@@ -1,11 +1,11 @@
-import type { IReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IReadReceipt } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import { BaseRaw, readSecondaryPreferred } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
+import type { FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
 
 export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReadReceipt>>) {
-		super(db, 'read_receipts_archive', trash);
+	constructor(db: Db) {
+		super(db, 'read_receipts_archive');
 	}
 
 	protected override modelIndexes(): IndexDescription[] {

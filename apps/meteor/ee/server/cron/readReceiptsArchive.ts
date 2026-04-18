@@ -67,13 +67,13 @@ export async function archiveOldReadReceipts(): Promise<void> {
 
 			// Mark messages as having archived receipts
 			// eslint-disable-next-line no-await-in-loop
-			const updateResult = await Messages.updateMany({ _id: { $in: messageIds } }, { $set: { receiptsArchived: true } });
+			const updateResult = await Messages.setReceiptsArchivedById(messageIds, true);
 			logger.info(`Marked ${updateResult.modifiedCount} messages as having archived receipts in batch ${batchNumber}`);
 
 			// Delete old receipts from hot storage for this batch
 			const receiptIds = oldReceipts.map((receipt) => receipt._id);
 			// eslint-disable-next-line no-await-in-loop
-			const deleteResult = await ReadReceipts.deleteMany({ _id: { $in: receiptIds } });
+			const deleteResult = await ReadReceipts.removeByIds(receiptIds);
 			logger.info(`Deleted ${deleteResult.deletedCount} old receipts from hot storage in batch ${batchNumber}`);
 
 			totalProcessed += oldReceipts.length;

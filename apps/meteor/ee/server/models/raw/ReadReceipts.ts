@@ -1,15 +1,23 @@
-import type { IReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IReadReceipt } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
+import type { FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
 
 export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReadReceipt>>) {
-		super(db, 'read_receipts', trash);
+	constructor(db: Db) {
+		super(db, 'read_receipts');
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
-		return [{ key: { messageId: 1 } }, { key: { userId: 1 } }, { key: { roomId: 1 } }, { key: { ts: -1 } }];
+		return [
+			// Unique index removed to increase performance. Uniqueness in now handled via composite value of _id
+			// TODO: Drop existent index on database migration of 9.0
+			// { key: { roomId: 1, userId: 1, messageId: 1 }, unique: true },
+			{ key: { messageId: 1 } },
+			{ key: { userId: 1 } },
+			{ key: { roomId: 1 } },
+			{ key: { ts: -1 } },
+		];
 	}
 
 	findByMessageId(messageId: string): FindCursor<IReadReceipt> {
