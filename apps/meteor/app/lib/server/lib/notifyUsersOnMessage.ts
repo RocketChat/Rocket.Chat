@@ -229,3 +229,6 @@ callbacks.add(
 	callbacks.priority.MEDIUM,
 	'notifyUsersOnMessage',
 );
+
+// FIX: Exported getUnreadSettingCount and getGroupMentions to be used by threads/server/functions.ts
+export { getUnreadSettingCount, getGroupMentions };

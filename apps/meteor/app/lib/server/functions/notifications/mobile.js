@@ -69,6 +69,7 @@ export function shouldNotifyMobile({
 	disableAllMessageNotifications,
 	mobilePushNotifications,
 	hasMentionToAll,
+	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
 	hasReplyToThread,
@@ -82,7 +83,16 @@ export function shouldNotifyMobile({
 		return false;
 	}
 
-	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
+	// FIX: Added !hasMentionToHere check to prevent blocking notifications when @here is used
+	if (
+		disableAllMessageNotifications &&
+		mobilePushNotifications == null &&
+		!isHighlighted &&
+		!hasMentionToUser &&
+		!hasReplyToThread &&
+		!hasMentionToAll &&
+		!hasMentionToHere
+	) {
 		return false;
 	}
 
@@ -111,10 +121,10 @@ export function shouldNotifyMobile({
 
 	return (
 		(roomType === 'd' ||
-			(!disableAllMessageNotifications && hasMentionToAll) ||
+			(!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) ||
 			isHighlighted ||
 			mobilePushNotifications === 'all' ||
 			hasMentionToUser) &&
-		(isHighlighted || !isThread || hasReplyToThread)
+		(isHighlighted || !isThread || hasReplyToThread || hasMentionToAll || hasMentionToHere)
 	);
 }
