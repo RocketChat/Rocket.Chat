@@ -1,0 +1,176 @@
+name: Weekly Commit Summary
+
+on:
+  schedule:
+    - cron: '0 9 * * 5' # Every Friday at 09:00 UTC
+  workflow_dispatch:
+
+jobs:
+  weekly-summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Gather weekly commits
+        id: gather-commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SINCE_DATE=$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          echo "since_date=${SINCE_DATE}" >> "$GITHUB_OUTPUT"
+
+          COMMIT_LOG=$(git log --since="${SINCE_DATE}" --oneline --no-merges --format="%h %s (%an)" origin/develop | head -500)
+
+          if [ -z "$COMMIT_LOG" ]; then
+            echo "has_commits=false" >> "$GITHUB_OUTPUT"
+            echo "No commits found in the last 7 days."
+          else
+            COMMIT_COUNT=$(echo "$COMMIT_LOG" | wc -l | tr -d ' ')
+            echo "has_commits=true" >> "$GITHUB_OUTPUT"
+            echo "commit_count=${COMMIT_COUNT}" >> "$GITHUB_OUTPUT"
+            echo "$COMMIT_LOG" > /tmp/weekly_commits.txt
+
+            # Extract PR numbers and fetch their bodies for context on actions/behavior changes
+            PR_NUMBERS=$(echo "$COMMIT_LOG" | grep -oP '#\K[0-9]+' | sort -u)
+            echo "" > /tmp/weekly_pr_details.txt
+            for PR in $PR_NUMBERS; do
+              BODY=$(gh pr view "$PR" --json number,title,body --jq '"### PR #\(.number): \(.title)\n\(.body // "")\n---"' 2>/dev/null || true)
+              if [ -n "$BODY" ]; then
+                echo "$BODY" >> /tmp/weekly_pr_details.txt
+              fi
+            done
+
+            echo "Collected ${COMMIT_COUNT} commits since ${SINCE_DATE}"
+          fi
+
+      - name: Generate summary with Claude
+        if: steps.gather-commits.outputs.has_commits == 'true'
+        id: claude-summary
+        uses: anthropics/claude-code-base-action@e8132bc5e637a42c27763fc757faa37e1ee43b34 # v0.0.63beta
+        with:
+          prompt: |
+            Read the file /tmp/weekly_commits.txt which contains the list of commits from the past week on the develop branch of Rocket.Chat.
+
+            Also read the file /tmp/weekly_pr_details.txt which contains the full PR descriptions (title + body) for each commit. Use these PR bodies to understand the full context of each change — especially look for mentions of:
+            - Required actions (immediate or future) by admins or users after upgrading
+            - Behavior changes (even subtle ones) that differ from previous versions
+            - Migration steps, manual configuration, or environment variable changes
+            - Deprecation notices or timelines
+            - Notes about backwards compatibility
+
+            Generate a weekly summary in English of the commits. The audience includes the Rocket.Chat engineering team, product team, and developers who build on top of Rocket.Chat (API consumers, integration builders, apps developers). Focus on what matters to people who use, ship, and build upon the product.
+
+            Structure the summary with these sections:
+
+            ## 1. Overview
+            A short paragraph (3-4 sentences) summarizing the overall theme of the week: what areas got the most attention, any notable trends.
+
+            ## 2. User-Facing Changes
+            These are changes that directly affect the day-to-day experience of end users or admins. Pay special attention to:
+            - New or changed **settings** (admin settings, user preferences)
+            - Changes to **permissions** or **roles**
+            - Changes to **UI behavior**, accessibility, or navigation
+            - Changes to **Omnichannel/Livechat** workflows
+            - Changes to **LDAP, SSO, or authentication** flows
+            - Changes to **notifications** (push, email, in-app)
+            Group them by area (e.g., Omnichannel, Admin, Accessibility, Apps, etc.) and describe what changed in practical terms.
+
+            ## 3. Developer & API Changes
+            These are changes relevant to developers who consume the Rocket.Chat API, build integrations, or develop Apps. Pay special attention to:
+            - **New, changed, or removed API endpoints** (REST, Realtime/DDP)
+            - Changes to **request/response schemas** or payload formats
+            - Changes to the **Apps Engine** (new capabilities, hooks, permission model)
+            - Changes to **webhooks** or **OAuth/bot** flows
+            - **SDK or client library** implications
+            - **OpenAPI spec** updates or endpoint migrations
+            - Changes to **DDP methods** or subscriptions
+            - **Breaking changes** in any public interface
+            Group by area and describe the practical impact for someone integrating with Rocket.Chat.
+
+            ## 4. Needs Documentation / Action Required
+            Flag any commits that likely require documentation updates or action from admins/users before or after upgrading. This includes:
+            - New or changed settings/configurations
+            - New or changed API endpoints or schemas
+            - Changed default behaviors
+            - New permissions or role changes
+            - Breaking changes or deprecations
+            - New Apps Engine capabilities
+            - **Migration steps or manual actions** required after upgrade (e.g., re-configure a setting, run a script, update an integration, regenerate tokens)
+            - Changes that require **admin intervention** (e.g., enable a new feature, review a new default, update environment variables)
+            Use the PR descriptions from /tmp/weekly_pr_details.txt to identify these. Look for keywords like "migration", "breaking", "required", "action needed", "manual", "must", "deprecated", "behavior change", "note:", "important:", "warning:". For each item, briefly explain what needs to be documented, what action is required (if any, whether immediate or in a future release), and who is affected (end user, admin, or developer).
+
+            ## 5. Performance & Size Impact
+            Call out changes that affect Docker image size, client bundle size, or load time. These directly impact self-hosted deployments and end-user experience. Include specific numbers when available (e.g., "-14.7%", "-489 KB"). Examples: barrel import optimizations, dependency removals, tree-shaking improvements, Docker layer changes.
+
+            ## 6. Internal / Infrastructure
+            Brief summary (not item-by-item) of refactors, CI/CD changes, dependency bumps, test improvements, and other internal changes that don't affect end users or developers. Only call out specific items if they are particularly noteworthy.
+
+            ## 7. Stats
+            Total commits, period covered, and top 3 contributors by commit count.
+
+            Formatting rules:
+            - Use Markdown compatible with Rocket.Chat
+            - Use **bold** for highlights
+            - Use emoji for section headers (🚀 User-Facing, 🛠️ Developer & API, 📝 Needs Documentation, ⚡ Performance & Size, 🔧 Internal)
+            - Keep individual items concise: max 2 lines each
+            - Include the PR number (e.g., #40123) when visible in the commit message
+
+            IMPORTANT: Respond ONLY with the formatted summary text. Do not include additional explanations, preambles, or comments outside the summary.
+          allowed_tools: 'Bash(cat:*),Bash(wc:*),View'
+          max_turns: '3'
+          model: 'claude-sonnet-4-5-20250929'
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Post summary to Rocket.Chat
+        if: steps.gather-commits.outputs.has_commits == 'true' && steps.claude-summary.outputs.conclusion == 'success'
+        env:
+          WEBHOOK_URL: ${{ secrets.WEEKLY_SUMMARY_WEBHOOK_URL }}
+          EXECUTION_FILE: ${{ steps.claude-summary.outputs.execution_file }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "::error::WEEKLY_SUMMARY_WEBHOOK_URL secret is not configured"
+            exit 1
+          fi
+
+          SUMMARY=$(jq -r '
+            [.[] | select(.role == "assistant")] | last |
+            if .content | type == "array" then
+              [.content[] | select(.type == "text") | .text] | join("\n")
+            elif .content | type == "string" then
+              .content
+            else
+              "Erro ao extrair resumo."
+            end
+          ' "$EXECUTION_FILE")
+
+          if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
+            echo "::error::Failed to extract summary from Claude execution log"
+            exit 1
+          fi
+
+          PAYLOAD=$(jq -n --arg text "$SUMMARY" '{ text: $text }')
+
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "Successfully posted weekly summary to Rocket.Chat (HTTP ${HTTP_CODE})"
+          else
+            echo "::error::Failed to post to Rocket.Chat webhook (HTTP ${HTTP_CODE})"
+            exit 1
+          fi
+
+      - name: Skip notification (no commits)
+        if: steps.gather-commits.outputs.has_commits != 'true'
+        run: echo "No commits found in the last 7 days. Skipping summary."
