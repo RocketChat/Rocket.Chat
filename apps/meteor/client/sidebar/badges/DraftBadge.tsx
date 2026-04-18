@@ -13,7 +13,7 @@ const DraftBadge = ({ roomTitle }: DraftBadgeProps) => {
 			variant='warning'
 			title={t('Draft_message')}
 			role='status'
-			aria-label={t('__draftMessage__from__roomTitle__', { roomTitle })}
+			aria-label={roomTitle ? t('__draftMessage__from__roomTitle__', { roomTitle }) : t('Draft_message')}
 		>
 			{t('Draft')}
 		</SidebarV2ItemBadge>
