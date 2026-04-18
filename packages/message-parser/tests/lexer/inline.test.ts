@@ -67,7 +67,12 @@ describe('user mentions', () => {
         expect(kinds('@ ')).toEqual(['TEXT', 'WHITESPACE']);
         expect(kinds('text@')).toEqual(['TEXT']);
         expect(kinds('@!')).toEqual(['TEXT']);
-        expect(kinds('@\u00e9')).toEqual(['TEXT']); // non-ASCII after @
+    });
+
+    test('unicode mention names are supported', () => {
+        expect(kv('@\u00e9')).toEqual([['MENTION_USER', '\u00e9']]);
+        expect(kv('@\u0e2a\u0e21\u0e0a\u0e32\u0e22')).toEqual([['MENTION_USER', '\u0e2a\u0e21\u0e0a\u0e32\u0e22']]);
+        expect(kv('@\u674e\u7956\u9633')).toEqual([['MENTION_USER', '\u674e\u7956\u9633']]);
     });
 
     test('mention surrounded by text', () => {
@@ -119,6 +124,27 @@ describe('URLs', () => {
 
     test('bare domain starting with c', () => {
         expect(kv('cdn.example.com')).toEqual([['URL', 'cdn.example.com']]);
+    });
+
+    test('bare domains starting with other letters are also detected', () => {
+        expect(kv('www.n-tv.de')).toEqual([['URL', 'www.n-tv.de']]);
+        expect(kv('test.1test.com')).toEqual([['URL', 'test.1test.com']]);
+    });
+
+    test('invalid TLD URLs are not autolinked', () => {
+        expect(kinds('https://test')).toEqual(['TEXT']);
+    });
+
+    test('custom domains can be allowed explicitly', () => {
+        const localKinds = new Lexer('gitlab.local', { customDomains: ['local'] })
+            .tokenize()
+            .map((t) => t.kind)
+            .filter((k) => k !== TokenKind.EOF);
+
+        const defaultKinds = kinds('gitlab.local');
+
+        expect(localKinds).toEqual([TokenKind.URL]);
+        expect(defaultKinds).toEqual(['TEXT']);
     });
 });
 
