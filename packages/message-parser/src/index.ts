@@ -1,7 +1,7 @@
 import type { Root } from './definitions';
 import * as grammar from './grammar.pegjs';
 import { tokenize } from './lexer';
-import type { Token } from './lexer';
+import type { Token, LexerOptions } from './lexer';
 
 export type * from './definitions';
 
@@ -21,7 +21,16 @@ export type Options = {
 
 export function parse(input: string, options?: Options): Root | Token[] {
 	if (options?.engine === 'handwritten') {
-		const tokens = tokenize(input);
+		const lexerOptions: LexerOptions = {
+			colors: options.colors ?? false,
+			emoticons: options.emoticons ?? false,
+			katex: {
+				dollarSyntax: options.katex?.dollarSyntax ?? false,
+				parenthesisSyntax: options.katex?.parenthesisSyntax ?? false,
+			},
+			customDomains: options.customDomains,
+		};
+		const tokens = tokenize(input, lexerOptions);
 		// TODO: once the handwritten parser is ready, pass tokens through it instead of returning them raw
 		return tokens;
 	}

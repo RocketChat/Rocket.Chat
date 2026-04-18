@@ -3,16 +3,19 @@ import { ScanContext, flushText, MAX_TOKENS } from './ScanContext';
 import { CHAR_CLASS, isUnicodeEmojiStart } from './constants/charSets';
 import { SCANNER_TABLE } from './scanners/index';
 import { scanUnicodeEmoji } from './scanners/emoji';
+import { LexerOptions, resolveLexerOptions } from './Options';
 
 /** Lexer that tokenizes a Rocket.Chat message string into a flat array of {@link Token} objects. */
 export class Lexer {
     private readonly _input: string;
     private readonly _len: number;
+    private readonly _options;
 
     /** @param input The raw message string to tokenize. */
-    constructor(input: string) {
+    constructor(input: string, options?: LexerOptions) {
         this._input = input;
         this._len = input.length;
+        this._options = resolveLexerOptions(options);
     }
 
     /**
@@ -24,6 +27,7 @@ export class Lexer {
             input: this._input,
             len: this._len,
             tokens: [],
+            options: this._options,
             textStart: -1,
             katexBlockOpen: false,
             katexInlineOpen: false,

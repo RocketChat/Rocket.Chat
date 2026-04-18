@@ -1,6 +1,7 @@
 import { makeToken, Token, TokenKind } from './Token';
 import { EMOTICON_TRIE, getEmoticonShortCode } from './constants/emoticons';
 import { CH_LF, CH_CR } from './constants/charCodes';
+import type { ResolvedLexerOptions } from './Options';
 
 // Safety cap to avoid runaway tokenization on malformed input.
 export const MAX_TOKENS = 4096;
@@ -9,6 +10,7 @@ export interface ScanContext {
     readonly input: string;
     readonly len: number;
     readonly tokens: Token[];
+    readonly options: ResolvedLexerOptions;
     textStart: number;         // start of current plain-text run; -1 = none
     katexBlockOpen: boolean;   // toggle for $$ open/close
     katexInlineOpen: boolean;  // toggle for $ open/close
@@ -55,6 +57,8 @@ export function consumeRun(input: string, pos: number, charCode: number): number
  * Returns `false` when no emoticon is found.
  */
 export function tryEmoticon(ctx: ScanContext, pos: number): number | false {
+    if (!ctx.options.emoticons) return false;
+
     const { input, len } = ctx;
     let node = EMOTICON_TRIE;
     let lastMatch: string | null = null;
