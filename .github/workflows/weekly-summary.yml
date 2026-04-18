@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -124,7 +124,11 @@ jobs:
             - Keep individual items concise: max 2 lines each
             - Include the PR number (e.g., #40123) when visible in the commit message
 
-            IMPORTANT: Respond ONLY with the formatted summary text. Do not include additional explanations, preambles, or comments outside the summary.
+            At the very end of the summary, add a machine-readable line listing the PR numbers that need documentation, in this exact format:
+            <!-- NEEDS_DOCS: #12345, #12346, #12347 -->
+            This line will be parsed by automation to tag PRs. Only include PRs listed in the "Needs Documentation / Action Required" section.
+
+            IMPORTANT: Respond ONLY with the formatted summary text and the NEEDS_DOCS comment. Do not include additional explanations, preambles, or comments outside the summary.
           allowed_tools: 'Bash(cat:*),Bash(wc:*),View'
           max_turns: '3'
           model: 'claude-sonnet-4-5-20250929'
@@ -170,6 +174,36 @@ jobs:
             echo "::error::Failed to post to Rocket.Chat webhook (HTTP ${HTTP_CODE})"
             exit 1
           fi
+
+      - name: Label PRs that need documentation
+        if: steps.gather-commits.outputs.has_commits == 'true' && steps.claude-summary.outputs.conclusion == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXECUTION_FILE: ${{ steps.claude-summary.outputs.execution_file }}
+        run: |
+          SUMMARY=$(jq -r '
+            [.[] | select(.role == "assistant")] | last |
+            if .content | type == "array" then
+              [.content[] | select(.type == "text") | .text] | join("\n")
+            elif .content | type == "string" then
+              .content
+            else
+              ""
+            end
+          ' "$EXECUTION_FILE")
+
+          # Extract PR numbers from the <!-- NEEDS_DOCS: #123, #456 --> comment
+          DOCS_PRS=$(echo "$SUMMARY" | grep -oP '<!-- NEEDS_DOCS:.*?-->' | grep -oP '#\K[0-9]+')
+
+          if [ -z "$DOCS_PRS" ]; then
+            echo "No PRs flagged for documentation."
+            exit 0
+          fi
+
+          for PR in $DOCS_PRS; do
+            echo "Adding 'docs' label to PR #${PR}"
+            gh pr edit "$PR" --add-label "docs" 2>/dev/null || echo "Warning: Could not label PR #${PR} (may be closed or inaccessible)"
+          done
 
       - name: Skip notification (no commits)
         if: steps.gather-commits.outputs.has_commits != 'true'
