@@ -7,6 +7,7 @@ import {
 } from '../constants/charCodes';
 import { DIGIT_ASCII } from '../constants/charSets';
 import { URL_RE, TRAIL_PUNCT } from '../constants/regexes';
+import { isValidAutolinkCandidate } from '../urlValidation';
 
 /**
  * Scanner for `#`: emits a {@link TokenKind.HEADING_MARKER} at line-start,
@@ -125,7 +126,7 @@ export function scanDigit(ctx: ScanContext, pos: number): number {
     const um = URL_RE.exec(input);
     if (um) {
         const raw = um[0].replace(TRAIL_PUNCT, '');
-        if (raw.length > 0) {
+        if (raw.length > 0 && isValidAutolinkCandidate(raw, ctx.options.customDomains)) {
             flushText(ctx, pos);
             emit(ctx, TokenKind.URL, raw, raw, pos);
             return pos + raw.length;
