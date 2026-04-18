@@ -3,6 +3,7 @@ import { scanMentionBody, scanEmojiShortCode } from '../helpers';
 import { TokenKind } from '../Token';
 import { CH_SLASH } from '../constants/charCodes';
 import { URL_RE, EMAIL_RE, PHONE_RE, COLOR_RE, TRAIL_PUNCT } from '../constants/regexes';
+import { isValidAutolinkCandidate, isValidAutoEmailCandidate } from '../urlValidation';
 
 /**
  * Scanner for `:`: handles URL schemes (`://`), emoji shortcodes (`:name:`), emoticons, or plain text.
@@ -48,7 +49,7 @@ function tryUrlScheme(ctx: ScanContext, pos: number): number {
     const m = URL_RE.exec(ctx.input);
     if (m) {
         const raw = m[0].replace(TRAIL_PUNCT, '');
-        if (raw.length > 0) {
+        if (raw.length > 0 && isValidAutolinkCandidate(raw, ctx.options.customDomains)) {
             if (prevTok?.kind === TokenKind.TEXT) ctx.tokens.pop();
             emit(ctx, TokenKind.URL, raw, raw, urlStart);
             return urlStart + raw.length;
@@ -88,7 +89,7 @@ export function scanPlus(ctx: ScanContext, pos: number): number {
     const em = EMAIL_RE.exec(input);
     if (em) {
         const raw = em[0].replace(TRAIL_PUNCT, '');
-        if (raw.length > 0) {
+        if (raw.length > 0 && isValidAutoEmailCandidate(raw)) {
             flushText(ctx, pos);
             emit(ctx, TokenKind.EMAIL, raw, raw, pos);
             return pos + raw.length;
@@ -106,7 +107,7 @@ export function scanC(ctx: ScanContext, pos: number): number {
     const { input } = ctx;
 
     // color token
-    if (input.startsWith('color:#', pos)) {
+    if (ctx.options.colors && input.startsWith('color:#', pos)) {
         COLOR_RE.lastIndex = pos;
         const m = COLOR_RE.exec(input);
         if (m) {
@@ -121,7 +122,7 @@ export function scanC(ctx: ScanContext, pos: number): number {
     const um = URL_RE.exec(input);
     if (um) {
         const raw = um[0].replace(TRAIL_PUNCT, '');
-        if (raw.length > 0) {
+        if (raw.length > 0 && isValidAutolinkCandidate(raw, ctx.options.customDomains)) {
             flushText(ctx, pos);
             emit(ctx, TokenKind.URL, raw, raw, pos);
             return pos + raw.length;
@@ -133,7 +134,7 @@ export function scanC(ctx: ScanContext, pos: number): number {
     const em = EMAIL_RE.exec(input);
     if (em) {
         const raw = em[0].replace(TRAIL_PUNCT, '');
-        if (raw.length > 0) {
+        if (raw.length > 0 && isValidAutoEmailCandidate(raw)) {
             flushText(ctx, pos);
             emit(ctx, TokenKind.EMAIL, raw, raw, pos);
             return pos + raw.length;
@@ -148,6 +149,36 @@ export function scanC(ctx: ScanContext, pos: number): number {
 export function scanEmoticonStarter(ctx: ScanContext, pos: number): number {
     const emResult = tryEmoticon(ctx, pos);
     if (emResult !== false) return emResult;
+    if (ctx.textStart === -1) ctx.textStart = pos;
+    return pos + 1;
+}
+
+/** Scanner for ASCII word starters: tries URL/e-mail autolinks and falls back to plain text. */
+export function scanWordStart(ctx: ScanContext, pos: number): number {
+    const { input } = ctx;
+
+    URL_RE.lastIndex = pos;
+    const um = URL_RE.exec(input);
+    if (um) {
+        const raw = um[0].replace(TRAIL_PUNCT, '');
+        if (raw.length > 0 && isValidAutolinkCandidate(raw, ctx.options.customDomains)) {
+            flushText(ctx, pos);
+            emit(ctx, TokenKind.URL, raw, raw, pos);
+            return pos + raw.length;
+        }
+    }
+
+    EMAIL_RE.lastIndex = pos;
+    const em = EMAIL_RE.exec(input);
+    if (em) {
+        const raw = em[0].replace(TRAIL_PUNCT, '');
+        if (raw.length > 0 && isValidAutoEmailCandidate(raw)) {
+            flushText(ctx, pos);
+            emit(ctx, TokenKind.EMAIL, raw, raw, pos);
+            return pos + raw.length;
+        }
+    }
+
     if (ctx.textStart === -1) ctx.textStart = pos;
     return pos + 1;
 }

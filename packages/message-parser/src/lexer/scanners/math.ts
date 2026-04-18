@@ -9,6 +9,11 @@ import { CH_DOLLAR } from '../constants/charCodes';
  * emitting the appropriate start/end token.
  */
 export function scanDollar(ctx: ScanContext, pos: number): number {
+    if (!ctx.options.katexDollarSyntax) {
+        if (ctx.textStart === -1) ctx.textStart = pos;
+        return pos + 1;
+    }
+
     flushText(ctx, pos);
 
     if (ctx.input.charCodeAt(pos + 1) === CH_DOLLAR) {
