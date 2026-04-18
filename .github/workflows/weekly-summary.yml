@@ -124,6 +124,7 @@ jobs:
             - Use emoji for section headers (🚀 User-Facing, 🛠️ Developer & API, 📝 Needs Documentation, ⚡ Performance & Size, 🔧 Internal)
             - Keep individual items concise: max 2 lines each
             - Include the PR number (e.g., #40123) when visible in the commit message
+            - Do NOT use Markdown tables — Rocket.Chat does not render them. Use bullet lists instead, or wrap tabular data in code blocks (``` ```)
 
             At the very end of the summary, add a machine-readable line listing the PR numbers that need documentation, in this exact format:
             <!-- NEEDS_DOCS: #12345, #12346, #12347 -->
