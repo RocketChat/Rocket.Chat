@@ -2,7 +2,7 @@ name: Weekly Commit Summary
 
 on:
   schedule:
-    - cron: '0 9 * * 5' # Every Friday at 09:00 UTC
+    - cron: '0 21 * * 5' # Every Friday at 18:00 BRT (21:00 UTC)
   workflow_dispatch:
 
 jobs:
