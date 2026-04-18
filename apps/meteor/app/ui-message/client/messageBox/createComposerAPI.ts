@@ -42,10 +42,12 @@ export const createComposerAPI = (
 	const persist = withDebouncing({ wait: 300 })(() => {
 		if (input.value) {
 			Accounts.storageLocation.setItem(storageID, input.value);
+			window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { key: storageID, value: input.value } }));
 			return;
 		}
 
 		Accounts.storageLocation.removeItem(storageID);
+		window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { key: storageID, value: null } }));
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {

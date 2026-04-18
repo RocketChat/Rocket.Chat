@@ -31,6 +31,7 @@ import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { getMessageBoxStorageKey } from '../../../../lib/utils/getMessageBoxStorageKey';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
@@ -127,7 +128,7 @@ const MessageBox = ({
 	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 
-	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
+	const storageID = getMessageBoxStorageKey(room._id, tmid);
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
