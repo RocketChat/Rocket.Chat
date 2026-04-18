@@ -1,8 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Button } from '@rocket.chat/fuselage';
+import { Button, Box } from '@rocket.chat/fuselage';
 import { useUserId, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { memo, useState, useEffect } from 'react';
+
+import ImportantMessageReadInfo from './ImportantMessageReadInfo';
 
 type ImportantMessageReadButtonProps = {
 	message: IMessage;
@@ -12,6 +15,7 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 	const userId = useUserId();
 	const toggleImportantMessageRead = useMethod('toggleImportantMessageRead');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 	
 	const serverIsRead = message.importantReadBy?.includes(userId || '') ?? false;
 	const [isRead, setIsRead] = useState(serverIsRead);
@@ -30,6 +34,9 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 		
 		try {
 			await toggleImportantMessageRead(message._id);
+			queryClient.invalidateQueries({ 
+				queryKey: ['important-message-readers', message._id] 
+			});
 		} catch (error) {
 			setIsRead(!newState);
 			dispatchToastMessage({
@@ -40,17 +47,20 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 	};
 
 	return (
-		<Button
-			small
-			onClick={handleToggle}
-			primary={!isRead}
-			success={isRead}
-			mis='x8'
-			mbs='x4'
-			style={{ width: 'fit-content', minWidth: 'auto' }}
-		>
-			{isRead ? 'Message read' : 'Mark as read'}
-		</Button>
+		<Box display='flex' alignItems='center'>
+			<Button
+				small
+				onClick={handleToggle}
+				primary={!isRead}
+				success={isRead}
+				mis='x8'
+				mbs='x4'
+				style={{ width: 'fit-content', minWidth: 'auto' }}
+			>
+				{isRead ? 'Message read' : 'Mark as read'}
+			</Button>
+			<ImportantMessageReadInfo message={message} />
+		</Box>
 	);
 };
 
