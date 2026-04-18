@@ -6,14 +6,19 @@ import { useCurrentRoutePath, useLayout, useRouter, useSetting } from '@rocket.c
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NavBarPagesStackMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+import { useSortMenu } from '../hooks/useSortMenu';
 
-const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
+type NavBarPagesStackMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+	showMarketplace: boolean;
+};
+
+const NavBarPagesStackMenu = ({ showMarketplace, ...props }: NavBarPagesStackMenuProps) => {
 	const { t } = useTranslation();
 
 	const showHome = useSetting('Layout_Show_Home_Button');
 	const { sidebar } = useLayout();
 	const router = useRouter();
+	const sortSections = useSortMenu();
 
 	const handleGoToHome = useEffectEvent(() => {
 		sidebar.toggle();
@@ -21,7 +26,11 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 	});
 
 	const currentRoute = useCurrentRoutePath();
-	const pressed = currentRoute?.includes('/directory') || currentRoute?.includes('/home');
+	const pressed =
+		currentRoute?.includes('/home') ||
+		currentRoute?.includes('/directory') ||
+		currentRoute?.includes('/marketplace') ||
+		currentRoute?.includes('/admin/display');
 
 	const items = [
 		showHome && {
@@ -36,10 +45,35 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 			content: t('Directory'),
 			onClick: () => router.navigate('/directory'),
 		},
+		showMarketplace && {
+			id: 'marketplace',
+			icon: 'store',
+			content: t('Marketplace'),
+			onClick: () => router.navigate('/marketplace'),
+		},
+		{
+			id: 'display',
+			icon: 'sort',
+			content: t('Display'),
+			onClick: () =>
+				GenericMenu.open({
+					title: t('Display'),
+					sections: sortSections,
+					selectionMode: 'multiple',
+				}),
+		},
 	].filter(Boolean) as GenericMenuItemProps[];
 
 	return (
-		<GenericMenu items={items} title={t('Pages')} is={NavBarItem} placement='bottom-start' icon='stack' pressed={pressed} {...props} />
+		<GenericMenu
+			items={items}
+			title={t('Pages')}
+			is={NavBarItem}
+			placement='bottom-start'
+			icon='stack'
+			pressed={pressed}
+			{...props}
+		/>
 	);
 };
 
