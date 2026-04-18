@@ -596,18 +596,6 @@ When migrating an endpoint, search for its tests and update:
 2. Remove `' [invalid-params]'` suffix from `error` message assertions
 3. Verify that status codes remain the same (400 for validation errors)
 
-## Tracking Migration Progress
-
-```bash
-# Summary by file
-node scripts/list-unmigrated-api-endpoints.mjs
-
-# Full list with line numbers (JSON)
-node scripts/list-unmigrated-api-endpoints.mjs --json
-```
-
-The script scans for `API.v1.addRoute` and `API.default.addRoute` calls in `apps/meteor/app/api/`.
-
 ## Reference Files
 
 | Pattern                          | File                                             |
@@ -624,4 +612,3 @@ The script scans for `API.v1.addRoute` and `API.default.addRoute` calls in `apps
 | Error response validators        | `packages/rest-typings/src/v1/Ajv.ts`            |
 | Request validators (examples)    | `packages/rest-typings/src/v1/moderation/`       |
 | Router implementation            | `packages/http-router/src/Router.ts`             |
-| Unmigrated endpoints script      | `scripts/list-unmigrated-api-endpoints.mjs`      |

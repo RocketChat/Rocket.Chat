@@ -59,7 +59,7 @@ runs:
     - name: Cache Deno (apps-engine)
       if: inputs.cache-modules
       id: cache-deno
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: packages/apps-engine/.deno-cache
         key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
@@ -68,7 +68,7 @@ runs:
 
     - name: Use Node.js ${{ env.NODE_VERSION }}
       id: node-version
-      uses: actions/setup-node@v6.0.0
+      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: ${{ inputs.cache-modules && 'yarn' || '' }}
@@ -80,7 +80,7 @@ runs:
 
     - name: Cache mongodb-memory-server binary
       if: inputs.cache-modules
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ${{ runner.temp }}/mongodb-memory-server
         key: mongoms-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
