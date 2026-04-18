@@ -148,7 +148,7 @@ class ReadReceiptClass {
 		}
 
 		// Combine receipts from both storages
-		const receipts = [...hotReceipts, ...coldReceipts];
+		const receipts = [...new Map([...hotReceipts, ...coldReceipts].map((receipt) => [receipt._id, receipt])).values()];
 
 		// get unique receipts user ids
 		const userIds = [...new Set(receipts.map((receipt) => receipt.userId))];

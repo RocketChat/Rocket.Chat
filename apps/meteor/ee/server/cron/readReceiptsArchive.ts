@@ -52,9 +52,17 @@ export async function archiveOldReadReceipts(): Promise<void> {
 			} catch (error: unknown) {
 				// If we get duplicate key errors, some receipts were already archived, which is fine
 				// We'll continue to mark messages and delete from hot storage
-				if (error && typeof error === 'object' && ('code' in error || 'name' in error)) {
-					const mongoError = error as { code?: number; name?: string; result?: { insertedCount?: number } };
-					if (mongoError.code === 11000 || mongoError.name === 'MongoBulkWriteError') {
+				if (error && typeof error === 'object' && ('code' in error || 'writeErrors' in error)) {
+					const mongoError = error as {
+						code?: number;
+						result?: { insertedCount?: number };
+						writeErrors?: Array<{ code?: number }>;
+					};
+					const onlyDuplicateErrors = mongoError.writeErrors?.length
+						? mongoError.writeErrors.every((writeError) => writeError.code === 11000)
+						: mongoError.code === 11000;
+
+					if (onlyDuplicateErrors) {
 						const insertedCount = mongoError.result?.insertedCount || 0;
 						logger.info(`Archived ${insertedCount} read receipts in batch ${batchNumber} (some were already archived)`);
 					} else {

@@ -65,7 +65,7 @@ export const createMessageSettings = () =>
 				public: true,
 				enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
 			});
-			await this.add('Message_Read_Receipt_Archive_Enabled', true, {
+			await this.add('Message_Read_Receipt_Archive_Enabled', false, {
 				type: 'boolean',
 				enterprise: true,
 				invalidValue: false,

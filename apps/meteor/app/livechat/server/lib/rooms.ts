@@ -287,7 +287,6 @@ export async function removeOmnichannelRoom(rid: string) {
 	const result = await Promise.allSettled([
 		Messages.removeByRoomId(rid),
 		ReadReceipts.removeByRoomId(rid),
-		ReadReceiptsArchive.removeByRoomId(rid),
 		Subscriptions.removeByRoomId(rid, {
 			async onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
@@ -295,6 +294,7 @@ export async function removeOmnichannelRoom(rid: string) {
 		}),
 		LivechatInquiry.removeByRoomId(rid),
 		LivechatRooms.removeById(rid),
+		ReadReceiptsArchive.removeByRoomId(rid),
 	]);
 
 	if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {

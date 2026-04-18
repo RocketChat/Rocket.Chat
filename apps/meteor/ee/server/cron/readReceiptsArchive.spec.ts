@@ -6,13 +6,13 @@ import { settings } from '../../../app/settings/server';
 jest.mock('@rocket.chat/models', () => ({
 	ReadReceipts: {
 		findOlderThan: jest.fn(),
-		deleteMany: jest.fn(),
+		removeByIds: jest.fn(),
 	},
 	ReadReceiptsArchive: {
 		insertMany: jest.fn(),
 	},
 	Messages: {
-		updateMany: jest.fn(),
+		setReceiptsArchivedById: jest.fn(),
 	},
 }));
 
@@ -93,8 +93,8 @@ describe('Read Receipts Archive', () => {
 		await archiveOldReadReceipts();
 
 		expect(ReadReceiptsArchive.insertMany).not.toHaveBeenCalled();
-		expect(Messages.updateMany).not.toHaveBeenCalled();
-		expect(ReadReceipts.deleteMany).not.toHaveBeenCalled();
+		expect(Messages.setReceiptsArchivedById).not.toHaveBeenCalled();
+		expect(ReadReceipts.removeByIds).not.toHaveBeenCalled();
 	});
 
 	it('should archive old receipts in single batch and mark messages', async () => {
@@ -109,8 +109,8 @@ describe('Read Receipts Archive', () => {
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
 		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
 		(ReadReceiptsArchive.insertMany as jest.Mock).mockResolvedValue({ insertedCount: 3 });
-		(Messages.updateMany as jest.Mock).mockResolvedValue({ modifiedCount: 2 });
-		(ReadReceipts.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 3 });
+		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 2 });
+		(ReadReceipts.removeByIds as jest.Mock).mockResolvedValue({ deletedCount: 3 });
 
 		await archiveOldReadReceipts();
 
@@ -118,10 +118,10 @@ describe('Read Receipts Archive', () => {
 		expect(ReadReceiptsArchive.insertMany).toHaveBeenCalledWith(oldReceipts, { ordered: false });
 
 		// Verify messages were marked
-		expect(Messages.updateMany).toHaveBeenCalledWith({ _id: { $in: ['msg1', 'msg2'] } }, { $set: { receiptsArchived: true } });
+		expect(Messages.setReceiptsArchivedById).toHaveBeenCalledWith(['msg1', 'msg2'], true);
 
 		// Verify old receipts were deleted by ID
-		expect(ReadReceipts.deleteMany).toHaveBeenCalledWith({ _id: { $in: ['1', '2', '3'] } });
+		expect(ReadReceipts.removeByIds).toHaveBeenCalledWith(['1', '2', '3']);
 	});
 
 	it('should process multiple batches with delay', async () => {
@@ -149,8 +149,8 @@ describe('Read Receipts Archive', () => {
 
 		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
 		(ReadReceiptsArchive.insertMany as jest.Mock).mockResolvedValue({ insertedCount: 2 });
-		(Messages.updateMany as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
-		(ReadReceipts.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 2 });
+		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
+		(ReadReceipts.removeByIds as jest.Mock).mockResolvedValue({ deletedCount: 2 });
 
 		const archivePromise = archiveOldReadReceipts();
 
@@ -160,8 +160,8 @@ describe('Read Receipts Archive', () => {
 
 		// Should process 2 batches
 		expect(ReadReceiptsArchive.insertMany).toHaveBeenCalledTimes(2);
-		expect(Messages.updateMany).toHaveBeenCalledTimes(2);
-		expect(ReadReceipts.deleteMany).toHaveBeenCalledTimes(2);
+		expect(Messages.setReceiptsArchivedById).toHaveBeenCalledTimes(2);
+		expect(ReadReceipts.removeByIds).toHaveBeenCalledTimes(2);
 	});
 
 	it('should handle duplicate key errors gracefully', async () => {
@@ -178,14 +178,14 @@ describe('Read Receipts Archive', () => {
 			result: { insertedCount: 0 },
 		});
 		(ReadReceiptsArchive.insertMany as jest.Mock).mockRejectedValue(duplicateError);
-		(Messages.updateMany as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
-		(ReadReceipts.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 1 });
+		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
+		(ReadReceipts.removeByIds as jest.Mock).mockResolvedValue({ deletedCount: 1 });
 
 		await archiveOldReadReceipts();
 
 		// Should continue despite duplicate error
-		expect(Messages.updateMany).toHaveBeenCalled();
-		expect(ReadReceipts.deleteMany).toHaveBeenCalled();
+		expect(Messages.setReceiptsArchivedById).toHaveBeenCalled();
+		expect(ReadReceipts.removeByIds).toHaveBeenCalled();
 	});
 
 	it('should rethrow non-duplicate errors', async () => {

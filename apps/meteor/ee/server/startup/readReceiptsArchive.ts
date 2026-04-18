@@ -5,4 +5,3 @@ import { readReceiptsArchiveCron } from '../cron/readReceiptsArchive';
 settings.watchMultiple(['Message_Read_Receipt_Archive_Cron', 'Message_Read_Receipt_Archive_Enabled'], async () => {
 	await readReceiptsArchiveCron();
 });
-
