@@ -91,9 +91,10 @@ jobs:
             - Changes to the **Apps Engine** (new capabilities, hooks, permission model)
             - Changes to **webhooks** or **OAuth/bot** flows
             - **SDK or client library** implications
-            - **OpenAPI spec** updates or endpoint migrations
+            - **OpenAPI spec** updates or endpoint migrations (even if labeled as "chore" — these affect API consumers and generated clients)
             - Changes to **DDP methods** or subscriptions
             - **Breaking changes** in any public interface
+            IMPORTANT: Classify commits by their actual impact, not by their conventional commit type. A "chore" or "refactor" that converts endpoints to OpenAPI, changes API schemas, or modifies public interfaces is a developer-facing change and belongs here, not in Internal.
             Group by area and describe the practical impact for someone integrating with Rocket.Chat.
 
             ## 4. Needs Documentation / Action Required
