@@ -738,7 +738,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const setDefaultRes = await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
-				.send({ teamId, roomId: teamPrivateRoomId, isDefault: true })
+				.send({ roomId: teamPrivateRoomId, isDefault: true })
 				.expect(200);
 
 			if (setDefaultRes.body?.room?.teamDefault) {
@@ -787,7 +787,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
-				.send({ teamId, roomId: teamDefaultRoomId, isDefault: false })
+				.send({ roomId: teamDefaultRoomId, isDefault: false })
 				.expect(200);
 
 			await request
@@ -978,7 +978,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
-				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
+				.send({ roomId: teamRoomId, isDefault: true })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body.success).to.be.false;
