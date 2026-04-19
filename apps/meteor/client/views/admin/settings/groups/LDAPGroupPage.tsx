@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
+import { useLdapSync } from '../../../../hooks/useLdapSync';
 import { links } from '../../../../lib/links';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
@@ -20,11 +21,11 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
-	const syncNow = useEndpoint('POST', '/v1/ldap.syncNow');
 	const testSearch = useEndpoint('POST', '/v1/ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
 	const closeModal = useEffectEvent(() => setModal());
+	const handleSyncNow = useLdapSync();
 
 	const handleLinkClick = useExternalLink();
 
@@ -43,37 +44,6 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 		try {
 			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
-		} catch (error) {
-			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
-	const handleSyncNowButtonClick = async (): Promise<void> => {
-		try {
-			await testConnection();
-			const confirmSync = async (): Promise<void> => {
-				closeModal();
-
-				try {
-					const { message } = await syncNow();
-					dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
-				} catch (error) {
-					error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
-				}
-			};
-
-			setModal(
-				<GenericModal
-					variant='info'
-					confirmText={t('Sync')}
-					cancelText={t('Cancel')}
-					title={t('Execute_Synchronization_Now')}
-					onConfirm={confirmSync}
-					onClose={closeModal}
-				>
-					{t('LDAP_Sync_Now_Description')}
-				</GenericModal>,
-			);
 		} catch (error) {
 			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -144,7 +114,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					<Button disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick}>
 						{t('Test_LDAP_Search')}
 					</Button>
-					<Button disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick}>
+					<Button disabled={!ldapEnabled || changed} onClick={handleSyncNow}>
 						{t('LDAP_Sync_Now')}
 					</Button>
 					<Button role='link' onClick={() => handleLinkClick(links.go.ldapDocs)}>

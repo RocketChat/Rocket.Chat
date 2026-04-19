@@ -3,6 +3,7 @@ import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessor
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
+import { censorUrl } from '@rocket.chat/tools';
 
 import { settings } from '../../../settings/server';
 
@@ -72,7 +73,7 @@ export class AppHttpBridge extends HttpBridge {
 
 		// end comptability with old HTTP.call API
 
-		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
+		this.orch.debugLog({ msg: `The App ${info.appId} is requesting from the outter webs:`, info: { ...info, url: censorUrl(info.url) } });
 
 		const shouldIgnoreSsrf = request.ssrfValidation !== true;
 		const fetchOptions: ExtendedFetchOptions = {

@@ -33,11 +33,12 @@ export const usePeekMediaSessionFeatures = (): PeekMediaSessionFeaturesReturn =>
 			return emptyFeatures;
 		}
 
-		const mainCall = instance.getMainCall();
-		if (!mainCall) {
+		const instanceState = instance.getState();
+		if (!instanceState?.confirmed) {
 			return emptyFeatures;
 		}
-		const { features } = mainCall;
+
+		const { features } = instanceState;
 
 		if (!cache.current || !areEqual(features, cache.current)) {
 			cache.current = features;
