@@ -227,6 +227,12 @@ const MessageBox = ({
 		}
 
 		switch (event.key) {
+			case 'Tab': {
+				event.preventDefault();
+				chat.composer?.insertText('  ');
+				return;
+			}
+
 			case 'Escape': {
 				closeEditing(event);
 				if (!input.value.trim()) onEscape?.();

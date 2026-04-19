@@ -5,13 +5,19 @@ import InlineElements from '../elements/InlineElements';
 
 type UnorderedListBlockProps = {
 	items: MessageParser.ListItem[];
+	nested?: boolean;
 };
 
-const UnorderedListBlock = ({ items }: UnorderedListBlockProps): ReactElement => (
-	<ul>
+const nestedListStyle = {
+	paddingInlineStart: '1.5rem',
+} as const;
+
+const UnorderedListBlock = ({ items, nested = false }: UnorderedListBlockProps): ReactElement => (
+	<ul style={nested ? nestedListStyle : undefined}>
 		{items.map((item, index) => (
 			<li key={index}>
 				<InlineElements>{item.value}</InlineElements>
+				{item.children?.length && <UnorderedListBlock items={item.children} nested />}
 			</li>
 		))}
 	</ul>

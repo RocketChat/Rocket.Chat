@@ -42,6 +42,48 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
+
+function buildNestedList(items) {
+  if (!items || !items.length) return items;
+  
+  const root = [];
+  const stack = [{ children: root, indent: -1 }];
+  
+  for (const item of items) {
+    const indent = item.indent || 0;
+    
+    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+      stack.pop();
+    }
+    
+    const cleanItem = {
+      type: item.type,
+      value: item.value,
+      ...(item.number !== undefined && { number: item.number }),
+    };
+    
+    const parent = stack[stack.length - 1];
+    parent.children.push(cleanItem);
+    
+    cleanItem.children = [];
+    
+    stack.push({ children: cleanItem.children, indent });
+  }
+  
+  function cleanEmptyChildren(items) {
+    for (const item of items) {
+      if (item.children && !item.children.length) {
+        delete item.children;
+      } else if (item.children) {
+        cleanEmptyChildren(item.children);
+      }
+    }
+  }
+  
+  cleanEmptyChildren(root);
+  
+  return root;
+}
 }}
 
 Start
@@ -174,9 +216,13 @@ TaskFlag = "x" { return true; } / " " { return false; }
  *  3. Item Three
  *
  */
-OrderedList = items:OrderedListItem+ { return orderedList(items); }
+OrderedList = items:OrderedListItem+ { return orderedList(buildNestedList(items)); }
 
-OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, parseInt(number, 10)); }
+OrderedListItem = indent:$[ \t]* number:Digits "." [ \t]+ text:Inline { 
+  const item = listItem(text, parseInt(number, 10));
+  item.indent = indent.length;
+  return item;
+}
 
 /**
  *
@@ -188,11 +234,19 @@ OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, p
  *  * Item Four
  *
  */
-UnorderedList = items:(UnorderedListHyphenItem+ / UnorderedListAsteriskItem+) { return unorderedList(items); }
+UnorderedList = items:(UnorderedListHyphenItem+ / UnorderedListAsteriskItem+) { return unorderedList(buildNestedList(items)); }
 
-UnorderedListHyphenItem = "-" [ \t]+ text:Inline { return listItem(text); }
+UnorderedListHyphenItem = indent:$[ \t]* "-" [ \t]+ text:Inline { 
+  const item = listItem(text);
+  item.indent = indent.length;
+  return item;
+}
 
-UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return listItem(text); }
+UnorderedListAsteriskItem = indent:$[ \t]* "*" [ \t]+ text:UnorderedListItemContent { 
+  const item = listItem(text);
+  item.indent = indent.length;
+  return item;
+}
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 

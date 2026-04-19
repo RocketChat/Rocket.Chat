@@ -14,6 +14,9 @@ const styles = StyleSheet.create({
 	bullet: {
 		marginHorizontal: 4,
 	},
+	nested: {
+		marginLeft: 16,
+	},
 });
 
 type UnorderedListBlockProps = {
@@ -21,10 +24,17 @@ type UnorderedListBlockProps = {
 };
 const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (
 	<View style={styles.wrapper} wrap>
-		{items.map(({ value }, index) => (
-			<View style={styles.list} key={index}>
-				<Text style={styles.bullet}>•</Text>
-				<InlineElements>{value}</InlineElements>
+		{items.map(({ value, children }, index) => (
+			<View key={index}>
+				<View style={styles.list}>
+					<Text style={styles.bullet}>•</Text>
+					<InlineElements>{value}</InlineElements>
+				</View>
+				{children?.length && (
+					<View style={styles.nested}>
+						<UnorderedListBlock items={children} />
+					</View>
+				)}
 			</View>
 		))}
 	</View>
