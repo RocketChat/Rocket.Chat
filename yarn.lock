@@ -9945,6 +9945,7 @@ __metadata:
     "@types/passport": "npm:^1.0.17"
     "@types/passport-facebook": "npm:^3.0.4"
     "@types/passport-github2": "npm:^1.2.9"
+    "@types/passport-google-oauth20": "npm:^2"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
     "@types/proxyquire": "npm:^1.3.31"
@@ -10088,6 +10089,7 @@ __metadata:
     passport-facebook: "npm:^3.0.0"
     passport-facebook2: "npm:^1.0.3"
     passport-github2: "npm:^0.1.12"
+    passport-google-oauth20: "npm:^2.0.0"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:10.3.1"
@@ -14767,6 +14769,17 @@ __metadata:
     "@types/passport": "npm:*"
     "@types/passport-oauth2": "npm:*"
   checksum: 10/375b16d5ab80ff0601a56abc1a2ec1eadda0a8f38bef9c5d7406b6141751a10f6bb565890459a27ecbcb9a622771250fd5539e0842ce1b205f68dc4c3d83c235
+  languageName: node
+  linkType: hard
+
+"@types/passport-google-oauth20@npm:^2":
+  version: 2.0.17
+  resolution: "@types/passport-google-oauth20@npm:2.0.17"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/passport": "npm:*"
+    "@types/passport-oauth2": "npm:*"
+  checksum: 10/534b10d00347f74014205485a96bbf80ba357de8293847cf3e1df67e7b10197fc4128f4c64be6ddf41ede61451e40627810323c26117c863cf244179dc59ee9f
   languageName: node
   linkType: hard
 
@@ -30372,6 +30385,15 @@ __metadata:
   dependencies:
     passport-oauth2: "npm:1.x.x"
   checksum: 10/cf174d1738a2b1d398ec9f4ba2e1ca229214ef65cfd05f5754303f664d5cfd6e3bacbf49ece19fcd576be43bfcc1d3795541f50692148436b9e4ddbffbe625ac
+  languageName: node
+  linkType: hard
+
+"passport-google-oauth20@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "passport-google-oauth20@npm:2.0.0"
+  dependencies:
+    passport-oauth2: "npm:1.x.x"
+  checksum: 10/bfd1316ec7cbef5c25f41daa752eade509dffd3016cc962bf2935d577b3dcfa379d8f0d177e28dd1af03b443cc04382108956a505c0134973f85c155adfd8101
   languageName: node
   linkType: hard
 
