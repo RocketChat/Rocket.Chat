@@ -3252,12 +3252,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('reports IdP failure when token endpoint errors', async () => {
 			await seedDefaultMocks();
-			await mockServerSet(
-				'POST',
-				'/auth/realms/mock/protocol/openid-connect/token',
-				{ error: 'invalid_client' },
-				500,
-			);
+			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', { error: 'invalid_client' }, 500);
 
 			await request
 				.get('/api/v1/abac/pdp/health')
