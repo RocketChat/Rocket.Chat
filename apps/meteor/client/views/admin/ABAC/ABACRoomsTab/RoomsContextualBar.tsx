@@ -44,6 +44,7 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 	const saveMutation = useMutation({
 		mutationFn: async (data: { room: string; attributes: { key: string; values: string[] }[] }) => {
 			const payload = {
+				confirmed: true,
 				attributes: data.attributes.reduce((acc: Record<string, string[]>, attribute) => {
 					acc[attribute.key] = attribute.values;
 					return acc;
