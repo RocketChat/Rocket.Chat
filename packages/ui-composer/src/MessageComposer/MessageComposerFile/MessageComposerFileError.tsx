@@ -5,6 +5,7 @@ import MessageComposerFile from './MessageComposerFile';
 
 type MessageComposerFileErrorProps = {
 	fileTitle: string;
+	fileFormat: string;
 	error: Error;
 	actionIcon: ReactElement;
 	onClick: () => void;
