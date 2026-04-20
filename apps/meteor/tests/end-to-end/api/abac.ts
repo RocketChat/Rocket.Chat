@@ -3211,5 +3211,4 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 	});
-
 });
