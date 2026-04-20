@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type {
 	IMediaCall,
 	IMediaCallNegotiation,
@@ -11,7 +13,6 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
-import { DEFAULT_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { InternalCallParams, MediaCallHeader } from '../definition/common';
@@ -79,11 +80,14 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as accepted', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 
-		const updatedCall = await MediaCalls.findOneById(call._id, { projection: { features: 1 } });
-		const features = (updatedCall?.features || DEFAULT_CALL_FEATURES) as CallFeature[];
+		const updatedCall = await MediaCalls.findOneById(call._id);
+		if (!updatedCall) {
+			logger.error({ msg: 'Unable to find up to date call data', callId: call._id });
+			return false;
+		}
 
-		await calleeAgent.onCallAccepted(call._id, { signedContractId: data.calleeContractId, features });
-		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, { signedContractId: call.caller.contractId, features });
+		await calleeAgent.onCallAccepted(updatedCall);
+		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
 		if (data.webrtcAnswer && negotiation) {
 			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
@@ -204,8 +208,9 @@ class MediaCallDirector {
 		calleeAgent.oppositeAgent = callerAgent;
 
 		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
-
-		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
+		const call: Omit<IMediaCall, '_updatedAt'> = {
+			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
+			_id: randomUUID(),
 			service,
 			kind: 'direct',
 			state: 'none',

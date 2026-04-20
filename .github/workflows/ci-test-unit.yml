@@ -15,6 +15,8 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: false
+      NPM_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -28,7 +30,7 @@ jobs:
     name: Unit Tests
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -39,14 +41,14 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
 
       - uses: ./.github/actions/restore-packages
 
       - name: Unit Test
         run: yarn testunit --concurrency=1
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           flags: unit
           verbose: true

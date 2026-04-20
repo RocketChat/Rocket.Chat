@@ -147,11 +147,7 @@ slashCommands.add({
 			return;
 		}
 
-		const emailText =
-			message?.attachments
-				?.map((a) => a.description)
-				.filter(Boolean)
-				.join('\n\n') || '';
+		const emailText = message?.msg || '';
 
 		// we await here because we need to make sure the email is sent before we update the message with the email info, otherwise we might
 		// end up with a message that has the info but the message was not sent successfully

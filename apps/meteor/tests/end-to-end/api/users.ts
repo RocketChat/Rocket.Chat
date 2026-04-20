@@ -7,12 +7,13 @@ import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.ch
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { updatePermission, updateSetting, restorePermissionToRoles } from '../../data/permissions.helper';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -182,7 +183,7 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 };
 
 describe('[Users]', () => {
-	let targetUser: { _id: IUser['_id']; username: string };
+	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[] };
 	let userCredentials: Credentials;
 
 	before((done) => getCredentials(done));
@@ -197,6 +198,7 @@ describe('[Users]', () => {
 		targetUser = {
 			_id: user._id,
 			username: user.username,
+			emails: user.emails,
 		};
 		userCredentials = await login(user.username, password);
 	});
@@ -804,6 +806,28 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.create'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.register]', () => {
@@ -904,6 +928,17 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
 				})
 				.end(done);
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.register'))
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 
@@ -1166,6 +1201,87 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		describe('querying by user email', () => {
+			after(async () => {
+				await restorePermissionToRoles('view-full-other-user-info');
+			});
+
+			describe("with 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', ['admin']);
+				});
+
+				it('should query information about a user by email', async () => {
+					const targetEmail = targetUser.emails[0].address;
+
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							email: targetEmail,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user._id', targetUser._id);
+							expect(res.body).to.have.nested.property('user.emails[0].address', targetEmail);
+						});
+				});
+				it('should return an error when querying by an email that does not exist', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							email: 'this_is_a_fake_email_that_does_not_exist@invalid.com',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+			});
+
+			describe("without 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', []);
+				});
+
+				it('should return an error when querying another user by email and lacking "view-full-other-user-info" permission', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							email: targetUser.emails[0].address,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+				it('should query information about myself by email', async () => {
+					await request
+						.get(api('users.info'))
+						.set(userCredentials)
+						.query({
+							email: targetUser.emails[0].address,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user.emails[0].address', targetUser.emails[0].address);
+						});
+				});
+			});
+		});
 	});
 	describe('[/users.getPresence]', () => {
 		it("should query a user's presence by userId", (done) => {
@@ -1217,6 +1333,16 @@ describe('[Users]', () => {
 						expect(res.body).to.have.nested.property('presence', 'offline');
 					});
 			});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.getPresence'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -1443,28 +1569,6 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should query all users in the system by name', (done) => {
-			// filtering user list
-			void request
-				.get(api('users.list'))
-				.set(credentials)
-				.query({
-					name: { $regex: 'g' },
-					sort: JSON.stringify({
-						createdAt: -1,
-					}),
-				})
-				.field('username', 1)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				})
-				.end(done);
-		});
-
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
 			await updatePermission('view-outside-room', ['admin']);
 			await request
@@ -1547,6 +1651,76 @@ describe('[Users]', () => {
 					res.body.users.forEach((user: IUser) => {
 						expect(user).to.not.have.property('inviteToken');
 					});
+				});
+		});
+
+		describe('querying by user email', async () => {
+			after(async () => {
+				await restorePermissionToRoles('view-full-other-user-info');
+			});
+			describe("with 'view-full-other-user-info' permission", async () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', ['admin']);
+				});
+				it('should return the specific user with the "emails" property', async () => {
+					const targetEmail = targetUser.emails[0].address;
+
+					await request
+						.get(api('users.list'))
+						.query({ email: targetEmail })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(1);
+
+							const returnedUser = res.body.users[0];
+							expect(returnedUser).to.have.property('_id', targetUser._id);
+							expect(returnedUser).to.have.property('emails').that.is.an('array');
+							expect(returnedUser).to.have.nested.property('emails[0].address', targetEmail);
+						});
+				});
+				it('should return an empty array when querying by an email that does not exist', async () => {
+					await request
+						.get(api('users.list'))
+						.query({ email: 'this_email_does_not_exist@invalid.com' })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(0);
+							expect(res.body).to.have.property('count', 0);
+						});
+				});
+			});
+			describe("without 'view-full-other-user-info' permission", async () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', []);
+				});
+				it('should return 403 Forbidden', async () => {
+					await request
+						.get(api('users.list'))
+						.query({ email: targetUser.emails[0].address })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'unauthorized');
+						});
+				});
+			});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.list'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
 				});
 		});
 	});
@@ -1658,6 +1832,16 @@ describe('[Users]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return 401 when not authenticated', async () => {
+				await request
+					.post(api('users.setAvatar'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('status', 'error');
+					});
+			});
 		});
 
 		describe('[/users.resetAvatar]', () => {
@@ -1755,6 +1939,16 @@ describe('[Users]', () => {
 							.end(done);
 					});
 				});
+			});
+
+			it('should return 401 when not authenticated', async () => {
+				await request
+					.post(api('users.resetAvatar'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('status', 'error');
+					});
 			});
 		});
 
@@ -1970,7 +2164,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [invalid-params]');
+					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters');
 				});
 		});
 
@@ -1989,7 +2183,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', 'must NOT have additional properties [invalid-params]');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties');
 				});
 		});
 
@@ -2629,6 +2823,16 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.update'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
@@ -3156,6 +3360,16 @@ describe('[Users]', () => {
 					.expect(200);
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	// TODO check for all response fields
@@ -3272,6 +3486,28 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.getPreferences]', () => {
@@ -3290,6 +3526,16 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.getPreferences'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -3340,6 +3586,20 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return an error when email is missing', (done) => {
+			void request
+				.post(api('users.forgotPassword'))
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', "must have required property 'email'");
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.sendConfirmationEmail]', () => {
@@ -3372,6 +3632,28 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.sendConfirmationEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.getUsernameSuggestion]', () => {
@@ -3403,6 +3685,18 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.exist;
+				})
+				.end(done);
+		});
+
+		it('should return 401 when not authenticated', (done) => {
+			void request
+				.get(api('users.getUsernameSuggestion'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
 				})
 				.end(done);
 		});
@@ -3610,6 +3904,28 @@ describe('[Users]', () => {
 				expect(roles[0].u).to.have.property('_id', credentials['X-User-Id']);
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.deleteOwnAccount'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.deleteOwnAccount'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.delete]', () => {
@@ -3744,7 +4060,6 @@ describe('[Users]', () => {
 					.set(credentials)
 					.send({
 						tokenName: 'test',
-						loginToken: '1234567890',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -3774,6 +4089,16 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('tokens').and.to.be.an('array');
 						})
 						.end(done);
+				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.get(api('users.getPersonalAccessTokens'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
 				});
 			});
 
@@ -3807,6 +4132,28 @@ describe('[Users]', () => {
 						})
 						.end(done);
 				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.post(api('users.generatePersonalAccessToken'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
+
+				it('should return 400 when body is empty', async () => {
+					await request
+						.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
 			});
 			describe('[/users.regeneratePersonalAccessToken]', () => {
 				it('should return a personal access token to user when user regenerates the token', (done) => {
@@ -3837,6 +4184,28 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', false);
 						})
 						.end(done);
+				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.post(api('users.regeneratePersonalAccessToken'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
+
+				it('should return 400 when body is empty', async () => {
+					await request
+						.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
 				});
 			});
 			describe('[/users.getPersonalAccessTokens]', () => {
@@ -3881,6 +4250,28 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', false);
 						})
 						.end(done);
+				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.post(api('users.removePersonalAccessToken'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
+
+				it('should return 400 when body is empty', async () => {
+					await request
+						.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
 				});
 			});
 		});
@@ -4261,6 +4652,18 @@ describe('[Users]', () => {
 				expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
 			});
 		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.deactivateIdle]', () => {
@@ -4355,6 +4758,18 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.requestDataDownload]', () => {
@@ -4401,6 +4816,16 @@ describe('[Users]', () => {
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.requestDataDownload'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -4512,6 +4937,16 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.logoutOtherClients'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
 				});
 		});
 	});
@@ -4684,6 +5119,16 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.autocomplete'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('[/users.getStatus]', () => {
@@ -4713,6 +5158,16 @@ describe('[Users]', () => {
 					expect(res.body._id).to.be.equal('rocket.cat');
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.getStatus'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -4813,8 +5268,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-status');
-					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy. [error-invalid-status]');
+					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.include('must be equal to one of the allowed values');
 				})
 				.end(done);
 		});
@@ -4849,6 +5304,16 @@ describe('[Users]', () => {
 					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -4887,6 +5352,16 @@ describe('[Users]', () => {
 			}
 
 			void request.post(api('users.removeOtherTokens')).set(newCredentials).expect(200).then(tryAuthentication);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.removeOtherTokens'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -4999,6 +5474,27 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.listTeams'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when query is empty', async () => {
+			await request
+				.get(api('users.listTeams'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.logout]', () => {
@@ -5084,6 +5580,16 @@ describe('[Users]', () => {
 				.expect(404)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.logout'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
 				});
 		});
 	});
@@ -5230,8 +5736,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
-					expect(res.body.error).to.be.equal('must be equal to one of the allowed values [invalid-params]');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.error).to.be.equal('must be equal to one of the allowed values');
 				});
 		});
 
@@ -5319,7 +5825,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'email' [invalid-params]");
+					expect(res.body).to.have.property('error', "must have required property 'email'");
 				});
 		});
 
@@ -5336,6 +5842,125 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-user');
 					expect(res.body).to.have.property('error', 'Invalid user [error-invalid-user]');
+				});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
+	describe('[/users.createToken]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.createToken'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is missing required fields', async () => {
+			await request
+				.post(api('users.createToken'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
+	describe('[/users.resetE2EKey]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.resetE2EKey'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body has invalid properties', async () => {
+			await request
+				.post(api('users.resetE2EKey'))
+				.set(credentials)
+				.send({ invalidProp: true })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
+	describe('[/users.resetTOTP]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.resetTOTP'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body has invalid properties', async () => {
+			await request
+				.post(api('users.resetTOTP'))
+				.set(credentials)
+				.send({ invalidProp: true })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
+	describe('[/users.2fa.enableEmail]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.2fa.enableEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
+	describe('[/users.2fa.disableEmail]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.2fa.disableEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
+	describe('[/users.2fa.sendEmailCode]', () => {
+		it('should return 400 when emailOrUsername is missing', async () => {
+			await request
+				.post(api('users.2fa.sendEmailCode'))
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
 				});
 		});
 	});

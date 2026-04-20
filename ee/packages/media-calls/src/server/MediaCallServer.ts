@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type {
 	CallFeature,
 	CallRejectedReason,
@@ -12,8 +11,14 @@ import type {
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
-import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
-import { CallRejectedError, type GetActorContactOptions, type InternalCallParams } from '../definition/common';
+import type {
+	IMediaCallServer,
+	IMediaCallServerSettings,
+	MediaCallServerEvents,
+	VoipPushNotificationEventType,
+} from '../definition/IMediaCallServer';
+import { CallRejectedError } from '../definition/common';
+import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
@@ -47,15 +52,8 @@ export class MediaCallServer implements IMediaCallServer {
 		});
 	}
 
-	public receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void {
-		if (!isClientMediaSignal(signal)) {
-			logger.error({ msg: 'The Media Signal Server received an invalid client signal object' });
-			throw new Error('invalid-signal');
-		}
-
-		this.signalProcessor.processSignal(fromUid, signal).catch((err) => {
-			logger.error({ msg: 'Failed to process client signal', err, type: signal.type });
-		});
+	public async receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal, options: SignalProcessingOptions = {}): Promise<void> {
+		return this.signalProcessor.processSignal(fromUid, signal, options);
 	}
 
 	public sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
@@ -74,6 +72,15 @@ export class MediaCallServer implements IMediaCallServer {
 		logger.debug({ msg: 'MediaCallServer.updateCallHistory', params });
 
 		this.emitter.emit('historyUpdate', params);
+	}
+
+	public sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
+		if (!this.settings.mobileRinging) {
+			return;
+		}
+		logger.debug({ msg: 'MediaCallServer.sendPushNotification', params });
+
+		this.emitter.emit('pushNotificationRequest', params);
 	}
 
 	public async requestCall(params: InternalCallParams): Promise<void> {

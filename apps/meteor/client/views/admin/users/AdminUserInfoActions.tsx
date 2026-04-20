@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { AdminUserInfoActionsProps } from './hooks/useAdminUserInfoActions';
+import type { AdminUserAction, AdminUserInfoActionsProps } from './hooks/useAdminUserInfoActions';
 import { useAdminUserInfoActions } from './hooks/useAdminUserInfoActions';
 import { UserInfoAction } from '../../../components/UserInfo';
 
@@ -47,9 +47,8 @@ const AdminUserInfoActions = ({
 		);
 	}, [t, menuOptions]);
 
-	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick, disabled }]: any): ReactElement => (
+		const mapAction = ([key, { content, title, icon = 'kebab', onClick, disabled }]: [string, AdminUserAction]): ReactElement => (
 			<UserInfoAction key={key} title={title} label={content} onClick={onClick} disabled={disabled} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

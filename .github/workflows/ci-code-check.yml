@@ -26,11 +26,11 @@ jobs:
 
     steps:
       - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0.0
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -41,19 +41,27 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
 
       - uses: ./.github/actions/restore-packages
 
-      - name: Cache TypeCheck
-        uses: actions/cache@v5
+      - name: Restore TypeScript incremental cache
+        id: restore-typecheck
+        if: matrix.check == 'ts'
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
-            typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
-            typecheck-cache-${{ runner.OS }}
-            typecheck-cache
+            typecheck-cache-${{ runner.os }}-
+
+      - name: Cache observability (typecheck)
+        if: matrix.check == 'ts'
+        run: |
+          {
+            echo "### TypeScript incremental cache"
+            echo "- **exact hit**: \`${{ steps.restore-typecheck.outputs.cache-hit }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install Meteor
         shell: bash
@@ -64,7 +72,7 @@ jobs:
           METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
           set -e
           LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-          if [ -e $LAUNCHER ]
+          if [ -e "$LAUNCHER" ]
           then
             echo "Cached Meteor bin found, restoring it"
             sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
@@ -79,17 +87,38 @@ jobs:
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck --concurrency=5
 
-      - name: Cache eslint
-        uses: actions/cache@v5
+      - name: Save TypeScript incremental cache
+        if: matrix.check == 'ts' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
+          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Restore ESLint cache
+        id: restore-eslint
         if: matrix.check == 'lint'
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ./apps/meteor/.eslintcache
-          key: eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
-            eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
-            eslintcache-cache-${{ runner.OS }}
-            eslintcache-cache
+            eslintcache-${{ runner.os }}-
+
+      - name: Cache observability (eslint)
+        if: matrix.check == 'lint'
+        run: |
+          {
+            echo "### ESLint cache"
+            echo "- **exact hit**: \`${{ steps.restore-eslint.outputs.cache-hit }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Lint
         if: matrix.check == 'lint'
         run: yarn lint
+
+      - name: Save ESLint cache
+        if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ./apps/meteor/.eslintcache
+          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
