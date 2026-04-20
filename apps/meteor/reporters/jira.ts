@@ -3,6 +3,13 @@ import fetch from 'node-fetch';
 
 const LOG = '[JIRA reporter]';
 
+/** Jira REST API v3 expects `description` as Atlassian Document Format, not a plain string. */
+const EMPTY_ADF_DESCRIPTION = {
+	type: 'doc',
+	version: 1,
+	content: [] as const,
+};
+
 class JIRAReporter implements Reporter {
 	private url: string;
 
@@ -169,7 +176,7 @@ ${this.run_url}
 		const data: {
 			fields: {
 				summary: string;
-				description: string;
+				description: typeof EMPTY_ADF_DESCRIPTION;
 				issuetype: {
 					name: string;
 				};
@@ -180,7 +187,7 @@ ${this.run_url}
 		} = {
 			fields: {
 				summary: payload.name,
-				description: '',
+				description: EMPTY_ADF_DESCRIPTION,
 				issuetype: {
 					name: 'Tech Debt',
 				},

@@ -1,88 +1,27 @@
-import { IconButton } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from '@rocket.chat/ui-composer';
-import { useSetModal } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
-import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import MessageComposerGenericFile from './MessageComposerGenericFile';
+import MessageComposerImageFileItem from './MessageComposerImageFile';
 import type { Upload } from '../../../../lib/chats/Upload';
-import { formatBytes } from '../../../../lib/utils/formatBytes';
-import { useChat } from '../../contexts/ChatContext';
-import FileUploadModal from '../../modals/FileUploadModal';
+import { MAX_FILE_SIZE_PREVIEW } from '../../../../lib/constants';
+import { isPreviewableImage } from '../../../../lib/utils/isPreviewableImage';
 
-type MessageComposerFileItemProps = {
+export type MessageComposerFileItemProps = {
 	upload: Upload;
 	onRemove: (id: string) => void;
 	onEdit: (id: Upload['id'], fileName: string, description?: string) => void;
 	onCancel: (id: Upload['id']) => void;
 	disabled: boolean;
+	shouldPreview?: boolean;
+	previewUrl?: string;
 };
 
-const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled, ...props }: MessageComposerFileItemProps) => {
-	const { t } = useTranslation();
-	const chat = useChat();
-	const [isActive, setIsActive] = useState(false);
-	const setModal = useSetModal();
+const MessageComposerFileItem = (props: MessageComposerFileItemProps) => {
+	const shouldPreview = isPreviewableImage(props.upload.file.type) && !(props.upload.file.size > MAX_FILE_SIZE_PREVIEW);
 
-	const fileSize = formatBytes(upload.file.size, 2);
-	const fileExtension = getMimeType(upload.file.type, upload.file.name);
-	const isLoading = !upload.url && !upload.error;
-
-	const handleOpenFilePreview = () => {
-		if (isLoading || upload.error) {
-			return;
-		}
-
-		setModal(
-			<FileUploadModal
-				onSubmit={(name, description) => {
-					onEdit(upload.id, name, description);
-					setModal(null);
-					chat?.composer?.focus();
-				}}
-				fileName={upload.file.name}
-				fileDescription={upload.description}
-				file={upload.file}
-				onClose={() => setModal(null)}
-			/>,
-		);
-	};
-
-	const dismissAction = isLoading ? () => onCancel(upload.id) : () => onRemove(upload.id);
-	const handleDismiss = usePreventPropagation(dismissAction);
-	const buttonProps = useButtonPattern(handleDismiss);
-
-	const actionIcon =
-		isLoading && !isActive ? (
-			<MessageComposerFileLoader />
-		) : (
-			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
-		);
-
-	if (upload.error) {
-		return (
-			<MessageComposerFileError fileTitle={upload.file.name} error={upload.error} actionIcon={actionIcon} onClick={handleOpenFilePreview} />
-		);
+	if (shouldPreview) {
+		return <MessageComposerImageFileItem {...props} />;
 	}
 
-	return (
-		<MessageComposerFile
-			aria-label={upload.file.name}
-			onClick={handleOpenFilePreview}
-			onPointerLeave={() => setIsActive(false)}
-			onPointerEnter={() => setIsActive(true)}
-			onFocus={() => setIsActive(true)}
-			onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setIsActive(false)}
-			fileTitle={upload.file.name}
-			fileSubtitle={`${fileSize} - ${fileExtension}`}
-			actionIcon={actionIcon}
-			aria-busy={isLoading}
-			disabled={disabled}
-			{...props}
-		/>
-	);
+	return <MessageComposerGenericFile {...props} />;
 };
 
 export default MessageComposerFileItem;

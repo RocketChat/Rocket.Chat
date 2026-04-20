@@ -75,6 +75,45 @@ test('updater typings', () => {
 	});
 });
 
+test('updater supports nested paths up to 3 levels deep', () => {
+	const updater = new UpdaterImpl<{
+		_id: string;
+		level1: {
+			level2: {
+				level3: string;
+			};
+		};
+	}>();
+
+	// 1-level deep path
+	updater.set('level1', { level2: { level3: 'test' } });
+	// 2-level deep path
+	updater.set('level1.level2', { level3: 'test' });
+	// 3-level deep path
+	updater.set('level1.level2.level3', 'test');
+});
+
+test('updater validates keys on real schemas with nested paths', () => {
+	const updater = new UpdaterImpl<IOmnichannelRoom>();
+
+	// valid 1-level paths
+	updater.set('fname', 'test');
+	// valid 2-level paths
+	updater.set('responseBy.lastMessageTs', new Date());
+	updater.set('v.activity', ['period1']);
+	// valid 3-level paths
+	updater.inc('metrics.response.total', 1);
+	updater.set('metrics.response.avg', 42);
+	updater.set('metrics.reaction.ft', 100);
+
+	// @ts-expect-error: non-existent top-level key
+	updater.set('nonExistentField', 'hello');
+	// @ts-expect-error: non-existent nested key
+	updater.set('responseBy.nonExistent', new Date());
+	// @ts-expect-error: 'fname' is a string, not a number — inc should reject it
+	updater.inc('fname', 1);
+});
+
 test('updater $set operations', async () => {
 	const updater = new UpdaterImpl<{
 		_id: string;
