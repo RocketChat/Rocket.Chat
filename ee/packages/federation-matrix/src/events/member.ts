@@ -281,6 +281,7 @@ async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
 	content,
+	unsigned,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
 	if (!joiningUser?.username) {
@@ -292,7 +293,27 @@ async function handleJoin({
 		throw new Error(`Room not found while joining user ${userId} to room ${roomId}`);
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+	// if we receive a join event but still don't have a subscription for the user,
+	// it means the join event was sent before the invite event, so we need to create the subscription and then accept the invite.
+	// this will happen when for example the user is unbanned, so the leave event will remove the subscription and then we just
+	// receive the join event without receiving the invite.
+	let subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+	if (!subscription) {
+		// try to guess the inviter from unsigned data
+		const inviterId = unsigned?.prev_content?.membership === 'invite' && unsigned?.prev_sender;
+		const inviterUser = inviterId ? await getOrCreateFederatedUser(inviterId) : undefined;
+
+		await Room.createUserSubscription({
+			ts: new Date(),
+			room,
+			userToBeAdded: joiningUser,
+			inviter: inviterUser,
+			status: 'INVITED',
+		});
+
+		subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+	}
+
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
