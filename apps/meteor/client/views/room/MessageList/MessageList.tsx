@@ -21,6 +21,7 @@ import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
 import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
+import { useChat } from '../contexts/ChatContext';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
@@ -120,7 +121,6 @@ export const MessageList = function MessageList({
 		const handle = virtualizerRef.current;
 		const lastItemIndex = messages.length - 1;
 		if (shouldJumpToBottom.current === true) {
-			console.log('scroll to bottom, 1');
 			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
 			// TODO: Find if there is a better way to scroll to the latest message
 			handle?.scrollToIndex(lastItemIndex + 1, {
@@ -129,7 +129,6 @@ export const MessageList = function MessageList({
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom
 		if (isAtBottom.current && lastViewportSize !== handle?.viewportSize) {
-			console.log('scroll to bottom, 2');
 			handle?.scrollToIndex(lastItemIndex + 1, {
 				align: 'end',
 			});
@@ -142,6 +141,35 @@ export const MessageList = function MessageList({
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const { t } = useTranslation();
+
+	const unreadMarkIndex = useRef<number | null>(null);
+	const chat = useChat();
+
+	const isUnreadMarkVisible = useCallback(() => {
+		if (unreadMarkIndex.current === null) {
+			return false;
+		}
+		const handle = virtualizerRef.current;
+		if (!handle) {
+			return false;
+		}
+		// `unreadMarkIndex` is the index in `messages`; VList also has a leading row when `canPreview`.
+		const listIndexOffset = canPreview ? 1 : 0;
+		const markListIndex = listIndexOffset + unreadMarkIndex.current;
+		const viewStartIndex = handle.findItemIndex(handle.scrollOffset);
+		const viewEndIndex = handle.findItemIndex(handle.scrollOffset + handle.viewportSize);
+		const minIndex = Math.min(viewStartIndex, viewEndIndex);
+		const maxIndex = Math.max(viewStartIndex, viewEndIndex);
+		const isVisible = markListIndex >= minIndex && markListIndex <= maxIndex;
+		return isVisible;
+	}, [canPreview]);
+
+	useEffect(() => {
+		if (chat) {
+			chat.readStateManager.setIsUnreadMarkVisibleCallback(isUnreadMarkVisible);
+		}
+	}, [chat, isUnreadMarkVisible]);
+
 	return (
 		<MessageListProvider>
 			<SelectedMessagesProvider>
@@ -173,6 +201,10 @@ export const MessageList = function MessageList({
 						const showUnreadDivider = firstUnreadMessageId === message._id;
 						const system = MessageTypes.isSystemMessage(message);
 						const visible = !isThreadMessage(message) && !system;
+
+						if (showUnreadDivider) {
+							unreadMarkIndex.current = index;
+						}
 
 						return (
 							<Fragment key={message._id}>
