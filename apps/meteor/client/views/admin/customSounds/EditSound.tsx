@@ -6,7 +6,7 @@ import type { ReactElement, SyntheticEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { validate, createSoundData } from './lib';
+import { validate } from './lib';
 import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
@@ -27,7 +27,6 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const setModal = useSetModal();
 
 	const { _id, name: previousName } = data || {};
-	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
 	const [file, setFile] = useState<File | undefined>();
@@ -54,12 +53,8 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || !!file, [name, previousName, file]);
 
 	const handleSave = useCallback(async () => {
-		const soundData = createSoundData(name, {
-			previousSound,
-			_id,
-		});
-
-		const validation = validate(soundData, file);
+		const trimmedName = name.trim();
+		const validation = validate({ _id, name: trimmedName }, file);
 		if (validation.length > 0) {
 			const firstInvalidField = validation[0];
 			dispatchToastMessage({
@@ -71,12 +66,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 		const formData = new FormData();
 		formData.append('_id', _id);
-		formData.append('name', soundData.name);
+		formData.append('name', trimmedName);
 		if (file) {
 			formData.append('sound', file);
 		}
 		await saveAction(formData);
-	}, [_id, dispatchToastMessage, name, previousSound, saveAction, file, t]);
+	}, [_id, dispatchToastMessage, name, saveAction, file, t]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {

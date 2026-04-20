@@ -6,7 +6,7 @@ import type { ReactElement, FormEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { validate, createSoundData } from './lib';
+import { validate } from './lib';
 import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
@@ -50,9 +50,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	);
 
 	const handleSave = useCallback(async () => {
-		const soundData = createSoundData(name);
-
-		const validation = validate(soundData, sound) as Array<Parameters<typeof t>[0]>;
+		const trimmedName = name.trim();
+		const validation = validate({ name: trimmedName }, sound) as Array<Parameters<typeof t>[0]>;
 		if (validation.length > 0) {
 			const firstInvalidField = validation[0];
 			dispatchToastMessage({
@@ -66,7 +65,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		if (sound) {
 			formData.append('sound', sound);
 		}
-		formData.append('name', soundData.name);
+		formData.append('name', trimmedName);
 		await saveAction(formData);
 	}, [sound, name, saveAction, t, dispatchToastMessage]);
 
