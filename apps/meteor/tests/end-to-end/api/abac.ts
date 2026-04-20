@@ -3213,12 +3213,20 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	});
 
 	describe('PDP health endpoint: reports per-stage failures', () => {
+		const tokenOkBody = { access_token: 'mock-pdp-token', token_type: 'Bearer', expires_in: 3600 };
+
 		beforeEach(async () => {
 			await mockServerReset();
 		});
 
-		it('reports healthy when platform, IdP and authorization all succeed', async () => {
+		afterEach(async () => {
+			await mockServerReset();
 			await seedDefaultMocks();
+		});
+
+		it('reports healthy when platform, IdP and authorization all succeed', async () => {
+			await mockServerSet('GET', '/healthz', { status: 'SERVING' });
+			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', tokenOkBody);
 			await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { decisionResponses: [] });
 
 			await request
@@ -3234,11 +3242,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('reports platform failure when /healthz returns NOT_SERVING', async () => {
 			await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' });
-			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', {
-				access_token: 'mock-pdp-token',
-				token_type: 'Bearer',
-				expires_in: 3600,
-			});
+			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', tokenOkBody);
+			await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { decisionResponses: [] });
 
 			await request
 				.get('/api/v1/abac/pdp/health')
@@ -3251,8 +3256,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('reports IdP failure when token endpoint errors', async () => {
-			await seedDefaultMocks();
+			await mockServerSet('GET', '/healthz', { status: 'SERVING' });
 			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', { error: 'invalid_client' }, 500);
+			await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { decisionResponses: [] });
 
 			await request
 				.get('/api/v1/abac/pdp/health')
@@ -3265,7 +3271,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('reports authorization failure when GetDecisions returns 500', async () => {
-			await seedDefaultMocks();
+			await mockServerSet('GET', '/healthz', { status: 'SERVING' });
+			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', tokenOkBody);
 			await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { error: 'unavailable' }, 500);
 
 			await request
