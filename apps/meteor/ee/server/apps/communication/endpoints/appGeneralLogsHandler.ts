@@ -4,6 +4,7 @@ import { getPaginationItems } from '../../../../../app/api/server/helpers/getPag
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 
+// TODO: this is a very common error response schema. We should find a way to standardize it.
 const errorResponse = ajv.compile<{
 	success: false;
 	error: string;
@@ -31,6 +32,7 @@ export const registerAppGeneralLogsHandler = ({ api, _orch }: AppsRestApi) =>
 					type: 'object',
 					properties: {
 						offset: { type: 'number' },
+						// TODO: reference a schema for the array items
 						logs: { type: 'array' },
 						count: { type: 'number' },
 						total: { type: 'number' },
