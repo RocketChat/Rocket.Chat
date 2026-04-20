@@ -37,7 +37,7 @@ const DeleteRoomModal = ({ rid, roomName, onClose }: DeleteRoomModalProps) => {
 			title={t('ABAC_Delete_room')}
 			annotation={t('ABAC_Delete_room_annotation')}
 			confirmText={t('Remove')}
-			onConfirm={() => deleteMutation.mutate(undefined)}
+			onConfirm={() => deleteMutation.mutate({ confirmed: true })}
 			onCancel={onClose}
 		>
 			<Trans i18nKey='ABAC_Delete_room_content' values={{ roomName }} components={{ bold: <Box is='span' fontWeight='bold' /> }} />
