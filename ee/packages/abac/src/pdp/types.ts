@@ -1,9 +1,9 @@
-import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast, ISubscription } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
 export type IDryRunMember = Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag' | '_updatedAt' | 'federated'> & {
-	subscription?: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+	rolePriority: number;
 	compliant: boolean;
 };
 

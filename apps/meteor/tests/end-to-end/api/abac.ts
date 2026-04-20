@@ -353,6 +353,72 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
+	describe('Confirmation flag required on modifying room endpoints', () => {
+		const guardKey = `guard_${Date.now()}`;
+
+		before(async () => {
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: guardKey, values: ['v1'] })
+				.expect(200);
+		});
+
+		it('POST bulk attributes rejects missing confirmed flag', async () => {
+			await request
+				.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
+				.set(credentials)
+				.send({ attributes: { [guardKey]: ['v1'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('not-confirmed');
+				});
+		});
+
+		it('POST single attribute rejects missing confirmed flag', async () => {
+			await request
+				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${guardKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.error).to.include('not-confirmed');
+				});
+		});
+
+		it('PUT single attribute rejects missing confirmed flag', async () => {
+			await request
+				.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${guardKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.error).to.include('not-confirmed');
+				});
+		});
+
+		it('DELETE bulk attributes rejects missing confirmed flag', async () => {
+			await request
+				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`)
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.error).to.include('not-confirmed');
+				});
+		});
+
+		it('DELETE single attribute rejects missing confirmed flag', async () => {
+			await request
+				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${guardKey}`)
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.error).to.include('not-confirmed');
+				});
+		});
+	});
+
 	describe('Room Attribute Operations', () => {
 		it('GET is-in-use should initially be false (no room usage yet)', async () => {
 			await request
@@ -369,7 +435,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
-				.send({ values: ['dup', 'dup'] })
+				.send({ confirmed: true, values: ['dup', 'dup'] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -380,7 +446,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
-				.send({ values: ['cyan'] })
+				.send({ confirmed: true, values: ['cyan'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -455,7 +521,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${auditRoom._id}/attributes/${auditAttrKey}`)
 					.set(credentials)
-					.send({ values: ['v1'] })
+					.send({ confirmed: true, values: ['v1'] })
 					.expect(200);
 			});
 
@@ -547,7 +613,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ roomId: auditRoom._id, usernames: [auditUser.username] })
 					.expect(200);
 
-				await request.delete(`${v1}/abac/rooms/${auditRoom._id}/attributes/${auditAttrKey}`).set(credentials).expect(200);
+				await request
+					.delete(`${v1}/abac/rooms/${auditRoom._id}/attributes/${auditAttrKey}`)
+					.set(credentials)
+					.query({ confirmed: 'true' })
+					.expect(200);
 
 				await request
 					.post(`${v1}/chat.sendMessage`)
@@ -590,7 +660,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
-				.send({ values: ['magenta', 'yellow'] })
+				.send({ confirmed: true, values: ['magenta', 'yellow'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -641,12 +711,13 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${dedicatedRoom._id}/attributes`)
 					.set(credentials)
-					.send({ attributes: { [key1]: ['value1'], [key2]: ['value2'] } })
+					.send({ confirmed: true, attributes: { [key1]: ['value1'], [key2]: ['value2'] } })
 					.expect(200);
 
 				await request
 					.delete(`${v1}/abac/rooms/${dedicatedRoom._id}/attributes/${key1}`)
 					.set(credentials)
+					.query({ confirmed: 'true' })
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
@@ -664,6 +735,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
+				.query({ confirmed: 'true' })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -684,6 +756,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 				.set(credentials)
+				.query({ confirmed: 'true' })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -760,7 +833,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['red'] })
+				.send({ confirmed: true, values: ['red'] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body.success).to.be.false;
@@ -772,7 +845,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['red'] })
+				.send({ confirmed: true, values: ['red'] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body.success).to.be.false;
@@ -786,7 +859,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['red'] })
+				.send({ confirmed: true, values: ['red'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
@@ -804,7 +877,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['green'] })
+				.send({ confirmed: true, values: ['green'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
@@ -815,7 +888,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['red'] })
+				.send({ confirmed: true, values: ['red'] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body.success).to.be.false;
@@ -827,7 +900,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['red'] })
+				.send({ confirmed: true, values: ['red'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
@@ -877,7 +950,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
-				.send({ values: ['cyan'] })
+				.send({ confirmed: true, values: ['cyan'] })
 				.expect(200);
 
 			// Attempt to delete attribute while in use should fail
@@ -901,7 +974,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 
 			// Remove room attribute again
-			await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`).set(credentials).expect(200);
+			await request
+				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
+				.set(credentials)
+				.query({ confirmed: 'true' })
+				.expect(200);
 
 			await request
 				.get(`${v1}/abac/attributes/${updatedKey}/is-in-use`)
@@ -946,7 +1023,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${abacRoomId}/attributes/${conversionAttrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -965,7 +1042,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${teamRoomId}/attributes/${conversionAttrKey}`)
 				.set(credentials)
-				.send({ values: ['beta'] })
+				.send({ confirmed: true, values: ['beta'] })
 				.expect(200);
 		});
 
@@ -1160,7 +1237,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
-					.send({ attributes: { [`${bulkAttrPrefix}_k1`]: bigValues } })
+					.send({ confirmed: true, attributes: { [`${bulkAttrPrefix}_k1`]: bigValues } })
 					.expect(400);
 			});
 
@@ -1168,7 +1245,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
-					.send({ attributes: { [secondKey]: ['alpha', 'delta'] } })
+					.send({ confirmed: true, attributes: { [secondKey]: ['alpha', 'delta'] } })
 					.expect(400);
 			});
 
@@ -1177,6 +1254,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
 					.send({
+						confirmed: true,
 						attributes: {
 							[secondKey]: ['alpha', 'beta'],
 						},
@@ -1191,7 +1269,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
-					.send({ values: eleven })
+					.send({ confirmed: true, values: eleven })
 					.expect(400);
 			});
 
@@ -1199,7 +1277,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
-					.send({ values: ['alpha', 'zzz'] })
+					.send({ confirmed: true, values: ['alpha', 'zzz'] })
 					.expect(400);
 			});
 
@@ -1207,7 +1285,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
-					.send({ values: ['gamma', 'invalid'] })
+					.send({ confirmed: true, values: ['gamma', 'invalid'] })
 					.expect(400);
 			});
 		});
@@ -1215,7 +1293,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		describe('Room attribute limits (max 10 attribute keys)', () => {
 			const tempAttrKeys: string[] = [];
 			it('Reset room attributes before limit test and populate with 10 keys', async () => {
-				await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).expect(200);
+				await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).query({ confirmed: 'true' }).expect(200);
 
 				const timestamp = Date.now();
 				const keys = Array.from({ length: 10 }, (_, i) => `limitk_${timestamp}_${i}`);
@@ -1231,7 +1309,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 								request
 									.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${k}`)
 									.set(credentials)
-									.send({ values: ['v1'] })
+									.send({ confirmed: true, values: ['v1'] })
 									.expect(200),
 							),
 					),
@@ -1249,7 +1327,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${extraKey}`)
 					.set(credentials)
-					.send({ values: ['v1'] })
+					.send({ confirmed: true, values: ['v1'] })
 					.expect(400);
 			});
 		});
@@ -1259,7 +1337,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(unauthorizedCredentials)
-					.send({ values: ['alpha'] })
+					.send({ confirmed: true, values: ['alpha'] })
 					.expect(403);
 			});
 
@@ -1267,12 +1345,16 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(unauthorizedCredentials)
-					.send({ values: ['alpha'] })
+					.send({ confirmed: true, values: ['alpha'] })
 					.expect(403);
 			});
 
 			it('DELETE /abac/rooms/:rid/attributes/:key should return 403 for unauthorized user', async () => {
-				await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`).set(unauthorizedCredentials).expect(403);
+				await request
+					.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
+					.set(unauthorizedCredentials)
+					.query({ confirmed: 'true' })
+					.expect(403);
 			});
 
 			it('GET /abac/attributes/:key/is-in-use should return 403 for unauthorized user', async () => {
@@ -1311,7 +1393,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
-					.send({ values: ['alpha'] })
+					.send({ confirmed: true, values: ['alpha'] })
 					.expect(400)
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-not-enabled');
@@ -1322,7 +1404,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
-					.send({ values: ['alpha'] })
+					.send({ confirmed: true, values: ['alpha'] })
 					.expect(400)
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-not-enabled');
@@ -1333,7 +1415,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
-					.send({ attributes: { [secondKey]: ['alpha'] } })
+					.send({ confirmed: true, attributes: { [secondKey]: ['alpha'] } })
 					.expect(400)
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-not-enabled');
@@ -1367,7 +1449,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${roomWithAttr}/attributes/${attrKey}`)
 					.set(credentials)
-					.send({ values: ['val1'] })
+					.send({ confirmed: true, values: ['val1'] })
 					.expect(200);
 
 				roomWithAttrAbacDisabled = (await createRoom({ type: 'p', name: `abac-type-room-with-attr-disabled-${Date.now()}` })).body.group
@@ -1375,7 +1457,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${roomWithAttrAbacDisabled}/attributes/${attrKey}`)
 					.set(credentials)
-					.send({ values: ['val2'] })
+					.send({ confirmed: true, values: ['val2'] })
 					.expect(200);
 			});
 
@@ -1457,7 +1539,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${mainRoomIdWithAttr}/attributes/${attrKeyTeam}`)
 					.set(credentials)
-					.send({ values: ['alpha'] })
+					.send({ confirmed: true, values: ['alpha'] })
 					.expect(200);
 
 				const teamWithAttrDisRes = await request
@@ -1469,7 +1551,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${mainRoomIdWithAttrAbacDisabled}/attributes/${attrKeyTeam}`)
 					.set(credentials)
-					.send({ values: ['beta'] })
+					.send({ confirmed: true, values: ['beta'] })
 					.expect(200);
 			});
 
@@ -1590,7 +1672,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${plainRoomId}/attributes/${validateAttrKey}`)
 					.set(credentials)
-					.send({ values: ['one'] })
+					.send({ confirmed: true, values: ['one'] })
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
@@ -1639,7 +1721,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${managedRoomId}/attributes/${inviteAttrKey}`)
 					.set(credentials)
-					.send({ values: ['one'] })
+					.send({ confirmed: true, values: ['one'] })
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
@@ -1706,7 +1788,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${roomWithAttr._id}/attributes/${accessAttrKey}`)
 				.set(credentials)
-				.send({ values: ['v1'] })
+				.send({ confirmed: true, values: ['v1'] })
 				.expect(200);
 		});
 
@@ -1739,7 +1821,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('INVITE: after room loses attributes user without attributes can be invited', async () => {
-			await request.delete(`${v1}/abac/rooms/${roomWithAttr._id}/attributes/${accessAttrKey}`).set(credentials).expect(200);
+			await request
+				.delete(`${v1}/abac/rooms/${roomWithAttr._id}/attributes/${accessAttrKey}`)
+				.set(credentials)
+				.query({ confirmed: 'true' })
+				.expect(200);
 
 			await request
 				.post(`${v1}/groups.invite`)
@@ -1772,7 +1858,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${managedRoom._id}/attributes/${enabledAccessAttrKey}`)
 					.set(credentials)
-					.send({ values: ['v1'] })
+					.send({ confirmed: true, values: ['v1'] })
 					.expect(200);
 
 				const username = `abac-enabled-user-${Date.now()}`;
@@ -1854,7 +1940,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
 				.set(credentials)
-				.send({ values: ['on'] })
+				.send({ confirmed: true, values: ['on'] })
 				.expect(200);
 
 			await request
@@ -1946,7 +2032,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: keeps access once room attributes are removed', async () => {
-			await request.delete(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`).set(credentials).expect(200);
+			await request
+				.delete(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
+				.set(credentials)
+				.query({ confirmed: 'true' })
+				.expect(200);
 
 			await request
 				.get(`${v1}/groups.history`)
@@ -1994,12 +2084,12 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 			await request
 				.post(`${v1}/abac/rooms/${listRoomId2}/attributes/${listAttrKey2}`)
 				.set(credentials)
-				.send({ values: ['x'] })
+				.send({ confirmed: true, values: ['x'] })
 				.expect(200);
 		});
 
@@ -2066,7 +2156,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(idsBefore).to.include(listRoomId1);
 
 			// Remove its only attribute key (listAttrKey1) - value was 'alpha'
-			await request.delete(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`).set(credentials).expect(200);
+			await request
+				.delete(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`)
+				.set(credentials)
+				.query({ confirmed: 'true' })
+				.expect(200);
 
 			const resAfter = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
 			const idsAfter = resAfter.body.rooms.map((r: any) => r._id);
@@ -2076,7 +2170,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2092,7 +2186,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/abac/rooms/${defaultRoomId}/attributes/${defKey}`)
 				.set(credentials)
-				.send({ values: ['one'] })
+				.send({ confirmed: true, values: ['one'] })
 				.expect(400);
 			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
 			const ids = res.body.rooms.map((r: any) => r._id);
@@ -2233,7 +2327,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/rooms/${teamListMainRoomId}/attributes/${teamListAttrKey}`)
 					.set(credentials)
-					.send({ values: ['red'] })
+					.send({ confirmed: true, values: ['red'] })
 					.expect(200);
 
 				await request
@@ -2488,6 +2582,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.post(`${v1}/abac/rooms/${roomIdWithAbac}/attributes/department`)
 					.set(credentials)
 					.send({
+						confirmed: true,
 						values: ['navControl'],
 					})
 					.expect(200);
@@ -2642,7 +2737,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2710,7 +2805,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2759,7 +2854,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2847,7 +2942,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2896,7 +2991,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['beta'] })
+				.send({ confirmed: true, values: ['beta'] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -2927,7 +3022,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2972,7 +3067,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha'] })
+				.send({ confirmed: true, values: ['alpha'] })
 				.expect(200);
 		});
 
@@ -2990,7 +3085,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.put(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ values: ['alpha', 'beta'] })
+				.send({ confirmed: true, values: ['alpha', 'beta'] })
 				.expect(200);
 
 			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
@@ -3002,6 +3097,90 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 			const memberIds = res.body.members.map((m: IUser) => m._id);
 			expect(memberIds).to.include(credentials['X-User-Id']);
+		});
+	});
+
+	describe('Dry-run: preview kick list without mutating state', () => {
+		let room: IRoom;
+		let permitUser: IUser;
+		let denyUser: IUser;
+
+		before(async function () {
+			this.timeout(15000);
+
+			permitUser = await createUser();
+			denyUser = await createUser();
+
+			room = (await createRoom({ type: 'p', name: `extpdp-dryrun-${Date.now()}` })).body.group;
+
+			await request
+				.post('/api/v1/groups.invite')
+				.set(credentials)
+				.send({ roomId: room._id, usernames: [permitUser.username, denyUser.username] })
+				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(permitUser), deleteUser(denyUser)]);
+		});
+
+		beforeEach(async () => {
+			await mockServerReset();
+			await seedDefaultMocks();
+		});
+
+		it('returns per-member compliance based on PDP bulk decisions', async () => {
+			await seedBulkDecisionByEntity([adminEmail, `${permitUser.username}@rocket.chat`], 'DECISION_DENY');
+
+			const res = await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
+				.set(credentials)
+				.send({ attributes: { [attrKey]: ['alpha'] } })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', 3);
+			expect(res.body).to.have.property('compliantCount', 2);
+			expect(res.body).to.have.property('nonCompliantCount', 1);
+
+			const byId: Record<string, boolean> = Object.fromEntries(
+				res.body.members.map((m: { _id: string; compliant: boolean }) => [m._id, m.compliant]),
+			);
+			expect(byId[permitUser._id]).to.be.true;
+			expect(byId[denyUser._id]).to.be.false;
+			expect(byId[credentials['X-User-Id']]).to.be.true;
+		});
+
+		it('orders non-compliant members before compliant and exposes rolePriority', async () => {
+			await seedBulkDecisionByEntity([adminEmail, `${permitUser.username}@rocket.chat`], 'DECISION_DENY');
+
+			const res = await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
+				.set(credentials)
+				.send({ attributes: { [attrKey]: ['alpha'] } })
+				.expect(200);
+
+			const members = res.body.members as Array<{ _id: string; compliant: boolean; rolePriority: number }>;
+			expect(members[0]._id).to.equal(denyUser._id);
+			expect(members[0].compliant).to.be.false;
+			for (const m of members) {
+				expect(m).to.have.property('rolePriority').that.is.a('number');
+			}
+		});
+
+		it('does not mutate room membership', async () => {
+			await seedBulkDecisionByEntity([], 'DECISION_DENY');
+
+			await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
+				.set(credentials)
+				.send({ attributes: { [attrKey]: ['alpha'] } })
+				.expect(200);
+
+			const membersRes = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const usernames = membersRes.body.members.map((m: IUser) => m.username);
+			expect(usernames).to.include(permitUser.username);
+			expect(usernames).to.include(denyUser.username);
 		});
 	});
 });

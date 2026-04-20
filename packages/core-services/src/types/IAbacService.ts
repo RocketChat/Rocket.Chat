@@ -13,7 +13,7 @@ export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
 export interface IAbacDryRunResult {
 	members: Array<
 		Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag' | '_updatedAt' | 'federated'> & {
-			subscription?: { _id: string; status?: string; ts?: Date; roles?: string[] };
+			rolePriority: number;
 			compliant: boolean;
 		}
 	>;

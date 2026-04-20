@@ -1,6 +1,6 @@
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
@@ -146,26 +146,6 @@ export class LocalPDP implements IPolicyDecisionPoint {
 							compliant: complianceExpr,
 						},
 					},
-					{
-						$lookup: {
-							from: Subscriptions.getCollectionName(),
-							as: 'subscription',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$rid', rid] }, { $eq: ['$u._id', '$$userId'] }],
-										},
-									},
-								},
-								{ $project: { _id: 1, roles: 1, status: 1, ts: 1 } },
-							],
-						},
-					},
-					{
-						$unwind: { path: '$subscription', preserveNullAndEmptyArrays: true },
-					},
 					{ $sort: { compliant: 1, rolePriority: 1, username: 1 } },
 					{
 						$project: {
@@ -177,7 +157,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 							avatarETag: 1,
 							_updatedAt: 1,
 							federated: 1,
-							subscription: 1,
+							rolePriority: 1,
 							compliant: 1,
 						},
 					},

@@ -1,6 +1,6 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import pLimit from 'p-limit';
 
@@ -459,7 +459,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	}
 
 	async dryRunRoomAttributes(rid: string, attributes: IAbacAttributeDefinition[]): Promise<IDryRunMember[]> {
-		type MemberRow = IDryRunMember & { emails?: IUser['emails']; rolePriority: number };
+		type MemberRow = IDryRunMember & { emails?: IUser['emails'] };
 
 		const members = await Users.col
 			.aggregate<MemberRow>(
@@ -479,26 +479,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 						},
 					},
 					{
-						$lookup: {
-							from: Subscriptions.getCollectionName(),
-							as: 'subscription',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$rid', rid] }, { $eq: ['$u._id', '$$userId'] }],
-										},
-									},
-								},
-								{ $project: { _id: 1, roles: 1, status: 1, ts: 1 } },
-							],
-						},
-					},
-					{
-						$unwind: { path: '$subscription', preserveNullAndEmptyArrays: true },
-					},
-					{
 						$project: {
 							_id: 1,
 							name: 1,
@@ -510,7 +490,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 							federated: 1,
 							emails: 1,
 							rolePriority: 1,
-							subscription: 1,
 						},
 					},
 				],
@@ -558,9 +537,9 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const compliance = await resolveCompliance();
 
-		const enriched = members.map((m, idx) => {
-			const { rolePriority, emails: _emails, ...rest } = m;
-			return { ...rest, compliant: compliance[idx], rolePriority };
+		const enriched: IDryRunMember[] = members.map((m, idx) => {
+			const { emails: _emails, ...rest } = m;
+			return { ...rest, compliant: compliance[idx] };
 		});
 
 		enriched.sort((a, b) => {
@@ -569,7 +548,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return (a.username ?? '').localeCompare(b.username ?? '');
 		});
 
-		return enriched.map(({ rolePriority: _rp, ...rest }) => rest);
+		return enriched;
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {

@@ -340,20 +340,10 @@ const DryRunMember = {
 		avatarETag: { type: 'string', nullable: true },
 		_updatedAt: {},
 		federated: { type: 'boolean', nullable: true },
-		subscription: {
-			type: 'object',
-			nullable: true,
-			properties: {
-				_id: { type: 'string' },
-				status: { type: 'string', nullable: true },
-				ts: {},
-				roles: { type: 'array', items: { type: 'string' }, nullable: true },
-			},
-			additionalProperties: true,
-		},
+		rolePriority: { type: 'number' },
 		compliant: { type: 'boolean' },
 	},
-	required: ['_id', 'compliant'],
+	required: ['_id', 'rolePriority', 'compliant'],
 	additionalProperties: true,
 };
 
