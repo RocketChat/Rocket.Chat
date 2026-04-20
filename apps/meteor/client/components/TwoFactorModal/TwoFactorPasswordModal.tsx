@@ -1,4 +1,5 @@
-import { Box, PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
