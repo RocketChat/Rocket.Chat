@@ -54,6 +54,14 @@ export class HomeContent {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
 	}
 
+	get mainMessageListScroller(): Locator {
+		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.mainMessageList });
+	}
+
+	get threadMessageListScroller(): Locator {
+		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.threadMessageList });
+	}
+
 	get systemMessageListItems(): Locator {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="system message"]');
 	}
@@ -313,16 +321,12 @@ export class HomeContent {
 		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
 	}
 
+	get btnOptionReplyInDm(): Locator {
+		return this.menuMore.getByRole('menuitem', { name: 'Reply in direct message', exact: true });
+	}
+
 	get btnVoiceCall(): Locator {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
-	}
-
-	get userCard(): Locator {
-		return this.page.getByRole('dialog', { name: 'User card', exact: true });
-	}
-
-	get linkUserCard(): Locator {
-		return this.userCard.locator('a');
 	}
 
 	get btnContactInformation(): Locator {
@@ -361,7 +365,7 @@ export class HomeContent {
 		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
-	async dragAndDropTxtFile(): Promise<void> {
+	async dragAndDropTxtFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -372,9 +376,12 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
 	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
@@ -540,6 +547,13 @@ export class HomeContent {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
 		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
+		await messageList.waitFor();
+
+		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+	}
+
+	async waitForThread(): Promise<void> {
+		const messageList = this.page.getByRole('list', { name: 'Thread message list', exact: true });
 		await messageList.waitFor();
 
 		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');

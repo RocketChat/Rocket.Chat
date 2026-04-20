@@ -119,7 +119,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				text: originalMessage.msg,
 				author_name: originalMessage.u.username,
 				author_icon: getUserAvatarURL(originalMessage.u.username),
-				content: originalMessage.content,
+				...(originalMessage.content && { content: originalMessage.content }),
 				ts: originalMessage.ts,
 				attachments: attachments.map(recursiveRemove),
 			},
@@ -136,7 +136,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	let originalMessage = await Messages.findOneById(message._id);
-	if (originalMessage == null || originalMessage._id == null) {
+	if (originalMessage?._id == null) {
 		throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
 			method: 'unpinMessage',
 			action: 'Message_pinning',

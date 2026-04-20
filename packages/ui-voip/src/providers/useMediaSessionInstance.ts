@@ -1,8 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
 import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
-import { useSetting, useStream, useWriteStream } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useStream, useToastMessageDispatch, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MediaCallLogger } from './MediaCallLogger';
 import { useIceServers } from '../hooks/useIceServers';
@@ -21,7 +23,12 @@ const getSessionIdKey = (userId: string) => {
 	return `rcx-media-session-id-${userId}`;
 };
 
-class MediaSessionStore extends Emitter<{ change: void }> {
+type MediaSessionStoreEventMap = {
+	change: void;
+	requestToast: { message: TranslationKey; args?: Record<string, string>; type: 'error' | 'success' | 'info' | 'warning' };
+};
+
+class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 	private sessionInstance: MediaSignalingSession | null = null;
 
 	private sendSignalFn: SignalTransport | null = null;
@@ -38,6 +45,10 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	public onChange(callback: () => void) {
 		return this.on('change', callback);
+	}
+
+	private requestToast({ message, args, type }: MediaSessionStoreEventMap['requestToast']) {
+		this.emit('requestToast', { message, args, type });
 	}
 
 	private webrtcProcessorFactory(config: WebRTCProcessorConfig) {
@@ -73,6 +84,22 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		return oldSessionId;
 	}
 
+	private async getDisplayMedia(constraints: MediaStreamConstraints) {
+		try {
+			if (!navigator?.mediaDevices?.getDisplayMedia) {
+				throw new Error('getDisplayMedia is not supported');
+			}
+			const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+			if (!stream) {
+				throw new Error('MediaSessionStore - getDisplayMedia - Failed to get display media');
+			}
+			return stream;
+		} catch (error) {
+			this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'error' });
+			throw error;
+		}
+	}
+
 	private makeInstance(userId: string) {
 		if (this.sessionInstance !== null) {
 			this.sessionInstance.endSession();
@@ -85,15 +112,19 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
-			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
+			transport: (signal: ClientMediaSignal) => {
+				void this.sendSignal(signal);
+			},
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
+			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: new MediaCallLogger(),
-			features: ['audio', 'transfer', 'hold'],
+			features: ['audio', 'screen-share', 'transfer', 'hold'],
+			autoSync: true,
 		});
 
 		if (window.sessionStorage) {
@@ -142,11 +173,14 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 const mediaSession = new MediaSessionStore();
 
 export const useMediaSessionInstance = (userId?: string) => {
+	const { t } = useTranslation();
 	const iceServers = useIceServers();
 	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
 
 	const notifyUserStream = useStream('notify-user');
 	const writeStream = useWriteStream('notify-user');
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	useEffect(() => {
 		mediaSession.setWebRTCProcessorFactory(
@@ -172,6 +206,12 @@ export const useMediaSessionInstance = (userId?: string) => {
 			unsubNotification();
 		};
 	}, [userId, notifyUserStream]);
+
+	useEffect(() => {
+		return mediaSession.on('requestToast', ({ message, args, type }) => {
+			dispatchToastMessage({ message: t(message, args), type });
+		});
+	}, [dispatchToastMessage, t]);
 
 	const instance = useSyncExternalStore(
 		useCallback((callback) => {

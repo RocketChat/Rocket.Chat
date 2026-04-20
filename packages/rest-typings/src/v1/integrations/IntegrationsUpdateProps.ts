@@ -8,6 +8,7 @@ export type IntegrationsUpdateProps =
 			integrationId: string;
 			channel: string;
 			scriptEnabled: boolean;
+			skipTranspile?: boolean;
 			scriptEngine: 'isolated-vm';
 			overrideDestinationChannelEnabled?: boolean;
 			script?: string;
@@ -32,6 +33,7 @@ export type IntegrationsUpdateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
+			skipTranspile?: boolean;
 			scriptEngine: 'isolated-vm';
 			script?: string;
 			runOnEdits?: boolean;
@@ -70,6 +72,10 @@ const integrationsUpdateSchema = {
 				scriptEnabled: {
 					type: 'boolean',
 					nullable: false,
+				},
+				skipTranspile: {
+					type: 'boolean',
+					nullable: true,
 				},
 				scriptEngine: {
 					type: 'string',
@@ -166,6 +172,10 @@ const integrationsUpdateSchema = {
 				scriptEnabled: {
 					type: 'boolean',
 					nullable: false,
+				},
+				skipTranspile: {
+					type: 'boolean',
+					nullable: true,
 				},
 				scriptEngine: {
 					type: 'string',

@@ -10,7 +10,6 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,
-			alert: 'Federation_Service_Alert',
 		});
 
 		await this.add('Federation_Service_Domain', '', {
@@ -87,7 +86,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 
 		await this.add('Federation_Service_EDU_Process_Receipt', false, {
 			type: 'boolean',
-			public: false,
+			public: true,
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,

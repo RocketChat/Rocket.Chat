@@ -12,7 +12,17 @@ const NavBarItemDirectoryPage = (props: NavBarItemDirectoryPageProps) => {
 	});
 	const currentRoute = useCurrentRoutePath();
 
-	return <NavBarItem {...props} icon='notebook-hashtag' onClick={handleDirectory} pressed={currentRoute?.includes('/directory')} />;
+	const directoryRoute = currentRoute?.includes('/directory');
+
+	return (
+		<NavBarItem
+			{...props}
+			icon='notebook-hashtag'
+			onClick={handleDirectory}
+			aria-current={directoryRoute ? 'page' : undefined}
+			pressed={directoryRoute}
+		/>
+	);
 };
 
 export default NavBarItemDirectoryPage;
