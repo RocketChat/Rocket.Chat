@@ -72,6 +72,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private lastState: { hasCall: boolean; hasVisibleCall: boolean; hasBusyCall: boolean };
 
+	private sessionEnded = false;
+
 	private registration: SessionRegistration;
 
 	public get sessionId(): string {
@@ -130,6 +132,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public endSession(): void {
+		this.sessionEnded = true;
 		this.registration.endSession();
 		this.disableStateReport();
 
@@ -193,6 +196,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
+		if (this.sessionEnded) {
+			return;
+		}
 		this.config.logger?.debug('MediaSignalingSession.processSignal', signal);
 		if ('callId' in signal) {
 			return this.processCallSignal(signal);

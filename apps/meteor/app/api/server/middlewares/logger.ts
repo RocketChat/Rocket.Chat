@@ -1,4 +1,5 @@
 import type { Logger } from '@rocket.chat/logger';
+import { censorUrl } from '@rocket.chat/tools';
 import type { MiddlewareHandler } from 'hono';
 
 import { getRestPayload } from '../../../../server/lib/logger/logPayloads';
@@ -11,7 +12,7 @@ export const loggerMiddleware =
 		const log = logger.logger.child(
 			{
 				method: c.req.method,
-				url: c.req.url,
+				url: censorUrl(c.req.url),
 				userId: c.req.header('x-user-id'),
 				userAgent: c.req.header('user-agent'),
 				length: c.req.header('content-length'),

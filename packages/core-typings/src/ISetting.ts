@@ -18,6 +18,7 @@ export type SettingValue =
 	| SettingValueAction
 	| Date
 	| { url?: string; defaultUrl?: string }
+	| { method: 'GET' | 'POST' | 'PUT' | 'DELETE'; path: string }
 	| undefined
 	| null;
 
