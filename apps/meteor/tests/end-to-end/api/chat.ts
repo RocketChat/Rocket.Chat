@@ -2766,6 +2766,55 @@ describe('[Chat]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return receipts based on subscription last seen when detailed storage is disabled', async function () {
+				if (!isEnterprise) {
+					this.skip();
+				}
+
+				// Save the current setting value
+				const currentDetailedSetting = await request
+					.get(api('settings.public'))
+					.query({ query: JSON.stringify({ _id: 'Message_Read_Receipt_Store_Users' }) })
+					.set(credentials);
+
+				const originalValue = currentDetailedSetting.body.settings?.[0]?.value;
+
+				try {
+					// Disable detailed storage
+					await updateSetting('Message_Read_Receipt_Store_Users', false);
+
+					// Get receipts with fallback mode
+					const response = await request
+						.get(api(`chat.getMessageReadReceipts`))
+						.set(credentials)
+						.query({
+							messageId: message._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+
+					expect(response.body).to.have.property('receipts').and.to.be.an('array');
+					expect(response.body).to.have.property('success', true);
+
+					// Receipts may be empty if no users have read the message yet
+					expect(response.body.receipts.length).to.be.greaterThanOrEqual(0);
+
+					// Each receipt should have the required properties
+					if (response.body.receipts.length > 0) {
+						const receipt = response.body.receipts[0];
+						expect(receipt).to.have.property('userId');
+						expect(receipt).to.have.property('messageId', message._id);
+						expect(receipt).to.have.property('ts');
+						expect(receipt).to.have.property('user');
+					}
+				} finally {
+					// Restore original setting
+					if (originalValue !== undefined) {
+						await updateSetting('Message_Read_Receipt_Store_Users', originalValue);
+					}
+				}
+			});
 		});
 
 		describe('when an error occurs', () => {

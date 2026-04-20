@@ -8,9 +8,9 @@ import { useMessageListReadReceipts } from '../list/MessageListContext';
 export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionConfig | null => {
 	const setModal = useSetModal();
 
-	const { enabled: readReceiptsEnabled, storeUsers: readReceiptsStoreUsers } = useMessageListReadReceipts();
+	const { enabled: readReceiptsEnabled } = useMessageListReadReceipts();
 
-	if (!readReceiptsEnabled || !readReceiptsStoreUsers) {
+	if (!readReceiptsEnabled) {
 		return null;
 	}
 

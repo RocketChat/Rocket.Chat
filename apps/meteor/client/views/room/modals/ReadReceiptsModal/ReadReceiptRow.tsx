@@ -18,9 +18,11 @@ const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser): ReactElement => {
 					{displayName}
 				</Box>
 			</Box>
-			<Box is='span' fontScale='c1' color='hint'>
-				{formatDateAndTime(ts)}
-			</Box>
+			{ts && (
+				<Box is='span' fontScale='c1' color='hint'>
+					{formatDateAndTime(ts)}
+				</Box>
+			)}
 		</Box>
 	);
 };

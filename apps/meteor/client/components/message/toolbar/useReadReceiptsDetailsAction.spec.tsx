@@ -26,12 +26,12 @@ describe('useReadReceiptsDetailsAction', () => {
 		expect(result.current).toBeNull();
 	});
 
-	it('should return null if read receipts store users is not enabled', () => {
+	it('should not return null if read receipts store users is not enabled', () => {
 		useMessageListReadReceiptsMocked.mockReturnValue({ enabled: true, storeUsers: false });
 
 		const { result } = renderHook(() => useReadReceiptsDetailsAction(message), { wrapper: mockAppRoot().build() });
 
-		expect(result.current).toBeNull();
+		expect(result.current).not.toBeNull();
 	});
 
 	it('should return a message action config', () => {
