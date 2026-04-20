@@ -246,9 +246,10 @@ async function handleInvite({
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, inviteeUser._id);
 	if (subscription) {
-		// if subscription state says the user is banned, it means the user was previously banned and is now being re-invited, so we need to unban the user instead of creating a new invite
+		// if subscription state says the user is banned, it means the user was previously banned and is now being re-invited,
+		// so we need to unban the user instead of creating a new invite
 		if (isBannedSubscription(subscription)) {
-			await Room.unbanAndInviteUser(subscription, inviterUser);
+			await Room.unbanAndInviteUser(subscription, inviteeUser, inviterUser);
 		}
 		return;
 	}
@@ -285,7 +286,6 @@ async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
 	content,
-	unsigned,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
 	if (!joiningUser?.username) {
@@ -301,22 +301,7 @@ async function handleJoin({
 	// it means the join event was sent before the invite event, so we need to create the subscription and then accept the invite.
 	// this will happen when for example the user is unbanned, so the leave event will remove the subscription and then we just
 	// receive the join event without receiving the invite.
-	let subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
-	if (!subscription) {
-		// try to guess the inviter from unsigned data
-		const inviterId = unsigned?.prev_content?.membership === 'invite' && unsigned?.prev_sender;
-		const inviterUser = inviterId ? await getOrCreateFederatedUser(inviterId) : undefined;
-
-		await Room.createUserSubscription({
-			ts: new Date(),
-			room,
-			userToBeAdded: joiningUser,
-			inviter: inviterUser,
-			status: 'INVITED',
-		});
-
-		subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
-	}
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
 
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
@@ -357,6 +342,7 @@ async function handleLeave({
 	room_id: roomId,
 	state_key: userId,
 	sender,
+	unsigned: { prev_content: prevContent },
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const serverName = federationSDK.getConfig('serverName');
 	const [username] = getUsernameServername(userId, serverName);
@@ -387,7 +373,12 @@ async function handleLeave({
 		return;
 	}
 
-	await Room.performUserRemoval(room, leavingUser);
+	// this means the leave event is actually an unban
+	if (prevContent?.membership === 'ban') {
+		await Room.performUserUnban(room, leavingUser, senderUser);
+	} else {
+		await Room.performUserRemoval(room, leavingUser);
+	}
 
 	// update room name for DMs
 	if (room.t === 'd') {

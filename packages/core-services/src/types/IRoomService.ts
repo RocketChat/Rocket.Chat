@@ -81,6 +81,7 @@ export interface IRoomService {
 	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
 	unbanAndInviteUser(
 		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
 		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
 	): Promise<void>;
 }
