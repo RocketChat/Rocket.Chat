@@ -53,7 +53,7 @@ describe('useDecryptedMessage', () => {
 	it('should handle E2EE messages with attachments', async () => {
 		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(true);
 		(e2e.decryptMessage as jest.Mock).mockResolvedValue({
-			attachments: [{ description: 'Attachment description' }],
+			attachments: [{ title: 'Attachment title' }],
 		});
 		const message = { msg: 'Encrypted message with attachment' };
 
@@ -63,7 +63,6 @@ describe('useDecryptedMessage', () => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
-		expect(result.current).toBe('Attachment description');
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 

@@ -33,7 +33,7 @@ export const RegisterSecretPageRouter = ({
 
 	if (isPublicRegistration || (origin === 'invite-register' && isRegistrationAllowedForSecret)) {
 		return (
-			<RegisterTemplate>
+			<RegisterTemplate aria-label={t('Register')}>
 				<RegisterForm setLoginRoute={setLoginRoute} />
 			</RegisterTemplate>
 		);

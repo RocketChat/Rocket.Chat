@@ -59,6 +59,7 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
 			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
+			description: fileToUpload.description,
 		}),
 	};
 };
@@ -90,14 +91,18 @@ const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2
 	});
 };
 
-async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message: IMessage) {
+async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 	const { msg, rid, tmid } = message;
 	const e2eRoom = await e2e.getInstanceByRoomId(rid);
 	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
 	const filesToUpload = store.get();
 
 	const confirmFilesQueue: (IUploadToConfirm & {
-		composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> & { fileName?: string; fileContent?: IE2EEMessage['content'] };
+		composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> & {
+			fileName?: string;
+			fileContent?: IE2EEMessage['content'];
+			description?: string;
+		};
 	})[] = [];
 
 	const validFiles = filesToUpload.filter((file) => !file.error);
@@ -118,7 +123,7 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 			confirmFilesQueue.push({
 				_id: upload.id,
 				name: upload.file.name,
-				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name },
+				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.description },
 			});
 			continue;
 		}
@@ -144,22 +149,24 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 		store.setProcessingUploads(true);
 		for (const fileToConfirm of confirmFilesQueue) {
 			await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, fileToConfirm.composedMessage);
+			store.removeUpload(fileToConfirm._id);
 		}
-		store.clear();
 	} catch (error: unknown) {
 		dispatchToastMessage({ type: 'error', message: error });
 	} finally {
 		store.setProcessingUploads(false);
-		chat.action.stop('uploading');
 	}
 
 	return true;
 }
 
 export const processMessageUploads = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
-	const { tmid } = message;
+	const store = chat.composer?.uploads;
 
-	const store = tmid ? chat.threadUploads : chat.uploads;
+	if (!store) {
+		return false;
+	}
+
 	const filesToUpload = store.get();
 
 	if (filesToUpload.length === 0) {
@@ -169,7 +176,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 	const failedUploads = filesToUpload.filter((upload) => upload.error);
 
 	if (!failedUploads.length) {
-		return continueSendingMessage(chat, store, message);
+		return continueSendingMessage(store, message);
 	}
 
 	const allUploadsFailed = failedUploads.length === filesToUpload.length;
@@ -197,7 +204,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 					onConfirm: () => {
 						imperativeModal.close();
 						failedUploads.forEach((upload) => store.removeUpload(upload.id));
-						resolve(continueSendingMessage(chat, store, message));
+						resolve(continueSendingMessage(store, message));
 					},
 					onCancel: () => {
 						imperativeModal.close();

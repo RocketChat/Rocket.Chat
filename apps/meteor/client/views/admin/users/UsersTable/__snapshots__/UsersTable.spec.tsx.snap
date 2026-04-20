@@ -619,23 +619,27 @@ exports[`renders Default without crashing 1`] = `
       </div>
     </div>
     <nav
-      class="rcx-box rcx-box--full rcx-pagination--divider rcx-pagination"
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
     >
       <div
-        class="rcx-box rcx-box--full rcx-pagination__left"
+        class="rcx-pagination__left"
       >
         <span
-          class="rcx-box rcx-box--full rcx-pagination__label"
+          class="rcx-pagination__label"
+          id=":rb:"
         >
           Items per page:
         </span>
         <ol
+          aria-labelledby=":rb:"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 25 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               disabled=""
               tabindex="-1"
@@ -644,9 +648,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 50 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               tabindex="0"
             >
@@ -654,9 +659,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 100 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               tabindex="0"
             >
@@ -666,20 +672,23 @@ exports[`renders Default without crashing 1`] = `
         </ol>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-pagination__right"
+        class="rcx-pagination__right"
       >
         <span
-          class="rcx-box rcx-box--full rcx-pagination__label"
+          class="rcx-pagination__label"
+          id=":ra:"
         >
           Showing results 1 - 5 of 5
         </span>
         <ol
+          aria-labelledby=":ra:"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Previous page"
               class="rcx-box rcx-box--full rcx-pagination__back"
               disabled=""
             >
@@ -696,9 +705,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Page 1"
               class="rcx-box rcx-box--full rcx-pagination__link"
               disabled=""
             >
@@ -706,9 +716,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Next page"
               class="rcx-box rcx-box--full rcx-pagination__forward"
               disabled=""
             >

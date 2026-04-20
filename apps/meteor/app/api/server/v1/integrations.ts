@@ -33,7 +33,7 @@ import { findOneIntegration } from '../lib/integrations';
 const integrationSuccessSchema = ajv.compile<{ integration: IIntegration | null }>({
 	type: 'object',
 	properties: {
-		integration: { type: 'object' },
+		integration: { oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }] },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['integration', 'success'],
@@ -79,7 +79,7 @@ API.v1.get(
 			200: ajv.compile<{ history: IIntegrationHistory[]; offset: number; items: number; count: number; total: number }>({
 				type: 'object',
 				properties: {
-					history: { type: 'array', items: { type: 'object' } },
+					history: { type: 'array', items: { $ref: '#/components/schemas/IIntegrationHistory' } },
 					offset: { type: 'number' },
 					items: { type: 'number' },
 					count: { type: 'number' },
@@ -147,7 +147,9 @@ API.v1.get(
 				properties: {
 					integrations: {
 						type: 'array',
-						items: { type: 'object' },
+						items: {
+							oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+						},
 					},
 					offset: { type: 'number' },
 					items: { type: 'number' },
@@ -280,7 +282,9 @@ API.v1.get(
 			200: ajv.compile<{ integration: IIntegration | null }>({
 				type: 'object',
 				properties: {
-					integration: { type: 'object' },
+					integration: {
+						oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+					},
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['integration', 'success'],

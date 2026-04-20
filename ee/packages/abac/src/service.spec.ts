@@ -81,6 +81,7 @@ describe('AbacService (unit)', () => {
 
 	beforeEach(() => {
 		service = new AbacService();
+		service.setPdpStrategy('local');
 		jest.clearAllMocks();
 	});
 
