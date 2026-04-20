@@ -443,7 +443,12 @@ export class QueueManager {
 
 		let defaultAgent: SelectedAgent | undefined;
 		const isAgentAvailable = (username: string) =>
-			Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1 } }, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+			Users.findOneOnlineAgentByUserList(
+				username,
+				{ projection: { _id: 1 } },
+				settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+			);
 
 		if (servedBy?.username && (await isAgentAvailable(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };

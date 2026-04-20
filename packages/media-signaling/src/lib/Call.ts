@@ -45,7 +45,7 @@ export interface IClientMediaCallConfig {
 	supportedFeatures: CallFeature[];
 }
 
-const TIMEOUT_TO_ACCEPT = 30000;
+const TIMEOUT_TO_ACCEPT = 60000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
 const STATE_REPORT_DELAY = 300;
@@ -54,9 +54,10 @@ const CALLS_WITH_NO_REMOTE_DATA_REPORT_DELAY = 5000;
 // if the server tells us we're the caller in a call we don't recognize, ignore it completely
 const AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS = true;
 
-type StateTimeoutHandler = {
+type StateTimeoutData = {
 	state: ClientState;
-	handler: ReturnType<typeof setTimeout>;
+	reset: () => void;
+	clear: () => void;
 };
 
 export class ClientMediaCall implements IClientMediaCall {
@@ -178,6 +179,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private acceptedLocally: boolean;
 
+	private acceptedRemotely: boolean;
+
 	private endedLocally: boolean;
 
 	private hasRemoteData: boolean;
@@ -188,7 +191,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private earlySignals: Set<ServerMediaSignal>;
 
-	private stateTimeoutHandlers: Set<StateTimeoutHandler>;
+	private stateTimeoutHandlers: Set<StateTimeoutData>;
 
 	private remoteCallId: string | null;
 
@@ -290,6 +293,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.remoteCallId = null;
 
 		this.acceptedLocally = false;
+		this.acceptedRemotely = false;
 		this.endedLocally = false;
 		this.hasRemoteData = false;
 		this.initialized = false;
@@ -657,6 +661,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.acceptedLocally = true;
+		// If the server already signed us into this call, go straight to the accepted state
+		if (this.acceptedRemotely) {
+			this.changeState('accepted');
+			return;
+		}
+
 		this.config.transporter.answer(this.callId, 'accept', { supportedFeatures: this.config.supportedFeatures });
 
 		if (this.getClientState() === 'accepting') {
@@ -1156,6 +1166,9 @@ export class ClientMediaCall implements IClientMediaCall {
 					this.changeState('active');
 				}
 				return;
+			case 'trying':
+				this.resetStateTimeouts();
+				break;
 
 			case 'hangup':
 				return this.flagAsEnded('remote');
@@ -1163,7 +1176,12 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private async flagAsAccepted(enabledFeatures?: CallFeature[]): Promise<void> {
+		if (!this.isPendingAcceptance()) {
+			return;
+		}
+
 		this.config.logger?.debug('ClientMediaCall.flagAsAccepted');
+		this.acceptedRemotely = true;
 
 		if (enabledFeatures && this._state !== 'accepted') {
 			this.enabledFeatures = enabledFeatures;
@@ -1175,14 +1193,13 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		if (!this.acceptedLocally) {
-			this.config.transporter.sendError(this.callId, { errorType: 'signaling', errorCode: 'not-accepted', critical: true });
-			this.config.logger?.error('Trying to activate a call that was not yet accepted locally.');
-			return;
-		}
-
 		if (this.contractState === 'proposed') {
 			this.contractState = 'self-signed';
+		}
+
+		if (!this.acceptedLocally) {
+			this.config.logger?.debug('Server signed us into a call that we have not yet accepted locally.');
+			return;
 		}
 
 		// Both sides of the call have accepted it, we can change the state now
@@ -1212,26 +1229,39 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		const handler = {
+		let handler: ReturnType<typeof setTimeout> | null = null;
+
+		const data = {
 			state,
-			handler: setTimeout(() => {
-				if (this.stateTimeoutHandlers.has(handler)) {
-					this.stateTimeoutHandlers.delete(handler);
+			clear: () => {
+				if (handler) {
+					clearTimeout(handler);
 				}
+				handler = null;
+			},
+			reset: () => {
+				data.clear();
+				handler = setTimeout(() => {
+					if (this.stateTimeoutHandlers.has(data)) {
+						this.stateTimeoutHandlers.delete(data);
+					}
 
-				if (state !== this.getClientState()) {
-					return;
-				}
+					if (state !== this.getClientState()) {
+						return;
+					}
 
-				if (callback) {
-					callback();
-				} else {
-					void this.hangup(this.getTimeoutHangupReason(state));
-				}
-			}, timeout),
+					if (callback) {
+						callback();
+					} else {
+						void this.hangup(this.getTimeoutHangupReason(state));
+					}
+				}, timeout);
+			},
 		};
 
-		this.stateTimeoutHandlers.add(handler);
+		data.reset();
+
+		this.stateTimeoutHandlers.add(data);
 	}
 
 	private getTimeoutHangupReason(state: ClientState): CallHangupReason {
@@ -1250,6 +1280,19 @@ export class ClientMediaCall implements IClientMediaCall {
 		return 'timeout';
 	}
 
+	private resetStateTimeouts(): void {
+		this.config.logger?.debug('ClientMediaCall.resetStateTimeouts');
+		const clientState = this.getClientState();
+
+		for (const handler of this.stateTimeoutHandlers.values()) {
+			if (handler.state !== clientState) {
+				continue;
+			}
+
+			handler.reset();
+		}
+	}
+
 	private updateStateTimeouts(): void {
 		this.config.logger?.debug('ClientMediaCall.updateStateTimeouts');
 		const clientState = this.getClientState();
@@ -1259,14 +1302,14 @@ export class ClientMediaCall implements IClientMediaCall {
 				continue;
 			}
 
-			clearTimeout(handler.handler);
+			handler.clear();
 			this.stateTimeoutHandlers.delete(handler);
 		}
 	}
 
 	private clearStateTimeouts(): void {
 		for (const handler of this.stateTimeoutHandlers.values()) {
-			clearTimeout(handler.handler);
+			handler.clear();
 		}
 		this.stateTimeoutHandlers.clear();
 	}

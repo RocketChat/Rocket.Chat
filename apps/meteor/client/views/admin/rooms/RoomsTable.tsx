@@ -49,7 +49,14 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: searchText === prevRoomFilterText.current ? current : 0,
-				types: roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES,
+				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
+					| 'c'
+					| 'd'
+					| 'p'
+					| 'l'
+					| 'discussions'
+					| 'teams'
+				)[],
 			};
 		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
 		500,
