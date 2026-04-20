@@ -113,7 +113,7 @@ export async function process2faAsyncReturn<TResult>({
 
 	await invokeTwoFactorModal(props, validateCode);
 
-	if (!result) {
+	if (result === undefined) {
 		throw new Error('Unexpected error: result is undefined');
 	}
 
