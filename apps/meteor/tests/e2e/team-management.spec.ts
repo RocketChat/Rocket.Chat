@@ -62,7 +62,7 @@ test.describe('teams-management-permissions', () => {
 
 		await poHomeTeam.navbar.btnCreateNew.click();
 		await expect(poHomeTeam.navbar.createNewMenu).toBeVisible();
-		await expect(poHomeTeam.navbar.createNewMenu.getByRole('menuitem', { name: 'Team' })).toHaveCount(0);
+		await expect(poHomeTeam.navbar.createNewMenuItem('Team')).not.toBeVisible();
 	});
 });
 
