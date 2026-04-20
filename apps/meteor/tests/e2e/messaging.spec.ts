@@ -187,7 +187,8 @@ test.describe('Messaging', () => {
 			await test.step('stress test on message editions', async () => {
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
 					const editPromise = page.waitForResponse(
-						(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+						(response) =>
+							/api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 					);
 
 					await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
