@@ -533,7 +533,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			}
 		}
 
-		enriched.sort((a, b) => (a.compliant === b.compliant ? 0 : a.compliant ? 1 : -1));
+		enriched.sort((a, b) => Number(a.compliant) - Number(b.compliant));
 
 		return enriched;
 	}
