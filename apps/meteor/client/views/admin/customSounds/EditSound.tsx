@@ -54,11 +54,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || !!file, [name, previousName, file]);
 
 	const handleSave = useCallback(async () => {
-		const soundData = createSoundData(file, name, {
-			previousName,
+		const soundData = createSoundData(name, {
 			previousSound,
 			_id,
-			extension: data.extension,
 		});
 
 		const validation = validate(soundData, file);
@@ -76,10 +74,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		formData.append('name', soundData.name);
 		if (file) {
 			formData.append('sound', file);
-			formData.append('extension', soundData.extension);
 		}
 		await saveAction(formData);
-	}, [_id, dispatchToastMessage, name, previousName, previousSound, saveAction, file, t, data.extension]);
+	}, [_id, dispatchToastMessage, name, previousSound, saveAction, file, t]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {

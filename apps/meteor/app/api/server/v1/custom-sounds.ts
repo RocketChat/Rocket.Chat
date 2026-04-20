@@ -18,6 +18,7 @@ import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '..
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { insertOrUpdateSound } from '../../../custom-sounds/server/lib/insertOrUpdateSound';
 import { uploadCustomSound } from '../../../custom-sounds/server/lib/uploadCustomSound';
+import { getExtension } from '../../../utils/lib/mimeTypes';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -194,12 +195,14 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('MIME type not allowed');
 			}
 
+			const soundExtension = getExtension(mimetype);
+
 			try {
 				const _id = await insertOrUpdateSound({
 					name: fields.name,
-					extension: fields.extension,
+					extension: soundExtension,
 				});
-				await uploadCustomSound(fileBuffer, mimetype, { _id, name: fields.name, extension: fields.extension });
+				await uploadCustomSound(fileBuffer, mimetype, { _id, name: fields.name, extension: soundExtension });
 				return API.v1.success({ sound: { _id } });
 			} catch (error) {
 				SystemLogger.error({ error });
@@ -236,10 +239,6 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('MIME type not allowed');
 			}
 
-			if (fileBuffer && !fields.extension) {
-				return API.v1.failure('Extension required');
-			}
-
 			const soundToUpdate = await CustomSounds.findOneById<Pick<ICustomSound, '_id' | 'name' | 'extension'>>(fields._id, {
 				projection: { _id: 1, name: 1, extension: 1 },
 			});
@@ -247,7 +246,7 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('Custom Sound not found.');
 			}
 
-			const nextExtension = fileBuffer ? fields.extension : soundToUpdate.extension;
+			const nextExtension = fileBuffer ? getExtension(mimetype) : soundToUpdate.extension;
 
 			try {
 				if (fileBuffer) {

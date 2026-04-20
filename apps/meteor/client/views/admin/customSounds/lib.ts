@@ -1,22 +1,15 @@
-import type { ICustomSoundData } from '../../../../app/custom-sounds/server/methods/insertOrUpdateSound';
 import { CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../../lib/constants';
 
-const getExtension = (file?: File): string => {
-	if (!file?.name) {
-		return '';
-	}
-
-	const dotIndex = file.name.lastIndexOf('.');
-
-	if (dotIndex <= 0 || dotIndex === file.name.length - 1) {
-		return '';
-	}
-
-	return file.name.slice(dotIndex + 1).toLowerCase();
+type ClientCustomSoundData = {
+	_id?: string;
+	name: string;
+	previousSound?: {
+		extension?: string;
+	};
 };
 
 // Here previousData will define if it is an update or a new entry
-export function validate(soundData: ICustomSoundData, soundFile?: File): ('Name' | 'Sound File' | 'FileType')[] {
+export function validate(soundData: ClientCustomSoundData, soundFile?: File): ('Name' | 'Sound File' | 'FileType')[] {
 	const errors: ('Name' | 'Sound File' | 'FileType')[] = [];
 
 	if (!soundData.name) {
@@ -39,30 +32,23 @@ export function validate(soundData: ICustomSoundData, soundFile?: File): ('Name'
 }
 
 export const createSoundData = (
-	soundFile: File | undefined,
 	name: string,
 	previousData?: {
 		_id: string;
-		extension: string;
-		previousName: string;
-		previousSound: {
-			extension?: string;
-		};
+		previousSound?: { extension?: string };
 	},
-): ICustomSoundData => {
+): ClientCustomSoundData => {
+	const sanitizedName = name.trim();
+
 	if (!previousData) {
 		return {
-			name: name.trim(),
-			extension: getExtension(soundFile),
+			name: sanitizedName,
 		};
 	}
 
 	return {
 		_id: previousData._id,
-		name: name.trim(),
-		extension: getExtension(soundFile),
-		previousName: previousData.previousName,
-		previousExtension: previousData.previousSound?.extension,
+		name: sanitizedName,
 		previousSound: previousData.previousSound,
 	};
 };

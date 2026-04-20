@@ -50,7 +50,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	);
 
 	const handleSave = useCallback(async () => {
-		const soundData = createSoundData(sound, name);
+		const soundData = createSoundData(name);
 
 		const validation = validate(soundData, sound) as Array<Parameters<typeof t>[0]>;
 		if (validation.length > 0) {
@@ -67,7 +67,6 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			formData.append('sound', sound);
 		}
 		formData.append('name', soundData.name);
-		formData.append('extension', soundData.extension);
 		await saveAction(formData);
 	}, [sound, name, saveAction, t, dispatchToastMessage]);
 
