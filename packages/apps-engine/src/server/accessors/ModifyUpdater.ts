@@ -1,5 +1,6 @@
 import { LivechatUpdater } from './LivechatUpdater';
 import { MessageBuilder } from './MessageBuilder';
+import { MessageUpdater } from './MessageUpdater';
 import { RoomBuilder } from './RoomBuilder';
 import { UserUpdater } from './UserUpdater';
 import type { ILivechatUpdater, IMessageBuilder, IMessageUpdater, IModifyUpdater, IRoomBuilder } from '../../definition/accessors';
@@ -23,6 +24,7 @@ export class ModifyUpdater implements IModifyUpdater {
 	) {
 		this.livechatUpdater = new LivechatUpdater(this.bridges, this.appId);
 		this.userUpdater = new UserUpdater(this.bridges, this.appId);
+		this.messageUpdater = new MessageUpdater(this.bridges, this.appId);
 	}
 
 	public getLivechatUpdater(): ILivechatUpdater {

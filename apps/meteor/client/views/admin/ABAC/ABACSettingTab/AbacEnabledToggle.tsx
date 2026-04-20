@@ -11,9 +11,10 @@ import SettingSkeleton from '../../settings/Setting/SettingSkeleton';
 
 type ABACEnabledToggleProps = {
 	hasABAC: 'loading' | boolean;
+	className?: string;
 };
 
-const ABACEnabledToggle = ({ hasABAC }: ABACEnabledToggleProps) => {
+const ABACEnabledToggle = ({ className, hasABAC }: ABACEnabledToggleProps) => {
 	const setting = useEditableSetting('ABAC_Enabled');
 	const setModal = useSetModal();
 	const dispatch = useSettingsDispatch();
@@ -89,6 +90,7 @@ const ABACEnabledToggle = ({ hasABAC }: ABACEnabledToggleProps) => {
 			hasResetButton={hasABAC && setting.packageValue !== setting.value}
 			onChangeValue={(value: SettingValue) => onChange(value === true)}
 			onResetButtonClick={() => onReset()}
+			className={className}
 		/>
 	);
 };
