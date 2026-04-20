@@ -11,22 +11,23 @@ import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
 
 type OutlookEventItemProps = Serialized<ICalendarEvent>;
 
+const hovered = css`
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:hover,
+	&:focus {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
+
 const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
 	const openCall = useOutlookOpenCall(meetingUrl);
 	const handleMeetingClick = usePreventPropagation(openCall);
-	const hovered = css`
-		&:hover {
-			cursor: pointer;
-		}
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 
 	const handleOpenEvent = () => {
 		setModal(

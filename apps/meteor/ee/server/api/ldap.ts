@@ -26,7 +26,7 @@ API.v1.addRoute(
 			}
 
 			await LDAPEE.sync();
-			await LDAPEE.syncAvatars();
+			await LDAPEE.syncAvatarAndAbacAttributes();
 
 			return API.v1.success({
 				message: 'Sync_in_progress' as const,

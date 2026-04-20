@@ -135,6 +135,153 @@ export class TestEndpoint extends ApiEndpoint {
 
 </details>
 
+#### External ID Test (resolveVisitor API)
+
+File name: `external-id-test_0.0.1.zip`
+
+An app that tests the `ILivechatCreator.resolveVisitor()` and `ILivechatUpdater.updateVisitorExternalId()` APIs for resolving and updating livechat visitors by external identifiers. This is used to test the WhatsApp BSUID (Business Scoped User ID) support and progressive visitor enrichment.
+
+**Endpoints:**
+
+1. `POST /api/apps/public/:appId/resolve-visitor` - Resolve visitor by externalId with phone/email fallback
+2. `POST /api/apps/public/:appId/update-external-id` - Update visitor's externalId for this app
+
+**Request body (resolve-visitor):**
+```json
+{
+  "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } },
+  "phone": "+1234567890"
+}
+```
+
+**Request body (update-external-id):**
+```json
+{
+  "visitorId": "visitor-123",
+  "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } }
+}
+```
+
+**Response:**
+- Returns the visitor if found/updated
+- Returns `{ visitor: null }` if not found
+
+<details>
+<summary>App source code</summary>
+
+**ExternalIdTestApp.ts**
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	ILogger,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { ResolveVisitorEndpoint } from './ResolveVisitorEndpoint';
+import { UpdateExternalIdEndpoint } from './UpdateExternalIdEndpoint';
+
+export class ExternalIdTestApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	public override async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new ResolveVisitorEndpoint(this), new UpdateExternalIdEndpoint(this)],
+		});
+	}
+}
+```
+
+**ResolveVisitorEndpoint.ts**
+```typescript
+import {
+	HttpStatusCode,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+
+export class ResolveVisitorEndpoint extends ApiEndpoint {
+	public override path = 'resolve-visitor';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { externalId, phone, email } = request.content;
+
+		let contactData: { phone: string } | { email: string } | undefined;
+
+		if (phone) {
+			contactData = { phone };
+		} else if (email) {
+			contactData = { email };
+		}
+
+		const visitor = await modify.getCreator().getLivechatCreator().resolveVisitor(externalId, contactData);
+
+		return {
+			status: HttpStatusCode.OK,
+			content: { visitor: visitor || null },
+		};
+	}
+}
+```
+
+**UpdateExternalIdEndpoint.ts**
+```typescript
+import {
+	HttpStatusCode,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+
+export class UpdateExternalIdEndpoint extends ApiEndpoint {
+	public override path = 'update-external-id';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { visitorId, externalId } = request.content;
+
+		if (!visitorId || !externalId) {
+			return {
+				status: HttpStatusCode.BAD_REQUEST,
+				content: { error: 'visitorId and externalId are required' },
+			};
+		}
+
+		const visitor = await modify.getUpdater().getLivechatUpdater().updateVisitorExternalId(visitorId, externalId);
+
+		return {
+			status: HttpStatusCode.OK,
+			content: { visitor: visitor || null },
+		};
+	}
+}
+```
+
+</details>
+
 #### Nested Requests simulation
 
 File name: `nested-requests_0.0.1.zip`
@@ -179,4 +326,161 @@ export class NestedRequestsApp extends App implements IPostMessageSent {
 }
 ```
 
+</details>
+
+#### Update Status Test
+
+File name: `update-status-test_0.0.1.zip`
+
+An app that provides two public API endpoints to test the `updateStatus` and `updateStatusText` bridge methods. A `username` parameter is required to specify the target user.
+
+**Endpoints:**
+
+- `POST /update-status` — Calls `updateStatus(user, statusText, status)`. Expects `{ username: string, status: string, statusText?: string }`.
+- `POST /update-status-text` — Calls `updateStatusText(user, statusText)`. Expects `{ username: string, statusText: string }`.
+
+<details>
+<summary>App source code</summary>
+
+**UpdateStatusTestApp.ts**
+```typescript
+import {
+    IAppAccessors,
+    IConfigurationExtend,
+    ILogger,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { UpdateStatusEndpoint } from './endpoints/UpdateStatusEndpoint';
+import { UpdateStatusTextEndpoint } from './endpoints/UpdateStatusTextEndpoint';
+
+export class UpdateStatusTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+        await configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [
+                new UpdateStatusEndpoint(this),
+                new UpdateStatusTextEndpoint(this),
+            ],
+        });
+    }
+}
+```
+
+**endpoints/UpdateStatusEndpoint.ts**
+```typescript
+import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+
+export class UpdateStatusEndpoint extends ApiEndpoint {
+    public path = 'update-status';
+
+    public async post(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse> {
+        const { status, statusText = '', username } = request.content || {};
+
+        if (!status) {
+            return { status: 400, content: 'status is required' };
+        }
+
+        if (!username) {
+            return { status: 400, content: 'username is required' };
+        }
+
+        const user = await read.getUserReader().getByUsername(username) as IUser;
+
+        if (!user) {
+            return { status: 404, content: 'User not found' };
+        }
+
+        await modify.getUpdater().getUserUpdater().updateStatus(user, statusText, status);
+
+        return this.success(JSON.stringify({ status, statusText }));
+    }
+}
+```
+
+**endpoints/UpdateStatusTextEndpoint.ts**
+```typescript
+import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+
+export class UpdateStatusTextEndpoint extends ApiEndpoint {
+    public path = 'update-status-text';
+
+    public async post(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse> {
+        const { statusText, username } = request.content || {};
+
+        if (typeof statusText !== 'string') {
+            return { status: 400, content: 'statusText is required' };
+        }
+
+        if (!username) {
+            return { status: 400, content: 'username is required' };
+        }
+
+        const user = await read.getUserReader().getByUsername(username) as IUser;
+
+        if (!user) {
+            return { status: 404, content: 'User not found' };
+        }
+
+        await modify.getUpdater().getUserUpdater().updateStatusText(user, statusText);
+
+        return this.success(JSON.stringify({ statusText }));
+    }
+}
+```
+
+</details>
+
+#### Message Reaction Test
+
+File name: `message-updater-test_0.0.1.zip`
+
+An app used to test the message reaction updates. Provides a `/msg-update` slashcommand that takes an action of `'add' | 'remove'` and a message id, then adds or removes a reaction in the target message accordingly using the App's bot user.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+export class MessageUpdaterTestApp extends App {
+    protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+        await configuration.slashCommands.provideSlashCommand(new class UpdateCommand implements ISlashCommand {
+            command = 'msg-update';
+            i18nDescription = 'msg-update';
+            i18nParamsExample = 'msg-update';
+            providesPreview = false;
+
+            constructor(private readonly app: App) { }
+
+            public async executor(context: SlashCommandContext, read: IRead, modify: IModify, _http: IHttp, _persis: IPersistence) {
+                const [action, msgId] = context.getArguments() as ['add' | 'remove', string];
+
+                const user = await read.getUserReader().getAppUser();
+
+                if (!user) {
+                    this.app.getLogger().error(`Couldn't find app user`);
+                    return;
+                }
+
+                if (action === 'add') {
+                    await modify.getUpdater().getMessageUpdater().addReaction(msgId, user.id, ':+1:');
+                    this.app.getLogger().debug(`Added reaction 👍 to message ${msgId}`);
+                } else {
+                    await modify.getUpdater().getMessageUpdater().removeReaction(msgId, user.id, ':+1:');
+                    this.app.getLogger().debug(`Removed reaction 👍 from message ${msgId}`);
+                }
+            }
+        }(this));
+    }
+}
+```
 </details>

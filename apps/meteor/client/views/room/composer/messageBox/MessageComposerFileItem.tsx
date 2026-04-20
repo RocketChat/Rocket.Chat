@@ -9,24 +9,26 @@ import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
+import { useChat } from '../../contexts/ChatContext';
 import FileUploadModal from '../../modals/FileUploadModal';
 
 type MessageComposerFileItemProps = {
 	upload: Upload;
 	onRemove: (id: string) => void;
-	onEdit: (id: Upload['id'], fileName: string) => void;
+	onEdit: (id: Upload['id'], fileName: string, description?: string) => void;
 	onCancel: (id: Upload['id']) => void;
 	disabled: boolean;
 };
 
 const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled, ...props }: MessageComposerFileItemProps) => {
 	const { t } = useTranslation();
+	const chat = useChat();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
 
 	const fileSize = formatBytes(upload.file.size, 2);
 	const fileExtension = getMimeType(upload.file.type, upload.file.name);
-	const isLoading = upload.percentage !== 100 && !upload.error;
+	const isLoading = !upload.url && !upload.error;
 
 	const handleOpenFilePreview = () => {
 		if (isLoading || upload.error) {
@@ -35,11 +37,13 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 
 		setModal(
 			<FileUploadModal
-				onSubmit={(name) => {
-					onEdit(upload.id, name);
+				onSubmit={(name, description) => {
+					onEdit(upload.id, name, description);
 					setModal(null);
+					chat?.composer?.focus();
 				}}
 				fileName={upload.file.name}
+				fileDescription={upload.description}
 				file={upload.file}
 				onClose={() => setModal(null)}
 			/>,

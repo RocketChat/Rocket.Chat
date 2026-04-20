@@ -89,6 +89,7 @@ const getStaticUser = (_id: string, overrides: Partial<IUser> = {}): IUser => {
 type StaticUserUpdate = Partial<IUser> & { _id: string };
 
 const service = new AbacService();
+service.setPdpStrategy('local');
 
 let db: Db;
 let sharedMongo: SharedMongoConnection;

@@ -8,6 +8,7 @@ import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
@@ -15,6 +16,7 @@ export const createComposerAPI = (
 	storageID: string,
 	quoteChainLimit: number,
 	composerRef: RefObject<HTMLElement>,
+	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
@@ -222,7 +224,7 @@ export const createComposerAPI = (
 		stopFormatterTracker.stop();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 		const initText = input.value.slice(0, selectionStart);
 		const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -252,7 +254,11 @@ export const createComposerAPI = (
 				triggerEvent(input, 'change');
 
 				focus();
-				return;
+				return {
+					selectionStart: input.selectionStart,
+					selectionEnd: input.selectionEnd,
+					value: input.value,
+				};
 			}
 		}
 
@@ -266,6 +272,12 @@ export const createComposerAPI = (
 		triggerEvent(input, 'change');
 
 		focus();
+
+		return {
+			selectionStart: input.selectionStart,
+			selectionEnd: input.selectionEnd,
+			value: input.value,
+		};
 	};
 
 	const insertNewLine = (): void => insertText('\n');
@@ -351,5 +363,6 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

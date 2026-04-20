@@ -6,6 +6,7 @@ export type NonEncryptedUpload = {
 	readonly url?: string;
 	readonly percentage: number;
 	readonly error?: Error;
+	readonly description?: string;
 };
 
 export type EncryptedUpload = NonEncryptedUpload & {

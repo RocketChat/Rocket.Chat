@@ -52,7 +52,8 @@ export type LivechatInstructions = {
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'] | 'voip';
 
-export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> {
+export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'> {
+	avatarETag: string | null;
 	ts: Date;
 }
 
