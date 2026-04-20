@@ -203,14 +203,11 @@ export default class RocketAdapter {
 
 		if (rocketMessage.file.name) {
 			let fileName = rocketMessage.file.name;
-			let text = rocketMessage.msg;
+			const text = rocketMessage.msg;
 
 			const attachment = this.getMessageAttachment(rocketMessage);
 			if (attachment) {
 				fileName = Meteor.absoluteUrl(attachment.title_link);
-				if (!text) {
-					text = attachment.description;
-				}
 			}
 
 			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), { ...rocketMessage, msg: `${text} ${fileName}` });

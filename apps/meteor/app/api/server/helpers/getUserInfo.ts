@@ -1,4 +1,4 @@
-import { isOAuthUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IMeApiUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { settings } from '../../../settings/server';
@@ -84,15 +84,7 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	return calendarSettings;
 };
 
-export async function getUserInfo(
-	me: IUser,
-	pullPreferences = true,
-): Promise<
-	IUser & {
-		email?: string;
-		avatarUrl: string;
-	}
-> {
+export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IMeApiUser> {
 	const verifiedEmail = isVerifiedEmail(me);
 
 	const userPreferences = me.settings?.preferences ?? {};
@@ -110,8 +102,8 @@ export async function getUserInfo(
 		isOAuthUser: isOAuthUser(me),
 		...(me.services && {
 			services: {
-				...(me.services.github && { github: me.services.github }),
-				...(me.services.gitlab && { gitlab: me.services.gitlab }),
+				...(me.services.github && { github: me.services.github as Record<string, unknown> }),
+				...(me.services.gitlab && { gitlab: me.services.gitlab as Record<string, unknown> }),
 				...(me.services.email2fa?.enabled && { email2fa: { enabled: me.services.email2fa.enabled } }),
 				...(me.services.totp?.enabled && { totp: { enabled: me.services.totp.enabled } }),
 				password: {
@@ -120,5 +112,6 @@ export async function getUserInfo(
 				},
 			},
 		}),
-	};
+		// Cast needed: spread of full IUser produces a superset; runtime response schema validates the actual shape
+	} as IMeApiUser;
 }

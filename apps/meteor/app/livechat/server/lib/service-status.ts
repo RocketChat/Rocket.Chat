@@ -8,13 +8,21 @@ import { settings } from '../../../settings/server';
 
 export async function getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 	if (agent?.agentId) {
-		return Users.findOnlineAgents(agent.agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+		return Users.findOnlineAgents(
+			agent.agentId,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+		);
 	}
 
 	if (department) {
 		return getOnlineForDepartment(department);
 	}
-	return Users.findOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	return Users.findOnlineAgents(
+		undefined,
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+	);
 }
 
 export async function online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
@@ -43,7 +51,11 @@ export async function online(department?: string, skipNoAgentSetting = false, sk
 
 export async function checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
 	if (agent?.agentId) {
-		return Users.checkOnlineAgents(agent.agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+		return Users.checkOnlineAgents(
+			agent.agentId,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+		);
 	}
 
 	if (department) {
@@ -62,7 +74,11 @@ export async function checkOnlineAgents(department?: string, agent?: { agentId: 
 		return checkOnlineAgents(dep?.fallbackForwardDepartment);
 	}
 
-	return Users.checkOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	return Users.checkOnlineAgents(
+		undefined,
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+	);
 }
 
 async function countBotAgents(department?: string) {

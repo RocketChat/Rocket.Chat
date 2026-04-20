@@ -70,17 +70,6 @@ export const AutoTranslate = {
 					}
 				}
 
-				if (attachment.description && attachment.translations && attachment.translations[language]) {
-					attachment.translations.original = attachment.description;
-
-					if (autoTranslateShowInverse) {
-						attachment.description = attachment.translations.original;
-					} else {
-						attachment.description = attachment.translations[language];
-					}
-				}
-
-				// @ts-expect-error - not sure what to do with this
 				if (attachment.attachments && attachment.attachments.length > 0) {
 					// @ts-expect-error - not sure what to do with this
 					attachment.attachments = this.translateAttachments(attachment.attachments, language);

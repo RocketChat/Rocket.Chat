@@ -1,3 +1,4 @@
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
@@ -15,9 +16,27 @@ import { getSubscriptions } from '../../../../server/publications/subscription';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
 import { API } from '../api';
 
-const successResponseSchema = ajv.compile({
+const subscriptionsGetResponseSchema = ajv.compile<{
+	update: ISubscription[];
+	remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
+}>({
 	type: 'object',
-	properties: { success: { type: 'boolean', enum: [true] } },
+	properties: {
+		update: { type: 'array', items: { $ref: '#/components/schemas/ISubscription' } },
+		remove: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					_deletedAt: { type: 'string', format: 'date-time' },
+				},
+				required: ['_id', '_deletedAt'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
 	required: ['success'],
 	additionalProperties: true,
 });
@@ -28,16 +47,7 @@ API.v1.get(
 		authRequired: true,
 		query: isSubscriptionsGetProps,
 		response: {
-			200: ajv.compile({
-				type: 'object',
-				properties: {
-					update: { type: 'array', items: { type: 'object' } },
-					remove: { type: 'array', items: { type: 'object' } },
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-				additionalProperties: true,
-			}),
+			200: subscriptionsGetResponseSchema,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
@@ -46,11 +56,10 @@ API.v1.get(
 
 		let updatedSinceDate: Date | undefined;
 		if (updatedSince) {
-			const updatedSinceStr = String(updatedSince);
-			if (isNaN(Date.parse(updatedSinceStr))) {
+			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 			}
-			updatedSinceDate = new Date(updatedSinceStr);
+			updatedSinceDate = new Date(updatedSince);
 		}
 
 		const result = await getSubscriptions(this.userId, updatedSinceDate);
@@ -66,21 +75,23 @@ API.v1.get(
 	},
 );
 
+const subscriptionsGetOneResponseSchema = ajv.compile<{ subscription: ISubscription | null }>({
+	type: 'object',
+	properties: {
+		subscription: { oneOf: [{ $ref: '#/components/schemas/ISubscription' }, { type: 'null' }] },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['subscription', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.get(
 	'subscriptions.getOne',
 	{
 		authRequired: true,
 		query: isSubscriptionsGetOneProps,
 		response: {
-			200: ajv.compile({
-				type: 'object',
-				properties: {
-					subscription: { type: 'object', nullable: true },
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['subscription', 'success'],
-				additionalProperties: false,
-			}),
+			200: subscriptionsGetOneResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
@@ -107,13 +118,22 @@ API.v1.get(
 		- rid: The rid of the room to be marked as read.
 		- roomId: Alternative for rid.
  */
+const voidSuccessResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
 API.v1.post(
 	'subscriptions.read',
 	{
 		authRequired: true,
 		body: isSubscriptionsReadProps,
 		response: {
-			200: successResponseSchema,
+			200: voidSuccessResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
@@ -129,7 +149,7 @@ API.v1.post(
 
 		await readMessages(room, this.userId, readThreads);
 
-		return API.v1.success({});
+		return API.v1.success();
 	},
 );
 
@@ -139,7 +159,7 @@ API.v1.post(
 		authRequired: true,
 		body: isSubscriptionsUnreadProps,
 		response: {
-			200: successResponseSchema,
+			200: voidSuccessResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
@@ -151,6 +171,6 @@ API.v1.post(
 			'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined,
 		);
 
-		return API.v1.success({});
+		return API.v1.success();
 	},
 );

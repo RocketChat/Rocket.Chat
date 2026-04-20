@@ -4,7 +4,8 @@ on:
   release:
     types: [published]
   pull_request:
-    branches: '**'
+    branches:
+      - '**'
     paths-ignore:
       - '**.md'
   merge_group:
@@ -33,6 +34,8 @@ jobs:
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       source-hash: ${{ steps.source.outputs.hash }}
+      packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
+      meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
@@ -45,9 +48,9 @@ jobs:
           echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
           echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
           echo "github.event_name: ${{ github.event_name }}"
-          cat $GITHUB_EVENT_PATH
+          cat "$GITHUB_EVENT_PATH"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         # with:
         #   sparse-checkout: |
         #     package.json
@@ -72,24 +75,32 @@ jobs:
           # Uncomment the following line to include the run ID in the hash and disable caching between runs
           # SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-${{ github.run_id }}
 
-          echo hash=${SOURCE_HASH}
+          echo "hash=${SOURCE_HASH}"
 
-          echo hash=${SOURCE_HASH} >> $GITHUB_OUTPUT
+          echo "hash=${SOURCE_HASH}" >> "$GITHUB_OUTPUT"
 
       - id: var
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> "$GITHUB_OUTPUT"
 
           NODE_VERSION=$(node -p "require('./package.json').engines.node")
           echo "NODE_VERSION: ${NODE_VERSION}"
-          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "node-version=${NODE_VERSION}" >> "$GITHUB_OUTPUT"
 
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
-          echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
+          echo "deno-version=${DENO_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - id: ci-cache-keys
+        run: |
+          set -euo pipefail
+          PACKAGES_HASH=$(cat yarn.lock .yarnrc.yml package.json turbo.json | sha256sum | awk '{print $1}')
+          echo "packages-build-cache-key=${PACKAGES_HASH}" >> "$GITHUB_OUTPUT"
+          METEOR_HASH=$(git archive HEAD apps/meteor | sha256sum | awk '{print $1}')
+          echo "meteor-rc-cache-key=${METEOR_HASH}" >> "$GITHUB_OUTPUT"
 
       - id: by-tag
         run: |
@@ -99,7 +110,7 @@ jobs:
             RELEASE="release-candidate"
           fi
           echo "RELEASE: ${RELEASE}"
-          echo "release=${RELEASE}" >> $GITHUB_OUTPUT
+          echo "release=${RELEASE}" >> "$GITHUB_OUTPUT"
 
       - id: latest
         run: |
@@ -108,7 +119,7 @@ jobs:
               awk -F/ '$NF !~ /rc|beta/ { print $NF; exit }'
           )"
           echo "LATEST_RELEASE: ${LATEST_RELEASE}"
-          echo "latest-release=${LATEST_RELEASE}" >> $GITHUB_OUTPUT
+          echo "latest-release=${LATEST_RELEASE}" >> "$GITHUB_OUTPUT"
 
       - id: docker
         run: |
@@ -120,14 +131,14 @@ jobs:
           # Docker tags cannot contain '/'; merge queue refs do (e.g. gh-readonly-queue/develop/pr-123-sha)
           DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
-          echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
+          echo "gh-docker-tag=${DOCKER_TAG}" >> "$GITHUB_OUTPUT"
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
     runs-on: ubuntu-24.04-arm
     needs: [release-versions]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           sparse-checkout: |
             package.json
@@ -170,26 +181,32 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: packages-cache-build
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
           key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
 
-      - name: Debug cache-hit
-        run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
+      - name: Cache observability (packages-build)
+        run: |
+          {
+            echo "### 📦 packages-build cache"
+            echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`"
+            echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Setup NodeJS
+        id: setup-node-packages
         uses: ./.github/actions/setup-node
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
@@ -200,8 +217,17 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           HARDENED_MODE: '1'
 
+      - name: Cache observability (node_modules)
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
+        run: |
+          {
+            echo "### 🟢 node_modules cache"
+            echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`"
+            echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Cache vite
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
@@ -209,7 +235,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
@@ -219,11 +245,10 @@ jobs:
       - name: Archive packages build output
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
-          tar -czf /tmp/RocketChat-packages-build.tar.gz \
-            $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
+          git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*' | tar -czf /tmp/RocketChat-packages-build.tar.gz -T -
 
       - name: Upload packages build artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
@@ -231,7 +256,7 @@ jobs:
 
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: turbo-build
           path: .turbo/cache
@@ -253,13 +278,13 @@ jobs:
           - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          source-hash: ${{ needs.release-versions.outputs.source-hash }}
+          source-hash: ${{ needs.release-versions.outputs.packages-build-cache-key }}-${{ needs.release-versions.outputs.meteor-rc-cache-key }}
           type: ${{ matrix.type }}
 
   build-gh-docker:
@@ -294,7 +319,7 @@ jobs:
             type: coverage
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/restore-packages
 
@@ -369,7 +394,7 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
           sparse-checkout: |
@@ -379,7 +404,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@v3
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -387,7 +412,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: manifests-*
           path: /tmp/manifests
@@ -405,12 +430,13 @@ jobs:
             echo "Creating manifest for $service"
 
             # Extract digests from manifest.json files
+            # shellcheck disable=SC2016
             mapfile -t refs < <(
               find "$service_dir" -type f -name 'manifest.json' -print0 \
                 | xargs -0 -I{} jq -r '.Descriptor.digest as $digest | .Ref | split("@")[0] + "@" + $digest' {}
             )
 
-            echo "Digest for ${service}: ${refs[@]}"
+            echo "Digest for ${service}: ${refs[*]}"
 
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
             if [ "$service" == "rocketchat-cov" ]; then
@@ -419,14 +445,14 @@ jobs:
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
 
-            echo $IMAGE
+            echo "$IMAGE"
 
             docker buildx imagetools create \
               --debug \
               --annotation "manifest-descriptor:org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               --tag "${IMAGE}" \
               --tag "${IMAGE}-gha-run-${{ github.run_id }}" \
-              ${refs[@]}
+              "${refs[@]}"
           done
 
   track-image-sizes:
@@ -439,7 +465,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Track Docker image sizes
         uses: ./.github/actions/docker-image-size-tracker
@@ -500,6 +526,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
@@ -516,6 +543,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-ui:
     name: 🔨 Test UI (CE)
@@ -537,6 +565,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -561,6 +590,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
@@ -581,6 +611,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
@@ -604,6 +635,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -616,7 +648,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -626,10 +658,10 @@ jobs:
           cache-modules: true
           install: true
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
 
       - name: Restore turbo build
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         continue-on-error: true
         with:
           name: turbo-build
@@ -640,7 +672,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@v3
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -653,7 +685,7 @@ jobs:
 
       # Download Docker images from build artifacts
       - name: Download Docker images
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
           pattern: 'docker-image-rocketchat-amd64-coverage'
@@ -711,15 +743,15 @@ jobs:
     needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Use Node.js
-        uses: actions/setup-node@v6.2.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
       - name: Restore coverage folder
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: coverage-*
           path: /tmp/coverage
@@ -733,14 +765,14 @@ jobs:
           npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: reports-coverage
           path: /tmp/coverage_report
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
@@ -749,7 +781,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .
@@ -810,7 +842,7 @@ jobs:
     needs: [build-gh-docker-publish, release-versions]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           sparse-checkout: |
             package.json
@@ -818,7 +850,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Restore build
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: build-production
           path: /tmp/build
@@ -832,30 +864,28 @@ jobs:
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
-          if [[ '${{ github.event_name }}' = 'release' ]]; then
-            GIT_TAG="${GITHUB_REF#*tags/}"
+          if [[ "${{ github.event_name }}" = 'release' ]]; then
             ARTIFACT_NAME="${REPO_VERSION}"
           else
-            GIT_TAG=""
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
           fi;
 
           ROCKET_DEPLOY_DIR="/tmp/deploy"
-          FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
+          FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz"
 
           aws s3 cp s3://rocketchat/sign.key.gpg .github/sign.key.gpg
 
-          mkdir -p $ROCKET_DEPLOY_DIR
+          mkdir -p "$ROCKET_DEPLOY_DIR"
 
           cp .github/sign.key.gpg /tmp
-          gpg --yes --batch --passphrase=$GPG_PASSWORD /tmp/sign.key.gpg
+          gpg --yes --batch --passphrase="$GPG_PASSWORD" /tmp/sign.key.gpg
           gpg --allow-secret-key-import --import /tmp/sign.key
           rm /tmp/sign.key
 
           ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
           gpg --armor --detach-sign "$FILENAME"
 
-          aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+          aws s3 cp "$ROCKET_DEPLOY_DIR/" s3://download.rocket.chat/build/ --recursive
 
   docker-image-publish:
     name: 🚀 Publish Docker Images (DockerHub)
@@ -867,7 +897,7 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           sparse-checkout: |
             docker-compose-ci.yml
@@ -875,13 +905,13 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -889,7 +919,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: manifests-*
           path: /tmp/manifests
@@ -918,8 +948,8 @@ jobs:
 
             echo "RELEASE: $RELEASE"
 
-            if [[ $RELEASE == 'latest' ]]; then
-              if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
+            if [[ "$RELEASE" == 'latest' ]]; then
+              if [[ '${{ needs.release-versions.outputs.latest-release }}' == "$GITHUB_REF_NAME" ]]; then
                 TAGS+=("$RELEASE")
               fi
             else
@@ -981,7 +1011,7 @@ jobs:
       - docker-image-publish
       - release-versions
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           sparse-checkout: |
             package.json
@@ -1018,7 +1048,7 @@ jobs:
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
-          curl --fail https://releases.rocket.chat/$RC_VERSION/info
+          curl --fail "https://releases.rocket.chat/$RC_VERSION/info"
 
   docs-update:
     name: Update Version Durability

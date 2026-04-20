@@ -134,6 +134,7 @@ export class MockedAppRootBuilder {
 		defineRoutes: () => () => undefined,
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
+		getLocationHash: () => '',
 		getRouteName: () => undefined,
 		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),
@@ -471,6 +472,17 @@ export class MockedAppRootBuilder {
 	withRoom(room: IRoom): this {
 		this.room = room;
 
+		return this;
+	}
+
+	withRouter(overrides: Partial<ContextType<typeof RouterContext>>): this {
+		this.router = { ...this.router, ...overrides };
+		return this;
+	}
+
+	withRouteParameter(name: string, value: string): this {
+		const innerFn = this.router.getRouteParameters;
+		this.router.getRouteParameters = () => ({ ...innerFn(), [name]: value });
 		return this;
 	}
 

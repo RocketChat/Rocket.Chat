@@ -53,16 +53,27 @@ test.describe('OC - Tags Visibility', () => {
 		});
 	});
 
-	test.beforeAll('Create conversations', async ({ api }) => {
-		conversations = await Promise.all([
-			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
-			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
-		]);
-	});
-
 	test.beforeEach(async ({ page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/');
+		await poOmnichannel.waitForHome();
+	});
+
+	test.beforeEach(async ({ api }) => {
+		if (conversations.length === 0) {
+			conversations = await Promise.all([
+				createConversation(api, {
+					visitorName: visitorA.name,
+					agentId: 'user1',
+					departmentId: departmentA.data._id,
+				}),
+				createConversation(api, {
+					visitorName: visitorB.name,
+					agentId: 'user1',
+					departmentId: departmentB.data._id,
+				}),
+			]);
+		}
 	});
 
 	test.afterAll(async ({ api }) => {

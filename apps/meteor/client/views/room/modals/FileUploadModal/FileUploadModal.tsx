@@ -1,12 +1,6 @@
 import {
 	Modal,
 	Box,
-	Field,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	TextInput,
 	Button,
 	ModalHeader,
 	ModalTitle,
@@ -15,10 +9,20 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	TextInput,
+	TextAreaInput,
+	Field,
+	FieldError,
+	FieldRow,
+	FieldLabel,
+	FieldGroup,
+	FieldDescription,
+} from '@rocket.chat/fuselage-forms';
 import type { ReactElement, ComponentProps } from 'react';
 import { memo, useCallback, useId } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
@@ -26,21 +30,22 @@ import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes'
 
 type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string) => void;
+	onSubmit: (name: string, description?: string) => void;
 	file: File;
 	fileName: string;
+	fileDescription?: string;
 };
 
-const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalProps): ReactElement => {
-	const t = useTranslation();
+const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubmit }: FileUploadModalProps): ReactElement => {
+	const { t } = useTranslation();
 	const fileUploadFormId = useId();
-	const fileNameField = useId();
+	const isImage = file.type.startsWith('image/');
 
 	const {
-		register,
+		control,
 		handleSubmit,
 		formState: { errors, isDirty, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName } });
+	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
 
 	const validateFileName = useCallback(
 		(fieldValue: string) => {
@@ -58,40 +63,50 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name }) => (!isDirty ? onClose() : onSubmit(name)))} {...props} />
+				<Box
+					is='form'
+					id={fileUploadFormId}
+					onSubmit={handleSubmit(({ name, description }) =>
+						!isDirty ? onClose() : onSubmit(name.trim(), description?.trim() || undefined),
+					)}
+					{...props}
+				/>
 			)}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
 				<ModalHeader>
 					<ModalTitle id={`${fileUploadFormId}-title`}>{t('FileUpload')}</ModalTitle>
-					<ModalClose onClick={onClose} />
+					<ModalClose tabIndex={-1} onClick={onClose} />
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} />
+						<FilePreview file={file} description={fileDescription} />
 					</Box>
 					<FieldGroup>
 						<Field>
-							<FieldLabel htmlFor={fileNameField}>{t('Upload_file_name')}</FieldLabel>
+							<FieldLabel>{t('Upload_file_name')}</FieldLabel>
 							<FieldRow>
-								<TextInput
-									id={fileNameField}
-									{...register('name', {
+								<Controller
+									name='name'
+									control={control}
+									rules={{
 										required: t('error-the-field-is-required', { field: t('Upload_file_name') }),
 										validate: validateFileName,
-									})}
-									error={errors.name?.message}
-									aria-invalid={errors.name ? 'true' : 'false'}
-									aria-describedby={`${fileNameField}-error`}
-									aria-required='true'
+									}}
+									render={({ field }) => <TextInput {...field} error={errors.name?.message} aria-required='true' />}
 								/>
 							</FieldRow>
-							{errors.name && (
-								<FieldError role='alert' id={`${fileNameField}-error`}>
-									{errors.name.message}
-								</FieldError>
-							)}
+							{errors.name && <FieldError>{errors.name.message}</FieldError>}
 						</Field>
+						{isImage && (
+							<Field>
+								<FieldLabel>{t('Alternative_text')}</FieldLabel>
+								<FieldDescription>{t('Alt_text_description')}</FieldDescription>
+								<FieldRow>
+									<Controller name='description' control={control} render={({ field }) => <TextAreaInput {...field} />} />
+								</FieldRow>
+							</Field>
+						)}
 					</FieldGroup>
 				</ModalContent>
 				<ModalFooter>
@@ -99,7 +114,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' loading={isSubmitting}>
+						<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
 							{t('Update')}
 						</Button>
 					</ModalFooterControllers>
