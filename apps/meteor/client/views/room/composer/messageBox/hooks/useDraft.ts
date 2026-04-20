@@ -5,7 +5,7 @@ import { useCallback, useRef } from 'react';
 export const useDraft = (rid: string, serverDraft?: string, tmid?: string) => {
 	const storageKey = `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
 	const [localDraft, setLocalDraft] = useLocalStorage<string>(storageKey, '');
-	const saveDraft = useEndpoint('POST', '/v1/subscriptions.saveDraft');
+	const saveDraft = useEndpoint('POST', '/v1/rooms.saveDraft');
 	const initialValueRef = useRef(serverDraft || localDraft);
 	const draftRef = useRef<string | null>(null);
 
