@@ -34,7 +34,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		navbar = new Navbar(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
 
-		await resetOwnE2EKey(ADMIN_CREDENTIALS);
+		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 		await page.goto('/home');
 		await loginPage.waitForIt();

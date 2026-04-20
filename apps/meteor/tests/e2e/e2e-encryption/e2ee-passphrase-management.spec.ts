@@ -43,7 +43,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		test.beforeEach(async ({ page }) => {
 			const loginPage = new LoginPage(page);
 
-			await resetOwnE2EKey(ADMIN_CREDENTIALS);
+			await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 			await page.goto('/home');
 			await loginPage.waitForIt();
@@ -130,7 +130,6 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			// Set a new password
 			await accountSecurityPage.goto();
 			await accountSecurityPage.setE2EEPassword(newPassword);
-			await accountSecurityPage.close();
 
 			// Log out
 			await navbar.logout();
