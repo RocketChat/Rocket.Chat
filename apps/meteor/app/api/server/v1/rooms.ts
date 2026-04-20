@@ -64,7 +64,7 @@ import { createDiscussion } from '../../../discussion/server/methods/createDiscu
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
-import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
 import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
@@ -452,14 +452,12 @@ const roomsSaveDraftEndpoint = API.v1.post(
 			return API.v1.failure('error-message-size-exceeded');
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId);
+		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
 		}
 
-		await Subscriptions.updateDraftById(subscription._id, draft || undefined);
-
-		void notifyOnSubscriptionChangedById(subscription._id);
+		void notifyOnSubscriptionChanged(subscription);
 
 		return API.v1.success();
 	},
