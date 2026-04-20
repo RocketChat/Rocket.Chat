@@ -3184,7 +3184,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('marks everyone compliant when attributes payload is empty (no PDP call needed)', async () => {
-			// Intentionally do NOT seed any GetDecisionBulk response — empty attrs must not trigger a PDP call.
 			const res = await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
 				.set(credentials)
@@ -3253,7 +3252,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('reports IdP failure when token endpoint errors', async () => {
 			await seedDefaultMocks();
-			// Override token endpoint with a 500
 			await mockServerSet(
 				'POST',
 				'/auth/realms/mock/protocol/openid-connect/token',
@@ -3331,12 +3329,33 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			await request.get('/api/v1/groups.history').set(userCreds).query({ roomId: room._id }).expect(200);
 
-			// With a warm cache, a subsequent request succeeds even if the PDP no longer returns PERMIT decisions.
 			await mockServerReset();
 			await seedDefaultMocks();
 			await seedGetDecisions('DECISION_DENY');
 
 			await request.get('/api/v1/groups.history').set(userCreds).query({ roomId: room._id }).expect(200);
+		});
+
+		it('dry-run always consults the PDP, even when the subscription cache is warm', async () => {
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisions('DECISION_PERMIT');
+			await request.get('/api/v1/groups.history').set(userCreds).query({ roomId: room._id }).expect(200);
+
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedBulkDecisionByEntity([], 'DECISION_DENY');
+
+			const res = await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
+				.set(credentials)
+				.send({ attributes: { [attrKey]: ['alpha'] } })
+				.expect(200);
+
+			const byId: Record<string, boolean> = Object.fromEntries(
+				res.body.members.map((m: { _id: string; compliant: boolean }) => [m._id, m.compliant]),
+			);
+			expect(byId[user._id]).to.be.false;
 		});
 	});
 });
