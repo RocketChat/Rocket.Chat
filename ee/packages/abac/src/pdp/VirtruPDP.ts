@@ -476,9 +476,10 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 							rolePriority: {
 								$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
 							},
+							_sortName: { $ifNull: ['$name', '$username'] },
 						},
 					},
-					{ $sort: { rolePriority: 1, username: 1 } },
+					{ $sort: { _sortName: 1 } },
 					{
 						$project: {
 							_id: 1,

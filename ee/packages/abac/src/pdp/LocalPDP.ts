@@ -144,9 +144,10 @@ export class LocalPDP implements IPolicyDecisionPoint {
 								$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
 							},
 							compliant: complianceExpr,
+							_sortName: { $ifNull: ['$name', '$username'] },
 						},
 					},
-					{ $sort: { compliant: 1, rolePriority: 1, username: 1 } },
+					{ $sort: { compliant: 1, _sortName: 1 } },
 					{
 						$project: {
 							_id: 1,

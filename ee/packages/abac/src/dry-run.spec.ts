@@ -16,6 +16,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 type UserSeed = {
 	_id: string;
 	username?: string;
+	name?: string;
 	abacAttributes?: IAbacAttributeDefinition[];
 	active?: boolean;
 	rid?: string;
@@ -55,6 +56,7 @@ describe('AbacService.dryRunRoomAttributes (LocalPDP)', () => {
 				createdAt: new Date(),
 				_updatedAt: new Date(),
 				__rooms: u.rid ? [u.rid] : [],
+				...(u.name !== undefined && { name: u.name }),
 				...(u.abacAttributes && { abacAttributes: u.abacAttributes }),
 				...(u.rolePriority !== undefined && u.rid && { roomRolePriorities: { [u.rid]: u.rolePriority } }),
 			})) as IUser[],
@@ -147,20 +149,33 @@ describe('AbacService.dryRunRoomAttributes (LocalPDP)', () => {
 	});
 
 	describe('sorting', () => {
-		it('orders non-compliant first, then by rolePriority asc, then username asc', async () => {
+		it('groups by compliance (non-compliant first) and sorts by name within each group', async () => {
 			const rid = await seedRoom();
 			await addDef('dept', ['eng']);
 			await seedUsers([
-				{ _id: 'dr_c_owner', username: 'alpha', rid, rolePriority: 0, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
-				{ _id: 'dr_c_reg_b', username: 'bravo', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
-				{ _id: 'dr_c_reg_c', username: 'charlie', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
-				{ _id: 'dr_nc_owner', username: 'zulu', rid, rolePriority: 0, abacAttributes: [{ key: 'dept', values: ['sales'] }] },
-				{ _id: 'dr_nc_reg', username: 'yankee', rid, abacAttributes: [{ key: 'dept', values: ['sales'] }] },
+				{ _id: 'dr_c_alice', username: 'u1', name: 'Alice', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'dr_c_charlie', username: 'u3', name: 'Charlie', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'dr_c_bob', username: 'u2', name: 'Bob', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'dr_nc_zoe', username: 'u5', name: 'Zoe', rid, abacAttributes: [{ key: 'dept', values: ['sales'] }] },
+				{ _id: 'dr_nc_xavier', username: 'u4', name: 'Xavier', rid, abacAttributes: [{ key: 'dept', values: ['sales'] }] },
 			]);
 
 			const { members } = await service.dryRunRoomAttributes(rid, { dept: ['eng'] }, actor);
 
-			expect(members.map((m) => m._id)).toEqual(['dr_nc_owner', 'dr_nc_reg', 'dr_c_owner', 'dr_c_reg_b', 'dr_c_reg_c']);
+			expect(members.map((m) => m._id)).toEqual(['dr_nc_xavier', 'dr_nc_zoe', 'dr_c_alice', 'dr_c_bob', 'dr_c_charlie']);
+		});
+
+		it('falls back to username when name is missing', async () => {
+			const rid = await seedRoom();
+			await addDef('dept', ['eng']);
+			await seedUsers([
+				{ _id: 'dr_named', username: 'zzz', name: 'aaa', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'dr_nameless', username: 'bbb', rid, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+			]);
+
+			const { members } = await service.dryRunRoomAttributes(rid, { dept: ['eng'] }, actor);
+
+			expect(members.map((m) => m._id)).toEqual(['dr_named', 'dr_nameless']);
 		});
 	});
 
