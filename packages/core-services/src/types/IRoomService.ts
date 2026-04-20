@@ -79,5 +79,8 @@ export interface IRoomService {
 	): Promise<boolean>;
 	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
 	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
-	unbanAndInviteUser(subscription: ISubscription, inviterUser: Pick<IUser, '_id' | 'username' | 'name'>): Promise<void>;
+	unbanAndInviteUser(
+		subscription: ISubscription,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void>;
 }

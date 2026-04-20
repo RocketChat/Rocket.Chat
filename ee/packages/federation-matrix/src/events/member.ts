@@ -1,5 +1,5 @@
 import { Room, Upload } from '@rocket.chat/core-services';
-import { isBannedSubscription } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -194,6 +194,10 @@ async function handleInvite({
 		throw new Error(`Failed to get or create inviter user: ${senderId}`);
 	}
 
+	if (!isRegisterUser(inviterUser)) {
+		throw new Error('Inviter user is not registered');
+	}
+
 	const inviteeUser = await getOrCreateFederatedUser(userId);
 	if (!inviteeUser) {
 		throw new Error(`Failed to get or create invitee user: ${userId}`);
@@ -232,7 +236,7 @@ async function handleInvite({
 		roomFName,
 		roomType,
 		inviterUserId: inviterUser._id,
-		inviterUsername: inviterUser.username as string, // TODO: Remove force cast
+		inviterUsername: inviterUser.username,
 		inviteeUsername: roomType === 'd' ? inviteeUser.username : undefined,
 	});
 
