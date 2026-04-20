@@ -1,5 +1,24 @@
 # @rocket.chat/i18n
 
+## 3.0.0-rc.0
+
+### Minor Changes
+
+- ([#39845](https://github.com/RocketChat/Rocket.Chat/pull/39845)) Adds support for setting up Virtru as a PDP (Policy Decision Point) for ABAC.
+
+- ([#40075](https://github.com/RocketChat/Rocket.Chat/pull/40075)) Adds alternative text field to image uploads to improve accessibility
+
+### Patch Changes
+
+- ([#40169](https://github.com/RocketChat/Rocket.Chat/pull/40169)) Moves keyboard shortcuts from the contextual bar into a modal accessible from the user menu, and adds a hotkey to open it.
+
+- ([#39985](https://github.com/RocketChat/Rocket.Chat/pull/39985)) Adds error feedback when clicking on a mentioned room you don't have access to
+
+- <details><summary>Updated dependencies [95a82f72dd45fc51d54bb1beed295315facf9109]:</summary>
+
+  - @rocket.chat/tools@0.3.0-rc.0
+  </details>
+
 ## 2.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @rocket.chat/media-signaling
 
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#40141](https://github.com/RocketChat/Rocket.Chat/pull/40141)) Adds a new REST endpoint to accept or reject media calls without an active media session
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
 ## 0.2.0
 
 ### Minor Changes
