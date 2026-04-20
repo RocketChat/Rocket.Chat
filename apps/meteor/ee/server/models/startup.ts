@@ -6,6 +6,7 @@ import { License } from '@rocket.chat/license';
 import('./OmnichannelServiceLevelAgreements');
 import('./AuditLog');
 import('./ReadReceipts');
+import('./ReadReceiptsArchive');
 
 void License.onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');

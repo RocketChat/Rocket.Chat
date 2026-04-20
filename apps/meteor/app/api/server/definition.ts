@@ -18,7 +18,7 @@ export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;
-	body: T extends object ? { success: true } & T : T;
+	body: T extends Record<string, unknown> ? { success: true } & T : T;
 };
 
 export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
@@ -318,6 +318,16 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	requestIp?: string;
 	route: string;
 	response: Response;
+	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
+	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+	readonly connection: {
+		token: string;
+		id: string;
+		close: () => void;
+		clientAddress: string;
+		httpHeaders: Record<string, string>;
+	};
+	readonly twoFactorChecked: boolean;
 } & (TOptions['authRequired'] extends true
 	? {
 			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;

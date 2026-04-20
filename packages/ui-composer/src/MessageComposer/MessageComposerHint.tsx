@@ -12,7 +12,7 @@ const MessageComposerHint = ({ icon, children, helperText }: MessageComposerHint
 	<Box pbs={0} pbe={4} display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
 		<Tag icon={icon ? <Icon mie={4} name={icon} size='x12' /> : undefined}>{children}</Tag>
 		{helperText && (
-			<Box fontScale='c1' color='font-hint'>
+			<Box fontScale='c1' color='hint'>
 				{helperText}
 			</Box>
 		)}

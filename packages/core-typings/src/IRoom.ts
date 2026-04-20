@@ -84,6 +84,29 @@ export interface IRoom extends IRocketChatRecord {
 	rolePrioritiesCreated?: number | boolean;
 }
 
+export type IDirectoryChannelResult = Pick<
+	IRoom,
+	| '_id'
+	| 't'
+	| 'usersCount'
+	| 'name'
+	| 'fname'
+	| 'description'
+	| 'topic'
+	| 'lastMessage'
+	| 'ts'
+	| 'archived'
+	| 'default'
+	| 'featured'
+	| 'prid'
+	| 'teamId'
+	| 'teamMain'
+	| 'federated'
+> & {
+	belongsTo?: string;
+	roomsCount?: number;
+};
+
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
 
@@ -362,6 +385,8 @@ export type RoomAdminFieldsType =
 	| 'uids'
 	| 'avatarETag'
 	| 'abacAttributes';
+
+export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
