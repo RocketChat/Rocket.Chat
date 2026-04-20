@@ -478,6 +478,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 							},
 						},
 					},
+					{ $sort: { rolePriority: 1, username: 1 } },
 					{
 						$project: {
 							_id: 1,
@@ -497,56 +498,41 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			)
 			.toArray();
 
-		const resolveCompliance = async (): Promise<boolean[]> => {
-			if (!attributes.length) {
-				return members.map(() => true);
-			}
+		if (!attributes.length) {
+			return members.map(({ emails: _emails, ...rest }) => ({ ...rest, compliant: true }));
+		}
 
-			const fqns = this.buildAttributeFqns(attributes);
-			const requests: Array<IGetDecisionBulkRequest | null> = members.map((m) => {
-				const entityKey = this.getUserEntityKey(m);
-				if (!entityKey) {
-					return null;
-				}
-				return {
-					entityIdentifier: {
-						entityChain: {
-							entities: [this.buildEntityIdentifier(entityKey)],
-						},
-					},
-					action: { name: 'read' },
-					resources: [
-						{
-							ephemeralId: rid,
-							attributeValues: { fqns },
-						},
-					],
-				};
-			});
+		const fqns = this.buildAttributeFqns(attributes);
+		const enriched: IDryRunMember[] = [];
+		const requests: IGetDecisionBulkRequest[] = [];
+		const queriedIdx: number[] = [];
 
-			const responses = await this.getDecisionBulk(requests);
-
-			return members.map((_m, idx) => {
-				if (!requests[idx]) {
-					return false;
-				}
-				const resp = responses[idx];
-				return !!resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			});
-		};
-
-		const compliance = await resolveCompliance();
-
-		const enriched: IDryRunMember[] = members.map((m, idx) => {
+		for (const m of members) {
+			const entityKey = this.getUserEntityKey(m);
 			const { emails: _emails, ...rest } = m;
-			return { ...rest, compliant: compliance[idx] };
-		});
+			if (entityKey) {
+				queriedIdx.push(enriched.length);
+				requests.push({
+					entityIdentifier: { entityChain: { entities: [this.buildEntityIdentifier(entityKey)] } },
+					action: { name: 'read' },
+					resources: [{ ephemeralId: rid, attributeValues: { fqns } }],
+				});
+			}
+			enriched.push({ ...rest, compliant: false });
+		}
 
-		enriched.sort((a, b) => {
-			if (a.compliant !== b.compliant) return a.compliant ? 1 : -1;
-			if (a.rolePriority !== b.rolePriority) return a.rolePriority - b.rolePriority;
-			return (a.username ?? '').localeCompare(b.username ?? '');
-		});
+		if (requests.length) {
+			const responses = await this.getDecisionBulk(requests);
+			for (let k = 0; k < responses.length; k++) {
+				const resp = responses[k];
+				const permitted = !!resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
+				if (permitted) {
+					enriched[queriedIdx[k]].compliant = true;
+				}
+			}
+		}
+
+		enriched.sort((a, b) => (a.compliant === b.compliant ? 0 : a.compliant ? 1 : -1));
 
 		return enriched;
 	}

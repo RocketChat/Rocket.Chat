@@ -338,7 +338,7 @@ const DryRunMember = {
 		nickname: { type: 'string', nullable: true },
 		status: { type: 'string', nullable: true },
 		avatarETag: { type: 'string', nullable: true },
-		_updatedAt: {},
+		_updatedAt: { type: 'string' },
 		federated: { type: 'boolean', nullable: true },
 		rolePriority: { type: 'number' },
 		compliant: { type: 'boolean' },
