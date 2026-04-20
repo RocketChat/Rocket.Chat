@@ -5,7 +5,6 @@ import {
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
-	isSubscriptionsSaveDraftProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
@@ -13,7 +12,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { readMessages } from '../../../../server/lib/readMessages';
 import { getSubscriptions } from '../../../../server/publications/subscription';
-import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
 import { API } from '../api';
 
@@ -154,29 +152,5 @@ API.v1.post(
 		);
 
 		return API.v1.success({});
-	},
-);
-
-API.v1.addRoute(
-	'subscriptions.saveDraft',
-	{
-		authRequired: true,
-		validateParams: isSubscriptionsSaveDraftProps,
-	},
-	{
-		async post() {
-			const { rid, draft } = this.bodyParams;
-
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId);
-			if (!subscription) {
-				throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
-			}
-
-			await Subscriptions.updateDraftById(subscription._id, draft || undefined);
-
-			void notifyOnSubscriptionChangedById(subscription._id);
-
-			return API.v1.success();
-		},
 	},
 );

@@ -106,24 +106,6 @@ const SubscriptionsUnreadSchema = {
 
 export const isSubscriptionsUnreadProps = ajvQuery.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
-type SubscriptionsSaveDraft = { rid: IRoom['_id']; draft: string };
-
-const SubscriptionsSaveDraftSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		draft: {
-			type: 'string',
-		},
-	},
-	required: ['rid', 'draft'],
-	additionalProperties: false,
-};
-
-export const isSubscriptionsSaveDraftProps = ajv.compile<SubscriptionsSaveDraft>(SubscriptionsSaveDraftSchema);
-
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
@@ -144,9 +126,5 @@ export type SubscriptionsEndpoints = {
 
 	'/v1/subscriptions.unread': {
 		POST: (params: SubscriptionsUnread) => void;
-	};
-
-	'/v1/subscriptions.saveDraft': {
-		POST: (params: SubscriptionsSaveDraft) => void;
 	};
 };
