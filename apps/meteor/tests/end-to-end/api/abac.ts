@@ -3182,5 +3182,161 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(usernames).to.include(permitUser.username);
 			expect(usernames).to.include(denyUser.username);
 		});
+
+		it('marks everyone compliant when attributes payload is empty (no PDP call needed)', async () => {
+			// Intentionally do NOT seed any GetDecisionBulk response — empty attrs must not trigger a PDP call.
+			const res = await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
+				.set(credentials)
+				.send({ attributes: {} })
+				.expect(200);
+
+			expect(res.body).to.have.property('total', 3);
+			expect(res.body).to.have.property('compliantCount', 3);
+			expect(res.body).to.have.property('nonCompliantCount', 0);
+			res.body.members.forEach((m: { compliant: boolean }) => expect(m.compliant).to.be.true);
+		});
+
+		it('fails with 400 when PDP is unavailable', async () => {
+			await mockServerReset();
+			await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' });
+
+			await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/dry-run`)
+				.set(credentials)
+				.send({ attributes: { [attrKey]: ['alpha'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.equal('error-pdp-unavailable');
+				});
+		});
+	});
+
+	describe('PDP health endpoint: reports per-stage failures', () => {
+		beforeEach(async () => {
+			await mockServerReset();
+		});
+
+		it('reports healthy when platform, IdP and authorization all succeed', async () => {
+			await seedDefaultMocks();
+			await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { decisionResponses: [] });
+
+			await request
+				.get('/api/v1/abac/pdp/health')
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('available', true);
+					expect(res.body.message).to.equal('ABAC_PDP_Health_OK');
+				});
+		});
+
+		it('reports platform failure when /healthz returns NOT_SERVING', async () => {
+			await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' });
+			await mockServerSet('POST', '/auth/realms/mock/protocol/openid-connect/token', {
+				access_token: 'mock-pdp-token',
+				token_type: 'Bearer',
+				expires_in: 3600,
+			});
+
+			await request
+				.get('/api/v1/abac/pdp/health')
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('available', false);
+					expect(res.body.message).to.equal('ABAC_PDP_Health_Platform_Failed');
+				});
+		});
+
+		it('reports IdP failure when token endpoint errors', async () => {
+			await seedDefaultMocks();
+			// Override token endpoint with a 500
+			await mockServerSet(
+				'POST',
+				'/auth/realms/mock/protocol/openid-connect/token',
+				{ error: 'invalid_client' },
+				500,
+			);
+
+			await request
+				.get('/api/v1/abac/pdp/health')
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('available', false);
+					expect(res.body.message).to.equal('ABAC_PDP_Health_IdP_Failed');
+				});
+		});
+
+		it('reports authorization failure when GetDecisions returns 500', async () => {
+			await seedDefaultMocks();
+			await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { error: 'unavailable' }, 500);
+
+			await request
+				.get('/api/v1/abac/pdp/health')
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('available', false);
+					expect(res.body.message).to.equal('ABAC_PDP_Health_Authorization_Failed');
+				});
+		});
+	});
+
+	describe('Decision caching: repeat reads skip PDP when within TTL', () => {
+		let room: IRoom;
+		let user: IUser;
+		let userCreds: Credentials;
+
+		before(async function () {
+			this.timeout(15000);
+
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', 60);
+
+			user = await createUser();
+			userCreds = await login(user.username, password);
+			room = (await createRoom({ type: 'p', name: `extpdp-cache-${Date.now()}` })).body.group;
+			await request
+				.post('/api/v1/groups.invite')
+				.set(credentials)
+				.send({ roomId: room._id, usernames: [user.username] })
+				.expect(200);
+
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisionBulk([
+				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+			]);
+			await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+				.set(credentials)
+				.send({ confirmed: true, values: ['alpha'] })
+				.expect(200);
+		});
+
+		after(async function () {
+			this.timeout(10000);
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', 0);
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
+		});
+
+		it('second access within TTL does not depend on a fresh PDP decision mock', async () => {
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisions('DECISION_PERMIT');
+
+			await request.get('/api/v1/groups.history').set(userCreds).query({ roomId: room._id }).expect(200);
+
+			// With a warm cache, a subsequent request succeeds even if the PDP no longer returns PERMIT decisions.
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisions('DECISION_DENY');
+
+			await request.get('/api/v1/groups.history').set(userCreds).query({ roomId: room._id }).expect(200);
+		});
 	});
 });
