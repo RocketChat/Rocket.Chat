@@ -163,11 +163,14 @@ test.describe('Messaging', () => {
 	test.describe.serial('Message edition', () => {
 		test('should edit messages', async ({ page }) => {
 			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('msg1');
+			await poHomeChannel.content.sendMessage('msg2');
 
 			await test.step('focus on the second message', async () => {
+				await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 				await page.keyboard.press('ArrowUp');
 
-				expect(await poHomeChannel.composer.inputMessage.inputValue()).toBe('msg2');
+				await expect.poll(() => poHomeChannel.composer.inputMessage.inputValue()).toBe('msg2');
 			});
 
 			await test.step('send edited message', async () => {
@@ -182,17 +185,19 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('stress test on message editions', async () => {
-				const editPromise = page.waitForResponse(
-					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-				);
-
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
+					const editPromise = page.waitForResponse(
+						(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+					);
+
+					await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 					await page.keyboard.press('ArrowUp');
 
 					await poHomeChannel.content.sendMessage(element, false);
+					await editPromise;
+					await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(element);
 				}
 
-				await editPromise;
 				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2 e');
 			});
 		});
