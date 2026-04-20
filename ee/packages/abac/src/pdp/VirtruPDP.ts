@@ -1,5 +1,6 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import pLimit from 'p-limit';
 
@@ -7,6 +8,7 @@ import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../erro
 import { logger } from '../logger';
 import type {
 	Decision,
+	IDryRunMember,
 	IEntityIdentifier,
 	IPolicyDecisionPoint,
 	IGetDecisionRequest,
@@ -454,6 +456,120 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		});
 
 		return nonCompliant;
+	}
+
+	async dryRunRoomAttributes(rid: string, attributes: IAbacAttributeDefinition[]): Promise<IDryRunMember[]> {
+		type MemberRow = IDryRunMember & { emails?: IUser['emails']; rolePriority: number };
+
+		const members = await Users.col
+			.aggregate<MemberRow>(
+				[
+					{
+						$match: {
+							__rooms: rid,
+							active: true,
+							username: { $exists: true },
+						},
+					},
+					{
+						$addFields: {
+							rolePriority: {
+								$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
+							},
+						},
+					},
+					{
+						$lookup: {
+							from: Subscriptions.getCollectionName(),
+							as: 'subscription',
+							let: { userId: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: {
+											$and: [{ $eq: ['$rid', rid] }, { $eq: ['$u._id', '$$userId'] }],
+										},
+									},
+								},
+								{ $project: { _id: 1, roles: 1, status: 1, ts: 1 } },
+							],
+						},
+					},
+					{
+						$unwind: { path: '$subscription', preserveNullAndEmptyArrays: true },
+					},
+					{
+						$project: {
+							_id: 1,
+							name: 1,
+							username: 1,
+							nickname: 1,
+							status: 1,
+							avatarETag: 1,
+							_updatedAt: 1,
+							federated: 1,
+							emails: 1,
+							rolePriority: 1,
+							subscription: 1,
+						},
+					},
+				],
+				{ allowDiskUse: true },
+			)
+			.toArray();
+
+		const resolveCompliance = async (): Promise<boolean[]> => {
+			if (!attributes.length) {
+				return members.map(() => true);
+			}
+
+			const fqns = this.buildAttributeFqns(attributes);
+			const requests: Array<IGetDecisionBulkRequest | null> = members.map((m) => {
+				const entityKey = this.getUserEntityKey(m);
+				if (!entityKey) {
+					return null;
+				}
+				return {
+					entityIdentifier: {
+						entityChain: {
+							entities: [this.buildEntityIdentifier(entityKey)],
+						},
+					},
+					action: { name: 'read' },
+					resources: [
+						{
+							ephemeralId: rid,
+							attributeValues: { fqns },
+						},
+					],
+				};
+			});
+
+			const responses = await this.getDecisionBulk(requests);
+
+			return members.map((_m, idx) => {
+				if (!requests[idx]) {
+					return false;
+				}
+				const resp = responses[idx];
+				return !!resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
+			});
+		};
+
+		const compliance = await resolveCompliance();
+
+		const enriched = members.map((m, idx) => {
+			const { rolePriority, emails: _emails, ...rest } = m;
+			return { ...rest, compliant: compliance[idx], rolePriority };
+		});
+
+		enriched.sort((a, b) => {
+			if (a.compliant !== b.compliant) return a.compliant ? 1 : -1;
+			if (a.rolePriority !== b.rolePriority) return a.rolePriority - b.rolePriority;
+			return (a.username ?? '').localeCompare(b.username ?? '');
+		});
+
+		return enriched.map(({ rolePriority: _rp, ...rest }) => rest);
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {

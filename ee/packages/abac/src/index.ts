@@ -1,5 +1,5 @@
 import { Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
+import type { AbacActor, IAbacDryRunResult, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
@@ -426,6 +426,40 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 		return Rooms.isAbacAttributeInUse(key, attribute.values || []);
+	}
+
+	async dryRunRoomAttributes(rid: string, attributes: Record<string, string[]>, _actor: AbacActor | undefined): Promise<IAbacDryRunResult> {
+		await this.ensurePdpAvailable();
+		const room = await getAbacRoom(rid);
+
+		const hasAttributes = Object.keys(attributes).length > 0;
+		const normalized = hasAttributes ? validateAndNormalizeAttributes(attributes) : [];
+		if (normalized.length) {
+			await ensureAttributeDefinitionsExist(normalized);
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		const members = await this.pdp.dryRunRoomAttributes(room._id, normalized);
+
+		let compliantCount = 0;
+		let nonCompliantCount = 0;
+		for (const m of members) {
+			if (m.compliant) {
+				compliantCount++;
+			} else {
+				nonCompliantCount++;
+			}
+		}
+
+		return {
+			members,
+			compliantCount,
+			nonCompliantCount,
+			total: members.length,
+		};
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {

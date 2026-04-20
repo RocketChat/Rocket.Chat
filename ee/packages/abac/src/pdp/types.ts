@@ -1,6 +1,18 @@
-import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast, ISubscription } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
+
+export type IDryRunMember = Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag' | '_updatedAt' | 'federated'> & {
+	subscription?: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+	compliant: boolean;
+};
+
+export interface IDryRunResult {
+	members: IDryRunMember[];
+	compliantCount: number;
+	nonCompliantCount: number;
+	total: number;
+}
 
 export interface IGetDecisionRequest {
 	actions: Array<{ standard: number }>;
@@ -71,6 +83,8 @@ export interface IPolicyDecisionPoint {
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+
+	dryRunRoomAttributes(rid: string, attributes: IAbacAttributeDefinition[]): Promise<IDryRunMember[]>;
 }
 
 export interface IVirtruPDPConfig {
