@@ -96,6 +96,7 @@ const CreateDiscussion = ({
 			prid: defaultParentRoom || parentRoom,
 			t_name: name,
 			users: usernames,
+			...(encrypted !== undefined && { encrypted }),
 			reply: encrypted ? undefined : firstMessage,
 			topic,
 			...(parentMessageId && { pmid: parentMessageId }),

@@ -97,5 +97,48 @@ describe('CreateDiscussion', () => {
 			const firstMessageField = screen.getByLabelText('Message');
 			expect(firstMessageField).toBeDisabled();
 		});
+
+		it('should include encrypted in payload when creating an encrypted discussion', async () => {
+			const createDiscussionEndpoint = jest.fn(() => ({
+				success: true,
+				discussion: {
+					...createFakeRoom({
+						_id: 'discussion-id',
+						t: 'p' as const,
+						name: 'discussion-name',
+						fname: 'Discussion Name',
+						prid: 'parent-room-id',
+					}),
+					rid: 'discussion-id',
+				} as any,
+			}));
+
+			const localAppRoot = mockAppRoot()
+				.withEndpoint('POST', '/v1/rooms.createDiscussion', createDiscussionEndpoint)
+				.withTranslations('en', 'core', {
+					Encrypted: 'Encrypted',
+					Discussion_first_message_title: 'Message',
+					Discussion_target_channel: 'Parent channel or team',
+					Name: 'Name',
+					Create: 'Create',
+				})
+				.build();
+
+			render(<CreateDiscussion onClose={jest.fn()} defaultParentRoom='parent-room-id' />, { wrapper: localAppRoot });
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'encrypted-discussion');
+			await userEvent.click(screen.getByRole('checkbox', { name: 'Encrypted' }));
+			await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+
+			await waitFor(() =>
+				expect(createDiscussionEndpoint).toHaveBeenCalledWith(
+					expect.objectContaining({
+						prid: 'parent-room-id',
+						t_name: 'encrypted-discussion',
+						encrypted: true,
+					}),
+				),
+			);
+		});
 	});
 });
