@@ -19,6 +19,37 @@ const errorResponse = ajv.compile<{
 	required: ['success', 'error'],
 });
 
+
+const logItemSchema = {
+  type: 'object',
+  properties: {
+    appId: { type: 'string' },
+    method: { type: 'string' },
+    entries: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: true,
+      },
+    },
+    startTime: { type: 'string' },
+    endTime: { type: 'string' },
+    totalTime: { type: 'number' },
+    instanceId: { type: 'string', nullable: true },
+    _createdAt: { type: 'string' },
+  },
+  required: [
+    'appId',
+    'method',
+    'entries',
+    'startTime',
+    'endTime',
+    'totalTime',
+    '_createdAt',
+  ],
+  additionalProperties: false,
+};
+
 export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 	void api.get(
 		':id/logs',
@@ -31,7 +62,7 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 					type: 'object',
 					properties: {
 						offset: { type: 'number' },
-						logs: { type: 'array' ,items:{type:'object',additionalProperties: true}},
+						logs: { type: 'array',items: logItemSchema},
 						count: { type: 'number' },
 						total: { type: 'number' },
 						success: { type: 'boolean' },
