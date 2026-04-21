@@ -34,7 +34,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 				try {
 					await chat?.data?.joinRoom();
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
 					throw error;
 				}
 			},
@@ -61,7 +61,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
 				}
 			},
 			onTyping: async (): Promise<void> => {

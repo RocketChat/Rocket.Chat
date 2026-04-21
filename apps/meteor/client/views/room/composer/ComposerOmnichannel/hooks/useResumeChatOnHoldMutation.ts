@@ -26,7 +26,7 @@ export const useResumeChatOnHoldMutation = (
 			return options?.onSuccess?.(data, rid, context);
 		},
 		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
 		},
 	});
 };

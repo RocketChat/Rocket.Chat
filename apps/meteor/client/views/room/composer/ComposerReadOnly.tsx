@@ -19,7 +19,7 @@ const ComposerReadOnly = (): ReactElement => {
 		mutationFn: () => joinChannel({ roomId: room._id }),
 
 		onError: (error: unknown) => {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
 		},
 	});
 
