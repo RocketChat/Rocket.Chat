@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 
 import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';
+import { MAX_FILE_SIZE_PREVIEW } from '../../../../lib/constants';
 import { isIE11 } from '../../../../lib/utils/isIE11';
 
 export enum FilePreviewType {
@@ -29,7 +30,7 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 		return false;
 	}
 	// Avoid preview if file size bigger than 10mb
-	if (file.size > 10000000) {
+	if (file.size > MAX_FILE_SIZE_PREVIEW) {
 		return false;
 	}
 	if (!Object.values(FilePreviewType).includes(fileType)) {

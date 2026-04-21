@@ -10829,7 +10829,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-client@workspace:^, @rocket.chat/ui-client@workspace:packages/ui-client":
+"@rocket.chat/ui-client@workspace:^, @rocket.chat/ui-client@workspace:packages/ui-client, @rocket.chat/ui-client@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
@@ -10901,6 +10901,7 @@ __metadata:
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
+    "@rocket.chat/ui-client": "workspace:~"
     "@storybook/addon-a11y": "npm:^8.6.18"
     "@storybook/addon-actions": "npm:^8.6.18"
     "@storybook/addon-docs": "npm:^8.6.18"
@@ -10924,6 +10925,7 @@ __metadata:
     "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
+    "@rocket.chat/ui-client": "*"
     react: "*"
     react-dom: "*"
   languageName: unknown

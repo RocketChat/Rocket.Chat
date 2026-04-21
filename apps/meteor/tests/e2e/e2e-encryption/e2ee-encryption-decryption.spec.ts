@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 
+import { resetOwnE2EKey } from './resetOwnE2EKey';
 import { setupE2EEPassword } from './setupE2EEPassword';
-import { BASE_URL } from '../config/constants';
+import { ADMIN_CREDENTIALS, BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { Navbar } from '../page-objects/fragments';
@@ -28,14 +29,12 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 	});
 
-	test.beforeEach(async ({ api, page }) => {
+	test.beforeEach(async ({ page }) => {
 		loginPage = new LoginPage(page);
 		navbar = new Navbar(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
 
-		await api.post('/method.call/e2e.resetOwnE2EKey', {
-			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-		});
+		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 		await page.goto('/home');
 		await loginPage.waitForIt();

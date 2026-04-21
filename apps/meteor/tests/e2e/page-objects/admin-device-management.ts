@@ -26,6 +26,14 @@ export class AdminDeviceManagement extends Admin {
 		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Device management' }) });
 	}
 
+	get notAuthorizedMessage(): Locator {
+		return this.page.getByRole('main').getByText('You are not authorized to view this page');
+	}
+
+	get emptyState(): Locator {
+		return this.adminPageContent.getByRole('heading', { name: 'No results found', exact: true });
+	}
+
 	async searchUserDevice(user: string): Promise<void> {
 		await this.adminPageContent.getByRole('textbox', { name: 'Search devices or users' }).fill(user);
 	}
