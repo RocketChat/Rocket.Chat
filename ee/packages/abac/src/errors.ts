@@ -1,3 +1,5 @@
+import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
+
 export enum AbacErrorCode {
 	InvalidAttributeValues = 'error-invalid-attribute-values',
 	InvalidAttributeKey = 'error-invalid-attribute-key',
@@ -13,15 +15,12 @@ export enum AbacErrorCode {
 	PdpUnavailable = 'error-pdp-unavailable',
 }
 
-export class AbacError extends Error {
+export class AbacError extends MeteorError {
 	public readonly code: AbacErrorCode;
 
-	public readonly details?: unknown;
-
 	constructor(code: AbacErrorCode, details?: unknown) {
-		super(code);
+		super(code, code, details);
 		this.code = code;
-		this.details = details;
 
 		Object.setPrototypeOf(this, new.target.prototype);
 	}
@@ -99,13 +98,17 @@ export class PdpUnavailableError extends AbacError {
 	}
 }
 
-export class PdpHealthCheckError extends Error {
-	public readonly errorCode: string;
-
+export class PdpHealthCheckError extends MeteorError {
 	constructor(errorCode: string) {
-		super(errorCode);
-		this.errorCode = errorCode;
+		super(errorCode, errorCode);
 
 		Object.setPrototypeOf(this, new.target.prototype);
 	}
 }
+
+export const getPdpHealthErrorCode = (err: unknown): string | null => {
+	if (!isMeteorError(err) || !err.reason?.startsWith('ABAC_PDP_Health_')) {
+		return null;
+	}
+	return err.reason;
+};

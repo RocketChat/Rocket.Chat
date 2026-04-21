@@ -1,4 +1,4 @@
-import { PdpHealthCheckError } from '@rocket.chat/abac';
+import { getPdpHealthErrorCode } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
@@ -385,7 +385,7 @@ const abacEndpoints = API.v1
 				logger.info({ msg: 'ABAC PDP health endpoint: healthy', userId: this.userId });
 				return API.v1.success({ available: true, message: 'ABAC_PDP_Health_OK' });
 			} catch (err) {
-				const message = err instanceof PdpHealthCheckError ? err.errorCode : 'ABAC_PDP_Health_Not_OK';
+				const message = getPdpHealthErrorCode(err) ?? 'ABAC_PDP_Health_Not_OK';
 				logger.info({ msg: 'ABAC PDP health endpoint: unhealthy', userId: this.userId, message, err });
 				return API.v1.failure({ available: false, message });
 			}
