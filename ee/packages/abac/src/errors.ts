@@ -15,15 +15,15 @@ export enum AbacErrorCode {
 	PdpUnavailable = 'error-pdp-unavailable',
 }
 
-export class AbacError extends MeteorError {
+export class AbacError extends Error {
 	public readonly code: AbacErrorCode;
 
+	public readonly details?: unknown;
+
 	constructor(code: AbacErrorCode, details?: unknown) {
-		super(code, undefined, details);
+		super(code);
 		this.code = code;
-		// MeteorError formats `.message` as `[code]`, and wrappers (addUserToRoom, Meteor.Error, ...) keep
-		// stacking brackets onto the previous message. Flatten it here so the code does not accumulate.
-		this.message = code;
+		this.details = details;
 
 		Object.setPrototypeOf(this, new.target.prototype);
 	}
