@@ -301,8 +301,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return { granted: false, userToRemove: fullUser };
 		}
 
-		// If we get an inconclusive or error decision, we err on the side of caution and deny access, but do not remove the user since we can't be sure
-		pdpLogger.warn({
+		pdpLogger.debug({
 			msg: 'Virtru PDP canAccessObject: inconclusive decision, denying without removal',
 			roomId: room._id,
 			userId: user._id,

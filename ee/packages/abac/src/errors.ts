@@ -103,8 +103,6 @@ export class PdpUnavailableError extends AbacError {
 
 export class PdpHealthCheckError extends MeteorError {
 	constructor(errorCode: string) {
-		// `reason` is the field the CustomRegenerator preserves across the broker, so the API layer
-		// can read the code via `err.reason` in microservices mode (see getPdpHealthErrorCode).
 		super(errorCode, errorCode);
 		this.message = errorCode;
 
