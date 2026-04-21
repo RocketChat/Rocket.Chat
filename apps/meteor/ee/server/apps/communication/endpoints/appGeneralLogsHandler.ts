@@ -3,22 +3,7 @@ import { isAppLogsProps, ajv } from '@rocket.chat/rest-typings';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
-
-// TODO: this is a very common error response schema. We should find a way to standardize it.
-const errorResponse = ajv.compile<{
-	success: false;
-	error: string;
-}>({
-	additionalProperties: false,
-	type: 'object',
-	properties: {
-		error: { type: 'string' },
-		status: { type: 'string', nullable: true },
-		message: { type: 'string', nullable: true },
-		success: { type: 'boolean', description: 'Indicates if the request was successful.' },
-	},
-	required: ['success', 'error'],
-});
+import {errorResponse} from './lib/errorResponse';
 
 export const registerAppGeneralLogsHandler = ({ api, _orch }: AppsRestApi) =>
 	void api.get(

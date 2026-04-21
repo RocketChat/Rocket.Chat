@@ -8,22 +8,10 @@ import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 import { APIClass } from '../../../../../app/api/server/ApiClass';
 import type { APIActionContext } from '../../../../../app/api/server/router';
+import {errorResponse} from './lib/errorResponse';
 
-const isErrorResponse = ajv.compile<{
-	success: false;
-	error: string;
-}>({
-	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-			enum: [false],
-		},
-		error: {
-			type: 'string',
-		},
-	},
-});
+
+
 
 class ExportHandlerAPI extends APIClass {
 	public override async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
@@ -64,9 +52,9 @@ export const registerAppLogsExportHandler = ({ api, _manager, _orch }: AppsRestA
 						},
 					},
 				}),
-				400: isErrorResponse,
-				401: isErrorResponse,
-				404: isErrorResponse,
+				400: errorResponse,
+				401: errorResponse,
+				404: errorResponse,
 			},
 		},
 

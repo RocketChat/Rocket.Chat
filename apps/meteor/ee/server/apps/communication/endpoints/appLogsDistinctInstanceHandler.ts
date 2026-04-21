@@ -1,34 +1,9 @@
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { AppsRestApi } from '../rest';
+import {errorResponse} from './lib/errorResponse';
 
 // This might be a good candidate for a default validator function exported by @rocket.chat/rest-typings
-const errorResponse = ajv.compile<{
-	success: false;
-	error: string;
-}>({
-	additionalProperties: false,
-	type: 'object',
-	properties: {
-		error: {
-			type: 'string',
-		},
-		status: {
-			type: 'string',
-			nullable: true,
-		},
-		message: {
-			type: 'string',
-			nullable: true,
-		},
-		success: {
-			type: 'boolean',
-			description: 'Indicates if the request was successful.',
-		},
-	},
-	required: ['success', 'error'],
-});
-
 export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestApi) =>
 	void api.get(
 		':id/logs/distinctValues',
