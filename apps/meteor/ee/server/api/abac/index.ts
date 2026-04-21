@@ -386,7 +386,7 @@ const abacEndpoints = API.v1
 				return API.v1.success({ available: true, message: 'ABAC_PDP_Health_OK' });
 			} catch (err) {
 				const message = getPdpHealthErrorCode(err) ?? 'ABAC_PDP_Health_Not_OK';
-				logger.info({ msg: 'ABAC PDP health endpoint: unhealthy', userId: this.userId, message, err });
+				logger.warn({ msg: 'ABAC PDP health endpoint: unhealthy', userId: this.userId, message, err });
 				return API.v1.failure({ available: false, message });
 			}
 		},
