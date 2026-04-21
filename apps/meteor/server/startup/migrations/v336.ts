@@ -11,9 +11,12 @@ addMigration({
 
 		const targetIndex = indexes.find((idx) => {
 			return (
-				idx.key?.roomId === 1 &&
-				idx.key?.userId === 1 &&
-				idx.key?.messageId === 1
+				idx.unique === true &&
+				idx.key &&
+				Object.keys(idx.key).length === 3 &&
+				idx.key.roomId === 1 &&
+				idx.key.userId === 1 &&
+				idx.key.messageId === 1
 			);
 		});
 
