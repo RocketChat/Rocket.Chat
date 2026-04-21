@@ -1,29 +1,24 @@
 import type { IReadReceipt } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
-import { BaseRaw } from '@rocket.chat/models';
+import { BaseRaw, readSecondaryPreferred } from '@rocket.chat/models';
 import type { FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
 
-export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
+export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db) {
-		super(db, 'read_receipts');
+		super(db, 'read_receipts_archive');
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
-		return [
-			// Unique index removed to increase performance. Uniqueness in now handled via composite value of _id
-			// TODO: Drop existent index on database migration of 9.0
-			// { key: { roomId: 1, userId: 1, messageId: 1 }, unique: true },
-			{ key: { messageId: 1 } },
-			{ key: { userId: 1 } },
-			{ key: { roomId: 1 } },
-			{ key: { ts: -1 } },
-		];
+		return [{ key: { messageId: 1 } }, { key: { userId: 1 } }, { key: { roomId: 1 } }, { key: { ts: -1 } }];
 	}
 
 	findByMessageId(messageId: string): FindCursor<IReadReceipt> {
-		return this.find({ messageId });
+		// Pass read preference directly to the find query to prefer reading from secondary replicas
+		return this.find({ messageId }, { readPreference: readSecondaryPreferred() });
 	}
 
+	// Archive doesn't need all the delete methods from hot storage
+	// But we implement them to satisfy the interface
 	removeByUserId(userId: string): Promise<DeleteResult> {
 		return this.deleteMany({ userId });
 	}
@@ -45,6 +40,7 @@ export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadRecei
 	}
 
 	findOlderThan(date: Date): FindCursor<IReadReceipt> {
-		return this.find({ ts: { $lt: date } });
+		// Pass read preference directly to the find query to prefer reading from secondary replicas
+		return this.find({ ts: { $lt: date } }, { readPreference: readSecondaryPreferred() });
 	}
 }

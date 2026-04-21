@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker';
 
+import { resetOwnE2EKey } from './resetOwnE2EKey';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
@@ -38,12 +40,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	});
 
 	test.describe('Generate', () => {
-		test.beforeEach(async ({ page, api }) => {
+		test.beforeEach(async ({ page }) => {
 			const loginPage = new LoginPage(page);
 
-			await api.post('/method.call/e2e.resetOwnE2EKey', {
-				message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-			});
+			await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 			await page.goto('/home');
 			await loginPage.waitForIt();
@@ -130,7 +130,6 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			// Set a new password
 			await accountSecurityPage.goto();
 			await accountSecurityPage.setE2EEPassword(newPassword);
-			await accountSecurityPage.close();
 
 			// Log out
 			await navbar.logout();

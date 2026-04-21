@@ -9,7 +9,7 @@ import { installTestApp, cleanupApps } from '../../data/apps/helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('Apps - Logs', () => {
+(IS_EE ? describe : describe.skip)('Apps - General Logs (GET /api/apps/logs)', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));
@@ -19,31 +19,17 @@ import { IS_EE } from '../../e2e/config/constants';
 		app = await installTestApp();
 	});
 
-	after(() => cleanupApps());
+	after(() => Promise.all([cleanupApps(), updatePermission('manage-apps', ['admin'])]));
 
-	it('should throw an error when trying to get logs for an invalid app', (done) => {
+	it('should return logs for all apps successfully', (done) => {
 		void request
-			.get(apps('/invalid-id/logs'))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(404)
-			.expect((res) => {
-				expect(res.body).to.have.a.property('success', false);
-				expect(res.body).to.not.have.a.property('logs');
-				expect(res.body.error).to.be.equal('No App found by the id of: invalid-id');
-			})
-			.end(done);
-	});
-
-	it('should return app logs successfully', (done) => {
-		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
-				expect(res.body).to.have.a.property('logs').that.is.an('array').with.a.lengthOf.at.least(1).and.at.most(50);
+				expect(res.body).to.have.a.property('logs').that.is.an('array').with.a.lengthOf.at.least(1);
 				expect(res.body).to.have.a.property('count').that.is.a('number');
 				expect(res.body).to.have.a.property('total').that.is.a('number');
 				expect(res.body).to.have.a.property('offset').that.is.a('number');
@@ -51,9 +37,36 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs with pagination', (done) => {
+	it('should require authentication', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
+			.expect('Content-Type', 'application/json')
+			.expect(401)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body).to.have.a.property('error');
+			})
+			.end(done);
+	});
+
+	it('should require manage-apps permission', (done) => {
+		void updatePermission('manage-apps', []).then(
+			() =>
+				void request
+					.get(apps('/logs'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+					})
+					.end((err) => void updatePermission('manage-apps', ['admin']).then(() => void done(err))),
+		);
+	});
+
+	it('should return logs with pagination', (done) => {
+		void request
+			.get(apps('/logs'))
 			.query({ count: 1, offset: 0 })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -67,50 +80,48 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs with sorting', (done) => {
+	it('should return logs with sorting', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.query({ sort: JSON.stringify({ _updatedAt: -1 }) })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
-				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1).and.at.most(50);
+				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1);
 			})
 			.end(done);
 	});
 
-	it('should return app logs filtered by logLevel', (done) => {
+	it('should return logs filtered by appId', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
-			.query({ logLevel: '2' })
+			.get(apps('/logs'))
+			.query({ appId: app.id })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
-				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1).and.at.most(50);
+				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1);
 
 				res.body.logs.forEach((log: ILoggerStorageEntry) => {
-					const entry = log.entries.find((entry) => ['error', 'warn', 'info', 'log', 'debug', 'success'].includes(entry.severity));
-
-					expect(entry).to.exist;
+					expect(log.appId).to.equal(app.id);
 				});
 			})
 			.end(done);
 	});
 
-	it('should return app logs filtered by method', (done) => {
+	it('should return logs filtered by method', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.query({ method: 'app:construct' })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
-				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1).and.at.most(50);
+				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1);
 
 				res.body.logs.forEach((log: ILoggerStorageEntry) => {
 					expect(log.method).to.equal('app:construct');
@@ -119,64 +130,46 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs filtered by date range', (done) => {
-		const startDate = new Date();
-		startDate.setDate(startDate.getDate() - 1); // 1 day ago
-		const endDate = new Date();
-
+	it('should return logs filtered by logLevel', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
-			.query({
-				startDate: startDate.toISOString(),
-				endDate: endDate.toISOString(),
-			})
+			.get(apps('/logs'))
+			.query({ logLevel: '2' })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
-				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1).and.at.most(50);
+				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1);
 
-				// Verify that all returned logs are within the date range
 				res.body.logs.forEach((log: ILoggerStorageEntry) => {
-					const logDate = new Date(log._createdAt);
-
-					expect(logDate).to.be.above(startDate).and.below(endDate);
-				});
-			})
-			.end(done);
-	});
-
-	it('should return app logs with combined filters', (done) => {
-		const startDate = new Date();
-		startDate.setDate(startDate.getDate() - 1); // 1 day ago
-		const endDate = new Date();
-
-		void request
-			.get(apps(`/${app.id}/logs`))
-			.query({
-				logLevel: '2',
-				method: 'app:construct',
-				startDate: startDate.toISOString(),
-				endDate: endDate.toISOString(),
-			})
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.a.property('success', true);
-				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1).and.at.most(50);
-
-				// Verify that all returned logs match all filter criteria
-				res.body.logs.forEach((log: ILoggerStorageEntry) => {
-					expect(log.method).to.equal('app:construct');
-
-					const logDate = new Date(log._createdAt);
-					expect(logDate >= startDate && logDate <= endDate).to.be.true;
-
 					const entry = log.entries.find((entry) => ['error', 'warn', 'info', 'log', 'debug', 'success'].includes(entry.severity));
-
 					expect(entry).to.exist;
+				});
+			})
+			.end(done);
+	});
+
+	it('should return logs filtered by date range', (done) => {
+		const startDate = new Date();
+		startDate.setDate(startDate.getDate() - 1); // 1 day ago
+		const endDate = new Date();
+
+		void request
+			.get(apps('/logs'))
+			.query({
+				startDate: startDate.toISOString(),
+				endDate: endDate.toISOString(),
+			})
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+				expect(res.body.logs).to.be.an('array').with.a.lengthOf.at.least(1);
+
+				res.body.logs.forEach((log: ILoggerStorageEntry) => {
+					const logDate = new Date(log._createdAt);
+					expect(logDate).to.be.above(startDate).and.below(endDate);
 				});
 			})
 			.end(done);
@@ -184,7 +177,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	it('should reject invalid logLevel value', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.query({ logLevel: 'debug' })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -198,7 +191,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	it('should reject invalid date format', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.query({ startDate: 'invalid-date' })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -216,7 +209,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		endDate.setDate(endDate.getDate() - 1); // endDate before startDate
 
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.query({
 				startDate: startDate.toISOString(),
 				endDate: endDate.toISOString(),
@@ -233,7 +226,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	it('should reject invalid additional properties', (done) => {
 		void request
-			.get(apps(`/${app.id}/logs`))
+			.get(apps('/logs'))
 			.query({ invalidProperty: 'value' })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -243,46 +236,5 @@ import { IS_EE } from '../../e2e/config/constants';
 				expect(res.body).to.have.a.property('error').that.is.not.empty;
 			})
 			.end(done);
-	});
-
-	it('should reject appId query parameter', (done) => {
-		void request
-			.get(apps(`/${app.id}/logs`))
-			.query({ appId: 'invalid-id' })
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(404)
-			.expect((res) => {
-				expect(res.body).to.have.a.property('success', false);
-				expect(res.body).to.have.a.property('error', 'Invalid query parameter "appId": invalid-id');
-			})
-			.end(done);
-	});
-
-	it('should require authentication', (done) => {
-		void request
-			.get(apps(`/${app.id}/logs`))
-			.expect('Content-Type', 'application/json')
-			.expect(401)
-			.expect((res) => {
-				expect(res.body).to.have.a.property('success', false);
-				expect(res.body).to.have.a.property('error');
-			})
-			.end(done);
-	});
-
-	it('should require manage-apps permission', (done) => {
-		void updatePermission('manage-apps', []).then(
-			() =>
-				void request
-					.get(apps(`/${app.id}/logs`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-					})
-					.end((err) => void updatePermission('manage-apps', ['admin']).then(() => void done(err))),
-		);
 	});
 });

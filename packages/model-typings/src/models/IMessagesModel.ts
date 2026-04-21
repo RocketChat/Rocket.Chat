@@ -249,6 +249,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		newMessage: string,
 	): Promise<UpdateResult>;
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
+	setReceiptsArchivedById(ids: string[], archived: boolean): Promise<UpdateResult | Document>;
 	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult>;
 
