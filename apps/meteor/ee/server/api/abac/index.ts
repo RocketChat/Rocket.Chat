@@ -36,12 +36,6 @@ import { syncRolePrioritiesForRoomIfRequired } from '../../../../app/lib/server/
 import { settings } from '../../../../app/settings/server';
 import { LDAPEE } from '../../sdk';
 
-const ensureConfirmed = (confirmed: boolean | undefined): void => {
-	if (confirmed !== true) {
-		throw new Error('error-abac-modification-not-confirmed');
-	}
-};
-
 const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 	user?._id
 		? {
@@ -70,7 +64,9 @@ const abacEndpoints = API.v1
 			const { rid } = this.urlParams;
 			const { attributes, confirmed } = this.bodyParams;
 
-			ensureConfirmed(confirmed);
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
@@ -127,7 +123,9 @@ const abacEndpoints = API.v1
 			const { rid } = this.urlParams;
 			const { confirmed } = this.queryParams;
 
-			ensureConfirmed(confirmed);
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			// We don't need to check if ABAC is enabled to clear attributes
 			// Since we're always allowing this operation
@@ -155,7 +153,9 @@ const abacEndpoints = API.v1
 			const { rid, key } = this.urlParams;
 			const { values, confirmed } = this.bodyParams;
 
-			ensureConfirmed(confirmed);
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
@@ -184,7 +184,9 @@ const abacEndpoints = API.v1
 			const { rid, key } = this.urlParams;
 			const { values, confirmed } = this.bodyParams;
 
-			ensureConfirmed(confirmed);
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
@@ -212,7 +214,9 @@ const abacEndpoints = API.v1
 			const { rid, key } = this.urlParams;
 			const { confirmed } = this.queryParams;
 
-			ensureConfirmed(confirmed);
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			await Abac.removeRoomAbacAttribute(rid, key, getActorFromUser(this.user));
 			return API.v1.success();
