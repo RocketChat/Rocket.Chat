@@ -18,5 +18,5 @@ test.each([
 	['@Кириллица', [paragraph([mentionUser('Кириллица')])]],
 	['test @Кириллица test', [paragraph([plain('test '), mentionUser('Кириллица'), plain(' test')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

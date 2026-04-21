@@ -3,6 +3,7 @@
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
+            "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.tool-versions"],
             "outputs": ["client/**", "definition/**", "deno-runtime/**", "lib/**", "scripts/**", "server/**", ".deno-cache/**"]
         }
     }

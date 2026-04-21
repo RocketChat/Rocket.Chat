@@ -6,7 +6,7 @@ import type {
 	TwitterOAuthConfiguration,
 	OAuthConfiguration,
 } from '@rocket.chat/core-typings';
-import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
+import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
 	ajv,
@@ -348,7 +348,12 @@ API.v1.post(
 
 		const { bodyParams } = this;
 
-		if (isSettingAction(setting) && isSettingsUpdatePropsActions(bodyParams) && bodyParams.execute) {
+		if (
+			isSettingAction(setting) &&
+			isSettingsUpdatePropsActions(bodyParams) &&
+			bodyParams.execute &&
+			!isActionSettingWithEndpoint(setting.value)
+		) {
 			await Meteor.callAsync(setting.value);
 			return API.v1.success();
 		}
