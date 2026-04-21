@@ -143,7 +143,7 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setLanguage('pt-BR'));
 
 				await expect(
-					page.frameLocator('#rocketchat-iframe').getByText('Por favor, nos passe algumas informações antes de iniciar o chat'),
+					page.frameLocator('#rocketchat-iframe').getByText('Por favor, conte-nos algumas informações para iniciarmos o chat'),
 				).toBeVisible();
 			});
 

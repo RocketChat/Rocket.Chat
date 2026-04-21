@@ -26,9 +26,9 @@ export type GetRoomPathAvatar = {
 
 export type AvatarUrlContextValue = {
 	getUserPathAvatar: {
-		(username: string, etag?: string): string;
-		(params: { userId: string; etag?: string }): string;
-		(params: { username: string; etag?: string }): string;
+		(username: string, etag?: string | null): string;
+		(params: { userId: string; etag?: string | null }): string;
+		(params: { username: string; etag?: string | null }): string;
 	};
 	getRoomPathAvatar: GetRoomPathAvatar;
 };

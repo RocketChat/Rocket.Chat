@@ -1,16 +1,23 @@
 import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
+import OngoingCallWithScreen from './OngoingCallWithScreen';
+import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const MediaCallWidget = () => {
-	const { sessionState } = useMediaCallView();
-	const { state, hidden, transferredBy } = sessionState;
+	const { inRoomView } = useMediaCallInstance();
+	const {
+		sessionState: { state, hidden, transferredBy, peerInfo, supportedFeatures },
+	} = useMediaCallView();
 
-	if (hidden) {
+	if (hidden || inRoomView) {
 		return null;
 	}
 
 	switch (state) {
 		case 'ongoing':
+			if ('username' in peerInfo && supportedFeatures.includes('screen-share')) {
+				return <OngoingCallWithScreen />;
+			}
 			return <OngoingCall />;
 		case 'new':
 			return <NewCall />;

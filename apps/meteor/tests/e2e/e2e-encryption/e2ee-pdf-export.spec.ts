@@ -1,9 +1,11 @@
 import { faker } from '@faker-js/faker';
 
+import { resetOwnE2EKey } from './resetOwnE2EKey';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { Navbar } from '../page-objects/fragments';
-import { ExportMessagesTab } from '../page-objects/fragments/export-messages-tab';
+import { ExportMessagesFlexTab } from '../page-objects/fragments/flextabs';
 import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -28,12 +30,10 @@ test.describe('E2EE PDF Export', () => {
 		// Note: Using admin user, so no need for userE2EE cleanup
 	});
 
-	test.beforeEach(async ({ api, page }) => {
+	test.beforeEach(async ({ page }) => {
 		const loginPage = new LoginPage(page);
 
-		await api.post('/method.call/e2e.resetOwnE2EKey', {
-			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-		});
+		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 		await page.goto('/home');
 		await loginPage.waitForIt();
@@ -43,7 +43,7 @@ test.describe('E2EE PDF Export', () => {
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
 		const navbar = new Navbar(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const exportMessagesTab = new ExportMessagesTab(page);
+		const exportMessagesTab = new ExportMessagesFlexTab(page);
 
 		const channelName = faker.string.uuid();
 
@@ -59,7 +59,7 @@ test.describe('E2EE PDF Export', () => {
 	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
 		const navbar = new Navbar(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const exportMessagesTab = new ExportMessagesTab(page);
+		const exportMessagesTab = new ExportMessagesFlexTab(page);
 
 		const channelName = faker.string.uuid();
 

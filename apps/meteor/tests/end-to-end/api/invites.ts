@@ -1,8 +1,13 @@
-import type { IInvite } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IInvite, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
@@ -192,6 +197,64 @@ describe('Invites', () => {
 					expect(res.body).to.have.property('valid', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('POST [/useInviteToken] - banned user', () => {
+		let room: IRoom;
+		let bannedUser: TestUser<IUser>;
+		let bannedUserCredentials: Credentials;
+		let inviteId: IInvite['_id'];
+
+		before(async () => {
+			bannedUser = await createUser();
+			bannedUserCredentials = await login(bannedUser.username, password);
+
+			const result = await createRoom({ type: 'p', name: `invite-ban-test-${Date.now()}` });
+			room = result.body.group;
+
+			// Add user then ban them
+			await request.post(api('groups.invite')).set(credentials).send({ roomId: room._id, userId: bannedUser._id }).expect(200);
+			await request.post(api('rooms.banUser')).set(credentials).send({ roomId: room._id, userId: bannedUser._id }).expect(200);
+
+			// Create invite link for the room
+			const invite = await request
+				.post(api('findOrCreateInvite'))
+				.set(credentials)
+				.send({ rid: room._id, days: 1, maxUses: 10 })
+				.expect(200);
+			inviteId = invite.body._id;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: room._id });
+			await deleteUser(bannedUser);
+		});
+
+		it('should fail if user is banned from the room', async () => {
+			await request
+				.post(api('useInviteToken'))
+				.set(bannedUserCredentials)
+				.send({ token: inviteId })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-user-is-banned');
+				});
+		});
+
+		it('should succeed after the user is unbanned', async () => {
+			await request.post(api('rooms.unbanUser')).set(credentials).send({ roomId: room._id, userId: bannedUser._id }).expect(200);
+
+			await request
+				.post(api('useInviteToken'))
+				.set(bannedUserCredentials)
+				.send({ token: inviteId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.have.property('rid', room._id);
+				});
 		});
 	});
 
