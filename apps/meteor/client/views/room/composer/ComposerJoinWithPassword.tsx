@@ -27,7 +27,7 @@ const ComposerJoinWithPassword = (): ReactElement => {
 			});
 		} catch (error: any) {
 			setError('joinCode', { type: error.errorType, message: error.error });
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : (error as any).error ?? String(error) }); 
 		}
 	};
 
