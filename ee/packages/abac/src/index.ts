@@ -766,10 +766,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async getPDPHealth(): Promise<void> {
 		if (!this.pdp) {
+			logger.warn({ msg: 'ABAC PDP health check: no PDP configured' });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_No_PDP');
 		}
 
-		await this.pdp.getHealthStatus();
+		try {
+			await this.pdp.getHealthStatus();
+			logger.info({ msg: 'ABAC PDP health check succeeded' });
+		} catch (err) {
+			logger.warn({ msg: 'ABAC PDP health check failed', err });
+			throw err;
+		}
 	}
 
 	async evaluateRoomMembership(): Promise<void> {

@@ -2,6 +2,7 @@ import { PdpHealthCheckError } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { ServerEvents, Users } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -31,6 +32,8 @@ import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
 import { LDAPEE } from '../../sdk';
+
+const logger = new Logger('AbacApi');
 
 const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 	user?._id
@@ -379,9 +382,11 @@ const abacEndpoints = API.v1
 		async function action() {
 			try {
 				await Abac.getPDPHealth();
+				logger.info({ msg: 'ABAC PDP health endpoint: healthy', userId: this.userId });
 				return API.v1.success({ available: true, message: 'ABAC_PDP_Health_OK' });
 			} catch (err) {
 				const message = err instanceof PdpHealthCheckError ? err.errorCode : 'ABAC_PDP_Health_Not_OK';
+				logger.info({ msg: 'ABAC PDP health endpoint: unhealthy', userId: this.userId, message, err });
 				return API.v1.failure({ available: false, message });
 			}
 		},
