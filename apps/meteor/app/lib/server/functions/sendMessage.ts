@@ -4,6 +4,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -186,10 +187,10 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 		});
 	}
 
-	const isAdmin = await hasPermissionAsync(user._id, 'view-privileged-setting');
-	if (!isAdmin && message.msg) {
-		const restrictedEmojisString = settings.get<string>('Emoji_Restricted_For_Users');
-		if (restrictedEmojisString) {
+	const restrictedEmojisString = settings.get<string>('Emoji_Restricted_For_Users');
+	if (restrictedEmojisString && message.msg) {
+		const hasManageEmojiPermission = await hasPermissionAsync(user._id, 'manage-emoji');
+		if (!hasManageEmojiPermission) {
 			const restrictedEmojis = restrictedEmojisString.split(',').map((emoji) => emoji.trim()).filter(Boolean);
 			if (restrictedEmojis.length) {
 				const emojiRegex = /:([a-zA-Z0-9_+-]+):/g;
@@ -198,7 +199,10 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 				for (const match of matches) {
 					const emojiName = match[1];
 					if (restrictedEmojis.includes(emojiName)) {
-						throw new Error(`Emoji :${emojiName}: is restricted`);
+						throw new Meteor.Error('error-emoji-restricted', `Emoji :${emojiName}: is restricted`, {
+							method: 'sendMessage',
+							emoji: emojiName,
+						});
 					}
 				}
 			}
