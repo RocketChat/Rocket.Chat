@@ -51,6 +51,8 @@
   "ABAC_Warning_Modal_Content": "You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room's default access control, it must be removed from ABAC management in <1>ABAC > Rooms</1>.",
   "ABAC_ShowAttributesInRooms": "Show ABAC attributes in rooms",
   "ABAC_ShowAttributesInRooms_Description": "Display the ABAC attributes assigned to the room in the contextual bar",
+  "ABAC_Use_User_Roles_As_Attributes": "Use user roles as ABAC attributes",
+  "ABAC_Use_User_Roles_As_Attributes_Description": "When enabled, workspace roles are exposed as a user attribute `RC-user-role` and can be used in ABAC room policies. Only available with the native PDP.",
   "ABAC_Room": "Room",
   "ABAC_Room_Attribute": "Room Attribute",
   "ABAC_Element": "ABAC Element",

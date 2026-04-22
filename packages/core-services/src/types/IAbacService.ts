@@ -18,6 +18,7 @@ export interface IAbacService {
 			values?: string;
 			offset?: number;
 			count?: number;
+			includeUserRoleAttribute?: boolean;
 		},
 		actor?: AbacActor,
 	): Promise<{ attributes: IAbacAttribute[]; offset: number; count: number; total: number }>;
@@ -48,4 +49,9 @@ export interface IAbacService {
 	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>, actor: AbacActor | undefined): Promise<void>;
 	evaluateRoomMembership(): Promise<void>;
 	getPDPHealth(): Promise<void>;
+	isRoleAttributeFeatureActive(): Promise<boolean>;
+	syncUserRoleAttribute(userId: IUser['_id']): Promise<void>;
+	syncRoomMembersWithRoleAttribute(rid: IRoom['_id']): Promise<void>;
+	isRoleInUseByAbacRooms(roleId: string): Promise<boolean>;
+	isAbacAttributeInUseByAnyRoom(): Promise<boolean>;
 }

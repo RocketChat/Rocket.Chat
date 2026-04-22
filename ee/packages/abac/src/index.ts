@@ -17,6 +17,7 @@ import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
+import { RC_USER_ROLE_ATTRIBUTE_KEY, RC_USER_ROLE_ATTRIBUTE_SYNTHETIC_ID } from './constants';
 import {
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
@@ -29,6 +30,7 @@ import {
 } from './errors';
 import {
 	getAbacRoom,
+	getAllRoleIdsCached,
 	diffAttributes,
 	extractAttribute,
 	diffAttributeSets,
@@ -61,8 +63,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	decisionCacheTimeout = 60; // seconds
 
+	private abacEnabled = false;
+
+	private useUserRolesAsAttributes = false;
+
 	constructor() {
 		super();
+
+		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
+			this.abacEnabled = !!setting.value;
+		});
+
+		this.onSettingChanged('ABAC_Use_User_Roles_As_Attributes', async ({ setting }): Promise<void> => {
+			this.useUserRolesAsAttributes = !!setting.value;
+		});
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
@@ -167,6 +181,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
+		this.abacEnabled = await Settings.get<boolean>('ABAC_Enabled');
+		this.useUserRolesAsAttributes = await Settings.get<boolean>('ABAC_Use_User_Roles_As_Attributes');
 
 		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
 		if (pdpType !== 'virtru') {
@@ -205,6 +221,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			values: Array.from(valuesSet),
 		}));
 
+		const preservedRoleAttribute = (await this.isRoleAttributeFeatureActive())
+			? user.abacAttributes?.find((a) => a.key === RC_USER_ROLE_ATTRIBUTE_KEY)
+			: undefined;
+
+		if (preservedRoleAttribute) {
+			finalAttributes.push(preservedRoleAttribute);
+		}
+
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
 				const finalUser = await Users.unsetAbacAttributesById(user._id);
@@ -242,7 +266,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async listAbacAttributes(filters?: { key?: string; values?: string; offset?: number; count?: number }): Promise<{
+	async listAbacAttributes(filters?: {
+		key?: string;
+		values?: string;
+		offset?: number;
+		count?: number;
+		includeUserRoleAttribute?: boolean;
+	}): Promise<{
 		attributes: IAbacAttribute[];
 		offset: number;
 		count: number;
@@ -269,12 +299,27 @@ export class AbacService extends ServiceClass implements IAbacService {
 		);
 
 		const attributes = await cursor.toArray();
-
-		return {
+		const base = {
 			attributes,
 			offset,
 			count: attributes.length,
 			total: await totalCount,
+		};
+
+		if (!filters?.includeUserRoleAttribute || offset !== 0 || !(await this.isRoleAttributeFeatureActive())) {
+			return base;
+		}
+
+		const synthetic: IAbacAttribute = {
+			_id: RC_USER_ROLE_ATTRIBUTE_SYNTHETIC_ID,
+			key: RC_USER_ROLE_ATTRIBUTE_KEY,
+			values: await getAllRoleIdsCached(),
+		} as IAbacAttribute;
+
+		return {
+			...base,
+			attributes: [synthetic, ...base.attributes],
+			count: base.count + 1,
 		};
 	}
 
@@ -446,6 +491,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
+		const roleAttributeAdded =
+			normalized.some((a) => a.key === RC_USER_ROLE_ATTRIBUTE_KEY) && !previous.some((a) => a.key === RC_USER_ROLE_ATTRIBUTE_KEY);
+		if (roleAttributeAdded) {
+			await this.syncRoomMembersWithRoleAttribute(rid);
+		}
 		if (diffAttributeSets(previous, normalized).added) {
 			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized);
 		}
@@ -476,6 +526,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 			);
 			const next = [...previous, { key, values }];
 
+			if (key === RC_USER_ROLE_ATTRIBUTE_KEY) {
+				await this.syncRoomMembersWithRoleAttribute(rid);
+			}
 			await this.onRoomAttributesChanged(room, next);
 			return;
 		}
@@ -549,6 +602,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, previous, next, 'key-added', actor);
 
+		if (key === RC_USER_ROLE_ATTRIBUTE_KEY) {
+			await this.syncRoomMembersWithRoleAttribute(rid);
+		}
 		await this.onRoomAttributesChanged(room, next);
 	}
 
@@ -582,6 +638,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
+		if (key === RC_USER_ROLE_ATTRIBUTE_KEY) {
+			await this.syncRoomMembersWithRoleAttribute(rid);
+		}
 		void Audit.objectAttributeChanged(
 			{ _id: room._id, name: room.name },
 			room.abacAttributes || [],
@@ -770,6 +829,55 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		await this.pdp.getHealthStatus();
+	}
+
+	async isRoleAttributeFeatureActive(): Promise<boolean> {
+		return this.abacEnabled && this.pdpType === 'local' && this.useUserRolesAsAttributes;
+	}
+
+	async syncUserRoleAttribute(userId: IUser['_id']): Promise<void> {
+		if (!(await this.isRoleAttributeFeatureActive())) {
+			return;
+		}
+
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'roles' | 'abacAttributes' | '__rooms'>>(userId, {
+			projection: { _id: 1, username: 1, roles: 1, abacAttributes: 1, __rooms: 1 },
+		});
+		if (!user) {
+			return;
+		}
+
+		const previous = user.abacAttributes || [];
+		const roleValues = user.roles || [];
+
+		await Users.upsertAbacAttributeByKey(user._id, RC_USER_ROLE_ATTRIBUTE_KEY, roleValues);
+
+		const next: IAbacAttributeDefinition[] = [
+			...previous.filter((a) => a.key !== RC_USER_ROLE_ATTRIBUTE_KEY),
+			{ key: RC_USER_ROLE_ATTRIBUTE_KEY, values: roleValues },
+		];
+
+		if (diffAttributeSets(previous, next).removed) {
+			await this.onSubjectAttributesChanged({ ...user, abacAttributes: next } as IUser, next);
+		}
+	}
+
+	async syncRoomMembersWithRoleAttribute(rid: IRoom['_id']): Promise<void> {
+		if (!rid) {
+			return;
+		}
+		await Users.addRolesAsAbacAttributeForRoomMembers(RC_USER_ROLE_ATTRIBUTE_KEY, rid);
+	}
+
+	async isRoleInUseByAbacRooms(roleId: string): Promise<boolean> {
+		if (!roleId || !(await this.isRoleAttributeFeatureActive())) {
+			return false;
+		}
+		return Rooms.isAbacAttributeInUse(RC_USER_ROLE_ATTRIBUTE_KEY, [roleId]);
+	}
+
+	async isAbacAttributeInUseByAnyRoom(): Promise<boolean> {
+		return Rooms.isAbacAttributeKeyInUse(RC_USER_ROLE_ATTRIBUTE_KEY);
 	}
 
 	async evaluateRoomMembership(): Promise<void> {

@@ -60,13 +60,18 @@ const GetAbacAttributesQuery = {
 		values: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		offset: { type: 'number' },
 		count: { type: 'number' },
+		includeUserRoleAttribute: { type: 'boolean' },
 	},
 	additionalProperties: false,
 };
 
-export const GETAbacAttributesQuerySchema = ajvQuery.compile<{ key?: string; values?: string; offset: number; count?: number }>(
-	GetAbacAttributesQuery,
-);
+export const GETAbacAttributesQuerySchema = ajvQuery.compile<{
+	key?: string;
+	values?: string;
+	offset: number;
+	count?: number;
+	includeUserRoleAttribute?: boolean;
+}>(GetAbacAttributesQuery);
 
 const AbacAttributeRecord = {
 	type: 'object',

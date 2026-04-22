@@ -16,6 +16,7 @@ import { validateUserEditing } from './validateUserEditing';
 import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
 import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
 import { callbacks } from '../../../../../server/lib/callbacks';
+import { afterUserRolesChanged } from '../../../../../server/lib/roles/afterUserRolesChanged';
 import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { generatePassword } from '../../lib/generatePassword';
@@ -70,6 +71,9 @@ const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 
 	return user;
 };
+
+const arraysHaveSameMembers = (a: readonly string[] = [], b: readonly string[] = []): boolean =>
+	a.length === b.length && new Set([...a, ...b]).size === a.length;
 
 const _saveUser = (session?: ClientSession) =>
 	async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
@@ -218,6 +222,10 @@ const _saveUser = (session?: ClientSession) =>
 				user: userUpdated,
 				oldUser: oldUserData,
 			});
+
+			if (userData._id && userData.roles && !arraysHaveSameMembers(userData.roles, oldUserData?.roles)) {
+				await afterUserRolesChanged(userData._id);
+			}
 
 			await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 				user: userUpdated,

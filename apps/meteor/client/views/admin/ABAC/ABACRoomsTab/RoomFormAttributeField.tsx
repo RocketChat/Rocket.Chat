@@ -10,7 +10,7 @@ type ABACAttributeAutocompleteProps = {
 	labelId: string;
 	onRemove: () => void;
 	index: number;
-	attributeList: { value: string; label: string; attributeValues: string[] }[];
+	attributeList: { value: string; label: string; attributeValues: string[]; valueLabels?: Record<string, string> }[];
 	required?: boolean;
 };
 
@@ -52,8 +52,13 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 		}
 
 		const selectedAttributeData = attributeList.find((option) => option.value === keyField.value);
+		if (!selectedAttributeData) {
+			return [];
+		}
 
-		return selectedAttributeData?.attributeValues.map((value) => [value, value]) || [];
+		const { attributeValues, valueLabels } = selectedAttributeData;
+
+		return attributeValues.map((value) => [value, valueLabels?.[value] ?? value]);
 	}, [attributeList, keyField.value]);
 
 	return (

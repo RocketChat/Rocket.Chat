@@ -168,6 +168,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
+	upsertAbacAttributeByKey(userId: IUser['_id'], key: string, values: string[]): Promise<UpdateResult>;
+	addRolesAsAbacAttributeForRoomMembers(key: string, rid: IRoom['_id']): Promise<Document | UpdateResult>;
 	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;

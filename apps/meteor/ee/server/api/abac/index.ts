@@ -182,7 +182,8 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { includeUserRoleAttribute, ...paginationParams } = this.queryParams;
+			const { offset, count } = await getPaginationItems(paginationParams as Record<string, string | string[] | number | null | undefined>);
 			const { key, values } = this.queryParams;
 
 			return API.v1.success(
@@ -192,6 +193,7 @@ const abacEndpoints = API.v1
 						values,
 						offset,
 						count,
+						includeUserRoleAttribute,
 					},
 					getActorFromUser(this.user),
 				),

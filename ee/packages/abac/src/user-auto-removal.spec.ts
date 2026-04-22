@@ -17,6 +17,12 @@ jest.mock('@rocket.chat/core-services', () => ({
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
+	Settings: {
+		get: jest.fn().mockResolvedValue(false),
+	},
+	Abac: {
+		isRoleAttributeFeatureActive: jest.fn().mockResolvedValue(false),
+	},
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
