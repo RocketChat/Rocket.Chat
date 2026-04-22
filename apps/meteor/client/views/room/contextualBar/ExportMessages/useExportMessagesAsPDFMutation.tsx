@@ -116,7 +116,6 @@ export const useExportMessagesAsPDFMutation = () => {
 										<Text style={message.tmid ? pdfStyles.threadMessage : pdfStyles.message}>{parseMessage(message)}</Text>
 										{message.attachments?.map((attachment: MessageAttachmentDefault, index) => (
 											<View key={index}>
-												{attachment.description && <Text style={pdfStyles.message}>{attachment.description}</Text>}
 												{attachment.image_url && <Image src={attachment.title_link} style={attachment.image_dimensions} />}
 												<Text style={pdfStyles.message}>{attachment.title}</Text>
 											</View>

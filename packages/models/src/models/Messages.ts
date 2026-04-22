@@ -1381,6 +1381,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateMany(query, update);
 	}
 
+	setReceiptsArchivedById(ids: string[], archived: boolean): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				_id: { $in: ids },
+			},
+			{
+				$set: {
+					receiptsArchived: archived,
+				},
+			},
+		);
+	}
+
 	// INSERT
 
 	async createWithTypeRoomIdMessageUserAndUnread(

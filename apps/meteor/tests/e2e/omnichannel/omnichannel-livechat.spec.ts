@@ -265,8 +265,10 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		agent = await createAgent(api, 'user1');
+
+		await createAuxContext(browser, Users.user1, '/', true);
 	});
 
 	test.beforeEach(async ({ page, api }) => {

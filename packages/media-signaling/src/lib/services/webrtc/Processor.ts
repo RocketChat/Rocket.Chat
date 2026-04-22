@@ -478,7 +478,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private createDataChannel(): void {
-		if (this._dataChannel || this._dataChannelEnded || !this.config.call.flags.includes('create-data-channel')) {
+		if (this._dataChannel || this._dataChannelEnded || !this.config.call.hasFlag('create-data-channel')) {
 			return;
 		}
 

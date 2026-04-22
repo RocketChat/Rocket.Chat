@@ -1,10 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactNode } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-type InfoPanelFieldProps = {
-	children?: ReactNode;
-};
+type InfoPanelFieldProps = ComponentPropsWithoutRef<typeof Box>;
 
-const InfoPanelField = ({ children }: InfoPanelFieldProps) => <Box mb={16}>{children}</Box>;
+const InfoPanelField = (props: InfoPanelFieldProps) => <Box mb={16} {...props} />;
 
 export default InfoPanelField;
