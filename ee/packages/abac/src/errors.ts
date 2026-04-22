@@ -110,9 +110,9 @@ export class PdpHealthCheckError extends MeteorError {
 	}
 }
 
-export const getPdpHealthErrorCode = (err: unknown): string | null => {
-	if (!isMeteorError(err) || !err.reason?.startsWith('ABAC_PDP_Health_')) {
-		return null;
+export const getPdpHealthErrorCode = (err: unknown): string => {
+	if (isMeteorError(err) && err.reason?.startsWith('ABAC_PDP_Health_')) {
+		return err.reason;
 	}
-	return err.reason;
+	return 'ABAC_PDP_Health_Not_OK';
 };
