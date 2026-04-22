@@ -74,22 +74,23 @@
 		"zod@npm:^3.25.0 || ^4.0.0": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch",
 		"zod@npm:~4.3.6": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch",
 		"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch",
-		"@react-aria/i18n@npm:^3.12.5": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch"
+		"@react-aria/i18n@npm:^3.12.5": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch",
+		"@react-aria/toolbar@npm:^3.0.0-nightly.5042": "3.0.0-nightly-fb28ab3b4-241024"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
 		"node-gyp": "^10.2.0"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.11",
+		"@changesets/cli": "^2.27.12",
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"ts-node": "^10.9.2",
-		"turbo": "2.8.12",
+		"turbo": "2.8.21",
 		"typescript": "~5.9.3"
 	},
 	"packageManager": "yarn@4.12.0",

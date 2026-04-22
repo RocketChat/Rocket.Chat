@@ -12,7 +12,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@codemirror/lang-javascript": "^6.2.4",
+		"@codemirror/lang-javascript": "^6.2.5",
 		"@codemirror/lang-json": "^6.0.2",
 		"@hello-pangea/dnd": "^17.0.0",
 		"@lezer/highlight": "^1.2.3",
@@ -37,20 +37,20 @@
 		"react-dom": "~18.3.1",
 		"react-router-dom": "^6.30.3",
 		"react-split-pane": "^0.1.92",
-		"react-virtuoso": "^4.12.0",
+		"react-virtuoso": "~4.12.8",
 		"reactflow": "^11.11.4"
 	},
 	"devDependencies": {
 		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/lodash": "~4.17.23",
-		"@types/react": "~18.3.27",
+		"@types/lodash": "~4.17.24",
+		"@types/react": "~18.3.28",
 		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-dom": "~18.3.7",
 		"@vitejs/plugin-react": "~6.0.1",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3",
-		"vite": "^8.0.0"
+		"vite": "^8.0.8"
 	},
 	"volta": {
 		"extends": "../../package.json"
