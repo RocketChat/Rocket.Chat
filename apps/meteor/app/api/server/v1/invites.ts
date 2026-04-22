@@ -6,6 +6,7 @@ import {
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
 	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -16,6 +17,51 @@ import { useInviteToken } from '../../../invites/server/functions/useInviteToken
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+
+const removeInviteResponseSchema = ajv.compile({
+	type: 'boolean',
+	enum: [true],
+});
+
+const useInviteTokenResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		room: {
+			type: 'object',
+			properties: {
+				rid: { type: 'string' },
+				prid: { type: 'string', nullable: true },
+				fname: { type: 'string', nullable: true },
+				name: { type: 'string', nullable: true },
+				t: { type: 'string' },
+			},
+			required: ['rid', 't'],
+			additionalProperties: false,
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['room', 'success'],
+	additionalProperties: false,
+});
+
+const validateInviteTokenResponseSchema = ajv.compile<{ valid: boolean }>({
+	type: 'object',
+	properties: {
+		valid: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['valid', 'success'],
+	additionalProperties: false,
+});
+
+const sendInvitationEmailResponseSchema = ajv.compile<{ success: boolean }>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
 
 const invites = API.v1
 	.get(
@@ -177,10 +223,7 @@ const invites = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile({
-					type: 'boolean',
-					enum: [true],
-				}),
+				200: removeInviteResponseSchema,
 				400: validateBadRequestErrorResponse,
 				401: ajv.compile({
 					type: 'object',
@@ -192,7 +235,6 @@ const invites = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-
 			return API.v1.success(await removeInvite(this.userId, { _id }));
 		},
 	)
@@ -202,33 +244,9 @@ const invites = API.v1
 			authRequired: true,
 			body: isUseInviteTokenProps,
 			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						room: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								prid: { type: 'string', nullable: true },
-								fname: { type: 'string', nullable: true },
-								name: { type: 'string', nullable: true },
-								t: { type: 'string' },
-							},
-							required: ['rid', 't'],
-							additionalProperties: false,
-						},
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['room', 'success'],
-					additionalProperties: false,
-				}),
+				200: useInviteTokenResponseSchema,
 				400: validateBadRequestErrorResponse,
-				401: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
+				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
@@ -242,15 +260,7 @@ const invites = API.v1
 			authRequired: false,
 			body: isValidateInviteTokenProps,
 			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						valid: { type: 'boolean' },
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['valid', 'success'],
-					additionalProperties: false,
-				}),
+				200: validateInviteTokenResponseSchema,
 			},
 		},
 		async function action() {
@@ -268,24 +278,9 @@ const invites = API.v1
 			authRequired: true,
 			body: isSendInvitationEmailParams,
 			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: { success: { type: 'boolean' } },
-					required: ['success'],
-					additionalProperties: false,
-				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
+				200: sendInvitationEmailResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {

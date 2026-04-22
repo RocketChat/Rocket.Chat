@@ -8,6 +8,7 @@ import type {
 	ITeam,
 	ISubscription,
 	RequiredField,
+	MessageTypesValues,
 } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
@@ -27,7 +28,7 @@ const RoomsAutoCompleteChannelAndPrivateSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutoCompleteChannelAndPrivateProps = ajv.compile<RoomsAutoCompleteChannelAndPrivateProps>(
+export const isRoomsAutoCompleteChannelAndPrivateProps = ajvQuery.compile<RoomsAutoCompleteChannelAndPrivateProps>(
 	RoomsAutoCompleteChannelAndPrivateSchema,
 );
 
@@ -60,11 +61,10 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajv.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(
-	RoomsAutocompleteChannelAndPrivateWithPaginationSchema,
-);
+export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps =
+	ajvQuery.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(RoomsAutocompleteChannelAndPrivateWithPaginationSchema);
 
-type RoomsAutocompleteAvailableForTeamsProps = { name: string };
+type RoomsAutocompleteAvailableForTeamsProps = { name?: string };
 
 const RoomsAutocompleteAvailableForTeamsSchema = {
 	type: 'object',
@@ -73,11 +73,11 @@ const RoomsAutocompleteAvailableForTeamsSchema = {
 			type: 'string',
 		},
 	},
-	required: ['name'],
+	required: [],
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutocompleteAvailableForTeamsProps>(
+export const isRoomsAutocompleteAvailableForTeamsProps = ajvQuery.compile<RoomsAutocompleteAvailableForTeamsProps>(
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
 
@@ -94,7 +94,7 @@ const RoomsAutocompleteAdminRoomsPayloadSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocompleteAdminRoomsPayload>(
+export const isRoomsAutocompleteAdminRoomsPayload = ajvQuery.compile<RoomsAutocompleteAdminRoomsPayload>(
 	RoomsAutocompleteAdminRoomsPayloadSchema,
 );
 
@@ -149,6 +149,10 @@ const RoomsCreateDiscussionSchema = {
 			nullable: true,
 		},
 		t_name: {
+			type: 'string',
+			nullable: true,
+		},
+		topic: {
 			type: 'string',
 			nullable: true,
 		},
@@ -272,9 +276,11 @@ const RoomsExportSchema = {
 
 export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
 
+type AdminRoomType = 'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams';
+
 type RoomsAdminRoomsProps = PaginatedRequest<{
 	filter?: string;
-	types?: string[];
+	types?: AdminRoomType[];
 }>;
 
 const RoomsAdminRoomsSchema = {
@@ -288,6 +294,7 @@ const RoomsAdminRoomsSchema = {
 			type: 'array',
 			items: {
 				type: 'string',
+				enum: ['c', 'd', 'p', 'l', 'discussions', 'teams'],
 			},
 			nullable: true,
 		},
@@ -312,7 +319,7 @@ const RoomsAdminRoomsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsProps = ajv.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
+export const isRoomsAdminRoomsProps = ajvQuery.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
 
 type RoomsAdminRoomsGetRoomProps = { rid?: string };
 
@@ -328,7 +335,7 @@ const RoomsAdminRoomsGetRoomSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsGetRoomProps = ajv.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
+export const isRoomsAdminRoomsGetRoomProps = ajvQuery.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
 
 type RoomsChangeArchivationStateProps = { rid: string; action?: string };
 
@@ -357,14 +364,17 @@ type RoomsSaveRoomSettingsProps = {
 	roomTopic?: string;
 	roomAnnouncement?: string;
 	roomDescription?: string;
+	roomCustomFields?: Record<string, any>;
 	roomType?: IRoom['t'];
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
+	systemMessages?: MessageTypesValues[];
 	default?: boolean;
+	joinCode?: string;
 	encrypted?: boolean;
 	favorite?: {
-		defaultValue?: boolean;
-		favorite?: boolean;
+		defaultValue: boolean;
+		favorite: boolean;
 	};
 	retentionEnabled?: boolean;
 	retentionMaxAge?: number;
@@ -404,6 +414,10 @@ const RoomsSaveRoomSettingsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		roomCustomFields: {
+			type: 'object',
+			nullable: true,
+		},
 		roomType: {
 			type: 'string',
 			nullable: true,
@@ -416,8 +430,17 @@ const RoomsSaveRoomSettingsSchema = {
 			type: 'boolean',
 			nullable: true,
 		},
+		systemMessages: {
+			type: 'array',
+			items: { type: 'string' },
+			nullable: true,
+		},
 		default: {
 			type: 'boolean',
+			nullable: true,
+		},
+		joinCode: {
+			type: 'string',
 			nullable: true,
 		},
 		encrypted: {
@@ -429,13 +452,12 @@ const RoomsSaveRoomSettingsSchema = {
 			properties: {
 				defaultValue: {
 					type: 'boolean',
-					nullable: true,
 				},
 				favorite: {
 					type: 'boolean',
-					nullable: true,
 				},
 			},
+			required: ['defaultValue', 'favorite'],
 			nullable: true,
 		},
 		retentionEnabled: { type: 'boolean', nullable: true },

@@ -37,7 +37,7 @@ runs:
   steps:
     - name: Login to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-      uses: docker/login-action@v3
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         registry: ghcr.io
         username: ${{ inputs.CR_USER }}
@@ -45,7 +45,7 @@ runs:
 
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
         name: build-${{ inputs.type }}
         path: /tmp/build
@@ -60,7 +60,7 @@ runs:
 
     - name: Set up Docker
       if: inputs.setup-docker == 'true'
-      uses: docker/setup-docker-action@v4
+      uses: docker/setup-docker-action@e43656e248c0bd0647d3f5c195d116aacf6fcaf4 # v4.7.0
       with:
         daemon-config: |
           {
@@ -175,13 +175,13 @@ runs:
 
     - name: Upload Docker image artifact
       if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
         path: /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar
         retention-days: 1
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       if: inputs.publish-image == 'true'
       with:
         name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
