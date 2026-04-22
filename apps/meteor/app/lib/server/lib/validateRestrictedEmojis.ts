@@ -36,8 +36,18 @@ export const assertNoRestrictedEmojis = async (uid: string, msg: string | undefi
 	const mappedUnicode = emojione.mapUnicodeToShort();
 	const unicodeRegex = emojione.unicodeCharRegex();
 
-	if (typeof unicodeRegex === 'string') {
-		const unicodeMatches = msg.matchAll(new RegExp(unicodeRegex, 'g'));
+	if (unicodeRegex) {
+		let regex: RegExp;
+		if (typeof unicodeRegex === 'string') {
+			regex = new RegExp(unicodeRegex, 'g');
+		} else if (unicodeRegex instanceof RegExp) {
+			regex = new RegExp(unicodeRegex.source, 'g');
+		} else {
+			return;
+		}
+
+		const unicodeMatches = msg.matchAll(regex);
+		
 		for (const match of unicodeMatches) {
 			const unicodeChar = match[0];
 			const codePoint = Array.from(unicodeChar)
@@ -46,7 +56,7 @@ export const assertNoRestrictedEmojis = async (uid: string, msg: string | undefi
 
 			const shortname = mappedUnicode[codePoint];
 			if (shortname) {
-				const emojiName = shortname.replace(/^:/, '').replace(/:$/, '');
+				const emojiName = shortname.slice(1, -1);
 				if (restrictedEmojis.includes(emojiName)) {
 					throw new Meteor.Error('error-emoji-restricted', `Emoji ${unicodeChar} is restricted`, {
 						method,
