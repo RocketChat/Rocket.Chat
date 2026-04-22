@@ -149,9 +149,7 @@ slashCommands.add({
 
 		const emailText = message?.msg || '';
 
-		// we await here because we need to make sure the email is sent before we update the message with the email info, otherwise we might
-		// end up with a message that has the info but the message was not sent successfully
-		const info = await sendEmail(
+		void sendEmail(
 			inbox,
 			{
 				to: room.email?.replyTo,
@@ -166,11 +164,12 @@ slashCommands.add({
 				sender: message.u.username,
 				rid: message.rid,
 			},
-		);
-		if (!info?.messageId) {
-			return;
-		}
-		await LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
+		).then((info) => {
+			if (info?.messageId) {
+				LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
+			}
+		});
+
 		await Messages.updateOne(
 			{ _id: message._id },
 			{
@@ -272,9 +271,8 @@ callbacks.add(
 		if (!replyToMessage || !isIMessageInbox(replyToMessage) || !replyToMessage.email?.messageId) {
 			return message;
 		}
-		// we await here because we need to make sure the email is sent before we update the message with the email info, otherwise we might
-		// end up with a message that has the info but the message was not sent successfully
-		const info = await sendEmail(
+
+		void sendEmail(
 			inbox,
 			{
 				text: match.groups.text,
@@ -288,13 +286,11 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		);
-
-		if (!info?.messageId) {
-			return message;
-		}
-
-		await LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
+		).then((info) => {
+			if (info?.messageId) {
+				LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
+			}
+		});
 
 		message.msg = match.groups.text;
 
@@ -347,13 +343,9 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	const info = await sendEmail(inbox, {
+	sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',
 	});
-	// Nodemailer doesn't return an error if the email fails to send, so we need to check the response for a messageId to confirm it was sent successfully.
-	if (!info?.messageId) {
-		throw new Error('smtp-send-failed');
-	}
 }
