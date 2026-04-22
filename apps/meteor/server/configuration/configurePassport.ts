@@ -1,5 +1,4 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import express from 'express';
 import flash from 'express-flash';

@@ -1,5 +1,5 @@
 import { LDAP } from '@rocket.chat/core-services';
-import type { OAuthConfiguration } from '@rocket.chat/core-typings';
+import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
@@ -69,8 +69,6 @@ export class CustomOAuthStrategy extends Strategy {
 			scope: config.scope,
 		};
 
-		console.log('strategy options', options);
-
 		super(options, verify);
 
 		this.serverURL = config.serverURL;
@@ -119,6 +117,8 @@ export class CustomOAuthStrategy extends Strategy {
 		this.name = name;
 		this.options = options;
 		this.config = config;
+
+		this.addHookToProcessUser();
 	}
 
 	getUsername(data: Record<string, any>) {
@@ -126,11 +126,15 @@ export class CustomOAuthStrategy extends Strategy {
 			const value = fromTemplate(this.usernameField, data);
 
 			if (!value) {
-				throw new Meteor.Error('field_not_found', `Username field "${this.usernameField}" not found in data`, data);
+				throw new Meteor.Error(
+					'field_not_found',
+					`Username field "${this.usernameField}" not found in data`,
+					JSON.stringify(data, null, 2),
+				);
 			}
-			return value;
+			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract username', error?.message);
+			throw new Error('CustomOAuth: Failed to extract username', error as Error);
 		}
 	}
 
@@ -139,11 +143,11 @@ export class CustomOAuthStrategy extends Strategy {
 			const value = fromTemplate(this.emailField, data);
 
 			if (!value) {
-				throw new Meteor.Error('field_not_found', `Email field "${this.emailField}" not found in data`, data);
+				throw new Meteor.Error('field_not_found', `Email field "${this.emailField}" not found in data`, JSON.stringify(data, null, 2));
 			}
-			return value;
+			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract email', error?.message);
+			throw new Error('CustomOAuth: Failed to extract email', error as Error);
 		}
 	}
 
@@ -155,9 +159,9 @@ export class CustomOAuthStrategy extends Strategy {
 				return this.getName(data);
 			}
 
-			return value;
+			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract custom name', error.message);
+			throw new Error('CustomOAuth: Failed to extract custom name', error as Error);
 		}
 	}
 
@@ -168,26 +172,24 @@ export class CustomOAuthStrategy extends Strategy {
 			if (!value) {
 				logger.debug({ msg: 'Avatar field not found in data', avatarField: this.avatarField, data });
 			}
-			return value;
+			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract avatar url', error.message);
+			throw new Error('CustomOAuth: Failed to extract avatar url', error as Error);
 		}
 	}
 
-	getName(identity: Record<string, any>) {
-		const name =
-			identity.name ||
+	getName(identity: Record<string, any>): string {
+		const name = (identity.name ||
 			identity.username ||
 			identity.nickname ||
 			identity.CharacterName ||
 			identity.userName ||
 			identity.preferred_username ||
-			identity.user?.name;
+			identity.user?.name) as string;
 		return name;
 	}
 
 	normalizeIdentity(identity: Record<string, any>) {
-		console.log('normalizeIdentity', identity);
 		if (identity) {
 			for (const normalizer of Object.values(normalizers)) {
 				const result = normalizer(identity);
@@ -215,9 +217,7 @@ export class CustomOAuthStrategy extends Strategy {
 			identity.name = this.getName(identity);
 		}
 
-		const afterRename = renameInvalidProperties(identity);
-		console.log('afterRename', afterRename);
-		return afterRename;
+		return renameInvalidProperties(identity);
 	}
 
 	override userProfile(accessToken: string, done: DoneCallback) {
@@ -227,7 +227,6 @@ export class CustomOAuthStrategy extends Strategy {
 
 		this._oauth2.get(this.identityPath, accessToken, (err, body, res) => {
 			if (err) {
-				console.log('error fetching identity from', this.identityPath, err);
 				return done(err);
 			}
 
@@ -252,7 +251,7 @@ export class CustomOAuthStrategy extends Strategy {
 			}
 
 			if (serviceData.username) {
-				let user = undefined;
+				let user: IUser | null = null;
 
 				if (this.keyField === 'username') {
 					user = this.mergeUsersDistinctServices
@@ -269,11 +268,10 @@ export class CustomOAuthStrategy extends Strategy {
 				}
 
 				await callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
-
 				// User already created or merged and has identical name as before
 				if (
-					user.services?.[serviceName] &&
-					user.services[serviceName].id === serviceData.id &&
+					user.services?.[serviceName as keyof NonNullable<IUser['services']>] &&
+					user.services[serviceName as keyof NonNullable<IUser['services']>].id === serviceData.id &&
 					user.name === serviceData.name &&
 					(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
@@ -312,7 +310,7 @@ export class CustomOAuthStrategy extends Strategy {
 						updater.set('emails', [{ address: serviceData.email, verified: true }]);
 					}
 
-					updater.set(serviceIdKey, serviceData.id);
+					updater.set(serviceIdKey as keyof IUser['services'], serviceData.id);
 
 					await saveUserIdentity({
 						_id: user._id,
@@ -337,21 +335,21 @@ export class CustomOAuthStrategy extends Strategy {
 			}
 		});
 
-		Accounts.validateNewUser((user) => {
-			if (!user.services?.[this.name]?.id) {
+		Accounts.validateNewUser((user: IUser & { email: string }) => {
+			if (!user.services?.[this.name as keyof NonNullable<IUser['services']>]?.id) {
 				return true;
 			}
 
 			if (this.usernameField) {
-				user.username = user.services[this.name].username;
+				user.username = user.services[this.name as keyof NonNullable<IUser['services']>].username;
 			}
 
 			if (this.emailField) {
-				user.email = user.services[this.name].email;
+				user.email = user.services[this.name as keyof NonNullable<IUser['services']>].email;
 			}
 
 			if (this.nameField) {
-				user.name = user.services[this.name].name;
+				user.name = user.services[this.name as keyof NonNullable<IUser['services']>].name;
 			}
 
 			return true;
@@ -363,23 +361,24 @@ const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
-		await hook.apply(this, args);
+		await hook.apply(this, args as unknown as [string, Record<string, any>]);
 	}
 
 	const [serviceName, serviceData] = args;
 
 	const user = await updateOrCreateUserFromExternalService.apply(this, args);
-	if (!user.userId) {
+
+	if (!user?.userId) {
 		return undefined;
 	}
 
-	const fullUser = await Users.findOneById(user.userId);
+	const fullUser = await Users.findOneById(user.userId as string);
 
 	if (!fullUser) {
 		return undefined;
 	}
 
-	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
+	if (settings.get('LDAP_Update_Data_On_OAuth_Login') && fullUser.username) {
 		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
 	}
 
