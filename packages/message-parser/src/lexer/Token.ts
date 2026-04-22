@@ -55,7 +55,7 @@ export enum TokenKind {
 
 export interface Token {
     kind: TokenKind;
-    raw: string;
+    raw: string; // remove later, only used for debugging
     value: string;
     start: number;
     end: number;

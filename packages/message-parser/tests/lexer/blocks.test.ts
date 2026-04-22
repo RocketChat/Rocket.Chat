@@ -115,8 +115,8 @@ describe('ordered list bullets', () => {
         expect(kinds('a 1. text')).toEqual(['TEXT', 'WHITESPACE', 'TEXT', 'WHITESPACE', 'TEXT']);
     });
 
-    test('number.text with no space becomes a URL', () => {
-        expect(kinds('1.text')).toEqual(['URL']);
+    test('number.text with no space stays text', () => {
+        expect(kinds('1.text')).toEqual(['TEXT']);
         expect(kv('1.com')).toEqual([['URL', '1.com']]);
     });
 

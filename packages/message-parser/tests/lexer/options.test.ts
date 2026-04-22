@@ -1,15 +1,14 @@
-import { parse } from '../../src';
 import { tokenize } from '../../src/lexer';
 import { TokenKind } from '../../src/lexer/Token';
 
 const kinds = (tokens: { kind: TokenKind }[]) => tokens.map((t) => t.kind).filter((k) => k !== TokenKind.EOF);
 
 describe('handwritten lexer option plumbing', () => {
-    test('parse() handwritten mode disables option-gated features by default', () => {
-        const emoticonKinds = kinds(parse(':)', { engine: 'handwritten' }) as { kind: TokenKind }[]);
-        const colorKinds = kinds(parse('color:#ff0000', { engine: 'handwritten' }) as { kind: TokenKind }[]);
-        const dollarKinds = kinds(parse('$x$', { engine: 'handwritten' }) as { kind: TokenKind }[]);
-        const parenthesisKinds = kinds(parse('\\(x\\)', { engine: 'handwritten' }) as { kind: TokenKind }[]);
+    test('tokenize() disables option-gated features when explicitly set to false', () => {
+        const emoticonKinds = kinds(tokenize(':)', { emoticons: false }));
+        const colorKinds = kinds(tokenize('color:#ff0000', { colors: false }));
+        const dollarKinds = kinds(tokenize('$x$', { katex: { dollarSyntax: false } }));
+        const parenthesisKinds = kinds(tokenize('\\(x\\)', { katex: { parenthesisSyntax: false } }));
 
         expect(emoticonKinds).toEqual([TokenKind.TEXT]);
         expect(colorKinds).toEqual([TokenKind.TEXT]);
@@ -17,18 +16,12 @@ describe('handwritten lexer option plumbing', () => {
         expect(parenthesisKinds).toEqual([TokenKind.TEXT]);
     });
 
-    test('parse() handwritten mode honors explicit feature flags', () => {
-        const emoticonKinds = kinds(parse(':)', { engine: 'handwritten', emoticons: true }) as { kind: TokenKind }[]);
-        const colorKinds = kinds(parse('color:#ff0000', { engine: 'handwritten', colors: true }) as { kind: TokenKind }[]);
-        const dollarKinds = kinds(
-            parse('$x$', { engine: 'handwritten', katex: { dollarSyntax: true } }) as { kind: TokenKind }[],
-        );
-        const parenthesisKinds = kinds(
-            parse('\\(x\\)', { engine: 'handwritten', katex: { parenthesisSyntax: true } }) as { kind: TokenKind }[],
-        );
-        const customDomainKinds = kinds(
-            parse('gitlab.local', { engine: 'handwritten', customDomains: ['local'] }) as { kind: TokenKind }[],
-        );
+    test('tokenize() honors explicit feature flags', () => {
+        const emoticonKinds = kinds(tokenize(':)', { emoticons: true }));
+        const colorKinds = kinds(tokenize('color:#ff0000', { colors: true }));
+        const dollarKinds = kinds(tokenize('$x$', { katex: { dollarSyntax: true } }));
+        const parenthesisKinds = kinds(tokenize('\\(x\\)', { katex: { parenthesisSyntax: true } }));
+        const customDomainKinds = kinds(tokenize('gitlab.local', { customDomains: ['local'] }));
 
         expect(emoticonKinds).toEqual([TokenKind.EMOTICON]);
         expect(colorKinds).toEqual([TokenKind.COLOR]);
