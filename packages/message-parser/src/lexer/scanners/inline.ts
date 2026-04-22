@@ -57,7 +57,14 @@ function tryUrlScheme(ctx: ScanContext, pos: number): number {
     }
 
     // no valid URL
-    if (ctx.textStart === -1) ctx.textStart = pos;
+    if (prevTok?.kind === TokenKind.TEXT) {
+        // Merge back with already-flushed scheme prefix so invalid URLs remain one TEXT token.
+        ctx.tokens.pop();
+        ctx.textStart = prevTok.start;
+    } else if (ctx.textStart === -1) {
+        ctx.textStart = pos;
+    }
+
     return pos + 1;
 }
 

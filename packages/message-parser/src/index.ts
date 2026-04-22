@@ -1,7 +1,9 @@
 import type { Root } from './definitions';
 import * as grammar from './grammar.pegjs';
 import { tokenize } from './lexer';
-import type { Token, LexerOptions } from './lexer';
+import type { LexerOptions } from './lexer';
+import { resolveLexerOptions } from './lexer/Options';
+import { Parser, resolveParserOptions } from './parser';
 
 export type * from './definitions';
 
@@ -19,7 +21,7 @@ export type Options = {
 	engine?: 'peggy' | 'handwritten';
 };
 
-export function parse(input: string, options?: Options): Root | Token[] {
+export function parse(input: string, options?: Options): Root {
 	if (options?.engine === 'handwritten') {
 		const lexerOptions: LexerOptions = {
 			colors: options.colors ?? false,
@@ -31,8 +33,9 @@ export function parse(input: string, options?: Options): Root | Token[] {
 			customDomains: options.customDomains,
 		};
 		const tokens = tokenize(input, lexerOptions);
-		// TODO: once the handwritten parser is ready, pass tokens through it instead of returning them raw
-		return tokens;
+		const resolved = resolveLexerOptions(lexerOptions);
+		const parserOpts = resolveParserOptions(resolved);
+		return new Parser(tokens, parserOpts).parse();
 	}
 
 	return grammar.parse(input, options);
@@ -50,3 +53,7 @@ export type {
 
 // Handwritten lexer
 export { Lexer, Token, TokenKind, makeToken, tokenize } from './lexer';
+
+// Handwritten parser
+export { Parser, TokenStream, resolveParserOptions } from './parser';
+export type { ParserOptions } from './parser';
