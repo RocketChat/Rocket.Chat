@@ -9182,6 +9182,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/tracing": "workspace:^"
     "@types/emojione": "npm:^2.2.9"
     "@types/lodash.debounce": "npm:^4.0.9"
     "@types/node": "npm:~22.16.5"
@@ -10793,6 +10794,7 @@ __metadata:
     "@opentelemetry/sdk-node": "npm:^0.54.2"
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
+    hono: "npm:^4.10.7"
     jest: "npm:~30.2.0"
     ts-jest: "npm:~29.4.6"
     typescript: "npm:~5.9.3"
@@ -23859,6 +23861,13 @@ __metadata:
   dependencies:
     parse-passwd: "npm:^1.0.0"
   checksum: 10/18dd4db87052c6a2179d1813adea0c4bfcfa4f9996f0e226fefb29eb3d548e564350fa28ec46b0bf1fbc0a1d2d6922ceceb80093115ea45ff8842a4990139250
+  languageName: node
+  linkType: hard
+
+"hono@npm:^4.10.7":
+  version: 4.12.12
+  resolution: "hono@npm:4.12.12"
+  checksum: 10/760617935cbc40fb20f2ffb4cbd5d59c3578a6838700be5f89a636a287bce59195d08f8e8e3551ca907796110457fb276327c155289d3776c151ed74ee02270f
   languageName: node
   linkType: hard
 

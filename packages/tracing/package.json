@@ -17,7 +17,8 @@
 	"dependencies": {
 		"@opentelemetry/api": "^1.9.0",
 		"@opentelemetry/exporter-trace-otlp-grpc": "^0.54.2",
-		"@opentelemetry/sdk-node": "^0.54.2"
+		"@opentelemetry/sdk-node": "^0.54.2",
+		"hono": "^4.10.7"
 	},
 	"devDependencies": {
 		"@types/jest": "~30.0.0",

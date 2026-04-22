@@ -2,6 +2,7 @@ import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, R
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
+import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
@@ -15,7 +16,6 @@ import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import { loggerMiddleware } from '../../../api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
 import type { APIActionContext } from '../../../api/server/router';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -429,7 +429,7 @@ const Api = new WebHookAPI({
 Api.router
 	.use(loggerMiddleware(integrationLogger))
 	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
-	.use(tracerSpanMiddleware);
+	.use(tracerSpanMiddleware());
 
 Api.addRoute(
 	':integrationId/:userId/:token',
