@@ -94,6 +94,9 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
+					const canMentionAll = hasAtLeastOnePermission('mention-all', rid);
+					const canMentionHere = hasAtLeastOnePermission('mention-here', rid);
+
 					const roomMessageUsers = getLastRecentUsers(rid, uid!)
 						.filter((u) => {
 							if (!filterRegex) return true;
@@ -106,7 +109,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							suggestion: true,
 						}));
 
-					if (!filterRegex || filterRegex.test('all')) {
+					if (canMentionAll && (!filterRegex || filterRegex.test('all'))) {
 						items.push({
 							_id: 'all',
 							username: 'all',
@@ -116,7 +119,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						});
 					}
 
-					if (!filterRegex || filterRegex.test('here')) {
+					if (canMentionHere && (!filterRegex || filterRegex.test('here'))) {
 						items.push({
 							_id: 'here',
 							username: 'here',
