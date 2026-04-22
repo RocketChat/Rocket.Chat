@@ -429,14 +429,6 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
-const getUserNameByUsernameCached = mem(
-	async (username: string): Promise<string | undefined> => {
-		const user = await Users.findOneByUsername(username, { projection: { name: 1 } });
-		return user?.name;
-	},
-	{ maxAge: 10000 },
-);
-
 const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
@@ -478,16 +470,18 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 
 		if (message.reactions) {
 			for (const [, reaction] of Object.entries(message.reactions)) {
-				if (!reaction.names || !reaction.usernames) {
+				if (!reaction.usernames?.length) {
 					continue;
 				}
-				for (let i = 0; i < reaction.usernames.length; i++) {
-					const username = reaction.usernames[i];
-					const name = await getUserNameByUsernameCached(username);
-					if (name) {
-						reaction.names[i] = name;
-					}
+
+				if (!reaction.names) {
+					reaction.names = [];
 				}
+
+				const users = await Users.findByUsernames(reaction.usernames, { projection: { username: 1, name: 1 } }).toArray();
+				const nameByUsername = new Map(users.map((u) => [u.username, u.name]));
+
+				reaction.names = reaction.usernames.map((username) => nameByUsername.get(username) || '');
 			}
 		}
 	}

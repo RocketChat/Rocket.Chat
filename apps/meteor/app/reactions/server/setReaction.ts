@@ -80,6 +80,15 @@ export async function setReaction(room: IRoom, user: IUser, message: IMessage, r
 		if (!message.reactions[reaction].names) {
 			message.reactions[reaction].names = [];
 		}
+
+		// Pad to match current usernames length before appending
+		while (message.reactions[reaction].names.length < message.reactions[reaction].usernames.length) {
+			message.reactions[reaction].names.push('');
+		}
+
+		message.reactions[reaction].usernames.push(user.username as string);
+		message.reactions[reaction].names.push('');
+
 		message.reactions[reaction].usernames.push(user.username as string);
 		message.reactions[reaction].names.push('');
 		await Messages.setReactions(message._id, message.reactions);
