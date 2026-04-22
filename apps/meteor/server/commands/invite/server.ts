@@ -5,11 +5,11 @@ import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { i18n } from '../../lib/i18n';
-import { FederationActions } from '../../services/room/hooks/BeforeFederationActions';
 import { addUsersToRoomMethod, sanitizeUsername } from '../../../app/lib/server/methods/addUsersToRoom';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { i18n } from '../../lib/i18n';
+import { FederationActions } from '../../services/room/hooks/BeforeFederationActions';
 
 // Type guards for the error
 function isStringError(error: unknown): error is { error: string } {

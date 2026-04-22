@@ -2,10 +2,10 @@ import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { i18n } from '../../lib/i18n';
 import { settings } from '../../../app/settings/server';
 import { setUserStatusMethod } from '../../../app/user-status/server/methods/setUserStatus';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { i18n } from '../../lib/i18n';
 
 slashCommands.add({
 	command: 'status',

@@ -2,10 +2,10 @@ import { api } from '@rocket.chat/core-services';
 import type { IRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { i18n } from '../../lib/i18n';
-import { hideRoomMethod } from '../../methods/hideRoom';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { i18n } from '../../lib/i18n';
+import { hideRoomMethod } from '../../methods/hideRoom';
 
 /*
  * Hide is a named function that will replace /hide commands

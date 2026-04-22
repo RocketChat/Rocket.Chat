@@ -70,10 +70,10 @@ function resolveImportSpecifier(fromFile, specifier) {
 	const resolved = path.resolve(dir, specifier);
 	// Try to find the actual file (could be .ts, /index.ts, etc.)
 	for (const candidate of [
-		resolved + '.ts',
-		resolved + '.tsx',
-		resolved + '.js',
-		resolved + '.jsx',
+		`${resolved}.ts`,
+		`${resolved}.tsx`,
+		`${resolved}.js`,
+		`${resolved}.jsx`,
 		path.join(resolved, 'index.ts'),
 		path.join(resolved, 'index.js'),
 		resolved, // exact match (rare)
@@ -98,7 +98,7 @@ function computeRelativeSpecifier(fromFile, targetAbs) {
 	rel = rel.replace(/\/index$/, '');
 	// Ensure it starts with ./ or ../
 	if (!rel.startsWith('.')) {
-		rel = './' + rel;
+		rel = `./${rel}`;
 	}
 	return rel;
 }
@@ -226,12 +226,7 @@ for (const oldFile of filesToMove) {
 
 // 3. Find external files that import from the old directory
 console.log('  Scanning for external files that import from the moved module...');
-const searchDirs = [
-	path.join(ROOT, 'app'),
-	path.join(ROOT, 'server'),
-	path.join(ROOT, 'ee'),
-	path.join(ROOT, 'lib'),
-];
+const searchDirs = [path.join(ROOT, 'app'), path.join(ROOT, 'server'), path.join(ROOT, 'ee'), path.join(ROOT, 'lib')];
 const externalFiles = [];
 for (const dir of searchDirs) {
 	if (fs.existsSync(dir)) {

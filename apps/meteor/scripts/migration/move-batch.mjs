@@ -25,7 +25,8 @@ if (!manifestPath) {
 	process.exit(1);
 }
 
-const manifest = fs.readFileSync(manifestPath, 'utf8')
+const manifest = fs
+	.readFileSync(manifestPath, 'utf8')
 	.split('\n')
 	.map((line) => line.trim())
 	.filter((line) => line && !line.startsWith('#'));

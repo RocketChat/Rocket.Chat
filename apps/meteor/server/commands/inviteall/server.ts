@@ -9,13 +9,13 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { i18n } from '../../lib/i18n';
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../../app/lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../app/lib/server/methods/createPrivateGroup';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { i18n } from '../../lib/i18n';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {

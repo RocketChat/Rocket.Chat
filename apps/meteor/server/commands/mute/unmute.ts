@@ -2,10 +2,10 @@ import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { i18n } from '../../lib/i18n';
-import { unmuteUserInRoom } from '../../methods/unmuteUserInRoom';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { i18n } from '../../lib/i18n';
+import { unmuteUserInRoom } from '../../methods/unmuteUserInRoom';
 
 /*
  * Unmute is a named function that will replace /unmute commands

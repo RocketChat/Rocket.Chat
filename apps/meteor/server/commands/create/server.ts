@@ -2,11 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
-import { i18n } from '../../lib/i18n';
 import { createChannelMethod } from '../../../app/lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../app/lib/server/methods/createPrivateGroup';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { i18n } from '../../lib/i18n';
 
 slashCommands.add({
 	command: 'create',
@@ -24,7 +24,7 @@ slashCommands.add({
 			return result;
 		}
 
-		const regexp = new RegExp(settings.get('UTF8_Channel_Names_Validation') as string);
+		const regexp = new RegExp(settings.get('UTF8_Channel_Names_Validation'));
 
 		const channel = regexp.exec(params.trim());
 

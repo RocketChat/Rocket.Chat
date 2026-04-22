@@ -42,12 +42,7 @@ function getAllFiles(dir, exts = ['.ts', '.js', '.tsx', '.jsx']) {
 
 const IMPORT_RE = /(?:from\s+|import\s+)(['"])([^'"]+)\1/g;
 
-const searchDirs = [
-	path.join(ROOT, 'app'),
-	path.join(ROOT, 'server'),
-	path.join(ROOT, 'ee'),
-	path.join(ROOT, 'lib'),
-];
+const searchDirs = [path.join(ROOT, 'app'), path.join(ROOT, 'server'), path.join(ROOT, 'ee'), path.join(ROOT, 'lib')];
 
 let violations = 0;
 

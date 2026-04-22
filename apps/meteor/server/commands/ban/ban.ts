@@ -2,11 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
-import { i18n } from '../../lib/i18n';
 import { sanitizeUsername } from '../../../app/lib/server/methods/addUsersToRoom';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
+import { i18n } from '../../lib/i18n';
 
 slashCommands.add({
 	command: 'ban',
