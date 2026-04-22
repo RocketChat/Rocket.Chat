@@ -108,8 +108,10 @@ const IMPORT_RE = /(?:from\s+|import\s+)(['"])([^'"]+)\1/g;
 
 /**
  * Update all relative imports in a file based on its old and new positions.
+ * `movedFiles` is a Map<oldAbsPath, newAbsPath> of all files being moved
+ * in the same operation, so we can resolve imports to co-moved siblings.
  */
-function updateImportsInFile(filePath, oldFilePath) {
+function updateImportsInFile(filePath, oldFilePath, movedFiles = new Map()) {
 	let content = fs.readFileSync(filePath, 'utf8');
 	let changed = false;
 
@@ -117,8 +119,23 @@ function updateImportsInFile(filePath, oldFilePath) {
 		if (!specifier.startsWith('.')) return match; // skip package imports
 
 		// Resolve the specifier relative to the OLD file location
-		const absoluteTarget = resolveImportSpecifier(oldFilePath, specifier);
+		let absoluteTarget = resolveImportSpecifier(oldFilePath, specifier);
 		if (!absoluteTarget) return match;
+
+		// If the target also moved (sibling file in same module), use its new location
+		for (const [oldPath, newPath] of movedFiles) {
+			// Check exact match or match stripping extension
+			if (absoluteTarget === oldPath || absoluteTarget === oldPath.replace(/\.(ts|tsx|js|jsx)$/, '')) {
+				absoluteTarget = newPath;
+				break;
+			}
+			// Also check if the target resolves to an index file inside the moved dir
+			const oldDir = oldPath.replace(/\.(ts|tsx|js|jsx)$/, '');
+			if (absoluteTarget.startsWith(oldDir)) {
+				absoluteTarget = newPath + absoluteTarget.slice(oldPath.length);
+				break;
+			}
+		}
 
 		// Compute new relative specifier from the NEW file location
 		const newSpecifier = computeRelativeSpecifier(filePath, absoluteTarget);
@@ -258,7 +275,7 @@ if (!dryRun) {
 if (!dryRun) {
 	let updatedCount = 0;
 	for (const [oldFile, newFile] of pathMap) {
-		if (updateImportsInFile(newFile, oldFile)) {
+		if (updateImportsInFile(newFile, oldFile, pathMap)) {
 			updatedCount++;
 		}
 	}
