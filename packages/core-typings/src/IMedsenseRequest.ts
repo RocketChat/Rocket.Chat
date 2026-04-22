@@ -1,10 +1,20 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
+export interface IMedsenseAfterHoursNotificationDelivery {
+	attemptedChannels: Array<'sms' | 'email'>;
+	sentChannels: Array<'sms' | 'email'>;
+	recipients?: string[];
+	errors?: string[];
+	updatedAt?: Date;
+}
+
 export interface IMedsenseRequest extends IRocketChatRecord {
 	roomId?: string | null; // The patient-pharmacist room
 	pharmacyId: string; // The pharmacy this request belongs to
 	requestedByUserId: string;
 	requestedByUsername?: string;
+	specialtyActionId?: string;
+	flowId?: string;
 	reason: string; // The issue/reason for the request
 	status:
 		| 'creating_room'
@@ -12,6 +22,7 @@ export interface IMedsenseRequest extends IRocketChatRecord {
 		| 'invite_sent'
 		| 'waiting_patient'
 		| 'ai_preassessment'
+		| 'after_hours'
 		| 'waiting_staff'
 		| 'ready_for_staff'
 		| 'taken'
@@ -41,4 +52,11 @@ export interface IMedsenseRequest extends IRocketChatRecord {
 	aiFollowUpCount?: number;
 	preAssessmentExpiresAt?: Date; // Timeout for pre-assessment
 	creationError?: string;
+	intakeAvailability?: 'open' | 'closed';
+	pharmacyTimezone?: string;
+	matchedVoiceInboundNumber?: string | null;
+	afterHoursNotifications?: {
+		patient?: IMedsenseAfterHoursNotificationDelivery;
+		pharmacy?: IMedsenseAfterHoursNotificationDelivery;
+	};
 }

@@ -17,6 +17,8 @@ export const USER_ACTIVITIES = {
 	USER_TYPING: 'user-typing',
 	USER_UPLOADING: 'user-uploading',
 	USER_PLAYING: 'user-playing',
+	MEDSENSE_PROCESSING_FORM: 'medsense-processing-form',
+	MEDSENSE_PREPARING_FORM: 'medsense-preparing-form',
 };
 
 const activityTimeouts = new Map();

@@ -15,7 +15,7 @@ export class MedsenseRequestsRaw extends BaseRaw<IMedsenseRequest> implements IM
 
 	findPendingByPharmacyId(pharmacyId: string): FindCursor<IMedsenseRequest> {
 		return this.find(
-			{ pharmacyId, status: { $in: ['invite_sent', 'waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'] } },
+			{ pharmacyId, status: { $in: ['invite_sent', 'waiting_patient', 'ai_preassessment', 'after_hours', 'waiting_staff', 'ready_for_staff'] } },
 			{ sort: { createdAt: 1 } },
 		);
 	}
@@ -99,13 +99,13 @@ export class MedsenseRequestsRaw extends BaseRaw<IMedsenseRequest> implements IM
 	}
 
 	findActiveByRoomId(roomId: string): Promise<IMedsenseRequest | null> {
-		return this.findOne({ roomId, status: { $in: ['invite_sent', 'waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff', 'taken'] } });
+		return this.findOne({ roomId, status: { $in: ['invite_sent', 'waiting_patient', 'ai_preassessment', 'after_hours', 'waiting_staff', 'ready_for_staff', 'taken'] } });
 	}
 
 	updateAssessmentProgress(
 		requestId: string,
 		data: Partial<
-			Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status' | 'aiSummary' | 'aiFollowUpCount'>
+			Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status' | 'flowId' | 'aiSummary' | 'aiFollowUpCount'>
 		>,
 	): Promise<UpdateResult | Document> {
 		return this.updateOne(

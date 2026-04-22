@@ -1,20 +1,12 @@
-import {
-	Box,
-	Button,
-	Field,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	Select,
-	TextAreaInput,
-	TextInput,
-} from '@rocket.chat/fuselage';
 import type { IMedsenseDocumentationTemplate, IMedsenseIntervention, ITemplateField, ITemplateSection } from '@rocket.chat/core-typings';
+import { Box, Button, Field, FieldGroup, FieldLabel, FieldRow, Select, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { buildDocumentationTemplateExportBasename, buildDocumentationTemplateExportPayload } from './DocumentationTemplateTransfer';
+import { downloadJsonAs } from '../../../lib/download';
 import { buildInterventionDocumentationPdfUrl } from '../../medsense/queue/InterventionDocumentationPdf';
 
 const SECTION_TYPE_OPTIONS: [string, string][] = [
@@ -34,11 +26,14 @@ const FIELD_TYPE_OPTIONS: [string, string][] = [
 	['text', 'Text'],
 	['textarea', 'Textarea'],
 	['date', 'Date'],
+	['number', 'Number'],
 	['select', 'Select'],
 	['drug', 'Drug Dropdown'],
 	['boolean', 'Yes / No'],
-	['checkbox', 'Checkbox'],
+	['repeater', 'Repeatable Rows'],
 ];
+
+const REPEATER_CHILD_FIELD_TYPE_OPTIONS = FIELD_TYPE_OPTIONS.filter(([value]) => value !== 'repeater') as [string, string][];
 
 const buildDefaultSection = (index: number): ITemplateSection => ({
 	key: `section_${index + 1}`,
@@ -58,25 +53,21 @@ const buildDefaultField = (index: number): ITemplateField => ({
 	sortOrder: index,
 });
 
+const normalizeFields = (fields: ITemplateField[]): ITemplateField[] =>
+	fields.map((field, fieldIndex) => ({
+		...field,
+		sortOrder: fieldIndex,
+		fields: field.type === 'repeater' && Array.isArray(field.fields) ? normalizeFields(field.fields) : field.fields,
+	}));
+
 const normalizeSections = (sections: ITemplateSection[]): ITemplateSection[] =>
 	sections.map((section, sectionIndex) => ({
 		...section,
 		sortOrder: sectionIndex,
-		fields: (section.fields || []).map((field, fieldIndex) => ({
-			...field,
-			sortOrder: fieldIndex,
-		})),
+		fields: normalizeFields(section.fields || []),
 	}));
 
-const CheckboxRow = ({
-	label,
-	checked,
-	onChange,
-}: {
-	label: string;
-	checked: boolean;
-	onChange: (checked: boolean) => void;
-}) => (
+const CheckboxRow = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) => (
 	<Box is='label' display='flex' alignItems='center' mb='x8'>
 		<Box is='input' type='checkbox' checked={checked} onChange={(event: any) => onChange(Boolean(event.currentTarget.checked))} mie='x8' />
 		<Box>{label}</Box>
@@ -87,11 +78,25 @@ const buildPreviewValueForField = (field: ITemplateField) => {
 	if (field.type === 'date') {
 		return new Date().toISOString().slice(0, 10);
 	}
+	if (field.type === 'number') {
+		return 1;
+	}
 	if (field.type === 'select') {
 		return field.options?.[0] || '';
 	}
 	if (field.type === 'drug') {
 		return field.options?.[0] || 'Sample Drug';
+	}
+	if (field.type === 'repeater') {
+		const childFields = field.fields || [];
+		if (!childFields.length) {
+			return [];
+		}
+
+		return [
+			Object.fromEntries(childFields.map((childField) => [childField.key, buildPreviewValueForField(childField)])),
+			Object.fromEntries(childFields.map((childField) => [childField.key, `Additional ${childField.label}`])),
+		];
 	}
 	if (field.type === 'boolean' || field.type === 'checkbox') {
 		return 'Yes';
@@ -125,14 +130,9 @@ const buildPreviewArtifacts = (template: Partial<IMedsenseDocumentationTemplate>
 	};
 	const followUp: Record<string, any> = {};
 	const prescriptionSection = resolvedTemplate.sections.find((section) => section.type === 'prescriptions');
-	const prescriptions =
-		prescriptionSection?.fields?.length
-			? [
-					Object.fromEntries(
-						prescriptionSection.fields.map((field) => [field.key, buildPreviewValueForField(field)]),
-					),
-			  ]
-			: [];
+	const prescriptions = prescriptionSection?.fields?.length
+		? [Object.fromEntries(prescriptionSection.fields.map((field) => [field.key, buildPreviewValueForField(field)]))]
+		: [];
 
 	resolvedTemplate.sections.forEach((section) => {
 		if (section.type === 'prescriptions' || section.type === 'signatures') {
@@ -218,11 +218,14 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 		}
 	}, [initialData]);
 
-	useEffect(() => () => {
-		if (previewUrl) {
-			URL.revokeObjectURL(previewUrl);
-		}
-	}, [previewUrl]);
+	useEffect(
+		() => () => {
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+			}
+		},
+		[previewUrl],
+	);
 
 	useEffect(() => {
 		if (!previewOpen || !previewLoading) {
@@ -304,7 +307,9 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 	const addField = (sectionIndex: number) => {
 		updateSections((sections) =>
 			sections.map((section, index) =>
-				index === sectionIndex ? { ...section, fields: [...(section.fields || []), buildDefaultField((section.fields || []).length)] } : section,
+				index === sectionIndex
+					? { ...section, fields: [...(section.fields || []), buildDefaultField((section.fields || []).length)] }
+					: section,
 			),
 		);
 	};
@@ -315,7 +320,60 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 					? {
 							...section,
 							fields: (section.fields || []).map((field, currentIndex) => (currentIndex === fieldIndex ? { ...field, ...update } : field)),
-					  }
+						}
+					: section,
+			),
+		);
+	};
+	const addRepeaterChildField = (sectionIndex: number, fieldIndex: number) => {
+		updateSections((sections) =>
+			sections.map((section, index) =>
+				index === sectionIndex
+					? {
+							...section,
+							fields: (section.fields || []).map((field, currentIndex) =>
+								currentIndex === fieldIndex
+									? { ...field, fields: [...(field.fields || []), buildDefaultField((field.fields || []).length)] }
+									: field,
+							),
+						}
+					: section,
+			),
+		);
+	};
+	const updateRepeaterChildField = (sectionIndex: number, fieldIndex: number, childFieldIndex: number, update: Partial<ITemplateField>) => {
+		updateSections((sections) =>
+			sections.map((section, index) =>
+				index === sectionIndex
+					? {
+							...section,
+							fields: (section.fields || []).map((field, currentIndex) =>
+								currentIndex === fieldIndex
+									? {
+											...field,
+											fields: (field.fields || []).map((childField, currentChildIndex) =>
+												currentChildIndex === childFieldIndex ? { ...childField, ...update } : childField,
+											),
+										}
+									: field,
+							),
+						}
+					: section,
+			),
+		);
+	};
+	const removeRepeaterChildField = (sectionIndex: number, fieldIndex: number, childFieldIndex: number) => {
+		updateSections((sections) =>
+			sections.map((section, index) =>
+				index === sectionIndex
+					? {
+							...section,
+							fields: (section.fields || []).map((field, currentIndex) =>
+								currentIndex === fieldIndex
+									? { ...field, fields: (field.fields || []).filter((_, currentChildIndex) => currentChildIndex !== childFieldIndex) }
+									: field,
+							),
+						}
 					: section,
 			),
 		);
@@ -351,7 +409,7 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 					? {
 							...section,
 							fields: (section.fields || []).filter((_, currentIndex) => currentIndex !== fieldIndex),
-					  }
+						}
 					: section,
 			),
 		);
@@ -411,6 +469,11 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 		setPreviewError(null);
 	};
 
+	const handleExport = () => {
+		downloadJsonAs(buildDocumentationTemplateExportPayload(formData), buildDocumentationTemplateExportBasename(formData));
+		dispatchToast({ type: 'success', message: 'Template export downloaded' });
+	};
+
 	if (fetching) {
 		return <Box p='x24'>Loading template...</Box>;
 	}
@@ -423,6 +486,9 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 			<Box mb='x24' display='flex' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
 				<Button onClick={onBack}>Back to List</Button>
 				<Box display='flex'>
+					<Button onClick={handleExport} disabled={loading || previewLoading} mie='x8'>
+						Export JSON
+					</Button>
 					<Button onClick={handlePreview} disabled={loading || previewLoading} loading={previewLoading} mie='x8'>
 						Preview PDF
 					</Button>
@@ -441,11 +507,18 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 				<Box fontScale='p2m' mbe='x12'>
 					Template Basics
 				</Box>
+				<Box fontScale='c1' color='hint' mbe='x16'>
+					Supported field shapes include repeatable row groups for medication lists, goals, resources, and other variable-length answers.
+				</Box>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>Template Key</FieldLabel>
 						<FieldRow>
-							<TextInput disabled={Boolean(templateId)} value={formData.key || ''} onChange={(event: any) => handleChange('key', event.currentTarget.value)} />
+							<TextInput
+								disabled={Boolean(templateId)}
+								value={formData.key || ''}
+								onChange={(event: any) => handleChange('key', event.currentTarget.value)}
+							/>
 						</FieldRow>
 					</Field>
 					<Field>
@@ -457,7 +530,11 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 					<Field>
 						<FieldLabel>Description</FieldLabel>
 						<FieldRow>
-							<TextAreaInput value={formData.description || ''} onChange={(event: any) => handleChange('description', event.currentTarget.value)} rows={3} />
+							<TextAreaInput
+								value={formData.description || ''}
+								onChange={(event: any) => handleChange('description', event.currentTarget.value)}
+								rows={3}
+							/>
 						</FieldRow>
 					</Field>
 					<Field>
@@ -474,7 +551,11 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 								))
 							) : (
 								<FieldRow>
-									<TextInput value={formData.interventionTypes?.join(', ') || ''} onChange={(event: any) => handleInterventionTypesChange(event.currentTarget.value)} placeholder='uti, counseling, medication_review' />
+									<TextInput
+										value={formData.interventionTypes?.join(', ') || ''}
+										onChange={(event: any) => handleInterventionTypesChange(event.currentTarget.value)}
+										placeholder='uti, counseling, medication_review'
+									/>
 								</FieldRow>
 							)}
 						</Box>
@@ -482,7 +563,11 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 					<Field>
 						<FieldLabel>Specialty Action IDs</FieldLabel>
 						<FieldRow>
-							<TextInput value={formData.specialtyActionIds?.join(', ') || ''} onChange={(event: any) => handleActionIdsChange(event.currentTarget.value)} placeholder='medessist:uti' />
+							<TextInput
+								value={formData.specialtyActionIds?.join(', ') || ''}
+								onChange={(event: any) => handleActionIdsChange(event.currentTarget.value)}
+								placeholder='medessist:uti'
+							/>
 						</FieldRow>
 					</Field>
 				</FieldGroup>
@@ -552,19 +637,29 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 							<Field>
 								<FieldLabel>Section Key</FieldLabel>
 								<FieldRow>
-									<TextInput value={section.key} onChange={(event: any) => updateSection(sectionIndex, { key: event.currentTarget.value })} />
+									<TextInput
+										value={section.key}
+										onChange={(event: any) => updateSection(sectionIndex, { key: event.currentTarget.value })}
+									/>
 								</FieldRow>
 							</Field>
 							<Field>
 								<FieldLabel>Section Title</FieldLabel>
 								<FieldRow>
-									<TextInput value={section.title} onChange={(event: any) => updateSection(sectionIndex, { title: event.currentTarget.value })} />
+									<TextInput
+										value={section.title}
+										onChange={(event: any) => updateSection(sectionIndex, { title: event.currentTarget.value })}
+									/>
 								</FieldRow>
 							</Field>
 							<Field>
 								<FieldLabel>Section Type</FieldLabel>
 								<FieldRow>
-									<Select options={SECTION_TYPE_OPTIONS} value={section.type} onChange={(value) => updateSection(sectionIndex, { type: String(value) as any })} />
+									<Select
+										options={SECTION_TYPE_OPTIONS}
+										value={section.type}
+										onChange={(value) => updateSection(sectionIndex, { type: String(value) as any })}
+									/>
 								</FieldRow>
 							</Field>
 						</FieldGroup>
@@ -585,7 +680,14 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 								</Box>
 
 								{(section.fields || []).map((field, fieldIndex) => (
-									<Box key={`${field.key}-${fieldIndex}`} mb='x12' p='x12' borderWidth='default' borderColor='extra-light' borderRadius='x4'>
+									<Box
+										key={`${field.key}-${fieldIndex}`}
+										mb='x12'
+										p='x12'
+										borderWidth='default'
+										borderColor='extra-light'
+										borderRadius='x4'
+									>
 										<Box display='flex' justifyContent='space-between' alignItems='center' mb='x8'>
 											<Box fontScale='p2m'>Field {fieldIndex + 1}</Box>
 											<Button small danger onClick={() => removeField(sectionIndex, fieldIndex)}>
@@ -597,19 +699,29 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 											<Field>
 												<FieldLabel>Field Key</FieldLabel>
 												<FieldRow>
-													<TextInput value={field.key} onChange={(event: any) => updateField(sectionIndex, fieldIndex, { key: event.currentTarget.value })} />
+													<TextInput
+														value={field.key}
+														onChange={(event: any) => updateField(sectionIndex, fieldIndex, { key: event.currentTarget.value })}
+													/>
 												</FieldRow>
 											</Field>
 											<Field>
 												<FieldLabel>Field Label</FieldLabel>
 												<FieldRow>
-													<TextInput value={field.label} onChange={(event: any) => updateField(sectionIndex, fieldIndex, { label: event.currentTarget.value })} />
+													<TextInput
+														value={field.label}
+														onChange={(event: any) => updateField(sectionIndex, fieldIndex, { label: event.currentTarget.value })}
+													/>
 												</FieldRow>
 											</Field>
 											<Field>
 												<FieldLabel>Field Type</FieldLabel>
 												<FieldRow>
-													<Select options={FIELD_TYPE_OPTIONS} value={field.type} onChange={(value) => updateField(sectionIndex, fieldIndex, { type: String(value) as any })} />
+													<Select
+														options={FIELD_TYPE_OPTIONS}
+														value={field.type}
+														onChange={(value) => updateField(sectionIndex, fieldIndex, { type: String(value) as any })}
+													/>
 												</FieldRow>
 											</Field>
 											<Field>
@@ -651,11 +763,13 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 																placeholder='Search imported CCDD drug catalog'
 															/>
 															<Box fontScale='c1' color='hint' mbs='x8' mbe='x8'>
-																Selected drugs: {Array.isArray((field as any).drugCatalogCodes) ? (field as any).drugCatalogCodes.length : 0}
+																Selected drugs:{' '}
+																{Array.isArray((field as any).drugCatalogCodes) ? (field as any).drugCatalogCodes.length : 0}
 															</Box>
 															<Box maxHeight='180px' overflowY='auto' borderWidth='default' borderColor='extra-light' p='x8'>
 																{drugCatalog.map((drug: any) => {
-																	const checked = Array.isArray((field as any).drugCatalogCodes) && (field as any).drugCatalogCodes.includes(drug.code);
+																	const checked =
+																		Array.isArray((field as any).drugCatalogCodes) && (field as any).drugCatalogCodes.includes(drug.code);
 																	return (
 																		<Box key={drug.code} display='flex' alignItems='center' mb='x4'>
 																			<Box is='label' display='flex' alignItems='center'>
@@ -668,7 +782,9 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 																				/>
 																				<Box display='flex' flexDirection='column'>
 																					<Box fontScale='p2'>{drug.displayName}</Box>
-																					<Box fontScale='c1' color='hint'>{drug.code}</Box>
+																					<Box fontScale='c1' color='hint'>
+																						{drug.code}
+																					</Box>
 																				</Box>
 																			</Box>
 																		</Box>
@@ -679,6 +795,108 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 														</Box>
 													</FieldRow>
 												</Field>
+											)}
+											{field.type === 'repeater' && (
+												<Box w='full'>
+													<Box display='flex' justifyContent='space-between' alignItems='center' mb='x8'>
+														<Box fontScale='p2m'>Repeater Columns</Box>
+														<Button small onClick={() => addRepeaterChildField(sectionIndex, fieldIndex)}>
+															Add Column
+														</Button>
+													</Box>
+													<Box fontScale='c1' color='hint' mbe='x12'>
+														Rows will be added dynamically in documentation review and PDF output.
+													</Box>
+													{(field.fields || []).map((childField, childFieldIndex) => (
+														<Box
+															key={`${childField.key}-${childFieldIndex}`}
+															mb='x12'
+															p='x12'
+															borderWidth='default'
+															borderColor='extra-light'
+															borderRadius='x4'
+														>
+															<Box display='flex' justifyContent='space-between' alignItems='center' mb='x8'>
+																<Box fontScale='p2m'>Column {childFieldIndex + 1}</Box>
+																<Button small danger onClick={() => removeRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex)}>
+																	Remove Column
+																</Button>
+															</Box>
+															<FieldGroup>
+																<Field>
+																	<FieldLabel>Column Key</FieldLabel>
+																	<FieldRow>
+																		<TextInput
+																			value={childField.key}
+																			onChange={(event: any) =>
+																				updateRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex, {
+																					key: event.currentTarget.value,
+																				})
+																			}
+																		/>
+																	</FieldRow>
+																</Field>
+																<Field>
+																	<FieldLabel>Column Label</FieldLabel>
+																	<FieldRow>
+																		<TextInput
+																			value={childField.label}
+																			onChange={(event: any) =>
+																				updateRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex, {
+																					label: event.currentTarget.value,
+																				})
+																			}
+																		/>
+																	</FieldRow>
+																</Field>
+																<Field>
+																	<FieldLabel>Column Type</FieldLabel>
+																	<FieldRow>
+																		<Select
+																			options={REPEATER_CHILD_FIELD_TYPE_OPTIONS}
+																			value={childField.type}
+																			onChange={(value) =>
+																				updateRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex, { type: String(value) as any })
+																			}
+																		/>
+																	</FieldRow>
+																</Field>
+																{childField.type === 'select' && (
+																	<Field>
+																		<FieldLabel>Options</FieldLabel>
+																		<FieldRow>
+																			<TextInput
+																				value={childField.options?.join(', ') || ''}
+																				onChange={(event: any) =>
+																					updateRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex, {
+																						options: event.currentTarget.value
+																							.split(',')
+																							.map((item: string) => item.trim())
+																							.filter(Boolean),
+																					})
+																				}
+																			/>
+																		</FieldRow>
+																	</Field>
+																)}
+															</FieldGroup>
+															<CheckboxRow
+																label='Required'
+																checked={Boolean(childField.required)}
+																onChange={(checked) =>
+																	updateRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex, { required: checked })
+																}
+															/>
+															<CheckboxRow
+																label='Visible In PDF'
+																checked={childField.visibleInPdf !== false}
+																onChange={(checked) =>
+																	updateRepeaterChildField(sectionIndex, fieldIndex, childFieldIndex, { visibleInPdf: checked })
+																}
+															/>
+														</Box>
+													))}
+												</Box>
 											)}
 										</FieldGroup>
 
@@ -707,70 +925,70 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 
 			{previewOpen &&
 				createPortal(
-				<div
-					style={{
-						position: 'fixed',
-						inset: 0,
-						backgroundColor: 'rgba(17, 24, 39, 0.6)',
-						zIndex: 100000,
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						padding: '12px',
-					}}
-				>
 					<div
 						style={{
-							background: 'var(--rcx-color-surface-light, #fff)',
-							width: 'calc(100vw - 24px)',
-							height: 'calc(100vh - 24px)',
-							maxWidth: '1400px',
-							maxHeight: '1000px',
-							borderRadius: '8px',
+							position: 'fixed',
+							inset: 0,
+							backgroundColor: 'rgba(17, 24, 39, 0.6)',
+							zIndex: 100000,
 							display: 'flex',
-							flexDirection: 'column',
-							overflow: 'hidden',
-							boxShadow: '0 20px 60px rgba(0, 0, 0, 0.35)',
+							alignItems: 'center',
+							justifyContent: 'center',
+							padding: '12px',
 						}}
 					>
 						<div
 							style={{
+								background: 'var(--rcx-color-surface-light, #fff)',
+								width: 'calc(100vw - 24px)',
+								height: 'calc(100vh - 24px)',
+								maxWidth: '1400px',
+								maxHeight: '1000px',
+								borderRadius: '8px',
 								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								padding: '16px 20px',
-								borderBottom: '1px solid var(--rcx-color-stroke-extra-light, #e5e7eb)',
+								flexDirection: 'column',
+								overflow: 'hidden',
+								boxShadow: '0 20px 60px rgba(0, 0, 0, 0.35)',
 							}}
 						>
-							<div style={{ fontWeight: 600 }}>Template PDF Preview</div>
-							<div style={{ display: 'flex', gap: '8px' }}>
-								{previewUrl && (
-									<Button small onClick={() => window.open(previewUrl, '_blank', 'noopener,noreferrer')}>
-										Open in New Tab
+							<div
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+									padding: '16px 20px',
+									borderBottom: '1px solid var(--rcx-color-stroke-extra-light, #e5e7eb)',
+								}}
+							>
+								<div style={{ fontWeight: 600 }}>Template PDF Preview</div>
+								<div style={{ display: 'flex', gap: '8px' }}>
+									{previewUrl && (
+										<Button small onClick={() => window.open(previewUrl, '_blank', 'noopener,noreferrer')}>
+											Open in New Tab
+										</Button>
+									)}
+									<Button small onClick={handleClosePreview}>
+										Close
 									</Button>
+								</div>
+							</div>
+							<div style={{ flex: 1, background: 'var(--rcx-color-surface-tint, #f8fafc)' }}>
+								{previewLoading && <Box p='x16'>Generating preview...</Box>}
+								{!previewLoading && previewError && (
+									<Box p='x16' color='danger'>
+										Unable to generate preview: {previewError}
+									</Box>
 								)}
-								<Button small onClick={handleClosePreview}>
-									Close
-								</Button>
+								{!previewLoading && !previewError && previewUrl && (
+									<object data={previewUrl} type='application/pdf' width='100%' height='100%' style={{ display: 'block' }}>
+										<embed src={previewUrl} type='application/pdf' width='100%' height='100%' style={{ display: 'block' }} />
+									</object>
+								)}
 							</div>
 						</div>
-						<div style={{ flex: 1, background: 'var(--rcx-color-surface-tint, #f8fafc)' }}>
-							{previewLoading && <Box p='x16'>Generating preview...</Box>}
-							{!previewLoading && previewError && (
-								<Box p='x16' color='danger'>
-									Unable to generate preview: {previewError}
-								</Box>
-							)}
-							{!previewLoading && !previewError && previewUrl && (
-								<object data={previewUrl} type='application/pdf' width='100%' height='100%' style={{ display: 'block' }}>
-									<embed src={previewUrl} type='application/pdf' width='100%' height='100%' style={{ display: 'block' }} />
-								</object>
-							)}
-						</div>
-					</div>
-				</div>,
-				document.body,
-			)}
+					</div>,
+					document.body,
+				)}
 		</Box>
 	);
 };

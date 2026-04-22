@@ -44,6 +44,12 @@ else \
   git config --global --add safe.directory /app; \
   yarn install --immutable; \
   echo "[build] yarn install --immutable done"; \
+  echo "[build] core-typings package build start"; \
+  yarn workspace @rocket.chat/core-typings build; \
+  echo "[build] core-typings package build done"; \
+  echo "[build] ui-contexts package build start"; \
+  yarn workspace @rocket.chat/ui-contexts build; \
+  echo "[build] ui-contexts package build done"; \
   echo "[build] ui-kit packages build start"; \
   yarn workspace @rocket.chat/ui-kit build; \
   yarn workspace @rocket.chat/fuselage-ui-kit build; \
@@ -51,9 +57,6 @@ else \
   echo "[build] message-parser package build start"; \
   yarn workspace @rocket.chat/message-parser build; \
   echo "[build] message-parser package build done"; \
-  echo "[build] core-typings package build start"; \
-  yarn workspace @rocket.chat/core-typings build; \
-  echo "[build] core-typings package build done"; \
   echo "[build] rest-typings package build start"; \
   yarn workspace @rocket.chat/rest-typings build; \
   echo "[build] rest-typings package build done"; \
@@ -104,12 +107,13 @@ RUN echo "[build] create rocketchat user start" \
   && chown -R rocketchat:rocketchat /app /app/uploads /tmp \
   && echo "[build] create rocketchat user done"
 
-COPY --from=build --chown=1001:1001 /app/bundle /app/bundle
+COPY --from=build --chown=1001:1001 /app/bundle/ /app/bundle/
 
 USER rocketchat
 
 RUN echo "[build] npm install --omit=dev start" \
   && cd programs/server && npm install --omit=dev \
+  && test -f npm/node_modules/isolated-vm/out/isolated_vm.node \
   && echo "[build] npm install --omit=dev done"
 
 RUN echo "[build] link abac for meteor packages start" \
@@ -123,15 +127,26 @@ RUN echo "[build] link abac for meteor packages start" \
   && echo "[build] link abac for meteor packages done"
 
 RUN echo "[build] patch apps-engine deno flags start" \
-  && sed -i "s/--unstable-detect-cjs/--cached-only/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/server/runtime/deno/AppsEngineDenoRuntime.js \
-  && sed -i "s/--unstable-detect-cjs/--cached-only/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/src/server/runtime/deno/AppsEngineDenoRuntime.ts \
-  && sed -i "s/--cached-only/--cached-only','--no-lock/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/server/runtime/deno/AppsEngineDenoRuntime.js \
-  && sed -i "s/--cached-only/--cached-only','--no-lock/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/src/server/runtime/deno/AppsEngineDenoRuntime.ts \
+  && for runtime_file in \
+    /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/server/runtime/deno/AppsEngineDenoRuntime.js \
+    /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/src/server/runtime/deno/AppsEngineDenoRuntime.ts; do \
+      if [ -f "$runtime_file" ]; then \
+        sed -i "s/--unstable-detect-cjs/--cached-only/g" "$runtime_file"; \
+        sed -i "s/--cached-only/--cached-only','--no-lock/g" "$runtime_file"; \
+      else \
+        echo "[build] skip missing $runtime_file"; \
+      fi; \
+    done \
   && rm -f /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.lock \
   && echo "[build] patch apps-engine deno flags done"
-
 RUN echo "[build] deno cache start" \
-  && deno cache --no-lock --config /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.jsonc /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/main.ts \
+  && deno_config=/app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.jsonc \
+  && deno_entry=/app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/main.ts \
+  && if [ -f "$deno_config" ] && [ -f "$deno_entry" ]; then \
+    deno cache --no-lock --config "$deno_config" "$deno_entry"; \
+  else \
+    echo "[build] skip deno cache; apps-engine deno runtime files not found"; \
+  fi \
   && echo "[build] deno cache done"
 
 

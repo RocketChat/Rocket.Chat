@@ -30,6 +30,7 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 
 export type OutgoingIntegrationEvent =
 	| 'sendMessage'
+	| 'medsenseSessionSummary'
 	| 'fileUploaded'
 	| 'roomArchived'
 	| 'roomCreated'

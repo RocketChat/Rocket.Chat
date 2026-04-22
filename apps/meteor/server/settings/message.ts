@@ -1,5 +1,3 @@
-import { Roles, Users } from '@rocket.chat/models';
-
 import { MessageTypesValues } from '../../app/lib/lib/MessageTypes';
 import { settingsRegistry } from '../../app/settings/server';
 
@@ -386,56 +384,6 @@ export const createMessageSettings = () =>
 		await this.add('Message_AllowStarring', true, {
 			type: 'boolean',
 			public: true,
-		});
-
-		await this.section('Medsense', async function () {
-			const botUsers = await Users.findUsersInRoles('bot', null, { projection: { username: 1 } }).toArray();
-			const botOptions = [
-				{ key: '', i18nLabel: 'None' },
-				...botUsers
-					.map((user) => user.username)
-					.filter((username): username is string => typeof username === 'string' && username.trim().length > 0)
-					.sort((a, b) => a.localeCompare(b))
-					.map((username) => ({ key: username, i18nLabel: username })),
-			];
-
-			const roles = await Roles.find({ scope: 'Users' }, { projection: { name: 1 } }).toArray();
-			const roleOptions = roles
-				.map((role) => role.name)
-				.filter((name): name is string => typeof name === 'string' && name.trim().length > 0)
-				.sort((a, b) => a.localeCompare(b))
-				.map((name) => ({ key: name, i18nLabel: name }));
-
-			await this.add('Medsense_Bot_User', '', {
-				type: 'select',
-				public: true,
-				values: botOptions,
-				i18nLabel: 'Medsense_Bot_User',
-				i18nDescription: 'Medsense_Bot_User_Description',
-			});
-
-			await this.add('Medsense_Start_Chat_Roles', ['user'], {
-				type: 'multiSelect',
-				public: true,
-				values: roleOptions,
-				i18nLabel: 'Medsense_Start_Chat_Roles',
-				i18nDescription: 'Medsense_Start_Chat_Roles_Description',
-			});
-
-			await this.add('Medsense_Start_Chat_Label', '', {
-				type: 'string',
-				public: true,
-				i18nLabel: 'Medsense_Start_Chat_Label',
-				i18nDescription: 'Medsense_Start_Chat_Label_Description',
-			});
-
-			await this.add('Medsense_Start_Chat_Greeting', 'What do you want to discuss today?', {
-				type: 'string',
-				public: true,
-				i18nLabel: 'Medsense_Start_Chat_Greeting',
-				i18nDescription: 'Medsense_Start_Chat_Greeting_Description',
-			});
-
 		});
 
 		await this.add('Message_CustomFields_Enabled', false, {

@@ -8,6 +8,15 @@ import './ComposerUserActionIndicator.css';
 
 const maxUsernames = 5;
 const MEDSENSE_LABEL = 'medsense';
+type ActivityAction = 'typing' | 'recording' | 'uploading' | 'playing' | 'medsense-processing-form' | 'medsense-preparing-form';
+
+const getActivityAction = (key: string): ActivityAction => {
+	if (key === 'medsense-processing-form' || key === 'medsense-preparing-form') {
+		return key;
+	}
+
+	return key.split('-')[1] as ActivityAction;
+};
 
 export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement | null => {
 	const { t } = useTranslation();
@@ -21,7 +30,7 @@ export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?:
 		() =>
 			Object.entries(roomAction ?? {})
 				.map(([key, usersMap]) => {
-					const action = key.split('-')[1] as 'typing' | 'recording' | 'uploading' | 'playing';
+					const action = getActivityAction(key);
 					const users = Object.keys(usersMap || {});
 					if (!users.length) {
 						return;
@@ -30,7 +39,7 @@ export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?:
 					return { action, users };
 				})
 				.filter(Boolean) as {
-				action: 'typing' | 'recording' | 'uploading' | 'playing';
+				action: ActivityAction;
 				users: string[];
 			}[],
 		[roomAction],
@@ -57,13 +66,19 @@ export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?:
 			if (hasMedsense) {
 				phrases.push('MedSense is thinking');
 			}
+			if (action === 'medsense-processing-form' && normalizedUsers.includes(MEDSENSE_LABEL)) {
+				phrases.push('MedSense is processing form');
+			}
+			if (action === 'medsense-preparing-form' && normalizedUsers.includes(MEDSENSE_LABEL)) {
+				phrases.push('MedSense is preparing form');
+			}
 
-			if (nonMedsenseUsers.length > 0) {
+			if (nonMedsenseUsers.length > 0 && !action.startsWith('medsense-')) {
 				const userList = formatUsers(nonMedsenseUsers);
 				phrases.push(`${userList} ${nonMedsenseUsers.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}`);
 			}
 
-			if (!phrases.length && users.length > 0) {
+			if (!phrases.length && users.length > 0 && !action.startsWith('medsense-')) {
 				const userList = formatUsers(users);
 				phrases.push(`${userList} ${users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}`);
 			}

@@ -1,0 +1,26 @@
+# Keep the source image context focused on inputs the Dockerfile can use.
+# The Dockerfile may use prebuilt/bundle and full source builds read git metadata,
+# so those are intentionally not ignored here.
+
+/node_modules
+/apps/meteor/node_modules
+
+.turbo
+**/.turbo
+
+data
+**/data/db
+
+.cache
+**/.cache
+
+coverage
+**/coverage
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.DS_Store
+Thumbs.db

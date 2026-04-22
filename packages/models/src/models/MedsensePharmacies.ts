@@ -22,11 +22,24 @@ export class MedsensePharmaciesRaw extends BaseRaw<IMedsensePharmacy> implements
 					name: 1,
 				},
 			},
+			{
+				key: {
+					voiceInboundNumber: 1,
+				},
+				unique: true,
+				partialFilterExpression: {
+					voiceInboundNumber: { $type: 'string' },
+				},
+			},
 		];
 	}
 
 	findOneBySlug(slug: string, options = {}) {
 		return this.findOne({ slug }, options);
+	}
+
+	findOneByVoiceInboundNumber(voiceInboundNumber: string, options = {}) {
+		return this.findOne({ voiceInboundNumber }, options);
 	}
 
 	create(data: Omit<IMedsensePharmacy, '_id' | 'createdAt' | 'updatedAt'>) {

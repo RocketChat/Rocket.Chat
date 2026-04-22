@@ -2,7 +2,6 @@ import {
 	Badge,
 	Box,
 	Button,
-	IconButton,
 	Callout,
 	Modal,
 	ModalHeader,
@@ -32,10 +31,10 @@ import {
 	Pagination,
 } from '@rocket.chat/fuselage';
 import { GenericMenu, Page, PageContent, PageHeader, usePagination } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useSetting, useToastMessageDispatch, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { PhoneNumberInput } from '@rocket.chat/web-ui-registration';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import PatientUserAutoComplete from './PatientUserAutoComplete';
 
@@ -69,6 +68,226 @@ const formatInterventionType = (type?: string) => {
 	return type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 };
 
+const formatSessionState = (request: any) => {
+	const voice = request?.voice;
+	if (voice?.active === true) {
+		return voice.state ? String(voice.state).replace(/_/g, ' ') : 'Active';
+	}
+	if (voice?.state && voice.state !== 'idle') {
+		return String(voice.state).replace(/_/g, ' ');
+	}
+	if (request?.status) {
+		return formatRequestStatus(request.status);
+	}
+	return 'Idle';
+};
+
+const sessionStateVariant = (request: any) => {
+	const voice = request?.voice;
+	if (voice?.active === true) {
+		return 'featured';
+	}
+	if (request?.status === 'taken') {
+		return 'primary';
+	}
+	return 'secondary';
+};
+
+const hasVoiceSessionContext = (request: any) => {
+	const voice = request?.voice;
+	if (!voice || typeof voice !== 'object') {
+		return false;
+	}
+	return Boolean(
+		voice.sessionId ||
+			voice.transport ||
+			voice.roomName ||
+			voice.lastTranscriptAt ||
+			voice.lastTtsAt ||
+			voice.lastEventAt ||
+			(voice.state && voice.state !== 'idle') ||
+			voice.active === true,
+	);
+};
+
+const isVoiceSessionCallable = (request: any) => {
+	const voice = request?.voice;
+	const patientPresent = voice?.participants?.patient?.present;
+	const state = String(voice?.state || '').trim().toLowerCase();
+	const isTerminalState = ['ended', 'disconnected', 'closed'].includes(state);
+	return voice?.active === true && patientPresent === true && !isTerminalState;
+};
+
+const normalizePreviewMessages = (messages: any[], request: any) => {
+	const requestedBy = String(request?.requestedByUsername || '').trim().toLowerCase();
+	return (Array.isArray(messages) ? messages : [])
+		.map((message: any) => {
+			const senderName =
+				String(message?.u?.name || message?.u?.username || message?.username || message?.alias || '').trim() || 'System';
+			const text = String(message?.msg || '').trim() || (message?.t ? `[${String(message.t).replace(/_/g, ' ')}]` : '');
+			const loweredSender = senderName.toLowerCase();
+			const kind = message?.t
+				? 'system'
+				: loweredSender.includes('bot') || loweredSender.includes('medsense')
+					? 'bot'
+					: requestedBy && loweredSender === requestedBy
+						? 'patient'
+						: 'staff';
+			return {
+				id: String(message?._id || message?.id || `${senderName}-${message?.ts || Math.random()}`),
+				ts: message?.ts || message?._updatedAt || null,
+				senderName,
+				text: text || '(no text)',
+				kind,
+			};
+		})
+		.filter((message) => Boolean(message.text))
+		.sort((left, right) => new Date(left.ts || 0).getTime() - new Date(right.ts || 0).getTime())
+		.slice(-10);
+};
+
+const previewTagVariant = (kind: string) => {
+	switch (kind) {
+		case 'patient':
+			return 'featured';
+		case 'staff':
+			return 'primary';
+		case 'bot':
+			return 'secondary-warning';
+		case 'system':
+			return 'secondary';
+		default:
+			return 'secondary';
+	}
+};
+
+const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => void }): JSX.Element => {
+	const t = useTranslation();
+	const formatDate = useFormatDate();
+	const getRoomSessionInfo = useEndpoint('GET', '/v1/medsense/room.sessionInfo');
+	const getRoomPreview = useEndpoint('GET', '/v1/medsense/room.preview');
+
+	const { data, isLoading, error } = useQuery({
+		queryKey: ['queue-preview-modal', request?.roomId],
+		queryFn: async () => {
+			if (!request?.roomId) {
+				return { room: null, sessionInfo: null, messages: [] };
+			}
+			const [previewResponse, sessionInfoResponse] = await Promise.all([
+				getRoomPreview({ roomId: request.roomId, count: 10 }),
+				getRoomSessionInfo({ roomId: request.roomId }),
+			]);
+			return {
+				room: previewResponse?.room || null,
+				sessionInfo: sessionInfoResponse?.sessionInfo || null,
+				messages: normalizePreviewMessages(previewResponse?.messages || [], request),
+			};
+		},
+		enabled: Boolean(request?.roomId),
+	});
+
+	const contextSummary = useMemo(() => {
+		return typeof data?.sessionInfo?.summary?.text === 'string' ? data.sessionInfo.summary.text : '';
+	}, [data?.sessionInfo]);
+
+	return (
+		<Modal {...({ style: { width: 'min(960px, 92vw)' } } as any)}>
+			<ModalHeader>
+				<Box display='flex' flexDirection='column' flexGrow={1} gap='x8'>
+					<ModalTitle>Conversation Preview</ModalTitle>
+					<Box display='flex' flexWrap='wrap' gap='x8' alignItems='center'>
+						<Tag variant='secondary'>{request?.requestedByUsername || 'Unknown'}</Tag>
+						<Tag variant={(request?.status ? 'primary' : 'secondary') as any}>
+							{request?.status ? formatRequestStatus(request.status) : 'Unknown'}
+						</Tag>
+						<Tag variant={sessionStateVariant(request) as any}>{formatSessionState(request)}</Tag>
+					</Box>
+				</Box>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
+				<Box display='flex' flexDirection='column' gap='x16'>
+					<Box display='grid' gap='x16' {...({ style: { gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' } } as any)}>
+						<Box p='x16' borderRadius='x8' bg='neutral-100'>
+							<Box fontScale='c2' color='default' mbe='x8'>
+								Request Details
+							</Box>
+							<Box mbe='x8'>
+								<b>{t('Patient')}:</b> {request?.requestedByUsername || 'Unknown'}
+							</Box>
+							<Box mbe='x8'>
+								<b>{t('Issue')}:</b> {request?.reason || '-'}
+							</Box>
+							<Box mbe='x8'>
+								<b>{t('Room')}:</b> {data?.room?.fname || data?.room?.name || request?.roomName || '-'}
+							</Box>
+							<Box>
+								<b>Taken at:</b> {formatDate(request?.takenAt || request?.createdAt)}
+							</Box>
+						</Box>
+						<Box p='x16' borderRadius='x8' bg='neutral-100'>
+							<Box fontScale='c2' color='default' mbe='x8'>
+								{t('Context_Summary')}
+							</Box>
+							<Box whiteSpace='pre-wrap' color='default'>
+								{contextSummary || t('No_summary_available')}
+							</Box>
+						</Box>
+					</Box>
+
+					<Box p='x16' borderRadius='x8' bg='neutral-100'>
+						<Box fontScale='c2' color='default' mbe='x12'>
+							Recent Messages
+						</Box>
+						{isLoading && (
+							<Box display='flex' justifyContent='center' p='x24'>
+								<Throbber size='x24' />
+							</Box>
+						)}
+						{!isLoading && error && <Callout type='danger'>{t('Error')}</Callout>}
+						{!isLoading && !error && (!data?.messages || data.messages.length === 0) && (
+							<Callout type='info'>No recent messages</Callout>
+						)}
+						{!isLoading && !error && Array.isArray(data?.messages) && data.messages.length > 0 && (
+							<Box
+								display='flex'
+								flexDirection='column'
+								gap='x8'
+								overflow='auto'
+								{...({ style: { maxHeight: '360px' } } as any)}
+							>
+								{data.messages.map((message: any) => (
+									<Box
+										key={message.id}
+										p='x12'
+										borderRadius='x8'
+										bg='surface-light'
+										{...({ style: { border: '1px solid var(--rcx-color-stroke-light)' } } as any)}
+									>
+										<Box display='flex' justifyContent='space-between' alignItems='center' gap='x8' mbe='x4'>
+											<Box display='flex' alignItems='center' gap='x8' flexWrap='wrap'>
+												<Tag variant={previewTagVariant(message.kind) as any}>{message.kind}</Tag>
+												<Box fontScale='p2m'>{message.senderName}</Box>
+											</Box>
+											<Box fontScale='c1' color='hint'>
+												{formatDate(message.ts)}
+											</Box>
+										</Box>
+										<Box whiteSpace='pre-wrap'>{message.text}</Box>
+									</Box>
+								))}
+							</Box>
+						)}
+					</Box>
+				</Box>
+			</ModalContent>
+			<ModalFooter>
+				<Button onClick={onClose}>{t('Close')}</Button>
+			</ModalFooter>
+		</Modal>
+	);
+};
+
 const useStatusColors = (): Record<string, string> => {
 	const settingValue = useSetting('Medsense_Queue_Status_Colors') as string | undefined;
 	return useMemo(() => {
@@ -90,6 +309,63 @@ const useStatusColors = (): Record<string, string> => {
 	}, [settingValue]);
 };
 
+type SignalWireVideoSdk = {
+	Video: {
+		RoomSession: new (...args: any[]) => any;
+	};
+};
+
+let signalWireBrowserSdkLoader: Promise<SignalWireVideoSdk> | null = null;
+const loadSignalWireBrowserSdk = async (): Promise<SignalWireVideoSdk> => {
+	const globalWindow = window as any;
+	if (globalWindow?.SignalWire?.Video?.RoomSession) {
+		return { Video: globalWindow.SignalWire.Video };
+	}
+	if (!signalWireBrowserSdkLoader) {
+		signalWireBrowserSdkLoader = import('@signalwire/js')
+			.then((module) => {
+				const resolvedVideo =
+					(module as any)?.Video ||
+					(module as any)?.SignalWire?.Video ||
+					(module as any)?.default?.Video ||
+					globalWindow?.SignalWire?.Video;
+				if (!resolvedVideo?.RoomSession) {
+					throw new Error('SignalWire Browser SDK v3 is unavailable.');
+				}
+				return { Video: resolvedVideo } as SignalWireVideoSdk;
+			})
+			.catch((error: any) => {
+				signalWireBrowserSdkLoader = null;
+				throw new Error(`SignalWire Browser SDK failed to load: ${error?.message || String(error)}`);
+			});
+	}
+	return signalWireBrowserSdkLoader;
+};
+
+const getVoiceJoinMediaErrorMessage = (error: any): string => {
+	const name = String(error?.name || '').trim();
+	if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+		return 'No microphone was found for browser voice. Use Call My Phone to join from your saved staff phone number.';
+	}
+	if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+		return 'Microphone permission was blocked. Allow microphone access or use Call My Phone.';
+	}
+	if (name === 'NotReadableError' || name === 'TrackStartError') {
+		return 'The microphone is already in use or unavailable. Use Call My Phone if the browser cannot access it.';
+	}
+	return error?.message || 'Browser voice join failed. Use Call My Phone if the browser cannot access a microphone.';
+};
+
+const requestMicrophonePermission = async (): Promise<void> => {
+	if (!navigator?.mediaDevices?.getUserMedia) {
+		throw new Error('This browser cannot access a microphone. Use Call My Phone to join from your saved staff phone number.');
+	}
+	const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+	for (const track of stream.getTracks()) {
+		track.stop();
+	}
+};
+
 // ============================================================================
 // WAITING QUEUE (requests.list)
 // ============================================================================
@@ -105,11 +381,7 @@ export const WaitingQueueContent = ({
 	const t = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const channelRoute = useRoute('channel');
-	const groupRoute = useRoute('group');
-	const directRoute = useRoute('direct');
 	const formatDate = useFormatDate();
-	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 	const joinButtonStyle = {
 		backgroundColor: '#2e8540',
 		borderColor: '#2e8540',
@@ -122,7 +394,6 @@ export const WaitingQueueContent = ({
 	const [declineRequest, setDeclineRequest] = useState<any>(null);
 	const [declineMessage, setDeclineMessage] = useState('');
 	const statusColors = useStatusColors();
-	const getRoomSessionInfo = useEndpoint('GET', '/v1/medsense/room.sessionInfo');
 
 	const takeAction = useEndpoint('POST', '/v1/medsense/request.take');
 	const takeMutation = useMutation({
@@ -154,42 +425,9 @@ export const WaitingQueueContent = ({
 		},
 	});
 
-	const { data: previewSessionInfo } = useQuery({
-		queryKey: ['request-preview-room-context', previewRequest?.roomId],
-		queryFn: async () => {
-			if (!previewRequest?.roomId) return null;
-			return getRoomSessionInfo({ roomId: previewRequest.roomId });
-		},
-		enabled: !!previewRequest?.roomId,
-	});
-
-	const previewRoomContextSummary = useMemo(() => {
-		const summaries = previewSessionInfo?.sessionInfo?.roomContextSummaries;
-		if (!Array.isArray(summaries) || summaries.length === 0) {
-			return '';
-		}
-		const latest = summaries[summaries.length - 1];
-		return latest?.summary || '';
-	}, [previewSessionInfo]);
-
-	const openRoom = async (roomId: string) => {
-		try {
-			const info = await getRoomInfo({ roomId });
-			const room = info?.room;
-			if (!room) return;
-			if (room.t === 'p') groupRoute.push({ name: room.name });
-			else if (room.t === 'c') channelRoute.push({ name: room.name });
-			else if (room.t === 'd') {
-				const username = room.usernames?.[0];
-				if (username) directRoute.push({ username });
-			}
-		} catch { }
-	};
-
-	const handleTake = async (requestId: string, roomId: string) => {
+	const handleTake = async (requestId: string) => {
 		try {
 			await takeMutation.mutateAsync({ requestId });
-			await openRoom(roomId);
 		} catch { }
 	};
 
@@ -218,7 +456,8 @@ export const WaitingQueueContent = ({
 					<TableRow>
 						<TableCell>{t('Patient')}</TableCell>
 						<TableCell>{t('Issue')}</TableCell>
-						<TableCell>{t('Status')}</TableCell>
+						<TableCell>Request</TableCell>
+						<TableCell>Session</TableCell>
 						<TableCell>{t('Room')}</TableCell>
 						<TableCell>{t('Waiting_Since')}</TableCell>
 						<TableCell>{t('Action')}</TableCell>
@@ -232,17 +471,20 @@ export const WaitingQueueContent = ({
 							<TableCell>
 								<Tag variant={(statusColors[request.status] || 'secondary') as any}>{formatRequestStatus(request.status)}</Tag>
 							</TableCell>
+							<TableCell>
+								<Tag variant={sessionStateVariant(request) as any}>{formatSessionState(request)}</Tag>
+							</TableCell>
 							<TableCell>{request.roomName || '-'}</TableCell>
 							<TableCell>{formatDate(request.createdAt)}</TableCell>
 							<TableCell>
 								<Box display='flex' gap='x8' flexWrap='wrap'>
 									<Button small onClick={() => setPreviewRequest(request)}>
-										{t('Preview')}
+										{t('View')}
 									</Button>
 									<Button
 										small
 										primary
-										onClick={() => handleTake(request._id, request.roomId)}
+										onClick={() => handleTake(request._id)}
 										disabled={takeMutation.isLoading}
 										{...({ style: joinButtonStyle } as any)}
 									>
@@ -267,32 +509,7 @@ export const WaitingQueueContent = ({
 				{...paginationProps}
 			/>
 
-			{/* Preview Modal */}
-			{previewRequest && (
-				<Modal>
-					<ModalHeader>
-						<ModalTitle>{t('Request_Preview')}</ModalTitle>
-						<ModalClose onClick={() => setPreviewRequest(null)} />
-					</ModalHeader>
-					<ModalContent>
-						<Box mb='x8'>
-							<b>{t('Patient')}:</b> {previewRequest.requestedByUsername || 'Unknown'}
-						</Box>
-						<Box mb='x8'>
-							<b>{t('Issue')}:</b> {previewRequest.reason || '-'}
-						</Box>
-						<Box mb='x8'>
-							<b>{t('Context_Summary')}:</b>
-						</Box>
-						<Box whiteSpace='pre-wrap' p='x8' bg='neutral-100' borderRadius='x4'>
-							{previewRoomContextSummary || t('No_summary_available')}
-						</Box>
-					</ModalContent>
-					<ModalFooter>
-						<Button onClick={() => setPreviewRequest(null)}>{t('Close')}</Button>
-					</ModalFooter>
-				</Modal>
-			)}
+			{previewRequest && <QueuePreviewModal request={previewRequest} onClose={() => setPreviewRequest(null)} />}
 
 			{/* Decline Modal */}
 			{declineRequest && (
@@ -356,14 +573,33 @@ export const FollowedQueueContent = ({
 	const t = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const channelRoute = useRoute('channel');
-	const groupRoute = useRoute('group');
-	const directRoute = useRoute('direct');
 	const formatDate = useFormatDate();
-	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const closeAction = useEndpoint('POST', '/v1/medsense/request.close');
+	const endVoiceAction = useEndpoint('POST', '/v1/medsense/voice.session.end');
+	const browserTokenAction = useEndpoint('POST', '/v1/medsense/voice.browser-token');
+	const staffPhoneJoinAction = useEndpoint('POST', '/v1/medsense/voice.staff-phone-join');
+	const staffTranscriptAction = useEndpoint('POST', '/v1/medsense/voice.staff-transcript');
+	const activeVoiceRef = useRef<{
+		roomId: string | null;
+		sessionId: string | null;
+		roomSession: any;
+		recognition: any;
+		recognitionRestart: boolean;
+		eventIndex: number;
+	}>({
+		roomId: null,
+		sessionId: null,
+		roomSession: null,
+		recognition: null,
+		recognitionRestart: false,
+		eventIndex: 0,
+	});
+	const [joiningVoiceRoomId, setJoiningVoiceRoomId] = useState<string | null>(null);
+	const [callingVoiceRoomId, setCallingVoiceRoomId] = useState<string | null>(null);
+	const [joinedVoiceRoomId, setJoinedVoiceRoomId] = useState<string | null>(null);
+	const [previewRequest, setPreviewRequest] = useState<any>(null);
 
 	const closeMutation = useMutation({
 		mutationFn: async ({ requestId }: { requestId: string }) => closeAction({ requestId }),
@@ -378,19 +614,199 @@ export const FollowedQueueContent = ({
 		},
 	});
 
-	const openRoom = async (roomId: string) => {
-		try {
-			const info = await getRoomInfo({ roomId });
-			const room = info?.room;
-			if (!room) return;
-			if (room.t === 'p') groupRoute.push({ name: room.name });
-			else if (room.t === 'c') channelRoute.push({ name: room.name });
-			else if (room.t === 'd') {
-				const username = room.usernames?.[0];
-				if (username) directRoute.push({ username });
+	const stopStaffRecognition = useCallback(() => {
+		const runtime = activeVoiceRef.current;
+		runtime.recognitionRestart = false;
+		if (runtime.recognition && typeof runtime.recognition.stop === 'function') {
+			try {
+				runtime.recognition.stop();
+			} catch {
+				// ignore browser recognition stop errors
 			}
-		} catch { }
-	};
+		}
+		runtime.recognition = null;
+	}, []);
+
+	const startStaffRecognition = useCallback(
+		(roomId: string) => {
+			const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+			if (!SpeechRecognitionCtor) {
+				dispatchToastMessage({
+					type: 'warning',
+					message: 'Browser voice joined, but Web Speech API is unavailable in this browser.',
+				});
+				return;
+			}
+
+			const runtime = activeVoiceRef.current;
+			const recognition = new SpeechRecognitionCtor();
+			recognition.lang = 'en-US';
+			recognition.interimResults = true;
+			recognition.continuous = true;
+			runtime.recognitionRestart = true;
+			runtime.recognition = recognition;
+
+			recognition.onresult = (event: any) => {
+				for (let i = event.resultIndex; i < event.results.length; i += 1) {
+					const result = event.results[i];
+					if (!result?.isFinal) continue;
+					const text = String(result?.[0]?.transcript || '').trim();
+					if (!text) continue;
+					runtime.eventIndex += 1;
+					const eventId = `staff-${runtime.sessionId || 'session'}-${Date.now()}-${runtime.eventIndex}`;
+					void staffTranscriptAction({
+						roomId,
+						text,
+						eventId,
+						final: true,
+						confidence:
+							typeof result?.[0]?.confidence === 'number'
+								? result[0].confidence
+								: undefined,
+						timestamp: new Date().toISOString(),
+					});
+				}
+			};
+
+			recognition.onend = () => {
+				if (!runtime.recognitionRestart || runtime.roomId !== roomId) {
+					return;
+				}
+				try {
+					recognition.start();
+				} catch {
+					// ignore auto-restart errors
+				}
+			};
+
+			try {
+				recognition.start();
+			} catch {
+				// ignore start race errors
+			}
+		},
+		[dispatchToastMessage, staffTranscriptAction],
+	);
+
+	const leaveVoiceJoin = useCallback(async () => {
+		const runtime = activeVoiceRef.current;
+		stopStaffRecognition();
+		if (runtime.roomSession && typeof runtime.roomSession.leave === 'function') {
+			try {
+				await runtime.roomSession.leave();
+			} catch {
+				// ignore leave errors
+			}
+		}
+		runtime.roomSession = null;
+		runtime.roomId = null;
+		runtime.sessionId = null;
+		runtime.eventIndex = 0;
+		setJoinedVoiceRoomId(null);
+		setJoiningVoiceRoomId(null);
+	}, [stopStaffRecognition]);
+
+	const joinVoiceAudio = useCallback(
+		async (request: any) => {
+			if (!request?.roomId) {
+				dispatchToastMessage({ type: 'error', message: 'Room is missing for this request.' });
+				return;
+			}
+			if (joinedVoiceRoomId && joinedVoiceRoomId === request.roomId) {
+				return;
+			}
+			if (joinedVoiceRoomId && joinedVoiceRoomId !== request.roomId) {
+				await leaveVoiceJoin();
+			}
+
+			setJoiningVoiceRoomId(request.roomId);
+			try {
+				await requestMicrophonePermission();
+				const tokenPayload = await browserTokenAction({ roomId: request.roomId });
+				const roomToken = String(tokenPayload?.roomToken || '').trim();
+				if (!roomToken) {
+					throw new Error('Voice browser token is missing roomToken.');
+				}
+
+				const signalWire = await loadSignalWireBrowserSdk();
+				const roomSession = new signalWire.Video.RoomSession({
+					token: roomToken,
+				});
+
+				const runtime = activeVoiceRef.current;
+				runtime.roomSession = roomSession;
+				runtime.roomId = request.roomId;
+				runtime.sessionId = tokenPayload?.sessionId || request.voice?.sessionId || null;
+				runtime.eventIndex = 0;
+
+				if (typeof roomSession.on === 'function') {
+					roomSession.on('room.left', () => {
+						void leaveVoiceJoin();
+					});
+				}
+
+				await roomSession.join({
+					audio: true,
+					video: false,
+					sendAudio: true,
+					sendVideo: false,
+				});
+				setJoinedVoiceRoomId(request.roomId);
+				setJoiningVoiceRoomId(null);
+				dispatchToastMessage({ type: 'success', message: 'Voice browser audio joined.' });
+				startStaffRecognition(request.roomId);
+			} catch (error: any) {
+				setJoiningVoiceRoomId(null);
+				dispatchToastMessage({
+					type: 'error',
+					message: getVoiceJoinMediaErrorMessage(error),
+				});
+			}
+		},
+		[browserTokenAction, dispatchToastMessage, joinedVoiceRoomId, leaveVoiceJoin, startStaffRecognition],
+	);
+
+	const callMyPhoneForVoice = useCallback(
+		async (request: any) => {
+			if (!request?.roomId) {
+				dispatchToastMessage({ type: 'error', message: 'Room is missing for this request.' });
+				return;
+			}
+			setCallingVoiceRoomId(request.roomId);
+			try {
+				const response = await staffPhoneJoinAction({ roomId: request.roomId });
+				dispatchToastMessage({
+					type: 'success',
+					message: `Calling your saved staff phone${response?.staffPhoneMasked ? ` (${response.staffPhoneMasked})` : ''}.`,
+				});
+			} catch (error: any) {
+				dispatchToastMessage({
+					type: 'error',
+					message: error?.error || error?.message || 'Could not call your saved staff phone.',
+				});
+			} finally {
+				setCallingVoiceRoomId(null);
+			}
+		},
+		[dispatchToastMessage, staffPhoneJoinAction],
+	);
+
+	useEffect(() => () => {
+		void leaveVoiceJoin();
+	}, [leaveVoiceJoin]);
+
+	const endVoiceMutation = useMutation({
+		mutationFn: async ({ roomId }: { roomId: string }) => endVoiceAction({ roomId, reason: 'staff_end_from_queue' }),
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: 'Voice session ended' });
+			queryClient.invalidateQueries({ queryKey: ['followed-queue'] });
+			refetch();
+		},
+		onError: (error) => {
+			const message = (error as any)?.error || (error as any)?.message || String(error);
+			dispatchToastMessage({ type: 'error', message });
+		},
+	});
 
 	if (isLoading) {
 		return (
@@ -419,6 +835,7 @@ export const FollowedQueueContent = ({
 						<TableCell>{t('Issue')}</TableCell>
 						<TableCell>{t('Taken by')}</TableCell>
 						<TableCell>{t('Taken at')}</TableCell>
+						<TableCell>{t('Status')}</TableCell>
 						<TableCell>{t('Action')}</TableCell>
 					</TableRow>
 				</TableHead>
@@ -430,10 +847,49 @@ export const FollowedQueueContent = ({
 							<TableCell>{request.takenBy?.username || '-'}</TableCell>
 							<TableCell>{formatDate(request.takenAt)}</TableCell>
 							<TableCell>
+								<Tag variant={sessionStateVariant(request) as any}>{formatSessionState(request)}</Tag>
+							</TableCell>
+							<TableCell>
 								<Box display='flex' gap='x8' flexWrap='wrap'>
-									<Button small onClick={() => openRoom(request.roomId)}>
+									<Button small onClick={() => setPreviewRequest(request)}>
 										{t('View')}
 									</Button>
+									{hasVoiceSessionContext(request) && (
+										<Button
+											small
+											onClick={() =>
+												joinedVoiceRoomId === request.roomId
+													? void leaveVoiceJoin()
+													: void joinVoiceAudio(request)
+											}
+											disabled={!isVoiceSessionCallable(request) || joiningVoiceRoomId === request.roomId}
+										>
+											{joinedVoiceRoomId === request.roomId && isVoiceSessionCallable(request)
+												? 'Leave Voice'
+												: joiningVoiceRoomId === request.roomId
+													? 'Joining...'
+													: 'Join Voice'}
+										</Button>
+									)}
+									{hasVoiceSessionContext(request) && (
+										<Button
+											small
+											onClick={() => void callMyPhoneForVoice(request)}
+											disabled={!isVoiceSessionCallable(request) || callingVoiceRoomId === request.roomId}
+										>
+											{callingVoiceRoomId === request.roomId ? 'Calling...' : 'Call My Phone'}
+										</Button>
+									)}
+									{hasVoiceSessionContext(request) && (
+										<Button
+											small
+											danger
+											onClick={() => endVoiceMutation.mutate({ roomId: request.roomId })}
+											disabled={!isVoiceSessionCallable(request) || endVoiceMutation.isLoading}
+										>
+											End Voice
+										</Button>
+									)}
 									<Button small danger onClick={() => closeMutation.mutate({ requestId: request._id })} disabled={closeMutation.isLoading}>
 										Close Session
 									</Button>
@@ -452,6 +908,7 @@ export const FollowedQueueContent = ({
 				onSetCurrent={setCurrent}
 				{...paginationProps}
 			/>
+			{previewRequest && <QueuePreviewModal request={previewRequest} onClose={() => setPreviewRequest(null)} />}
 		</>
 	);
 };

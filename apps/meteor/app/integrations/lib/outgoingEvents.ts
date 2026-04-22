@@ -14,6 +14,15 @@ export const outgoingEvents: Record<
 			targetRoom: false,
 		},
 	},
+	medsenseSessionSummary: {
+		label: 'Integrations_Outgoing_Type_MedsenseSessionSummary' as TranslationKey,
+		value: 'medsenseSessionSummary',
+		use: {
+			channel: true,
+			triggerWords: false,
+			targetRoom: false,
+		},
+	},
 	fileUploaded: {
 		label: 'Integrations_Outgoing_Type_FileUploaded',
 		value: 'fileUploaded',

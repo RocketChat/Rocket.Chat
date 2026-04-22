@@ -14,6 +14,13 @@ const styles = StyleSheet.create({
 	fieldRow: { flexDirection: 'row', marginBottom: 5 },
 	fieldLabel: { width: '40%', fontWeight: 'bold' },
 	fieldValue: { width: '60%' },
+	repeaterBlock: { marginTop: 6, marginBottom: 8 },
+	repeaterTitle: { fontSize: 11, fontWeight: 'bold', marginBottom: 6 },
+	repeaterTable: { display: 'flex', flexDirection: 'column', border: '1 solid #d5dbe0', borderRadius: 4, overflow: 'hidden' },
+	repeaterHeaderRow: { flexDirection: 'row', backgroundColor: '#edf2f5' },
+	repeaterHeaderCell: { flexGrow: 1, flexBasis: 0, padding: 6, fontSize: 9, fontWeight: 'bold', borderRight: '1 solid #d5dbe0' },
+	repeaterRow: { flexDirection: 'row', borderTop: '1 solid #e5e9ec' },
+	repeaterCell: { flexGrow: 1, flexBasis: 0, padding: 6, fontSize: 9, borderRight: '1 solid #e5e9ec' },
 	signatures: { marginTop: 30, borderTop: '1 solid #ccc', paddingTop: 10 },
 	signatureRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
 	signatureBlock: { width: '45%' },
@@ -21,6 +28,71 @@ const styles = StyleSheet.create({
 	signatureName: { marginTop: 20, borderTop: '1 solid #000', paddingTop: 5, textAlign: 'center' },
 	footer: { position: 'absolute', bottom: 30, left: 30, right: 30, textAlign: 'center', color: '#999', fontSize: 9 },
 });
+
+const formatPdfValue = (value: any): string =>
+	value === undefined || value === null || value === ''
+		? '-'
+		: Array.isArray(value)
+			? value.map((item) => formatPdfValue(item)).join(', ')
+			: typeof value === 'boolean'
+				? value
+					? 'Yes'
+					: 'No'
+				: String(value);
+
+const renderRepeaterField = (field: any, rows: any[]) => {
+	const childFields = (field.fields || []).filter((child: any) => child.visibleInPdf !== false);
+	const populatedRows = rows.filter((row) =>
+		Object.values(row || {}).some((value) => value !== undefined && value !== null && value !== ''),
+	);
+	if (!childFields.length) {
+		return (
+			<View style={styles.fieldRow}>
+				<Text style={styles.fieldLabel}>{field.label}:</Text>
+				<Text style={styles.fieldValue}>-</Text>
+			</View>
+		);
+	}
+
+	if (!populatedRows.length) {
+		return (
+			<View style={styles.fieldRow}>
+				<Text style={styles.fieldLabel}>{field.label}:</Text>
+				<Text style={styles.fieldValue}>-</Text>
+			</View>
+		);
+	}
+
+	return (
+		<View style={styles.repeaterBlock}>
+			<Text style={styles.repeaterTitle}>{field.pdfTitle || field.label}</Text>
+			<View style={styles.repeaterTable}>
+				<View style={styles.repeaterHeaderRow}>
+					{childFields.map((child: any, childIndex: number) => (
+						<Text
+							key={`${field.key}-header-${child.key}`}
+							style={[styles.repeaterHeaderCell, childIndex === childFields.length - 1 ? { borderRight: '0' } : null]}
+						>
+							{child.pdfTitle || child.label}
+						</Text>
+					))}
+				</View>
+				{populatedRows.map((row: Record<string, any>, rowIndex: number) => (
+					<View key={`${field.key}-row-${rowIndex}`} style={styles.repeaterRow}>
+						{childFields.map((child: any, childIndex: number) => (
+							<Text
+								key={`${field.key}-${rowIndex}-${child.key}`}
+								style={[styles.repeaterCell, childIndex === childFields.length - 1 ? { borderRight: '0' } : null]}
+							>
+								{formatPdfValue(row?.[child.key])}
+							</Text>
+						))}
+					</View>
+				))}
+			</View>
+		</View>
+	);
+};
 
 const PdfDocument = ({ intervention, template }: { intervention: IMedsenseIntervention; template: IMedsenseDocumentationTemplate }) => {
 	const values = intervention.documentationValues || {};
@@ -31,7 +103,7 @@ const PdfDocument = ({ intervention, template }: { intervention: IMedsenseInterv
 
 	return (
 		<Document>
-			<Page size="A4" style={styles.page}>
+			<Page size='A4' style={styles.page}>
 				<Text style={styles.header}>{docTitle}</Text>
 
 				<View style={styles.meta}>
@@ -59,31 +131,49 @@ const PdfDocument = ({ intervention, template }: { intervention: IMedsenseInterv
 									prescriptions.map((prescription: Record<string, any>, prescriptionIndex: number) => (
 										<View key={`prescription-${prescriptionIndex}`} style={{ marginBottom: 8 }}>
 											<Text style={{ fontSize: 11, marginBottom: 4 }}>Prescription {prescriptionIndex + 1}</Text>
-											{section.fields?.filter((field) => field.visibleInPdf !== false).map((field) => (
-												<View key={`${field.key}-${prescriptionIndex}`} style={styles.fieldRow}>
-													<Text style={styles.fieldLabel}>{field.label}:</Text>
-													<Text style={styles.fieldValue}>{prescription?.[field.key] !== undefined ? String(prescription[field.key]) : '-'}</Text>
-												</View>
-											))}
+											{section.fields
+												?.filter((field) => field.visibleInPdf !== false)
+												.map((field) => (
+													<View key={`${field.key}-${prescriptionIndex}`} style={styles.fieldRow}>
+														<Text style={styles.fieldLabel}>{field.label}:</Text>
+														<Text style={styles.fieldValue}>
+															{prescription?.[field.key] !== undefined ? String(prescription[field.key]) : '-'}
+														</Text>
+													</View>
+												))}
 										</View>
 									))
 								) : (
 									<Text>-</Text>
 								)
 							) : section.type === 'follow_up' ? (
-								section.fields?.filter((field) => field.visibleInPdf !== false).map((field) => (
-									<View key={field.key} style={styles.fieldRow}>
-										<Text style={styles.fieldLabel}>{field.label}:</Text>
-										<Text style={styles.fieldValue}>{followUp[field.key] !== undefined ? String(followUp[field.key]) : '-'}</Text>
-									</View>
-								))
+								section.fields
+									?.filter((field) => field.visibleInPdf !== false)
+									.map((field) =>
+										field.type === 'repeater' ? (
+											<View key={field.key}>
+												{renderRepeaterField(field, Array.isArray(followUp[field.key]) ? followUp[field.key] : [])}
+											</View>
+										) : (
+											<View key={field.key} style={styles.fieldRow}>
+												<Text style={styles.fieldLabel}>{field.label}:</Text>
+												<Text style={styles.fieldValue}>{formatPdfValue(followUp[field.key])}</Text>
+											</View>
+										),
+									)
 							) : (
-								section.fields?.filter((field) => field.visibleInPdf !== false).map((field) => (
-									<View key={field.key} style={styles.fieldRow}>
-										<Text style={styles.fieldLabel}>{field.label}:</Text>
-										<Text style={styles.fieldValue}>{values[field.key] !== undefined ? String(values[field.key]) : '-'}</Text>
-									</View>
-								))
+								section.fields
+									?.filter((field) => field.visibleInPdf !== false)
+									.map((field) =>
+										field.type === 'repeater' ? (
+											<View key={field.key}>{renderRepeaterField(field, Array.isArray(values[field.key]) ? values[field.key] : [])}</View>
+										) : (
+											<View key={field.key} style={styles.fieldRow}>
+												<Text style={styles.fieldLabel}>{field.label}:</Text>
+												<Text style={styles.fieldValue}>{formatPdfValue(values[field.key])}</Text>
+											</View>
+										),
+									)
 							)}
 						</View>
 					))}
@@ -99,7 +189,9 @@ const PdfDocument = ({ intervention, template }: { intervention: IMedsenseInterv
 										<Image style={styles.signatureImage} src={intervention.signatures.pharmacist.signatureImageData} />
 									)}
 									<Text style={styles.signatureName}>{intervention.signatures.pharmacist.name}</Text>
-									<Text style={{ fontSize: 9, textAlign: 'center', marginTop: 2 }}>{new Date(intervention.signatures.pharmacist.signedAt).toLocaleString()}</Text>
+									<Text style={{ fontSize: 9, textAlign: 'center', marginTop: 2 }}>
+										{new Date(intervention.signatures.pharmacist.signedAt).toLocaleString()}
+									</Text>
 								</View>
 							)}
 							{intervention.signatures?.patient && (
@@ -109,7 +201,9 @@ const PdfDocument = ({ intervention, template }: { intervention: IMedsenseInterv
 										<Image style={styles.signatureImage} src={intervention.signatures.patient.signatureImageData} />
 									)}
 									<Text style={styles.signatureName}>{intervention.signatures.patient.name}</Text>
-									<Text style={{ fontSize: 9, textAlign: 'center', marginTop: 2 }}>{new Date(intervention.signatures.patient.signedAt).toLocaleString()}</Text>
+									<Text style={{ fontSize: 9, textAlign: 'center', marginTop: 2 }}>
+										{new Date(intervention.signatures.patient.signedAt).toLocaleString()}
+									</Text>
 								</View>
 							)}
 						</View>

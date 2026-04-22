@@ -36,6 +36,7 @@ const PharmacyTable = () => {
             <GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
             <GenericTableHeaderCell key='slug'>{t('Slug')}</GenericTableHeaderCell>
             <GenericTableHeaderCell key='active'>{t('Active')}</GenericTableHeaderCell>
+            <GenericTableHeaderCell key='voiceInboundNumber'>Voice Number</GenericTableHeaderCell>
             <GenericTableHeaderCell key='url' w={100} />
         </>
     );
@@ -45,7 +46,7 @@ const PharmacyTable = () => {
             <GenericTable>
                 <GenericTableHeader>{headers}</GenericTableHeader>
                 <GenericTableBody>
-                    <GenericTableLoadingTable headerCells={4} />
+                    <GenericTableLoadingTable headerCells={5} />
                 </GenericTableBody>
             </GenericTable>
         );
@@ -73,6 +74,7 @@ const PharmacyTable = () => {
                             <GenericTableCell withTruncatedText>{pharmacy.name}</GenericTableCell>
                             <GenericTableCell withTruncatedText>{pharmacy.slug}</GenericTableCell>
                             <GenericTableCell withTruncatedText>{pharmacy.active ? t('Yes') : t('No')}</GenericTableCell>
+                            <GenericTableCell withTruncatedText>{pharmacy.voiceInboundNumber || '-'}</GenericTableCell>
                             <GenericTableCell withTruncatedText>
                                 <PharmacyItemMenu pharmacyId={pharmacy._id} />
                             </GenericTableCell>

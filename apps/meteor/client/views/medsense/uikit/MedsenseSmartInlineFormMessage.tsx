@@ -15,6 +15,7 @@ type ParsedOption = {
 	value: string;
 	label: string;
 	selected: boolean;
+	multi: boolean;
 };
 
 type ParsedCustom = {
@@ -39,6 +40,7 @@ type ParsedInlineLayout = {
 	title?: string;
 	prompt?: string;
 	options: ParsedOption[];
+	multi: boolean;
 	custom?: ParsedCustom;
 	submit: ParsedSubmit;
 };
@@ -60,6 +62,21 @@ const cleanSectionText = (text: string): string => {
 	const trimmed = text.trim();
 	const markdownTitle = trimmed.match(/^\*(.+)\*$/);
 	return markdownTitle ? markdownTitle[1].trim() : trimmed;
+};
+
+const MULTI_SELECT_LABEL_MARKER = /^\[[ xX]\]\s+/;
+
+const cleanOptionLabel = (label: string): string => label.replace(MULTI_SELECT_LABEL_MARKER, '');
+
+const isMultiSelectOption = (option: Pick<ParsedOption, 'multi'>): boolean => option.multi;
+
+const getNextSelectedValues = (currentValues: string[], optionValue: string, multi: boolean | undefined): string[] => {
+	const alreadySelected = currentValues.includes(optionValue);
+	if (multi) {
+		return alreadySelected ? currentValues.filter((value) => value !== optionValue) : [...currentValues, optionValue];
+	}
+
+	return alreadySelected ? [] : [optionValue];
 };
 
 const parseInlineLayout = (blocks: MessageSurfaceLayout): ParsedInlineLayout | null => {
@@ -106,17 +123,19 @@ const parseInlineLayout = (blocks: MessageSurfaceLayout): ParsedInlineLayout | n
 				}
 
 				const value = typeof element.value === 'string' ? element.value : '';
-				const label = asText(element.text);
+				const rawLabel = asText(element.text);
 				const elementAppId = typeof element.appId === 'string' ? element.appId : undefined;
 
 				if (actionId === ACTION_SELECT) {
+					const blockId = typeof block.blockId === 'string' ? block.blockId : '';
 					options.push({
-						blockId: typeof block.blockId === 'string' ? block.blockId : '',
+						blockId,
 						actionId,
 						appId: elementAppId,
 						value,
-						label,
+						label: cleanOptionLabel(rawLabel),
 						selected: typeof block.blockId === 'string' && block.blockId.endsWith('::selected'),
+						multi: blockId.includes('::multi::') || MULTI_SELECT_LABEL_MARKER.test(rawLabel.trim()),
 					});
 					continue;
 				}
@@ -127,7 +146,7 @@ const parseInlineLayout = (blocks: MessageSurfaceLayout): ParsedInlineLayout | n
 						actionId,
 						appId: elementAppId,
 						value,
-						label: label || 'Submit',
+						label: rawLabel || 'Submit',
 					};
 				}
 			}
@@ -165,6 +184,7 @@ const parseInlineLayout = (blocks: MessageSurfaceLayout): ParsedInlineLayout | n
 		title,
 		prompt,
 		options,
+		multi: options.some(isMultiSelectOption),
 		custom,
 		submit,
 	};
@@ -177,18 +197,21 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 	const parsed = useMemo(() => parseInlineLayout(blocks), [blocks]);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
-	const initialSelected = useMemo(() => parsed?.options.find((option) => option.selected)?.value || '', [parsed]);
+	const initialSelectedValues = useMemo(
+		() => parsed?.options.filter((option) => option.selected).map((option) => option.value) || [],
+		[parsed],
+	);
 	const initialCustom = useMemo(() => parsed?.custom?.initialValue || '', [parsed]);
 
-	const [selectedValue, setSelectedValue] = useState(initialSelected);
+	const [selectedValues, setSelectedValues] = useState<string[]>(initialSelectedValues);
 	const [customDraft, setCustomDraft] = useState(initialCustom);
 	const [isCustomOpen, setIsCustomOpen] = useState(Boolean(initialCustom.trim().length));
 
 	useEffect(() => {
-		setSelectedValue(initialSelected);
+		setSelectedValues(initialSelectedValues);
 		setCustomDraft(initialCustom);
 		setIsCustomOpen(Boolean(initialCustom.trim().length));
-	}, [initialCustom, initialSelected]);
+	}, [initialCustom, initialSelectedValues]);
 
 	useEffect(() => {
 		if (!isCustomOpen) {
@@ -221,8 +244,8 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 
 	const onSelectOption = useCallback(
 		async (option: ParsedOption): Promise<void> => {
-			const nextSelected = selectedValue === option.value ? '' : option.value;
-			setSelectedValue(nextSelected);
+			const nextSelectedValues = getNextSelectedValues(selectedValues, option.value, parsed?.multi);
+			setSelectedValues(nextSelectedValues);
 			setCustomDraft('');
 			setIsCustomOpen(false);
 			await emitAction({
@@ -232,7 +255,7 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 				appId: option.appId,
 			});
 		},
-		[emitAction, selectedValue],
+		[emitAction, parsed?.multi, selectedValues],
 	);
 
 	const onSubmit = useCallback(async (): Promise<void> => {
@@ -240,7 +263,7 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 			return;
 		}
 
-		if (!customDraft.trim().length && !selectedValue) {
+		if (!customDraft.trim().length && selectedValues.length === 0) {
 			return;
 		}
 
@@ -254,7 +277,7 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 			value: submitValue,
 			appId: parsed.submit.appId,
 		});
-	}, [customDraft, emitAction, parsed?.submit, selectedValue]);
+	}, [customDraft, emitAction, parsed?.submit, selectedValues.length]);
 
 	if (!parsed) {
 		return <UiKitComponent render={MedsenseUiKitMessageSurface} blocks={blocks} />;
@@ -270,19 +293,22 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 				{parsed.prompt && <div className='medsenseUIKit-inlineForm__prompt'>{parsed.prompt}</div>}
 
 				<div className='medsenseUIKit-inlineForm__rows'>
-					{parsed.options.map((option) => (
-						<button
-							key={option.blockId || `${option.actionId}-${option.value}`}
-							type='button'
-							className={`medsenseUIKit-inlineRow ${selectedValue === option.value ? 'medsenseUIKit-inlineRow--selected' : ''}`}
-							onClick={() => void onSelectOption(option)}
-						>
-							<span className='medsenseUIKit-inlineRow__label'>{option.label}</span>
-							<span className='medsenseUIKit-inlineRow__indicator' aria-hidden='true'>
-								{selectedValue === option.value ? '\u2713' : ''}
-							</span>
-						</button>
-					))}
+					{parsed.options.map((option) => {
+						const isSelected = selectedValues.includes(option.value);
+						return (
+							<button
+								key={option.blockId || `${option.actionId}-${option.value}`}
+								type='button'
+								className={`medsenseUIKit-inlineRow ${isSelected ? 'medsenseUIKit-inlineRow--selected' : ''}`}
+								onClick={() => void onSelectOption(option)}
+							>
+								<span className='medsenseUIKit-inlineRow__label'>{option.label}</span>
+								<span className='medsenseUIKit-inlineRow__indicator' aria-hidden='true'>
+									{isSelected ? '\u2713' : ''}
+								</span>
+							</button>
+						);
+					})}
 
 					{parsed.custom && !isCustomOpen && (
 						<button type='button' className='medsenseUIKit-inlineRow medsenseUIKit-inlineRow--custom' onClick={() => setIsCustomOpen(true)}>
@@ -305,7 +331,7 @@ const MedsenseSmartInlineFormMessage = ({ blocks }: { blocks: MessageSurfaceLayo
 									const next = event.currentTarget.value;
 									setCustomDraft(next);
 									if (next.trim().length > 0) {
-										setSelectedValue('');
+										setSelectedValues([]);
 									}
 								}}
 								onKeyDown={(event) => {

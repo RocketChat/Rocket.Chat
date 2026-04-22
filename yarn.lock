@@ -2165,6 +2165,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.28.4":
+  version: 7.28.6
+  resolution: "@babel/runtime@npm:7.28.6"
+  checksum: 10/fbcd439cb74d4a681958eb064c509829e3f46d8a4bfaaf441baa81bb6733d1e680bccc676c813883d7741bcaada1d0d04b15aa320ef280b5734e2192b50decf9
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:~7.28.4":
   version: 7.28.4
   resolution: "@babel/runtime@npm:7.28.4"
@@ -8232,6 +8239,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redux-saga/core@npm:^1.2.3":
+  version: 1.4.2
+  resolution: "@redux-saga/core@npm:1.4.2"
+  dependencies:
+    "@babel/runtime": "npm:^7.28.4"
+    "@redux-saga/deferred": "npm:^1.3.1"
+    "@redux-saga/delay-p": "npm:^1.3.1"
+    "@redux-saga/is": "npm:^1.2.1"
+    "@redux-saga/symbols": "npm:^1.2.1"
+    "@redux-saga/types": "npm:^1.3.1"
+    typescript-tuple: "npm:^2.2.1"
+  checksum: 10/45a3c35ca1a55f65feecb17ca12b153f4292cd3573b7954e509407b36859c462750f80731abd8e4a77c3dbe7ac814e2810206458c6104cfa191207682723b6fa
+  languageName: node
+  linkType: hard
+
+"@redux-saga/deferred@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@redux-saga/deferred@npm:1.3.1"
+  checksum: 10/c4bd6a09d3b71e603dc025cb27df9345919d9e11619e15943fadedeb85b42ae88cd9db021dd7f4a4a94edd1011b387fab6b9f5dcc5faa031d4b8080afad3a820
+  languageName: node
+  linkType: hard
+
+"@redux-saga/delay-p@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@redux-saga/delay-p@npm:1.3.1"
+  dependencies:
+    "@redux-saga/symbols": "npm:^1.2.1"
+  checksum: 10/07bb86a7437e4786c4ad3dc44fe60a2549eb08be42cc4c5bcf4e53fed817b14c2bda124d56385891235ddc88a19331bde636ec4d63015fb151a83f13aa753aab
+  languageName: node
+  linkType: hard
+
+"@redux-saga/is@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@redux-saga/is@npm:1.2.1"
+  dependencies:
+    "@redux-saga/symbols": "npm:^1.2.1"
+    "@redux-saga/types": "npm:^1.3.1"
+  checksum: 10/fe8cdf64f8e3a56fb263a36be4879cf0bf3d8f35d36dbfca36ac429188a553f5a3a396a6db1737b72fddb98205648fa8365bca1601300ed7f938d34f935fcc8d
+  languageName: node
+  linkType: hard
+
+"@redux-saga/symbols@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@redux-saga/symbols@npm:1.2.1"
+  checksum: 10/0190c8a16ad491133e29d816a53dbae745cfbc892b5f6dee93482a81560ab140f9dd667f524fb711acc30602e446f12436afdf9d6e1a61ac004132ab5bbd34ed
+  languageName: node
+  linkType: hard
+
+"@redux-saga/types@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@redux-saga/types@npm:1.3.1"
+  checksum: 10/6ef32d247c44123b9cad3d7a0b1422cbf4ddbe33a1e85c4239dfaf791205dc0ff0c41aed661973ff060c93a31266f0ee561b819eb2978b27255682e1684dae97
+  languageName: node
+  linkType: hard
+
 "@remix-run/router@npm:1.21.0":
   version: 1.21.0
   resolution: "@remix-run/router@npm:1.21.0"
@@ -9398,6 +9460,7 @@ __metadata:
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
+    "@signalwire/js": "npm:^3.29.2"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
     "@storybook/addon-a11y": "npm:^8.6.14"
@@ -11074,6 +11137,43 @@ __metadata:
   version: 2.0.0
   resolution: "@sideway/pinpoint@npm:2.0.0"
   checksum: 10/1ed21800128b2b23280ba4c9db26c8ff6142b97a8683f17639fd7f2128aa09046461574800b30fb407afc5b663c2331795ccf3b654d4b38fa096e41a5c786bf8
+  languageName: node
+  linkType: hard
+
+"@signalwire/core@npm:4.3.2":
+  version: 4.3.2
+  resolution: "@signalwire/core@npm:4.3.2"
+  dependencies:
+    "@redux-saga/core": "npm:^1.2.3"
+    eventemitter3: "npm:^5.0.1"
+    loglevel: "npm:^1.8.1"
+    redux: "npm:^4.2.1"
+    uuid: "npm:^9.0.0"
+  peerDependencies:
+    "@types/jest": ^29.5.2
+    "@types/node": ^20.3.2
+  checksum: 10/eca3c894dbdb3ce9fda6adaca8a65e5309d30d063123e0545a53eac80c081c5901dabd18adc93d0590048489a711fc87477611ebabaf7170f55da125391bb5ec
+  languageName: node
+  linkType: hard
+
+"@signalwire/js@npm:^3.29.2":
+  version: 3.29.2
+  resolution: "@signalwire/js@npm:3.29.2"
+  dependencies:
+    "@signalwire/core": "npm:4.3.2"
+    "@signalwire/webrtc": "npm:3.14.2"
+    jwt-decode: "npm:^3.1.2"
+  checksum: 10/3ee6abd1b9fd75cc5d4341de57a7aa3a2c907cc00e4f50964caff7f9398741b5c6ddf001ce18ecd261b5485491276ef1f1e37d1e218b34ad9a03ecd7eafd0562
+  languageName: node
+  linkType: hard
+
+"@signalwire/webrtc@npm:3.14.2":
+  version: 3.14.2
+  resolution: "@signalwire/webrtc@npm:3.14.2"
+  dependencies:
+    "@signalwire/core": "npm:4.3.2"
+    sdp: "npm:^3.2.0"
+  checksum: 10/a52b80183981d7a39ac4ba1c2ae95bdd25f7e2de9f08517bcaf117863fbe2d72b673b5fd334209cc750f2b9e0d10550bbd15c1de4cb744ce24b8b61622b57907
   languageName: node
   linkType: hard
 
@@ -26909,6 +27009,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jwt-decode@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "jwt-decode@npm:3.1.2"
+  checksum: 10/20a4b072d44ce3479f42d0d2c8d3dabeb353081ba4982e40b83a779f2459a70be26441be6c160bfc8c3c6eadf9f6380a036fbb06ac5406b5674e35d8c4205eeb
+  languageName: node
+  linkType: hard
+
 "jwt-decode@npm:^4.0.0":
   version: 4.0.0
   resolution: "jwt-decode@npm:4.0.0"
@@ -27416,7 +27523,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loglevel@npm:^1.9.2":
+"loglevel@npm:^1.8.1, loglevel@npm:^1.9.2":
   version: 1.9.2
   resolution: "loglevel@npm:1.9.2"
   checksum: 10/6153d8db308323f7ee20130bc40309e7a976c30a10379d8666b596d9c6441965c3e074c8d7ee3347fe5cfc059c0375b6f3e8a10b93d5b813cc5547f5aa412a29
@@ -32682,7 +32789,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.0.0, redux@npm:^4.0.4":
+"redux@npm:^4.0.0, redux@npm:^4.0.4, redux@npm:^4.2.1":
   version: 4.2.1
   resolution: "redux@npm:4.2.1"
   dependencies:
@@ -33664,6 +33771,13 @@ __metadata:
   bin:
     sdp-verify: checker.js
   checksum: 10/20506388f86a52c8cd86cb855ce2b3dc13bff74d702ed8519cb9994c39f921dad0e47d726330206a4afdd6c491c26b70c17b72955ba2f4ac26b9859f97626faa
+  languageName: node
+  linkType: hard
+
+"sdp@npm:^3.2.0":
+  version: 3.2.1
+  resolution: "sdp@npm:3.2.1"
+  checksum: 10/6b23a202430fa2128bf32285f880ad9f9c2a6ff65cb2767aeca9d5c1860f4844a5762cb820028acd503b6c773106285b9a6d7c11964412328426886527167b8f
   languageName: node
   linkType: hard
 
@@ -36604,6 +36718,31 @@ __metadata:
   bin:
     typedoc: bin/typedoc
   checksum: 10/6b2bb87c85de96475f60ba2a92e0cb7169fef138cce4d91c949267ca9268c4fc97c2db9702f306ad5e594aa5244cc9aa563791ec31dd1b1d5288cf1ab08aa7a0
+  languageName: node
+  linkType: hard
+
+"typescript-compare@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "typescript-compare@npm:0.0.2"
+  dependencies:
+    typescript-logic: "npm:^0.0.0"
+  checksum: 10/d6c43213e7689f8519438b6deceb9877cdc83b4f64677bbc07e6d88d8b63bee713035731678facfd3f81b019b93131a876a230194b4f8d31737bfc5af71594d2
+  languageName: node
+  linkType: hard
+
+"typescript-logic@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "typescript-logic@npm:0.0.0"
+  checksum: 10/84506bd58b7e15455b3233ded7f43f2ff8667500dca94f8e96e61aa16fa5a78bd9c45455f27c49f0e4aee7322c3e5a4b270e68bf8ba29fdf1571256fe2607152
+  languageName: node
+  linkType: hard
+
+"typescript-tuple@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "typescript-tuple@npm:2.2.1"
+  dependencies:
+    typescript-compare: "npm:^0.0.2"
+  checksum: 10/6e03ff36696aa0b832465234f1ce5496717b50b22c8597f903894a1e7577ab0d0d86eeb84d509dc206f02aa21a75d196c0082d59325fde3ac9a22b6bc5ff3d14
   languageName: node
   linkType: hard
 

@@ -25,6 +25,7 @@ import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
 
 type Trigger = Record<string, Record<string, any>>;
+const MEDSENSE_SESSION_INFO_VERSION = 3;
 
 type MessageWithEditedAt = IMessage & { editedAt?: Date };
 type ArgumentsObject = {
@@ -33,11 +34,18 @@ type ArgumentsObject = {
 	room?: IRoom;
 	owner?: IUser;
 	user?: IUser;
+	sessionSummaryPayload?: Record<string, any>;
 };
 type IntegrationData = {
 	token: string;
 	bot: boolean;
+	event?: OutgoingIntegrationEvent;
 	trigger_word?: string;
+	roomId?: string;
+	requestId?: string | null;
+	patientUserId?: string | null;
+	latestMessage?: Record<string, any>;
+	session?: Record<string, any>;
 	channel_id?: string;
 	channel_name?: string;
 	message_id?: string;
@@ -243,9 +251,13 @@ class RocketChatIntegrationHandler {
 
 		switch (argObject.event) {
 			case 'sendMessage':
+			case 'medsenseSessionSummary':
 				if (args.length >= 3) {
 					argObject.message = args[1] as IMessage;
 					argObject.room = args[2] as IRoom;
+				}
+				if (argObject.event === 'medsenseSessionSummary' && args.length >= 4) {
+					argObject.sessionSummaryPayload = args[3] as Record<string, any>;
 				}
 				break;
 			case 'fileUploaded':
@@ -301,7 +313,7 @@ class RocketChatIntegrationHandler {
 		return argObject;
 	}
 
-	async mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user }: ArgumentsObject) {
+	async mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user, sessionSummaryPayload }: ArgumentsObject) {
 		/* The "services" field contains sensitive information such as
 		the user's password hash. To prevent this information from being
 		sent to the webhook, we're checking and removing it by destructuring
@@ -341,24 +353,57 @@ class RocketChatIntegrationHandler {
 				}
 				data.text = message.msg;
 				data.siteUrl = settings.get('Site_Url');
+				const hasRequestFields = room.medsenseActiveRequestId !== undefined || room.medsenseActiveRequestStatus !== undefined;
+				const hasSessionInfo = (room as any).medsenseSessionInfo !== undefined;
 				const roomWithRequest =
-					room.medsenseActiveRequestId !== undefined || room.medsenseActiveRequestStatus !== undefined
+					hasRequestFields && (room as any).medsenseAssigned !== undefined && hasSessionInfo
 						? room
 						: await Rooms.findOneById(room._id, {
 								projection: {
 									name: 1,
 									medsenseActiveRequestId: 1,
 									medsenseActiveRequestStatus: 1,
+									medsenseAssigned: 1,
+									medsenseSessionInfo: 1,
 									uids: 1,
 									usersCount: 1,
 								},
 							});
+				const roomSessionInfo = ((room as any).medsenseSessionInfo ?? (roomWithRequest as any)?.medsenseSessionInfo) as
+					| Record<string, any>
+					| undefined;
+				const voice = roomSessionInfo?.voice && typeof roomSessionInfo.voice === 'object' ? roomSessionInfo.voice : undefined;
+				const compactSession = roomSessionInfo
+					? {
+							status: roomSessionInfo.status,
+							currentOwner: roomSessionInfo.currentOwner,
+							activeRun: roomSessionInfo.activeRun,
+							pending: roomSessionInfo.pending,
+							voice: voice
+								? {
+										active: voice.active,
+										sessionId: voice.sessionId,
+										roomName: voice.roomName,
+										transport: voice.transport,
+										callId: voice.callId,
+										state: voice.state,
+										patientUserId: voice.patientUserId,
+										patientIdentityType: voice.patientIdentityType,
+									}
+								: undefined,
+						}
+					: undefined;
+				if (compactSession) {
+					data.session = compactSession;
+				}
 				data.room = {
 					_id: room._id,
 					name: room.name,
 					medsenseActiveRequestId: (room as any).medsenseActiveRequestId ?? roomWithRequest?.medsenseActiveRequestId,
 					medsenseActiveRequestStatus: (room as any).medsenseActiveRequestStatus ?? roomWithRequest?.medsenseActiveRequestStatus,
-				};
+					medsenseAssigned: (room as any).medsenseAssigned === 'Staff' || (roomWithRequest as any)?.medsenseAssigned === 'Staff' ? 'Staff' : 'AI',
+					medsenseSessionInfo: compactSession,
+				} as any;
 				data.room_has_non_bot_non_user_staff = await this.hasNonBotNonUserStaffInRoom(
 					(roomWithRequest ?? room) as Pick<IRoom, '_id'> & Partial<Pick<IRoom, 'uids' | 'usersCount'>>,
 					senderRoles,
@@ -381,6 +426,20 @@ class RocketChatIntegrationHandler {
 				if (message.tmid) {
 					data.tmid = message.tmid;
 				}
+				break;
+			case 'medsenseSessionSummary':
+				Object.assign(data, {
+					event: 'medsenseSessionSummary',
+					roomId: room._id,
+					...(sessionSummaryPayload && typeof sessionSummaryPayload === 'object' ? sessionSummaryPayload : {}),
+				});
+				data.channel_id = room._id;
+				data.channel_name = room.name;
+				data.message_id = message._id;
+				data.timestamp = message.ts;
+				data.user_id = message.u._id;
+				data.user_name = message.u.username;
+				data.text = message.msg;
 				break;
 			case 'fileUploaded':
 				data.channel_id = room._id;
@@ -586,7 +645,114 @@ class RocketChatIntegrationHandler {
 		});
 	}
 
-	async executeTriggerUrl(url: string, trigger: IOutgoingIntegration, { event, message, room, owner, user }: ArgumentsObject, tries = 0) {
+	private async resetMedsenseSessionSummaryUpdate(roomId?: string, triggerMessageId?: string): Promise<void> {
+		if (!roomId) {
+			return;
+		}
+
+		const selector: Record<string, any> = { _id: roomId };
+		if (triggerMessageId) {
+			selector['medsenseSessionInfo.summaryUpdate.triggerMessageId'] = triggerMessageId;
+		}
+
+		await Rooms.update(selector, {
+			$set: {
+				'medsenseSessionInfo.summaryUpdate': {
+					inProgress: false,
+					triggerMessageId: null,
+					startedAt: null,
+				},
+			},
+		});
+	}
+
+	private async applyMedsenseSessionSummaryResponse({
+		room,
+		message,
+		responseData,
+		status,
+		historyId,
+	}: {
+		room?: IRoom;
+		message?: MessageWithEditedAt;
+		responseData: any;
+		status: number;
+		historyId: string;
+	}): Promise<void> {
+		const roomId = room?._id;
+		const triggerMessageId = message?._id;
+		if (!roomId) {
+			return;
+		}
+
+		if (!this.successResults.includes(status) || !responseData?.ok || typeof responseData?.summary?.text !== 'string') {
+			outgoingLogger.warn({
+				msg: 'Medsense session summary webhook did not return a successful summary response',
+				roomId,
+				messageId: triggerMessageId,
+				status,
+			});
+			await this.resetMedsenseSessionSummaryUpdate(roomId, triggerMessageId);
+			await updateHistory({ historyId, step: 'medsense-session-summary-failed', error: true, finished: true });
+			return;
+		}
+
+		const clearBufferThroughMessageId =
+			typeof responseData.clearBufferThroughMessageId === 'string' && responseData.clearBufferThroughMessageId.trim()
+				? responseData.clearBufferThroughMessageId.trim()
+				: triggerMessageId || null;
+
+		const roomRecord = await Rooms.findOneById(roomId, {
+			projection: { medsenseSessionInfo: 1 },
+		});
+		const sessionInfo =
+			(roomRecord as any)?.medsenseSessionInfo && typeof (roomRecord as any).medsenseSessionInfo === 'object'
+				? (roomRecord as any).medsenseSessionInfo
+				: {};
+		const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
+		const clearIndex = clearBufferThroughMessageId
+			? sessionBuffer.findIndex((entry: any) => entry?.messageId === clearBufferThroughMessageId)
+			: -1;
+		const nextSessionBuffer = clearIndex >= 0 ? sessionBuffer.slice(clearIndex + 1) : sessionBuffer;
+		const updatedAt =
+			typeof responseData.summary.updatedAt === 'string' && responseData.summary.updatedAt.trim()
+				? responseData.summary.updatedAt.trim()
+				: new Date().toISOString();
+		const currentSummary = sessionInfo.summary && typeof sessionInfo.summary === 'object' ? sessionInfo.summary : {};
+		const nextSummary = {
+			...currentSummary,
+			text: responseData.summary.text,
+			updatedAt,
+			lastProcessedMessageId: clearBufferThroughMessageId,
+		};
+			const setPatch: Record<string, any> = {
+				'medsenseSessionInfo.version': MEDSENSE_SESSION_INFO_VERSION,
+			'medsenseSessionInfo.summary': nextSummary,
+			'medsenseSessionInfo.sessionBuffer': nextSessionBuffer,
+			'medsenseSessionInfo.summaryUpdate': {
+				inProgress: false,
+				triggerMessageId: null,
+				startedAt: null,
+			},
+		};
+		if (clearIndex >= 0 && nextSessionBuffer.length === 0) {
+			setPatch['medsenseSessionInfo.sessionForms'] = [];
+		}
+
+		await Rooms.update({ _id: roomId }, { $set: setPatch });
+		await updateHistory({
+			historyId,
+			step: 'medsense-session-summary-applied',
+			finished: true,
+			data: {
+				clearBufferThroughMessageId,
+				remainingBufferCount: nextSessionBuffer.length,
+				patientContext: responseData.patientContext || null,
+			},
+		});
+	}
+
+	async executeTriggerUrl(url: string, trigger: IOutgoingIntegration, { event, message, room, owner, user, sessionSummaryPayload }: ArgumentsObject, tries = 0) {
 		if (!this.isTriggerEnabled(trigger)) {
 			outgoingLogger.warn(`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`);
 			return;
@@ -637,7 +803,7 @@ class RocketChatIntegrationHandler {
 			data.trigger_word = word;
 		}
 
-		await this.mapEventArgsToData(data, { event, message, room, owner, user });
+		await this.mapEventArgsToData(data, { event, message, room, owner, user, sessionSummaryPayload });
 		await updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		outgoingLogger.info(`Will be executing the Integration "${trigger.name}" to the url: ${url}`);
@@ -661,7 +827,9 @@ class RocketChatIntegrationHandler {
 			return;
 		}
 
-		if (opts.message) {
+		if (opts.message && event === 'medsenseSessionSummary') {
+			await updateHistory({ historyId, step: 'after-prepare-message-suppressed', finished: false });
+		} else if (opts.message) {
 			const prepareMessage = await this.sendMessage({ trigger, room, message: opts.message, data });
 			if (!prepareMessage) {
 				await updateHistory({ historyId, step: 'after-prepare-send-message-failed', finished: true });
@@ -718,7 +886,7 @@ class RocketChatIntegrationHandler {
 					outgoingLogger.info(`Status code for the Integration ${trigger.name} to ${url} is ${res.status}`);
 				}
 
-				const data = (() => {
+				const responseData = (() => {
 					const contentType = (res.headers.get('content-type') || '').split(';')[0];
 					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
 						return null;
@@ -738,6 +906,17 @@ class RocketChatIntegrationHandler {
 					httpResult: content,
 				});
 
+				if (event === 'medsenseSessionSummary') {
+					await this.applyMedsenseSessionSummaryResponse({
+						room,
+						message,
+						responseData,
+						status: res.status,
+						historyId,
+					});
+					return;
+				}
+
 				const responseContent = await this.wrapScriptEngineCall(() =>
 					scriptEngine.processOutgoingResponse({
 						integration: trigger,
@@ -753,7 +932,7 @@ class RocketChatIntegrationHandler {
 						trigger,
 						room,
 						message: responseContent,
-						data,
+						data: responseData,
 					});
 
 					if (!resultMessage) {
@@ -833,7 +1012,7 @@ class RocketChatIntegrationHandler {
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 							setTimeout(() => {
-								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, tries + 1);
+								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user, sessionSummaryPayload }, tries + 1);
 							}, waitTime);
 						} else {
 							await updateHistory({ historyId, step: 'too-many-retries', error: true });
@@ -874,6 +1053,9 @@ class RocketChatIntegrationHandler {
 					httpError: error,
 					httpResult: null,
 				});
+				if (event === 'medsenseSessionSummary') {
+					await this.resetMedsenseSessionSummaryUpdate(room?._id, message?._id);
+				}
 			});
 	}
 

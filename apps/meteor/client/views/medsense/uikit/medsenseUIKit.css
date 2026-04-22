@@ -69,17 +69,17 @@
 }
 
 .medsenseUIKit-actions--selected .rcx-box > .rcx-button {
-  background: var(--medsense-row);
-  border-color: #66b8ff;
-  box-shadow: 0 0 0 1px rgba(102, 184, 255, 0.65);
+  background: var(--medsense-row-selected);
+  border-color: var(--medsense-primary);
+  box-shadow: 0 0 0 2px rgb(78 167 255 / 70%);
   color: #eef6ff;
   font-weight: 700;
 }
 
 .medsenseUIKit-actions--selected .rcx-box > .rcx-button:hover {
-  background: var(--medsense-row);
-  border-color: #78c5ff;
-  box-shadow: 0 0 0 1px rgba(120, 197, 255, 0.7);
+  background: var(--medsense-row-selected);
+  border-color: var(--medsense-primary-hover);
+  box-shadow: 0 0 0 2px rgb(106 180 255 / 80%);
 }
 
 
@@ -238,15 +238,15 @@ button.medsenseUIKit-inlineRow:hover {
 }
 
 .medsenseUIKit-inlineRow--selected {
-  border-color: #66b8ff;
-  box-shadow: 0 0 0 1px rgba(102, 184, 255, 0.65);
-  background: var(--medsense-row);
+  border-color: var(--medsense-primary);
+  box-shadow: 0 0 0 2px rgb(78 167 255 / 70%);
+  background: var(--medsense-row-selected);
 }
 
 .medsenseUIKit-inlineRow--selected:hover {
-  border-color: #78c5ff;
-  box-shadow: 0 0 0 1px rgba(120, 197, 255, 0.75);
-  background: var(--medsense-row);
+  border-color: var(--medsense-primary-hover);
+  box-shadow: 0 0 0 2px rgb(106 180 255 / 80%);
+  background: var(--medsense-row-selected);
 }
 
 .medsenseUIKit-inlineRow__label {

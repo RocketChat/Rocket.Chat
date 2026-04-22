@@ -14,6 +14,6 @@ export interface IMedsenseRequestsModel extends IBaseModel<IMedsenseRequest> {
 	findActiveByRoomId(roomId: string): Promise<IMedsenseRequest | null>;
 	updateAssessmentProgress(
 		requestId: string,
-		data: Partial<Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status'>>,
+		data: Partial<Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status' | 'flowId'>>,
 	): Promise<UpdateResult | Document>;
 }
