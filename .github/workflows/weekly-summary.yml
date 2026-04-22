@@ -163,19 +163,65 @@ jobs:
             exit 1
           fi
 
-          PAYLOAD=$(jq -n --arg text "$SUMMARY" '{ text: $text }')
+          printf '%s' "$SUMMARY" > /tmp/summary.txt
 
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD")
+          # Split the summary into chunks that fit under Rocket.Chat's message size limit.
+          # Prefer splitting at section headers ("### ") to keep logical units together.
+          python3 - <<'PYEOF' > /tmp/chunks.json
+          import json
 
-          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
-            echo "Successfully posted weekly summary to Rocket.Chat (HTTP ${HTTP_CODE})"
-          else
-            echo "::error::Failed to post to Rocket.Chat webhook (HTTP ${HTTP_CODE})"
-            exit 1
-          fi
+          MAX_SIZE = 4500
+          with open('/tmp/summary.txt') as f:
+              summary = f.read()
+
+          sections = []
+          current = []
+          for line in summary.split('\n'):
+              if line.startswith('### ') and current:
+                  sections.append('\n'.join(current))
+                  current = [line]
+              else:
+                  current.append(line)
+          if current:
+              sections.append('\n'.join(current))
+
+          chunks = []
+          acc = ''
+          for section in sections:
+              sep_len = 1 if acc else 0
+              if acc and len(acc) + sep_len + len(section) > MAX_SIZE:
+                  chunks.append(acc)
+                  acc = section
+              else:
+                  acc = (acc + '\n' + section) if acc else section
+
+          if acc:
+              chunks.append(acc)
+
+          print(json.dumps(chunks))
+          PYEOF
+
+          CHUNK_COUNT=$(jq 'length' /tmp/chunks.json)
+          echo "Splitting summary into ${CHUNK_COUNT} chunk(s)"
+
+          for i in $(seq 0 $((CHUNK_COUNT - 1))); do
+            CHUNK=$(jq -r ".[$i]" /tmp/chunks.json)
+            PAYLOAD=$(jq -n --arg text "$CHUNK" '{ text: $text }')
+
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST "$WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD")
+
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+              echo "Posted chunk $((i + 1))/${CHUNK_COUNT} (HTTP ${HTTP_CODE})"
+            else
+              echo "::error::Failed to post chunk $((i + 1))/${CHUNK_COUNT} (HTTP ${HTTP_CODE})"
+              exit 1
+            fi
+          done
+
+          echo "Successfully posted weekly summary to Rocket.Chat in ${CHUNK_COUNT} chunk(s)"
 
       - name: Label PRs that need documentation
         if: steps.gather-commits.outputs.has_commits == 'true' && steps.claude-summary.outputs.conclusion == 'success'
