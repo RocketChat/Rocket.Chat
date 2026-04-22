@@ -81,11 +81,11 @@ const RoomBody = (): ReactElement => {
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
 	const {
-		wrapperRef,
-		innerRef: unreadBarInnerRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
 		counter: [unread],
+		setUnreadCount,
+		setLastMessageDate,
 	} = useHandleUnread(room, subscription);
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
@@ -101,14 +101,7 @@ const RoomBody = (): ReactElement => {
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
 		useHasNewMessages(room._id, user?._id, shouldJumpToBottom, isAtBottom);
 
-	const innerRef = useMergedRefsV2(
-		dateScrollInnerRef,
-		newMessagesScrollRef,
-		unreadBarInnerRef,
-		getMoreInnerRef,
-		selectAndScrollRef,
-		messageListRef,
-	);
+	const innerRef = useMergedRefsV2(dateScrollInnerRef, newMessagesScrollRef, getMoreInnerRef, selectAndScrollRef, messageListRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -165,7 +158,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
 								{isUploading && <UploadProgressIndicator uploads={uploads} />}
@@ -214,6 +207,8 @@ const RoomBody = (): ReactElement => {
 												room={room}
 												retentionPolicy={retentionPolicy}
 												hasMoreNextMessages={hasMoreNextMessages}
+												setUnreadCount={setUnreadCount}
+												setLastMessageDate={setLastMessageDate}
 											/>
 										</CustomVirtuaScrollbars>
 									</MessageListErrorBoundary>

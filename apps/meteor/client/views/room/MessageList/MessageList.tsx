@@ -1,8 +1,9 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
@@ -35,6 +36,8 @@ type MessageListProps = {
 	shouldJumpToBottom: MutableRefObject<boolean>;
 	isAtBottom: MutableRefObject<boolean>;
 	isJumpingToMessage: MutableRefObject<boolean>;
+	setUnreadCount: Dispatch<SetStateAction<number>>;
+	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
 };
 
 const lastViewportSize = 0;
@@ -51,6 +54,8 @@ export const MessageList = function MessageList({
 	shouldJumpToBottom,
 	isAtBottom,
 	isJumpingToMessage,
+	setUnreadCount,
+	setLastMessageDate,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
@@ -170,6 +175,26 @@ export const MessageList = function MessageList({
 		}
 	}, [chat, isUnreadMarkVisible]);
 
+	const handleTopVisibleMessage = useDebouncedCallback(
+		() => {
+			const handle = virtualizerRef.current;
+			if (!handle) {
+				setUnreadCount(0);
+				return;
+			}
+			const topListIndex = handle.findItemIndex(handle.scrollOffset);
+			const messageIndex = topListIndex - (canPreview ? 1 : 0);
+			const topMessage = messages[messageIndex];
+			if (!topMessage) {
+				setUnreadCount(0);
+				return;
+			}
+			setLastMessageDate(topMessage.ts);
+		},
+		300,
+		[canPreview, messages, setUnreadCount, setLastMessageDate],
+	);
+
 	return (
 		<MessageListProvider>
 			<SelectedMessagesProvider>
@@ -182,6 +207,7 @@ export const MessageList = function MessageList({
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();
+						handleTopVisibleMessage();
 					}}
 				>
 					{canPreview ? (
