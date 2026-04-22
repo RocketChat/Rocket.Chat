@@ -33,7 +33,7 @@
 		"mongodb": "6.16.0",
 		"pino": "^8.21.0",
 		"reflect-metadata": "^0.2.2",
-		"sanitize-html": "~2.17.0",
+		"sanitize-html": "~2.17.3",
 		"tsyringe": "^4.10.0",
 		"tweetnacl": "^1.0.3"
 	},
@@ -42,7 +42,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.16.5",
-		"@types/sanitize-html": "~2.16.0",
+		"@types/sanitize-html": "~2.16.1",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
 		"jest-qase-reporter": "^2.1.4",

@@ -22,7 +22,7 @@
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/react": "~18.3.27",
+		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.37.5",
@@ -31,7 +31,7 @@
 		"eslint-plugin-testing-library": "~6.4.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
-		"react-virtuoso": "^4.12.0",
+		"react-virtuoso": "~4.12.8",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
