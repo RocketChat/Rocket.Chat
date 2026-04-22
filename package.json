@@ -50,6 +50,8 @@
 		"markdown-it": "^14.1.1",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
+		"protobufjs": "7.5.5",
+		"webdav/axios": "0.31.1",
 		"picomatch@npm:^2.0.4": "^2.3.2",
 		"picomatch@npm:^2.2.1": "^2.3.2",
 		"picomatch@npm:^2.2.3": "^2.3.2",

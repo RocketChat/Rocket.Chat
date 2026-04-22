@@ -2174,6 +2174,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
+	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subId, status: 'BANNED' },
+			{ $set: { status: 'INVITED', open: true, unread: 1, userMentions: 1, groupMentions: 0, alert: true, inviter } },
+		);
+	}
+
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult> {
 		const query = {
 			'rid': roomId,

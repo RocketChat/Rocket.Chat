@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "29.0.0",
+	"version": "29.0.2",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/onboarding-ui": "~0.36.2",
-		"dompurify": "~3.3.2"
+		"dompurify": "~3.4.0"
 	},
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
