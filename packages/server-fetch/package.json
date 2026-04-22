@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/server-fetch",
-	"version": "0.1.2",
+	"version": "0.1.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

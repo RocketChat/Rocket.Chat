@@ -6,6 +6,7 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
 import { installTestApp, cleanupApps } from '../../data/apps/helper';
+import { updatePermission } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Apps - Logs', () => {
@@ -256,5 +257,32 @@ import { IS_EE } from '../../e2e/config/constants';
 				expect(res.body).to.have.a.property('error', 'Invalid query parameter "appId": invalid-id');
 			})
 			.end(done);
+	});
+
+	it('should require authentication', (done) => {
+		void request
+			.get(apps(`/${app.id}/logs`))
+			.expect('Content-Type', 'application/json')
+			.expect(401)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body).to.have.a.property('error');
+			})
+			.end(done);
+	});
+
+	it('should require manage-apps permission', (done) => {
+		void updatePermission('manage-apps', []).then(
+			() =>
+				void request
+					.get(apps(`/${app.id}/logs`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+					})
+					.end((err) => void updatePermission('manage-apps', ['admin']).then(() => void done(err))),
+		);
 	});
 });
