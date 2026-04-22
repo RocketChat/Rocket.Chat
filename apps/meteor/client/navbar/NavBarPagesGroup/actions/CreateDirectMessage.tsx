@@ -3,11 +3,6 @@ import {
 	Box,
 	Modal,
 	Button,
-	FieldGroup,
-	Field,
-	FieldRow,
-	FieldError,
-	FieldHint,
 	ModalHeader,
 	ModalTitle,
 	ModalClose,
@@ -15,6 +10,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { FieldGroup, Field, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
