@@ -13,7 +13,7 @@
  * After all moves, runs `tsc --noEmit` to verify.
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -45,7 +45,7 @@ for (const line of manifest) {
 
 	try {
 		const scriptPath = path.join(import.meta.dirname, 'move-module.mjs');
-		execSync(`node "${scriptPath}" --from "${fromDir}" --to "${toDir}"`, {
+		execFileSync(process.execPath, [scriptPath, '--from', fromDir, '--to', toDir], {
 			cwd: ROOT,
 			stdio: 'inherit',
 		});

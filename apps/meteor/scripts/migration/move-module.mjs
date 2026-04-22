@@ -124,14 +124,14 @@ function updateImportsInFile(filePath, oldFilePath, movedFiles = new Map()) {
 
 		// If the target also moved (sibling file in same module), use its new location
 		for (const [oldPath, newPath] of movedFiles) {
+			const oldNoExt = oldPath.replace(/\.(ts|tsx|js|jsx)$/, '');
 			// Check exact match or match stripping extension
-			if (absoluteTarget === oldPath || absoluteTarget === oldPath.replace(/\.(ts|tsx|js|jsx)$/, '')) {
+			if (absoluteTarget === oldPath || absoluteTarget === oldNoExt) {
 				absoluteTarget = newPath;
 				break;
 			}
-			// Also check if the target resolves to an index file inside the moved dir
-			const oldDir = oldPath.replace(/\.(ts|tsx|js|jsx)$/, '');
-			if (absoluteTarget.startsWith(oldDir)) {
+			// Only treat as "inside a moved index dir" with a proper separator boundary
+			if (absoluteTarget.startsWith(oldNoExt + path.sep)) {
 				absoluteTarget = newPath + absoluteTarget.slice(oldPath.length);
 				break;
 			}
@@ -166,7 +166,7 @@ function findImportsFrom(filePath, targetDirAbs) {
 		const specifier = m[2];
 		if (!specifier.startsWith('.')) continue;
 		const resolved = resolveImportSpecifier(filePath, specifier);
-		if (resolved && resolved.startsWith(targetDirAbs)) {
+		if (resolved && (resolved === targetDirAbs || resolved.startsWith(targetDirAbs + path.sep))) {
 			matches.push({ specifier, resolved });
 		}
 	}
@@ -184,7 +184,9 @@ function updateExternalImports(externalFile, oldDirAbs, newDirAbs) {
 		if (!specifier.startsWith('.')) return match;
 
 		const resolved = resolveImportSpecifier(externalFile, specifier);
-		if (!resolved || !resolved.startsWith(oldDirAbs)) return match;
+		if (!resolved) return match;
+		const insideOldDir = resolved === oldDirAbs || resolved.startsWith(oldDirAbs + path.sep);
+		if (!insideOldDir) return match;
 
 		// Map the old absolute path to the new absolute path
 		const relativeToDirOld = path.relative(oldDirAbs, resolved);

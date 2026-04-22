@@ -145,23 +145,22 @@ The migration is split into 7 phases, ordered by risk (lowest first) and depende
 
 **Scripts** (disposable, deleted after use):
 
-1. **`move-file.sh <old-path> <new-path>`** — Moves a single file and fixes all imports.
+1. **`move-module.mjs --from <old-dir> --to <new-dir>`** — Moves a module directory and fixes all imports.
    - `mkdir -p` the target directory
-   - `git mv` the file from old to new location
-   - Compute the import specifier other files use for this file (strip `.ts`, handle `index.ts`)
-   - `grep -rl` to find every file importing the old path
-   - For each importer, compute the new relative path and replace the import
-   - If the file has co-located tests (`.spec.ts`, `.tests.ts`), move those too
+   - `git mv` every file from old to new location
+   - For each moved file, recompute relative imports from the new position
+   - For external files importing into the moved directory, recompute their specifiers
+   - Supports `--dry-run` to preview changes without writing
 
-2. **`move-batch.sh <manifest-file>`** — Moves a batch of files from a TSV manifest.
+2. **`move-batch.mjs <manifest.tsv>`** — Moves a batch of modules from a TSV manifest.
    - Reads the manifest line by line (`old-path<TAB>new-path`)
-   - Calls `move-file.sh` for each entry
+   - Calls `move-module.mjs` for each entry
    - After all moves, runs `tsc --noEmit` once to verify nothing broke
    - Reports: files moved, imports updated, any errors
 
-3. **`verify-no-old-imports.sh`** — Checks that no imports still point to `app/*/server/` for already-moved files. Run after each phase to catch stragglers.
+3. **`verify-no-old-imports.mjs <pattern>...`** — Checks that no imports still reference given substrings (e.g., `app/slashcommand`). Run after each phase to catch stragglers.
 
-Each phase produces a manifest file (the tables below), feeds it to `move-batch.sh`, verifies with `tsc --noEmit`, and commits the result. The scripts themselves are deleted once all phases are complete.
+Each phase produces a manifest file (the tables below), feeds it to `move-batch.mjs`, verifies with `tsc --noEmit`, and commits the result. The scripts themselves are deleted once all phases are complete.
 
 **Deliverable**: Scripts written and tested on a small dry-run (e.g., move one slash command file, verify, revert).
 
@@ -545,7 +544,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 - Delete `app/lib/server/index.ts` (should be empty by now)
 - Update `server/importPackages.ts` to remove all `app/` imports
 - Verify no remaining imports from `app/*/server/`
-- Delete the migration scripts (`move-file.sh`, `move-batch.sh`, `verify-no-old-imports.sh`)
+- Delete the migration scripts (`move-module.mjs`, `move-batch.mjs`, `verify-no-old-imports.mjs`)
 
 **Final verification**: Full `tsc --noEmit`, full test suite, manual smoke test of core features (login, send message, create room, livechat, file upload).
 
@@ -598,7 +597,7 @@ This file is the main import aggregator for the app/lib module. As files move ou
 | **Broken imports** — moving 800+ files changes import paths everywhere        | Migration script updates all imports in the same commit as the file move; `tsc --noEmit` verifies after each batch |
 | **Missing method registration** — Meteor methods must be imported to register | Each phase verifies that all methods still register by checking `tsc --noEmit` and running method-specific tests   |
 | **Merge conflicts** — other developers working on moved files                 | Communicate migration schedule; do large moves in low-activity windows; each phase is a separate PR                |
-| **`app/lib/server/` is a dependency hub** — 62 features import from it        | Migration script handles all import updates atomically per batch; `verify-no-old-imports.sh` catches stragglers    |
+| **`app/lib/server/` is a dependency hub** — 62 features import from it        | Migration script handles all import updates atomically per batch; `verify-no-old-imports.mjs` catches stragglers   |
 | **Omnichannel is huge** — 132 files in livechat                               | Move incrementally: API in Phase 3, methods in Phase 5, hooks in Phase 6, lib in Phase 7                           |
 | **Test breakage** — tests may import from old paths                           | Update test imports in the same PR as the file move; tests co-located with source files move together              |
 
