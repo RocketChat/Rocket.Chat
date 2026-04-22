@@ -19,7 +19,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 type CallHistoryList = PaginatedRequest<{
 	filter?: string;
 	direction?: CallHistoryItem['direction'];
-	state?: CallHistoryItemState[] | CallHistoryItemState;
+	state?: CallHistoryItemState[];
 }>;
 
 const CallHistoryListSchema = {
@@ -42,20 +42,10 @@ const CallHistoryListSchema = {
 			enum: ['inbound', 'outbound'],
 		},
 		state: {
-			// our clients serialize arrays as `state=value1&state=value2`, but if there's a single value the parser doesn't know it is an array, so we need to support both arrays and direct values
-			// if a client tries to send a JSON array, our parser will treat it as a string and the type validation will reject it
-			// This means this param won't work from Swagger UI
-			oneOf: [
-				{
-					type: 'array',
-					items: {
-						$ref: '#/components/schemas/CallHistoryItemState',
-					},
-				},
-				{
-					$ref: '#/components/schemas/CallHistoryItemState',
-				},
-			],
+			type: 'array',
+			items: {
+				$ref: '#/components/schemas/CallHistoryItemState',
+			},
 		},
 	},
 	required: [],

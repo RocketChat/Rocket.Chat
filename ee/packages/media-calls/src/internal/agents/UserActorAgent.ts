@@ -5,6 +5,7 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
+import type { VoipPushNotificationEventType } from '../../definition/IMediaCallServer';
 import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
 import { getMediaCallServer } from '../../server/injection';
@@ -36,6 +37,8 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			return;
 		}
 
+		this.sendPushNotification({ callId: call._id, event: 'answer' });
+
 		const initialOfferSignal = await getInitialOfferSignal(call, this.role);
 		if (!initialOfferSignal) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
@@ -45,6 +48,10 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
+		if (this.role === 'callee') {
+			this.sendPushNotification({ callId, event: 'end' });
+		}
+
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -67,6 +74,9 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		}
 
 		await this.sendSignal(getNewCallSignal(call, this.role));
+		if (this.role === 'callee') {
+			this.sendPushNotification({ callId: call._id, event: 'new' });
+		}
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
@@ -153,5 +163,9 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
+	}
+
+	private sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
+		getMediaCallServer().sendPushNotification(params);
 	}
 }

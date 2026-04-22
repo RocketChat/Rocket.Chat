@@ -27,6 +27,9 @@ oAuthRouter.use(
 	}),
 );
 
+oAuthRouter.enable('trust proxy');
+oAuthRouter.set('trust proxy', true);
+
 oAuthRouter.use(passport.initialize());
 oAuthRouter.use(passport.session());
 oAuthRouter.use(flash());
