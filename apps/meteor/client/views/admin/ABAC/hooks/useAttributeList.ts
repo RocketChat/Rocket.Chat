@@ -4,10 +4,9 @@ import { useContext, useMemo } from 'react';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
+import { RC_USER_ROLE_ATTRIBUTE_KEY, RC_USER_ROLE_ATTRIBUTE_SYNTHETIC_ID } from '../constants';
 
 const COUNT = 150;
-const RC_USER_ROLE_ATTRIBUTE_KEY = 'RC-user-role';
-const RC_USER_ROLE_SYNTHETIC_ID = '__rc-user-role__';
 
 type AttributeListItem = {
 	_id: string;
@@ -59,7 +58,7 @@ export const useAttributeList = () => {
 
 		if (useUserRolesAsAttributes && pdpType === 'local') {
 			attributes.unshift({
-				_id: RC_USER_ROLE_SYNTHETIC_ID,
+				_id: RC_USER_ROLE_ATTRIBUTE_SYNTHETIC_ID,
 				label: RC_USER_ROLE_ATTRIBUTE_KEY,
 				value: RC_USER_ROLE_ATTRIBUTE_KEY,
 				attributeValues: [...getRoles().keys()],

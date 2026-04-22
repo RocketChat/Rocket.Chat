@@ -6,8 +6,7 @@ import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { RoomFormData } from './RoomForm';
-
-const RC_USER_ROLE_ATTRIBUTE_KEY = 'RC-user-role';
+import { RC_USER_ROLE_ATTRIBUTE_KEY } from '../constants';
 
 type ABACAttributeAutocompleteProps = {
 	labelId: string;
