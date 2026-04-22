@@ -29,7 +29,7 @@ abstract class E2EEBanner {
 		if (!bannerVisible) {
 			const e2eeModalVisible = await this.root
 				.page()
-				.getByRole('dialog', { name: /E2EE password/ })
+				.getByRole('dialog', { name: /E2E(E)? password/ })
 				.waitFor({ state: 'visible', timeout: 2_000 })
 				.then(() => true)
 				.catch(() => false);
@@ -62,7 +62,7 @@ export class SaveE2EEPasswordBanner extends E2EEBanner {
 
 export class EnterE2EEPasswordBanner extends E2EEBanner {
 	constructor(page: Page) {
-		super(page.getByRole('button', { name: /Enter (your E2E|E2EE) password/ }));
+		super(page.getByRole('button', { name: /Enter (your )?E2E(E)? password/ }));
 	}
 }
 
