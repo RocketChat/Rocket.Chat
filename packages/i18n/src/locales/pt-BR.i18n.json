@@ -7138,7 +7138,7 @@
     "other": "{{count}} arquivos removidos"
   },
   "__count__files_failed_to_upload": {
-    "one": "{{count}} arquivo não foi carregado e não será enviado.",
+    "one": "{{count}} arquivo não foi carregado e não será enviado: {{name}}",
     "other": "{{count}} arquivos não foram carregados e não serão enviados."
   },
   "__count__follower": {
