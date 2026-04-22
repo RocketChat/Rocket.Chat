@@ -3,6 +3,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { hasSameElements } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
@@ -71,9 +72,6 @@ const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 
 	return user;
 };
-
-const arraysHaveSameMembers = (a: readonly string[] = [], b: readonly string[] = []): boolean =>
-	a.length === b.length && new Set([...a, ...b]).size === a.length;
 
 const _saveUser = (session?: ClientSession) =>
 	async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
@@ -223,7 +221,7 @@ const _saveUser = (session?: ClientSession) =>
 				oldUser: oldUserData,
 			});
 
-			if (userData._id && userData.roles && !arraysHaveSameMembers(userData.roles, oldUserData?.roles)) {
+			if (userData._id && userData.roles && !hasSameElements(userData.roles, oldUserData?.roles)) {
 				await afterUserRolesChanged(userData._id);
 			}
 
