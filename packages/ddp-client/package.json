@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "1.0.6",
+	"version": "1.0.8",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
