@@ -20,7 +20,26 @@ abstract class E2EEBanner {
 
 	async click() {
 		await this.dismissBlockingModal();
-		await expect(this.root).toBeVisible({ timeout: 15_000 });
+
+		const bannerVisible = await this.root
+			.waitFor({ state: 'visible', timeout: 15_000 })
+			.then(() => true)
+			.catch(() => false);
+
+		if (!bannerVisible) {
+			const e2eeModalVisible = await this.root
+				.page()
+				.getByRole('dialog', { name: /E2EE password/ })
+				.waitFor({ state: 'visible', timeout: 2_000 })
+				.then(() => true)
+				.catch(() => false);
+
+			if (e2eeModalVisible) {
+				return;
+			}
+
+			await expect(this.root).toBeVisible({ timeout: 15_000 });
+		}
 
 		try {
 			await this.root.click({ timeout: 3_000 });
