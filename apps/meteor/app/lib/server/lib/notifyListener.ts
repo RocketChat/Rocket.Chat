@@ -429,6 +429,14 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
+const getUserNameByUsernameCached = mem(
+	async (username: string): Promise<string | undefined> => {
+		const user = await Users.findOneByUsername(username, { projection: { name: 1 } });
+		return user?.name;
+	},
+	{ maxAge: 10000 },
+);
+
 const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
@@ -464,6 +472,21 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 				const name = await getUserNameCached(mention._id);
 				if (name) {
 					mention.name = name;
+				}
+			}
+		}
+
+		if (message.reactions) {
+			for (const [, reaction] of Object.entries(message.reactions)) {
+				if (!reaction.names || !reaction.usernames) {
+					continue;
+				}
+				for (let i = 0; i < reaction.usernames.length; i++) {
+					const username = reaction.usernames[i];
+					const name = await getUserNameByUsernameCached(username);
+					if (name) {
+						reaction.names[i] = name;
+					}
 				}
 			}
 		}
