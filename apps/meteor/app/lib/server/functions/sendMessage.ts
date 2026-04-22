@@ -185,6 +185,25 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 			messageCustomFields: settings.get<string>('Message_CustomFields'),
 		});
 	}
+
+	const isAdmin = await hasPermissionAsync(user._id, 'view-privileged-setting');
+	if (!isAdmin && message.msg) {
+		const restrictedEmojisString = settings.get<string>('Emoji_Restricted_For_Users');
+		if (restrictedEmojisString) {
+			const restrictedEmojis = restrictedEmojisString.split(',').map((emoji) => emoji.trim()).filter(Boolean);
+			if (restrictedEmojis.length) {
+				const emojiRegex = /:([a-zA-Z0-9_+-]+):/g;
+				const matches = message.msg.matchAll(emojiRegex);
+				
+				for (const match of matches) {
+					const emojiName = match[1];
+					if (restrictedEmojis.includes(emojiName)) {
+						throw new Error(`Emoji :${emojiName}: is restricted`);
+					}
+				}
+			}
+		}
+	}
 };
 
 export function prepareMessageObject(

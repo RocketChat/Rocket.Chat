@@ -9,19 +9,15 @@ type RestrictEmojiProps = {
 	close: () => void;
 };
 
-const RestrictEmoji = ({ close, ...props }: RestrictEmojiProps): ReactElement => {
+const RestrictEmoji = ({ close }: RestrictEmojiProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
 
 	const restrictedEmojisString = useSetting<string>('Emoji_Restricted_For_Users', '');
 	const [restrictedEmojis, setRestrictedEmojis] = useState(restrictedEmojisString || '');
-	const [error, setError] = useState(false);
 
 	const handleChangeRestrictedEmojis = (e: ChangeEvent<HTMLTextAreaElement>): void => {
-		if (error) {
-			setError(false);
-		}
 		setRestrictedEmojis(e.currentTarget.value);
 	};
 
@@ -30,14 +26,15 @@ const RestrictEmoji = ({ close, ...props }: RestrictEmojiProps): ReactElement =>
 			await dispatchSettings([{ _id: 'Emoji_Restricted_For_Users', value: restrictedEmojis }]);
 			dispatchToastMessage({ type: 'success', message: t('Emoji_Restrictions_Updated_Successfully') });
 			close();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : String(err);
+			dispatchToastMessage({ type: 'error', message: errorMessage });
 		}
 	}, [restrictedEmojis, dispatchSettings, dispatchToastMessage, t, close]);
 
 	return (
 		<>
-			<ContextualbarScrollableContent {...props}>
+			<ContextualbarScrollableContent>
 				<Field>
 					<FieldLabel>{t('Restricted_Emojis')}</FieldLabel>
 					<FieldRow>
@@ -53,7 +50,6 @@ const RestrictEmoji = ({ close, ...props }: RestrictEmojiProps): ReactElement =>
 							{t('Emoji_Restricted_For_Users_Description')}
 						</Box>
 					</FieldRow>
-					{error && <FieldError>{t('error-the-field-is-required', { field: t('Restricted_Emojis') })}</FieldError>}
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
