@@ -11,6 +11,7 @@ import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authoriza
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../lib/validateScriptSyntax';
 
 const validChannelChars = ['@', '#'];
 
@@ -107,13 +108,16 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 	};
 
+	// Validate the script syntax if it is enabled and using a sandbox that is
+	// not frozen. isolated-vm embeds modern V8 and runs the script natively, so
+	// no transpilation is needed.
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
 		integration.scriptEnabled === true &&
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		const { script, error } = validateScriptSyntax(integration.script);
 		if (error) {
 			integrationData.scriptCompiled = undefined;
 			integrationData.scriptError = error;

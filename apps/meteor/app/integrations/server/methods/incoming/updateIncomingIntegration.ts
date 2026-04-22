@@ -9,6 +9,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authoriza
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../lib/validateScriptSyntax';
 
 const validChannelChars = ['@', '#'];
 
@@ -83,17 +84,15 @@ export const updateIncomingIntegration = async (
 
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	// Default to transpiling with Babel for backwards compatibility; integrations
-	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
-	const skipTranspile = integration.skipTranspile === true;
-
 	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
 		if (error) {
 			await Integrations.updateOne(
 				{ _id: integrationId },
 				{
-					$set: { scriptError: error, skipTranspile },
+					$set: { scriptError: error },
 					$unset: { scriptCompiled: 1 as const },
 				},
 			);
@@ -101,7 +100,7 @@ export const updateIncomingIntegration = async (
 			await Integrations.updateOne(
 				{ _id: integrationId },
 				{
-					$set: { scriptCompiled: script, skipTranspile },
+					$set: { scriptCompiled: script },
 					$unset: { scriptError: 1 as const },
 				},
 			);

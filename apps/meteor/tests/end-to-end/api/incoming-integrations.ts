@@ -434,7 +434,28 @@ describe('[Incoming Integrations]', () => {
 						scriptEnabled: true,
 						overrideDestinationChannelEnabled: false,
 						channel: '#general',
-						script: sloppyModeScript,
+						script:
+							'const buildMessage = (obj) => {\n' +
+							'  \n' +
+							'    const template = `[#VALUE](${ obj.test })`;\n' +
+							'  \n' +
+							'    return {\n' +
+							'      text: template\n' +
+							'    };\n' +
+							'  };\n' +
+							'  \n' +
+							'  class Script {\n' +
+							'    process_incoming_request({ request }) {\n' +
+							'      const msg = buildMessage(request.content);\n' +
+							'  \n' +
+							'      return {\n' +
+							'        content:{\n' +
+							'              text: msg.text\n' +
+							'        }\n' +
+							'      };\n' +
+							'    }\n' +
+							'  }\n' +
+							'					\n',
 					})
 					.expect(200);
 				withScriptDefaultContentType = res2.body.integration;
