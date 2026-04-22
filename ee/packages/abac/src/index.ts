@@ -877,7 +877,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async isAbacAttributeInUseByAnyRoom(): Promise<boolean> {
-		return Rooms.isAbacAttributeKeyInUse(RC_USER_ROLE_ATTRIBUTE_KEY);
+		return !!(await Rooms.findOneByAbacAttributeKey(RC_USER_ROLE_ATTRIBUTE_KEY));
 	}
 
 	async evaluateRoomMembership(): Promise<void> {

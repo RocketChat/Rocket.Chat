@@ -57,7 +57,6 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 				setValue(setting.value);
-				setEditor(isSettingColor(setting) ? setting.editor : undefined);
 			}
 		},
 		230,

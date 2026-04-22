@@ -136,9 +136,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return !!room;
 	}
 
-	async isAbacAttributeKeyInUse(key: string): Promise<boolean> {
-		const room = await this.findOne({ 'abacAttributes.key': key }, { projection: { _id: 1 } });
-		return !!room;
+	findOneByAbacAttributeKey(key: string) {
+		return this.findOne({ 'abacAttributes.key': key }, { projection: { _id: 1 } });
 	}
 
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
