@@ -1,7 +1,30 @@
 import { ScanContext, flushText, emit, tryEmoticon, isLineStart } from '../ScanContext';
 import { TokenKind } from '../Token';
-import { CH_GT, CH_T_LO, CH_COLON, CH_LBRACKET, CH_LPAREN } from '../constants/charCodes';
+import { CH_GT, CH_T_LO, CH_COLON, CH_LBRACKET, CH_LPAREN, CH_BACKSLASH } from '../constants/charCodes';
 import { TS_INNER } from '../constants/regexes';
+
+function hasUnclosedLinkHref(ctx: ScanContext): boolean {
+    let closeCount = 0;
+
+    for (let i = ctx.tokens.length - 1; i >= 0; i--) {
+        const kind = ctx.tokens[i].kind;
+
+        if (kind === TokenKind.LINK_HREF_CLOSE) {
+            closeCount++;
+            continue;
+        }
+
+        if (kind === TokenKind.LINK_HREF_OPEN) {
+            if (closeCount === 0) {
+                return true;
+            }
+
+            closeCount--;
+        }
+    }
+
+    return false;
+}
 
 /**
  * Scanner for `<`: emits a {@link TokenKind.TIMESTAMP} for `<t:…>` sequences,
@@ -81,9 +104,27 @@ export function scanBracketOpen(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-/** Scanner for `)`: always emits a {@link TokenKind.LINK_HREF_CLOSE} token. */
+/**
+ * Scanner for `)`: emits a {@link TokenKind.LINK_HREF_CLOSE} when there is a prior
+ * unmatched `](` or when `)` is the very first thing in the input (no preceding
+ * text or tokens). Falls back to plain text otherwise.
+ */
 export function scanParenClose(ctx: ScanContext, pos: number): number {
-    flushText(ctx, pos);
-    emit(ctx, TokenKind.LINK_HREF_CLOSE, ')', ')', pos);
+    const prevCode = pos > 0 ? ctx.input.charCodeAt(pos - 1) : 0;
+
+    // Keep escaped closing parens as text (e.g. "\\)" when KaTeX parenthesis syntax is disabled).
+    if (prevCode === CH_BACKSLASH) {
+        if (ctx.textStart === -1) ctx.textStart = pos;
+        return pos + 1;
+    }
+
+    // Emit LINK_HREF_CLOSE when inside a link href or when `)` stands completely alone.
+    if (hasUnclosedLinkHref(ctx) || (ctx.textStart === -1 && ctx.tokens.length === 0)) {
+        flushText(ctx, pos);
+        emit(ctx, TokenKind.LINK_HREF_CLOSE, ')', ')', pos);
+        return pos + 1;
+    }
+
+    if (ctx.textStart === -1) ctx.textStart = pos;
     return pos + 1;
 }
