@@ -28,6 +28,7 @@
 		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
+		"@rocket.chat/ui-client": "workspace:~",
 		"@storybook/addon-a11y": "^8.6.18",
 		"@storybook/addon-actions": "^8.6.18",
 		"@storybook/addon-docs": "^8.6.18",
@@ -52,6 +53,7 @@
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/icons": "*",
+		"@rocket.chat/ui-client": "*",
 		"react": "*",
 		"react-dom": "*"
 	},
