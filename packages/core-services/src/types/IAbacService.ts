@@ -18,7 +18,6 @@ export interface IAbacService {
 			values?: string;
 			offset?: number;
 			count?: number;
-			includeUserRoleAttribute?: boolean;
 		},
 		actor?: AbacActor,
 	): Promise<{ attributes: IAbacAttribute[]; offset: number; count: number; total: number }>;

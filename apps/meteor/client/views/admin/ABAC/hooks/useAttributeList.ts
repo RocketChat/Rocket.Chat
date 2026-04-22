@@ -1,40 +1,35 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { AuthorizationContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
-import { useRolesList } from '../../../../hooks/useRolesList';
 
 const COUNT = 150;
 const RC_USER_ROLE_ATTRIBUTE_KEY = 'RC-user-role';
+const RC_USER_ROLE_SYNTHETIC_ID = '__rc-user-role__';
 
 type AttributeListItem = {
 	_id: string;
 	label: string;
 	value: string;
 	attributeValues: string[];
-	valueLabels?: Record<string, string>;
 };
 
 export const useAttributeList = () => {
 	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
-	const { data: rolesData } = useRolesList();
 
-	const roleLabels = useMemo(() => {
-		const labels: Record<string, string> = {};
-		for (const role of rolesData?.roles ?? []) {
-			labels[role._id] = role.name || role._id;
-		}
-		return labels;
-	}, [rolesData]);
+	const useUserRolesAsAttributes = useSetting('ABAC_Use_User_Roles_As_Attributes', false);
+	const pdpType = useSetting('ABAC_PDP_Type', 'local');
+
+	const { getRoles } = useContext(AuthorizationContext);
 
 	const attributesQuery = useQuery({
 		enabled: isABACAvailable,
 		queryKey: ABACQueryKeys.roomAttributes.list(),
 		queryFn: async () => {
-			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT, includeUserRoleAttribute: true });
+			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });
 			const { attributes: firstPageAttributes, total } = firstPage;
 
 			let currentPage = COUNT;
@@ -54,16 +49,25 @@ export const useAttributeList = () => {
 		if (!attributesQuery.data) {
 			return undefined;
 		}
-		return {
-			attributes: attributesQuery.data.map<AttributeListItem>((attribute) => ({
-				_id: attribute._id,
-				label: attribute.key,
-				value: attribute.key,
-				attributeValues: attribute.values,
-				...(attribute.key === RC_USER_ROLE_ATTRIBUTE_KEY && { valueLabels: roleLabels }),
-			})),
-		};
-	}, [attributesQuery.data, roleLabels]);
+
+		const attributes: AttributeListItem[] = attributesQuery.data.map((attribute) => ({
+			_id: attribute._id,
+			label: attribute.key,
+			value: attribute.key,
+			attributeValues: attribute.values,
+		}));
+
+		if (useUserRolesAsAttributes && pdpType === 'local') {
+			attributes.unshift({
+				_id: RC_USER_ROLE_SYNTHETIC_ID,
+				label: RC_USER_ROLE_ATTRIBUTE_KEY,
+				value: RC_USER_ROLE_ATTRIBUTE_KEY,
+				attributeValues: [...getRoles().keys()],
+			});
+		}
+
+		return { attributes };
+	}, [attributesQuery.data, useUserRolesAsAttributes, pdpType, getRoles]);
 
 	return {
 		...attributesQuery,

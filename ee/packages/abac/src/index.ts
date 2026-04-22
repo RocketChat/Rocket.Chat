@@ -17,7 +17,7 @@ import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
-import { RC_USER_ROLE_ATTRIBUTE_KEY, RC_USER_ROLE_ATTRIBUTE_SYNTHETIC_ID } from './constants';
+import { RC_USER_ROLE_ATTRIBUTE_KEY } from './constants';
 import {
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
@@ -30,7 +30,6 @@ import {
 } from './errors';
 import {
 	getAbacRoom,
-	getAllRoleIdsCached,
 	diffAttributes,
 	extractAttribute,
 	diffAttributeSets,
@@ -266,13 +265,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async listAbacAttributes(filters?: {
-		key?: string;
-		values?: string;
-		offset?: number;
-		count?: number;
-		includeUserRoleAttribute?: boolean;
-	}): Promise<{
+	async listAbacAttributes(filters?: { key?: string; values?: string; offset?: number; count?: number }): Promise<{
 		attributes: IAbacAttribute[];
 		offset: number;
 		count: number;
@@ -299,27 +292,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		);
 
 		const attributes = await cursor.toArray();
-		const base = {
+
+		return {
 			attributes,
 			offset,
 			count: attributes.length,
 			total: await totalCount,
-		};
-
-		if (!filters?.includeUserRoleAttribute || offset !== 0 || !(await this.isRoleAttributeFeatureActive())) {
-			return base;
-		}
-
-		const synthetic: IAbacAttribute = {
-			_id: RC_USER_ROLE_ATTRIBUTE_SYNTHETIC_ID,
-			key: RC_USER_ROLE_ATTRIBUTE_KEY,
-			values: await getAllRoleIdsCached(),
-		} as IAbacAttribute;
-
-		return {
-			...base,
-			attributes: [synthetic, ...base.attributes],
-			count: base.count + 1,
 		};
 	}
 
