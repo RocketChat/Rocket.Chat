@@ -42,7 +42,8 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 		queryFn: async () => {
 			if (!userId) return false;
 			try {
-				return await getUserRoomRole(message.rid, userId, 'important-message-marker');
+				const result = await getUserRoomRole(message.rid, userId, 'important-message-marker');
+				return result ?? false;
 			} catch (error) {
 				return false;
 			}
@@ -89,6 +90,7 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	}
 
 	const handleClick = () => {
+		console.log('[ImportantMessageReadInfo] Toggling list visibility:', { messageId: message._id, currentState: showList });
 		setShowList(!showList);
 		if (!showList) {
 			setSearchText('');
@@ -96,7 +98,9 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	};
 
 	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setSearchText(e.target.value);
+		const value = e.target.value;
+		console.log('[ImportantMessageReadInfo] Search text changed:', { messageId: message._id, searchText: value });
+		setSearchText(value);
 	};
 
 	return (

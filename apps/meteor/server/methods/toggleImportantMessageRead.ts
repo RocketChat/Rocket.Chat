@@ -19,14 +19,18 @@ Meteor.methods({
 			});
 		}
 
+		console.log('[toggleImportantMessageRead] Starting:', { messageId, userId });
+
 		const message = await Messages.findOneById(messageId);
 		if (!message) {
+			console.error('[toggleImportantMessageRead] Message not found:', messageId);
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'toggleImportantMessageRead',
 			});
 		}
 
 		if (!message.isImportant) {
+			console.error('[toggleImportantMessageRead] Message not marked as important:', messageId);
 			throw new Meteor.Error('error-not-important-message', 'Message is not marked as important', {
 				method: 'toggleImportantMessageRead',
 			});
@@ -40,11 +44,13 @@ Meteor.methods({
 				{ _id: messageId },
 				{ $pull: { importantReadBy: userId } }
 			);
+			console.log('[toggleImportantMessageRead] Marked as unread:', { messageId, userId });
 		} else {
 			await Messages.updateOne(
 				{ _id: messageId },
 				{ $addToSet: { importantReadBy: userId } }
 			);
+			console.log('[toggleImportantMessageRead] Marked as read:', { messageId, userId });
 		}
 
 		return !isRead;

@@ -25,15 +25,18 @@ export const removeRoomImportantMessageMarker = async (
 	check(rid, String);
 	check(userId, String);
 
+	console.log('[removeRoomImportantMessageMarker] Starting:', { fromUserId, rid, userId });
+
 	const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
 	if (!room) {
+		console.error('[removeRoomImportantMessageMarker] Room not found:', rid);
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'removeRoomImportantMessageMarker',
 		});
 	}
 
-	// Проверяем права текущего пользователя
 	if (!(await hasPermissionAsync(fromUserId, 'set-important-message-marker', rid))) {
+		console.error('[removeRoomImportantMessageMarker] Permission denied:', { fromUserId, rid });
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'removeRoomImportantMessageMarker',
 		});
@@ -41,6 +44,7 @@ export const removeRoomImportantMessageMarker = async (
 
 	const user = await Users.findOneById(userId);
 	if (!user?.username) {
+		console.error('[removeRoomImportantMessageMarker] User not found:', userId);
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'removeRoomImportantMessageMarker',
 		});
@@ -48,21 +52,21 @@ export const removeRoomImportantMessageMarker = async (
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (!subscription) {
+		console.error('[removeRoomImportantMessageMarker] Subscription not found:', { rid, userId });
 		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 			method: 'removeRoomImportantMessageMarker',
 		});
 	}
 
 	if (!Array.isArray(subscription.roles) || !subscription.roles.includes('important-message-marker')) {
+		console.error('[removeRoomImportantMessageMarker] User does not have role:', { rid, userId });
 		throw new Meteor.Error('error-user-does-not-have-role', 'User does not have the role', {
 			method: 'removeRoomImportantMessageMarker',
 		});
 	}
 
-	// Callback перед удалением роли
 	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'user' });
 
-	// Удаляем роль
 	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'important-message-marker');
 	await syncRoomRolePriorityForUserAndRoom(
 		userId,
@@ -76,12 +80,12 @@ export const removeRoomImportantMessageMarker = async (
 
 	const fromUser = await Users.findOneById(fromUserId);
 	if (!fromUser) {
+		console.error('[removeRoomImportantMessageMarker] FromUser not found:', fromUserId);
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'removeRoomImportantMessageMarker',
 		});
 	}
 
-	// Сохраняем системное сообщение
 	await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'important-message-marker' });
 
 	const team = await Team.getOneByMainRoomId(rid);
@@ -89,7 +93,6 @@ export const removeRoomImportantMessageMarker = async (
 		await Team.removeRolesFromMember(team._id, userId, ['important-message-marker']);
 	}
 
-	// Бродкастим событие
 	const event = {
 		type: 'removed',
 		_id: 'important-message-marker',
@@ -107,6 +110,7 @@ export const removeRoomImportantMessageMarker = async (
 
 	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
 
+	console.log('[removeRoomImportantMessageMarker] Role removed successfully:', { rid, userId });
 	return true;
 };
 

@@ -175,6 +175,7 @@ const MessageBox = ({
 	});
 
 	const handleImportantToggle = useEffectEvent((active: boolean) => {
+		console.log('[MessageBox] Important toggle clicked:', { active });
 		setIsImportantActive(active);
 		textareaRef.current?.focus();
 	});

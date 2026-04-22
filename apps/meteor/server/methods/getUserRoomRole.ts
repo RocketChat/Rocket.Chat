@@ -21,13 +21,15 @@ Meteor.methods({
 			});
 		}
 
-		// Get the target user's subscription
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 		
 		if (!subscription) {
+			console.log('[getUserRoomRole] Subscription not found:', { rid, userId, role });
 			return false;
 		}
 
-		return subscription.roles?.includes(role) ?? false;
+		const hasRole = subscription.roles?.includes(role) ?? false;
+		console.log('[getUserRoomRole] Checked role:', { rid, userId, role, hasRole });
+		return hasRole;
 	},
 });

@@ -87,6 +87,13 @@ export const useChangeImportantMessageMarkerAction = (
 		try {
 			const newRoleState = !hasRole;
 
+			console.log('[useChangeImportantMessageMarkerAction] Changing role:', { 
+				rid, 
+				userId: uid, 
+				username, 
+				newRoleState 
+			});
+
 			await Meteor.callAsync(
 				newRoleState
 					? 'addRoomImportantMessageMarker'
@@ -95,11 +102,12 @@ export const useChangeImportantMessageMarkerAction = (
 				uid
 			);
 
-			// Refetch the role status and invalidate all role queries for this user
 			await refetch();
 			await queryClient.invalidateQueries({ 
 				queryKey: ['user-room-role', uid, rid] 
 			});
+
+			console.log('[useChangeImportantMessageMarkerAction] Role changed successfully');
 
 			dispatchToastMessage({
 				type: 'success',
@@ -108,6 +116,8 @@ export const useChangeImportantMessageMarkerAction = (
 					: `Removed ability to mark important messages from @${username} in this room`,
 			});
 		} catch (error) {
+			console.error('[useChangeImportantMessageMarkerAction] Error changing role:', error);
+
 			const message =
 				error && typeof error === 'object' && 'message' in error
 					? (error as any).message

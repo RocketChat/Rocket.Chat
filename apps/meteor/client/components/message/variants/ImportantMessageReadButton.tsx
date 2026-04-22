@@ -32,13 +32,17 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 		const newState = !isRead;
 		setIsRead(newState);
 		
+		console.log('[ImportantMessageReadButton] Toggling read status:', { messageId: message._id, newState });
+		
 		try {
 			await toggleImportantMessageRead(message._id);
 			queryClient.invalidateQueries({ 
 				queryKey: ['important-message-readers', message._id] 
 			});
+			console.log('[ImportantMessageReadButton] Read status toggled successfully');
 		} catch (error) {
 			setIsRead(!newState);
+			console.error('[ImportantMessageReadButton] Error toggling read status:', error);
 			dispatchToastMessage({
 				type: 'error',
 				message: error instanceof Error ? error.message : String(error),
