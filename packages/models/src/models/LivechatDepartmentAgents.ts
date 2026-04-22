@@ -178,6 +178,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
 		extraQuery?: Filter<AvailableAgentsAggregation>,
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
@@ -188,14 +189,15 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		const onlineUsers = await Users.findOnlineUserFromList(
 			agents.map((agent) => agent.username),
 			isLivechatEnabledWhenAgentIdle,
+			acceptChatsWithNoAgents,
 		).toArray();
 
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery, isLivechatEnabledWhenAgentIdle)).map(
-			(u) => u.username,
-		);
+		const currentUnavailableAgents = (
+			await Users.getUnavailableAgents(departmentId, extraQuery, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents)
+		).map((u) => u.username);
 
 		const query: Filter<ILivechatDepartmentAgents> = {
 			departmentId,

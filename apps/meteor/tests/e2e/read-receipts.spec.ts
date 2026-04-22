@@ -30,7 +30,7 @@ test.describe.serial('read-receipts', () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 			await poHomeChannel.content.openLastMessageMenu();
-			expect(page.locator('role=menuitem[name="Read receipts"]')).not.toBeVisible;
+			await expect(page.locator('role=menuitem[name="Read receipts"]')).not.toBeVisible();
 		});
 	});
 

@@ -109,7 +109,8 @@ export class LDAPEEManager extends LDAPManager {
 			!settings.get('LDAP_Enable') ||
 			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
 			!License.hasModule('abac') ||
-			!settings.get('ABAC_Enabled')
+			!settings.get('ABAC_Enabled') ||
+			settings.get('ABAC_PDP_Type') === 'virtru'
 		) {
 			return;
 		}
@@ -129,7 +130,12 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	public static async syncUsersAbacAttributes(users: FindCursor<IUser>): Promise<void> {
-		if (!settings.get('LDAP_Enable') || !License.hasModule('abac') || !settings.get('ABAC_Enabled')) {
+		if (
+			!settings.get('LDAP_Enable') ||
+			!License.hasModule('abac') ||
+			!settings.get('ABAC_Enabled') ||
+			settings.get('ABAC_PDP_Type') === 'virtru'
+		) {
 			return;
 		}
 
@@ -194,6 +200,43 @@ export class LDAPEEManager extends LDAPManager {
 			throw new Error(
 				'Please verify your mapping for LDAP X RocketChat ABAC Attributes. The structure is invalid, the structure should be an object like: {key: LdapAttribute, value: RocketChatAbacAttribute}',
 			);
+		}
+	}
+
+	public static async syncAvatarAndAbacAttributes(): Promise<void> {
+		const syncAvatars = settings.get('LDAP_Background_Sync_Avatars');
+		const syncAbac = settings.get('LDAP_Background_Sync_ABAC_Attributes') && License.hasModule('abac') && settings.get('ABAC_Enabled');
+		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+
+		if (!syncAvatars && !syncAbac) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				const users = Users.findLDAPUsers();
+				for await (const user of users) {
+					const ldapUser = await this.findLDAPUser(ldap, user);
+					if (!ldapUser) {
+						continue;
+					}
+
+					if (syncAvatars) {
+						await LDAPManager.syncUserAvatar(user, ldapUser);
+					}
+
+					if (syncAbac && abacMapping) {
+						await Abac.addSubjectAttributes(user, ldapUser, abacMapping, undefined);
+					}
+				}
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 

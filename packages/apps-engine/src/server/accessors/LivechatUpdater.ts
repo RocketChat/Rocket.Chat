@@ -1,5 +1,5 @@
 import type { ILivechatUpdater } from '../../definition/accessors';
-import type { ILivechatRoom, ILivechatTransferData, IVisitor } from '../../definition/livechat';
+import type { ILivechatRoom, ILivechatTransferData, IVisitor, IVisitorExternalIdentifier } from '../../definition/livechat';
 import type { IUser } from '../../definition/users';
 import type { AppBridges } from '../bridges';
 
@@ -22,5 +22,12 @@ export class LivechatUpdater implements ILivechatUpdater {
 			.getLivechatBridge()
 			.doSetCustomFields({ token, key, value, overwrite }, this.appId)
 			.then((result) => result > 0);
+	}
+
+	public updateVisitorExternalId(
+		visitorId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<IVisitor | undefined> {
+		return this.bridges.getLivechatBridge().doUpdateVisitorExternalId(visitorId, externalId, this.appId);
 	}
 }

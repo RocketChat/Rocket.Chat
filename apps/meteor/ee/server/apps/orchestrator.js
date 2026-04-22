@@ -10,6 +10,7 @@ import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket
 import { Meteor } from 'meteor/meteor';
 
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { redactionFieldPaths } from './lib/redactor';
 import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
 import { isTesting } from './marketplace/isTesting';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
@@ -44,7 +45,7 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
+		this._rocketchatLogger = new Logger('Rocket.Chat Apps', { redact: redactionFieldPaths });
 
 		this._model = AppsModel;
 		this._logModel = AppLogs;

@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
-import { Messages, Uploads, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Uploads, ReadReceipts, ReadReceiptsArchive } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
@@ -41,6 +41,7 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 			await Messages.deleteMany({ _id: { $in: messageIds } });
 		}
 		await ReadReceipts.removeByMessageIds(messageIds);
+		await ReadReceiptsArchive.removeByMessageIds(messageIds);
 
 		const store = FileUpload.getStore('Uploads');
 		await Promise.all(files.map((file) => store.deleteById(file)));
