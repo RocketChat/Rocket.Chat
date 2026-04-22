@@ -113,8 +113,9 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await expect(poHomeChannel.roomToolbar.menuItemDisableE2EEncryption).toBeVisible();
+		await page.keyboard.press('Escape');
 
 		await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
