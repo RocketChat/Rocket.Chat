@@ -5715,13 +5715,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/ed25519@npm:^3.0.1":
-  version: 3.1.0
-  resolution: "@noble/ed25519@npm:3.1.0"
-  checksum: 10/79f6fd3b1e1011387de9d2244bbd8268a0bc1d2b303af6f92875c97326ebeb7675f2d2342ca148237a57372162bbc8e1345e698a7c06099c87d64c3f78b0249c
-  languageName: node
-  linkType: hard
-
 "@noble/hashes@npm:1.4.0":
   version: 1.4.0
   resolution: "@noble/hashes@npm:1.4.0"
@@ -8928,7 +8921,7 @@ __metadata:
   resolution: "@rocket.chat/agenda@workspace:packages/agenda"
   dependencies:
     "@types/debug": "npm:^4.1.13"
-    cron: "npm:~1.8.3"
+    cron: "npm:~1.8.2"
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
     eslint: "npm:~9.39.4"
@@ -9560,7 +9553,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~9.39.4"
     express: "npm:^4.21.2"
-    hono: "npm:^4.12.14"
+    hono: "npm:4.12.5"
     jest: "npm:~30.2.0"
     qs: "npm:^6.14.2"
     supertest: "npm:~7.1.4"
@@ -9911,7 +9904,7 @@ __metadata:
     "@nivo/heatmap": "npm:0.88.0"
     "@nivo/line": "npm:0.88.0"
     "@nivo/pie": "npm:0.88.0"
-    "@noble/ed25519": "npm:^3.0.1"
+    "@noble/ed25519": "npm:^3.0.0"
     "@node-oauth/oauth2-server": "npm:~5.2.1"
     "@opentelemetry/api": "npm:^1.9.1"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
@@ -10110,7 +10103,7 @@ __metadata:
     cookie: "npm:^0.7.2"
     cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.6"
-    cron: "npm:~1.8.3"
+    cron: "npm:~1.8.2"
     cron-validator: "npm:^1.3.1"
     cross-env: "npm:^7.0.3"
     css-vars-ponyfill: "npm:^2.4.9"
@@ -10145,7 +10138,7 @@ __metadata:
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
-    hono: "npm:^4.12.14"
+    hono: "npm:4.12.5"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -17785,15 +17778,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brace-expansion@npm:^5.0.5":
-  version: 5.0.5
-  resolution: "brace-expansion@npm:5.0.5"
-  dependencies:
-    balanced-match: "npm:^4.0.2"
-  checksum: 10/f259b2ddf04489da9512ad637ba6b4ef2d77abd4445d20f7f1714585f153435200a53fa6a2e4a5ee974df14ddad4cd16421f6f803e96e8b452bd48598878d0ee
-  languageName: node
-  linkType: hard
-
 "braces@npm:^3.0.3, braces@npm:~3.0.2":
   version: 3.0.3
   resolution: "braces@npm:3.0.3"
@@ -19394,12 +19378,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron@npm:~1.8.3":
-  version: 1.8.3
-  resolution: "cron@npm:1.8.3"
+"cron@npm:~1.8.2":
+  version: 1.8.2
+  resolution: "cron@npm:1.8.2"
   dependencies:
-    luxon: "npm:^1.23.x"
-  checksum: 10/4d4acd13e47ce89a2044b69bf208deda48897ca3a5f6376027f0124ed172376dc746d2fc5192439aaaf2e321ce7b556b1afbe6a1dfd6e88fb1b0c86971a89e75
+    moment-timezone: "npm:^0.5.x"
+  checksum: 10/bdccbf23fe1718004a84ecd988049da0e4978847184c94d2e08f5ffbea5bfebea43680a860ac95c5c711530d315fc3ab1193126479069ec2bfb5319ba10c97ad
   languageName: node
   linkType: hard
 
@@ -23020,16 +23004,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.11":
-  version: 1.16.0
-  resolution: "follow-redirects@npm:1.16.0"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 10/3fbe3d80b3b544c22705d837aa5d4a0d07a740d913534a2620b0a004c610af4148e3b58723536dd099aaa1c9d3a155964bde9665d6e5cb331460809a1fc572fd
-  languageName: node
-  linkType: hard
-
 "fontkit@npm:^2.0.2":
   version: 2.0.2
   resolution: "fontkit@npm:2.0.2"
@@ -24113,10 +24087,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.12.14":
-  version: 4.12.14
-  resolution: "hono@npm:4.12.14"
-  checksum: 10/2e620adb89e773a7e982dee8d8c9917f79c71b89cb051b5bc0d2aa91b5318373e90ba7a236bdc4762dc36026c1d7e5e979d6b48cf1dbbe44fc524a5c4df227d9
+"hono@npm:4.12.5":
+  version: 4.12.5
+  resolution: "hono@npm:4.12.5"
+  checksum: 10/3d03cf2885f7c75325869a178bc94291a17a656002b930dc91456cb177366f6f344c7c90c09707c1fcb4c6e40b1f33fac98f1622628061628cabadcf8cf6d3fd
   languageName: node
   linkType: hard
 
@@ -28015,13 +27989,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^1.23.x":
-  version: 1.28.1
-  resolution: "luxon@npm:1.28.1"
-  checksum: 10/dfba84bb3cd72f359c77115d374937c31eccdfa6b383284b6848c075f85e02269d4d9a717608944f2c11c4ca5d3df0fc18197ce4ca21313ddd72619b39ee034c
-  languageName: node
-  linkType: hard
-
 "lz-string@npm:^1.5.0":
   version: 1.5.0
   resolution: "lz-string@npm:1.5.0"
@@ -29143,7 +29110,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.48, moment-timezone@npm:~0.5.48":
+"moment-timezone@npm:^0.5.48, moment-timezone@npm:^0.5.x, moment-timezone@npm:~0.5.48":
   version: 0.5.48
   resolution: "moment-timezone@npm:0.5.48"
   dependencies:
@@ -30827,13 +30794,6 @@ __metadata:
   version: 2.3.2
   resolution: "picomatch@npm:2.3.2"
   checksum: 10/b788ef8148a2415b9dec12f0bb350ae6a5830f8f1950e472abc2f5225494debf7d1b75eb031df0ceaea9e8ec3e7bad599e8dbf3c60d61b42be429ba41bff4426
-  languageName: node
-  linkType: hard
-
-"picomatch@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "picomatch@npm:4.0.4"
-  checksum: 10/f6ef80a3590827ce20378ae110ac78209cc4f74d39236370f1780f957b7ee41c12acde0e4651b90f39983506fd2f5e449994716f516db2e9752924aff8de93ce
   languageName: node
   linkType: hard
 
