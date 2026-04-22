@@ -205,8 +205,16 @@ export class Navbar {
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
 		await this.dismissBlockingModal();
-		const room = this.getSearchRoomByName(name);
-		await room.waitFor();
+		let room = this.getSearchRoomByName(name);
+
+		try {
+			await expect(room).toBeVisible({ timeout: 10_000 });
+		} catch {
+			await this.typeSearch(name);
+			await this.dismissBlockingModal();
+			room = this.getSearchRoomByName(name);
+			await expect(room).toBeVisible({ timeout: 10_000 });
+		}
 
 		try {
 			await room.click({ timeout: 3_000 });
