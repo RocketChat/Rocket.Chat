@@ -62,10 +62,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 		oAuthRouter.get(
 			`/oauth/${config.provider}`,
-			(req, _res, next) => {
-				console.log('authenticate', req.session, req.session.id);
-				next();
-			},
 			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
 		);
 		oAuthRouter.get(
