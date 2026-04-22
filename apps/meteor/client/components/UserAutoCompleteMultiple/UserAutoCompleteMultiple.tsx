@@ -1,4 +1,4 @@
-import { MultiSelectFiltered } from '@rocket.chat/fuselage';
+import { MultiSelectFiltered } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
