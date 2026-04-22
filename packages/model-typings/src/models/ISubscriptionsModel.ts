@@ -346,6 +346,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findBannedByRoomId(roomId: ISubscription['rid']): FindCursor<ISubscription>;
 	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult>;
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
 	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T>;
 }
