@@ -4,8 +4,12 @@
  * without relying on filesystem path traversal.
  *
  * Uses require() instead of a static import so TypeScript does not resolve the path
- * at compile time. The compiled output lands at definition/version.js, so
- * '../package.json' correctly points to the package root at runtime.
+ * at compile time.
+ *
+ * When running for tests, using ts-node, package.json is located two levels above the current file.
+ * When running in production, package.json is located one level above the compiled version of this file.
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const ENGINE_VERSION: string = (require('../package.json') as { version: string }).version;
+const runningFromSource = __dirname.endsWith('src/definition');
+const requirePath = runningFromSource ? '../../package.json' : '../package.json';
+
+export const ENGINE_VERSION: string = require(requirePath).version;
