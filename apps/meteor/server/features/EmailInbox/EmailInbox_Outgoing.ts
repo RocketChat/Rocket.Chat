@@ -77,7 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string } | undefined> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -91,7 +91,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 		.then((info) => {
 			// Nodemailer doesn't return an error if the email fails to send, 
 			// so we need to check the response for a messageId to confirm it was sent successfully.
-			if (!info) {
+			if (!info?.messageId) {
 				throw new Error('smtp-send-failed');
 			}
 			logger.info({ msg: 'Message sent', info });
