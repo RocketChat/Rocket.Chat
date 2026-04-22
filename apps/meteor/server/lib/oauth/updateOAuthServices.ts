@@ -100,37 +100,36 @@ export async function updateOAuthServices(): Promise<void> {
 
 				new CustomOAuth(serviceKey, config);
 				addPassportCustomOAuth(serviceKey, config);
+			}
+			if (serviceName === 'Facebook') {
+				(data as FacebookOAuthConfiguration).appId = data.clientId as string;
+				delete data.clientId;
+			}
+			if (serviceName === 'Twitter') {
+				(data as TwitterOAuthConfiguration).consumerKey = data.clientId as string;
+				delete data.clientId;
+			}
 
-				if (serviceName === 'Facebook') {
-					(data as FacebookOAuthConfiguration).appId = data.clientId as string;
-					delete data.clientId;
-				}
-				if (serviceName === 'Twitter') {
-					(data as TwitterOAuthConfiguration).consumerKey = data.clientId as string;
-					delete data.clientId;
-				}
+			if (serviceName === 'Linkedin') {
+				(data as LinkedinOAuthConfiguration).clientConfig = {
+					requestPermissions: ['openid', 'email', 'profile'],
+				};
+			}
 
-				if (serviceName === 'Linkedin') {
-					(data as LinkedinOAuthConfiguration).clientConfig = {
-						requestPermissions: ['openid', 'email', 'profile'],
-					};
-				}
+			if (serviceName === 'Nextcloud') {
+				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
+				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
+				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
+			}
 
-				if (serviceName === 'Nextcloud') {
-					data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
-					data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
-					data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
-				}
-
-				await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
-				void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
-			} else {
-				const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
-				if (service?._id) {
-					const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
-					if (deletedCount > 0) {
-						void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
-					}
+			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
+			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
+		} else {
+			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
+			if (service?._id) {
+				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
+				if (deletedCount > 0) {
+					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 				}
 			}
 		}
