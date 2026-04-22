@@ -36,12 +36,14 @@ export function scanHash(ctx: ScanContext, pos: number): number {
     const emResult = tryEmoticon(ctx, pos);
     if (emResult !== false) return emResult;
 
-    // channel mention
-    const name = scanMentionBody(input, ctx.len, pos + 1);
-    if (name.length > 0) {
-        flushText(ctx, pos);
-        emit(ctx, TokenKind.MENTION_CHANNEL, '#' + name, name, pos);
-        return pos + 1 + name.length;
+    // channel mention — only at word boundaries (start of input or after whitespace)
+    if (pos === 0 || prevCode === CH_SPACE || prevCode === CH_TAB || prevCode === CH_LF || prevCode === CH_CR) {
+        const name = scanMentionBody(input, ctx.len, pos + 1);
+        if (name.length > 0) {
+            flushText(ctx, pos);
+            emit(ctx, TokenKind.MENTION_CHANNEL, '#' + name, name, pos);
+            return pos + 1 + name.length;
+        }
     }
 
     if (ctx.textStart === -1) ctx.textStart = pos;
