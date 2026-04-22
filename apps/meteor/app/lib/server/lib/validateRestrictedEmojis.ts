@@ -1,3 +1,4 @@
+import emojione from 'emojione';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -29,6 +30,30 @@ export const assertNoRestrictedEmojis = async (uid: string, msg: string | undefi
 				method,
 				emoji: emojiName,
 			});
+		}
+	}
+
+	const mappedUnicode = emojione.mapUnicodeToShort();
+	const unicodeRegex = emojione.unicodeCharRegex();
+
+	if (typeof unicodeRegex === 'string') {
+		const unicodeMatches = msg.matchAll(new RegExp(unicodeRegex, 'g'));
+		for (const match of unicodeMatches) {
+			const unicodeChar = match[0];
+			const codePoint = Array.from(unicodeChar)
+				.map((char) => char.codePointAt(0)?.toString(16).padStart(4, '0'))
+				.join('-');
+
+			const shortname = mappedUnicode[codePoint];
+			if (shortname) {
+				const emojiName = shortname.replace(/^:/, '').replace(/:$/, '');
+				if (restrictedEmojis.includes(emojiName)) {
+					throw new Meteor.Error('error-emoji-restricted', `Emoji ${unicodeChar} is restricted`, {
+						method,
+						emoji: emojiName,
+					});
+				}
+			}
 		}
 	}
 };
