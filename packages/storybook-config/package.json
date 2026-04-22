@@ -30,7 +30,7 @@
 		"@storybook/preview-api": "^8.6.18",
 		"@storybook/react-webpack5": "^8.6.18",
 		"@storybook/theming": "^8.6.18",
-		"react-virtuoso": "^4.12.8",
+		"react-virtuoso": "~4.12.8",
 		"storybook": "^8.6.18",
 		"storybook-dark-mode": "^4.0.2",
 		"webpack": "~5.104.1"
