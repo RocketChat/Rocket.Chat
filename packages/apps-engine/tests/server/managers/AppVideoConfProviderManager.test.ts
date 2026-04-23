@@ -176,7 +176,7 @@ describe('AppVideoConfProviderManager', () => {
 		const regInfo = (manager as any).videoConfProviders.get('testing').get('test') as AppVideoConfProvider;
 		await assert.doesNotReject(() => manager.registerProviders('testing'));
 
-		assert.doesNotReject(() => manager.unregisterProviders('non-existant'));
+		await assert.doesNotReject(() => manager.unregisterProviders('non-existant'));
 		assert.strictEqual(regInfo.isRegistered, true);
 		await assert.doesNotReject(() => manager.unregisterProviders('testing'));
 		assert.strictEqual(regInfo.isRegistered, false);
