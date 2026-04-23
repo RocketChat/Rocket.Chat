@@ -20,7 +20,9 @@ import {
 	Subscriptions,
 	Users,
 	ReadReceipts,
+	ReadReceiptsArchive,
 } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -292,6 +294,7 @@ export async function removeOmnichannelRoom(rid: string) {
 		}),
 		LivechatInquiry.removeByRoomId(rid),
 		LivechatRooms.removeById(rid),
+		ReadReceiptsArchive.removeByRoomId(rid),
 	]);
 
 	if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {

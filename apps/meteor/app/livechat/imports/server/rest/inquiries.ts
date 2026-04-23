@@ -18,6 +18,7 @@ import { getPaginationItems } from '../../../../api/server/helpers/getPagination
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { returnRoomAsInquiry } from '../../../server/lib/rooms';
 import { takeInquiry } from '../../../server/lib/takeInquiry';
+import { Meteor } from 'meteor/meteor';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',

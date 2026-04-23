@@ -1,5 +1,5 @@
-import { type SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
-import { type ILayoutBlock } from '../initialState';
+import type { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
+import type { ILayoutBlock } from '../initialState';
 import { ActionTypes } from '../reducer';
 
 type PayloadType = {

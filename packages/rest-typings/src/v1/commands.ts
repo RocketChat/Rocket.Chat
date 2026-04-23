@@ -1,19 +1,6 @@
-import type { SlashCommand, SlashCommandPreviews } from '@rocket.chat/core-typings';
-
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { SlashCommandPreviews } from '@rocket.chat/core-typings';
 
 export type CommandsEndpoints = {
-	'/v1/commands.list': {
-		GET: (
-			params?: PaginatedRequest<{
-				fields?: string;
-			}>,
-		) => PaginatedResult<{
-			appsLoaded: boolean;
-			commands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[];
-		}>;
-	};
 	'/v1/commands.run': {
 		POST: (params: { command: string; params?: string; roomId: string; tmid?: string; triggerId: string }) => {
 			result: unknown;

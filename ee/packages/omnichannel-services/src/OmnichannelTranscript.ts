@@ -184,7 +184,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async getMessagesData(messages: IMessage[], t: TFunction): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
-		for await (const message of messages) {
+		for (const message of messages) {
 			const systemMessage = this.getSystemMessage(message, t);
 
 			if (systemMessage) {
@@ -209,7 +209,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const files = [];
 			const quotes = [];
 
-			for await (const attachment of message.attachments) {
+			for (const attachment of message.attachments) {
 				if (isQuoteAttachment(attachment)) {
 					quotes.push(...this.getQuotesFromMessage(message));
 					continue;
@@ -312,9 +312,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 			}
 
-			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
-			// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
-			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
+			const msg = message.msg || '';
 			// Remove nulls from final array
 			messagesData.push({
 				msg,

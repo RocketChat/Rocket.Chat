@@ -1,10 +1,10 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
-import PlainSpan from '../elements/PlainSpan';
+import InlineElements from '../elements/InlineElements';
 
 type HeadingBlockProps = {
-	children?: MessageParser.Plain[];
+	children?: MessageParser.Inlines[];
 	level?: 1 | 2 | 3 | 4;
 };
 
@@ -13,9 +13,7 @@ const HeadingBlock = ({ children = [], level = 1 }: HeadingBlockProps): ReactEle
 
 	return (
 		<HeadingTag>
-			{children.map((block, index) => (
-				<PlainSpan key={index} text={block.value} />
-			))}
+			<InlineElements>{children}</InlineElements>
 		</HeadingTag>
 	);
 };

@@ -4,6 +4,8 @@ import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import type { AppLogs } from '@rocket.chat/models';
 
+import { redact } from '../lib/redactor';
+
 export class AppRealLogStorage extends AppLogStorage {
 	constructor(private db: typeof AppLogs) {
 		super('mongodb');
@@ -40,6 +42,10 @@ export class AppRealLogStorage extends AppLogStorage {
 
 	async storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {
 		logEntry.instanceId = InstanceStatus.id();
+
+		logEntry.entries.forEach((entry) => {
+			entry.args.forEach(redact);
+		});
 
 		const id = (await this.db.insertOne(logEntry)).insertedId;
 

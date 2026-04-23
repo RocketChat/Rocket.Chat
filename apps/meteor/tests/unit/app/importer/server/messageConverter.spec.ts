@@ -92,6 +92,16 @@ describe('Message Converter', () => {
 				});
 		});
 
+		it('should not have properties with undefined values', async () => {
+			const converter = new MessageConverter({ workInMemory: true });
+
+			const converted = await converter.buildMessageObject(messageToImport, 'general', { _id: 'rocket.cat', username: 'rocket.cat' });
+
+			Object.entries(converted).forEach(([key, value]) => {
+				expect(value, `Property "${key}" should not be undefined`).to.not.be.undefined;
+			});
+		});
+
 		// #TODO: Validate all message attributes
 	});
 

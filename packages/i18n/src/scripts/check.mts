@@ -111,7 +111,7 @@ const sortKeys = describeTask('sort-keys', async function* () {
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -169,7 +169,7 @@ const wipeExtraKeys = describeTask('wipe-extra-keys', async function* () {
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -204,7 +204,7 @@ const wipeExtraKeys = describeTask('wipe-extra-keys', async function* () {
 const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* () {
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		const resource = await readResource(language);
 		const plurals = getLanguagePlurals(language).concat(['zero']); // 'zero' is special in i18next
 
@@ -236,7 +236,7 @@ const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* 
 const findMissingPlurals = describeTask('find-missing-plurals', async function* () {
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -286,7 +286,7 @@ const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores'
 	const placeholderRegex = /__(.*?)__/g;
 	const identifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		const resource = await readResource(language);
 
 		for (const { key, plural, translation } of listTranslations(resource)) {
@@ -336,7 +336,7 @@ const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores'
 const trimEndOfFile = describeTask('trim-eof', async function* () {
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		const content = await readContent(language);
 		const trimmedContent = content.replace(/\s+$/g, '');
 
@@ -379,7 +379,7 @@ const missingPlaceholders = describeTask('missing-placeholders', async function*
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -422,7 +422,7 @@ const extraPlaceholders = describeTask('extra-placeholders', async function* () 
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -474,6 +474,89 @@ const findPositionalParams = describeTask('find-sprintf-params', async function*
 	}
 });
 
+function* detectDuplicateJsonKeys(text: string) {
+	let pos = 0;
+
+	const skip = () => {
+		while (pos < text.length && ' \t\r\n'.includes(text[pos])) pos++;
+	};
+
+	const readString = (): string => {
+		pos++;
+		let s = '';
+		while (pos < text.length && text[pos] !== '"') {
+			if (text[pos] === '\\') {
+				s += text[pos++];
+			}
+			s += text[pos++];
+		}
+		pos++;
+		return s;
+	};
+
+	function* skipValue(): Generator<{ key: string; parentKey?: string }> {
+		skip();
+		if (text[pos] === '"') readString();
+		else if (text[pos] === '{') yield* readObject();
+		else if (text[pos] === '[') yield* readArray();
+		else while (pos < text.length && !',}]'.includes(text[pos]) && !' \t\r\n'.includes(text[pos])) pos++;
+	}
+
+	function* readObject(parentKey?: string) {
+		pos++;
+		skip();
+		const seen = new Set<string>();
+		while (pos < text.length && text[pos] !== '}') {
+			skip();
+			const key = readString();
+			skip();
+			pos++;
+			if (seen.has(key)) {
+				yield { key, parentKey };
+			}
+			seen.add(key);
+			yield* skipValue();
+			skip();
+			if (text[pos] === ',') pos++;
+		}
+		pos++;
+	}
+
+	function* readArray() {
+		pos++;
+		skip();
+		while (pos < text.length && text[pos] !== ']') {
+			yield* skipValue();
+			skip();
+			if (text[pos] === ',') pos++;
+		}
+		pos++;
+	}
+
+	skip();
+	if (pos < text.length && text[pos] === '{') yield* readObject();
+}
+
+const findDuplicateKeys = describeTask('find-duplicate-keys', async function* () {
+	const languages = await getResourceLanguages();
+
+	for (const language of languages) {
+		const content = await readContent(language);
+
+		for (const { key, parentKey } of detectDuplicateJsonKeys(content)) {
+			yield {
+				lint: async (reportError) => {
+					if (parentKey) {
+						reportError('%s: duplicate key %o in %o', language, key, parentKey);
+					} else {
+						reportError('%s: duplicate key %o', language, key);
+					}
+				},
+			};
+		}
+	}
+});
+
 /**
  * Map of all available tasks
  */
@@ -488,6 +571,7 @@ const tasksByName = {
 	'find-sprintf-params': findPositionalParams,
 	'missing-placeholders': missingPlaceholders,
 	'extra-placeholders': extraPlaceholders,
+	'find-duplicate-keys': findDuplicateKeys,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
@@ -501,6 +585,7 @@ async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 		'trim-eof',
 		'missing-placeholders',
 		'extra-placeholders',
+		'find-duplicate-keys',
 	]);
 
 	if (task?.length) {
@@ -512,7 +597,7 @@ async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 		throw new Error('No valid tasks selected.');
 	}
 
-	for await (const taskName of tasks) {
+	for (const taskName of tasks) {
 		const task = tasksByName[taskName];
 		await task({ fix });
 	}

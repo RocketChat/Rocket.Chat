@@ -48,7 +48,7 @@ describe('normalizeMessagePreview', () => {
 	});
 
 	describe('when message has attachments', () => {
-		it('should return attachment description when available', () => {
+		it('should return attachment title when description is available', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -60,10 +60,10 @@ describe('normalizeMessagePreview', () => {
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('Attachment description');
+			expect(result).toBe('Attachment title');
 		});
 
-		it('should return attachment title when description is not available', () => {
+		it('should return attachment title when message is not provided', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -112,7 +112,7 @@ describe('normalizeMessagePreview', () => {
 			expect(result).toBe('Second attachment title');
 		});
 
-		it('should find first attachment description', () => {
+		it('should find first attachment title', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -129,21 +129,7 @@ describe('normalizeMessagePreview', () => {
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('Second attachment description');
-		});
-
-		it('should escape HTML in attachment description', () => {
-			const message = createFakeMessageWithAttachment({
-				msg: '',
-				attachments: [
-					{
-						description: '<script>alert("xss")</script>',
-					},
-				],
-			});
-			const result = normalizeMessagePreview(message, mockT);
-
-			expect(result).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
+			expect(result).toBe('Third attachment title');
 		});
 
 		it('should escape HTML in attachment title', () => {

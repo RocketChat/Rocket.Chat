@@ -2,6 +2,7 @@ import http from 'http';
 import https from 'https';
 
 import { Logger } from '@rocket.chat/logger';
+import { censorUrl } from '@rocket.chat/tools';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -21,7 +22,7 @@ function getFetchAgent<U extends string>(
 	allowSelfSignedCerts?: boolean,
 	originalHostname?: string,
 ): http.Agent | https.Agent | null | HttpsProxyAgent<U> | HttpProxyAgent<U> {
-	const isHttps = /^https/.test(url);
+	const isHttps = url.startsWith('https');
 
 	const proxy = getProxyForUrl(url);
 	if (proxy) {
@@ -65,10 +66,9 @@ async function getFetchAgentWithValidation<U extends string>(
 	let resolvedIp: string | undefined;
 
 	if (!ignoreSsrfValidation) {
-		// eslint-disable-next-line no-await-in-loop
 		const ssrfResult = await checkForSsrfWithIp(url, allowList);
 		if (!ssrfResult.allowed) {
-			logger.error({ msg: 'SSRF validation failed for URL', url });
+			logger.error({ msg: 'SSRF validation failed for URL', url: censorUrl(url) });
 			throw new Error('error-ssrf-validation-failed');
 		}
 
@@ -83,7 +83,7 @@ async function getFetchAgentWithValidation<U extends string>(
 			}
 		}
 	} else {
-		logger.debug({ msg: 'Request not using SSRF validation', url: pinnedUrl });
+		logger.debug({ msg: 'Request not using SSRF validation', url: censorUrl(pinnedUrl) });
 	}
 
 	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
@@ -109,7 +109,7 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 		throw new Error('error-too-many-redirects');
 	}
 
-	logger.debug({ msg: 'Following redirect', redirectCount, location, status: response.status });
+	logger.debug({ msg: 'Following redirect', redirectCount, location: censorUrl(location), status: response.status });
 	return location;
 }
 
@@ -119,7 +119,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 
 	try {
 		for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
-			// eslint-disable-next-line no-await-in-loop
 			const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
 				currentUrl,
 				allowSelfSignedCerts,
@@ -167,7 +166,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				}
 			}
 
-			// eslint-disable-next-line no-await-in-loop
 			const response = await fetch(url.toString(), {
 				// @ts-expect-error - This complained when types were moved to file :/
 				signal: controller.signal,
@@ -196,5 +194,5 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 }
 
 export { Response };
-export { ExtendedFetchOptions };
+export type { ExtendedFetchOptions };
 export { parseSsrfAllowlist };

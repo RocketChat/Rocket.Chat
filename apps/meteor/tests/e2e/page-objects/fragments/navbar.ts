@@ -215,11 +215,7 @@ export class Navbar {
 
 	async createNewDM(username: string): Promise<void> {
 		await this.openCreate('Direct message');
-		await this.modals['Direct message'].dmListbox.click();
-		await this.modals['Direct message'].dmListbox.pressSequentially(username);
-		await this.root.waitForTimeout(600);
-		await this.root.keyboard.press('Enter');
-
+		await this.modals['Direct message'].inviteUserToDM(username);
 		await this.modals['Direct message'].btnCreate.click();
 	}
 
@@ -271,5 +267,9 @@ export class Navbar {
 
 		const newStatus = await this.btnSwitchOmnichannelStatus.getAttribute('title');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
+	}
+
+	getUserStatusBadge(status: 'online' | 'away' | 'busy' | 'offline'): Locator {
+		return this.btnUserMenu.locator(`svg[class*="${status}"]`);
 	}
 }

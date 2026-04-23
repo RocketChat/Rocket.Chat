@@ -1,5 +1,110 @@
 # @rocket.chat/omni-core-ee
 
+## 0.0.20
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.4
+  - @rocket.chat/models@2.1.4
+  - @rocket.chat/omni-core@0.0.20
+  </details>
+
+## 0.0.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.3
+  - @rocket.chat/models@2.1.3
+  - @rocket.chat/omni-core@0.0.19
+  </details>
+
+## 0.0.18
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, 539659af22bc19880eda047dfc0b152472ccb65c, eae3fb3136bd0b48294c050a71b0a36d05ca02b0]:</summary>
+
+  - @rocket.chat/models@2.1.2
+  - @rocket.chat/core-services@0.13.2
+  - @rocket.chat/omni-core@0.0.18
+  - @rocket.chat/logger@1.0.1
+  </details>
+
+## 0.0.18-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.4
+  - @rocket.chat/models@2.1.2-rc.4
+  - @rocket.chat/omni-core@0.0.18-rc.4
+  </details>
+
+## 0.0.18-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.3
+  - @rocket.chat/models@2.1.2-rc.3
+  - @rocket.chat/omni-core@0.0.18-rc.3
+  </details>
+
+## 0.0.18-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.2
+  - @rocket.chat/models@2.1.2-rc.2
+  - @rocket.chat/omni-core@0.0.18-rc.2
+  </details>
+
+## 0.0.18-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.1
+  - @rocket.chat/models@2.1.2-rc.1
+  - @rocket.chat/omni-core@0.0.18-rc.1
+  </details>
+
+## 0.0.18-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, 539659af22bc19880eda047dfc0b152472ccb65c, eae3fb3136bd0b48294c050a71b0a36d05ca02b0]:</summary>
+
+  - @rocket.chat/models@2.1.2-rc.0
+  - @rocket.chat/core-services@0.13.2-rc.0
+  - @rocket.chat/omni-core@0.0.18-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  </details>
+
+## 0.0.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.1
+  - @rocket.chat/models@2.1.1
+  - @rocket.chat/omni-core@0.0.17
+  </details>
+
 ## 0.0.16
 
 ### Patch Changes
