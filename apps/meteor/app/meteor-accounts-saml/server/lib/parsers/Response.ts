@@ -208,7 +208,9 @@ export class ResponseParser {
 		let newXml = null;
 
 		if (typeof encAssertion !== 'undefined') {
-			const options = { key: this.serviceProviderOptions.privateKey };
+			// disallowDecryptionWithInsecureAlgorithm defaults to true in xml-encryption v4, but AES-CBC/3DES
+			// are still widely used by SAML IdPs in practice, so we keep the pre-v4 behaviour here.
+			const options = { key: this.serviceProviderOptions.privateKey, disallowDecryptionWithInsecureAlgorithm: false };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
 			xmlenc.decrypt(encData, options, (err, result) => {
 				if (err) {
@@ -350,7 +352,7 @@ export class ResponseParser {
 		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
 
 		if (typeof encSubject !== 'undefined') {
-			const options = { key: this.serviceProviderOptions.privateKey };
+			const options = { key: this.serviceProviderOptions.privateKey, disallowDecryptionWithInsecureAlgorithm: false };
 			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, (err, result) => {
 				if (err) {
 					SAMLUtils.error({ err });
