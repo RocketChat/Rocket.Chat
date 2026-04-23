@@ -21,14 +21,13 @@ export async function sendMessage(api: BaseTest['api'], roomId: string, msg: str
 
 	if (options?.asUser) {
 		const userContext = await baseRequest.newContext({
-			baseURL: BASE_API_URL,
 			extraHTTPHeaders: {
 				'X-Auth-Token': options.asUser.data.loginToken,
 				'X-User-Id': options.asUser.data._id,
 			},
 		});
 		try {
-			const response = await userContext.post('/chat.sendMessage', { data: payload });
+			const response = await userContext.post(`${BASE_API_URL}/chat.sendMessage`, { data: payload });
 			const data: { success?: boolean; message?: { _id: string } } = await response.json();
 
 			if (!data.success || !data.message?._id) {

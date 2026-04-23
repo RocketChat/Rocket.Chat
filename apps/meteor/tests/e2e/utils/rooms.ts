@@ -1,6 +1,9 @@
+import { request as baseRequest } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import type { BaseTest } from './test';
+import { BASE_API_URL } from '../config/constants';
+import type { IUserState } from '../fixtures/userStates';
 
 export async function deleteChannel(api: BaseTest['api'], roomName: string): Promise<void> {
 	await api.post('/channels.delete', { roomName });
@@ -38,4 +41,21 @@ export async function inviteUsersToRoom(api: BaseTest['api'], roomId: string, us
 
 export async function setRoomTopic(api: BaseTest['api'], roomId: string, topic: string): Promise<void> {
 	await api.post('/rooms.saveRoomSettings', { rid: roomId, roomTopic: topic });
+}
+
+// Joins a public channel as a specific user. Unlike inviteUsersToRoom (which is
+// the admin adding someone), this emits the "user joined" system message that
+// UI-driven joins produce — required when a spec asserts on system messages.
+export async function joinChannelAsUser(roomId: string, asUser: IUserState): Promise<void> {
+	const ctx = await baseRequest.newContext({
+		extraHTTPHeaders: {
+			'X-Auth-Token': asUser.data.loginToken,
+			'X-User-Id': asUser.data._id,
+		},
+	});
+	try {
+		await ctx.post(`${BASE_API_URL}/channels.join`, { data: { roomId } });
+	} finally {
+		await ctx.dispose();
+	}
 }
