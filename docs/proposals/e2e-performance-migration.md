@@ -54,7 +54,7 @@ Definition of done: no existing spec broken, no new spec needs to reach past `fr
 
 One-shot audit that produces the ordered worklist for Phase 2.
 
-Deliverable: a spreadsheet (or markdown table, committed under `docs/proposals/e2e-migration-triage.md`) with one row per spec file, columns:
+Deliverable: [`docs/proposals/e2e-migration-triage.md`](./e2e-migration-triage.md) — markdown table with one row per spec file, columns:
 
 - `path`
 - `is_serial` (boolean)
@@ -69,7 +69,7 @@ Do-not-migrate list (mark `opt_out_reason`):
 - Auth / session suites: `account-login.spec.ts`, `account-forgetSessionOnWindowClose.spec.ts`, `account-manage-devices.spec.ts`, `enforce-2FA.spec.ts`.
 - Federation suite (separate concerns, already covered in `e2e/federation/README.md`).
 
-The audit can be produced with a script (`scripts/e2e-triage.ts` is a reasonable home) or manually for the first pass. The script is optional — the triage file is not.
+The audit is produced by [`apps/meteor/tests/e2e/scripts/e2e-triage.mts`](../../apps/meteor/tests/e2e/scripts/e2e-triage.mts). Re-run it (`node --experimental-strip-types apps/meteor/tests/e2e/scripts/e2e-triage.mts`) whenever the spec surface changes or a new Playwright report is landed, and commit the regenerated table.
 
 ## Phase 2 — migrate in batches
 
