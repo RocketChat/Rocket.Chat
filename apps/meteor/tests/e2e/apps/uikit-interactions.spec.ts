@@ -146,6 +146,11 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		const containerEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_container');
 		expect(containerEntry?.args[1], 'Container type should be view for modal').toBe('view');
 
+		await test.step('room is intentionally absent for modal block actions (modals have no room context)', async () => {
+			const roomEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_room');
+			expect(roomEntry, 'Room entry should not be present for modal block action').toBeUndefined();
+		});
+
 		// Close the modal for the next test
 		await surface.getByRole('button', { name: 'Close' }).click();
 	});
