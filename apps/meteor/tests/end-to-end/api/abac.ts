@@ -3004,4 +3004,504 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(memberIds).to.include(credentials['X-User-Id']);
 		});
 	});
+
+	describe('RC-user-role attribute feature', () => {
+		const v1 = '/api/v1';
+		const ROLE_ATTR_KEY = 'RC-user-role';
+
+		let memberA: IUser;
+		let memberB: IUser;
+		let outsider: IUser;
+		let abacRoom: IRoom;
+
+		let roleAId = '';
+		let roleBId = '';
+
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+			await updateSetting('ABAC_PDP_Type', 'local');
+			await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+
+			const createRoleRes1 = await request
+				.post(`${v1}/roles.create`)
+				.set(credentials)
+				.send({ name: `rc_user_role_A_${Date.now()}` })
+				.expect(200);
+			roleAId = createRoleRes1.body.role._id;
+
+			const createRoleRes2 = await request
+				.post(`${v1}/roles.create`)
+				.set(credentials)
+				.send({ name: `rc_user_role_B_${Date.now()}` })
+				.expect(200);
+			roleBId = createRoleRes2.body.role._id;
+
+			memberA = await createUser();
+			memberB = await createUser();
+			outsider = await createUser();
+
+			abacRoom = (await createRoom({ type: 'p', name: `abac-rc-role-${Date.now()}` })).body.group;
+			await request.post(`${v1}/groups.invite`).set(credentials).send({ roomId: abacRoom._id, userId: memberA._id }).expect(200);
+			await request.post(`${v1}/groups.invite`).set(credentials).send({ roomId: abacRoom._id, userId: memberB._id }).expect(200);
+		});
+
+		after(async () => {
+			await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+
+			await deleteRoom({ type: 'p', roomId: abacRoom._id });
+
+			await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleAId });
+			await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleBId });
+
+			await deleteUser(memberA);
+			await deleteUser(memberB);
+			await deleteUser(outsider);
+
+			await updateSetting('ABAC_Use_User_Roles_As_Attributes', false);
+		});
+
+		describe('Role add/remove sync', () => {
+			beforeEach(async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+				await request.post(`${v1}/roles.removeUserFromRole`).set(credentials).send({ roleId: roleAId, username: memberA.username });
+				await request.post(`${v1}/roles.removeUserFromRole`).set(credentials).send({ roleId: roleBId, username: memberA.username });
+			});
+
+			it('should sync RC-user-role attribute after adding a role to a user', async () => {
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleAId, username: memberA.username }).expect(200);
+
+				const userRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const roleAttr = (userRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				expect(roleAttr).to.exist;
+				expect(roleAttr!.values).to.include.members([roleAId, 'user']);
+			});
+
+			it('should shrink RC-user-role values after removing a role while keeping the key', async () => {
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleAId, username: memberA.username }).expect(200);
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleBId, username: memberA.username }).expect(200);
+
+				await request
+					.post(`${v1}/roles.removeUserFromRole`)
+					.set(credentials)
+					.send({ roleId: roleAId, username: memberA.username })
+					.expect(200);
+
+				const userRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const roleAttr = (userRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				expect(roleAttr).to.exist;
+				expect(roleAttr!.values).to.include(roleBId);
+				expect(roleAttr!.values).to.not.include(roleAId);
+			});
+
+			it('should be a no-op when adding a role the user already has', async () => {
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleAId, username: memberA.username }).expect(200);
+				const beforeRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const before = beforeRes.body.user.abacAttributes || [];
+
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleAId, username: memberA.username }).expect(200);
+
+				const afterRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				expect(afterRes.body.user.abacAttributes || []).to.deep.equal(before);
+			});
+
+			it('should be a no-op when removing a role the user does not have', async () => {
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleAId, username: memberA.username }).expect(200);
+				const beforeRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const before = beforeRes.body.user.abacAttributes || [];
+
+				await request
+					.post(`${v1}/roles.removeUserFromRole`)
+					.set(credentials)
+					.send({ roleId: roleBId, username: memberA.username })
+					.expect(200);
+
+				const afterRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				expect(afterRes.body.user.abacAttributes || []).to.deep.equal(before);
+			});
+
+			it('should not write RC-user-role when the feature is OFF', async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', false);
+
+				await addAbacAttributesToUserDirectly(memberA._id, []);
+
+				await request.post(`${v1}/roles.addUserToRole`).set(credentials).send({ roleId: roleAId, username: memberA.username }).expect(200);
+
+				const userRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const attrs = userRes.body.user.abacAttributes || [];
+				expect(attrs.find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
+
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+			});
+		});
+
+		describe('users.update / users.create sync', () => {
+			beforeEach(async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { roles: ['user'] } })
+					.expect(200);
+			});
+
+			it('should sync the attribute when users.update changes the roles array', async () => {
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { roles: ['user', roleAId] } })
+					.expect(200);
+
+				const userRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const roleAttr = (userRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				expect(roleAttr).to.exist;
+				expect(roleAttr!.values).to.have.members(['user', roleAId]);
+			});
+
+			it('should not re-sync when users.update receives the same roles (reordered)', async () => {
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { roles: ['user', roleAId] } })
+					.expect(200);
+				const beforeRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const before = beforeRes.body.user.abacAttributes || [];
+
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { roles: [roleAId, 'user'] } })
+					.expect(200);
+
+				const afterRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				expect(afterRes.body.user.abacAttributes || []).to.deep.equal(before);
+			});
+
+			it('should not touch the attribute when users.update has no roles field', async () => {
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { roles: ['user', roleAId] } })
+					.expect(200);
+				const beforeRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const before = beforeRes.body.user.abacAttributes || [];
+
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { name: 'renamed-in-test' } })
+					.expect(200);
+
+				const afterRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				expect(afterRes.body.user.abacAttributes || []).to.deep.equal(before);
+			});
+
+			it('should sync the attribute when users.create is called with explicit roles', async () => {
+				const username = `a34user_${Date.now()}`;
+				const createRes = await request
+					.post(`${v1}/users.create`)
+					.set(credentials)
+					.send({
+						email: `${username}@test.com`,
+						name: username,
+						username,
+						password: 'Abc123!!',
+						roles: ['user', roleAId],
+					})
+					.expect(200);
+				const createdId = createRes.body.user._id as string;
+
+				try {
+					const userRes = await request.get(`${v1}/users.info`).set(credentials).query({ username }).expect(200);
+					const roleAttr = (userRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+					expect(roleAttr).to.exist;
+					expect(roleAttr!.values).to.have.members(['user', roleAId]);
+				} finally {
+					await deleteUser({ _id: createdId });
+				}
+			});
+
+			it('should reflect the default role when users.create is called without roles', async () => {
+				const username = `a35user_${Date.now()}`;
+				const createRes = await request
+					.post(`${v1}/users.create`)
+					.set(credentials)
+					.send({
+						email: `${username}@test.com`,
+						name: username,
+						username,
+						password: 'Abc123!!',
+					})
+					.expect(200);
+				const createdId = createRes.body.user._id as string;
+
+				try {
+					const userRes = await request.get(`${v1}/users.info`).set(credentials).query({ username }).expect(200);
+					const roleAttr = (userRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+					expect(roleAttr).to.exist;
+					expect(roleAttr!.values).to.include('user');
+				} finally {
+					await deleteUser({ _id: createdId });
+				}
+			});
+		});
+
+		describe('Room attribute ops involving RC-user-role', () => {
+			beforeEach(async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberA._id, data: { roles: ['user', roleAId] } })
+					.expect(200);
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: memberB._id, data: { roles: ['user', roleAId] } })
+					.expect(200);
+				await request
+					.post(`${v1}/users.update`)
+					.set(credentials)
+					.send({ userId: outsider._id, data: { roles: ['user'] } })
+					.expect(200);
+
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+			});
+
+			afterEach(async () => {
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+			});
+
+			it("should sync members' attributes to mirror their own roles when RC-user-role is added to the room", async () => {
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(200);
+
+				const aRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const bRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberB.username }).expect(200);
+				const outRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: outsider.username }).expect(200);
+
+				const aRoleAttr = (aRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				const bRoleAttr = (bRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				const outRoleAttr = (outRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+
+				expect(aRoleAttr).to.exist;
+				expect(aRoleAttr!.values).to.have.members(['user', roleAId]);
+				expect(bRoleAttr).to.exist;
+				expect(bRoleAttr!.values).to.have.members(['user', roleAId]);
+				expect(outRoleAttr).to.be.undefined;
+			});
+
+			it("should not narrow members' attributes when the room's RC-user-role values change", async () => {
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(200);
+
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleBId] })
+					.expect(200);
+
+				const aRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const aRoleAttr = (aRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				expect(aRoleAttr!.values).to.have.members(['user', roleAId]);
+			});
+
+			it('should sync members when RC-user-role is set via bulk attribute replace', async () => {
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes`)
+					.set(credentials)
+					.send({ attributes: { [ROLE_ATTR_KEY]: [roleAId] } })
+					.expect(200);
+
+				const aRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const aRoleAttr = (aRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				expect(aRoleAttr).to.exist;
+				expect(aRoleAttr!.values).to.have.members(['user', roleAId]);
+			});
+
+			it('should leave the user-side attribute intact when RC-user-role is deleted from the room', async () => {
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(200);
+
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials).expect(200);
+
+				const roomRes = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: abacRoom._id }).expect(200);
+				expect((roomRes.body.room.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
+
+				const aRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
+				const aRoleAttr = (aRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
+				expect(aRoleAttr).to.exist;
+				expect(aRoleAttr!.values).to.have.members(['user', roleAId]);
+			});
+
+			it('should never touch a non-member when any RC-user-role room op runs', async () => {
+				await addAbacAttributesToUserDirectly(outsider._id, []);
+
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(200);
+				const after1Res = await request.get(`${v1}/users.info`).set(credentials).query({ username: outsider.username }).expect(200);
+				expect((after1Res.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
+
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleBId] })
+					.expect(200);
+				const after2Res = await request.get(`${v1}/users.info`).set(credentials).query({ username: outsider.username }).expect(200);
+				expect((after2Res.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
+
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials).expect(200);
+				const after3Res = await request.get(`${v1}/users.info`).set(credentials).query({ username: outsider.username }).expect(200);
+				expect((after3Res.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
+			});
+
+			it('should reject adding RC-user-role to a room when the feature is OFF', async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', false);
+
+				const res = await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error').that.includes('error-attribute-definition-not-found');
+
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+			});
+		});
+
+		describe('roles.delete guard', () => {
+			beforeEach(async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+			});
+
+			afterEach(async () => {
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+			});
+
+			it('should allow deleting a role not referenced by any ABAC room', async () => {
+				const createRes = await request
+					.post(`${v1}/roles.create`)
+					.set(credentials)
+					.send({ name: `a51_${Date.now()}` })
+					.expect(200);
+				const roleId = createRes.body.role._id;
+
+				await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(200);
+			});
+
+			it('should block deleting a role referenced by an ABAC room via RC-user-role', async () => {
+				const createRes = await request
+					.post(`${v1}/roles.create`)
+					.set(credentials)
+					.send({ name: `a52_${Date.now()}` })
+					.expect(200);
+				const roleId = createRes.body.role._id;
+
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleId] })
+					.expect(200);
+
+				const res = await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error').that.includes('error-abac-role-in-use-by-room');
+
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+				await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(200);
+			});
+
+			it('should allow the same role deletion when the feature is OFF (guard inactive)', async () => {
+				const createRes = await request
+					.post(`${v1}/roles.create`)
+					.set(credentials)
+					.send({ name: `a53_${Date.now()}` })
+					.expect(200);
+				const roleId = createRes.body.role._id;
+
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleId] })
+					.expect(200);
+
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', false);
+				await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(200);
+
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+			});
+
+		});
+
+		describe('Setting-disable guard', () => {
+			beforeEach(async () => {
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+			});
+
+			afterEach(async () => {
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
+			});
+
+			it('should allow disabling the setting when no room uses RC-user-role', async () => {
+				const res = await request
+					.post(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`)
+					.set(credentials)
+					.send({ value: false })
+					.expect(200);
+				expect(res.body).to.have.property('success', true);
+			});
+
+			it('should reject disabling while a room uses RC-user-role and keep the setting true', async () => {
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(200);
+
+				const res = await request
+					.post(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`)
+					.set(credentials)
+					.send({ value: false })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error').that.includes('error-abac-role-attribute-in-use');
+
+				const check = await request.get(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`).set(credentials).expect(200);
+				expect(check.body).to.have.property('value', true);
+			});
+
+			it('should allow disabling after clearing RC-user-role from all rooms', async () => {
+				await request
+					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
+					.set(credentials)
+					.send({ values: [roleAId] })
+					.expect(200);
+
+				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
+
+				const res = await request
+					.post(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`)
+					.set(credentials)
+					.send({ value: false })
+					.expect(200);
+				expect(res.body).to.have.property('success', true);
+			});
+		});
+	});
 });
