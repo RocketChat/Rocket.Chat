@@ -499,7 +499,10 @@ const RoomsIsMemberPropsSchema = {
 		userId: { type: 'string', minLength: 1 },
 		username: { type: 'string', minLength: 1 },
 	},
-	oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId', 'userId'] },
+		{ type: 'object', required: ['roomId', 'username'] },
+	],
 	additionalProperties: false,
 };
 
@@ -796,7 +799,10 @@ const membersOrderedByRoleRolePropsSchema = {
 			type: 'string',
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId'] },
+		{ type: 'object', required: ['roomName'] },
+	],
 	additionalProperties: false,
 };
 
