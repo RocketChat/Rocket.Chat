@@ -54,7 +54,7 @@ export class CustomOAuthStrategy extends Strategy {
 	tokenPath: string;
 
 	constructor(name: string, config: OAuthConfiguration & { clientSecret: string }, verify: VerifyFunction) {
-		if (!Match.test(config.serverURL, String)) {
+		if (!config.serverURL || typeof config.serverURL !== 'string') {
 			throw new Meteor.Error('customOAuth: serverURL is required and must be String');
 		}
 
@@ -77,18 +77,14 @@ export class CustomOAuthStrategy extends Strategy {
 		this.tokenSentVia = config.tokenSentVia;
 		this.identityTokenSentVia = config.identityTokenSentVia;
 		this.keyField = config.keyField;
-		this.usernameField = config.usernameField.trim();
-		this.emailField = config.emailField.trim();
-		this.nameField = config.nameField.trim();
-		this.avatarField = config.avatarField.trim();
+		this.usernameField = config.usernameField?.trim();
+		this.emailField = config.emailField?.trim();
+		this.nameField = config.nameField?.trim();
+		this.avatarField = config.avatarField?.trim();
 		this.mergeUsers = !!config.mergeUsers;
 		this.mergeUsersDistinctServices = !!config.mergeUsersDistinctServices;
 		this.rolesClaim = config.rolesClaim || 'roles';
 		this.accessTokenParam = config.accessTokenParam || 'access_token';
-
-		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
-			this.identityTokenSentVia = this.tokenSentVia;
-		}
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
