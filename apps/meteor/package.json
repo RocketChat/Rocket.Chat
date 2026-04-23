@@ -163,7 +163,7 @@
 		"@slack/rtm-api": "~7.0.4",
 		"@tanstack/react-query": "~5.65.1",
 		"@types/meteor": "^2.9.11",
-		"@xmldom/xmldom": "~0.9.10",
+		"@xmldom/xmldom": "~0.8.13",
 		"adm-zip": "0.5.17",
 		"ajv": "^8.17.1",
 		"ajv-formats": "~3.0.1",
