@@ -196,7 +196,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
-						text: attachment.description || attachment.text || '',
+						text: attachment.text || '',
 					},
 				});
 				if (!result.ok) {

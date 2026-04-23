@@ -23,6 +23,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	const createUser: Record<string, any> = {
 		username: userData.username,
 		password: userData.password,
+		...(userData.name && { name: userData.name }),
 		joinDefaultChannels: userData.joinDefaultChannels,
 		isGuest,
 		globalRoles: roles,

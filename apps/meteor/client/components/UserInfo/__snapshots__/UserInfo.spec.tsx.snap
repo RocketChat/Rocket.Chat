@@ -164,21 +164,22 @@ exports[`renders Default without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r1:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r1:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -258,19 +259,15 @@ exports[`renders Default without crashing 1`] = `
       </div>
       <div>
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
@@ -278,20 +275,16 @@ exports[`renders Default without crashing 1`] = `
           />
         </div>
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
         />
       </div>
     </div>
@@ -467,21 +460,22 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r3:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r3:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -539,7 +533,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
                       >
-                        January 1, 2025
+                        January 1st, 2025
                       </div>
                     </div>
                   </div>
@@ -575,19 +569,15 @@ exports[`renders InvitedUser without crashing 1`] = `
       </div>
       <div>
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
@@ -595,20 +585,16 @@ exports[`renders InvitedUser without crashing 1`] = `
           />
         </div>
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
         />
       </div>
     </div>
@@ -784,21 +770,22 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r5:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r5:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -938,19 +925,15 @@ exports[`renders WithABACAttributes without crashing 1`] = `
       </div>
       <div>
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
@@ -958,20 +941,16 @@ exports[`renders WithABACAttributes without crashing 1`] = `
           />
         </div>
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
         />
       </div>
     </div>
@@ -1147,21 +1126,22 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r7:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r7:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -1255,19 +1235,15 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
       </div>
       <div>
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
         />
         <div
-          class=""
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
@@ -1275,20 +1251,16 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
           />
         </div>
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
         />
         <div
-          class=""
-          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
         />
       </div>
     </div>
