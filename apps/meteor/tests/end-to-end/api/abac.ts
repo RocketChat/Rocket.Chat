@@ -3444,7 +3444,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
 			});
-
 		});
 
 		describe('Setting-disable guard', () => {
