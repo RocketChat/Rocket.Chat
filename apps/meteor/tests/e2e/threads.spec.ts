@@ -1,14 +1,17 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteRoom, sendMessage } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 test.describe.serial('Threads', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		const { channel } = await createTargetChannelAndReturnFullRoom(api);
+		targetChannel = channel.name!;
+		targetChannelId = channel._id;
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -16,10 +19,11 @@ test.describe.serial('Threads', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
-	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel));
+	test.afterAll(async ({ api }) => deleteRoom(api, targetChannelId));
 
-	test('expect no unread banner when replying to a thread in a fresh channel', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('parent for unread-banner test');
+	test('expect no unread banner when replying to a thread in a fresh channel', async ({ api, page }) => {
+		await sendMessage(api, targetChannelId, 'parent for unread-banner test');
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('parent for unread-banner test');
 		await poHomeChannel.content.openReplyInThread();
 		await poHomeChannel.content.sendMessageInThread('first thread reply');
 
@@ -27,8 +31,9 @@ test.describe.serial('Threads', () => {
 		await expect(page.getByTitle('Mark as read')).not.toBeVisible();
 	});
 
-	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('this is a message for reply');
+	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ api, page }) => {
+		await sendMessage(api, targetChannelId, 'this is a message for reply');
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('this is a message for reply');
 		await poHomeChannel.content.openReplyInThread();
 
 		await expect(page).toHaveURL(/.*thread/);
@@ -90,11 +95,11 @@ test.describe.serial('Threads', () => {
 	});
 
 	test.describe('thread message actions', () => {
-		test.beforeEach(async ({ page }) => {
+		test.beforeEach(async ({ api, page }) => {
 			poHomeChannel = new HomeChannel(page);
+			await sendMessage(api, targetChannelId, 'this is a message for reply');
 			await page.goto('/home');
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.content.openReplyInThread();
 		});
 

@@ -1,13 +1,15 @@
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteRoom, sendMessage } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe.serial('Image Gallery', async () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 	let targetChannelLargeImage: string;
+	let targetChannelLargeImageId: string;
 	const viewport = {
 		width: 1280,
 		height: 720,
@@ -18,8 +20,14 @@ test.describe.serial('Image Gallery', async () => {
 	test.use({ viewport });
 
 	test.beforeAll(async ({ api, browser }) => {
-		targetChannel = await createTargetChannel(api);
-		targetChannelLargeImage = await createTargetChannel(api);
+		const [channel, channelLarge] = await Promise.all([
+			createTargetChannelAndReturnFullRoom(api),
+			createTargetChannelAndReturnFullRoom(api),
+		]);
+		targetChannel = channel.channel.name!;
+		targetChannelId = channel.channel._id;
+		targetChannelLargeImage = channelLarge.channel.name!;
+		targetChannelLargeImageId = channelLarge.channel._id;
 		const { page } = await createAuxContext(browser, Users.user1);
 		poHomeChannel = new HomeChannel(page);
 
@@ -32,8 +40,8 @@ test.describe.serial('Image Gallery', async () => {
 
 	test.afterAll(async ({ api }) => {
 		await poHomeChannel.page.close();
-		await deleteChannel(api, targetChannel);
-		await deleteChannel(api, targetChannelLargeImage);
+		await deleteRoom(api, targetChannelId);
+		await deleteRoom(api, targetChannelLargeImageId);
 	});
 
 	test.describe('When sending an image as a file', () => {
@@ -124,8 +132,8 @@ test.describe.serial('Image Gallery', async () => {
 	test.describe('When sending an image as a link', () => {
 		const imageLink = 'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png';
 
-		test.beforeAll(async () => {
-			await poHomeChannel.content.sendMessage(imageLink);
+		test.beforeAll(async ({ api }) => {
+			await sendMessage(api, targetChannelId, imageLink, { asUser: Users.user1 });
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(imageLink);
 
