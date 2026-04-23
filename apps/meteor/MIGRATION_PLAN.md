@@ -15,7 +15,7 @@ server/<responsibility>/<domain>/<file>
 This migration extends that pattern by:
 
 1. Adding domain subfolders to existing responsibility folders (e.g., `server/methods/rooms/`)
-2. Creating new responsibility folders where needed (e.g., `server/functions/`, `server/api/`, `server/commands/`)
+2. Creating new responsibility folders where needed (e.g., `server/functions/`, `server/api/`, `server/slashcommands/`)
 3. Preserving all existing `server/` folders untouched
 
 ## Target Structure
@@ -46,7 +46,7 @@ apps/meteor/server/
 │   ├── cloud/                     #   connectWorkspace.ts, syncWorkspace/ (from app/cloud/server/functions/)
 │   └── shared/                    #   validateName.ts, validateNameChars.ts, getModifiedHttpHeaders.ts
 │
-├── commands/                      # Slash commands (from app/slashcommands-*/server/)
+├── slashcommands/                 # Slash commands (from app/slashcommands-*/server/)
 │   ├── archiveroom.ts
 │   ├── asciiarts/
 │   ├── ban.ts
@@ -168,7 +168,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 ### Phase 1: Slash Commands (18 folders → 1 directory)
 
-**Goal**: Quick win. 18 tiny folders with 1-3 files each consolidate into `server/commands/`.
+**Goal**: Quick win. 18 tiny folders with 1-3 files each consolidate into `server/slashcommands/`.
 
 **Risk**: Very low. Slash commands are leaf nodes — nothing imports from them.
 
@@ -176,23 +176,23 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 | Source                                             | Destination                        |
 | -------------------------------------------------- | ---------------------------------- |
-| `app/slashcommand-asciiarts/server/`               | `server/commands/asciiarts/`       |
-| `app/slashcommands-archiveroom/server/server.ts`   | `server/commands/archiveroom.ts`   |
-| `app/slashcommands-ban/server/server.ts`           | `server/commands/ban.ts`           |
-| `app/slashcommands-create/server/server.ts`        | `server/commands/create.ts`        |
-| `app/slashcommands-help/server/server.ts`          | `server/commands/help.ts`          |
-| `app/slashcommands-hide/server/server.ts`          | `server/commands/hide.ts`          |
-| `app/slashcommands-invite/server/server.ts`        | `server/commands/invite.ts`        |
-| `app/slashcommands-inviteall/server/server.ts`     | `server/commands/inviteall.ts`     |
-| `app/slashcommands-join/server/server.ts`          | `server/commands/join.ts`          |
-| `app/slashcommands-kick/server/server.ts`          | `server/commands/kick.ts`          |
-| `app/slashcommands-leave/server/server.ts`         | `server/commands/leave.ts`         |
-| `app/slashcommands-me/server/server.ts`            | `server/commands/me.ts`            |
-| `app/slashcommands-msg/server/server.ts`           | `server/commands/msg.ts`           |
-| `app/slashcommands-mute/server/server.ts`          | `server/commands/mute.ts`          |
-| `app/slashcommands-status/server/server.ts`        | `server/commands/status.ts`        |
-| `app/slashcommands-topic/server/server.ts`         | `server/commands/topic.ts`         |
-| `app/slashcommands-unarchiveroom/server/server.ts` | `server/commands/unarchiveroom.ts` |
+| `app/slashcommand-asciiarts/server/`               | `server/slashcommands/asciiarts/`       |
+| `app/slashcommands-archiveroom/server/server.ts`   | `server/slashcommands/archiveroom.ts`   |
+| `app/slashcommands-ban/server/server.ts`           | `server/slashcommands/ban.ts`           |
+| `app/slashcommands-create/server/server.ts`        | `server/slashcommands/create.ts`        |
+| `app/slashcommands-help/server/server.ts`          | `server/slashcommands/help.ts`          |
+| `app/slashcommands-hide/server/server.ts`          | `server/slashcommands/hide.ts`          |
+| `app/slashcommands-invite/server/server.ts`        | `server/slashcommands/invite.ts`        |
+| `app/slashcommands-inviteall/server/server.ts`     | `server/slashcommands/inviteall.ts`     |
+| `app/slashcommands-join/server/server.ts`          | `server/slashcommands/join.ts`          |
+| `app/slashcommands-kick/server/server.ts`          | `server/slashcommands/kick.ts`          |
+| `app/slashcommands-leave/server/server.ts`         | `server/slashcommands/leave.ts`         |
+| `app/slashcommands-me/server/server.ts`            | `server/slashcommands/me.ts`            |
+| `app/slashcommands-msg/server/server.ts`           | `server/slashcommands/msg.ts`           |
+| `app/slashcommands-mute/server/server.ts`          | `server/slashcommands/mute.ts`          |
+| `app/slashcommands-status/server/server.ts`        | `server/slashcommands/status.ts`        |
+| `app/slashcommands-topic/server/server.ts`         | `server/slashcommands/topic.ts`         |
+| `app/slashcommands-unarchiveroom/server/server.ts` | `server/slashcommands/unarchiveroom.ts` |
 
 **Import updates**: Each slash command file typically has 0-2 external importers. Update `server/importPackages.ts` to import from the new location.
 
@@ -533,7 +533,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 - `app/invites/server/` → `server/lib/rooms/invites/`
 - `app/retention-policy/server/` → `server/lib/rooms/retention/`
 - `app/user-status/server/` → `server/lib/users/status/`
-- `app/bot-helpers/server/` → `server/lib/commands/bot-helpers.ts`
+- `app/bot-helpers/server/` → `server/lib/bot-helpers/` (moved in Phase 1)
 - `app/cors/server/` → `server/lib/cors/`
 - `app/error-handler/server/` → `server/lib/error-handler/`
 - `app/oauth2-server-config/server/` → `server/lib/auth/oauth2-server/`

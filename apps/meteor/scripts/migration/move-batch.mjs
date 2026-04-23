@@ -7,8 +7,8 @@
  *   node move-batch.mjs <manifest.tsv>
  *
  * Manifest format (TSV, one pair per line):
- *   app/slashcommands-ban/server	server/commands/ban
- *   app/slashcommands-kick/server	server/commands/kick
+ *   app/slashcommands-ban/server	server/slashcommands/ban
+ *   app/slashcommands-kick/server	server/slashcommands/kick
  *
  * After all moves, runs `tsc --noEmit` to verify.
  */

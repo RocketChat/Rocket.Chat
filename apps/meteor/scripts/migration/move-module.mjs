@@ -4,7 +4,7 @@
  * Disposable migration script: moves a module directory and updates all imports.
  *
  * Usage:
- *   node move-module.mjs --from app/slashcommands-ban/server --to server/commands/ban
+ *   node move-module.mjs --from app/slashcommands-ban/server --to server/slashcommands/ban
  *
  * All paths are relative to the Meteor app root (apps/meteor/).
  *
