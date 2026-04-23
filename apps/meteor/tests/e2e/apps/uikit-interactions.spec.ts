@@ -160,7 +160,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 
 		await test.step('room is intentionally absent for modal block actions (modals have no room context)', async () => {
 			const roomEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_room');
-			expect(roomEntry, 'Room entry should not be present for modal block action').toBeUndefined();
+			expect(roomEntry?.args[1], 'Room entry should not be present for modal block action').toBe('no-room');
 		});
 
 		// Close the modal for the next test
