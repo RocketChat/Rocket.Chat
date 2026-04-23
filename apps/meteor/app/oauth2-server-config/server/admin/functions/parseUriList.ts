@@ -13,5 +13,5 @@ export const parseUriList = (userUri: string) => {
 		uriList.push(uri);
 	});
 
-	return uriList.join(','); // Normalize the input into a comma-delimited string so redirect URIs are stored consistently.
+	return uriList.join(',');
 };
