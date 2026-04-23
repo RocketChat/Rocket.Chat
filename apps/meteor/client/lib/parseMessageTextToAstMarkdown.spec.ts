@@ -145,6 +145,15 @@ describe('parseMessageTextToAstMarkdown', () => {
 		);
 	});
 
+	it('should return an empty md array for empty messages', () => {
+		const emptyMessage: IMessage = {
+			...baseMessage,
+			msg: '',
+		};
+
+		expect(parseMessageTextToAstMarkdown(emptyMessage, parseOptions, autoTranslateOptions).md).toStrictEqual([]);
+	});
+
 	describe('translated', () => {
 		const translatedMessage: ITranslatedMessage = {
 			...baseMessage,
