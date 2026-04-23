@@ -341,6 +341,7 @@ export default [
 		files: ['packages/apps-engine/tests/**/*'],
 		rules: {
 			'@typescript-eslint/no-non-null-assertion': 'off',
+			'testing-library/no-await-sync-queries': 'off',
 		},
 	},
 	{
