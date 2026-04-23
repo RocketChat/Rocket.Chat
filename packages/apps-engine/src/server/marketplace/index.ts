@@ -1,11 +1,11 @@
-import { IAppLicenseMetadata } from './IAppLicenseMetadata';
-import { IMarketplaceInfo } from './IMarketplaceInfo';
-import { IMarketplacePricingPlan } from './IMarketplacePricingPlan';
-import { IMarketplacePricingTier } from './IMarketplacePricingTier';
-import { IMarketplaceSimpleBundleInfo } from './IMarketplaceSimpleBundleInfo';
-import { IMarketplaceSubscriptionInfo } from './IMarketplaceSubscriptionInfo';
+import type { IAppLicenseMetadata } from './IAppLicenseMetadata';
+import type { IMarketplaceInfo } from './IMarketplaceInfo';
+import type { IMarketplacePricingPlan } from './IMarketplacePricingPlan';
+import type { IMarketplacePricingTier } from './IMarketplacePricingTier';
+import type { IMarketplaceSimpleBundleInfo } from './IMarketplaceSimpleBundleInfo';
+import type { IMarketplaceSubscriptionInfo } from './IMarketplaceSubscriptionInfo';
 
-export {
+export type {
 	IAppLicenseMetadata,
 	IMarketplaceInfo,
 	IMarketplacePricingPlan,

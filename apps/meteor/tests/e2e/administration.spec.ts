@@ -77,7 +77,7 @@ test.describe.parallel('administration', () => {
 			await poAdminUsers.editUser.inputSetManually.click();
 			await poAdminUsers.editUser.inputPassword.fill('P@ssw0rd1234.!');
 			await poAdminUsers.editUser.inputConfirmPassword.fill('P@ssw0rd1234.!');
-			await expect(poAdminUsers.editUser.userRole).toBeVisible();
+			await expect(poAdminUsers.editUser.chipUserRole).toBeVisible();
 			await poAdminUsers.editUser.btnAddUser.click();
 		});
 
@@ -97,7 +97,7 @@ test.describe.parallel('administration', () => {
 			await poAdminUsers.editUser.inputSetManually.click();
 			await poAdminUsers.editUser.inputPassword.fill('P@ssw0rd1234.!');
 			await poAdminUsers.editUser.inputConfirmPassword.fill('P@ssw0rd1234.!');
-			await expect(poAdminUsers.editUser.userRole).toBeVisible();
+			await expect(poAdminUsers.editUser.chipUserRole).toBeVisible();
 			await expect(poAdminUsers.editUser.joinDefaultChannels).toBeVisible();
 			await poAdminUsers.editUser.btnAddUser.click();
 
@@ -223,6 +223,7 @@ test.describe.parallel('administration', () => {
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await poAdminRooms.editRoom.archivedLabel.click();
 			await poAdminRooms.editRoom.btnSave.click();
+			await poAdminRooms.editRoom.waitForDismissal();
 
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await expect(poAdminRooms.editRoom.archivedInput).toBeChecked();

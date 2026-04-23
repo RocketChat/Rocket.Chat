@@ -2,6 +2,7 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -164,7 +165,9 @@ const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWith
 
 const ise2eUpdateGroupKeyParamsPOST = ajv.compile<e2eUpdateGroupKeyParamsPOST>(e2eUpdateGroupKeyParamsPOSTSchema);
 
-const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingForGroupKeyProps>(E2EFetchUsersWaitingForGroupKeySchema);
+const isE2EFetchUsersWaitingForGroupKeyProps = ajvQuery.compile<E2EFetchUsersWaitingForGroupKeyProps>(
+	E2EFetchUsersWaitingForGroupKeySchema,
+);
 
 const isE2EProvideUsersGroupKeyProps = ajv.compile<E2EProvideUsersGroupKeyProps>(E2EProvideUsersGroupKeySchema);
 
@@ -457,7 +460,6 @@ const e2eEndpoints = API.v1
 			},
 		},
 		async function action() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { public_key, private_key, force } = this.bodyParams;
 
 			await setUserPublicAndPrivateKeysMethod(this.userId, {

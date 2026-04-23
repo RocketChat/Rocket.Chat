@@ -6,14 +6,24 @@ type ImageItemProps = {
 	name: string | undefined;
 	timestamp: string;
 	username?: string;
+	alt?: string;
 };
 
-const ImageItem = ({ id, url, name, timestamp, username }: ImageItemProps) => {
+const ImageItem = ({ id, url, name, timestamp, username, alt = '' }: ImageItemProps) => {
 	return (
-		<Box minWidth={0} data-id={id} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1}>
+		<Box
+			minWidth={0}
+			data-id={id}
+			className='gallery-item-container'
+			title={name}
+			display='flex'
+			alignItems='center'
+			flexGrow={1}
+			flexShrink={1}
+		>
 			{url && (
 				<Box minWidth='x48'>
-					<Avatar size='x48' url={url} className='gallery-item' />
+					<Avatar size='x48' url={url} className='gallery-item' alt={alt} />
 				</Box>
 			)}
 			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>

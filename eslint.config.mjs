@@ -241,7 +241,6 @@ export default [
 			'apps/meteor/ee/app/**/*.ts',
 			'apps/meteor/ee/client/**/*.@(ts|tsx)',
 			'apps/meteor/ee/server/**/*.ts',
-			'packages/ui-contexts/**/*.@(ts|tsx)',
 			'packages/i18n/src/scripts/common.mts',
 		],
 		rules: {
@@ -268,6 +267,16 @@ export default [
 					},
 				},
 			],
+			'testing-library/no-await-sync-events': 'off',
+			'testing-library/no-container': 'off',
+			'testing-library/no-manual-cleanup': 'off',
+			'testing-library/no-node-access': 'off',
+			'testing-library/no-render-in-lifecycle': 'off',
+			'testing-library/prefer-explicit-assert': 'off',
+			'testing-library/prefer-find-by': 'off',
+			'testing-library/prefer-screen-queries': 'off',
+			'testing-library/prefer-user-event': 'off',
+			'testing-library/render-result-naming-convention': 'off',
 		},
 	},
 	{
@@ -280,14 +289,10 @@ export default [
 		},
 	},
 	{
-		files: ['packages/apps-engine/**/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: getAbsolutePath('./packages/apps-engine/tsconfig-lint.json'),
-			},
-		},
+		files: ['packages/apps-engine/**/*'],
 		rules: {
 			'@typescript-eslint/no-empty-object-type': 'off',
+			'@typescript-eslint/no-unnecessary-type-assertion': 'off', // this rule does not deal well with assertions that remove `undefined` from the type
 			'@typescript-eslint/no-unsafe-function-type': 'error',
 			'@typescript-eslint/no-wrapper-object-types': 'error',
 			'@typescript-eslint/naming-convention': [
@@ -333,7 +338,14 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/apps-engine/**/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)/**'],
+		files: ['packages/apps-engine/tests/**/*'],
+		rules: {
+			'@typescript-eslint/no-non-null-assertion': 'off',
+			'testing-library/no-await-sync-queries': 'off',
+		},
+	},
+	{
+		ignores: ['packages/apps-engine/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],
@@ -490,7 +502,6 @@ export default [
 			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
 			'packages/livechat/**/*.@(ts|tsx)',
 			'packages/ui-client/**/*.@(ts|tsx)',
-			'packages/ui-contexts/**/*.@(ts|tsx)',
 			'packages/ui-voip/**/*.@(ts|tsx)',
 			'packages/web-ui-registration/**/*.@(ts|tsx)',
 		],

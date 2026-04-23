@@ -111,7 +111,12 @@ export const RoutingManager: Routing = {
 		if (
 			!agent ||
 			(agent.username &&
-				!(await Users.findOneOnlineAgentByUserList(agent.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) &&
+				!(await Users.findOneOnlineAgentByUserList(
+					agent.username,
+					{},
+					settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+					settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+				)) &&
 				!(await allowAgentSkipQueue(agent)))
 		) {
 			logger.debug({ msg: 'Agent offline or invalid. Using routing method to get next agent', inquiryId: inquiry._id });

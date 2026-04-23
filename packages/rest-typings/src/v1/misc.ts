@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type ShieldSvg = {
@@ -51,7 +51,7 @@ const SpotlightSchema = {
 	additionalProperties: false,
 };
 
-export const isSpotlightProps = ajv.compile<Spotlight>(SpotlightSchema);
+export const isSpotlightProps = ajvQuery.compile<Spotlight>(SpotlightSchema);
 
 type Directory = PaginatedRequest<{
 	text: string;
@@ -95,7 +95,7 @@ const DirectorySchema = {
 	additionalProperties: false,
 };
 
-export const isDirectoryProps = ajv.compile<Directory>(DirectorySchema);
+export const isDirectoryProps = ajvQuery.compile<Directory>(DirectorySchema);
 
 type MethodCall = { method: string; params: unknown[]; id: string; msg: 'string' };
 
@@ -185,7 +185,7 @@ export type MiscEndpoints = {
 
 	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
-			users: Pick<Required<IUser>, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>)[];
 			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
 		};
 	};

@@ -7,7 +7,8 @@ export const require = (mod: string) => {
 	// However, the import maps are configured to look at the source folder for typescript files, but during
 	// runtime those files are not available
 	if (mod.startsWith('@rocket.chat/apps-engine')) {
-		mod = import.meta.resolve(mod).replace('file://', '').replace('src/', '');
+		// Only remove "src/" substring when it comes after "apps-engine/"
+		mod = import.meta.resolve(mod).replace('file://', '').replace('apps-engine/src/', 'apps-engine/');
 	}
 
 	return _require(mod);

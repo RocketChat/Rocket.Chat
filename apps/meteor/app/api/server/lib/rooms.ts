@@ -153,7 +153,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 	};
 }
 
-export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name: string }): Promise<{
+export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name?: string }): Promise<{
 	items: IRoom[];
 }> {
 	const options: FindOptions<IRoom> = {

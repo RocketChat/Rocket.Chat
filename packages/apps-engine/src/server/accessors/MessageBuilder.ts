@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion -- the builder works under the assumption that "gets" would only happen after the corresponding "sets" */
+
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
 import type { IMessageBuilder } from '../../definition/accessors';
@@ -40,7 +42,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getThreadId(): string {
-		return this.msg.threadId;
+		return this.msg.threadId!;
 	}
 
 	public setRoom(room: IRoom): IMessageBuilder {
@@ -49,7 +51,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getRoom(): IRoom {
-		return this.msg.room;
+		return this.msg.room!;
 	}
 
 	public setSender(sender: IUser): IMessageBuilder {
@@ -58,7 +60,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getSender(): IUser {
-		return this.msg.sender;
+		return this.msg.sender!;
 	}
 
 	public setText(text: string): IMessageBuilder {
@@ -67,7 +69,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getText(): string {
-		return this.msg.text;
+		return this.msg.text!;
 	}
 
 	public setEmojiAvatar(emoji: string): IMessageBuilder {
@@ -76,7 +78,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getEmojiAvatar(): string {
-		return this.msg.emoji;
+		return this.msg.emoji!;
 	}
 
 	public setAvatarUrl(avatarUrl: string): IMessageBuilder {
@@ -85,7 +87,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getAvatarUrl(): string {
-		return this.msg.avatarUrl;
+		return this.msg.avatarUrl!;
 	}
 
 	public setUsernameAlias(alias: string): IMessageBuilder {
@@ -94,7 +96,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getUsernameAlias(): string {
-		return this.msg.alias;
+		return this.msg.alias!;
 	}
 
 	public addAttachment(attachment: IMessageAttachment): IMessageBuilder {
@@ -112,7 +114,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getAttachments(): Array<IMessageAttachment> {
-		return this.msg.attachments;
+		return this.msg.attachments!;
 	}
 
 	public replaceAttachment(position: number, attachment: IMessageAttachment): IMessageBuilder {
@@ -148,7 +150,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getEditor(): IUser {
-		return this.msg.editor;
+		return this.msg.editor!;
 	}
 
 	public setGroupable(groupable: boolean): IMessageBuilder {
@@ -157,7 +159,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getGroupable(): boolean {
-		return this.msg.groupable;
+		return this.msg.groupable!;
 	}
 
 	public setParseUrls(parseUrls: boolean): IMessageBuilder {
@@ -165,8 +167,8 @@ export class MessageBuilder implements IMessageBuilder {
 		return this;
 	}
 
-	public getParseUrls(): boolean {
-		return this.msg.parseUrls;
+	public getParseUrls() {
+		return this.msg.parseUrls!;
 	}
 
 	public getMessage(): IMessage {
@@ -201,8 +203,8 @@ export class MessageBuilder implements IMessageBuilder {
 		return this;
 	}
 
-	public getBlocks() {
-		return this.msg.blocks;
+	public getBlocks(): Array<IBlock | LayoutBlock> {
+		return this.msg.blocks!;
 	}
 
 	public addCustomField(key: string, value: any): IMessageBuilder {

@@ -1,4 +1,5 @@
 import { AppConsole } from './AppConsole';
-import { ILoggerStorageEntry } from './ILoggerStorageEntry';
+import type { ILoggerStorageEntry } from './ILoggerStorageEntry';
 
-export { AppConsole, ILoggerStorageEntry };
+export type { ILoggerStorageEntry };
+export { AppConsole };

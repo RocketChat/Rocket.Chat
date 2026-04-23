@@ -72,6 +72,7 @@ const MockedMediaCallProvider = ({
 	};
 
 	const getAutocompleteOptions = (filter: string) =>
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		Promise.resolve(myData.filter((item) => item.label.toLowerCase().includes(filter.toLowerCase())));
 
 	const getPeerInfo = (id: string) => {
@@ -139,7 +140,7 @@ const MockedMediaCallProvider = ({
 		remoteMuted,
 		remoteHeld,
 		callId: undefined,
-		supportedFeatures: ['audio', 'transfer', 'hold'],
+		supportedFeatures: ['audio', 'screen-share', 'transfer', 'hold'],
 	} as SessionState;
 
 	const contextValue = {
@@ -155,19 +156,13 @@ const MockedMediaCallProvider = ({
 		onAccept: onCall,
 		onToggleWidget,
 		onSelectPeer,
+		streams: {},
+		onToggleScreenSharing: () => undefined,
 	};
 
 	const instanceContextValue = {
 		instance: {
-			getMainCall: () => ({
-				contact: {
-					type: 'user',
-					id: '1234567890',
-				},
-				role: 'caller',
-				reject: () => undefined,
-				hangup: () => undefined,
-			}),
+			getState: () => null,
 			on: () => undefined,
 		} as unknown as MediaSignalingSession,
 		signalEmitter: new Emitter<Signals>(),
@@ -175,6 +170,8 @@ const MockedMediaCallProvider = ({
 		openRoomId: undefined,
 		setOpenRoomId: () => undefined,
 		getAutocompleteOptions,
+		inRoomView: false,
+		setInRoomView: () => undefined,
 	};
 
 	return (
