@@ -255,7 +255,7 @@ describe('[CustomSounds]', () => {
 				});
 		});
 
-		it('should not be able to update sounds name if the name was already taken ', async () => {
+		it('should not be able to update sounds name if the name was already taken', async () => {
 			await request
 				.post(api('custom-sounds.update'))
 				.set(credentials)
