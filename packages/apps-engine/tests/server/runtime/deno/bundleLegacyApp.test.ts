@@ -67,10 +67,9 @@ describe('bundleLegacyApp', () => {
 
 	it('marks @rocket.chat/apps-engine/* imports as external', async () => {
 		const appPackage = makeAppPackage('app.js', {
-			'app.js': [
-				'var AppInterface = require("@rocket.chat/apps-engine/definition/AppInterface");',
-				'module.exports = AppInterface;',
-			].join('\n'),
+			'app.js': ['var AppInterface = require("@rocket.chat/apps-engine/definition/AppInterface");', 'module.exports = AppInterface;'].join(
+				'\n',
+			),
 		});
 
 		await bundleLegacyApp(appPackage);

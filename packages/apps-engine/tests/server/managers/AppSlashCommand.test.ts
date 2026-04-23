@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { IAppStorageItem } from '../../../src/server/storage';
 import type { ISlashCommand } from '../../../src/definition/slashcommands';
 import type { AppManager } from '../../../src/server/AppManager';
 import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
+import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestData } from '../../test-data/utilities';
 
 describe('AppSlashCommand', () => {

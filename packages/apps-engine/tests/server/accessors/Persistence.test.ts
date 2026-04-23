@@ -32,12 +32,7 @@ describe('Persistence', () => {
 			doRemoveByAssociations(assocs: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object>> {
 				return Promise.resolve([theData]);
 			},
-			doUpdateByAssociations(
-				associations: Array<RocketChatAssociationRecord>,
-				d: object,
-				upsert: boolean,
-				appId: string,
-			): Promise<string> {
+			doUpdateByAssociations(associations: Array<RocketChatAssociationRecord>, d: object, upsert: boolean, appId: string): Promise<string> {
 				return Promise.resolve('id4');
 			},
 		} as PersistenceBridge;
