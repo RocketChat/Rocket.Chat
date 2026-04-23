@@ -103,9 +103,10 @@ class PushNotification {
 			idOnly,
 		});
 
+		await Push.send(config);
+
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		metrics.notificationsSentTotal.inc({ notification_type: 'mobile' });
-		await Push.send(config);
 	}
 
 	async getNotificationForMessageId({
