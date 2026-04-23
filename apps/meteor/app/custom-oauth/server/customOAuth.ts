@@ -122,15 +122,13 @@ export class CustomOAuthStrategy extends Strategy {
 			const value = fromTemplate(this.usernameField, data);
 
 			if (!value) {
-				throw new Meteor.Error(
-					'field_not_found',
-					`Username field "${this.usernameField}" not found in data`,
-					JSON.stringify(data, null, 2),
-				);
+				logger.debug({ msg: 'Username field not found in data', usernameField: this.usernameField, data });
+				throw new Meteor.Error('field_not_found', `Username field "${this.usernameField}" not found in data`);
 			}
+
 			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract username', error as Error);
+			throw new Error('CustomOAuth: Failed to extract username', { cause: error });
 		}
 	}
 
@@ -139,11 +137,12 @@ export class CustomOAuthStrategy extends Strategy {
 			const value = fromTemplate(this.emailField, data);
 
 			if (!value) {
-				throw new Meteor.Error('field_not_found', `Email field "${this.emailField}" not found in data`, JSON.stringify(data, null, 2));
+				logger.debug({ msg: 'Email field not found in data', emailField: this.emailField, data });
+				throw new Meteor.Error('field_not_found', `Email field "${this.emailField}" not found in data`);
 			}
 			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract email', error as Error);
+			throw new Error('CustomOAuth: Failed to extract email', { cause: error });
 		}
 	}
 
@@ -157,7 +156,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract custom name', error as Error);
+			throw new Error('CustomOAuth: Failed to extract custom name', { cause: error });
 		}
 	}
 
@@ -170,7 +169,7 @@ export class CustomOAuthStrategy extends Strategy {
 			}
 			return value as string;
 		} catch (error) {
-			throw new Error('CustomOAuth: Failed to extract avatar url', error as Error);
+			throw new Error('CustomOAuth: Failed to extract avatar url', { cause: error });
 		}
 	}
 
@@ -241,7 +240,7 @@ export class CustomOAuthStrategy extends Strategy {
 	}
 
 	addHookToProcessUser() {
-		BeforeUpdateOrCreateUserFromExternalService.push(async (serviceName, serviceData /* , options*/) => {
+		BeforeUpdateOrCreateUserFromExternalService.push(async (serviceName, serviceData) => {
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -355,7 +354,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 
-Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
+Accounts.updateOrCreateUserFromExternalService = async function (...args) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args as unknown as [string, Record<string, any>]);
 	}
