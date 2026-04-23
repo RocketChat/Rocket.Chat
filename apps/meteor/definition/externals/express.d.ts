@@ -11,6 +11,7 @@ declare module 'express' {
 }
 declare global {
 	namespace Express {
-		type User = IUser;
+		//eslint-disable-next-line
+		interface User extends IUser {}
 	}
 }

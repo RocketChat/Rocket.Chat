@@ -1,4 +1,5 @@
 import type { OAuthConfiguration, IUser } from '@rocket.chat/core-typings';
+import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { DoneCallback, Profile } from 'passport';
@@ -6,6 +7,10 @@ import type { DoneCallback, Profile } from 'passport';
 import { verifyFunction } from './verifyFunction';
 import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAuth';
 import { oAuthRouter } from '../../configuration/configurePassport';
+
+interface IOAuthRequest extends Request {
+	user?: IUser;
+}
 
 export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAuthConfiguration & { clientSecret: string }>) => {
 	passport.unuse(serviceName);
@@ -28,7 +33,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 	oAuthRouter.get(
 		`/oauth/${serviceName}/callback`,
 		passport.authenticate(serviceName, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
-		async (req, res) => {
+		async (req: IOAuthRequest, res: Response) => {
 			const oAuthUser = req.user as IUser;
 
 			if (!oAuthUser) {
