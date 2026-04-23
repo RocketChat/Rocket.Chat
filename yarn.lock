@@ -10220,7 +10220,7 @@ __metadata:
     webdav: "npm:^4.11.5"
     webpack: "npm:~5.104.1"
     xml-crypto: "npm:~3.2.1"
-    xml-encryption: "npm:~3.1.0"
+    xml-encryption: "npm:~4.0.0"
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
     yoga-layout: "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch"
@@ -16024,14 +16024,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:^0.8.5, @xmldom/xmldom@npm:^0.8.8":
-  version: 0.8.10
-  resolution: "@xmldom/xmldom@npm:0.8.10"
-  checksum: 10/62400bc5e0e75b90650e33a5ceeb8d94829dd11f9b260962b71a784cd014ddccec3e603fe788af9c1e839fa4648d8c521ebd80d8b752878d3a40edabc9ce7ccf
-  languageName: node
-  linkType: hard
-
-"@xmldom/xmldom@npm:~0.8.13":
+"@xmldom/xmldom@npm:0.8.13, @xmldom/xmldom@npm:~0.8.13":
   version: 0.8.13
   resolution: "@xmldom/xmldom@npm:0.8.13"
   checksum: 10/f8f3d56fa91d5026885c0c5c00b07eae47647bda0d742ecbf8e51e06bb287ab30222977b20529ee15c364031606225ebca58907a8ecc76a3add6b3f10e6ddfc6
@@ -38481,14 +38474,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-encryption@npm:~3.1.0":
-  version: 3.1.0
-  resolution: "xml-encryption@npm:3.1.0"
+"xml-encryption@npm:~4.0.0":
+  version: 4.0.0
+  resolution: "xml-encryption@npm:4.0.0"
   dependencies:
     "@xmldom/xmldom": "npm:^0.8.5"
     escape-html: "npm:^1.0.3"
     xpath: "npm:0.0.32"
-  checksum: 10/c84c1e11692181c24a1c30123fed4fa31015c58994bbdcf091f07fa79f0fb809774b1533d191c4739bf76bb0fb95f223d393e84cc48417480a1896b2b689373b
+  checksum: 10/319f5c0c591a5600f5f6846c9b27a69e6ecd7d4a2215cfb9ffac37490143d48239652097eae6ff33a0d55f8b534c03caa09e75ee260d89d3d1bc26802c1cfc36
   languageName: node
   linkType: hard
 
