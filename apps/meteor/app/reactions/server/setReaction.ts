@@ -75,9 +75,7 @@ export async function setReaction(room: IRoom, user: IUser, message: IMessage, r
 				usernames: [],
 			};
 		}
-
 		message.reactions[reaction].usernames.push(user.username as string);
-
 		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
