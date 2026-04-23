@@ -469,13 +469,12 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		}
 
 		if (message.reactions) {
-			// Collect all unique usernames across all reactions
 			const usernames = new Set<string>();
 			Object.values(message.reactions).forEach((reaction) => {
 				reaction.usernames?.forEach((username) => usernames.add(username));
 			});
 
-			const users = await Users.findByUsernames([...username], {
+			const users = await Users.findByUsernames([...usernames], {
 				projection: { username: 1, name: 1 },
 			}).toArray();
 
