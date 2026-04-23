@@ -15,8 +15,6 @@ test.describe('teams-management-permissions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
 		newTeamModal = new CreateNewTeamModal(page);
-
-		await page.goto('/home');
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -28,14 +26,10 @@ test.describe('teams-management-permissions', () => {
 		});
 	});
 
-	test('should not allow to create public team if user does not have the create-c permission', async ({ api }) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [{ _id: 'create-c', roles: [] }],
-				})
-			).status(),
-		).toBe(200);
+	test('should not allow to create public team if user does not have the create-c permission', async ({ page, api }) => {
+		await expect(await api.post('/permissions.update', { permissions: [{ _id: 'create-c', roles: [] }] })).toBeOK();
+		await page.goto('/home');
+		await poHomeTeam.waitForHome();
 
 		await poHomeTeam.navbar.openCreate('Team');
 
@@ -43,14 +37,10 @@ test.describe('teams-management-permissions', () => {
 		await expect(newTeamModal.checkboxPrivate).toBeChecked();
 	});
 
-	test('should not allow to create private team if user does not have the create-p permission', async ({ api }) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [{ _id: 'create-p', roles: [] }],
-				})
-			).status(),
-		).toBe(200);
+	test('should not allow to create private team if user does not have the create-p permission', async ({ page, api }) => {
+		await expect(await api.post('/permissions.update', { permissions: [{ _id: 'create-p', roles: [] }] })).toBeOK();
+		await page.goto('/home');
+		await poHomeTeam.waitForHome();
 
 		await poHomeTeam.navbar.openCreate('Team');
 
@@ -58,20 +48,21 @@ test.describe('teams-management-permissions', () => {
 		await expect(newTeamModal.checkboxPrivate).not.toBeChecked();
 	});
 
-	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api }) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'create-p', roles: [] },
-						{ _id: 'create-c', roles: [] },
-					],
-				})
-			).status(),
-		).toBe(200);
+	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ page, api }) => {
+		await expect(
+			await api.post('/permissions.update', {
+				permissions: [
+					{ _id: 'create-p', roles: [] },
+					{ _id: 'create-c', roles: [] },
+				],
+			}),
+		).toBeOK();
+		await page.goto('/home');
+		await poHomeTeam.waitForHome();
 
 		await poHomeTeam.navbar.btnCreateNew.click();
-		await expect(poHomeTeam.navbar.createNewMenu.getByRole('menuitem', { name: 'Team' })).not.toBeVisible();
+		await expect(poHomeTeam.navbar.createNewMenu).toBeVisible();
+		await expect(poHomeTeam.navbar.createNewMenuItem('Team')).not.toBeVisible();
 	});
 });
 
@@ -110,6 +101,7 @@ test.describe.serial('teams-management', () => {
 		newChannelModal = new CreateNewChannelModal(page);
 
 		await page.goto('/home');
+		await poHomeTeam.waitForHome();
 	});
 
 	test('should create targetTeam private', async ({ page }) => {

@@ -747,6 +747,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const setDefaultRes = await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
+				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
 				.send({ teamId, roomId: teamPrivateRoomId, isDefault: true })
 				.expect(200);
 
@@ -796,6 +797,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
+				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
 				.send({ teamId, roomId: teamDefaultRoomId, isDefault: false })
 				.expect(200);
 
@@ -987,6 +989,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
+				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
 				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
 				.expect(400)
 				.expect((res) => {

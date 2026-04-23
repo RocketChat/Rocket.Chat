@@ -27,14 +27,14 @@ runs:
 
   steps:
     - name: Cache build
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       id: cache-build
       with:
         path: /tmp/Rocket.Chat.tar.gz
         key: ${{ runner.arch }}-${{ runner.os }}-${{ inputs.type }}-rc-build-${{ inputs.source-hash }}
 
     - name: Set Swap Space
-      uses: pierotofy/set-swap-space@master
+      uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         swap-size-gb: 4
@@ -66,7 +66,7 @@ runs:
     #     df -h
 
     - name: Cache vite
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./node_modules/.vite
@@ -75,7 +75,7 @@ runs:
           vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
     - name: Cache meteor local
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./apps/meteor/.meteor/local
@@ -84,7 +84,7 @@ runs:
           meteor-local-cache-${{ runner.arch }}-${{ runner.os }}-${{ inputs.type }}-
 
     - name: Cache meteor
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ~/.meteor
@@ -134,7 +134,7 @@ runs:
       run: meteor reset
 
     - name: Restore packages build
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
         name: packages-build
         path: /tmp
@@ -210,7 +210,7 @@ runs:
         tar czf /tmp/Rocket.Chat.tar.gz bundle
 
     - name: Store build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: build-${{ inputs.type }}
         path: /tmp/Rocket.Chat.tar.gz

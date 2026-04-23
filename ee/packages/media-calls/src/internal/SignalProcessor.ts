@@ -169,6 +169,17 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
+		if (call.state !== 'active') {
+			const otherActor = role === 'caller' ? call.callee : call.caller;
+			if (otherActor.type === 'user') {
+				this.sendSignal(otherActor.id, {
+					callId: call._id,
+					type: 'notification',
+					notification: 'trying',
+				});
+			}
+		}
+
 		if (!signal.requestSignals) {
 			return;
 		}

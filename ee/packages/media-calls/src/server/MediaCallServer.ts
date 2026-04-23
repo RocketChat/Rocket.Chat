@@ -11,7 +11,12 @@ import type {
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
-import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
+import type {
+	IMediaCallServer,
+	IMediaCallServerSettings,
+	MediaCallServerEvents,
+	VoipPushNotificationEventType,
+} from '../definition/IMediaCallServer';
 import { CallRejectedError } from '../definition/common';
 import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
@@ -67,6 +72,15 @@ export class MediaCallServer implements IMediaCallServer {
 		logger.debug({ msg: 'MediaCallServer.updateCallHistory', params });
 
 		this.emitter.emit('historyUpdate', params);
+	}
+
+	public sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
+		if (!this.settings.mobileRinging) {
+			return;
+		}
+		logger.debug({ msg: 'MediaCallServer.sendPushNotification', params });
+
+		this.emitter.emit('pushNotificationRequest', params);
 	}
 
 	public async requestCall(params: InternalCallParams): Promise<void> {
