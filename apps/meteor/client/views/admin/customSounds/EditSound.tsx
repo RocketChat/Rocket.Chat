@@ -127,7 +127,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
-							{file?.name || `${data.name}.${data.extension}` || t('None')}
+							{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
 						</Margins>
 					</Box>
 				</Field>

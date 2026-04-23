@@ -159,7 +159,7 @@ describe('[CustomSounds]', () => {
 				.expect(400);
 		});
 
-		describe('without manage-sounds permission', async () => {
+		describe('without manage-sounds permission', () => {
 			let unauthorizedUser: IUser;
 			let unauthorizedUserCredentials: Credentials;
 
