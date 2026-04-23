@@ -62,7 +62,7 @@ export class TokenStream {
     }
 
     isEOF(): boolean {
-        return this._pos >= this._tokens.length;
+        return this._pos >= this._tokens.length || this.peek().kind === TokenKind.EOF;
     }
 
     isLineStart(): boolean {

@@ -3,7 +3,7 @@ import type { Token } from '../lexer';
 import { TokenKind } from '../lexer';
 import { TokenStream } from './TokenStream';
 import type { ParserOptions } from './ParserOptions';
-import { paragraph, plain, lineBreak, reducePlainTexts } from '../utils';
+import { paragraph, plain, lineBreak, reducePlainTexts, heading, mentionChannel } from '../utils';
 
 /**
  * Maximum recursion depth to prevent stack overflow on crafted input.
@@ -45,13 +45,31 @@ export class Parser {
 	 * 2. Falling back to paragraph parsing for inline content
 	 */
 	parse(): Root {
+		void this._options;
 		const blocks: Array<Paragraph | Blocks> = [];
 
 		while (!this._stream.isEOF()) {
-			// Skip bare newlines between blocks (they become line-breaks
-			// only when they appear *inside* a paragraph).
 			if (this._stream.at(TokenKind.NEWLINE)) {
-				this._stream.advance();
+				const newlineCount = this._consumeNewlines();
+
+				// Leading newlines do not produce nodes.
+				if (blocks.length === 0) {
+					continue;
+				}
+
+				if (this._stream.isEOF()) {
+					const previous = blocks[blocks.length - 1];
+					if (previous?.type === 'HEADING' && newlineCount >= 1) {
+						blocks.push(lineBreak());
+					}
+					continue;
+				}
+
+				// Between blocks, N newlines become N-1 LINE_BREAK nodes.
+				for (let index = 1; index < newlineCount; index++) {
+					blocks.push(lineBreak());
+				}
+
 				continue;
 			}
 
@@ -63,7 +81,7 @@ export class Parser {
 			}
 
 			// Fallback: parse a paragraph.
-			blocks.push(this._parseParagraph());
+			blocks.push(this.parseParagraph());
 		}
 
 		// Empty input → single paragraph with empty plain text.
@@ -84,8 +102,28 @@ export class Parser {
 	 * task list, KaTeX block, and spoiler block rules here.
 	 */
 	private _tryBlock(): Blocks | null {
-		// Phase 2 will implement block-level dispatch here.
+		if (!this._stream.isLineStart()) {
+			return null;
+		}
+
+		if (this._stream.at(TokenKind.HEADING_MARKER)) {
+			return this._parseHeading();
+		}
+
 		return null;
+	}
+
+	private _parseHeading(): Blocks {
+		const marker = this._stream.expect(TokenKind.HEADING_MARKER);
+
+		// Lexer guarantees heading marker is followed by one space/tab delimiter.
+		if (this._stream.at(TokenKind.WHITESPACE)) {
+			this._stream.advance();
+		}
+
+		const content = this._parsePlainTexts(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
+
+		return heading(content, Number(marker.value) as 1 | 2 | 3 | 4);
 	}
 
 	// ── paragraph ────────────────────────────────────────────────────────
@@ -96,36 +134,8 @@ export class Parser {
 	 *
 	 * Line breaks within a paragraph produce `LineBreak` nodes.
 	 */
-	private _parseParagraph(): Paragraph {
-		const inlines: Paragraph['value'] = [];
-
-		while (!this._stream.isEOF()) {
-			// A newline could be a line break within the paragraph or a
-			// paragraph separator (double newline / block start).
-			if (this._stream.at(TokenKind.NEWLINE)) {
-				this._stream.advance();
-
-				// Double newline or EOF → end of paragraph.
-				if (this._stream.isEOF() || this._stream.at(TokenKind.NEWLINE)) {
-					break;
-				}
-
-				// Check if the next line starts a block construct.
-				if (this._isBlockStart()) {
-					break;
-				}
-
-				// Single newline inside paragraph → line break.
-				inlines.push(lineBreak());
-				continue;
-			}
-
-			// Collect inline content.
-			const inline = this._parseInline();
-			if (inline !== null) {
-				inlines.push(inline);
-			}
-		}
+	private parseParagraph(): Paragraph {
+		const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
 
 		if (inlines.length === 0) {
 			return paragraph([plain('')]);
@@ -143,60 +153,76 @@ export class Parser {
 	 * tokens as plain text. Phases 3–4 will add emphasis, links, code
 	 * spans, emoji, mentions, timestamps, colors, and KaTeX.
 	 */
-	private _parseInline(): Inlines | null {
-		const token = this._stream.peek();
+	private parseInlines(stopKinds: ReadonlySet<TokenKind>): Inlines[] {
+		const inlines: Inlines[] = [];
 
-		switch (token.kind) {
-			case TokenKind.TEXT:
-			case TokenKind.WHITESPACE:
-				this._stream.advance();
-				return plain(token.value);
+		while (!this._stream.isEOF()) {
+			const token = this._stream.peek();
 
-			case TokenKind.ESCAPED:
-				this._stream.advance();
-				return plain(token.value);
+			if (stopKinds.has(token.kind)) {
+				break;
+			}
 
-			case TokenKind.EOF:
-				return null;
+			switch (token.kind) {
+				case TokenKind.TEXT:
+				case TokenKind.WHITESPACE:
+				case TokenKind.ESCAPED:
+					this._stream.advance();
+					inlines.push(plain(token.value));
+					break;
 
-			default:
-				// Unknown/unhandled token kinds → consume as plain text
-				// so the parser never gets stuck.
-				this._stream.advance();
-				return plain(token.raw);
+				case TokenKind.MENTION_CHANNEL:
+					this._stream.advance();
+					inlines.push(mentionChannel(token.value));
+					break;
+
+				default:
+					// Preserve forward progress until richer inline handlers land.
+					this._stream.advance();
+					inlines.push(plain(token.raw));
+			}
 		}
+
+		return inlines;
 	}
 
 	// ── helpers ──────────────────────────────────────────────────────────
 
-	/**
-	 * Returns `true` when the current token could start a block-level
-	 * construct. Used to break out of paragraph parsing.
-	 *
-	 * Stub — Phase 2 will check for HEADING_MARKER, TRIPLE_BACKTICK,
-	 * BLOCKQUOTE_MARKER, UL_BULLET, OL_BULLET, TASK_BULLET,
-	 * KATEX_BLOCK_START, and BLOCK_SPOILER_FENCE.
-	 */
-	private _isBlockStart(): boolean {
-		if (!this._stream.isLineStart()) {
-			return false;
+	private _consumeNewlines(): number {
+		let count = 0;
+
+		while (this._stream.at(TokenKind.NEWLINE)) {
+			this._stream.advance();
+			count++;
 		}
 
-		const kind = this._stream.peek().kind;
+		return count;
+	}
 
-		switch (kind) {
-			case TokenKind.HEADING_MARKER:
-			case TokenKind.TRIPLE_BACKTICK:
-			case TokenKind.BLOCKQUOTE_MARKER:
-			case TokenKind.UL_BULLET:
-			case TokenKind.OL_BULLET:
-			case TokenKind.TASK_BULLET:
-			case TokenKind.KATEX_BLOCK_START:
-			case TokenKind.BLOCK_SPOILER_FENCE:
-				return true;
-			default:
-				return false;
+	private _parsePlainTexts(stopKinds: ReadonlySet<TokenKind>): Plain[] {
+		const chunks: Plain[] = [];
+
+		while (!this._stream.isEOF()) {
+			const token = this._stream.peek();
+
+			if (stopKinds.has(token.kind)) {
+				break;
+			}
+
+			this._stream.advance();
+
+			switch (token.kind) {
+				case TokenKind.TEXT:
+				case TokenKind.WHITESPACE:
+				case TokenKind.ESCAPED:
+					chunks.push(plain(token.value));
+					break;
+				default:
+					chunks.push(plain(token.raw));
+			}
 		}
+
+		return reducePlainTexts(chunks) as Plain[];
 	}
 
 	/**
