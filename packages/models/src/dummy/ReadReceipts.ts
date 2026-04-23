@@ -33,10 +33,6 @@ export class ReadReceiptsDummy extends BaseDummy<IReadReceipt> implements IReadR
 		return this.deleteMany({});
 	}
 
-	removeOTRReceiptsUntilDate(_roomId: string, _until: Date): Promise<DeleteResult> {
-		return this.deleteMany({});
-	}
-
 	async removeByIdPinnedTimestampLimitAndUsers(
 		_roomId: string,
 		_ignorePinned: boolean,

@@ -8,7 +8,7 @@ export class LivechatUnitMonitorsRaw extends BaseRaw<ILivechatUnitMonitor> imple
 		super(db, 'livechat_unit_monitors');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {

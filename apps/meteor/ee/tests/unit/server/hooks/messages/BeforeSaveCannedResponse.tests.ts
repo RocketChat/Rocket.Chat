@@ -39,7 +39,7 @@ class LivechatVisitorsModel extends BaseRaw<any> {
 }
 
 class UsersModel extends BaseRaw<any> {
-	async findOneById() {
+	override async findOneById() {
 		return {
 			name: 'John Doe Agent',
 		};

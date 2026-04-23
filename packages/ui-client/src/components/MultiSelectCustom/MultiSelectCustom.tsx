@@ -1,6 +1,8 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import type { Button } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useButtonPattern, useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, FormEvent, ReactElement, RefObject } from 'react';
+import type { Keys as IconNames } from '@rocket.chat/icons';
+import type { ComponentPropsWithoutRef, FormEvent, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
@@ -25,6 +27,7 @@ export type OptionProp = {
 	text: string;
 	checked?: boolean;
 	isGroupTitle?: boolean;
+	icon?: { name: IconNames; color?: 'default' | 'danger' | 'warning' };
 };
 
 /**
@@ -47,7 +50,7 @@ type DropDownProps = {
 	selectedOptions: OptionProp[];
 	setSelectedOptions: (roles: OptionProp[]) => void;
 	searchBarText?: string;
-} & ComponentProps<typeof Button>;
+} & ComponentPropsWithoutRef<typeof Button>;
 
 export const MultiSelectCustom = ({
 	dropdownOptions,
@@ -57,7 +60,7 @@ export const MultiSelectCustom = ({
 	setSelectedOptions,
 	searchBarText,
 	...props
-}: DropDownProps): ReactElement => {
+}: DropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const target = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);

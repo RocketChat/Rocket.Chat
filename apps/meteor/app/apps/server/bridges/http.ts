@@ -2,7 +2,10 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
+import { censorUrl } from '@rocket.chat/tools';
+
+import { settings } from '../../../settings/server';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
@@ -70,16 +73,22 @@ export class AppHttpBridge extends HttpBridge {
 
 		// end comptability with old HTTP.call API
 
-		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
+		this.orch.debugLog({ msg: `The App ${info.appId} is requesting from the outter webs:`, info: { ...info, url: censorUrl(info.url) } });
+
+		const shouldIgnoreSsrf = request.ssrfValidation !== true;
+		const fetchOptions: ExtendedFetchOptions = {
+			method,
+			body: content,
+			headers,
+			timeout,
+			...(shouldIgnoreSsrf
+				? { ignoreSsrfValidation: true }
+				: { ignoreSsrfValidation: false, allowList: settings.get<string>('SSRF_Allowlist') }),
+		};
 
 		const response = await fetch(
 			url.href,
-			{
-				method,
-				body: content,
-				headers,
-				timeout,
-			},
+			fetchOptions,
 			(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
 		);

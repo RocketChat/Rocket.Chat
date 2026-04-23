@@ -15,15 +15,7 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { usePermission } from '@rocket.chat/ui-contexts';
-import { useContext, useEffect, useId, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useDownloadExportMutation } from './useDownloadExportMutation';
-import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
-import { useRoomExportMutation } from './useRoomExportMutation';
-import { validateEmail } from '../../../../../lib/emailValidator';
+import { validateEmail } from '@rocket.chat/tools';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -32,12 +24,19 @@ import {
 	ContextualbarClose,
 	ContextualbarFooter,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useContext, useEffect, useId, useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useDownloadExportMutation } from './useDownloadExportMutation';
+import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
+import { useRoomExportMutation } from './useRoomExportMutation';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';
@@ -62,7 +61,7 @@ const ExportMessages = () => {
 
 	const {
 		control,
-		formState: { errors, isSubmitting, isDirty },
+		formState: { errors, isSubmitting, isDirty, isSubmitted },
 		watch,
 		register,
 		setValue,
@@ -70,7 +69,6 @@ const ExportMessages = () => {
 		clearErrors,
 		reset,
 	} = useForm<ExportMessagesFormValues>({
-		mode: 'onBlur',
 		defaultValues: {
 			type: isE2ERoom ? 'download' : 'email',
 			dateFrom: '',
@@ -147,8 +145,8 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		setValue('messagesCount', messageCount, { shouldDirty: true });
-	}, [messageCount, setValue]);
+		setValue('messagesCount', messageCount, { shouldDirty: true, shouldValidate: isSubmitted });
+	}, [messageCount, setValue, isSubmitted]);
 
 	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
@@ -217,13 +215,6 @@ const ExportMessages = () => {
 			<ContextualbarScrollableContent>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
-						{room.createdOTR && (
-							<Field>
-								<Callout role='alert' type='warning'>
-									{t('OTR_messages_cannot_be_exported')}
-								</Callout>
-							</Field>
-						)}
 						<Field>
 							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
 							<FieldRow>
@@ -306,6 +297,17 @@ const ExportMessages = () => {
 										<Controller
 											name='toUsers'
 											control={control}
+											rules={{
+												validate: {
+													validateRecipient: (toUsers) => {
+														const additionalEmails = watch('additionalEmails');
+														if (toUsers?.length > 0 || additionalEmails !== '') {
+															return undefined;
+														}
+														return t('Mail_Message_Missing_to');
+													},
+												},
+											}}
 											render={({ field: { value, onChange, onBlur, name } }) => (
 												<UserAutoCompleteMultiple
 													id={toUsersField}
@@ -316,10 +318,19 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													name={name}
+													aria-label={t('To_users')}
+													aria-describedby={`${toUsersField}-error`}
+													aria-invalid={Boolean(errors?.toUsers?.message)}
+													error={errors?.toUsers?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
+									{errors?.toUsers && (
+										<FieldError role='alert' id={`${toUsersField}-error`}>
+											{errors.toUsers.message}
+										</FieldError>
+									)}
 								</Field>
 								<Field>
 									<FieldLabel htmlFor={additionalEmailsField}>{t('To_additional_emails')}</FieldLabel>
@@ -341,7 +352,7 @@ const ExportMessages = () => {
 
 														return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
 													},
-													validateToUsers: (additionalEmails) => {
+													validateRecipient: (additionalEmails) => {
 														if (additionalEmails !== '' || toUsers?.length > 0) {
 															return undefined;
 														}
@@ -350,10 +361,16 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field }) => (
+											render={({ field: { value, onChange, onBlur, name } }) => (
 												<TextInput
 													id={additionalEmailsField}
-													{...field}
+													value={value}
+													onChange={(e) => {
+														onChange(e);
+														clearErrors('toUsers');
+													}}
+													onBlur={onBlur}
+													name={name}
 													placeholder={t('Email_Placeholder_any')}
 													addon={<Icon name='mail' size='x20' />}
 													aria-describedby={`${additionalEmailsField}-error`}
@@ -408,7 +425,7 @@ const ExportMessages = () => {
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button disabled={!isDirty} loading={isSubmitting} form={formId} primary type='submit'>
+					<Button loading={isSubmitting} form={formId} primary type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>

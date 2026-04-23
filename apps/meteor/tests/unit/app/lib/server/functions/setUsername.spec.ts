@@ -37,9 +37,6 @@ describe('setUsername', () => {
 		setUserAvatar: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		notifyOnUserChange: sinon.stub(),
-		RateLimiter: {
-			limitFunction: sinon.stub(),
-		},
 		underscore: {
 			escape: sinon.stub(),
 		},
@@ -56,7 +53,7 @@ describe('setUsername', () => {
 			'meteor/accounts-base': { Accounts: stubs.Accounts },
 			'underscore': stubs.underscore,
 			'../../../settings/server': { settings: stubs.settings },
-			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange, RateLimiter: stubs.RateLimiter },
+			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange },
 			'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
 			'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
 			'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
@@ -64,7 +61,7 @@ describe('setUsername', () => {
 			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
 			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
 			'./validateUsername': { validateUsername: stubs.validateUsername },
-			'../../../../lib/callbacks': { callbacks: stubs.callbacks },
+			'../../../../server/lib/callbacks': { callbacks: stubs.callbacks },
 			'../../../../server/lib/logger/system': { SystemLogger: stubs.SystemLogger },
 		});
 
@@ -92,7 +89,6 @@ describe('setUsername', () => {
 		stubs.setUserAvatar.reset();
 		stubs.addUserToRoom.reset();
 		stubs.notifyOnUserChange.reset();
-		stubs.RateLimiter.limitFunction.reset();
 		stubs.underscore.escape.reset();
 		stubs.SystemLogger.reset();
 	});

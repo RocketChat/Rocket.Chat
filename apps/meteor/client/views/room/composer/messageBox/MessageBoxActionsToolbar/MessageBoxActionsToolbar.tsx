@@ -1,5 +1,6 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -16,7 +17,6 @@ import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
 import { messageBox } from '../../../../../../app/ui-utils/client';
-import { isTruthy } from '../../../../../../lib/isTruthy';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
@@ -31,6 +31,7 @@ type MessageBoxActionsToolbarProps = {
 	tmid?: IMessage['_id'];
 	isImportantActive?: boolean;
 	onImportantToggle?: (active: boolean) => void;
+	isEditing: boolean;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
@@ -50,6 +51,7 @@ const MessageBoxActionsToolbar = ({
 	isMicrophoneDenied,
 	isImportantActive = false,
 	onImportantToggle,
+	isEditing = false,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
 	const chatContext = useChat();
@@ -83,8 +85,8 @@ const MessageBoxActionsToolbar = ({
 
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || typing || isRecording);
-	const webdavActions = useWebdavActions();
+	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
+	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
 	const timestampAction = useTimestampAction(chatContext.composer);

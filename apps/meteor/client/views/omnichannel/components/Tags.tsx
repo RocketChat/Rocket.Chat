@@ -76,7 +76,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 					<CurrentChatTags
 						id={tagsFieldId}
 						value={paginatedTagValue}
-						handler={(tags: { label: string; value: string }[]): void => {
+						handler={(tags): void => {
 							handler(tags.map((tag) => tag.label));
 						}}
 						department={department}

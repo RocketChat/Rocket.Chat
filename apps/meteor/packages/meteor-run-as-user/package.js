@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-
 	api.use([
 		'meteor',
 		'check',
@@ -19,12 +18,5 @@ Package.onUse(function (api) {
 		// 'ddp-client'
 	]);
 
-	api.addFiles(
-		[
-			'lib/pre.1.0.3.js', // Waiting for ddp-common and ddp-client
-			'lib/common.js',
-			'lib/collection.overwrites.js',
-		],
-		['client', 'server'],
-	);
+	api.addFiles(['lib/common.js', 'lib/collection.overwrites.js'], ['client', 'server']);
 });

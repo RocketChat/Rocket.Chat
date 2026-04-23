@@ -1,45 +1,33 @@
+import { Emitter } from '@rocket.chat/emitter';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { MediaCallProvider as MediaCallProviderBase, MediaCallContext } from '@rocket.chat/ui-voip';
+import { MediaCallProvider as MediaCallProviderBase, MediaCallInstanceContext } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
-import { useVoipWarningModal } from '../hooks/useVoipWarningModal';
 
 const MediaCallProvider = ({ children }: { children: ReactNode }) => {
-	const dispatchWarning = useVoipWarningModal();
-
 	const canMakeInternalCall = usePermission('allow-internal-voice-calls');
 	const canMakeExternalCall = usePermission('allow-external-voice-calls');
 
-	const hasModule = useHasLicenseModule('teams-voip');
+	const { data: hasModule = false } = useHasLicenseModule('teams-voip');
 
 	const unauthorizedContextValue = useMemo(
 		() => ({
-			state: 'unauthorized' as const,
-			onToggleWidget: undefined,
-			onEndCall: undefined,
-			peerInfo: undefined,
+			inRoomView: false,
+			setInRoomView: () => undefined,
+			instance: undefined,
+			signalEmitter: new Emitter<any>(),
+			audioElement: undefined,
+			openRoomId: undefined,
+			setOpenRoomId: () => undefined,
+			getAutocompleteOptions: () => Promise.resolve([]),
 		}),
 		[],
 	);
 
-	const unlicensedContextValue = useMemo(
-		() => ({
-			state: 'unlicensed' as const,
-			onToggleWidget: dispatchWarning,
-			onEndCall: undefined,
-			peerInfo: undefined,
-		}),
-		[dispatchWarning],
-	);
-
-	if (!hasModule) {
-		return <MediaCallContext.Provider value={unlicensedContextValue}>{children}</MediaCallContext.Provider>;
-	}
-
-	if (!canMakeInternalCall && !canMakeExternalCall) {
-		return <MediaCallContext.Provider value={unauthorizedContextValue}>{children}</MediaCallContext.Provider>;
+	if (!hasModule || (!canMakeInternalCall && !canMakeExternalCall)) {
+		return <MediaCallInstanceContext.Provider value={unauthorizedContextValue}>{children}</MediaCallInstanceContext.Provider>;
 	}
 
 	return <MediaCallProviderBase>{children}</MediaCallProviderBase>;

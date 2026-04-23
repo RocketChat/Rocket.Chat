@@ -2,7 +2,7 @@ import type { EventID, HomeserverEventSignatures } from '@rocket.chat/federation
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 
-type MatrixMessageContent = HomeserverEventSignatures['homeserver.matrix.message']['content'] & { format?: string };
+type MatrixMessageContent = HomeserverEventSignatures['homeserver.matrix.message']['event']['content'] & { format?: string };
 
 type MatrixEvent = {
 	content?: { body?: string; formatted_body?: string };

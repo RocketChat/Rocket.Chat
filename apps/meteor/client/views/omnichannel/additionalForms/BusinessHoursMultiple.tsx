@@ -14,7 +14,7 @@ const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeo
 		control,
 		formState: { errors },
 	} = useFormContext<BusinessHoursFormData>();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const enabledField = useId();
 	const nameField = useId();

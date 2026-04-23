@@ -1,5 +1,5 @@
 const { subtle } = crypto;
-export const randomUUID = crypto.randomUUID.bind(crypto);
+export const randomUUID = () => crypto.randomUUID();
 export const getRandomValues = crypto.getRandomValues.bind(crypto);
 
 interface IAesGcmParams extends AesGcmParams {
@@ -40,7 +40,7 @@ export const decryptBuffer = <TKey extends IKey>(
 	params: ParamsOf<TKey>,
 	data: BufferSource,
 ): Promise<ArrayBuffer> => subtle.decrypt(params, key, data) as Promise<ArrayBuffer>;
-export const deriveBits = subtle.deriveBits.bind(subtle);
+export const deriveBits = (...args: Parameters<typeof subtle.deriveBits>) => subtle.deriveBits(...args);
 
 type AesParams = {
 	name: 'AES-CBC' | 'AES-GCM' | 'AES-CTR';

@@ -141,7 +141,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 				_id: new ObjectId().toHexString(),
 				data: {
 					...data,
-					roles: data.roles ? [...new Set(...data.roles, ...defaultRoles)] : defaultRoles,
+					roles: data.roles ? [...new Set([...data.roles, ...defaultRoles])] : defaultRoles,
 				},
 				dataType: 'user',
 			})),

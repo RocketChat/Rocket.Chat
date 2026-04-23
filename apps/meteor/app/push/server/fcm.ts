@@ -9,8 +9,8 @@ import type { NativeNotificationParameters } from './push';
 type FCMDataField = Record<string, any>;
 
 type FCMNotificationField = {
-	title: string;
-	body: string;
+	title?: string;
+	body?: string;
 	image?: string;
 };
 
@@ -103,7 +103,7 @@ async function fetchWithRetry(url: string, _removeToken: () => void, options: Ex
 	}
 
 	const error: FCMError = await response.json();
-	logger.error('sendFCM error', error);
+	logger.error({ msg: 'sendFCM error', err: error });
 
 	return response;
 }
@@ -140,13 +140,13 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 
 	// then we will create the notification field
 	const notificationField: FCMNotificationField = {
-		title: notification.title,
-		body: notification.text,
+		...(notification.title && { title: notification.title }),
+		...(notification.text && { body: notification.text }),
 	};
 
 	// then we will create the message
 	const message: FCMMessage = {
-		notification: notificationField,
+		...(Object.keys(notificationField).length && { notification: notificationField }),
 		data,
 		android: {
 			priority: 'HIGH',
@@ -164,7 +164,7 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 		return;
 	}
 
-	logger.debug('sendFCM', tokens, notification);
+	logger.debug({ msg: 'sendFCM', tokens, notification });
 
 	const messages = getFCMMessagesFromPushData(tokens, notification);
 	const headers = {
@@ -181,17 +181,23 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 	const url = `https://fcm.googleapis.com/v1/projects/${options.gcm.projectNumber}/messages:send`;
 
 	for (const fcmRequest of messages) {
-		logger.debug('sendFCM message', fcmRequest);
+		logger.debug({ msg: 'sendFCM message', request: fcmRequest });
 
 		const removeToken = () => {
 			const { token } = fcmRequest.message;
-			token && _removeToken({ gcm: token });
+			token && _removeToken(token);
 		};
 
-		const response = fetchWithRetry(url, removeToken, { method: 'POST', headers, body: JSON.stringify(fcmRequest) });
+		const response = fetchWithRetry(url, removeToken, {
+			method: 'POST',
+			headers,
+			body: JSON.stringify(fcmRequest),
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
 
 		response.catch((err) => {
-			logger.error('sendFCM error', err);
+			logger.error({ msg: 'sendFCM error', err });
 		});
 	}
 };

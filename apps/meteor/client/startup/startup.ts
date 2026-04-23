@@ -1,7 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import moment from 'moment';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -10,8 +9,6 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { watchUserId } from '../meteor/user';
 
 Meteor.startup(() => {
-	fireGlobalEvent('startup', true);
-
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
 		const uid = watchUserId();
@@ -33,7 +30,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const utcOffset = moment().utcOffset() / 60;
+		const utcOffset = -new Date().getTimezoneOffset() / 60;
 		if (user.utcOffset !== utcOffset) {
 			sdk.call('userSetUtcOffset', utcOffset);
 		}

@@ -1,11 +1,10 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
+import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';
 
-import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersTableSortingOption } from '../AdminUsersPage';
 
 type UseFilteredUsersOptions = {
@@ -29,16 +28,16 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 		const listUsersPayload: Partial<Record<AdminUsersTab, UsersListStatusParamsGET>> = {
 			all: {},
 			pending: {
-				hasLoggedIn: false,
 				type: 'user',
-				status: 'active',
+				status: 'deactivated',
+				inactiveReason: ['pending_approval'],
 			},
 			active: {
-				hasLoggedIn: true,
 				status: 'active',
 			},
 			deactivated: {
 				status: 'deactivated',
+				inactiveReason: ['deactivated', 'idle_too_long'],
 			},
 		};
 

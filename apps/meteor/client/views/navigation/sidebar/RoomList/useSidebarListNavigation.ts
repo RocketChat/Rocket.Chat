@@ -1,5 +1,5 @@
+import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
-import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) =>
 	(node as HTMLElement).classList.contains('rcx-sidebar-v2-item') && (node as HTMLElement).parentElement?.role === 'listitem';
@@ -69,7 +69,7 @@ export const useSidebarListNavigation = () => {
 				'blur',
 				(e) => {
 					if (
-						!(e.relatedTarget as HTMLElement)?.classList.contains('focus-visible') ||
+						!(e.relatedTarget as HTMLElement)?.matches(':focus-visible') ||
 						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
 					) {
 						return;
@@ -85,7 +85,7 @@ export const useSidebarListNavigation = () => {
 			node.addEventListener(
 				'focus',
 				(e) => {
-					const triggeredByKeyboard = (e.target as HTMLElement)?.classList.contains('focus-visible');
+					const triggeredByKeyboard = (e.target as HTMLElement)?.matches(':focus-visible');
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}

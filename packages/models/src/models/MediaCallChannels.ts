@@ -9,7 +9,7 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 		super(db, 'media_call_channels', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { callId: 1, actorType: 1, actorId: 1, contractId: 1 },

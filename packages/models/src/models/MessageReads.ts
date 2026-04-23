@@ -9,7 +9,7 @@ export class MessageReadsRaw extends BaseRaw<MessageReads> implements IMessageRe
 		super(db, 'message_reads', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { ls: 1 } }];
 	}
 

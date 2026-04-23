@@ -1,10 +1,10 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveUnit } from './useRemoveUnit';
-import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 
 const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; visibility: string }) => {
 	const { t } = useTranslation();
@@ -14,7 +14,7 @@ const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; v
 	const handleDelete = useRemoveUnit(_id);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} role='link' data-qa-id={name} onClick={onRowClick(_id)} action qa-user-id={_id}>
+		<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
 			<GenericTableCell>
@@ -22,7 +22,6 @@ const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; v
 					icon='trash'
 					small
 					title={t('Remove')}
-					data-qa-id={`remove-unit-${name}`}
 					onClick={(e) => {
 						e.stopPropagation();
 						handleDelete();

@@ -34,7 +34,7 @@ export class ReactiveObserveHandle<T extends { _id: string }> extends ObserveHan
 		}
 	}
 
-	stop() {
+	override stop() {
 		this.collection.queries.delete(this.query);
 	}
 }

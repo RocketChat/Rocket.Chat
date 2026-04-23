@@ -1,30 +1,28 @@
+import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
+import { ajv } from '@rocket.chat/rest-typings';
+
 import { API } from '../api';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getServerInfo } from '../lib/getServerInfo';
 
-API.default.addRoute(
+const infoResponseSchema = ajv.compile<IWorkspaceInfo>({
+	type: 'object',
+	properties: {
+		version: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: true,
+});
+
+API.default.get(
 	'info',
-	{ authRequired: false },
 	{
-		async get() {
-			const user = await getLoggedInUser(this.request);
-			return API.v1.success(await getServerInfo(user?._id));
+		authRequired: false,
+		response: {
+			200: infoResponseSchema,
 		},
 	},
-);
-
-API.default.addRoute(
-	'ecdh_proxy/initEncryptedSession',
-	{ authRequired: false },
-	{
-		post() {
-			return {
-				statusCode: 200,
-				body: {
-					success: false,
-					error: 'Not Acceptable',
-				},
-			};
-		},
+	async function action() {
+		return API.v1.success(await getServerInfo(this.userId));
 	},
 );

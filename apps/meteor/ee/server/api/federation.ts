@@ -1,11 +1,12 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
 import { getFederationRoutes } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
-import { ajv } from '@rocket.chat/rest-typings';
+import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 import { API } from '../../../app/api/server';
+import { getTrimmedServerVersion } from '../../../app/api/server/lib/getTrimmedServerVersion';
 
 const logger = new Logger('FederationRoutes');
 
@@ -13,7 +14,7 @@ API.v1.get(
 	'/federation/matrixIds.verify',
 	{
 		authRequired: true,
-		query: ajv.compile<{
+		query: ajvQuery.compile<{
 			matrixIds: string[];
 		}>({
 			type: 'object',
@@ -42,7 +43,7 @@ API.v1.get(
 
 export async function registerFederationRoutes(): Promise<void> {
 	try {
-		const routes = getFederationRoutes();
+		const routes = getFederationRoutes(getTrimmedServerVersion());
 
 		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
 	} catch (error) {

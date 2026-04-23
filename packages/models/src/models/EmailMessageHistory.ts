@@ -9,7 +9,7 @@ export class EmailMessageHistoryRaw extends BaseRaw<IEmailMessageHistory> implem
 		super(db, 'email_message_history', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { createdAt: 1 }, expireAfterSeconds: 60 * 60 * 24 }];
 	}
 

@@ -11,6 +11,7 @@ type getRoomDirectiesType = {
 	roomCanIgnore: boolean;
 	roomCanBlock: boolean;
 	roomCanMute: boolean;
+	roomCanBan: boolean;
 	roomCanRemove: boolean;
 	roomCanInvite: boolean;
 };
@@ -34,6 +35,7 @@ export const getRoomDirectives = ({
 		roomCanIgnore,
 		roomCanBlock,
 		roomCanMute,
+		roomCanBan,
 		roomCanRemove,
 		roomCanInvite,
 	] = [
@@ -45,6 +47,7 @@ export const getRoomDirectives = ({
 			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.BAN, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.REMOVE_USER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, showingUserId, userSubscription),
 		]) ??
@@ -59,6 +62,7 @@ export const getRoomDirectives = ({
 		roomCanIgnore,
 		roomCanBlock,
 		roomCanMute,
+		roomCanBan,
 		roomCanRemove,
 		roomCanInvite,
 	};

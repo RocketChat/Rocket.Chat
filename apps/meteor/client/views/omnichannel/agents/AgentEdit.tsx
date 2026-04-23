@@ -2,19 +2,19 @@ import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } 
 import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
-
-import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
+
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
@@ -27,7 +27,6 @@ type AgentEditFormData = {
 	departments: { label: string; value: string }[];
 	status: ILivechatAgentStatus;
 	maxNumberSimultaneousChat: number;
-	voipExtension: string;
 };
 
 type AgentEditProps = {
@@ -40,7 +39,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const voipEnabled = useSetting('VoIP_Enabled');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { name, username, livechat, statusLivechat } = agentData;
@@ -68,7 +66,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 			departments: initialDepartmentValue,
 			status: statusLivechat,
 			maxNumberSimultaneousChat: livechat?.maxNumberSimultaneousChat || 0,
-			voipExtension: '',
 		},
 	});
 
@@ -106,7 +103,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const emailField = useId();
 	const departmentsFieldId = useId();
 	const statusField = useId();
-	const voipExtensionField = useId();
 
 	return (
 		<>
@@ -126,11 +122,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 							<Field>
 								<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
 								<FieldRow>
-									<Controller
-										name='name'
-										control={control}
-										render={({ field }) => <TextInput id={nameField} data-qa-id='agent-edit-name' {...field} readOnly />}
-									/>
+									<Controller name='name' control={control} render={({ field }) => <TextInput id={nameField} {...field} readOnly />} />
 								</FieldRow>
 							</Field>
 							<Field>
@@ -172,30 +164,12 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 										name='status'
 										control={control}
 										render={({ field }) => (
-											<Select
-												id={statusField}
-												data-qa-id='agent-edit-status'
-												{...field}
-												options={statusOptions}
-												placeholder={t('Select_an_option')}
-											/>
+											<Select id={statusField} {...field} options={statusOptions} placeholder={t('Select_an_option')} />
 										)}
 									/>
 								</FieldRow>
 							</Field>
 							{MaxChatsPerAgent && <MaxChatsPerAgent />}
-							{voipEnabled && (
-								<Field>
-									<FieldLabel htmlFor={voipExtensionField}>{t('VoIP_Extension')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='voipExtension'
-											control={control}
-											render={({ field }) => <TextInput id={voipExtensionField} {...field} />}
-										/>
-									</FieldRow>
-								</Field>
-							)}
 						</FieldGroup>
 					</form>
 				</FormProvider>
@@ -205,7 +179,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 					<Button type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} primary type='submit' data-qa-id='agent-edit-save' disabled={!isDirty}>
+					<Button form={formId} primary type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

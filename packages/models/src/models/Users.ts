@@ -26,37 +26,12 @@ import type {
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
+	AnyBulkWriteOperation,
 } from 'mongodb';
 
 import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
-
-const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
-	statusLivechat: 'available',
-	roles: 'livechat-agent',
-	// ignore deactivated users
-	active: true,
-	...(!isLivechatEnabledWhenAgentIdle && {
-		$or: [
-			{
-				status: {
-					$exists: true,
-					$ne: UserStatus.OFFLINE,
-				},
-				roles: {
-					$ne: 'bot',
-				},
-			},
-			{
-				roles: 'bot',
-			},
-		],
-	}),
-	...extraFilters,
-	...(isLivechatEnabledWhenAgentIdle === false && {
-		statusConnection: { $ne: 'away' },
-	}),
-});
+import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -72,7 +47,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// Move index from constructor to here
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { __rooms: 1 }, sparse: true },
 			{ key: { roles: 1 }, sparse: true },
@@ -92,7 +67,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { 'services.saml.inResponseTo': 1 } },
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
-			{ key: { extension: 1 }, sparse: true, unique: true },
 			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
@@ -127,6 +101,50 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
 		];
+	}
+
+	findUsersByIdentifiers(
+		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options: FindOptions<IUser> = {},
+	): FindCursor<IUser> {
+		const normalizedIds = (ids ?? []).filter(Boolean);
+		const normalizedUsernames = (usernames ?? []).filter(Boolean);
+		const normalizedEmails = (emails ?? []).map((e) => String(e).trim()).filter(Boolean);
+		const normalizedLdapIds = (ldapIds ?? []).filter(Boolean);
+
+		const or: Filter<IUser>[] = [];
+
+		if (normalizedIds.length) {
+			or.push({ _id: { $in: normalizedIds } });
+		}
+		if (normalizedUsernames.length) {
+			or.push({ username: { $in: normalizedUsernames } });
+		}
+		if (normalizedEmails.length) {
+			or.push({ 'emails.address': { $in: normalizedEmails } });
+		}
+		if (normalizedLdapIds.length) {
+			or.push({ 'services.ldap.id': { $in: normalizedLdapIds } });
+		}
+
+		const query: Filter<IUser> = {
+			active: true,
+			$or: or,
+		};
+
+		return this.find(query, options);
+	}
+
+	setAbacAttributesById(_id: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>) {
+		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
+	}
+
+	unsetAbacAttributesById(_id: IUser['_id']) {
+		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
+	}
+
+	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>) {
+		return this.find({ active: true, __rooms: { $in: roomIds } }, options);
 	}
 
 	/**
@@ -537,19 +555,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<Pick<IUser, 'roles' | '_id'>>(query, { projection: { roles: 1 } });
 	}
 
-	getDistinctFederationDomains() {
-		return this.col.distinct('federation.origin', { federation: { $exists: true } });
-	}
-
 	async getNextLeastBusyAgent(
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }> {
-		const match = queryStatusAgentOnline(
+		const match = queryAvailableAgentsForSelection(
 			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
 			isEnabledWhenAgentIdle,
+			acceptChatsWithNoAgents,
 		);
 
 		const departmentFilter = department
@@ -627,10 +643,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }> {
-		const match = queryStatusAgentOnline(
+		const match = queryAvailableAgentsForSelection(
 			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
 			isEnabledWhenAgentIdle,
+			acceptChatsWithNoAgents,
 		);
 		const departmentFilter = department
 			? [
@@ -786,6 +804,41 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			}>(aggregate)
 			.toArray();
 		return agent;
+	}
+
+	async acquireAgentLock(agentId: IUser['_id'], lockTime: Date, lockTimeoutMs = 5000): Promise<boolean> {
+		const result = await this.updateOne(
+			{
+				_id: agentId,
+				$or: [{ agentLocked: { $exists: false } }, { agentLockedAt: { $lt: new Date(Date.now() - lockTimeoutMs) } }],
+			},
+			{
+				$set: {
+					agentLocked: true,
+					agentLockedAt: lockTime,
+				},
+			},
+		);
+
+		return result.modifiedCount > 0;
+	}
+
+	async releaseAgentLock(agentId: IUser['_id'], lockTime: Date): Promise<boolean> {
+		const result = await this.updateOne(
+			{
+				_id: agentId,
+				agentLocked: true,
+				agentLockedAt: lockTime,
+			},
+			{
+				$unset: {
+					agentLocked: 1,
+					agentLockedAt: 1,
+				},
+			},
+		);
+
+		return result.modifiedCount > 0;
 	}
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]> {
@@ -1436,78 +1489,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	// Voip functions
-	findOneByAgentUsername(username: string, options?: FindOptions<IUser>) {
-		const query = { username, roles: 'livechat-agent' };
-
-		return this.findOne(query, options);
-	}
-
-	findOneByExtension(extension: string, options?: FindOptions<IUser>) {
-		const query = {
-			extension,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findByExtensions(extensions: string[], options?: FindOptions<IUser>) {
-		const query = {
-			extension: {
-				$in: extensions,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	getVoipExtensionByUserId(userId: IUser['_id'], options?: FindOptions<IUser>) {
-		const query = {
-			_id: userId,
-			extension: { $exists: true },
-		};
-		return this.findOne(query, options);
-	}
-
-	setExtension(userId: IUser['_id'], extension: string) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				extension,
-			},
-		};
-		return this.updateOne(query, update);
-	}
-
-	unsetExtension(userId: IUser['_id']) {
-		const query = {
-			_id: userId,
-		};
-		const update = {
-			$unset: {
-				extension: 1 as const,
-			},
-		};
-		return this.updateOne(query, update);
-	}
-
-	getAvailableAgentsIncludingExt<T extends Document = ILivechatAgent>(includeExt?: string, text?: string, options?: FindOptions<IUser>) {
-		const query = {
-			roles: { $in: ['livechat-agent'] },
-			$and: [
-				...(text?.trim()
-					? [{ $or: [{ username: new RegExp(escapeRegExp(text), 'i') }, { name: new RegExp(escapeRegExp(text), 'i') }] }]
-					: []),
-				{ $or: [{ extension: { $exists: false } }, ...(includeExt ? [{ extension: includeExt }] : [])] },
-			],
-		};
-
-		return this.findPaginated<T>(query, options);
-	}
-
 	findActiveUsersTOTPEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
@@ -1643,13 +1624,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		});
 	}
 
-	findOnlineUserFromList<T extends Document = ILivechatAgent>(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean) {
+	findOnlineUserFromList<T extends Document = ILivechatAgent>(
+		userList: string | string[],
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
+	) {
 		// TODO: Create class Agent
 		const username = {
 			$in: ([] as string[]).concat(userList),
 		};
 
-		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return this.find<T>(query);
 	}
@@ -1665,13 +1650,18 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query);
 	}
 
-	findOneOnlineAgentByUserList(userList: string | string[], options?: FindOptions<IUser>, isLivechatEnabledWhenAgentIdle?: boolean) {
+	findOneOnlineAgentByUserList(
+		userList: string | string[],
+		options?: FindOptions<IUser>,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
+	) {
 		// TODO:: Create class Agent
 		const username = {
 			$in: ([] as string[]).concat(userList),
 		};
 
-		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return this.findOne(query, options);
 	}
@@ -1679,6 +1669,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	async getUnavailableAgents(
 		_departmentId?: string,
 		_extraQuery?: Filter<AvailableAgentsAggregation>,
+		_isLivechatEnabledWhenAgentIdle?: boolean,
+		_acceptChatsWithNoAgent?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		return [];
 	}
@@ -1887,16 +1879,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query);
 	}
 
-	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
+	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean, acceptChatsWithNoAgents?: boolean) {
 		// TODO:: Create class Agent
-		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle);
+		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return !!(await this.findOne(query));
 	}
 
-	findOnlineAgents<T extends Document = ILivechatAgent>(agentId?: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
+	findOnlineAgents<T extends Document = ILivechatAgent>(
+		agentId?: IUser['_id'],
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
+	) {
 		// TODO:: Create class Agent
-		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle);
+		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return this.find<T>(query);
 	}
@@ -1922,10 +1918,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	findOneOnlineAgentById<T extends Document = ILivechatAgent>(
 		_id: IUser['_id'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
 		options?: FindOptions<IUser>,
 	) {
 		// TODO: Create class Agent
-		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
+		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return this.findOne<T>(query, options);
 	}
@@ -1949,17 +1946,24 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// 2
-	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<AvailableAgentsAggregation>, enabledWhenAgentIdle?: boolean) {
+	async getNextAgent(
+		ignoreAgentId?: string,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
+		enabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
+	) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery)).map((u) => u.username);
+		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery, enabledWhenAgentIdle, acceptChatsWithNoAgents)).map(
+			(u) => u.username,
+		);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
 			username: { $nin: unavailableAgents },
 		};
 
-		const query = queryStatusAgentOnline(extraFilters, enabledWhenAgentIdle);
+		const query = queryAvailableAgentsForSelection(extraFilters, enabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		const sort: Record<string, SortDirection> = {
 			livechatCount: 1,
@@ -2028,7 +2032,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	makeAgentUnavailableAndUnsetExtension(userId: IUser['_id']) {
+	makeAgentUnavailable(userId: IUser['_id']) {
 		const query = {
 			_id: userId,
 			roles: 'livechat-agent',
@@ -2037,9 +2041,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
-			},
-			$unset: {
-				extension: 1 as const,
 			},
 		};
 
@@ -2404,7 +2405,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
+	override findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
@@ -2764,34 +2765,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByFreeSwitchExtensions<T extends Document = IUser>(freeSwitchExtensions: string[], options: FindOptions<IUser> = {}) {
-		return this.findOne<T>(
-			{
-				freeSwitchExtension: { $in: freeSwitchExtensions },
-			},
-			options,
-		);
-	}
-
-	findAssignedFreeSwitchExtensions() {
-		return this.findUsersWithAssignedFreeSwitchExtensions({
-			projection: {
-				freeSwitchExtension: 1,
-			},
-		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
-	}
-
-	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options: FindOptions<IUser> = {}) {
-		return this.find<T>(
-			{
-				freeSwitchExtension: {
-					$exists: true,
-				},
-			},
-			options,
-		);
-	}
-
 	// UPDATE
 	addImportIds(_id: IUser['_id'], importIds: string[]) {
 		importIds = ([] as string[]).concat(importIds);
@@ -2954,20 +2927,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				active,
+				...(!active && { inactiveReason: 'deactivated' as const }),
 			},
+			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateOne({ _id }, update);
-	}
-
-	setAllUsersActive(active: boolean) {
-		const update = {
-			$set: {
-				active,
-			},
-		};
-
-		return this.updateMany({}, update);
 	}
 
 	/**
@@ -2988,7 +2953,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				active,
+				...(!active && { inactiveReason: 'idle_too_long' as const }),
 			},
+			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateMany(query, update);
@@ -3185,6 +3152,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	async setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]) {
+		const ops: AnyBulkWriteOperation<IUser>[] = updates.map(({ userId, banners }) => ({
+			updateOne: {
+				filter: { _id: userId },
+				update: { $set: { banners } },
+			},
+		}));
+
+		return this.col.bulkWrite(ops);
+	}
+
 	removeSamlServiceSession(_id: IUser['_id']) {
 		const update = {
 			$unset: {
@@ -3222,17 +3200,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	async setFreeSwitchExtension(_id: IUser['_id'], extension?: string) {
-		return this.updateOne(
-			{
-				_id,
-			},
-			{
-				...(extension ? { $set: { freeSwitchExtension: extension } } : { $unset: { freeSwitchExtension: 1 } }),
-			},
-		);
-	}
-
 	// INSERT
 	create(data: InsertionModel<IUser>) {
 		const user = {
@@ -3246,7 +3213,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// REMOVE
-	removeById(_id: IUser['_id']) {
+	override removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
 	}
 
@@ -3390,7 +3357,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			$unset: {
 				livechat: 1,
 				statusLivechat: 1,
-				extension: 1,
 				openBusinessHours: 1,
 			},
 		};

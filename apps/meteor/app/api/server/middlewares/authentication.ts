@@ -27,7 +27,10 @@ export function authenticationMiddleware(
 		if (userId && authToken) {
 			req.user = (await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string))) || undefined;
 		} else {
-			req.user = (await oAuth2ServerAuth(req))?.user;
+			const { authorization } = req.headers;
+			const accessToken = typeof req.query.access_token === 'string' ? req.query.access_token : undefined;
+			delete req.query.access_token;
+			req.user = await oAuth2ServerAuth({ authorization, accessToken });
 		}
 
 		if (config.rejectUnauthorized && !req.user) {

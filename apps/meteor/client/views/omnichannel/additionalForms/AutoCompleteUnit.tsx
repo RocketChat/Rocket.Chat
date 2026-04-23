@@ -43,7 +43,7 @@ const AutoCompleteUnit = ({
 	return (
 		<PaginatedSelectFiltered
 			id={id}
-			data-qa='autocomplete-unit'
+			aria-label={t('Unit')} // FIXME: remove this when PaginatedSelectFiltered properly associates the input with the label htmlFor
 			error={error}
 			filter={unitsFilter}
 			flexGrow={0}

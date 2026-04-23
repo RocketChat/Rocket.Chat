@@ -10,7 +10,7 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [(storyFn) => <PopoverContainer children={storyFn()} />],
+	decorators: [(storyFn) => <PopoverContainer>{storyFn()}</PopoverContainer>],
 } satisfies Meta<ComponentProps<typeof MessageBlocks>>;
 
 export const WithBlocks: StoryFn<ComponentProps<typeof MessageBlocks>> = () => (
