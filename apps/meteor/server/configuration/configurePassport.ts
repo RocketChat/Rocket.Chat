@@ -36,7 +36,6 @@ oAuthRouter.use(flash());
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
-		console.log('serializeUser', user);
 		done(null, user);
 	});
 
