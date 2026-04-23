@@ -1,4 +1,4 @@
-import type { Root, Paragraph, Blocks, Inlines, Plain } from '../definitions';
+import type { Root, Paragraph, Blocks, Inlines, Plain, Emoji } from '../definitions';
 import type { Token } from '../lexer';
 import { TokenKind } from '../lexer';
 import { TokenStream } from './TokenStream';
@@ -18,32 +18,20 @@ import {
 	unorderedList,
 	listItem,
 	emoji,
+	emojiUnicode,
+	bigEmoji,
+	katex,
+	inlineKatex,
+	spoilerBlock,
 	tasks,
 	task,
 	mentionUser,
 	link,
 } from '../utils';
 
-/**
- * Maximum recursion depth to prevent stack overflow on crafted input.
- * This complements the lexer's MAX_TOKENS cap.
- */
+// Safety guard against runaway recursion.
 const MAX_DEPTH = 100;
 
-/**
- * Recursive-descent parser that consumes a flat `Token[]` stream (produced by
- * the handwritten lexer) and builds the same `Root` AST that the legacy PEG
- * parser produces.
- *
- * ### Design notes
- * - The parser is stateless across calls — each `parse()` invocation creates
- *   a fresh `TokenStream` and produces a new `Root`.
- * - Block-level rules are tried first at each line boundary; if none match,
- *   the line is wrapped in a `Paragraph`.
- * - Inline parsing is handled by `parseInlines()`, which delegates to
- *   specialised methods for emphasis, links, code spans, etc. (added in
- *   later phases).
- */
 export class Parser {
 	private readonly _stream: TokenStream;
 	private readonly _options: ParserOptions;
@@ -54,17 +42,14 @@ export class Parser {
 		this._options = options;
 	}
 
-	// ── public API ───────────────────────────────────────────────────────
-
-	/**
-	 * Parses the full token stream and returns the `Root` AST.
-	 *
-	 * The top-level loop alternates between:
-	 * 1. Trying block-level constructs (heading, code fence, blockquote, list, etc.)
-	 * 2. Falling back to paragraph parsing for inline content
-	 */
 	parse(): Root {
 		void this._options;
+
+		const bigEmojiRoot = this._tryParseBigEmojiRoot();
+		if (bigEmojiRoot !== null) {
+			return bigEmojiRoot;
+		}
+
 		const blocks: Array<Paragraph | Blocks> = [];
 
 		while (!this._stream.isEOF()) {
@@ -84,6 +69,12 @@ export class Parser {
 					continue;
 				}
 
+				const previous = blocks[blocks.length - 1];
+				if (previous?.type === 'SPOILER_BLOCK' && newlineCount === 1) {
+					blocks.push(lineBreak());
+					continue;
+				}
+
 				// Between blocks, N newlines become N-1 LINE_BREAK nodes.
 				for (let index = 1; index < newlineCount; index++) {
 					blocks.push(lineBreak());
@@ -92,18 +83,17 @@ export class Parser {
 				continue;
 			}
 
-			// Try block-level rules (Phase 2 will populate this).
+			// Block first, paragraph fallback second.
 			const block = this._tryBlock();
 			if (block !== null) {
 				blocks.push(block);
 				continue;
 			}
 
-			// Fallback: parse a paragraph.
 			blocks.push(this.parseParagraph());
 		}
 
-		// Empty input → single paragraph with empty plain text.
+		// Keep behavior consistent with the legacy parser for empty input.
 		if (blocks.length === 0) {
 			blocks.push(paragraph([plain('')]));
 		}
@@ -111,15 +101,6 @@ export class Parser {
 		return blocks as Root;
 	}
 
-	// ── block-level rules ────────────────────────────────────────────────
-
-	/**
-	 * Attempts to parse a block-level construct at the current stream
-	 * position. Returns `null` if no block rule matches.
-	 *
-	 * Stub — Phase 2 will add heading, code fence, blockquote, list,
-	 * task list, KaTeX block, and spoiler block rules here.
-	 */
 	private _tryBlock(): Blocks | null {
 		if (!this._stream.isLineStart()) {
 			return null;
@@ -127,6 +108,14 @@ export class Parser {
 
 		if (this._stream.at(TokenKind.TRIPLE_BACKTICK)) {
 			return this._parseCodeFence();
+		}
+
+		if (this._stream.at(TokenKind.KATEX_BLOCK_START)) {
+			return this._parseKatexBlock();
+		}
+
+		if (this._stream.at(TokenKind.BLOCK_SPOILER_FENCE)) {
+			return this._parseSpoilerBlock();
 		}
 
 		if (this._stream.at(TokenKind.BLOCKQUOTE_MARKER)) {
@@ -155,7 +144,6 @@ export class Parser {
 	private _parseHeading(): Blocks {
 		const marker = this._stream.expect(TokenKind.HEADING_MARKER);
 
-		// Lexer guarantees heading marker is followed by one space/tab delimiter.
 		if (this._stream.at(TokenKind.WHITESPACE)) {
 			this._stream.advance();
 		}
@@ -167,7 +155,7 @@ export class Parser {
 
 	private _parseCodeFence(): Blocks | null {
 		const start = this._stream.mark();
-		this._stream.advance(); // opening TRIPLE_BACKTICK
+		this._stream.advance();
 
 		if (!this._stream.at(TokenKind.CODE_CONTENT)) {
 			this._stream.reset(start);
@@ -197,6 +185,51 @@ export class Parser {
 		}
 
 		return code(lines, language);
+	}
+
+	private _parseKatexBlock(): Blocks {
+		this._stream.advance();
+		let content = '';
+
+		while (!this._stream.isEOF() && !this._stream.at(TokenKind.KATEX_BLOCK_END)) {
+			content += this._stream.advance().raw;
+		}
+
+		if (this._stream.at(TokenKind.KATEX_BLOCK_END)) {
+			this._stream.advance();
+		}
+
+		return katex(content);
+	}
+
+	private _parseSpoilerBlock(): Blocks {
+		this._stream.advance();
+
+		if (this._stream.at(TokenKind.NEWLINE)) {
+			this._stream.advance();
+		}
+
+		const paragraphs: Paragraph[] = [];
+
+		while (!this._stream.isEOF()) {
+			if (this._stream.isLineStart() && this._stream.at(TokenKind.BLOCK_SPOILER_FENCE)) {
+				this._stream.advance();
+				break;
+			}
+
+			const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
+			paragraphs.push(paragraph(inlines.length > 0 ? reducePlainTexts(inlines) : [plain('')]));
+
+			if (this._stream.at(TokenKind.NEWLINE)) {
+				this._stream.advance();
+			}
+		}
+
+		if (paragraphs.length === 0) {
+			paragraphs.push(paragraph([plain('')]));
+		}
+
+		return spoilerBlock(paragraphs);
 	}
 
 	private _parseBlockquote(): Blocks {
@@ -289,14 +322,6 @@ export class Parser {
 		return tasks(items);
 	}
 
-	// ── paragraph ────────────────────────────────────────────────────────
-
-	/**
-	 * Parses a single paragraph: collects inline content up to the next
-	 * double-newline, EOF, or block-level token at line-start.
-	 *
-	 * Line breaks within a paragraph produce `LineBreak` nodes.
-	 */
 	private parseParagraph(): Paragraph {
 		const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
 
@@ -307,15 +332,6 @@ export class Parser {
 		return paragraph(reducePlainTexts(inlines));
 	}
 
-	// ── inline parsing ───────────────────────────────────────────────────
-
-	/**
-	 * Parses a single inline element from the current position.
-	 *
-	 * Stub — currently only handles `TEXT`, `WHITESPACE`, and `ESCAPED`
-	 * tokens as plain text. Phases 3–4 will add emphasis, links, code
-	 * spans, emoji, mentions, timestamps, colors, and KaTeX.
-	 */
 	private parseInlines(stopKinds: ReadonlySet<TokenKind>): Inlines[] {
 		const inlines: Inlines[] = [];
 
@@ -327,6 +343,18 @@ export class Parser {
 			}
 
 			switch (token.kind) {
+				case TokenKind.KATEX_INLINE_START: {
+					const parsedInlineKatex = this._parseInlineKatex(stopKinds);
+					if (parsedInlineKatex !== null) {
+						inlines.push(parsedInlineKatex);
+						break;
+					}
+
+					this._stream.advance();
+					inlines.push(plain(token.raw));
+					break;
+				}
+
 				case TokenKind.ASTERISK: {
 					const parsedBold = this._parseAsteriskBold(stopKinds);
 					if (parsedBold !== null) {
@@ -373,14 +401,85 @@ export class Parser {
 					inlines.push(emoji(token.value));
 					break;
 
+				case TokenKind.EMOJI_UNICODE:
+					this._stream.advance();
+					inlines.push(emojiUnicode(token.value));
+					break;
+
 				default:
-					// Preserve forward progress until richer inline handlers land.
 					this._stream.advance();
 					inlines.push(plain(token.raw));
 			}
 		}
 
 		return inlines;
+	}
+
+	private _tryParseBigEmojiRoot(): Root | null {
+		const start = this._stream.mark();
+		const emojis: Emoji[] = [];
+
+		while (!this._stream.isEOF()) {
+			const token = this._stream.peek();
+
+			switch (token.kind) {
+				case TokenKind.EMOJI_SHORTCODE:
+					this._stream.advance();
+					emojis.push(emoji(token.value));
+					break;
+
+				case TokenKind.EMOJI_UNICODE:
+					this._stream.advance();
+					emojis.push(emojiUnicode(token.value));
+					break;
+
+				case TokenKind.WHITESPACE:
+				case TokenKind.NEWLINE:
+					this._stream.advance();
+					break;
+
+				default:
+					this._stream.reset(start);
+					return null;
+			}
+		}
+
+		if (emojis.length >= 1 && emojis.length <= 3) {
+			return [bigEmoji(emojis as [Emoji] | [Emoji, Emoji] | [Emoji, Emoji, Emoji])];
+		}
+
+		this._stream.reset(start);
+		return null;
+	}
+
+	private _parseInlineKatex(stopKinds: ReadonlySet<TokenKind>): Inlines | null {
+		const start = this._stream.mark();
+
+		if (!this._stream.at(TokenKind.KATEX_INLINE_START)) {
+			return null;
+		}
+
+		this._stream.advance();
+		let content = '';
+
+		while (!this._stream.isEOF()) {
+			const token = this._stream.peek();
+
+			if (token.kind === TokenKind.KATEX_INLINE_END) {
+				this._stream.advance();
+				return inlineKatex(content);
+			}
+
+			if (stopKinds.has(token.kind)) {
+				this._stream.reset(start);
+				return null;
+			}
+
+			content += this._stream.advance().raw;
+		}
+
+		this._stream.reset(start);
+		return null;
 	}
 
 	private _parseAsteriskBold(stopKinds: ReadonlySet<TokenKind>): Inlines | null {
@@ -498,8 +597,6 @@ export class Parser {
 		return link(href, (reduced.length > 0 ? reduced : [plain('')]) as any);
 	}
 
-	// ── helpers ──────────────────────────────────────────────────────────
-
 	private _consumeNewlines(): number {
 		let count = 0;
 
@@ -537,17 +634,11 @@ export class Parser {
 		return reducePlainTexts(chunks) as Plain[];
 	}
 
-	/**
-	 * Guards against runaway recursion by incrementing a depth counter.
-	 * Must be paired with `_leaveRecursion()`.
-	 * @returns `true` if the recursion limit has been exceeded.
-	 */
 	protected _enterRecursion(): boolean {
 		this._depth++;
 		return this._depth > MAX_DEPTH;
 	}
 
-	/** Decrements the recursion depth counter. */
 	protected _leaveRecursion(): void {
 		this._depth--;
 	}
