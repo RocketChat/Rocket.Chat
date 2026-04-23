@@ -3,7 +3,26 @@ import type { Token } from '../lexer';
 import { TokenKind } from '../lexer';
 import { TokenStream } from './TokenStream';
 import type { ParserOptions } from './ParserOptions';
-import { paragraph, plain, lineBreak, reducePlainTexts, heading, mentionChannel, code, codeLine } from '../utils';
+import {
+	paragraph,
+	plain,
+	lineBreak,
+	reducePlainTexts,
+	heading,
+	mentionChannel,
+	code,
+	codeLine,
+	quote,
+	bold,
+	orderedList,
+	unorderedList,
+	listItem,
+	emoji,
+	tasks,
+	task,
+	mentionUser,
+	link,
+} from '../utils';
 
 /**
  * Maximum recursion depth to prevent stack overflow on crafted input.
@@ -110,6 +129,22 @@ export class Parser {
 			return this._parseCodeFence();
 		}
 
+		if (this._stream.at(TokenKind.BLOCKQUOTE_MARKER)) {
+			return this._parseBlockquote();
+		}
+
+		if (this._stream.at(TokenKind.OL_BULLET)) {
+			return this._parseOrderedList();
+		}
+
+		if (this._stream.at(TokenKind.TASK_BULLET)) {
+			return this._parseTasks();
+		}
+
+		if (this._stream.at(TokenKind.UL_BULLET)) {
+			return this._parseUnorderedList();
+		}
+
 		if (this._stream.at(TokenKind.HEADING_MARKER)) {
 			return this._parseHeading();
 		}
@@ -164,6 +199,96 @@ export class Parser {
 		return code(lines, language);
 	}
 
+	private _parseBlockquote(): Blocks {
+		const paragraphs: Paragraph[] = [];
+
+		while (this._stream.isLineStart() && this._stream.at(TokenKind.BLOCKQUOTE_MARKER)) {
+			this._stream.advance();
+
+			if (this._stream.at(TokenKind.WHITESPACE)) {
+				this._stream.advance();
+			}
+
+			const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
+			paragraphs.push(paragraph(inlines.length > 0 ? reducePlainTexts(inlines) : [plain('')]));
+
+			if (this._stream.at(TokenKind.NEWLINE)) {
+				this._stream.advance();
+			}
+		}
+
+		return quote(paragraphs);
+	}
+
+	private _parseOrderedList(): Blocks {
+		const items = [] as ReturnType<typeof listItem>[];
+
+		while (this._stream.isLineStart() && this._stream.at(TokenKind.OL_BULLET)) {
+			const bullet = this._stream.advance();
+			const number = Number.parseInt(bullet.value, 10);
+			const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
+			items.push(listItem(inlines.length > 0 ? reducePlainTexts(inlines) : [plain('')], number));
+
+			const newlineMark = this._stream.mark();
+			if (this._stream.at(TokenKind.NEWLINE)) {
+				this._stream.advance();
+			}
+
+			if (!(this._stream.isLineStart() && this._stream.at(TokenKind.OL_BULLET))) {
+				this._stream.reset(newlineMark);
+				break;
+			}
+		}
+
+		return orderedList(items);
+	}
+
+	private _parseUnorderedList(): Blocks {
+		const items = [] as ReturnType<typeof listItem>[];
+		const marker = this._stream.peek().value;
+
+		while (this._stream.isLineStart() && this._stream.at(TokenKind.UL_BULLET) && this._stream.peek().value === marker) {
+			this._stream.advance();
+			const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
+			items.push(listItem(inlines.length > 0 ? reducePlainTexts(inlines) : [plain('')]));
+
+			const newlineMark = this._stream.mark();
+			if (this._stream.at(TokenKind.NEWLINE)) {
+				this._stream.advance();
+			}
+
+			if (!(this._stream.isLineStart() && this._stream.at(TokenKind.UL_BULLET) && this._stream.peek().value === marker)) {
+				this._stream.reset(newlineMark);
+				break;
+			}
+		}
+
+		return unorderedList(items);
+	}
+
+	private _parseTasks(): Blocks {
+		const items = [] as ReturnType<typeof task>[];
+
+		while (this._stream.isLineStart() && this._stream.at(TokenKind.TASK_BULLET)) {
+			const bullet = this._stream.advance();
+			const checked = bullet.value === 'x';
+			const inlines = this.parseInlines(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
+			items.push(task(inlines.length > 0 ? reducePlainTexts(inlines) : [plain('')], checked));
+
+			const newlineMark = this._stream.mark();
+			if (this._stream.at(TokenKind.NEWLINE)) {
+				this._stream.advance();
+			}
+
+			if (!(this._stream.isLineStart() && this._stream.at(TokenKind.TASK_BULLET))) {
+				this._stream.reset(newlineMark);
+				break;
+			}
+		}
+
+		return tasks(items);
+	}
+
 	// ── paragraph ────────────────────────────────────────────────────────
 
 	/**
@@ -202,6 +327,18 @@ export class Parser {
 			}
 
 			switch (token.kind) {
+				case TokenKind.ASTERISK: {
+					const parsedBold = this._parseAsteriskBold(stopKinds);
+					if (parsedBold !== null) {
+						inlines.push(parsedBold);
+						break;
+					}
+
+					this._stream.advance();
+					inlines.push(plain(token.raw));
+					break;
+				}
+
 				case TokenKind.TEXT:
 				case TokenKind.WHITESPACE:
 				case TokenKind.ESCAPED:
@@ -214,6 +351,28 @@ export class Parser {
 					inlines.push(mentionChannel(token.value));
 					break;
 
+				case TokenKind.MENTION_USER:
+					this._stream.advance();
+					inlines.push(mentionUser(token.value));
+					break;
+
+				case TokenKind.LINK_OPEN: {
+					const parsedLink = this._parseMarkdownLink(stopKinds);
+					if (parsedLink !== null) {
+						inlines.push(parsedLink);
+						break;
+					}
+
+					this._stream.advance();
+					inlines.push(plain(token.raw));
+					break;
+				}
+
+				case TokenKind.EMOJI_SHORTCODE:
+					this._stream.advance();
+					inlines.push(emoji(token.value));
+					break;
+
 				default:
 					// Preserve forward progress until richer inline handlers land.
 					this._stream.advance();
@@ -222,6 +381,121 @@ export class Parser {
 		}
 
 		return inlines;
+	}
+
+	private _parseAsteriskBold(stopKinds: ReadonlySet<TokenKind>): Inlines | null {
+		const start = this._stream.mark();
+		const opener = this._stream.peek();
+
+		if (opener.kind !== TokenKind.ASTERISK || (opener.value !== '*' && opener.value !== '**')) {
+			return null;
+		}
+
+		const delimiter = opener.value;
+
+		this._stream.advance();
+		const content: Inlines[] = [];
+
+		while (!this._stream.isEOF()) {
+			const token = this._stream.peek();
+
+			if (stopKinds.has(token.kind)) {
+				this._stream.reset(start);
+				return null;
+			}
+
+			if (token.kind === TokenKind.ASTERISK && token.value === delimiter) {
+				this._stream.advance();
+				const reduced = reducePlainTexts(content);
+				return bold((reduced.length > 0 ? reduced : [plain('')]) as any);
+			}
+
+			this._stream.advance();
+			switch (token.kind) {
+				case TokenKind.TEXT:
+				case TokenKind.WHITESPACE:
+				case TokenKind.ESCAPED:
+					content.push(plain(token.value));
+					break;
+				case TokenKind.MENTION_CHANNEL:
+					content.push(mentionChannel(token.value));
+					break;
+				default:
+					content.push(plain(token.raw));
+			}
+		}
+
+		this._stream.reset(start);
+		return null;
+	}
+
+	private _parseMarkdownLink(stopKinds: ReadonlySet<TokenKind>): Inlines | null {
+		const start = this._stream.mark();
+
+		if (!this._stream.at(TokenKind.LINK_OPEN)) {
+			return null;
+		}
+
+		this._stream.advance();
+		const label: Inlines[] = [];
+
+		while (!this._stream.isEOF() && !this._stream.at(TokenKind.LINK_HREF_OPEN)) {
+			const token = this._stream.peek();
+
+			if (stopKinds.has(token.kind)) {
+				this._stream.reset(start);
+				return null;
+			}
+
+			this._stream.advance();
+			switch (token.kind) {
+				case TokenKind.TEXT:
+				case TokenKind.WHITESPACE:
+				case TokenKind.ESCAPED:
+					label.push(plain(token.value));
+					break;
+				case TokenKind.MENTION_CHANNEL:
+					label.push(mentionChannel(token.value));
+					break;
+				case TokenKind.MENTION_USER:
+					label.push(mentionUser(token.value));
+					break;
+				case TokenKind.EMOJI_SHORTCODE:
+					label.push(emoji(token.value));
+					break;
+				default:
+					label.push(plain(token.raw));
+			}
+		}
+
+		if (!this._stream.at(TokenKind.LINK_HREF_OPEN)) {
+			this._stream.reset(start);
+			return null;
+		}
+
+		this._stream.advance();
+		let href = '';
+
+		while (!this._stream.isEOF() && !this._stream.at(TokenKind.LINK_HREF_CLOSE)) {
+			const token = this._stream.peek();
+
+			if (stopKinds.has(token.kind)) {
+				this._stream.reset(start);
+				return null;
+			}
+
+			this._stream.advance();
+			href += token.value;
+		}
+
+		if (!this._stream.at(TokenKind.LINK_HREF_CLOSE)) {
+			this._stream.reset(start);
+			return null;
+		}
+
+		this._stream.advance();
+		const reduced = reducePlainTexts(label);
+		return link(href, (reduced.length > 0 ? reduced : [plain('')]) as any);
 	}
 
 	// ── helpers ──────────────────────────────────────────────────────────
