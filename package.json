@@ -75,7 +75,9 @@
 		"zod@npm:~4.3.6": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch",
 		"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch",
 		"@react-aria/i18n@npm:^3.12.5": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch",
-		"@react-aria/toolbar@npm:^3.0.0-nightly.5042": "3.0.0-nightly-fb28ab3b4-241024"
+		"@react-aria/toolbar@npm:^3.0.0-nightly.5042": "3.0.0-nightly-fb28ab3b4-241024",
+		"xml-crypto/@xmldom/xmldom": "0.8.13",
+		"xml-encryption/@xmldom/xmldom": "0.8.13"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
