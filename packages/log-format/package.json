@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/log-format",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -20,7 +20,7 @@
 	"devDependencies": {
 		"@types/chalk": "^2.2.4",
 		"@types/ejson": "^2.2.2",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

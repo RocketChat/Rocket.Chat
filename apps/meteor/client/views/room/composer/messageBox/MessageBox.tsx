@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -21,11 +21,13 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
+import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -45,7 +47,6 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -142,7 +143,8 @@ const MessageBox = ({
 		[chat, storageID, quoteChainLimit, room._id, tmid],
 	);
 
-	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
+	const isTouchDevice = useMediaQuery('(pointer: coarse)');
+	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -378,6 +380,20 @@ const MessageBox = ({
 		),
 	);
 
+	const beforeInputHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
+				node.addEventListener('beforeinput', eventHandler);
+
+				return () => {
+					node.removeEventListener('beforeinput', eventHandler);
+				};
+			},
+			[chat],
+		),
+	);
+
 	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		textareaRef,
@@ -385,6 +401,7 @@ const MessageBox = ({
 		callbackRef,
 		autofocusRef,
 		keyDownHandlerCallbackRef,
+		beforeInputHandlerCallbackRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);

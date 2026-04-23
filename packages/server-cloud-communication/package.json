@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/server-cloud-communication",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
@@ -14,7 +14,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

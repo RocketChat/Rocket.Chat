@@ -6,7 +6,7 @@ jobs:
   new-release:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -15,13 +15,11 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 22.16.0
-          deno-version: 1.43.5
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
 
       - name: Build packages
         run: yarn build

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/server-fetch",
-	"version": "0.1.1",
+	"version": "0.1.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -20,15 +20,16 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"@types/proxy-from-env": "^1.0.4",
+		"abort-controller": "^3.0.0",
 		"http-proxy-agent": "^7.0.2",
 		"https-proxy-agent": "^7.0.6",
 		"node-fetch": "2.7.0",
 		"proxy-from-env": "^1.1.0"
 	},
 	"devDependencies": {
-		"@types/jest": "^29.5.5",
+		"@types/jest": "^29.5.14",
 		"@types/node-fetch": "~2.6.13",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"jest": "^29.7.0",
 		"typescript": "~5.9.3"
 	},

@@ -1,16 +1,34 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	TextInput,
+	Button,
+	NumberInput,
+	ButtonGroup,
+	ContextualbarFooter,
+} from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
+
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 type SlaEditProps = {
 	isNew?: boolean;
 	slaId?: string;
 	reload: () => void;
 	data?: Serialized<IOmnichannelServiceLevelAgreements>;
+};
+
+type SlaEditFormData = {
+	name: string;
+	description?: string;
+	dueTimeInMinutes: number;
 };
 
 function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
@@ -20,16 +38,17 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { name, description, dueTimeInMinutes } = data || {};
-
 	const {
 		control,
-		getValues,
-		formState: { errors, isValid, isDirty },
+		formState: { errors, isDirty },
+		handleSubmit,
 		reset,
-	} = useForm({
-		mode: 'onChange',
-		defaultValues: { name, description, dueTimeInMinutes },
+	} = useForm<SlaEditFormData>({
+		defaultValues: {
+			name: data?.name || '',
+			description: data?.description || '',
+			dueTimeInMinutes: data?.dueTimeInMinutes || 0,
+		},
 	});
 
 	const { field: nameField } = useController({
@@ -50,73 +69,96 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 
 	const { field: descField } = useController({ control, name: 'description' });
 
-	const handleSave = useEffectEvent(async () => {
-		const { name, description, dueTimeInMinutes } = getValues();
+	const formId = useId();
+	const nameFieldId = useId();
+	const descFieldId = useId();
+	const dueTimeFieldId = useId();
 
-		if (!isValid || !name || dueTimeInMinutes === undefined) {
-			return dispatchToastMessage({ type: 'error', message: t('Required_field') });
-		}
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ name, description, dueTimeInMinutes }: SlaEditFormData) => {
+			try {
+				const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
+				if (slaId) {
+					await updateSLA(payload);
+				} else {
+					await saveSLA(payload);
+				}
 
-		try {
-			const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
-			if (slaId) {
-				await updateSLA(payload);
-			} else {
-				await saveSLA(payload);
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				reload();
+				slasRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
-			slasRoute.push({});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+		},
+		{ isDirty },
+	);
 
 	return (
-		<ContextualbarScrollableContent is='form' {...props}>
-			<Field>
-				<FieldLabel>{t('Name')}*</FieldLabel>
-				<FieldRow>
-					<TextInput placeholder={t('Name')} flexGrow={1} {...nameField} error={errors.name?.message} />
-				</FieldRow>
-				<FieldError role='alert'>{errors.name?.message}</FieldError>
-			</Field>
-			<Field>
-				<FieldLabel>{t('Description')}</FieldLabel>
-				<FieldRow>
-					<TextInput placeholder={t('Description')} flexGrow={1} {...descField} />
-				</FieldRow>
-			</Field>
-			<Field>
-				<FieldLabel>{t('Estimated_wait_time_in_minutes')}*</FieldLabel>
-				<FieldRow>
-					<NumberInput
-						placeholder={t('Estimated_wait_time_in_minutes')}
-						flexGrow={1}
-						{...dueTimeField}
-						error={errors.dueTimeInMinutes?.message}
-					/>
-				</FieldRow>
-				<FieldError role='alert'>{errors.dueTimeInMinutes?.message}</FieldError>
-			</Field>
-			<Field>
-				<FieldRow>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd={4}>
-							{!isNew && (
-								<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
-									{t('Reset')}
-								</Button>
-							)}
-							<Button primary mie='none' flexGrow={1} disabled={!isDirty || !isValid} onClick={handleSave}>
-								{t('Save')}
-							</Button>
-						</Margins>
-					</Box>
-				</FieldRow>
-			</Field>
-		</ContextualbarScrollableContent>
+		<>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} id={formId} {...props}>
+				<Field>
+					<FieldLabel required htmlFor={nameFieldId}>
+						{t('Name')}
+					</FieldLabel>
+					<FieldRow>
+						<TextInput
+							id={nameFieldId}
+							placeholder={t('Name')}
+							flexGrow={1}
+							{...nameField}
+							aria-describedby={`${nameFieldId}-error`}
+							aria-invalid={Boolean(errors.name?.message)}
+							error={errors.name?.message}
+						/>
+					</FieldRow>
+					{errors.name && (
+						<FieldError role='alert' id={`${nameFieldId}-error`}>
+							{errors.name.message}
+						</FieldError>
+					)}
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={descFieldId}>{t('Description')}</FieldLabel>
+					<FieldRow>
+						<TextInput id={descFieldId} placeholder={t('Description')} flexGrow={1} {...descField} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel required htmlFor={dueTimeFieldId}>
+						{t('Estimated_wait_time_in_minutes')}
+					</FieldLabel>
+					<FieldRow>
+						<NumberInput
+							id={dueTimeFieldId}
+							placeholder={t('Estimated_wait_time_in_minutes')}
+							flexGrow={1}
+							{...dueTimeField}
+							aria-describedby={`${dueTimeFieldId}-error`}
+							aria-invalid={Boolean(errors.dueTimeInMinutes?.message)}
+							error={errors.dueTimeInMinutes?.message}
+						/>
+					</FieldRow>
+					{errors.dueTimeInMinutes && (
+						<FieldError role='alert' id={`${dueTimeFieldId}-error`}>
+							{errors.dueTimeInMinutes.message}
+						</FieldError>
+					)}
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					{!isNew && (
+						<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
+							{t('Reset')}
+						</Button>
+					)}
+					<Button primary mie='none' type='submit' flexGrow={1} form={formId}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 }
 

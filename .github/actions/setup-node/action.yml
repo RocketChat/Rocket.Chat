@@ -3,24 +3,21 @@ description: 'Setup NodeJS'
 
 inputs:
   node-version:
-    required: true
-    description: 'Node version'
+    required: false
+    description: 'Node version. If not provided, read from package.json engines.node'
   cache-modules:
     required: false
     description: 'Cache node_modules'
   install:
     required: false
     description: 'Install dependencies'
-    type: boolean
   type:
     required: false
     description: 'development or production'
-    type: string
     default: 'development'
   deno-version:
-    required: true
-    description: 'Deno version'
-    type: string
+    required: false
+    description: 'Deno version. If not provided, read from .tool-versions'
   NPM_TOKEN:
     required: false
     description: 'NPM token'
@@ -33,46 +30,65 @@ outputs:
   node-version:
     description: 'Node version'
     value: ${{ steps.node-version.outputs.node-version }}
+  cache-deno-hit:
+    description: 'Exact key hit for Deno cache'
+    value: ${{ steps.cache-deno.outputs.cache-hit }}
 
 runs:
   using: composite
 
   steps:
-    - name: Cache Node Modules & Deno
+    - name: Resolve tool versions
+      shell: bash
+      run: |
+        NODE_VERSION="${{ inputs.node-version }}"
+        if [ -z "$NODE_VERSION" ]; then
+          NODE_VERSION=$(node -p "require('./package.json').engines.node")
+        fi
+        echo "NODE_VERSION: ${NODE_VERSION}"
+        echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
+
+        DENO_VERSION="${{ inputs.deno-version }}"
+        if [ -z "$DENO_VERSION" ]; then
+          DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
+        fi
+        echo "DENO_VERSION: ${DENO_VERSION}"
+        echo "DENO_VERSION=${DENO_VERSION}" >> $GITHUB_ENV
+
+    # Turbo local cache: use rharkor/caching-for-turbo in workflows — not stored here to avoid huge redundant keys.
+    - name: Cache Deno (apps-engine)
       if: inputs.cache-modules
-      id: cache-node-modules
-      uses: actions/cache@v3
+      id: cache-deno
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
-        # We need to cache node_modules for all workspaces with "hoistingLimits" defined
-        path: |
-          .turbo/cache
-          node_modules
-          apps/meteor/node_modules
-          apps/meteor/ee/server/services/node_modules
-          packages/apps-engine/node_modules
-          packages/apps-engine/.deno-cache
-        key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v5
-        # key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v${{ github.run_id }}
-    #
-    # Could use this command to list all paths to save:
-    # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
+        path: packages/apps-engine/.deno-cache
+        key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
+        restore-keys: |
+          deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-
 
-    - name: Use Node.js ${{ inputs.node-version }}
+    - name: Use Node.js ${{ env.NODE_VERSION }}
       id: node-version
-      uses: actions/setup-node@v6.0.0
+      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
       with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'yarn'
+        node-version: ${{ env.NODE_VERSION }}
+        cache: ${{ inputs.cache-modules && 'yarn' || '' }}
 
-    - name: Use Deno ${{ inputs.deno-version }}
-      uses: denoland/setup-deno@v1
+    - name: Use Deno ${{ env.DENO_VERSION }}
+      uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
       with:
-        deno-version: ${{ inputs.deno-version }}
+        deno-version: ${{ env.DENO_VERSION }}
+
+    - name: Cache mongodb-memory-server binary
+      if: inputs.cache-modules
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: ${{ runner.temp }}/mongodb-memory-server
+        key: mongoms-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
     - name: Configure mongodb-memory-server cache
       shell: bash
       run: |
-        CACHE_DIR="${GITHUB_WORKSPACE}/node_modules/.cache/mongodb-memory-server"
+        CACHE_DIR="${{ runner.temp }}/mongodb-memory-server"
         mkdir -p "$CACHE_DIR"
         echo "MONGOMS_DOWNLOAD_DIR=$CACHE_DIR" >> $GITHUB_ENV
         echo "MONGOMS_PREFER_GLOBAL_PATH=false" >> $GITHUB_ENV
