@@ -19,7 +19,6 @@ async function createCustomSound(fileName: string, filePath: string): Promise<st
 		.set(credentials)
 		.attach('sound', filePath)
 		.field('name', fileName)
-		.field('extension', path.extname(filePath).replace('.', ''))
 		.expect(200)
 		.expect((res) => {
 			expect(res.body).to.have.property('success', true);
@@ -85,7 +84,6 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.attach('sound', mockWavAudioPath)
 				.field('name', `happy-path-sound-${randomUUID()}`)
-				.field('extension', 'mp3')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -101,7 +99,6 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.attach('sound', mockWavAudioPath)
 				.field('name', fileName)
-				.field('extension', 'mp3')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -121,7 +118,6 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.attach('sound', largeBuffer, { filename: 'large.wav', contentType: 'audio/wav' })
 				.field('name', 'large-sound')
-				.field('extension', 'wav')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('error').and.to.be.equal('[error-file-too-large]');
@@ -134,7 +130,6 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.attach('sound', Buffer.from('this is not audio'), { filename: 'test.txt', contentType: 'text/plain' })
 				.field('name', 'invalid-sound')
-				.field('extension', 'txt')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -148,7 +143,6 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.attach('sound', mockWavAudioPath)
 				.field('name', '<script>alert("xss")</script>')
-				.field('extension', 'wav')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -162,7 +156,6 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.attach('sound', mockWavAudioPath)
 				.field('name', '{"$regex":".*"}')
-				.field('extension', 'wav')
 				.expect(400);
 		});
 
@@ -185,7 +178,6 @@ describe('[CustomSounds]', () => {
 					.set(unauthorizedUserCredentials)
 					.attach('sound', mockWavAudioPath)
 					.field('name', `forbidden-sound-${randomUUID()}`)
-					.field('extension', 'mp3')
 					.expect(403);
 			});
 		});
@@ -213,7 +205,6 @@ describe('[CustomSounds]', () => {
 				.field('_id', fileId)
 				.field('name', previousFileName)
 				.attach('sound', mockWavAudioPath)
-				.field('extension', 'wav')
 				.expect(200);
 		});
 
@@ -249,7 +240,6 @@ describe('[CustomSounds]', () => {
 				.attach('sound', mockMp3AudioPath)
 				.field('_id', fileId)
 				.field('name', newSoundName)
-				.field('extension', 'mp3')
 				.expect(200);
 
 			await request
@@ -272,25 +262,10 @@ describe('[CustomSounds]', () => {
 				.attach('sound', mockWavAudioPath)
 				.field('_id', fileId)
 				.field('name', `${fileName}-2`)
-				.field('extension', 'mp3')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
-				});
-		});
-
-		it('should not be able to update sound if file was attached but the extension was not', async () => {
-			await request
-				.post(api('custom-sounds.update'))
-				.set(credentials)
-				.attach('sound', mockWavAudioPath)
-				.field('_id', fileId)
-				.field('name', `${fileName}-2`)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Extension required');
 				});
 		});
 
@@ -305,7 +280,6 @@ describe('[CustomSounds]', () => {
 				.attach('sound', mockWavAudioPath)
 				.field('_id', fileId)
 				.field('name', '<script>alert("xss")</script>')
-				.field('extension', 'wav')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -320,7 +294,6 @@ describe('[CustomSounds]', () => {
 				.attach('sound', mockWavAudioPath)
 				.field('_id', fileId)
 				.field('name', '{"$regex":".*"}')
-				.field('extension', 'wav')
 				.expect(400);
 		});
 
@@ -333,7 +306,6 @@ describe('[CustomSounds]', () => {
 				.attach('sound', largeBuffer, { filename: 'large.wav', contentType: 'audio/wav' })
 				.field('_id', fileId)
 				.field('name', 'large-sound')
-				.field('extension', 'wav')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('error').and.to.be.equal('[error-file-too-large]');
@@ -360,7 +332,6 @@ describe('[CustomSounds]', () => {
 				.attach('sound', Buffer.from('fake-audio'), { filename: 'test.mp4', contentType: 'video/mp4' })
 				.field('_id', fileId)
 				.field('name', fileName)
-				.field('extension', 'mp4')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body.error).to.equal('MIME type not allowed');
