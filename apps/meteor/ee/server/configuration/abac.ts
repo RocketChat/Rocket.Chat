@@ -16,11 +16,7 @@ const VIRTRU_PDP_SYNC_JOB = 'ABAC_Virtru_PDP_Sync';
 const abacLogger = new Logger('ABAC');
 
 beforeSaveSetting.patch(async (next, settingId, newValue) => {
-	if (
-		settingId === 'ABAC_Use_User_Roles_As_Attributes' &&
-		newValue === false &&
-		(await Abac.isAbacAttributeInUseByAnyRoom())
-	) {
+	if (settingId === 'ABAC_Use_User_Roles_As_Attributes' && newValue === false && (await Abac.isAbacAttributeInUseByAnyRoom())) {
 		throw new Meteor.Error(
 			'error-abac-role-attribute-in-use',
 			'Cannot disable `Use user roles as ABAC attributes` while rooms use the `RC-user-role` attribute. Remove it from those rooms first.',
