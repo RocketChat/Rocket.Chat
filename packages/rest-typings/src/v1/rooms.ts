@@ -773,6 +773,7 @@ type MembersOrderedByRoleProps = {
 export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
 
 const membersOrderedByRoleRolePropsSchema = {
+	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
