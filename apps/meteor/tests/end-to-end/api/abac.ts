@@ -2579,6 +2579,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		let roleAId = '';
 		let roleBId = '';
+		// Roles used by the roles.delete guard tests. They must be created up-front: the feature's
+		// `getAllRoleIdsCached` helper memoizes for 5 minutes, so any role created *during* a test
+		// won't be in the cached set and will be rejected with `error-attribute-definition-not-found`.
+		let roleGuardedAId = '';
+		let roleGuardedBId = '';
 
 		before(async () => {
 			await updateSetting('ABAC_Enabled', true);
@@ -2599,6 +2604,20 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 			roleBId = createRoleRes2.body.role._id;
 
+			const createGuardedA = await request
+				.post(`${v1}/roles.create`)
+				.set(credentials)
+				.send({ name: `rc_user_role_guarded_A_${Date.now()}` })
+				.expect(200);
+			roleGuardedAId = createGuardedA.body.role._id;
+
+			const createGuardedB = await request
+				.post(`${v1}/roles.create`)
+				.set(credentials)
+				.send({ name: `rc_user_role_guarded_B_${Date.now()}` })
+				.expect(200);
+			roleGuardedBId = createGuardedB.body.role._id;
+
 			memberA = await createUser();
 			memberB = await createUser();
 			outsider = await createUser();
@@ -2615,6 +2634,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleAId });
 			await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleBId });
+			await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleGuardedAId });
+			await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleGuardedBId });
 
 			await deleteUser(memberA);
 			await deleteUser(memberB);
@@ -2872,8 +2893,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials).expect(200);
 
-				const roomRes = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: abacRoom._id }).expect(200);
-				expect((roomRes.body.room.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
+				const roomRes = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid: abacRoom._id }).expect(200);
+				expect((roomRes.body.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY)).to.be.undefined;
 
 				const aRes = await request.get(`${v1}/users.info`).set(credentials).query({ username: memberA.username }).expect(200);
 				const aRoleAttr = (aRes.body.user.abacAttributes || []).find((a: IAbacAttributeDefinition) => a.key === ROLE_ATTR_KEY);
@@ -2942,50 +2963,51 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('should block deleting a role referenced by an ABAC room via RC-user-role', async () => {
-				const createRes = await request
-					.post(`${v1}/roles.create`)
-					.set(credentials)
-					.send({ name: `a52_${Date.now()}` })
-					.expect(200);
-				const roleId = createRes.body.role._id;
-
 				await request
 					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
 					.set(credentials)
-					.send({ values: [roleId] })
+					.send({ values: [roleGuardedAId] })
 					.expect(200);
 
-				const res = await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(400);
+				const res = await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleGuardedAId }).expect(400);
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error').that.includes('error-abac-role-in-use-by-room');
 
 				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
-				await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(200);
 			});
 
 			it('should allow the same role deletion when the feature is OFF (guard inactive)', async () => {
-				const createRes = await request
-					.post(`${v1}/roles.create`)
-					.set(credentials)
-					.send({ name: `a53_${Date.now()}` })
-					.expect(200);
-				const roleId = createRes.body.role._id;
-
 				await request
 					.post(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`)
 					.set(credentials)
-					.send({ values: [roleId] })
+					.send({ values: [roleGuardedBId] })
 					.expect(200);
 
 				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
 				await updateSetting('ABAC_Use_User_Roles_As_Attributes', false);
-				await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId }).expect(200);
+				await request.post(`${v1}/roles.delete`).set(credentials).send({ roleId: roleGuardedBId }).expect(200);
 
 				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
 			});
 		});
 
 		describe('Setting-disable guard', () => {
+			// The guard lives in `beforeSaveSetting`, which only runs through the Meteor `saveSettings`
+			// method (used by the admin UI). The REST endpoint `/settings/:_id` writes directly and
+			// bypasses the guard — hence these tests go through `method.call/saveSettings`.
+			const saveFeatureSetting = (value: boolean) =>
+				request
+					.post(methodCall('saveSettings'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							msg: 'method',
+							id: `save-rc-user-role-${Date.now()}`,
+							method: 'saveSettings',
+							params: [[{ _id: 'ABAC_Use_User_Roles_As_Attributes', value }]],
+						}),
+					});
+
 			beforeEach(async () => {
 				await updateSetting('ABAC_Use_User_Roles_As_Attributes', true);
 				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
@@ -2997,12 +3019,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('should allow disabling the setting when no room uses RC-user-role', async () => {
-				const res = await request
-					.post(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`)
-					.set(credentials)
-					.send({ value: false })
-					.expect(200);
+				const res = await saveFeatureSetting(false).expect(200);
 				expect(res.body).to.have.property('success', true);
+				const parsed = JSON.parse(res.body.message);
+				expect(parsed).to.not.have.property('error');
 			});
 
 			it('should reject disabling while a room uses RC-user-role and keep the setting true', async () => {
@@ -3012,13 +3032,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ values: [roleAId] })
 					.expect(200);
 
-				const res = await request
-					.post(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`)
-					.set(credentials)
-					.send({ value: false })
-					.expect(400);
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error').that.includes('error-abac-role-attribute-in-use');
+				const res = await saveFeatureSetting(false).expect(400);
+				const parsed = JSON.parse(res.body.message);
+				expect(parsed).to.have.property('error');
+				expect(parsed.error).to.have.property('error', 'error-abac-role-attribute-in-use');
 
 				const check = await request.get(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`).set(credentials).expect(200);
 				expect(check.body).to.have.property('value', true);
@@ -3033,12 +3050,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				await request.delete(`${v1}/abac/rooms/${abacRoom._id}/attributes/${ROLE_ATTR_KEY}`).set(credentials);
 
-				const res = await request
-					.post(`${v1}/settings/ABAC_Use_User_Roles_As_Attributes`)
-					.set(credentials)
-					.send({ value: false })
-					.expect(200);
+				const res = await saveFeatureSetting(false).expect(200);
 				expect(res.body).to.have.property('success', true);
+				const parsed = JSON.parse(res.body.message);
+				expect(parsed).to.not.have.property('error');
 			});
 		});
 	});
