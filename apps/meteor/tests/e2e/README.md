@@ -245,26 +245,28 @@ Do **not** apply when:
 
 ## API helpers for state seeding
 
-Prefer these helpers in `beforeAll` / `beforeEach` and in setup `test.step`s. All live under `apps/meteor/tests/e2e/utils/`.
+Prefer these helpers in `beforeAll` / `beforeEach` and in setup `test.step`s. All live under `apps/meteor/tests/e2e/utils/`, split by concern (`channels.ts`, `groups.ts`, `teams.ts`, `direct-messages.ts`, `discussions.ts`, `messages.ts`, `rooms.ts`). Import from `./utils` — never reach into a specific file.
 
-| Intent                               | Helper                                                    | REST endpoint             |
-| ------------------------------------ | --------------------------------------------------------- | ------------------------- |
-| Create public channel                | `createTargetChannel(api)`                                | `/channels.create`        |
-| Create public channel (full room)    | `createTargetChannelAndReturnFullRoom(api)`               | `/channels.create`        |
-| Create private channel               | `createTargetPrivateChannel(api)`                         | `/groups.create`          |
-| Create private group (full room)     | `createTargetGroupAndReturnFullRoom(api)`                 | `/groups.create`          |
-| Create team                          | `createTargetTeam(api)`                                   | `/teams.create`           |
-| Create discussion (fresh parent)     | `createTargetDiscussion(api)`                             | `/rooms.createDiscussion` |
-| Create discussion on existing msg    | `createDiscussion(api, parentRoomId, parentMsgId, name)`  | `/rooms.createDiscussion` |
-| Create DM room (get id back)         | `createDirectMessageRoom(api, username)`                  | `/im.create`              |
-| Send message to a room               | `sendMessage(api, roomId, msg)`                           | `/chat.sendMessage`       |
-| Send message inside a thread         | `sendMessage(api, roomId, msg, parentMsgId)`              | `/chat.sendMessage`       |
-| Send message as a specific user      | `sendMessageFromUser(request, user, rid, msg)`            | `/chat.postMessage`       |
-| Delete channel (by name)             | `deleteChannel(api, roomName)`                            | `/channels.delete`        |
-| Delete room (by id)                  | `deleteRoom(api, roomId)`                                 | `/rooms.delete`           |
-| Delete team                          | `deleteTeam(api, teamName)`                               | `/teams.delete`           |
+| Intent                               | Helper                                                          | REST endpoint             |
+| ------------------------------------ | --------------------------------------------------------------- | ------------------------- |
+| Create public channel                | `createTargetChannel(api)`                                      | `/channels.create`        |
+| Create public channel (full room)    | `createTargetChannelAndReturnFullRoom(api)`                     | `/channels.create`        |
+| Create private channel               | `createTargetPrivateChannel(api)`                               | `/groups.create`          |
+| Create private group (full room)     | `createTargetGroupAndReturnFullRoom(api)`                       | `/groups.create`          |
+| Create team                          | `createTargetTeam(api)`                                         | `/teams.create`           |
+| Create discussion (fresh parent)     | `createTargetDiscussion(api)`                                   | `/rooms.createDiscussion` |
+| Create discussion on existing msg    | `createDiscussion(api, parentRoomId, parentMsgId, name)`        | `/rooms.createDiscussion` |
+| Create DM room (get id back)         | `createDirectMessageRoom(api, username)`                        | `/im.create`              |
+| Send message to a room               | `sendMessage(api, roomId, msg)`                                 | `/chat.sendMessage`       |
+| Send message inside a thread         | `createThreadReply(api, roomId, parentMsgId, msg)`              | `/chat.sendMessage`       |
+| Send message as a specific user      | `sendMessage(api, roomId, msg, { asUser: user })`               | `/chat.sendMessage`       |
+| Invite users to a room (by username) | `inviteUsersToRoom(api, roomId, usernames)`                     | `/channels.invite` or `/groups.invite` |
+| Set room topic                       | `setRoomTopic(api, roomId, topic)`                              | `/rooms.saveRoomSettings` |
+| Delete channel (by name)             | `deleteChannel(api, roomName)`                                  | `/channels.delete`        |
+| Delete room (by id)                  | `deleteRoom(api, roomId)`                                       | `/rooms.delete`           |
+| Delete team                          | `deleteTeam(api, teamName)`                                     | `/teams.delete`           |
 
-If the helper you need is missing, add it under `utils/` and re-export it from `utils/index.ts` rather than inlining the REST call in the spec.
+If the helper you need is missing, add it under the matching file in `utils/` and re-export it from `utils/index.ts` rather than inlining the REST call in the spec.
 
 ## Template: optimized `.serial` suite
 

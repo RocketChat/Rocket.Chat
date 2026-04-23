@@ -8,9 +8,8 @@ import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { Navbar } from '../page-objects/fragments';
 import { FileUploadModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
-import { createTargetGroupAndReturnFullRoom, deleteChannel, deleteRoom } from '../utils';
+import { createTargetGroupAndReturnFullRoom, deleteChannel, deleteRoom, sendMessage } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
-import { sendMessageFromUser } from '../utils/sendMessage';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
@@ -165,11 +164,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			await deleteChannel(api, targetChannelName);
 		});
 
-		test('expect to not crash and not show quote message for a message_link which is not accessible to the user', async ({
-			page,
-			request,
-			api,
-		}) => {
+		test('expect to not crash and not show quote message for a message_link which is not accessible to the user', async ({ page, api }) => {
 			const encryptedRoomPage = new EncryptedRoomPage(page);
 			targetChannelName = faker.string.uuid();
 
@@ -191,9 +186,9 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			targetRoomId = user1Channel._id;
 
 			// send a message to the private group, which is not accessible to the main user
-			const sentMessage = (await sendMessageFromUser(request, Users.user2, targetRoomId, 'This is a test message.')).message;
+			const sentMessageId = await sendMessage(api, targetRoomId, 'This is a test message.', { asUser: Users.user2 });
 
-			const messageLink = `${BASE_URL}/group/${user1Channel.name}?msg=${sentMessage._id}`;
+			const messageLink = `${BASE_URL}/group/${user1Channel.name}?msg=${sentMessageId}`;
 
 			await encryptedRoomPage.sendMessage(`This is a message with message link - ${messageLink}`);
 
