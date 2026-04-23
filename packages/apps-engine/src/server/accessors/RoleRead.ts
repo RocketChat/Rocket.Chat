@@ -8,7 +8,7 @@ export class RoleRead implements IRoleRead {
 		private appId: string,
 	) {}
 
-	public getOneByIdOrName(idOrName: IRole['id'] | IRole['name']): Promise<IRole | null> {
+	public getOneByIdOrName(idOrName: string): Promise<IRole | null> {
 		return this.roleBridge.doGetOneByIdOrName(idOrName, this.appId);
 	}
 
