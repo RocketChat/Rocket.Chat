@@ -196,14 +196,14 @@ export class AppVideoConfProviderManager {
 	}
 
 	private registerProvider(appId: string, info: AppVideoConfProvider): void {
-		this.bridge.doRegisterProvider(info.provider, appId);
+		void this.bridge.doRegisterProvider(info.provider, appId);
 		info.hasBeenRegistered();
 	}
 
 	private unregisterProvider(appId: string, info: AppVideoConfProvider): void {
 		const key = info.provider.name.toLowerCase().trim();
 
-		this.bridge.doUnRegisterProvider(info.provider, appId);
+		void this.bridge.doUnRegisterProvider(info.provider, appId);
 		this.providerApps.delete(key);
 
 		info.isRegistered = false;

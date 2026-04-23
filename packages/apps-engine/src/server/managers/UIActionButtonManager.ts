@@ -29,14 +29,14 @@ export class UIActionButtonManager {
 
 		this.registeredActionButtons.get(appId).set(button.actionId, button);
 
-		this.activationBridge.doActionsChanged();
+		void this.activationBridge.doActionsChanged();
 
 		return true;
 	}
 
 	public clearAppActionButtons(appId: string) {
 		this.registeredActionButtons.set(appId, new Map());
-		this.activationBridge.doActionsChanged();
+		void this.activationBridge.doActionsChanged();
 	}
 
 	public getAppActionButtons(appId: string) {
@@ -61,7 +61,7 @@ export class UIActionButtonManager {
 				if (!AppStatusUtils.isEnabled(appStatus)) {
 					continue;
 				}
-			} catch (error) {
+			} catch {
 				// If we can't get the app status, skip this app's buttons
 				continue;
 			}
