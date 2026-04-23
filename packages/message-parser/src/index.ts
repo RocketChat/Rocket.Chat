@@ -22,23 +22,23 @@ export type Options = {
 };
 
 export function parse(input: string, options?: Options): Root {
-	if (options?.engine === 'handwritten') {
-		const lexerOptions: LexerOptions = {
-			colors: options.colors ?? false,
-			emoticons: options.emoticons ?? false,
-			katex: {
-				dollarSyntax: options.katex?.dollarSyntax ?? false,
-				parenthesisSyntax: options.katex?.parenthesisSyntax ?? false,
-			},
-			customDomains: options.customDomains,
-		};
-		const tokens = tokenize(input, lexerOptions);
-		const resolved = resolveLexerOptions(lexerOptions);
-		const parserOpts = resolveParserOptions(resolved);
-		return new Parser(tokens, parserOpts).parse();
+	if (options?.engine === 'peggy') {
+		return grammar.parse(input, options);
 	}
 
-	return grammar.parse(input, options);
+	const lexerOptions: LexerOptions = {
+		colors: options?.colors ?? false,
+		emoticons: options?.emoticons ?? false,
+		katex: {
+			dollarSyntax: options?.katex?.dollarSyntax ?? false,
+			parenthesisSyntax: options?.katex?.parenthesisSyntax ?? false,
+		},
+		customDomains: options?.customDomains,
+	};
+	const tokens = tokenize(input, lexerOptions);
+	const resolved = resolveLexerOptions(lexerOptions);
+	const parserOpts = resolveParserOptions(resolved);
+	return new Parser(tokens, parserOpts).parse();
 }
 
 export {
@@ -56,4 +56,4 @@ export { Lexer, Token, TokenKind, makeToken, tokenize } from './lexer';
 
 // Handwritten parser
 export { Parser, TokenStream, resolveParserOptions } from './parser';
-export type { ParserOptions } from './parser';
+export type { ParserOptions } from './parser';
