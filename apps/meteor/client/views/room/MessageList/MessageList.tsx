@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { MessageTypes } from '@rocket.chat/message-types';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
@@ -38,6 +38,7 @@ type MessageListProps = {
 	isJumpingToMessage: MutableRefObject<boolean>;
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
+	debouncedClearNewMessagesOnScroll: () => void;
 };
 
 const lastViewportSize = 0;
@@ -56,6 +57,7 @@ export const MessageList = function MessageList({
 	isJumpingToMessage,
 	setUnreadCount,
 	setLastMessageDate,
+	debouncedClearNewMessagesOnScroll,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
@@ -80,7 +82,6 @@ export const MessageList = function MessageList({
 			}
 
 			isAtBottom.current = offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0) >= -20;
-
 			if (shouldJumpToBottom.current && isAtBottom.current) {
 				shouldJumpToBottom.current = false;
 			}
@@ -138,7 +139,7 @@ export const MessageList = function MessageList({
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, rid, firstUnreadMessageId]);
+	}, [isAtBottom, messages, shouldJumpToBottom.current, isJumpingToMessage.current, rid, firstUnreadMessageId]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 
@@ -208,6 +209,7 @@ export const MessageList = function MessageList({
 						handlePrepend(offset);
 						storeScrollPosition();
 						handleTopVisibleMessage();
+						debouncedClearNewMessagesOnScroll();
 					}}
 				>
 					{canPreview ? (

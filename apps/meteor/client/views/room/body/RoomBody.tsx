@@ -98,10 +98,15 @@ const RoomBody = (): ReactElement => {
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
-	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
-		useHasNewMessages(room._id, user?._id, shouldJumpToBottom, isAtBottom);
+	const {
+		handleNewMessageButtonClick,
+		handleJumpToRecentButtonClick,
+		handleComposerResize,
+		hasNewMessages,
+		debouncedClearNewMessagesOnScroll,
+	} = useHasNewMessages(room._id, user?._id, shouldJumpToBottom, isAtBottom);
 
-	const innerRef = useMergedRefsV2(dateScrollInnerRef, newMessagesScrollRef, getMoreInnerRef, selectAndScrollRef, messageListRef);
+	const innerRef = useMergedRefsV2(dateScrollInnerRef, getMoreInnerRef, selectAndScrollRef, messageListRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -209,6 +214,7 @@ const RoomBody = (): ReactElement => {
 												hasMoreNextMessages={hasMoreNextMessages}
 												setUnreadCount={setUnreadCount}
 												setLastMessageDate={setLastMessageDate}
+												debouncedClearNewMessagesOnScroll={debouncedClearNewMessagesOnScroll}
 											/>
 										</CustomVirtuaScrollbars>
 									</MessageListErrorBoundary>

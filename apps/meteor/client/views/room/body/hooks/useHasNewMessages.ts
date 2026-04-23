@@ -1,11 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { clientCallbacks } from '@rocket.chat/ui-client';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useChat } from '../../contexts/ChatContext';
 
 export const useHasNewMessages = (
@@ -80,27 +80,18 @@ export const useHasNewMessages = (
 		};
 	}, [isAtBottom, rid, shouldJumpToBottom, uid]);
 
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
+	const debouncedClearNewMessagesOnScroll = useDebouncedCallback(
+		() => {
+			if (isAtBottom.current) {
+				setHasNewMessages(false);
 			}
-
-			node.addEventListener(
-				'scroll',
-				withThrottling({ wait: 100 })(() => {
-					isAtBottom.current && setHasNewMessages(false);
-				}),
-				{
-					passive: true,
-				},
-			);
 		},
-		[isAtBottom],
+		100,
+		[],
 	);
 
 	return {
-		newMessagesScrollRef: ref,
+		debouncedClearNewMessagesOnScroll,
 		handleNewMessageButtonClick,
 		handleJumpToRecentButtonClick,
 		handleComposerResize,
