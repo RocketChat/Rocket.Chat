@@ -45,7 +45,9 @@
 		"underscore": "1.13.8",
 		"webpack": "~5.104.0",
 		"yoga-layout@npm:^3.2.1": "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch",
-		"@react-pdf/layout@npm:^4.4.2": "patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch"
+		"@react-pdf/layout@npm:^4.4.2": "patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch",
+		"xml-crypto/@xmldom/xmldom": "0.8.13",
+		"xml-encryption/@xmldom/xmldom": "0.8.13"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
