@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
@@ -39,6 +39,7 @@ type MessageListProps = {
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
 	debouncedClearNewMessagesOnScroll: () => void;
+	handleDateScroll: (topMessage: IMessage | undefined) => void;
 };
 
 const lastViewportSize = 0;
@@ -58,6 +59,7 @@ export const MessageList = function MessageList({
 	setUnreadCount,
 	setLastMessageDate,
 	debouncedClearNewMessagesOnScroll,
+	handleDateScroll,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
@@ -93,6 +95,7 @@ export const MessageList = function MessageList({
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
+	// REVIEW TODO: This is an anti pattern (using refs to trigger effects) It works, but we need to find a correct way to handle this
 	// Scroll to bottom
 	useEffect(() => {
 		if (isJumpingToMessage.current) {
@@ -177,15 +180,7 @@ export const MessageList = function MessageList({
 	}, [chat, isUnreadMarkVisible]);
 
 	const handleTopVisibleMessage = useDebouncedCallback(
-		() => {
-			const handle = virtualizerRef.current;
-			if (!handle) {
-				setUnreadCount(0);
-				return;
-			}
-			const topListIndex = handle.findItemIndex(handle.scrollOffset);
-			const messageIndex = topListIndex - (canPreview ? 1 : 0);
-			const topMessage = messages[messageIndex];
+		(topMessage: IMessage | undefined) => {
 			if (!topMessage) {
 				setUnreadCount(0);
 				return;
@@ -193,7 +188,7 @@ export const MessageList = function MessageList({
 			setLastMessageDate(topMessage.ts);
 		},
 		300,
-		[canPreview, messages, setUnreadCount, setLastMessageDate],
+		[setUnreadCount, setLastMessageDate],
 	);
 
 	return (
@@ -208,8 +203,14 @@ export const MessageList = function MessageList({
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();
-						handleTopVisibleMessage();
 						debouncedClearNewMessagesOnScroll();
+
+						const handle = virtualizerRef.current;
+						const topMessage = handle
+							? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)]
+							: undefined;
+						handleTopVisibleMessage(topMessage);
+						handleDateScroll(topMessage);
 					}}
 				>
 					{canPreview ? (
