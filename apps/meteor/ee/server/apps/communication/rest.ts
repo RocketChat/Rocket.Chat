@@ -70,8 +70,8 @@ export class AppsRestApi {
 		});
 
 		const logger = new Logger('APPS');
+
 		this.api.router
-			.use(loggerMiddleware(logger))
 			.use(
 				metricsMiddleware({
 					basePathRegex: new RegExp(/^\/api\/apps\//),
@@ -83,7 +83,8 @@ export class AppsRestApi {
 					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
 				}),
 			)
-			.use(tracerSpanMiddleware);
+			.use(tracerSpanMiddleware)
+			.use(loggerMiddleware(logger));
 
 		this.addManagementRoutes();
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
