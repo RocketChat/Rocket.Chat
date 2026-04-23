@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker';
+import type { BrowserContext, Page } from 'playwright-core';
 
 import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AccountSecurity } from './page-objects';
 import { setSettingValueById, updateOwnUserPassword } from './utils';
 import { test, expect } from './utils/test';
-
-test.use({ storageState: Users.admin.state });
 
 const RANDOM_PASSWORD = faker.helpers
 	.shuffle([
@@ -20,22 +19,31 @@ const RANDOM_PASSWORD = faker.helpers
 
 test.describe.serial('account-security', () => {
 	let poAccountSecurity: AccountSecurity;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeEach(async ({ page, api }) => {
+	test.beforeAll(async ({ browser }) => {
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
 		poAccountSecurity = new AccountSecurity(page);
+	});
+
+	test.beforeEach(async ({ api }) => {
 		await page.goto('/account/security');
 		await page.waitForSelector('#main-content');
 		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
 	});
 
-	test.afterAll(async ({ api }) =>
-		Promise.all([
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
 			setSettingValueById(api, 'Accounts_AllowPasswordChange', true),
 			setSettingValueById(api, 'Accounts_TwoFactorAuthentication_Enabled', true),
 			setSettingValueById(api, 'E2E_Enable', false),
 			setSettingValueById(api, 'Accounts_Password_Policy_Enabled', true),
-		]),
-	);
+		]);
+		await page.close();
+		await context.close();
+	});
 
 	test('should disable and enable email 2FA', async () => {
 		await poAccountSecurity.security2FASection.click();
@@ -70,7 +78,7 @@ test.describe.serial('account-security', () => {
 			]);
 		});
 
-		test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
+		test('security tab is invisible when password change, 2FA and E2E are disabled', async () => {
 			const securityTab = poAccountSecurity.sidebar.linkSecurity;
 			await expect(securityTab).not.toBeVisible();
 			const mainContent = page.locator('#main-content').getByText('You are not authorized to view this page.').first();
