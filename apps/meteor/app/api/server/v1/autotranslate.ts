@@ -91,16 +91,8 @@ const autotranslateEndpoints = API.v1
 				return API.v1.failure('AutoTranslate is disabled.');
 			}
 
-			if (!roomId) {
-				return API.v1.failure('The bodyParam "roomId" is required.');
-			}
-			if (!field) {
-				return API.v1.failure('The bodyParam "field" is required.');
-			}
-			if (value === undefined) {
-				return API.v1.failure('The bodyParam "value" is required.');
-			}
-			if (field === 'autoTranslate' && typeof value !== 'boolean') {
+			// ajv 2020-12 with coerceTypes coerces booleans to strings, so check for both
+			if (field === 'autoTranslate' && value !== true && value !== 'true' && value !== false && value !== 'false') {
 				return API.v1.failure('The bodyParam "autoTranslate" must be a boolean.');
 			}
 
@@ -108,7 +100,7 @@ const autotranslateEndpoints = API.v1
 				return API.v1.failure('The bodyParam "autoTranslateLanguage" must be a string.');
 			}
 
-			await saveAutoTranslateSettings(this.userId, roomId, field, value === true ? '1' : String(value).valueOf(), {
+			await saveAutoTranslateSettings(this.userId, roomId, field, value === true || value === 'true' ? '1' : String(value), {
 				defaultLanguage: defaultLanguage || '',
 			});
 

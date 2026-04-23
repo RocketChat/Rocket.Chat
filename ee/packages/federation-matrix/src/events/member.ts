@@ -1,5 +1,5 @@
 import { Room, Upload } from '@rocket.chat/core-services';
-import { isBannedSubscription } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -194,6 +194,10 @@ async function handleInvite({
 		throw new Error(`Failed to get or create inviter user: ${senderId}`);
 	}
 
+	if (!isRegisterUser(inviterUser)) {
+		throw new Error('Inviter user is not registered');
+	}
+
 	const inviteeUser = await getOrCreateFederatedUser(userId);
 	if (!inviteeUser) {
 		throw new Error(`Failed to get or create invitee user: ${userId}`);
@@ -232,7 +236,7 @@ async function handleInvite({
 		roomFName,
 		roomType,
 		inviterUserId: inviterUser._id,
-		inviterUsername: inviterUser.username as string, // TODO: Remove force cast
+		inviterUsername: inviterUser.username,
 		inviteeUsername: roomType === 'd' ? inviteeUser.username : undefined,
 	});
 
@@ -242,6 +246,11 @@ async function handleInvite({
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, inviteeUser._id);
 	if (subscription) {
+		// if subscription state says the user is banned, it means the user was previously banned and is now being re-invited,
+		// so we need to unban the user instead of creating a new invite
+		if (isBannedSubscription(subscription)) {
+			await Room.unbanAndInviteUser(subscription, inviteeUser, inviterUser);
+		}
 		return;
 	}
 
@@ -288,7 +297,12 @@ async function handleJoin({
 		throw new Error(`Room not found while joining user ${userId} to room ${roomId}`);
 	}
 
+	// if we receive a join event but still don't have a subscription for the user,
+	// it means the join event was sent before the invite event, so we need to create the subscription and then accept the invite.
+	// this will happen when for example the user is unbanned, so the leave event will remove the subscription and then we just
+	// receive the join event without receiving the invite.
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
@@ -328,6 +342,7 @@ async function handleLeave({
 	room_id: roomId,
 	state_key: userId,
 	sender,
+	unsigned: { prev_content: prevContent },
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const serverName = federationSDK.getConfig('serverName');
 	const [username] = getUsernameServername(userId, serverName);
@@ -358,7 +373,12 @@ async function handleLeave({
 		return;
 	}
 
-	await Room.performUserRemoval(room, leavingUser);
+	// this means the leave event is actually an unban
+	if (prevContent?.membership === 'ban') {
+		await Room.performUserUnban(room, leavingUser, senderUser);
+	} else {
+		await Room.performUserRemoval(room, leavingUser);
+	}
 
 	// update room name for DMs
 	if (room.t === 'd') {

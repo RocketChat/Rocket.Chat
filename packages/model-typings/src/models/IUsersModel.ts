@@ -111,12 +111,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number }>;
 	getLastAvailableAgentRouted(
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date }>;
 
 	setLastRoutingTime(userId: IUser['_id']): Promise<WithId<IUser> | null>;
@@ -252,17 +254,20 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(
 		userList: string | string[],
 		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
 	): FindCursor<T>;
 	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getUnavailableAgents(
 		departmentId?: string,
 		extraQuery?: Filter<AvailableAgentsAggregation>,
 		isLivechatEnabledWhenIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,
 		options?: FindOptions<IUser>,
 		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<IUser | null>;
 
 	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T>;
@@ -283,13 +288,18 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		loginTokenObject: AtLeast<IPersonalAccessToken, 'type' | 'name'>;
 	}): Promise<UpdateResult>;
 	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }: { userId: IUser['_id']; tokenName: string }): Promise<IUser | null>;
-	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean): Promise<boolean>;
-	findOnlineAgents<T extends Document = ILivechatAgent>(agentId?: IUser['_id'], isLivechatEnabledWhenIdle?: boolean): FindCursor<T>;
+	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean, acceptChatsWithNoAgents?: boolean): Promise<boolean>;
+	findOnlineAgents<T extends Document = ILivechatAgent>(
+		agentId?: IUser['_id'],
+		isLivechatEnabledWhenIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
+	): FindCursor<T>;
 	countOnlineAgents(agentId: string): Promise<number>;
 	findOneBotAgent<T extends Document = ILivechatAgent>(): Promise<T | null>;
 	findOneOnlineAgentById(
 		agentId: string,
 		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
 		options?: FindOptions<IUser>,
 	): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
@@ -298,6 +308,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		ignoreAgentId?: string,
 		extraQuery?: Filter<AvailableAgentsAggregation>,
 		enabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
 	): Promise<{ agentId: string; username?: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username?: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;

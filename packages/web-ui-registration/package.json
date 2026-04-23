@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "29.0.0",
+	"version": "29.0.2",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
@@ -17,7 +17,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "~3.3.2"
+		"dompurify": "~3.4.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
@@ -44,15 +44,15 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
-		"@types/react": "~18.3.27",
+		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"i18next": "~23.4.9",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
-		"react-virtuoso": "^4.12.0",
+		"react-virtuoso": "~4.12.8",
 		"storybook": "^8.6.18",
 		"storybook-dark-mode": "^4.0.2",
 		"typescript": "~5.9.3"
@@ -60,7 +60,7 @@
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
 		"@rocket.chat/tools": "0.2.5",
-		"@rocket.chat/ui-contexts": "29.0.0",
+		"@rocket.chat/ui-contexts": "29.0.2",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",

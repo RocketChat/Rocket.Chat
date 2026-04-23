@@ -19,9 +19,14 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	isUsersListParamsGET,
+	isUsersPresenceParamsGET,
+	isUsersRequestDataDownloadParamsGET,
+	isUsersGetPresenceParamsGET,
+	isUsersGetStatusParamsGET,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
@@ -101,59 +106,91 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const voidSuccessResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+// user shape varies by projection and permissions — use $ref when IUser is available in typia
+const userObjectResponse = ajv.compile<{ user: object }>({
+	type: 'object',
+	properties: {
+		user: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['user', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'users.update',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
-		async post() {
-			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
-
-			if (userData.name && !validateNameChars(userData.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-			const auditStore = new UserChangedAuditStore({
-				_id: this.user._id,
-				ip: this.requestIp,
-				useragent: this.request.headers.get('user-agent') || '',
-				username: this.user.username,
-			});
-
-			await saveUser(this.userId, userData, { auditStore });
-
-			if (typeof this.bodyParams.data.active !== 'undefined') {
-				const {
-					userId,
-					data: { active },
-					confirmRelinquish,
-				} = this.bodyParams;
-				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
-			}
-
-			const { fields } = await this.parseJsonQuery();
-
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			return API.v1.success({ user });
+		authRequired: true,
+		twoFactorRequired: true,
+		body: isUsersUpdateParamsPOST,
+		response: {
+			200: userObjectResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
+
+		if (userData.name && !validateNameChars(userData.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+		const auditStore = new UserChangedAuditStore({
+			_id: this.user._id,
+			ip: this.requestIp || '',
+			useragent: this.request.headers.get('user-agent') || '',
+			username: this.user.username,
+		});
+
+		await saveUser(this.userId, userData, { auditStore });
+
+		if (typeof this.bodyParams.data.active !== 'undefined') {
+			const {
+				userId,
+				data: { active },
+				confirmRelinquish,
+			} = this.bodyParams;
+			await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
+		}
+
+		const { fields } = await this.parseJsonQuery();
+
+		const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
-API.v1.addRoute(
-	'users.updateOwnBasicInfo',
-	{
-		authRequired: true,
-		userWithoutUsername: true,
-		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
-		rateLimiterOptions: {
-			numRequestsAllowed: 1,
-			intervalTimeInMS: 60000,
+API.v1
+	.post(
+		'users.updateOwnBasicInfo',
+		{
+			authRequired: true,
+			userWithoutUsername: true,
+			body: isUsersUpdateOwnBasicInfoParamsPOST,
+			rateLimiterOptions: {
+				numRequestsAllowed: 1,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: userObjectResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-	{
-		async post() {
+		async function action() {
 			const userData = {
 				email: this.bodyParams.data.email,
 				realname: this.bodyParams.data.name,
@@ -184,14 +221,19 @@ API.v1.addRoute(
 				user: await getUserInfo((await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude })) as IUser, false),
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setPreferences',
-	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
-	{
-		async post() {
+	)
+	.post(
+		'users.setPreferences',
+		{
+			authRequired: true,
+			body: isUsersSetPreferencesParamsPOST,
+			response: {
+				200: userObjectResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (
 				this.bodyParams.userId &&
 				this.bodyParams.userId !== this.userId &&
@@ -228,14 +270,20 @@ API.v1.addRoute(
 				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setAvatar',
-	{ authRequired: true, validateParams: isUsersSetAvatarProps },
-	{
-		async post() {
+	)
+	.post(
+		'users.setAvatar',
+		{
+			authRequired: true,
+			body: isUsersSetAvatarProps,
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const canEditOtherUserAvatar = await hasPermissionAsync(this.userId, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
@@ -299,14 +347,19 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.create',
-	{ authRequired: true, validateParams: isUserCreateParamsPOST },
-	{
-		async post() {
+	)
+	.post(
+		'users.create',
+		{
+			authRequired: true,
+			body: isUserCreateParamsPOST,
+			response: {
+				200: userObjectResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -344,141 +397,225 @@ API.v1.addRoute(
 
 			return API.v1.success({ user });
 		},
-	},
-);
+	);
 
-API.v1.addRoute(
+API.v1.post(
 	'users.delete',
-	{ authRequired: true, permissionsRequired: ['delete-user'] },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
-
-			return API.v1.success({ deletedRooms });
+		authRequired: true,
+		permissionsRequired: ['delete-user'],
+		body: ajv.compile<{ userId?: string; username?: string; user?: string; confirmRelinquish?: boolean }>({
+			type: 'object',
+			properties: {
+				userId: { type: 'string' },
+				username: { type: 'string' },
+				user: { type: 'string' },
+				confirmRelinquish: { type: 'boolean', nullable: true },
+			},
+			anyOf: [{ required: ['userId'] }, { required: ['username'] }, { required: ['user'] }],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ deletedRooms: string[] }>({
+				type: 'object',
+				properties: {
+					deletedRooms: { type: 'array', items: { type: 'string' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['deletedRooms', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+		const { confirmRelinquish = false } = this.bodyParams;
+
+		const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
+
+		return API.v1.success({ deletedRooms });
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
 	{
-		async post() {
-			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
-			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
-
-			return API.v1.success();
+		authRequired: true,
+		body: ajv.compile<{ password: string; confirmRelinquish?: boolean }>({
+			type: 'object',
+			properties: {
+				password: { type: 'string' },
+				confirmRelinquish: { type: 'boolean', nullable: true },
+			},
+			required: ['password'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		const { confirmRelinquish = false } = this.bodyParams;
+
+		await deleteUserOwnAccount(this.userId, this.bodyParams.password, confirmRelinquish);
+
+		return API.v1.success();
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.setActiveStatus',
 	{
 		authRequired: true,
-		validateParams: isUserSetActiveStatusParamsPOST,
+		body: isUserSetActiveStatusParamsPOST,
 		permissionsRequired: {
 			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
 		},
-	},
-	{
-		async post() {
-			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-			await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
-
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-			return API.v1.success({
-				user,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
-	{
-		async post() {
-			const { daysIdle, role = 'user' } = this.bodyParams;
-
-			const lastLoggedIn = new Date();
-			lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
-
-			// since we're deactiving users that are not logged in, there is no need to send data through WS
-			const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
-
-			return API.v1.success({
-				count,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.info',
-	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
-	{
-		async get() {
-			const searchTerms: [string, 'id' | 'username' | 'importId' | 'email'] | false =
-				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
-				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
-				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
-				('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']);
-
-			if (!searchTerms) {
-				return API.v1.failure('Invalid search query.');
-			}
-
-			const user = await getFullUserDataByIdOrUsernameOrImportIdOrEmail(this.userId, ...searchTerms);
-
-			if (!user) {
-				return API.v1.failure('User not found.');
-			}
-			const myself = user._id === this.userId;
-			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
-				return API.v1.success({
+		response: {
+			200: ajv.compile<{ user: Pick<IUser, '_id' | 'active'> }>({
+				type: 'object',
+				properties: {
 					user: {
-						...user,
-						rooms: await Subscriptions.findByUserId(user._id, {
-							projection: {
-								rid: 1,
-								name: 1,
-								t: 1,
-								roles: 1,
-								unread: 1,
-								federated: 1,
-							},
-							sort: {
-								t: 1,
-								name: 1,
-							},
-						}).toArray(),
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							active: { type: 'boolean' },
+						},
+						required: ['_id', 'active'],
+						additionalProperties: false,
 					},
-				});
-			}
-
-			return API.v1.success({
-				user,
-			});
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['user', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
+		await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
+
+		const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+		return API.v1.success({
+			user,
+		});
 	},
 );
 
+API.v1.post(
+	'users.deactivateIdle',
+	{
+		authRequired: true,
+		body: isUserDeactivateIdleParamsPOST,
+		permissionsRequired: ['edit-other-user-active-status'],
+		response: {
+			200: ajv.compile<{ count: number }>({
+				type: 'object',
+				properties: {
+					count: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['count', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { daysIdle, role = 'user' } = this.bodyParams;
+
+		const lastLoggedIn = new Date();
+		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
+
+		// since we're deactiving users that are not logged in, there is no need to send data through WS
+		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+		return API.v1.success({
+			count,
+		});
+	},
+);
+
+API.v1.get(
+	'users.info',
+	{
+		authRequired: true,
+		query: isUsersInfoParamsGetProps,
+		response: {
+			// user shape varies by projection, permissions, and includeUserRooms
+			200: userObjectResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email'] | false =
+			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
+			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
+			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
+			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']);
+
+		if (!searchTerms) {
+			return API.v1.failure('Invalid search query.');
+		}
+
+		const user = await getFullUserDataByIdOrUsernameOrImportIdOrEmail(this.userId, ...searchTerms);
+
+		if (!user) {
+			return API.v1.failure('User not found.');
+		}
+		const myself = user._id === this.userId;
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			return API.v1.success({
+				user: {
+					...user,
+					rooms: await Subscriptions.findByUserId(user._id, {
+						projection: {
+							rid: 1,
+							name: 1,
+							t: 1,
+							roles: 1,
+							unread: 1,
+							federated: 1,
+						},
+						sort: {
+							t: 1,
+							name: 1,
+						},
+					}).toArray(),
+				},
+			});
+		}
+
+		return API.v1.success({
+			user,
+		});
+	},
+);
+
+// users.list accepts arbitrary query filter fields (name, username, etc.)
+// that cannot be statically defined — keeping as addRoute until params are known
 API.v1.addRoute(
 	'users.list',
 	{
@@ -606,77 +743,103 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.listByStatus',
 	{
 		authRequired: true,
-		validateParams: isUsersListStatusProps,
+		query: isUsersListStatusProps,
 		permissionsRequired: ['view-d-room'],
-	},
-	{
-		async get() {
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
-
-			return API.v1.success(
-				await findPaginatedUsersByStatus({
-					uid: this.userId,
-					offset,
-					count,
-					sort,
-					status,
-					roles,
-					searchTerm,
-					hasLoggedIn,
-					type,
-					inactiveReason,
-				}),
-			);
+		response: {
+			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					// user shape varies by projection and permissions
+					users: { type: 'array' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		if (
+			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
+
+		return API.v1.success(
+			await findPaginatedUsersByStatus({
+				uid: this.userId,
+				offset,
+				count,
+				sort,
+				status,
+				roles,
+				searchTerm,
+				hasLoggedIn,
+				type,
+				inactiveReason,
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.sendWelcomeEmail',
 	{
 		authRequired: true,
-		validateParams: isUsersSendWelcomeEmailProps,
+		body: isUsersSendWelcomeEmailProps,
 		permissionsRequired: ['send-mail'],
-	},
-	{
-		async post() {
-			const { email } = this.bodyParams;
-
-			if (!isSMTPConfigured()) {
-				throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
-					method: 'sendWelcomeEmail',
-				});
-			}
-
-			const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
-
-			if (!user) {
-				throw new MeteorError('error-invalid-user', 'Invalid user', {
-					method: 'sendWelcomeEmail',
-				});
-			}
-
-			await sendWelcomeEmail({ ...user, email });
-
-			return API.v1.success();
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { email } = this.bodyParams;
+
+		if (!isSMTPConfigured()) {
+			throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+				method: 'sendWelcomeEmail',
+			});
+		}
+
+		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
+
+		if (!user) {
+			throw new MeteorError('error-invalid-user', 'Invalid user', {
+				method: 'sendWelcomeEmail',
+			});
+		}
+
+		await sendWelcomeEmail({ ...user, email });
+
+		return API.v1.success();
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.register',
 	{
 		authRequired: false,
@@ -684,88 +847,104 @@ API.v1.addRoute(
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
-		validateParams: isUserRegisterParamsPOST,
-	},
-	{
-		async post() {
-			const { secret: secretURL, ...params } = this.bodyParams;
-
-			if (this.userId) {
-				return API.v1.failure('Logged in users can not register again.');
-			}
-
-			if (params.name && !validateNameChars(params.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			if (!validateUsername(this.bodyParams.username)) {
-				return API.v1.failure(`The username provided is not valid`);
-			}
-
-			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
-				return API.v1.failure('Username is already in use');
-			}
-			if (!(await checkEmailAvailability(this.bodyParams.email))) {
-				return API.v1.failure('Email already exists');
-			}
-			if (this.bodyParams.customFields) {
-				try {
-					await validateCustomFields(this.bodyParams.customFields);
-				} catch (e) {
-					return API.v1.failure(e);
-				}
-			}
-
-			// Register the user
-			const userId = await registerUser({
-				...params,
-				...(secretURL && { secretURL }),
-			});
-
-			if (typeof userId !== 'string') {
-				return API.v1.failure('Error creating user');
-			}
-
-			// Now set their username
-			const { fields } = await this.parseJsonQuery();
-			await setUsernameWithValidation(userId, this.bodyParams.username);
-
-			const user = await Users.findOneById(userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFields(userId, this.bodyParams.customFields);
-			}
-
-			return API.v1.success({ user });
+		body: isUserRegisterParamsPOST,
+		response: {
+			200: userObjectResponse,
+			400: validateBadRequestErrorResponse,
 		},
+	},
+	async function action() {
+		const { secret: secretURL, ...params } = this.bodyParams;
+
+		if (this.userId) {
+			return API.v1.failure('Logged in users can not register again.');
+		}
+
+		if (params.name && !validateNameChars(params.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+
+		if (!validateUsername(this.bodyParams.username)) {
+			return API.v1.failure(`The username provided is not valid`);
+		}
+
+		if (!(await checkUsernameAvailability(this.bodyParams.username))) {
+			return API.v1.failure('Username is already in use');
+		}
+		if (!(await checkEmailAvailability(this.bodyParams.email))) {
+			return API.v1.failure('Email already exists');
+		}
+		if (this.bodyParams.customFields) {
+			try {
+				validateCustomFields(this.bodyParams.customFields);
+			} catch (e) {
+				return API.v1.failure(e);
+			}
+		}
+
+		// Register the user
+		const userId = await registerUser({
+			...params,
+			...(secretURL && { secretURL }),
+		});
+
+		if (typeof userId !== 'string') {
+			return API.v1.failure('Error creating user');
+		}
+
+		// Now set their username
+		const { fields } = await this.parseJsonQuery();
+		await setUsernameWithValidation(userId, this.bodyParams.username);
+
+		const user = await Users.findOneById(userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		if (this.bodyParams.customFields) {
+			await saveCustomFields(userId, this.bodyParams.customFields);
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.resetAvatar',
-	{ authRequired: true },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
-				await resetAvatar(this.userId, this.userId);
-			} else if (
-				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
-				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				await resetAvatar(this.userId, user._id);
-			} else {
-				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
-					method: 'users.resetAvatar',
-				});
-			}
-
-			return API.v1.success();
+		authRequired: true,
+		body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
+			type: 'object',
+			properties: {
+				userId: { type: 'string' },
+				username: { type: 'string' },
+				user: { type: 'string' },
+			},
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
+			await resetAvatar(this.userId, this.userId);
+		} else if (
+			(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
+			(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+		) {
+			await resetAvatar(this.userId, user._id);
+		} else {
+			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+				method: 'users.resetAvatar',
+			});
+		}
+
+		return API.v1.success();
 	},
 );
 
@@ -805,7 +984,7 @@ const usersEndpoints = API.v1
 									minLength: 1,
 								},
 							},
-							required: ['userId'],
+							required: ['userId', 'authToken'],
 							additionalProperties: false,
 						},
 						success: {
@@ -896,113 +1075,230 @@ const usersEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getPreferences',
-	{ authRequired: true },
 	{
-		async get() {
-			const user = await Users.findOneById(this.userId);
-			if (user?.settings) {
-				const { preferences = {} } = user?.settings;
-				preferences.language = user?.language;
-
-				return API.v1.success({
-					preferences,
-				});
-			}
-			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ preferences: Record<string, unknown> }>({
+				type: 'object',
+				properties: {
+					// preferences is a dynamic key-value object that varies per user
+					preferences: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['preferences', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await Users.findOneById(this.userId);
+		if (user?.settings) {
+			const { preferences = {} } = user?.settings;
+			preferences.language = user?.language;
+
+			return API.v1.success({
+				preferences,
+			});
+		}
+		return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 );
 
-API.v1.addRoute(
-	'users.forgotPassword',
-	{ authRequired: false },
-	{
-		async post() {
+API.v1
+	.post(
+		'users.forgotPassword',
+		{
+			authRequired: false,
+			body: ajv.compile<{ email: string }>({
+				type: 'object',
+				properties: {
+					email: { type: 'string' },
+				},
+				required: ['email'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
 			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
 
 			if (!isPasswordResetEnabled) {
 				return API.v1.failure('Password reset is not enabled');
 			}
 
-			const { email } = this.bodyParams;
-			if (!email) {
-				return API.v1.failure("The 'email' param is required");
-			}
-
-			await sendForgotPasswordEmail(email.toLowerCase());
+			await sendForgotPasswordEmail(this.bodyParams.email.toLowerCase());
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getUsernameSuggestion',
-	{ authRequired: true, userWithoutUsername: true },
-	{
-		async get() {
+	)
+	.get(
+		'users.getUsernameSuggestion',
+		{
+			authRequired: true,
+			userWithoutUsername: true,
+			response: {
+				200: ajv.compile<{ result: string }>({
+					type: 'object',
+					properties: {
+						result: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const result = await generateUsernameSuggestion(this.user);
+
+			if (!result) {
+				return API.v1.failure('No username suggestion found');
+			}
 
 			return API.v1.success({ result });
 		},
-	},
-);
+	);
 
-API.v1.addRoute(
-	'users.checkUsernameAvailability',
-	{
-		authRequired: true,
-		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
+const tokenNameBodySchema = ajv.compile<{ tokenName: string; bypassTwoFactor?: boolean }>({
+	type: 'object',
+	properties: {
+		tokenName: { type: 'string' },
+		bypassTwoFactor: { type: 'boolean', nullable: true },
 	},
-	{
-		async get() {
+	required: ['tokenName'],
+	additionalProperties: false,
+});
+
+const tokenResponseSchema = ajv.compile<{ token: string }>({
+	type: 'object',
+	properties: {
+		token: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['token', 'success'],
+	additionalProperties: false,
+});
+
+API.v1
+	.get(
+		'users.checkUsernameAvailability',
+		{
+			authRequired: true,
+			query: isUsersCheckUsernameAvailabilityParamsGET,
+			response: {
+				200: ajv.compile<{ result: boolean }>({
+					type: 'object',
+					properties: {
+						result: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { username } = this.queryParams;
 
 			const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
 
 			return API.v1.success({ result });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.generatePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'users.generatePersonalAccessToken',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			body: tokenNameBodySchema,
+			response: {
+				200: tokenResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
 			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.regeneratePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'users.regeneratePersonalAccessToken',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			body: ajv.compile<{ tokenName: string }>({
+				type: 'object',
+				properties: {
+					tokenName: { type: 'string' },
+				},
+				required: ['tokenName'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: tokenResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tokenName } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
 			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success({ token });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getPersonalAccessTokens',
-	{ authRequired: true, permissionsRequired: ['create-personal-access-tokens'] },
-	{
-		async get() {
+	)
+	.get(
+		'users.getPersonalAccessTokens',
+		{
+			authRequired: true,
+			permissionsRequired: ['create-personal-access-tokens'],
+			response: {
+				200: ajv.compile<{ tokens: { name: string; createdAt: string; lastTokenPart: string; bypassTwoFactor: boolean }[] }>({
+					type: 'object',
+					properties: {
+						tokens: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									name: { type: 'string' },
+									createdAt: { type: 'string' },
+									lastTokenPart: { type: 'string' },
+									bypassTwoFactor: { type: 'boolean' },
+								},
+								required: ['name', 'createdAt', 'lastTokenPart', 'bypassTwoFactor'],
+								additionalProperties: false,
+							},
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['tokens', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
@@ -1018,30 +1314,45 @@ API.v1.addRoute(
 					})) || [],
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.removePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
-			const { tokenName } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
-			await removePersonalAccessTokenOfUser(tokenName, this.userId);
+	)
+	.post(
+		'users.removePersonalAccessToken',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			body: ajv.compile<{ tokenName: string }>({
+				type: 'object',
+				properties: {
+					tokenName: { type: 'string' },
+				},
+				required: ['tokenName'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			await removePersonalAccessTokenOfUser(this.bodyParams.tokenName, this.userId);
 
 			return API.v1.success();
 		},
-	},
-);
+	);
 
-API.v1.addRoute(
-	'users.2fa.enableEmail',
-	{ authRequired: true },
-	{
-		async post() {
+API.v1
+	.post(
+		'users.2fa.enableEmail',
+		{
+			authRequired: true,
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
 			if (hasUnverifiedEmail) {
 				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
@@ -1078,14 +1389,20 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.2fa.disableEmail',
-	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
-	{
-		async post() {
+	)
+	.post(
+		'users.2fa.disableEmail',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			await Users.disableEmail2FAByUserId(this.userId);
 
 			void notifyOnUserChangeAsync(async () => {
@@ -1103,116 +1420,160 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	)
+	.post(
+		'users.2fa.sendEmailCode',
+		{
+			body: ajv.compile<{ emailOrUsername: string }>({
+				type: 'object',
+				properties: {
+					emailOrUsername: { type: 'string' },
+				},
+				required: ['emailOrUsername'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
+			const { emailOrUsername } = this.bodyParams;
 
-API.v1.addRoute('users.2fa.sendEmailCode', {
-	async post() {
-		const { emailOrUsername } = this.bodyParams;
+			const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
+			const userId = this.userId || (await Users[method](emailOrUsername, { projection: { _id: 1 } }))?._id;
 
-		if (!emailOrUsername) {
-			throw new Meteor.Error('error-parameter-required', 'emailOrUsername is required');
-		}
+			if (!userId) {
+				// this.logger.error('[2fa] User was not found when requesting 2fa email code');
+				return API.v1.success();
+			}
+			const user = await getUserForCheck(userId);
+			if (!user) {
+				// this.logger.error('[2fa] User was not found when requesting 2fa email code');
+				return API.v1.success();
+			}
 
-		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
-		const userId = this.userId || (await Users[method](emailOrUsername, { projection: { _id: 1 } }))?._id;
+			await emailCheck.sendEmailCode(user);
 
-		if (!userId) {
-			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
-		}
-		const user = await getUserForCheck(userId);
-		if (!user) {
-			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
-			return API.v1.success();
-		}
+		},
+	);
 
-		await emailCheck.sendEmailCode(user);
-
-		return API.v1.success();
-	},
-});
-
-API.v1.addRoute(
+API.v1.post(
 	'users.sendConfirmationEmail',
 	{
 		authRequired: true,
-		validateParams: isUsersSendConfirmationEmailParamsPOST,
+		body: isUsersSendConfirmationEmailParamsPOST,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,
 			intervalTimeInMS: 60000,
 		},
-	},
-	{
-		async post() {
-			const { email } = this.bodyParams;
-
-			if (await sendConfirmationEmail(email)) {
-				return API.v1.success();
-			}
-			return API.v1.failure();
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { email } = this.bodyParams;
+
+		if (await sendConfirmationEmail(email)) {
+			return API.v1.success();
+		}
+		return API.v1.failure();
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.presence',
-	{ authRequired: true },
 	{
-		async get() {
-			// if presence broadcast is disabled, return an empty array (all users are "offline")
-			if (settings.get('Presence_broadcast_disabled')) {
-				return API.v1.success({
-					users: [],
-					full: true,
-				});
-			}
-
-			const { from, ids } = this.queryParams;
-
-			const options = {
-				projection: {
-					username: 1,
-					name: 1,
-					status: 1,
-					utcOffset: 1,
-					statusText: 1,
-					avatarETag: 1,
+		authRequired: true,
+		query: isUsersPresenceParamsGET,
+		response: {
+			200: ajv.compile<{ users: object[]; full: boolean }>({
+				type: 'object',
+				properties: {
+					// user shape varies by projection and permissions
+					users: { type: 'array' },
+					full: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
 				},
-			};
+				required: ['users', 'full', 'success'],
+				additionalProperties: false,
+			}),
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		// if presence broadcast is disabled, return an empty array (all users are "offline")
+		if (settings.get('Presence_broadcast_disabled')) {
+			return API.v1.success({
+				users: [],
+				full: true,
+			});
+		}
 
-			if (ids) {
+		const { from, ids } = this.queryParams;
+
+		const options = {
+			projection: {
+				username: 1,
+				name: 1,
+				status: 1,
+				utcOffset: 1,
+				statusText: 1,
+				avatarETag: 1,
+			},
+		};
+
+		if (ids) {
+			return API.v1.success({
+				users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				full: false,
+			});
+		}
+
+		if (from) {
+			const ts = new Date(from);
+			const diff = (Date.now() - Number(ts)) / 1000 / 60;
+
+			if (diff < 10) {
 				return API.v1.success({
-					users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+					users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
 					full: false,
 				});
 			}
+		}
 
-			if (from) {
-				const ts = new Date(from);
-				const diff = (Date.now() - Number(ts)) / 1000 / 60;
-
-				if (diff < 10) {
-					return API.v1.success({
-						users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
-						full: false,
-					});
-				}
-			}
-
-			return API.v1.success({
-				users: await Users.findUsersNotOffline(options).toArray(),
-				full: true,
-			});
-		},
+		return API.v1.success({
+			users: await Users.findUsersNotOffline(options).toArray(),
+			full: true,
+		});
 	},
 );
 
-API.v1.addRoute(
-	'users.requestDataDownload',
-	{ authRequired: true },
-	{
-		async get() {
+API.v1
+	.get(
+		'users.requestDataDownload',
+		{
+			authRequired: true,
+			query: isUsersRequestDataDownloadParamsGET,
+			response: {
+				200: ajv.compile<{ requested: boolean; exportOperation: IExportOperation }>({
+					type: 'object',
+					properties: {
+						requested: { type: 'boolean' },
+						// IExportOperation has complex/dynamic shape not yet in typia
+						exportOperation: { type: 'object' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['requested', 'exportOperation', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { fullExport = false } = this.queryParams;
 			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
 				requested: boolean;
@@ -1224,14 +1585,26 @@ API.v1.addRoute(
 				exportOperation: result.exportOperation,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.logoutOtherClients',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'users.logoutOtherClients',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ token: string; tokenExpires: string }>({
+					type: 'object',
+					properties: {
+						token: { type: 'string' },
+						tokenExpires: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['token', 'tokenExpires', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
@@ -1262,58 +1635,93 @@ API.v1.addRoute(
 				tokenExpires: tokenExpires?.toISOString() || '',
 			});
 		},
-	},
-);
+	);
 
-API.v1.addRoute(
+API.v1.get(
 	'users.autocomplete',
-	{ authRequired: true, validateParams: isUsersAutocompleteProps },
 	{
-		async get() {
-			const { selector: selectorRaw } = this.queryParams;
+		authRequired: true,
+		query: isUsersAutocompleteProps,
+		response: {
+			200: ajv.compile<{ items: object[] }>({
+				type: 'object',
+				properties: {
+					// autocomplete items shape varies by permissions
+					items: { type: 'array' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['items', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { selector: selectorRaw } = this.queryParams;
 
-			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
+		const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
 
-			try {
-				if (selector?.conditions) {
-					const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
-					const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
+		try {
+			if (selector?.conditions) {
+				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
 
-					if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
-						throw new Error('error-invalid-query');
-					}
+				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+					throw new Error('error-invalid-query');
 				}
-			} catch (e) {
-				return API.v1.failure(e);
 			}
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 
-			return API.v1.success(
-				await findUsersToAutocomplete({
-					uid: this.userId,
-					selector,
-				}),
-			);
-		},
+		return API.v1.success(
+			await findUsersToAutocomplete({
+				uid: this.userId,
+				selector,
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
-	'users.removeOtherTokens',
-	{ authRequired: true },
-	{
-		async post() {
-			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
+API.v1
+	.post(
+		'users.removeOtherTokens',
+		{
+			authRequired: true,
+			response: {
+				200: voidSuccessResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.resetE2EKey',
-	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
-	{
-		async post() {
+		async function action() {
+			await Users.removeNonLoginTokensExcept(this.userId, this.token);
+			return API.v1.success();
+		},
+	)
+	.post(
+		'users.resetE2EKey',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
+				type: 'object',
+				properties: {
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				// reset other user keys
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -1332,17 +1740,30 @@ API.v1.addRoute(
 			await resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.resetTOTP',
-	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
-	{
-		async post() {
-			// // reset own keys
+	)
+	.post(
+		'users.resetTOTP',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
+				type: 'object',
+				properties: {
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				// reset other user keys
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
@@ -1363,14 +1784,29 @@ API.v1.addRoute(
 			await resetTOTP(this.userId, false);
 			return API.v1.success();
 		},
-	},
-);
+	);
 
-API.v1.addRoute(
-	'users.listTeams',
-	{ authRequired: true, validateParams: isUsersListTeamsProps },
-	{
-		async get() {
+API.v1
+	.get(
+		'users.listTeams',
+		{
+			authRequired: true,
+			query: isUsersListTeamsProps,
+			response: {
+				200: ajv.compile<{ teams: unknown[] }>({
+					type: 'object',
+					properties: {
+						teams: { type: 'array' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['teams', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
@@ -1389,14 +1825,28 @@ API.v1.addRoute(
 				teams,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.logout',
-	{ authRequired: true, validateParams: isUserLogoutParamsPOST },
-	{
-		async post() {
+	)
+	.post(
+		'users.logout',
+		{
+			authRequired: true,
+			body: isUserLogoutParamsPOST,
+			response: {
+				200: ajv.compile<{ message: string }>({
+					type: 'object',
+					properties: {
+						message: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
@@ -1416,14 +1866,33 @@ API.v1.addRoute(
 				message: `User ${userId} has been logged out!`,
 			});
 		},
-	},
-);
+	);
 
-API.v1.addRoute(
-	'users.getPresence',
-	{ authRequired: true },
-	{
-		async get() {
+const statusType = { type: 'string', enum: ['online', 'offline', 'away', 'busy'] } as const;
+
+API.v1
+	.get(
+		'users.getPresence',
+		{
+			authRequired: true,
+			query: isUsersGetPresenceParamsGET,
+			response: {
+				200: ajv.compile<{ presence: UserStatus; connectionStatus?: string; lastLogin?: Date }>({
+					type: 'object',
+					properties: {
+						presence: statusType,
+						connectionStatus: { type: 'string', nullable: true },
+						lastLogin: { type: 'string', nullable: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['presence', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user = await Users.findOneById(this.userId);
 				return API.v1.success({
@@ -1439,20 +1908,40 @@ API.v1.addRoute(
 				presence: user.status || ('offline' as UserStatus),
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setStatus',
-	{
-		authRequired: true,
-		rateLimiterOptions: {
-			numRequestsAllowed: 5,
-			intervalTimeInMS: 60000,
+	)
+	.post(
+		'users.setStatus',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{
+				status?: UserStatus;
+				message?: string;
+				userId?: string;
+				username?: string;
+				user?: string;
+			}>({
+				type: 'object',
+				properties: {
+					status: { type: 'string', enum: ['online', 'away', 'offline', 'busy'] },
+					message: { type: 'string', nullable: true },
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
 		},
-	},
-	{
-		async post() {
+		async function action() {
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -1530,27 +2019,35 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-// status: 'online' | 'offline' | 'away' | 'busy';
-// message?: string;
-// _id: string;
-// connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
-// };
-
-API.v1.addRoute(
-	'users.getStatus',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'users.getStatus',
+		{
+			authRequired: true,
+			query: isUsersGetStatusParamsGET,
+			response: {
+				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						status: statusType,
+						connectionStatus: { type: 'string', nullable: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'status', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
-				const user: IUser | null = await Users.findOneById(this.userId);
 				return API.v1.success({
-					_id: user?._id,
+					_id: this.userId,
 					// message: user.statusText,
-					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					connectionStatus: (this.user.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					status: (this.user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 				});
 			}
 
@@ -1562,8 +2059,7 @@ API.v1.addRoute(
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 			});
 		},
-	},
-);
+	);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

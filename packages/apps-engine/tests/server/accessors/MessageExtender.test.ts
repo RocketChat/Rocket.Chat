@@ -20,20 +20,14 @@ describe('MessageExtender', () => {
 		assert.strictEqual(me.addCustomField('thing', 'value'), me);
 		assert.ok(msg.customFields !== undefined);
 		assert.strictEqual(msg.customFields.thing, 'value');
-		assert.throws(
-			() => me.addCustomField('thing', 'second'),
-			{
-				name: 'Error',
-				message: 'The message already contains a custom field by the key: thing',
-			},
-		);
-		assert.throws(
-			() => me.addCustomField('thing.', 'second'),
-			{
-				name: 'Error',
-				message: 'The given key contains a period, which is not allowed. Key: thing.',
-			},
-		);
+		assert.throws(() => me.addCustomField('thing', 'second'), {
+			name: 'Error',
+			message: 'The message already contains a custom field by the key: thing',
+		});
+		assert.throws(() => me.addCustomField('thing.', 'second'), {
+			name: 'Error',
+			message: 'The given key contains a period, which is not allowed. Key: thing.',
+		});
 
 		assert.strictEqual(me.addAttachment({}), me);
 		assert.strictEqual(msg.attachments.length, 1);

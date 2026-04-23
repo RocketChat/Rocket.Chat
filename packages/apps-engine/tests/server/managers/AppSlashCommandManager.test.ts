@@ -341,7 +341,8 @@ describe('AppSlashCommandManager', () => {
 			1,
 		);
 		assert.strictEqual(
-			doRegisterCommandSpy.mock.calls.filter((c: any) => c.arguments[0] === enabledRegInfo.slashCommand && c.arguments[1] === 'testing').length,
+			doRegisterCommandSpy.mock.calls.filter((c: any) => c.arguments[0] === enabledRegInfo.slashCommand && c.arguments[1] === 'testing')
+				.length,
 			1,
 		);
 	});

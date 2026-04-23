@@ -231,7 +231,7 @@ describe('LIVECHAT - rooms', () => {
 		it('should return an error when the "agents" query parameter is not valid', async () => {
 			await request
 				.get(api('livechat/rooms'))
-				.query({ agents: 'invalid' })
+				.query({ agents: { test: true } })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -265,7 +265,7 @@ describe('LIVECHAT - rooms', () => {
 		it('should return an error when the "open" query parameter is not valid', async () => {
 			await request
 				.get(api('livechat/rooms'))
-				.query({ 'open[]': 'true' })
+				.query({ open: { test: true } })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -276,7 +276,7 @@ describe('LIVECHAT - rooms', () => {
 		it('should return an error when the "tags" query parameter is not valid', async () => {
 			await request
 				.get(api('livechat/rooms'))
-				.query({ tags: 'invalid' })
+				.query({ tags: { obj: true } })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)

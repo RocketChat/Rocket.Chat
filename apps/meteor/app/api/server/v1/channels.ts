@@ -640,7 +640,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (subscription?.open) {
-				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls ?? subscription.ts, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;
