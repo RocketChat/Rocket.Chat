@@ -1,13 +1,15 @@
-import { ScanContext, flushText, emit } from '../ScanContext';
+import { ScanContext, flushText, emit, isLineStart } from '../ScanContext';
 import { TokenKind } from '../Token';
 import { CH_BACKTICK, CH_LF, CH_CR } from '../constants/charCodes';
 
 /** Scanner for `` ` ``: dispatches to fenced-block or inline-code scanning. */
 export function scanBacktick(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
+    const prevCode = pos > 0 ? ctx.input.charCodeAt(pos - 1) : 0;
     if (
         ctx.input.charCodeAt(pos + 1) === CH_BACKTICK &&
-        ctx.input.charCodeAt(pos + 2) === CH_BACKTICK
+        ctx.input.charCodeAt(pos + 2) === CH_BACKTICK &&
+        isLineStart(pos, prevCode)
     ) {
         return scanFencedBlock(ctx, pos);
     }

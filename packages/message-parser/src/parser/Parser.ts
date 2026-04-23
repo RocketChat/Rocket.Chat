@@ -3,7 +3,7 @@ import type { Token } from '../lexer';
 import { TokenKind } from '../lexer';
 import { TokenStream } from './TokenStream';
 import type { ParserOptions } from './ParserOptions';
-import { paragraph, plain, lineBreak, reducePlainTexts, heading, mentionChannel } from '../utils';
+import { paragraph, plain, lineBreak, reducePlainTexts, heading, mentionChannel, code, codeLine } from '../utils';
 
 /**
  * Maximum recursion depth to prevent stack overflow on crafted input.
@@ -106,6 +106,10 @@ export class Parser {
 			return null;
 		}
 
+		if (this._stream.at(TokenKind.TRIPLE_BACKTICK)) {
+			return this._parseCodeFence();
+		}
+
 		if (this._stream.at(TokenKind.HEADING_MARKER)) {
 			return this._parseHeading();
 		}
@@ -124,6 +128,40 @@ export class Parser {
 		const content = this._parsePlainTexts(new Set([TokenKind.NEWLINE, TokenKind.EOF]));
 
 		return heading(content, Number(marker.value) as 1 | 2 | 3 | 4);
+	}
+
+	private _parseCodeFence(): Blocks | null {
+		const start = this._stream.mark();
+		this._stream.advance(); // opening TRIPLE_BACKTICK
+
+		if (!this._stream.at(TokenKind.CODE_CONTENT)) {
+			this._stream.reset(start);
+			return null;
+		}
+
+		const content = this._stream.advance().value;
+
+		let language: string | undefined;
+		let body = content;
+		const firstNewline = content.indexOf('\n');
+
+		if (firstNewline !== -1) {
+			const languageCandidate = content.slice(0, firstNewline).trim();
+			language = languageCandidate.length > 0 ? languageCandidate : undefined;
+			body = content.slice(firstNewline + 1);
+		}
+
+		if (body.endsWith('\n')) {
+			body = body.slice(0, -1);
+		}
+
+		const lines = body.split('\n').map((line) => codeLine(plain(line)));
+
+		if (this._stream.at(TokenKind.TRIPLE_BACKTICK)) {
+			this._stream.advance();
+		}
+
+		return code(lines, language);
 	}
 
 	// ── paragraph ────────────────────────────────────────────────────────
