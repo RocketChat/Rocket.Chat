@@ -112,12 +112,12 @@ If any file in the batch regresses or stays flat, split that file out into its o
 
 Prevents regression after Phase 2 completes. Can land in parallel with Phase 2.
 
-1. **Doc guardrail** — already in place via README "Anti-patterns to flag in review". Link to it from `.github/pull_request_template.md` under the E2E section.
-2. **Lint guardrail (optional)** — a custom ESLint rule or a grep-based CI check that fails when a spec file:
+1. **Doc guardrail** — in place. README "Anti-patterns to flag in review" exists and `.github/pull_request_template.md` points reviewers to it.
+2. **Lint guardrail (optional)** — still open. A custom ESLint rule or a grep-based CI check that fails when a spec file:
    - Uses `poHomeChannel.content.sendMessage` inside `test.beforeEach` or `test.beforeAll`.
    - Declares `test.describe.serial` together with `beforeEach(async ({ page }) => { await page.goto(...) })`.
    Both are strong signals of missed Pattern 1 / Pattern 2 opportunities.
-3. **Timing guardrail** — add a weekly GitHub Action (or extend an existing one) that parses the Playwright report from main and posts a list of spec files with p50 > 3s/test. Recurring offenders become Phase 2 candidates.
+3. **Timing guardrail** — in place. `playwright.config.ts` now emits a JSON report; [`apps/meteor/tests/e2e/scripts/e2e-timing-report.mts`](../../apps/meteor/tests/e2e/scripts/e2e-timing-report.mts) turns it into a p50>3s/test table; [`.github/workflows/e2e-timing-guardrail.yml`](../../.github/workflows/e2e-timing-guardrail.yml) runs weekly (Mondays 09:00 UTC), pulls the latest successful `ci.yml` trace artifact from `develop` and posts the table as the run summary.
 
 ## Picking up the work
 

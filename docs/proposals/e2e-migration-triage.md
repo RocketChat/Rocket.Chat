@@ -14,7 +14,7 @@ as a rough stand-in.
 - Candidates for Phase 2: 144
 - Opt-out: 8
 - Serial suites: 63
-- Specs with at least one UI setup hit: 9
+- Specs with at least one UI setup hit: 5
 
 ## Phase 2 candidates
 
@@ -22,12 +22,8 @@ Sorted by the stand-in priority until `ci_median_ms` is populated.
 
 | path | is_serial | ui_setup_hits | ci_median_ms | priority_score |
 | --- | :-: | --: | --: | --: |
-| `report-message.spec.ts` | yes | 8 | — | — |
-| `messaging.spec.ts` | yes | 2 | — | — |
 | `feature-preview.spec.ts` | yes | 1 | — | — |
-| `image-gallery.spec.ts` | yes | 1 | — | — |
 | `quote-messages.spec.ts` | yes | 1 | — | — |
-| `threads.spec.ts` | yes | 1 | — | — |
 | `account-profile.spec.ts` | yes | 0 | — | — |
 | `account-security.spec.ts` | yes | 0 | — | — |
 | `admin-room.spec.ts` | yes | 0 | — | — |
@@ -43,6 +39,7 @@ Sorted by the stand-in priority until `ci_median_ms` is populated.
 | `files-management.spec.ts` | yes | 0 | — | — |
 | `global-search.spec.ts` | yes | 0 | — | — |
 | `homepage.spec.ts` | yes | 0 | — | — |
+| `image-gallery.spec.ts` | yes | 0 | — | — |
 | `imports.spec.ts` | yes | 0 | — | — |
 | `jump-to-thread-message.spec.ts` | yes | 0 | — | — |
 | `mark-unread.spec.ts` | yes | 0 | — | — |
@@ -50,6 +47,7 @@ Sorted by the stand-in priority until `ci_median_ms` is populated.
 | `message-composer.spec.ts` | yes | 0 | — | — |
 | `message-mentions.spec.ts` | yes | 0 | — | — |
 | `messaging-scroll-to-bottom.spec.ts` | yes | 0 | — | — |
+| `messaging.spec.ts` | yes | 0 | — | — |
 | `notification-sounds.spec.ts` | yes | 0 | — | — |
 | `omnichannel/omnichannel-agents.spec.ts` | yes | 0 | — | — |
 | `omnichannel/omnichannel-appearance.spec.ts` | yes | 0 | — | — |
@@ -71,6 +69,7 @@ Sorted by the stand-in priority until `ci_median_ms` is populated.
 | `presence.spec.ts` | yes | 0 | — | — |
 | `read-receipts-deactivated-users.spec.ts` | yes | 0 | — | — |
 | `read-receipts.spec.ts` | yes | 0 | — | — |
+| `report-message.spec.ts` | yes | 0 | — | — |
 | `retention-policy.spec.ts` | yes | 0 | — | — |
 | `search-discussion.spec.ts` | yes | 0 | — | — |
 | `settings-assets.spec.ts` | yes | 0 | — | — |
@@ -80,6 +79,7 @@ Sorted by the stand-in priority until `ci_median_ms` is populated.
 | `sidebar.spec.ts` | yes | 0 | — | — |
 | `system-messages.spec.ts` | yes | 0 | — | — |
 | `team-management.spec.ts` | yes | 0 | — | — |
+| `threads.spec.ts` | yes | 0 | — | — |
 | `omnichannel/omnichannel-canned-responses-usage.spec.ts` | no | 1 | — | — |
 | `omnichannel/omnichannel-livechat-message-bubble-color.spec.ts` | no | 1 | — | — |
 | `quote-attachment.spec.ts` | no | 1 | — | — |

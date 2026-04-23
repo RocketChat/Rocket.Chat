@@ -22,6 +22,10 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
+		// JSON reporter — consumed by the weekly timing guardrail workflow
+		// (scripts/e2e-timing-report.mts) and by anyone wanting to analyse
+		// per-test durations locally. Small file, safe to always emit.
+		['json', { outputFile: 'tests/e2e/.playwright/results.json' }],
 		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
 			'./reporters/rocketchat.ts',
 			{

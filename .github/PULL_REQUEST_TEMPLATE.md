@@ -37,3 +37,11 @@
 
 ## Further comments
 <!-- If this is a relatively large or complex change, kick off the discussion by explaining why you chose the solution you did and what alternatives you considered, etc... -->
+
+<!--
+  E2E reviewers: if this PR touches apps/meteor/tests/e2e/, check the anti-patterns flagged in
+  apps/meteor/tests/e2e/README.md#anti-patterns-to-flag-in-review
+  (UI-driven setup in beforeAll/beforeEach, serial suites re-creating their context per test,
+  etc.). See docs/proposals/e2e-performance-migration.md for the rollout plan.
+-->
+
