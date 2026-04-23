@@ -474,17 +474,19 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 				reaction.usernames?.forEach((username) => usernames.add(username));
 			});
 
-			const users = await Users.findByUsernames([...usernames], {
-				projection: { username: 1, name: 1 },
-			}).toArray();
+			if (usernames.size) {
+				const users = await Users.findByUsernames([...usernames], {
+					projection: { username: 1, name: 1 },
+				}).toArray();
 
-			const nameByUsername = new Map(users.map((u) => [u.username, u.name]));
+				const nameByUsername = new Map(users.map((u) => [u.username, u.name]));
 
-			for (const [, reaction] of Object.entries(message.reactions)) {
-				if (!reaction.usernames?.length) {
-					continue;
+				for (const [, reaction] of Object.entries(message.reactions)) {
+					if (!reaction.usernames?.length) {
+						continue;
+					}
+					reaction.names = reaction.usernames.map((username) => nameByUsername.get(username) || '');
 				}
-				reaction.names = reaction.usernames.map((username) => nameByUsername.get(username) || '');
 			}
 		}
 	}
