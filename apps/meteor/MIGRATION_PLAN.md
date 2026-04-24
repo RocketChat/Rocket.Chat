@@ -218,7 +218,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/webdav/server/`           | `server/bridges/webdav/`                 |
 | `app/nextcloud/server/`        | `server/bridges/nextcloud/`              |
 
-**Note**: The `app/apps/server/` folder has more than just bridges (lib/, hooks/, etc.). Only move the bridges/ and converters/ subdirectories in this phase. The rest of `app/apps/` moves in Phase 5.
+**Note**: `app/apps/server/` contains only `bridges/` and `converters/`. Both move together in this phase.
 
 **Verification**: `tsc --noEmit`, test an incoming webhook and an Apps Engine app.
 
@@ -348,7 +348,6 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/authorization/server/functions/*.ts`                         | `server/functions/authorization/`                               |
 | `app/cloud/server/functions/*.ts`                                 | `server/functions/cloud/`                                       |
 | `app/livechat/server/lib/*.ts` (functions)                        | `server/functions/omnichannel/`                                 |
-| `app/file-upload/server/functions/*.ts`                           | `server/functions/media/`                                       |
 
 **Verification per sub-phase**: `tsc --noEmit`, run unit tests for the moved functions, run integration tests.
 
@@ -436,7 +435,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/wordpress/server/`                   | `server/lib/auth-providers/wordpress.ts`         |
 | `app/lib/server/oauth/*.js`               | `server/lib/auth-providers/oauth/`               |
 | `app/meteor-accounts-saml/server/`        | `server/lib/saml/`                               |
-| `app/2fa/server/lib/` + `server/classes/` | `server/lib/2fa/`                                |
+| `app/2fa/server/` (non-methods)           | `server/lib/2fa/`                                |
 | `app/authentication/server/` (non-hooks)  | `server/lib/auth/`                               |
 | `app/token-login/server/`                 | `server/lib/auth/token-login.ts`                 |
 
@@ -477,13 +476,12 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/mentions/server/`                            | `server/lib/messaging/mentions/`    |
 | `app/markdown/server/`                            | `server/lib/messaging/markdown/`    |
 | `app/emoji/server/`                               | `server/lib/messaging/emoji/`       |
-| `app/highlight-words/` (if server code exists)    | `server/lib/messaging/highlight/`   |
 
 #### Phase 6e: Media, Import, Search, and Remaining Libraries
 
 | Source                                      | Destination                               |
 | ------------------------------------------- | ----------------------------------------- |
-| `app/file-upload/server/` (non-functions)   | `server/lib/media/file-upload/`           |
+| `app/file-upload/server/`                   | `server/lib/media/file-upload/`           |
 | `app/file/server/`                          | `server/lib/media/file/`                  |
 | `app/emoji-custom/server/`                  | `server/lib/media/emoji-custom/`          |
 | `app/emoji-emojione/server/`                | `server/lib/media/emoji-emojione/`        |
@@ -525,7 +523,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/livechat/server/hooks/`       | Already moved in Phase 6b                                   |
 | `app/livechat/server/api/`         | Already moved in Phase 3                                    |
 | `app/livechat/server/` (remaining) | `server/lib/omnichannel/`                                   |
-| `app/livechat-enterprise/server/`  | `server/lib/omnichannel/enterprise/` (if exists)            |
+| `ee/app/livechat-enterprise/server/` | `server/lib/omnichannel/enterprise/`                      |
 
 **Remaining cleanup**:
 
