@@ -1,23 +1,37 @@
 import { faker } from '@faker-js/faker';
+import type { BrowserContext, Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
+const DEFAULT_VIEWPORT = { width: 1280, height: 720 };
+
 test.use({ storageState: Users.user1.state });
 
 test.describe.serial('message-composer', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+	test.beforeAll(async ({ api, browser }) => {
+		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		context = await browser.newContext({ storageState: Users.user1.state, viewport: DEFAULT_VIEWPORT });
+		page = await context.newPage();
+		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
+	test.afterAll(async () => {
+		await page.close();
+		await context.close();
+	});
 
+	test.beforeEach(async () => {
+		// One test shrinks the viewport to 768x600 — make sure we start at the
+		// default each time.
+		await page.setViewportSize(DEFAULT_VIEWPORT);
 		await page.goto('/home');
 	});
 
@@ -28,14 +42,14 @@ test.describe.serial('message-composer', () => {
 		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(12);
 	});
 
-	test('should have only the main formatter and the main action', async ({ page }) => {
+	test('should have only the main formatter and the main action', async () => {
 		await page.setViewportSize({ width: 768, height: 600 });
 		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(6);
 	});
 
-	test('should navigate on toolbar using arrow keys', async ({ page }) => {
+	test('should navigate on toolbar using arrow keys', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await page.keyboard.press('Tab');
@@ -47,7 +61,7 @@ test.describe.serial('message-composer', () => {
 		await expect(poHomeChannel.composer.btnBoldFormatter).toBeFocused();
 	});
 
-	test('should move the focus away from toolbar using tab key', async ({ page }) => {
+	test('should move the focus away from toolbar using tab key', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await page.keyboard.press('Tab');
@@ -56,7 +70,7 @@ test.describe.serial('message-composer', () => {
 		await expect(poHomeChannel.composer.btnEmoji).not.toBeFocused();
 	});
 
-	test('should add a link to the selected text', async ({ page }) => {
+	test('should add a link to the selected text', async () => {
 		const url = faker.internet.url();
 		await poHomeChannel.navbar.openChat(targetChannel);
 
@@ -70,7 +84,7 @@ test.describe.serial('message-composer', () => {
 		await expect(poHomeChannel.composer.inputMessage).toHaveValue(`[hello composer](${url})`);
 	});
 
-	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
+	test('should select popup item and not send the message when pressing enter', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
@@ -105,7 +119,7 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
-	test('should list popup items correctly', async ({ page }) => {
+	test('should list popup items correctly', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
@@ -116,7 +130,7 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
-	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
+	test('should close mention popup when canceling a message edit via "Cancel" button', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
@@ -144,7 +158,7 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
-	test('should close mention popup when canceling a message edit via keyboard', async ({ page }) => {
+	test('should close mention popup when canceling a message edit via keyboard', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
@@ -189,7 +203,7 @@ test.describe.serial('message-composer', () => {
 			await expect(poHomeChannel.audioRecorder).not.toBeVisible();
 		});
 
-		test('should attach file to the composer when clicking on "Finish recording"', async ({ page }) => {
+		test('should attach file to the composer when clicking on "Finish recording"', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.composer.btnAudioMessage.click();
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
