@@ -6580,6 +6580,8 @@
   "manage-selected-settings_description": "Permission to change settings which are explicitly granted to be changed",
   "manage-sounds": "Manage Sounds",
   "manage-sounds_description": "Permission to manage the server sounds",
+  "manage-feature-preview": "Manage Feature Preview",
+  "manage-feature-preview_description": "Permission to manage feature preview",
   "manage-the-app": "Manage the App",
   "manage-user-status": "Manage User Status",
   "manage-user-status_description": "Permission to manage the server custom user statuses",
@@ -7158,7 +7160,7 @@
   "__count__replies": "{{count}} replies",
   "__count__replies__date__": "{{count}} replies, {{date}}",
   "__count__result_found": {
-     "one": "{{count}} result found",
+    "one": "{{count}} result found",
     "other": "{{count}} results found"
   },
   "__count__tags__and__count__conversations__period__": "{{count}} tags and {{conversations}} conversations, {{period}}",
