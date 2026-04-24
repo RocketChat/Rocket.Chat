@@ -193,7 +193,7 @@ export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value']
 	let needsSlowPath = false;
 	for (let i = 0; i < flattenableValues.length; i++) {
 		const v = flattenableValues[i];
-		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+		if (Array.isArray(v) || v.type === 'EMOJI') {
 			needsSlowPath = true;
 			break;
 		}

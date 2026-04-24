@@ -219,6 +219,10 @@ UnorderedListHyphenItem
 
 UnorderedListAsteriskItem
   = indent:$([ \t]*) "*" [ \t]+ text:UnorderedListAsteriskItemContent
+    &{ 
+      const plainText = text.map((item) => item.value ?? '').join('');
+      return plainText !== '*' && !(plainText.endsWith('*') && !plainText.startsWith('*'));
+    }
     { return listItem(text, undefined, indent.length); }
 
 UnorderedListAsteriskItemContent

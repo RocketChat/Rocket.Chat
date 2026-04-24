@@ -60,6 +60,8 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (value: unknown[], number?: number) => ({
 	type: 'LIST_ITEM' as const,
 	value,
+	children: [],
+	indent: 0,
 	...(number !== undefined ? { number } : {}),
 });
 
