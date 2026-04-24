@@ -28,10 +28,10 @@ import { formattingButtons } from '../../../../../app/ui-message/client/messageB
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
+import { Subscriptions } from '../../../../stores';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
 import { useFileUpload } from '../../body/hooks/useFileUpload';
@@ -293,27 +293,28 @@ const MessageBox = ({
 
 	const federationMatrixEnabled = useIsFederationEnabled();
 
-	const canSend = useReactiveValue(
-		useCallback(() => {
-			if (!room.t) {
+	// canSendMessage directives read from the Subscriptions store, so subscribe to it to re-run on changes
+	// (e.g. user joins/leaves the room). room and federationMatrixEnabled are already React-reactive.
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
+		if (!room.t) {
+			return false;
+		}
+
+		if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+			return false;
+		}
+
+		if (isRoomFederated(room)) {
+			// we are dropping the non native federation for now
+			if (!isRoomNativeFederated(room)) {
 				return false;
 			}
 
-			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
-				return false;
-			}
-
-			if (isRoomFederated(room)) {
-				// we are dropping the non native federation for now
-				if (!isRoomNativeFederated(room)) {
-					return false;
-				}
-
-				return federationMatrixEnabled;
-			}
-			return true;
-		}, [room, federationMatrixEnabled]),
-	);
+			return federationMatrixEnabled;
+		}
+		return true;
+	});
 
 	const sizes = useContentBoxSize(textareaRef);
 
