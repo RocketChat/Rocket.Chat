@@ -6,6 +6,7 @@ export type DateInput = string | Date | number;
 /**
  * Map moment-style locale format tokens to date-fns format string.
  * Used for Message_DateFormat and Message_TimeFormat settings (defaults: LL, LT).
+ * Moment's `[literal]` escape syntax is translated to date-fns' `'literal'` syntax.
  */
 export const momentFormatToDateFns = (momentFormat: string): string => {
 	const tokenMap: Record<string, string> = {
@@ -39,12 +40,25 @@ export const momentFormatToDateFns = (momentFormat: string): string => {
 		A: 'a',
 		a: 'a',
 	};
-	let out = momentFormat;
 	const entries = Object.entries(tokenMap).sort(([a], [b]) => b.length - a.length);
-	for (const [mom, df] of entries) {
-		out = out.replace(new RegExp(mom.replace(/([.*+?^${}()|[\]\\])/g, '\\$1'), 'g'), df);
-	}
-	return out;
+
+	const replaceTokens = (input: string): string => {
+		let out = input;
+		for (const [mom, df] of entries) {
+			out = out.replace(new RegExp(mom.replace(/([.*+?^${}()|[\]\\])/g, '\\$1'), 'g'), df);
+		}
+		return out;
+	};
+
+	return momentFormat
+		.split(/(\[[^\]]*\])/g)
+		.map((part) => {
+			if (part.startsWith('[') && part.endsWith(']')) {
+				return `'${part.slice(1, -1).replace(/'/g, "''")}'`;
+			}
+			return replaceTokens(part);
+		})
+		.join('');
 };
 
 export const formatDate = (date: DateInput, formatStr: string, locale?: Locale): string => {
