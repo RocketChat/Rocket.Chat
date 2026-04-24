@@ -1,4 +1,4 @@
-export * from './IEmailDescriptor';
-export * from './IPreEmailSent';
-export * from './IPreEmailSentContext';
-export * from './IEmail';
+export type * from './IEmailDescriptor';
+export type * from './IPreEmailSent';
+export type * from './IPreEmailSentContext';
+export type * from './IEmail';

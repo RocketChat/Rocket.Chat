@@ -76,7 +76,9 @@ export class ReadStateManager extends Emitter {
 
 		const firstUnreadRecord = Messages.state.findFirst(
 			(record) =>
-				record.rid === this.subscription?.rid && record.ts.getTime() > this.subscription.ls.getTime() && record.u._id !== getUserId(),
+				record.rid === this.subscription?.rid &&
+				record.ts.getTime() > (this.subscription.ls?.getTime() ?? 0) &&
+				record.u._id !== getUserId(),
 			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 

@@ -69,6 +69,12 @@ COPY ./packages/ui-kit/dist packages/ui-kit/dist
 COPY ./packages/http-router/package.json packages/http-router/package.json
 COPY ./packages/http-router/dist packages/http-router/dist
 
+COPY ./packages/server-fetch/package.json packages/server-fetch/package.json
+COPY ./packages/server-fetch/dist packages/server-fetch/dist
+
+COPY ./packages/tools/package.json packages/tools/package.json
+COPY ./packages/tools/dist packages/tools/dist
+
 COPY ./ee/packages/abac/package.json ee/packages/abac/package.json
 COPY ./ee/packages/abac/dist ee/packages/abac/dist
 
