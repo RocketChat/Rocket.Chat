@@ -66,6 +66,7 @@ services:
       - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -86,6 +87,7 @@ services:
       - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -106,6 +108,7 @@ services:
       - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -126,6 +129,7 @@ services:
       - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -152,6 +156,7 @@ services:
       - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -173,6 +178,7 @@ services:
       - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
