@@ -50,7 +50,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 		const loadedMessage = messages.find((message) => message._id === messageJumpParam);
 
 		if (!loadedMessage) {
-			if (message && RoomHistoryManager.isLoaded(rid)) {
+			if (message) {
 				RoomHistoryManager.getSurroundingChannelMessages(message);
 			}
 			return;
