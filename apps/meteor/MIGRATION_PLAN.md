@@ -15,8 +15,9 @@ server/<responsibility>/<domain>/<file>
 This migration extends that pattern by:
 
 1. Adding domain subfolders to existing responsibility folders (e.g., `server/methods/rooms/`)
-2. Creating new responsibility folders where needed (e.g., `server/functions/`, `server/api/`, `server/slashcommands/`)
-3. Preserving all existing `server/` folders untouched
+2. Creating new responsibility folders where needed (e.g., `server/api/`, `server/slashcommands/`)
+3. Extending `server/lib/` with domain subfolders for functions and shared libraries
+4. Preserving all existing `server/` folders untouched
 
 ## Target Structure
 
@@ -27,24 +28,14 @@ apps/meteor/server/
 │
 ├── api/                           # REST API (from app/api/server/)
 │   ├── v1/                        #   endpoint files: users.ts, rooms.ts, chat.ts...
-│   │   └── omnichannel/           #   livechat endpoints (from app/livechat/server/api/v1/)
-│   ├── helpers/                   #   getPaginationItems.ts, getUserFromParams.ts...
-│   ├── lib/                       #   getUploadFormData.ts, isValidQuery.ts...
-│   ├── middlewares/               #   authentication.ts, cors.ts, metrics.ts...
+│   │   ├── omnichannel/           #   livechat endpoints (from app/livechat/server/api/v1/)
+│   │   └── middlewares/           #   authentication.ts, cors.ts, metrics.ts...
+│   ├── lib/                       #   helpers + lib merged: getPaginationItems.ts, getUploadFormData.ts...
+│   ├── validation/                #   ajv.ts — JSON schema validation
 │   ├── ApiClass.ts                #   API framework
 │   ├── api.ts                     #   API initialization
 │   ├── router.ts                  #   Hono router
-│   ├── definition.ts              #   TypeScript types
-│   └── ajv.ts                     #   JSON schema validation
-│
-├── functions/                     # Domain functions (from app/lib/server/functions/ + app/*/server/functions/)
-│   ├── users/                     #   setRealName.ts, deleteUser.ts, saveUserIdentity.ts...
-│   ├── rooms/                     #   createRoom.ts, addUserToRoom.ts, deleteRoom.ts...
-│   ├── messages/                  #   sendMessage.ts, deleteMessage.ts, insertMessage.ts...
-│   ├── omnichannel/               #   closeLivechatRoom.ts, closeOmnichannelConversations.ts + app/livechat/server/lib/
-│   ├── authorization/             #   hasPermission.ts, canAccessRoom.ts (from app/authorization/server/functions/)
-│   ├── cloud/                     #   connectWorkspace.ts, syncWorkspace/ (from app/cloud/server/functions/)
-│   └── shared/                    #   validateName.ts, validateNameChars.ts, getModifiedHttpHeaders.ts
+│   └── definition.ts              #   TypeScript types
 │
 ├── slashcommands/                 # Slash commands (from app/slashcommands-*/server/)
 │   ├── archiveroom.ts
@@ -93,8 +84,14 @@ apps/meteor/server/
 │   ├── rooms/                     #   NEW: beforeAddUserToRoom
 │   └── omnichannel/               #   NEW: from app/livechat/server/hooks/
 │
-├── lib/                           # EXISTING — shared utilities
+├── lib/                           # EXISTING — shared utilities + domain functions
 │   ├── [existing contents]        #   current files stay in place
+│   ├── users/                     #   NEW: domain functions (setRealName.ts, deleteUser.ts, saveUserIdentity.ts...)
+│   ├── rooms/                     #   NEW: domain functions (createRoom.ts, addUserToRoom.ts, deleteRoom.ts...)
+│   ├── messages/                  #   NEW: domain functions (sendMessage.ts, deleteMessage.ts, insertMessage.ts...)
+│   ├── omnichannel/               #   NEW: domain functions + livechat lib (closeLivechatRoom.ts...)
+│   ├── authorization/             #   NEW: hasPermission.ts, canAccessRoom.ts (from app/authorization/server/functions/)
+│   ├── cloud/                     #   NEW: connectWorkspace.ts, syncWorkspace/ (from app/cloud/server/functions/)
 │   ├── auth-providers/            #   NEW: OAuth providers (apple, github, gitlab, etc.)
 │   ├── notifications/             #   NEW: push, email, queue (from app/push/, app/mailer/...)
 │   ├── integrations/              #   NEW: webhook lib, trigger handlers
@@ -260,9 +257,9 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 ---
 
-### Phase 4: Domain Functions (`server/functions/`)
+### Phase 4: Domain Functions (into `server/lib/`)
 
-**Goal**: Create `server/functions/` and populate it with domain functions from `app/lib/server/functions/` and `app/*/server/functions/`. This is the largest and most impactful phase.
+**Goal**: Move domain functions from `app/lib/server/functions/` and `app/*/server/functions/` into `server/lib/` with domain subfolders. This is the largest and most impactful phase.
 
 **Risk**: Medium-high. These functions are heavily imported across the codebase (~62 features import from `app/lib/server`). The migration script updates all import paths in the same commit.
 
@@ -274,79 +271,79 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 | Source                                                          | Destination                                                   |
 | --------------------------------------------------------------- | ------------------------------------------------------------- |
-| `app/lib/server/functions/setRealName.ts`                       | `server/functions/users/setRealName.ts`                       |
-| `app/lib/server/functions/setUsername.ts`                       | `server/functions/users/setUsername.ts`                       |
-| `app/lib/server/functions/setEmail.ts`                          | `server/functions/users/setEmail.ts`                          |
-| `app/lib/server/functions/saveUserIdentity.ts`                  | `server/functions/users/saveUserIdentity.ts`                  |
-| `app/lib/server/functions/setUserAvatar.ts`                     | `server/functions/users/setUserAvatar.ts`                     |
-| `app/lib/server/functions/setUserActiveStatus.ts`               | `server/functions/users/setUserActiveStatus.ts`               |
-| `app/lib/server/functions/setStatusText.ts`                     | `server/functions/users/setStatusText.ts`                     |
-| `app/lib/server/functions/getStatusText.ts`                     | `server/functions/users/getStatusText.ts`                     |
-| `app/lib/server/functions/deleteUser.ts`                        | `server/functions/users/deleteUser.ts`                        |
-| `app/lib/server/functions/getFullUserData.ts`                   | `server/functions/users/getFullUserData.ts`                   |
-| `app/lib/server/functions/getUsernameSuggestion.ts`             | `server/functions/users/getUsernameSuggestion.ts`             |
-| `app/lib/server/functions/getUserCreatedByApp.ts`               | `server/functions/users/getUserCreatedByApp.ts`               |
-| `app/lib/server/functions/getUserSingleOwnedRooms.ts`           | `server/functions/users/getUserSingleOwnedRooms.ts`           |
-| `app/lib/server/functions/getAvatarSuggestionForUser.ts`        | `server/functions/users/getAvatarSuggestionForUser.ts`        |
-| `app/lib/server/functions/checkEmailAvailability.ts`            | `server/functions/users/checkEmailAvailability.ts`            |
-| `app/lib/server/functions/checkUsernameAvailability.ts`         | `server/functions/users/checkUsernameAvailability.ts`         |
-| `app/lib/server/functions/validateUsername.ts`                  | `server/functions/users/validateUsername.ts`                  |
-| `app/lib/server/functions/saveCustomFields.ts`                  | `server/functions/users/saveCustomFields.ts`                  |
-| `app/lib/server/functions/saveCustomFieldsWithoutValidation.ts` | `server/functions/users/saveCustomFieldsWithoutValidation.ts` |
+| `app/lib/server/functions/setRealName.ts`                       | `server/lib/users/setRealName.ts`                       |
+| `app/lib/server/functions/setUsername.ts`                       | `server/lib/users/setUsername.ts`                       |
+| `app/lib/server/functions/setEmail.ts`                          | `server/lib/users/setEmail.ts`                          |
+| `app/lib/server/functions/saveUserIdentity.ts`                  | `server/lib/users/saveUserIdentity.ts`                  |
+| `app/lib/server/functions/setUserAvatar.ts`                     | `server/lib/users/setUserAvatar.ts`                     |
+| `app/lib/server/functions/setUserActiveStatus.ts`               | `server/lib/users/setUserActiveStatus.ts`               |
+| `app/lib/server/functions/setStatusText.ts`                     | `server/lib/users/setStatusText.ts`                     |
+| `app/lib/server/functions/getStatusText.ts`                     | `server/lib/users/getStatusText.ts`                     |
+| `app/lib/server/functions/deleteUser.ts`                        | `server/lib/users/deleteUser.ts`                        |
+| `app/lib/server/functions/getFullUserData.ts`                   | `server/lib/users/getFullUserData.ts`                   |
+| `app/lib/server/functions/getUsernameSuggestion.ts`             | `server/lib/users/getUsernameSuggestion.ts`             |
+| `app/lib/server/functions/getUserCreatedByApp.ts`               | `server/lib/users/getUserCreatedByApp.ts`               |
+| `app/lib/server/functions/getUserSingleOwnedRooms.ts`           | `server/lib/users/getUserSingleOwnedRooms.ts`           |
+| `app/lib/server/functions/getAvatarSuggestionForUser.ts`        | `server/lib/users/getAvatarSuggestionForUser.ts`        |
+| `app/lib/server/functions/checkEmailAvailability.ts`            | `server/lib/users/checkEmailAvailability.ts`            |
+| `app/lib/server/functions/checkUsernameAvailability.ts`         | `server/lib/users/checkUsernameAvailability.ts`         |
+| `app/lib/server/functions/validateUsername.ts`                  | `server/lib/users/validateUsername.ts`                  |
+| `app/lib/server/functions/saveCustomFields.ts`                  | `server/lib/users/saveCustomFields.ts`                  |
+| `app/lib/server/functions/saveCustomFieldsWithoutValidation.ts` | `server/lib/users/saveCustomFieldsWithoutValidation.ts` |
 
 #### Phase 4b: Room Functions (~16 files)
 
 | Source                                                          | Destination                                                   |
 | --------------------------------------------------------------- | ------------------------------------------------------------- |
-| `app/lib/server/functions/createRoom.ts`                        | `server/functions/rooms/createRoom.ts`                        |
-| `app/lib/server/functions/createDirectRoom.ts`                  | `server/functions/rooms/createDirectRoom.ts`                  |
-| `app/lib/server/functions/deleteRoom.ts`                        | `server/functions/rooms/deleteRoom.ts`                        |
-| `app/lib/server/functions/archiveRoom.ts`                       | `server/functions/rooms/archiveRoom.ts`                       |
-| `app/lib/server/functions/unarchiveRoom.ts`                     | `server/functions/rooms/unarchiveRoom.ts`                     |
-| `app/lib/server/functions/addUserToRoom.ts`                     | `server/functions/rooms/addUserToRoom.ts`                     |
-| `app/lib/server/functions/addUserToDefaultChannels.ts`          | `server/functions/rooms/addUserToDefaultChannels.ts`          |
-| `app/lib/server/functions/removeUserFromRoom.ts`                | `server/functions/rooms/removeUserFromRoom.ts`                |
-| `app/lib/server/functions/acceptRoomInvite.ts`                  | `server/functions/rooms/acceptRoomInvite.ts`                  |
-| `app/lib/server/functions/cleanRoomHistory.ts`                  | `server/functions/rooms/cleanRoomHistory.ts`                  |
-| `app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts` | `server/functions/rooms/getRoomByNameOrIdWithOptionToJoin.ts` |
-| `app/lib/server/functions/getRoomsWithSingleOwner.ts`           | `server/functions/rooms/getRoomsWithSingleOwner.ts`           |
-| `app/lib/server/functions/joinDefaultChannels.ts`               | `server/functions/rooms/joinDefaultChannels.ts`               |
-| `app/lib/server/functions/relinquishRoomOwnerships.ts`          | `server/functions/rooms/relinquishRoomOwnerships.ts`          |
-| `app/lib/server/functions/setRoomAvatar.ts`                     | `server/functions/rooms/setRoomAvatar.ts`                     |
-| `app/lib/server/functions/updateGroupDMsName.ts`                | `server/functions/rooms/updateGroupDMsName.ts`                |
-| `app/lib/server/functions/banUserFromRoom.ts`                   | `server/functions/rooms/banUserFromRoom.ts`                   |
-| `app/lib/server/functions/executeUnbanUserFromRoom.ts`          | `server/functions/rooms/executeUnbanUserFromRoom.ts`          |
+| `app/lib/server/functions/createRoom.ts`                        | `server/lib/rooms/createRoom.ts`                        |
+| `app/lib/server/functions/createDirectRoom.ts`                  | `server/lib/rooms/createDirectRoom.ts`                  |
+| `app/lib/server/functions/deleteRoom.ts`                        | `server/lib/rooms/deleteRoom.ts`                        |
+| `app/lib/server/functions/archiveRoom.ts`                       | `server/lib/rooms/archiveRoom.ts`                       |
+| `app/lib/server/functions/unarchiveRoom.ts`                     | `server/lib/rooms/unarchiveRoom.ts`                     |
+| `app/lib/server/functions/addUserToRoom.ts`                     | `server/lib/rooms/addUserToRoom.ts`                     |
+| `app/lib/server/functions/addUserToDefaultChannels.ts`          | `server/lib/rooms/addUserToDefaultChannels.ts`          |
+| `app/lib/server/functions/removeUserFromRoom.ts`                | `server/lib/rooms/removeUserFromRoom.ts`                |
+| `app/lib/server/functions/acceptRoomInvite.ts`                  | `server/lib/rooms/acceptRoomInvite.ts`                  |
+| `app/lib/server/functions/cleanRoomHistory.ts`                  | `server/lib/rooms/cleanRoomHistory.ts`                  |
+| `app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts` | `server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.ts` |
+| `app/lib/server/functions/getRoomsWithSingleOwner.ts`           | `server/lib/rooms/getRoomsWithSingleOwner.ts`           |
+| `app/lib/server/functions/joinDefaultChannels.ts`               | `server/lib/rooms/joinDefaultChannels.ts`               |
+| `app/lib/server/functions/relinquishRoomOwnerships.ts`          | `server/lib/rooms/relinquishRoomOwnerships.ts`          |
+| `app/lib/server/functions/setRoomAvatar.ts`                     | `server/lib/rooms/setRoomAvatar.ts`                     |
+| `app/lib/server/functions/updateGroupDMsName.ts`                | `server/lib/rooms/updateGroupDMsName.ts`                |
+| `app/lib/server/functions/banUserFromRoom.ts`                   | `server/lib/rooms/banUserFromRoom.ts`                   |
+| `app/lib/server/functions/executeUnbanUserFromRoom.ts`          | `server/lib/rooms/executeUnbanUserFromRoom.ts`          |
 
 #### Phase 4c: Message Functions (~10 files)
 
 | Source                                                      | Destination                                                  |
 | ----------------------------------------------------------- | ------------------------------------------------------------ |
-| `app/lib/server/functions/sendMessage.ts`                   | `server/functions/messages/sendMessage.ts`                   |
-| `app/lib/server/functions/insertMessage.ts`                 | `server/functions/messages/insertMessage.ts`                 |
-| `app/lib/server/functions/deleteMessage.ts`                 | `server/functions/messages/deleteMessage.ts`                 |
-| `app/lib/server/functions/updateMessage.ts`                 | `server/functions/messages/updateMessage.ts`                 |
-| `app/lib/server/functions/loadMessageHistory.ts`            | `server/functions/messages/loadMessageHistory.ts`            |
-| `app/lib/server/functions/processWebhookMessage.ts`         | `server/functions/messages/processWebhookMessage.ts`         |
-| `app/lib/server/functions/parseUrlsInMessage.ts`            | `server/functions/messages/parseUrlsInMessage.ts`            |
-| `app/lib/server/functions/attachMessage.ts`                 | `server/functions/messages/attachMessage.ts`                 |
-| `app/lib/server/functions/isTheLastMessage.ts`              | `server/functions/messages/isTheLastMessage.ts`              |
-| `app/lib/server/functions/extractUrlsFromMessageAST.ts`     | `server/functions/messages/extractUrlsFromMessageAST.ts`     |
-| `app/lib/server/functions/extractMentionsFromMessageAST.ts` | `server/functions/messages/extractMentionsFromMessageAST.ts` |
+| `app/lib/server/functions/sendMessage.ts`                   | `server/lib/messages/sendMessage.ts`                   |
+| `app/lib/server/functions/insertMessage.ts`                 | `server/lib/messages/insertMessage.ts`                 |
+| `app/lib/server/functions/deleteMessage.ts`                 | `server/lib/messages/deleteMessage.ts`                 |
+| `app/lib/server/functions/updateMessage.ts`                 | `server/lib/messages/updateMessage.ts`                 |
+| `app/lib/server/functions/loadMessageHistory.ts`            | `server/lib/messages/loadMessageHistory.ts`            |
+| `app/lib/server/functions/processWebhookMessage.ts`         | `server/lib/messages/processWebhookMessage.ts`         |
+| `app/lib/server/functions/parseUrlsInMessage.ts`            | `server/lib/messages/parseUrlsInMessage.ts`            |
+| `app/lib/server/functions/attachMessage.ts`                 | `server/lib/messages/attachMessage.ts`                 |
+| `app/lib/server/functions/isTheLastMessage.ts`              | `server/lib/messages/isTheLastMessage.ts`              |
+| `app/lib/server/functions/extractUrlsFromMessageAST.ts`     | `server/lib/messages/extractUrlsFromMessageAST.ts`     |
+| `app/lib/server/functions/extractMentionsFromMessageAST.ts` | `server/lib/messages/extractMentionsFromMessageAST.ts` |
 
 #### Phase 4d: Other Domain Functions
 
 | Source                                                            | Destination                                                     |
 | ----------------------------------------------------------------- | --------------------------------------------------------------- |
-| `app/lib/server/functions/closeLivechatRoom.ts`                   | `server/functions/omnichannel/closeLivechatRoom.ts`             |
-| `app/lib/server/functions/closeOmnichannelConversations.ts`       | `server/functions/omnichannel/closeOmnichannelConversations.ts` |
-| `app/lib/server/functions/syncRolePrioritiesForRoomIfRequired.ts` | `server/functions/rooms/syncRolePrioritiesForRoomIfRequired.ts` |
-| `app/lib/server/functions/validateName.ts`                        | `server/functions/shared/validateName.ts`                       |
-| `app/lib/server/functions/validateNameChars.ts`                   | `server/functions/shared/validateNameChars.ts`                  |
-| `app/lib/server/functions/getModifiedHttpHeaders.ts`              | `server/functions/shared/getModifiedHttpHeaders.ts`             |
-| `app/lib/server/functions/disableCustomScripts.ts`                | `server/functions/shared/disableCustomScripts.ts`               |
-| `app/authorization/server/functions/*.ts`                         | `server/functions/authorization/`                               |
-| `app/cloud/server/functions/*.ts`                                 | `server/functions/cloud/`                                       |
-| `app/livechat/server/lib/*.ts` (functions)                        | `server/functions/omnichannel/`                                 |
+| `app/lib/server/functions/closeLivechatRoom.ts`                   | `server/lib/omnichannel/closeLivechatRoom.ts`             |
+| `app/lib/server/functions/closeOmnichannelConversations.ts`       | `server/lib/omnichannel/closeOmnichannelConversations.ts` |
+| `app/lib/server/functions/syncRolePrioritiesForRoomIfRequired.ts` | `server/lib/rooms/syncRolePrioritiesForRoomIfRequired.ts` |
+| `app/lib/server/functions/validateName.ts`                        | `server/lib/shared/validateName.ts`                       |
+| `app/lib/server/functions/validateNameChars.ts`                   | `server/lib/shared/validateNameChars.ts`                  |
+| `app/lib/server/functions/getModifiedHttpHeaders.ts`              | `server/lib/shared/getModifiedHttpHeaders.ts`             |
+| `app/lib/server/functions/disableCustomScripts.ts`                | `server/lib/shared/disableCustomScripts.ts`               |
+| `app/authorization/server/functions/*.ts`                         | `server/lib/authorization/`                               |
+| `app/cloud/server/functions/*.ts`                                 | `server/lib/cloud/`                                       |
+| `app/livechat/server/lib/*.ts` (functions)                        | `server/lib/omnichannel/`                                 |
 
 **Verification per sub-phase**: `tsc --noEmit`, run unit tests for the moved functions, run integration tests.
 
@@ -517,7 +514,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 | Source                               | Destination                                                 |
 | ------------------------------------ | ----------------------------------------------------------- |
-| `app/livechat/server/lib/`           | `server/functions/omnichannel/` + `server/lib/omnichannel/` |
+| `app/livechat/server/lib/`           | `server/lib/omnichannel/` |
 | `app/livechat/server/methods/`       | Already moved in Phase 5                                    |
 | `app/livechat/server/hooks/`         | Already moved in Phase 6b                                   |
 | `app/livechat/server/api/`           | Already moved in Phase 3                                    |
@@ -551,7 +548,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 ### How to Handle `app/lib/server/lib/` (Utility Files)
 
-These files don't fit neatly into `functions/` because they're hooks, utilities, or notification orchestration:
+These files don't fit neatly into `lib/<domain>/` because they're hooks, utilities, or notification orchestration:
 
 | File                             | Destination                 | Reason                     |
 | -------------------------------- | --------------------------- | -------------------------- |
@@ -614,9 +611,9 @@ This file is the main import aggregator for the app/lib module. As files move ou
 
 Once all files are in `server/`, the following improvements become possible (but are separate work):
 
-1. **Move business logic from `functions/` into `services/`** — the service layer becomes the single source of truth
+1. **Move business logic from `lib/` domain folders into `services/`** — the service layer becomes the single source of truth
 2. **Delete Meteor methods** — the `server/methods/` directory can be emptied feature by feature
 3. **Delete publications** — `server/publications/` can be emptied as DDP is removed
-4. **Add `index.ts` exports** to each `functions/<domain>/` for a clean public API
-5. **Add ESLint layer rules** — e.g., `methods/` cannot import from `api/`, `functions/` cannot import from `methods/`
-6. **Reorganize `server/lib/`** into a cleaner structure (it will have grown with auth-providers, messaging, notifications, etc.)
+4. **Add `index.ts` exports** to each `lib/<domain>/` for a clean public API
+5. **Add ESLint layer rules** — e.g., `methods/` cannot import from `api/`, `lib/` domain folders cannot import from `methods/`
+6. **Reorganize `server/lib/`** into a cleaner structure if needed (it will have grown with domain functions, auth-providers, messaging, notifications, etc.)
