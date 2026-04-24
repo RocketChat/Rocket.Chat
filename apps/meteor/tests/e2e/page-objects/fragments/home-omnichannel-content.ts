@@ -39,9 +39,10 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	async selectCannedResponse(cannedResponseName: string): Promise<void> {
-		await this.composer.inputMessage.pressSequentially('!');
-		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
-		await this.composer.inputMessage.pressSequentially(cannedResponseName);
-		await this.page.keyboard.press('Enter');
+		await this.composer.inputMessage.clear();
+		await this.composer.inputMessage.pressSequentially(`!${cannedResponseName}`);
+		await this.composer.boxPopup.waitFor({ state: 'visible' });
+		const desiredOption = this.composer.boxPopup.getByText(cannedResponseName, { exact: true });
+		await desiredOption.click();
 	}
 }
