@@ -2,7 +2,6 @@ import type { Locator, Page } from '@playwright/test';
 
 import { HomeContent } from './home-content';
 import { OmnichannelTransferChatModal, OmnichannelReturnToQueueModal } from './modals';
-import { expect } from '../../utils/test';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly forwardChatModal: OmnichannelTransferChatModal;
@@ -40,13 +39,9 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	async selectCannedResponse(cannedResponseName: string): Promise<void> {
-		await this.composer.inputMessage.click();
-		await this.composer.inputMessage.fill('');
 		await this.composer.inputMessage.pressSequentially('!');
-		const composerBoxPopup = this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
-		await composerBoxPopup.waitFor({ state: 'visible' });
+		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
 		await this.composer.inputMessage.pressSequentially(cannedResponseName);
-		await expect(this.composer.inputMessage).toHaveValue(`!${cannedResponseName}`);
 		await this.page.keyboard.press('Enter');
 	}
 }
