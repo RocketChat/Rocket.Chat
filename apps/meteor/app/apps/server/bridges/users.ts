@@ -131,6 +131,7 @@ export class AppUserBridge extends UserBridge {
 		const { status, statusText, ...updateFields } = fields;
 
 		if (status) {
+			// TODO: pass statusEmoji and statusExpiresAt when Apps Engine IUserBridge supports them
 			await Presence.setStatus(user.id, status as UserStatus, statusText);
 		} else if (typeof statusText === 'string') {
 			await setStatusText(

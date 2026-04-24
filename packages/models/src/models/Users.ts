@@ -1097,25 +1097,27 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	updateStatus(_id: IUser['_id'], status: UserStatus) {
-		const update = {
-			$set: {
-				status,
+	findOneForPresenceEngine(userId: IUser['_id']) {
+		return this.findOneById(userId, {
+			projection: {
+				username: 1,
+				roles: 1,
+				status: 1,
+				statusDefault: 1,
+				statusSource: 1,
+				statusText: 1,
+				statusEmoji: 1,
+				statusExpiresAt: 1,
+				statusConnection: 1,
+				previousState: 1,
 			},
-		};
-
-		return this.updateOne({ _id }, update);
+		});
 	}
 
-	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
-		const update = {
-			$set: {
-				status,
-				statusDefault,
-			},
-		};
+	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[]) {
+		const $unset = clear?.length ? Object.fromEntries(clear.map((field) => [field, '' as const])) : undefined;
 
-		return this.updateOne({ _id }, update);
+		return this.findOneAndUpdate({ _id: userId }, { $set: values, ...($unset && { $unset }) }, { returnDocument: 'after' });
 	}
 
 	updateStatusByAppId(appId: string, status: UserStatus) {

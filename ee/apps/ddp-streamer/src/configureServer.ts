@@ -114,6 +114,7 @@ server.methods({
 		if (!userId) {
 			return;
 		}
+		// TODO: pass statusEmoji and statusExpiresAt when DDP protocol supports them
 		return Presence.setStatus(userId, status);
 	},
 	'UserPresence:online'() {
@@ -135,6 +136,7 @@ server.methods({
 		if (!userId) {
 			return;
 		}
+		// TODO: pass statusEmoji and statusExpiresAt when DDP protocol supports them
 		return Presence.setStatus(userId, status, statusText);
 	},
 });

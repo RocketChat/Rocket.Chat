@@ -5,6 +5,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
+import { setActive, endActive, clearActive } from './lib/presenceEngine';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 const MAX_CONNECTIONS = 200;
@@ -42,7 +43,7 @@ export class Presence extends ServiceClass implements IPresence {
 				this.connsPerInstance.delete(id);
 
 				const affectedUsers = await this.removeLostConnections(id);
-				affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+				affectedUsers.forEach((uid) => this.recalculateStatusFromConnections(uid));
 				return;
 			}
 
@@ -78,14 +79,14 @@ export class Presence extends ServiceClass implements IPresence {
 
 	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
 		const affectedUsers = await this.removeLostConnections(node.id);
-		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+		return affectedUsers.forEach((uid) => this.recalculateStatusFromConnections(uid));
 	}
 
 	override async started(): Promise<void> {
 		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
-			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+			return affectedUsers.forEach((uid) => this.recalculateStatusFromConnections(uid));
 		}, 10000);
 
 		try {
@@ -100,7 +101,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
-		const results = await Promise.allSettled(userIds.map((uid) => this.updateUserPresence(uid)));
+		const results = await Promise.allSettled(userIds.map((uid) => this.recalculateStatusFromConnections(uid)));
 		const fulfilled = results.filter((result) => result.status === 'fulfilled');
 		const rejected = results.filter((result) => result.status === 'rejected');
 
@@ -158,7 +159,7 @@ export class Presence extends ServiceClass implements IPresence {
 			status: UserStatus.ONLINE,
 		});
 
-		await this.updateUserPresence(uid);
+		await this.recalculateStatusFromConnections(uid);
 		return {
 			uid,
 			connectionId: session,
@@ -182,7 +183,7 @@ export class Presence extends ServiceClass implements IPresence {
 			return;
 		}
 
-		await this.updateUserPresence(uid);
+		await this.recalculateStatusFromConnections(uid);
 
 		return { uid, connectionId };
 	}
@@ -193,7 +194,7 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 		await UsersSessions.removeConnectionByConnectionId(session);
 
-		await this.updateUserPresence(uid);
+		await this.recalculateStatusFromConnections(uid);
 
 		return {
 			uid,
@@ -230,69 +231,141 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.map(({ _id }) => _id);
 	}
 
-	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
-		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
-
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'roles' | 'status'>>(uid, {
-			projection: { username: 1, roles: 1, status: 1 },
-		});
-
-		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-
-		const result = await Users.updateStatusById(uid, {
-			statusDefault,
-			status,
-			statusConnection,
-			statusText,
-		});
-
-		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user?.username, status, statusText, roles: user?.roles || [] }, user?.status);
+	/**
+	 * Sets a user's status from a manual action (REST API, Meteor method, Apps Engine).
+	 * Decides internally whether to apply a new claim or clear/reset to system-managed.
+	 * Omitted fields (undefined) are preserved from the current user state.
+	 * "Online" with no text triggers a full reset (clearActiveState).
+	 */
+	async setStatus(
+		userId: string,
+		statusDefault: UserStatus,
+		statusText?: string,
+		statusEmoji?: string,
+		statusExpiresAt?: Date,
+	): Promise<void> {
+		if (statusDefault === UserStatus.ONLINE && !statusText) {
+			await this.clearActiveState(userId);
+			return;
 		}
 
-		return !!result.modifiedCount;
+		await this.setActiveState(userId, {
+			statusDefault,
+			statusSource: 'manual',
+			...(statusText != null && { statusText }),
+			...(statusEmoji && { statusEmoji }),
+			...(statusExpiresAt && { statusExpiresAt }),
+		});
+	}
+
+	/**
+	 * Applies a presence claim from a source (manual, external, internal).
+	 * The engine computes the update, then applyPresenceUpdate writes to DB
+	 * combined with connection status in a single operation.
+	 */
+	async setActiveState(
+		userId: string,
+		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusEmoji' | 'statusExpiresAt'>,
+	): Promise<void> {
+		const user = await Users.findOneForPresenceEngine(userId);
+		if (!user) {
+			return;
+		}
+		const result = setActive(user, newState);
+		if (!result) {
+			return;
+		}
+		await this.recalculateStatusFromConnections(userId, result);
+	}
+
+	/**
+	 * Ends the current active claim. Restores previous if valid, otherwise
+	 * falls back to system-managed.
+	 */
+	async endActiveState(userId: string): Promise<void> {
+		const user = await Users.findOneForPresenceEngine(userId);
+		if (!user) {
+			return;
+		}
+		await this.recalculateStatusFromConnections(userId, endActive(user));
+	}
+
+	/**
+	 * Removes all presence claims and resets to "Online" with no text.
+	 * After this, the system manages presence based on connections.
+	 */
+	async clearActiveState(userId: string): Promise<void> {
+		await this.recalculateStatusFromConnections(userId, clearActive());
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
 		const result = await UsersSessions.updateConnectionStatusById(uid, session, status);
 
-		await this.updateUserPresence(uid);
+		await this.recalculateStatusFromConnections(uid);
 
 		return !!result.modifiedCount;
 	}
 
-	async updateUserPresence(uid: string): Promise<void> {
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
-			projection: {
-				username: 1,
-				statusDefault: 1,
-				statusText: 1,
-				roles: 1,
-				status: 1,
-			},
-		});
+	/**
+	 * Single point of write for all presence updates.
+	 *
+	 * When called with an engineResult (from setActiveState, endActiveState, clearActiveState),
+	 * combines the engine's computed values with DDP session status in a single DB write.
+	 * For REST-only users (no sessions), preserves the engine's status as-is.
+	 *
+	 * When called without engineResult (from connection lifecycle: connect, disconnect, heartbeat),
+	 * recalculates display status from sessions and writes status + statusConnection.
+	 */
+	async recalculateStatusFromConnections(
+		uid: string,
+		engineResult?: {
+			values: Record<string, unknown>;
+			clear?: string[];
+		},
+	): Promise<void> {
+		const user = await Users.findOneForPresenceEngine(uid);
 		if (!user) {
 			return;
 		}
 
-		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
+		if (engineResult) {
+			// only recalculate connection status when the engine changed the visible status (has statusDefault)
+			if (engineResult.values.statusDefault) {
+				const userSessions = await UsersSessions.findOneById(uid);
+				const connections = userSessions?.connections ?? [];
+				const { status, statusConnection } = processPresenceAndStatus(connections, engineResult.values.statusDefault as UserStatus);
+				engineResult.values.status = status;
+				engineResult.values.statusConnection = statusConnection;
+			}
 
-		const { statusDefault } = user;
+			const updatedUser = await Users.updatePresenceAndStatus(uid, engineResult.values, engineResult.clear);
+			if (updatedUser) {
+				this.broadcast(updatedUser, user.status);
+			}
+			return;
+		}
 
-		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-
-		const result = await Users.updateStatusById(uid, {
-			status,
-			statusConnection,
-		});
-
+		const userSessions = await UsersSessions.findOneById(uid);
+		const { status, statusConnection } = processPresenceAndStatus(userSessions?.connections, user.statusDefault);
+		const result = await Users.updateStatusById(uid, { status, statusConnection });
 		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles }, user.status);
+			this.broadcast(
+				{
+					_id: uid,
+					username: user.username,
+					status,
+					statusText: user.statusText,
+					statusEmoji: user.statusEmoji,
+					statusSource: user.statusSource,
+					roles: user.roles,
+				},
+				user.status,
+			);
 		}
 	}
 
 	private broadcast(
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>,
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusEmoji' | 'statusSource' | 'roles'>,
 		previousStatus: UserStatus | undefined,
 	): void {
 		if (!this.broadcastEnabled) {
