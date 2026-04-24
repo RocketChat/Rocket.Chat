@@ -34,3 +34,11 @@ export const guessTimezoneFromOffset = (offset: string | number): string => {
 };
 
 export const guessTimezone = (): string => new Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export const canonicalizeTimezone = (name: string): string => {
+	try {
+		return new Intl.DateTimeFormat(undefined, { timeZone: name }).resolvedOptions().timeZone;
+	} catch {
+		return name;
+	}
+};
