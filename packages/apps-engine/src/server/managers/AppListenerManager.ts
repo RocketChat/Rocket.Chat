@@ -20,10 +20,6 @@ import { UIActionButtonContext } from '../../definition/ui';
 import type { IUIKitResponse, IUIKitSurface, UIKitIncomingInteraction } from '../../definition/uikit';
 import { UIKitIncomingInteractionType } from '../../definition/uikit';
 import { isUIKitIncomingInteractionActionButtonMessageBox } from '../../definition/uikit/IUIKitIncomingInteractionActionButton';
-import type {
-	IUIKitIncomingInteractionMessageContainer,
-	IUIKitIncomingInteractionModalContainer,
-} from '../../definition/uikit/UIKitIncomingInteractionContainer';
 import type { IUIKitLivechatBlockIncomingInteraction, IUIKitLivechatIncomingInteraction } from '../../definition/uikit/livechat';
 import type { IFileUploadInternalContext } from '../../definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '../../definition/users';
@@ -357,15 +353,15 @@ export class AppListenerManager {
 			case AppInterface.IPreMessageSentModify:
 				return this.executePreMessageSentModify(data as IMessage);
 			case AppInterface.IPostMessageSent:
-				this.executePostMessageSent(data as IMessage);
+				void this.executePostMessageSent(data as IMessage);
 				return;
 			case AppInterface.IPostSystemMessageSent:
-				this.executePostSystemMessageSent(data as IMessage);
+				void this.executePostSystemMessageSent(data as IMessage);
 				return;
 			case AppInterface.IPreMessageDeletePrevent:
 				return this.executePreMessageDeletePrevent(data as IMessage);
 			case AppInterface.IPostMessageDeleted:
-				this.executePostMessageDelete(data as IMessageDeleteContext);
+				void this.executePostMessageDelete(data as IMessageDeleteContext);
 				return;
 			case AppInterface.IPreMessageUpdatedPrevent:
 				return this.executePreMessageUpdatedPrevent(data as IMessage);
@@ -374,7 +370,7 @@ export class AppListenerManager {
 			case AppInterface.IPreMessageUpdatedModify:
 				return this.executePreMessageUpdatedModify(data as IMessage);
 			case AppInterface.IPostMessageUpdated:
-				this.executePostMessageUpdated(data as IMessage);
+				void this.executePostMessageUpdated(data as IMessage);
 				return;
 			case AppInterface.IPostMessageReacted:
 				return this.executePostMessageReacted(data as IMessageReactionContext);
@@ -394,12 +390,12 @@ export class AppListenerManager {
 			case AppInterface.IPreRoomCreateModify:
 				return this.executePreRoomCreateModify(data as IRoom);
 			case AppInterface.IPostRoomCreate:
-				this.executePostRoomCreate(data as IRoom);
+				void this.executePostRoomCreate(data as IRoom);
 				return;
 			case AppInterface.IPreRoomDeletePrevent:
 				return this.executePreRoomDeletePrevent(data as IRoom);
 			case AppInterface.IPostRoomDeleted:
-				this.executePostRoomDeleted(data as IRoom);
+				void this.executePostRoomDeleted(data as IRoom);
 				return;
 			case AppInterface.IPreRoomUserJoined:
 				return this.executePreRoomUserJoined(data as IRoomUserJoinedContext);
@@ -411,10 +407,10 @@ export class AppListenerManager {
 				return this.executePostRoomUserLeave(data as IRoomUserLeaveContext);
 			// External Components
 			case AppInterface.IPostExternalComponentOpened:
-				this.executePostExternalComponentOpened(data as IExternalComponent);
+				void this.executePostExternalComponentOpened(data as IExternalComponent);
 				return;
 			case AppInterface.IPostExternalComponentClosed:
-				this.executePostExternalComponentClosed(data as IExternalComponent);
+				void this.executePostExternalComponentClosed(data as IExternalComponent);
 				return;
 			case AppInterface.IUIKitInteractionHandler:
 				return this.executeUIKitInteraction(data as UIKitIncomingInteraction);
@@ -1071,7 +1067,7 @@ export class AppListenerManager {
 						triggerId,
 						value,
 						message,
-						container: container as IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer,
+						container,
 					};
 				}
 			}

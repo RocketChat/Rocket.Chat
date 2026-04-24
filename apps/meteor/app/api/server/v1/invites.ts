@@ -70,7 +70,6 @@ const invites = API.v1
 			authRequired: true,
 			response: {
 				200: ajv.compile<IInvite[]>({
-					additionalProperties: false,
 					type: 'array',
 					items: {
 						$ref: '#/components/schemas/IInvite',
