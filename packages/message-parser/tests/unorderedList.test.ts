@@ -53,6 +53,7 @@ test.each([
 			]),
 		],
 	],
+	[`* A * B`, [unorderedList([listItem([plain('A ')]), listItem([plain('B')])])]],
 	//   [
 	//     `
 	// * First item

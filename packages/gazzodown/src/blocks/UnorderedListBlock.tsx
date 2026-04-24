@@ -21,7 +21,7 @@ const renderChildren = (children: MessageParser.ListItem[]): ReactElement => (
 const UnorderedListBlock = ({ items }: UnorderedListBlockProps): ReactElement => (
 	<ul style={{ paddingInlineStart: '1.5rem' }}>
 		{items.map((item, index) => (
-			<li key={index} value={item.number}>
+			<li key={index}>
 				<InlineElements>{item.value}</InlineElements>
 				{item.children?.length ? renderChildren(item.children) : null}
 			</li>
