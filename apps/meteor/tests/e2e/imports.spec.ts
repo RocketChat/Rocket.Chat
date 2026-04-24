@@ -2,6 +2,7 @@ import fs from 'fs';
 import * as path from 'path';
 
 import { parse } from 'csv-parse';
+import type { BrowserContext, Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { AdminImports, AdminRooms } from './page-objects';
@@ -80,14 +81,28 @@ const roomsCsvToJson = (): Promise<void> =>
 	);
 
 test.describe.serial('imports', () => {
-	test.beforeAll(async () => {
+	let page: Page;
+	let context: BrowserContext;
+	let poAdminImports: AdminImports;
+	let poAdminRooms: AdminRooms;
+
+	test.beforeAll(async ({ browser }) => {
 		await usersCsvsToJson();
 		await roomsCsvToJson();
 		await countDmMessages();
+
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
+		poAdminImports = new AdminImports(page);
+		poAdminRooms = new AdminRooms(page);
 	});
 
-	test('expect import users data from slack', async ({ page }) => {
-		const poAdminImports = new AdminImports(page);
+	test.afterAll(async () => {
+		await page.close();
+		await context.close();
+	});
+
+	test('expect import users data from slack', async () => {
 		await page.goto('/admin/import');
 
 		await poAdminImports.btnImportNewFile.click();
@@ -104,8 +119,7 @@ test.describe.serial('imports', () => {
 		});
 	});
 
-	test('expect import users data from zipped CSV files', async ({ page }) => {
-		const poAdminImports = new AdminImports(page);
+	test('expect import users data from zipped CSV files', async () => {
 		await page.goto('/admin/import');
 
 		await poAdminImports.btnImportNewFile.click();
@@ -124,7 +138,7 @@ test.describe.serial('imports', () => {
 		});
 	});
 
-	test('expect all imported users to be actually listed as users', async ({ page }) => {
+	test('expect all imported users to be actually listed as users', async () => {
 		await page.goto('/admin/users');
 
 		for await (const user of rowUserName) {
@@ -136,39 +150,36 @@ test.describe.serial('imports', () => {
 		}
 	});
 
-	test('expect all imported rooms to be actually listed as rooms with correct members count', async ({ page }) => {
-		const poAdmin: AdminRooms = new AdminRooms(page);
+	test('expect all imported rooms to be actually listed as rooms with correct members count', async () => {
 		await page.goto('/admin/rooms');
 
 		for await (const room of importedRooms) {
-			await poAdmin.inputSearchRooms.fill(room.name);
+			await poAdminRooms.inputSearchRooms.fill(room.name);
 
 			const expectedMembersCount = room.members.split(';').filter((username) => username !== room.ownerUsername).length + 1;
 			expect(page.locator(`tbody tr td:nth-child(2) >> text="${expectedMembersCount}"`));
 		}
 	});
 
-	test('expect all imported rooms to have correct room type and owner', async ({ page }) => {
-		const poAdmin = new AdminRooms(page);
+	test('expect all imported rooms to have correct room type and owner', async () => {
 		await page.goto('/admin/rooms');
 
 		for await (const room of importedRooms) {
-			await poAdmin.inputSearchRooms.fill(room.name);
-			await poAdmin.getRoomRow(room.name).click();
+			await poAdminRooms.inputSearchRooms.fill(room.name);
+			await poAdminRooms.getRoomRow(room.name).click();
 
 			room.visibility === 'private'
-				? await expect(poAdmin.editRoom.privateInput).toBeChecked()
-				: await expect(poAdmin.editRoom.privateInput).not.toBeChecked();
-			await expect(poAdmin.editRoom.roomOwnerInput).toHaveValue(room.ownerUsername);
+				? await expect(poAdminRooms.editRoom.privateInput).toBeChecked()
+				: await expect(poAdminRooms.editRoom.privateInput).not.toBeChecked();
+			await expect(poAdminRooms.editRoom.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
 	});
 
-	test('expect imported DM to be actually listed as a room with correct members and messages count', async ({ page }) => {
-		const poAdmin = new AdminRooms(page);
+	test('expect imported DM to be actually listed as a room with correct members and messages count', async () => {
 		await page.goto('/admin/rooms');
 
 		for await (const user of csvImportedUsernames) {
-			await poAdmin.inputSearchRooms.fill(user);
+			await poAdminRooms.inputSearchRooms.fill(user);
 			expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
 
 			const expectedMembersCount = 2;
