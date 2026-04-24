@@ -1,25 +1,37 @@
+import type { BrowserContext, Page } from 'playwright-core';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { deleteChannel, createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
+
+const DEFAULT_VIEWPORT = { width: 1280, height: 720 };
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('Sidebar', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		context = await browser.newContext({ storageState: Users.admin.state, viewport: DEFAULT_VIEWPORT });
+		page = await context.newPage();
+		poHomeChannel = new HomeChannel(page);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await deleteChannel(api, targetChannel);
+		await page.close();
+		await context.close();
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
-
+	test.beforeEach(async () => {
+		// Reset viewport — several tests shrink it for mobile/tablet checks
+		// and we're reusing the same page across the whole suite.
+		await page.setViewportSize(DEFAULT_VIEWPORT);
 		await page.goto('/home');
 		await page.waitForSelector('main');
 	});
@@ -36,18 +48,18 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
 		});
 
-		test('should display home and directory inside a menu in smaller views', async ({ page }) => {
+		test('should display home and directory inside a menu in smaller views', async () => {
 			await page.setViewportSize({ width: 1023, height: 767 });
 			await expect(poHomeChannel.navbar.btnMenuPages).toBeVisible();
 		});
 
-		test('should display voice and omnichannel items inside a menu and sidebar toggler in mobile view', async ({ page }) => {
+		test('should display voice and omnichannel items inside a menu and sidebar toggler in mobile view', async () => {
 			await page.setViewportSize({ width: 767, height: 510 });
 			await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).toBeVisible();
 			await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 		});
 
-		test('should hide everything else when navbar search is focused in mobile view', async ({ page }) => {
+		test('should hide everything else when navbar search is focused in mobile view', async () => {
 			await page.setViewportSize({ width: 767, height: 510 });
 			await poHomeChannel.navbar.searchInput.click();
 
@@ -56,13 +68,13 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).not.toBeVisible();
 			await expect(poHomeChannel.navbar.groupHistoryNavigation).not.toBeVisible();
 		});
-		test('expect navbar toolbar buttons to be enabled in tablet view', async ({ page }) => {
+		test('expect navbar toolbar buttons to be enabled in tablet view', async () => {
 			await page.setViewportSize({ width: 1023, height: 767 });
 
 			await expect(poHomeChannel.navbar.btnDisplay).toBeEnabled();
 			await expect(poHomeChannel.navbar.btnCreateNew).toBeEnabled();
 		});
-		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
+		test('should navigate on navbar toolbar pressing tab', async () => {
 			await poHomeChannel.navbar.btnHome.focus();
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
@@ -75,7 +87,7 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('sidebar', async () => {
-		test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {
+		test('should navigate on sidebar items using arrow keys and restore focus', async () => {
 			// focus should be on the next item
 			await poHomeChannel.sidebar.channelsList.getByRole('link').first().focus();
 			await page.keyboard.press('ArrowDown');
@@ -87,7 +99,7 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.sidebar.channelsList.getByRole('link').first()).not.toBeFocused();
 		});
 
-		test('should expand/collapse sidebar groups', async ({ page }) => {
+		test('should expand/collapse sidebar groups', async () => {
 			await page.goto('/home');
 
 			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
@@ -102,7 +114,7 @@ test.describe.serial('Sidebar', () => {
 			expect(isExpanded).toBeTruthy();
 		});
 
-		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
+		test('should expand/collapse sidebar groups with keyboard', async () => {
 			await page.goto('/home');
 
 			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
@@ -123,7 +135,7 @@ test.describe.serial('Sidebar', () => {
 			}).toPass();
 		});
 
-		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
+		test('should persist collapsed/expanded groups after page reload', async () => {
 			await page.goto('/home');
 
 			const collapser = poHomeChannel.sidebar.firstCollapser;
@@ -150,12 +162,7 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('embedded layout', async () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/home');
-			await page.waitForSelector('main');
-		});
-
-		test('should not show Navbar', async ({ page }) => {
+		test('should not show Navbar', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
 			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
@@ -163,7 +170,7 @@ test.describe.serial('Sidebar', () => {
 			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
 		});
 
-		test('should show burger menu', async ({ page }) => {
+		test('should show burger menu', async () => {
 			await page.goto('admin/info?layout=embedded');
 			await page.setViewportSize({ width: 767, height: 510 });
 
