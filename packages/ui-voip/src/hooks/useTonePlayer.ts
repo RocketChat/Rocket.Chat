@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-class TonePlayer {
-	private audioContext: AudioContext;
+export class TonePlayer {
+	protected audioContext: AudioContext;
 
 	private audioElement: HTMLAudioElement;
 
@@ -9,7 +9,7 @@ class TonePlayer {
 
 	private filter: BiquadFilterNode;
 
-	private destination: MediaStreamAudioDestinationNode;
+	protected destination: MediaStreamAudioDestinationNode;
 
 	constructor() {
 		this.audioContext = new AudioContext();
@@ -77,7 +77,7 @@ class TonePlayer {
 	}
 }
 
-const DIGIT_TONE_MAP = {
+export const DIGIT_TONE_MAP = {
 	'1': [1209, 697],
 	'2': [1336, 697],
 	'3': [1477, 697],
