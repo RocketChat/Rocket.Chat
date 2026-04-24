@@ -68,14 +68,16 @@ apps/meteor/server/
 │ ── EXISTING (extended with domain subfolders) ────────────
 │
 ├── methods/                       # EXISTING — Meteor methods (deprecated)
-│   ├── [existing flat files]      #   current files stay in place
-│   ├── rooms/                     #   NEW: from app/lib/server/methods/ + app/channel-settings/...
-│   ├── users/                     #   NEW: from app/lib/server/methods/
-│   ├── messages/                  #   NEW: from app/lib/server/methods/
-│   ├── auth/                      #   NEW: from app/authorization/server/methods/ + app/2fa/...
-│   ├── omnichannel/               #   NEW: from app/livechat/server/methods/
-│   ├── import/                    #   NEW: from app/importer/server/methods/
-│   └── integrations/              #   NEW: from app/integrations/server/methods/
+│   ├── rooms/                     #   from app/lib/server/methods/ + app/channel-settings/... + existing flat files
+│   ├── users/                     #   from app/lib/server/methods/ + existing flat files
+│   ├── messages/                  #   from app/lib/server/methods/ + existing flat files
+│   ├── auth/                      #   from app/authorization/server/methods/ + app/2fa/... + existing flat files
+│   ├── omnichannel/               #   from app/livechat/server/methods/
+│   ├── settings/                  #   from app/lib/server/methods/ + existing flat files
+│   ├── platform/                  #   from app/autotranslate/ + app/e2e/ + existing flat files
+│   ├── import/                    #   from app/importer/server/methods/
+│   ├── integrations/              #   from app/integrations/server/methods/
+│   └── index.ts                   #   updated to import from domain subfolders
 │
 ├── hooks/                         # EXISTING — event handlers
 │   ├── [existing flat files]      #   current files stay in place
@@ -355,9 +357,9 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Risk**: Medium. Methods are entry points — nothing imports them, they just need to be loaded at startup. The main risk is missing a method registration.
 
-**Scope**: ~100 files
+**Scope**: ~148 files
 
-**Note**: The existing files in `server/methods/` (flat structure) stay in place. New domain subfolders are added alongside them. Over time, the flat files can be moved into the appropriate domain subfolder too, but that's optional in this migration.
+**Note**: The existing flat files in `server/methods/` are also moved into the appropriate domain subfolder as part of this phase.
 
 | Source                                            | Destination                                     |
 | ------------------------------------------------- | ----------------------------------------------- |
@@ -399,6 +401,58 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/importer/server/methods/*.ts`                | `server/methods/import/`                        |
 | `app/autotranslate/server/methods/*.ts`           | `server/methods/platform/`                      |
 | `app/e2e/server/methods/*.ts`                     | `server/methods/platform/`                      |
+
+**Existing `server/methods/` flat files** — also moved into domain subfolders:
+
+| Source                                        | Destination                                        |
+| --------------------------------------------- | -------------------------------------------------- |
+| `server/methods/deleteUser.ts`                | `server/methods/users/deleteUser.ts`               |
+| `server/methods/setUserActiveStatus.ts`       | `server/methods/users/setUserActiveStatus.ts`      |
+| `server/methods/registerUser.ts`              | `server/methods/users/registerUser.ts`             |
+| `server/methods/resetAvatar.ts`               | `server/methods/users/resetAvatar.ts`              |
+| `server/methods/setAvatarFromService.ts`      | `server/methods/users/setAvatarFromService.ts`     |
+| `server/methods/saveUserPreferences.ts`       | `server/methods/users/saveUserPreferences.ts`      |
+| `server/methods/saveUserProfile.ts`           | `server/methods/users/saveUserProfile.ts`          |
+| `server/methods/getUsersOfRoom.ts`            | `server/methods/users/getUsersOfRoom.ts`           |
+| `server/methods/userPresence.ts`              | `server/methods/users/userPresence.ts`             |
+| `server/methods/userSetUtcOffset.ts`          | `server/methods/users/userSetUtcOffset.ts`         |
+| `server/methods/ignoreUser.ts`                | `server/methods/users/ignoreUser.ts`               |
+| `server/methods/addAllUserToRoom.ts`          | `server/methods/rooms/addAllUserToRoom.ts`         |
+| `server/methods/addRoomLeader.ts`             | `server/methods/rooms/addRoomLeader.ts`            |
+| `server/methods/addRoomModerator.ts`          | `server/methods/rooms/addRoomModerator.ts`         |
+| `server/methods/addRoomOwner.ts`              | `server/methods/rooms/addRoomOwner.ts`             |
+| `server/methods/removeRoomLeader.ts`          | `server/methods/rooms/removeRoomLeader.ts`         |
+| `server/methods/removeRoomModerator.ts`       | `server/methods/rooms/removeRoomModerator.ts`      |
+| `server/methods/removeRoomOwner.ts`           | `server/methods/rooms/removeRoomOwner.ts`          |
+| `server/methods/removeUserFromRoom.ts`        | `server/methods/rooms/removeUserFromRoom.ts`       |
+| `server/methods/getRoomById.ts`               | `server/methods/rooms/getRoomById.ts`              |
+| `server/methods/getRoomIdByNameOrId.ts`       | `server/methods/rooms/getRoomIdByNameOrId.ts`      |
+| `server/methods/getRoomNameById.ts`           | `server/methods/rooms/getRoomNameById.ts`          |
+| `server/methods/browseChannels.ts`            | `server/methods/rooms/browseChannels.ts`           |
+| `server/methods/channelsList.ts`              | `server/methods/rooms/channelsList.ts`             |
+| `server/methods/getTotalChannels.ts`          | `server/methods/rooms/getTotalChannels.ts`         |
+| `server/methods/hideRoom.ts`                  | `server/methods/rooms/hideRoom.ts`                 |
+| `server/methods/openRoom.ts`                  | `server/methods/rooms/openRoom.ts`                 |
+| `server/methods/toggleFavorite.ts`            | `server/methods/rooms/toggleFavorite.ts`           |
+| `server/methods/createDirectMessage.ts`       | `server/methods/messages/createDirectMessage.ts`   |
+| `server/methods/deleteFileMessage.ts`         | `server/methods/messages/deleteFileMessage.ts`     |
+| `server/methods/messageSearch.ts`             | `server/methods/messages/messageSearch.ts`         |
+| `server/methods/loadHistory.ts`               | `server/methods/messages/loadHistory.ts`           |
+| `server/methods/loadMissedMessages.ts`        | `server/methods/messages/loadMissedMessages.ts`    |
+| `server/methods/loadNextMessages.ts`          | `server/methods/messages/loadNextMessages.ts`      |
+| `server/methods/loadSurroundingMessages.ts`   | `server/methods/messages/loadSurroundingMessages.ts` |
+| `server/methods/readMessages.ts`              | `server/methods/messages/readMessages.ts`          |
+| `server/methods/readThreads.ts`               | `server/methods/messages/readThreads.ts`           |
+| `server/methods/muteUserInRoom.ts`            | `server/methods/rooms/muteUserInRoom.ts`           |
+| `server/methods/unmuteUserInRoom.ts`          | `server/methods/rooms/unmuteUserInRoom.ts`         |
+| `server/methods/afterVerifyEmail.ts`          | `server/methods/auth/afterVerifyEmail.ts`          |
+| `server/methods/sendConfirmationEmail.ts`     | `server/methods/auth/sendConfirmationEmail.ts`     |
+| `server/methods/sendForgotPasswordEmail.ts`   | `server/methods/auth/sendForgotPasswordEmail.ts`   |
+| `server/methods/logoutCleanUp.ts`             | `server/methods/auth/logoutCleanUp.ts`             |
+| `server/methods/getSetupWizardParameters.ts`  | `server/methods/settings/getSetupWizardParameters.ts` |
+| `server/methods/loadLocale.ts`                | `server/methods/platform/loadLocale.ts`            |
+| `server/methods/OEmbedCacheCleanup.ts`        | `server/methods/platform/OEmbedCacheCleanup.ts`    |
+| `server/methods/requestDataDownload.ts`       | `server/methods/platform/requestDataDownload.ts`   |
 
 **Import updates**: Update `server/importPackages.ts` and any `server/methods/index.ts` that aggregates method registrations.
 
