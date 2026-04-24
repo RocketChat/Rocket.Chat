@@ -131,10 +131,12 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[], number?: number): ListItem => ({
+export const listItem = (text: Inlines[], number?: number, indent = 0): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+	indent,
+	children: [],
 });
 
 export const mentionUser = (() => {
