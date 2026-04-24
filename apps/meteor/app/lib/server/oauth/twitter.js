@@ -14,10 +14,10 @@ const getIdentity = async function (accessToken, appId, appSecret, accessTokenSe
 		accessSecret: accessTokenSecret,
 	});
 	try {
-		return client.v1.verifyCredentials({ include_email: true });
+		return await client.v1.verifyCredentials({ include_email: true });
 	} catch (err) {
 		throw _.extend(new Error(`Failed to fetch identity from Twitter. ${err.message}`), {
-			response: err.response,
+			data: err.data ?? err.response,
 		});
 	}
 };
