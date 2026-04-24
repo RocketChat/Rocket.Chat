@@ -70,7 +70,7 @@ callbacks.add(
 				notificationMessage,
 			});
 		} catch (e) {
-			console.error('Error sending reaction notification', e);
+			SystemLogger.error('Error sending reaction notification', e);
 		}
 	},
 	callbacks.priority.LOW,
