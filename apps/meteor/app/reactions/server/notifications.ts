@@ -6,6 +6,7 @@ import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/server/l
 import { settings } from '../../settings/server';
 import { notifyDesktopUser } from '../../lib/server/functions/notifications/desktop';
 import { emoji } from '../../emoji/server';
+import { SystemLogger } from '/server/lib/logger/system';
 
 callbacks.add(
 	'afterSetReaction',
@@ -80,7 +81,34 @@ callbacks.add(
 	'afterUnsetReaction',
 	async (message, { user, room }) => {
 		try {
+			if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
+				return;
+			}
+
 			if (!message.u?._id || message.u._id === user._id) {
+				return;
+			}
+
+			const recipient = await Users.findOneById(message.u._id, {
+				projection: {
+					active: 1,
+					settings: {
+						preferences: {
+							receiveReactionNotifications: 1,
+						},
+					},
+				},
+			});
+
+			if (!recipient || !recipient.active) {
+				return;
+			}
+
+			const receiveReactionNotifications =
+				recipient.settings?.preferences?.receiveReactionNotifications ??
+				settings.get<boolean>('Accounts_Default_User_Preferences_receiveReactionNotifications');
+
+			if (!receiveReactionNotifications) {
 				return;
 			}
 
@@ -99,7 +127,7 @@ callbacks.add(
 
 			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, recipientId);
 		} catch (e) {
-			console.error('Error handling reaction notification removal', e);
+			SystemLogger.error('Error handling reaction notification removal', e);
 		}
 	},
 	callbacks.priority.LOW,
