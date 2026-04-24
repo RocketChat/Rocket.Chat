@@ -144,6 +144,7 @@ The migration is split into 7 phases, ordered by risk (lowest first) and depende
 **Scripts** (disposable, deleted after use):
 
 1. **`move-module.mjs --from <old-dir> --to <new-dir>`** — Moves a module directory and fixes all imports.
+
    - `mkdir -p` the target directory
    - `git mv` every file from old to new location
    - For each moved file, recompute relative imports from the new position
@@ -151,6 +152,7 @@ The migration is split into 7 phases, ordered by risk (lowest first) and depende
    - Supports `--dry-run` to preview changes without writing
 
 2. **`move-batch.mjs <manifest.tsv>`** — Moves a batch of modules from a TSV manifest.
+
    - Reads the manifest line by line (`old-path<TAB>new-path`)
    - Calls `move-module.mjs` for each entry
    - After all moves, runs `tsc --noEmit` once to verify nothing broke
@@ -172,8 +174,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Scope**: ~40 files
 
-| Source                                             | Destination                        |
-| -------------------------------------------------- | ---------------------------------- |
+| Source                                             | Destination                             |
+| -------------------------------------------------- | --------------------------------------- |
 | `app/slashcommand-asciiarts/server/`               | `server/slashcommands/asciiarts/`       |
 | `app/slashcommands-archiveroom/server/server.ts`   | `server/slashcommands/archiveroom.ts`   |
 | `app/slashcommands-ban/server/server.ts`           | `server/slashcommands/ban.ts`           |
@@ -206,13 +208,13 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Scope**: ~48 files
 
-| Source                         | Destination                              |
-| ------------------------------ | ---------------------------------------- |
-| `app/irc/server/`              | `server/bridges/irc/`                    |
-| `app/slackbridge/server/`      | `server/bridges/slack/`                  |
-| `app/smarsh-connector/server/` | `server/bridges/smarsh/`                 |
-| `app/webdav/server/`           | `server/bridges/webdav/`                 |
-| `app/nextcloud/server/`        | `server/bridges/nextcloud/`              |
+| Source                         | Destination                 |
+| ------------------------------ | --------------------------- |
+| `app/irc/server/`              | `server/bridges/irc/`       |
+| `app/slackbridge/server/`      | `server/bridges/slack/`     |
+| `app/smarsh-connector/server/` | `server/bridges/smarsh/`    |
+| `app/webdav/server/`           | `server/bridges/webdav/`    |
+| `app/nextcloud/server/`        | `server/bridges/nextcloud/` |
 
 **Note**: `app/apps/server/` (Apps-Engine bridges and converters) is explicitly out of scope for this migration. It will be handled manually in a separate initiative — do not move, rename, or touch it during any phase of this plan.
 
@@ -228,30 +230,31 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Scope**: ~92 files + ~43 livechat API files
 
-| Source                                  | Destination                  |
-| --------------------------------------- | ---------------------------- |
-| `app/api/server/v1/*.ts`                | `server/api/v1/`             |
-| `app/api/server/helpers/`               | `server/api/helpers/`        |
-| `app/api/server/lib/`                   | `server/api/lib/`            |
-| `app/api/server/middlewares/`           | `server/api/middlewares/`    |
-| `app/api/server/ApiClass.ts`            | `server/api/ApiClass.ts`     |
-| `app/api/server/api.ts`                 | `server/api/api.ts`          |
-| `app/api/server/router.ts`              | `server/api/router.ts`       |
-| `app/api/server/definition.ts`          | `server/api/definition.ts`   |
-| `app/api/server/ajv.ts`                 | `server/api/ajv.ts`          |
-| `app/api/server/default/`               | `server/api/default/`        |
-| `app/livechat/server/api/v1/*.ts`       | `server/api/v1/omnichannel/` |
-| `app/livechat/imports/server/rest/*.ts` | `server/api/v1/omnichannel/` |
+| Source                                  | Destination                    |
+| --------------------------------------- | ------------------------------ |
+| `app/api/server/v1/*.ts`                | `server/api/v1/`               |
+| `app/api/server/helpers/`               | `server/api/lib/`              |
+| `app/api/server/lib/`                   | `server/api/lib/`              |
+| `app/api/server/middlewares/`           | `server/api/v1/middlewares/`   |
+| `app/api/server/ApiClass.ts`            | `server/api/ApiClass.ts`       |
+| `app/api/server/api.ts`                 | `server/api/api.ts`            |
+| `app/api/server/router.ts`              | `server/api/router.ts`         |
+| `app/api/server/definition.ts`          | `server/api/definition.ts`     |
+| `app/api/server/ajv.ts`                 | `server/api/validation/ajv.ts` |
+| `app/api/server/default/`               | `server/api/default/`          |
+| `app/livechat/server/api/v1/*.ts`       | `server/api/v1/omnichannel/`   |
+| `app/livechat/imports/server/rest/*.ts` | `server/api/v1/omnichannel/`   |
 
 **Key import update**: `server/main.ts` currently imports `../app/api/server/api` — update to `./api/api`.
 
 **Sub-steps**:
 
-1. Move the API framework files first (ApiClass.ts, router.ts, api.ts, definition.ts, ajv.ts, middlewares/)
-2. Move helpers/ and lib/
-3. Move v1/ endpoint files
-4. Move livechat API files into v1/omnichannel/
-5. Update `server/main.ts` and all cross-references
+1. Move the API framework files first (ApiClass.ts, router.ts, api.ts, definition.ts)
+2. Move ajv.ts into `server/api/validation/`
+3. Merge helpers/ and lib/ into a single `server/api/lib/`
+4. Move v1/ endpoint files and middlewares/ into `server/api/v1/`
+5. Move livechat API files into v1/omnichannel/
+6. Update `server/main.ts` and all cross-references
 
 **Verification**: `tsc --noEmit`, run the REST API test suite, test a few endpoints manually.
 
@@ -416,24 +419,24 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 #### Phase 6a: Auth Providers (~30 files)
 
-| Source                                    | Destination                                      |
-| ----------------------------------------- | ------------------------------------------------ |
-| `app/apple/server/`                       | `server/lib/auth-providers/apple.ts`             |
-| `app/crowd/server/`                       | `server/lib/auth-providers/crowd/`               |
-| `app/custom-oauth/server/`                | `server/lib/auth-providers/custom-oauth.ts`      |
-| `app/dolphin/server/`                     | `server/lib/auth-providers/dolphin.ts`           |
-| `app/drupal/server/`                      | `server/lib/auth-providers/drupal.ts`            |
-| `app/github/server/`                      | `server/lib/auth-providers/github.ts`            |
-| `app/github-enterprise/server/`           | `server/lib/auth-providers/github-enterprise.ts` |
-| `app/gitlab/server/`                      | `server/lib/auth-providers/gitlab.ts`            |
-| `app/google-oauth/server/`                | `server/lib/auth-providers/google.ts`            |
-| `app/iframe-login/server/`                | `server/lib/auth-providers/iframe.ts`            |
-| `app/wordpress/server/`                   | `server/lib/auth-providers/wordpress.ts`         |
-| `app/lib/server/oauth/*.js`               | `server/lib/auth-providers/oauth/`               |
-| `app/meteor-accounts-saml/server/`        | `server/lib/saml/`                               |
-| `app/2fa/server/` (non-methods)           | `server/lib/2fa/`                                |
-| `app/authentication/server/` (non-hooks)  | `server/lib/auth/`                               |
-| `app/token-login/server/`                 | `server/lib/auth/token-login.ts`                 |
+| Source                                   | Destination                                      |
+| ---------------------------------------- | ------------------------------------------------ |
+| `app/apple/server/`                      | `server/lib/auth-providers/apple.ts`             |
+| `app/crowd/server/`                      | `server/lib/auth-providers/crowd/`               |
+| `app/custom-oauth/server/`               | `server/lib/auth-providers/custom-oauth.ts`      |
+| `app/dolphin/server/`                    | `server/lib/auth-providers/dolphin.ts`           |
+| `app/drupal/server/`                     | `server/lib/auth-providers/drupal.ts`            |
+| `app/github/server/`                     | `server/lib/auth-providers/github.ts`            |
+| `app/github-enterprise/server/`          | `server/lib/auth-providers/github-enterprise.ts` |
+| `app/gitlab/server/`                     | `server/lib/auth-providers/gitlab.ts`            |
+| `app/google-oauth/server/`               | `server/lib/auth-providers/google.ts`            |
+| `app/iframe-login/server/`               | `server/lib/auth-providers/iframe.ts`            |
+| `app/wordpress/server/`                  | `server/lib/auth-providers/wordpress.ts`         |
+| `app/lib/server/oauth/*.js`              | `server/lib/auth-providers/oauth/`               |
+| `app/meteor-accounts-saml/server/`       | `server/lib/saml/`                               |
+| `app/2fa/server/` (non-methods)          | `server/lib/2fa/`                                |
+| `app/authentication/server/` (non-hooks) | `server/lib/auth/`                               |
+| `app/token-login/server/`                | `server/lib/auth/token-login.ts`                 |
 
 #### Phase 6b: Hooks (~25 files)
 
@@ -512,14 +515,14 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Scope**: ~150 files
 
-| Source                             | Destination                                                 |
-| ---------------------------------- | ----------------------------------------------------------- |
-| `app/livechat/server/lib/`         | `server/functions/omnichannel/` + `server/lib/omnichannel/` |
-| `app/livechat/server/methods/`     | Already moved in Phase 5                                    |
-| `app/livechat/server/hooks/`       | Already moved in Phase 6b                                   |
-| `app/livechat/server/api/`         | Already moved in Phase 3                                    |
-| `app/livechat/server/` (remaining) | `server/lib/omnichannel/`                                   |
-| `ee/app/livechat-enterprise/server/` | `server/lib/omnichannel/enterprise/`                      |
+| Source                               | Destination                                                 |
+| ------------------------------------ | ----------------------------------------------------------- |
+| `app/livechat/server/lib/`           | `server/functions/omnichannel/` + `server/lib/omnichannel/` |
+| `app/livechat/server/methods/`       | Already moved in Phase 5                                    |
+| `app/livechat/server/hooks/`         | Already moved in Phase 6b                                   |
+| `app/livechat/server/api/`           | Already moved in Phase 3                                    |
+| `app/livechat/server/` (remaining)   | `server/lib/omnichannel/`                                   |
+| `ee/app/livechat-enterprise/server/` | `server/lib/omnichannel/enterprise/`                        |
 
 **Remaining cleanup**:
 
