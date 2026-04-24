@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { Locator } from 'playwright-core';
+import type { BrowserContext, Locator, Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -12,6 +12,8 @@ test.describe.serial('Messaging scroll to bottom', () => {
 	let targetChannel: { name: string; _id: string };
 	let poHomeChannel: HomeChannel;
 	let mainMessage: { _id: string };
+	let page: Page;
+	let context: BrowserContext;
 
 	const fillMessages = async (api: BaseTest['api']) => {
 		const firstResponse = await api.post('/chat.postMessage', {
@@ -53,7 +55,7 @@ test.describe.serial('Messaging scroll to bottom', () => {
 		await expect.poll(() => scroller.evaluate((el) => Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 2)).toBe(true);
 	};
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		await api
 			.post('/channels.create', { name: faker.string.uuid() })
 			.then((res) => res.json())
@@ -62,10 +64,13 @@ test.describe.serial('Messaging scroll to bottom', () => {
 			});
 
 		await fillMessages(api);
+
+		context = await browser.newContext({ storageState: Users.admin.state, viewport: { width: 1023, height: 700 } });
+		page = await context.newPage();
+		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
+	test.beforeEach(async () => {
 		await page.goto(`/channel/${targetChannel._id}/thread/${mainMessage._id}`);
 		await poHomeChannel.content.waitForChannel();
 		await poHomeChannel.content.waitForThread();
@@ -73,11 +78,11 @@ test.describe.serial('Messaging scroll to bottom', () => {
 
 	test.afterAll(async ({ api }) => {
 		await deleteChannel(api, targetChannel.name);
+		await page.close();
+		await context.close();
 	});
 
-	test('should scroll the main message list to bottom when sending a message in the main channel', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
+	test('should scroll the main message list to bottom when sending a message in the main channel', async () => {
 		await scrollToTop(poHomeChannel.content.mainMessageListScroller);
 
 		await poHomeChannel.content.sendMessage('main channel message');
@@ -85,9 +90,7 @@ test.describe.serial('Messaging scroll to bottom', () => {
 		await expectScrolledToBottom(poHomeChannel.content.mainMessageListScroller);
 	});
 
-	test('should scroll the thread message list to bottom when sending a message in the thread', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
+	test('should scroll the thread message list to bottom when sending a message in the thread', async () => {
 		await scrollToTop(poHomeChannel.content.threadMessageListScroller);
 
 		await poHomeChannel.content.sendMessageInThread('new thread reply');
@@ -95,9 +98,7 @@ test.describe.serial('Messaging scroll to bottom', () => {
 		await expectScrolledToBottom(poHomeChannel.content.threadMessageListScroller);
 	});
 
-	test('should not scroll the main channel message list when sending a message in the thread', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
+	test('should not scroll the main channel message list when sending a message in the thread', async () => {
 		await scrollToTop(poHomeChannel.content.mainMessageListScroller);
 		await scrollToTop(poHomeChannel.content.threadMessageListScroller);
 
@@ -107,9 +108,7 @@ test.describe.serial('Messaging scroll to bottom', () => {
 		await expect(poHomeChannel.content.mainMessageListScroller).toHaveJSProperty('scrollTop', 0);
 	});
 
-	test('should not scroll the thread message list when sending a message in the main channel', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
+	test('should not scroll the thread message list when sending a message in the main channel', async () => {
 		await scrollToTop(poHomeChannel.content.mainMessageListScroller);
 		await scrollToTop(poHomeChannel.content.threadMessageListScroller);
 
