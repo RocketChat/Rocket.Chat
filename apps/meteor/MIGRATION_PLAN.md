@@ -154,12 +154,14 @@ The migration is split into 7 phases, ordered by risk (lowest first) and depende
 
    - Reads the manifest line by line (`old-path<TAB>new-path`)
    - Calls `move-module.mjs` for each entry
-   - After all moves, runs `tsc --noEmit` once to verify nothing broke
+   - After all moves, runs `yarn lint --quiet` once to verify no imports broke
    - Reports: files moved, imports updated, any errors
 
 3. **`verify-no-old-imports.mjs <pattern>...`** — Checks that no imports still reference given substrings (e.g., `app/slashcommand`). Run after each phase to catch stragglers.
 
-Each phase produces a manifest file (the tables below), feeds it to `move-batch.mjs`, verifies with `tsc --noEmit`, and commits the result. The scripts themselves are deleted once all phases are complete.
+Each phase produces a manifest file (the tables below), feeds it to `move-batch.mjs`, verifies with `yarn lint --quiet`, and commits the result. The scripts themselves are deleted once all phases are complete.
+
+**Primary validation command**: `yarn lint --quiet` is the authoritative check for broken imports after a move. The `--quiet` flag suppresses warnings so unresolved-import errors stand out. Run it from the repo root after every batch. `tsc --noEmit` may additionally be used to catch type regressions, but lint is the first line of defense for import integrity.
 
 **Deliverable**: Scripts written and tested on a small dry-run (e.g., move one slash command file, verify, revert).
 
@@ -195,7 +197,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Import updates**: Each slash command file typically has 0-2 external importers. Update `server/importPackages.ts` to import from the new location.
 
-**Verification**: `tsc --noEmit`, manual test of 2-3 slash commands (e.g., `/invite`, `/kick`, `/topic`).
+**Verification**: `yarn lint --quiet`, manual test of 2-3 slash commands (e.g., `/invite`, `/kick`, `/topic`).
 
 ---
 
@@ -217,7 +219,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Note**: `app/apps/server/` (Apps-Engine bridges and converters) is explicitly out of scope for this migration. It will be handled manually in a separate initiative — do not move, rename, or touch it during any phase of this plan.
 
-**Verification**: `tsc --noEmit`, test an incoming webhook.
+**Verification**: `yarn lint --quiet`, test an incoming webhook.
 
 ---
 
@@ -255,7 +257,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 5. Move livechat API files into v1/omnichannel/
 6. Update `server/main.ts` and all cross-references
 
-**Verification**: `tsc --noEmit`, run the REST API test suite, test a few endpoints manually.
+**Verification**: `yarn lint --quiet`, run the REST API test suite, test a few endpoints manually.
 
 ---
 
@@ -347,7 +349,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/cloud/server/functions/*.ts`                                 | `server/lib/cloud/`                                       |
 | `app/livechat/server/lib/*.ts` (functions)                        | `server/lib/omnichannel/`                                 |
 
-**Verification per sub-phase**: `tsc --noEmit`, run unit tests for the moved functions, run integration tests.
+**Verification per sub-phase**: `yarn lint --quiet`, run unit tests for the moved functions, run integration tests.
 
 ---
 
@@ -456,7 +458,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Import updates**: Update `server/importPackages.ts` and any `server/methods/index.ts` that aggregates method registrations.
 
-**Verification**: `tsc --noEmit`, test several Meteor methods via DDP client.
+**Verification**: `yarn lint --quiet`, test several Meteor methods via DDP client.
 
 ---
 
@@ -554,7 +556,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/version-check/server/`                 | `server/lib/cloud/version-check/`         |
 | `app/license/server/`                       | `server/lib/cloud/license/`               |
 
-**Verification**: `tsc --noEmit` after each sub-phase, full test suite at end of Phase 6.
+**Verification**: `yarn lint --quiet` after each sub-phase, full test suite at end of Phase 6.
 
 ---
 
@@ -594,7 +596,7 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 - Verify no remaining imports from `app/*/server/`
 - Delete the migration scripts (`move-module.mjs`, `move-batch.mjs`, `verify-no-old-imports.mjs`)
 
-**Final verification**: Full `tsc --noEmit`, full test suite, manual smoke test of core features (login, send message, create room, livechat, file upload).
+**Final verification**: `yarn lint --quiet` across the repo, full `tsc --noEmit` for type regressions, full test suite, manual smoke test of core features (login, send message, create room, livechat, file upload).
 
 ---
 
@@ -642,8 +644,8 @@ This file is the main import aggregator for the app/lib module. As files move ou
 
 | Risk                                                                          | Mitigation                                                                                                         |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Broken imports** — moving 800+ files changes import paths everywhere        | Migration script updates all imports in the same commit as the file move; `tsc --noEmit` verifies after each batch |
-| **Missing method registration** — Meteor methods must be imported to register | Each phase verifies that all methods still register by checking `tsc --noEmit` and running method-specific tests   |
+| **Broken imports** — moving 800+ files changes import paths everywhere        | Migration script updates all imports in the same commit as the file move; `yarn lint --quiet` verifies after each batch (authoritative check for unresolved imports) |
+| **Missing method registration** — Meteor methods must be imported to register | Each phase verifies that all methods still register by running `yarn lint --quiet` and method-specific tests   |
 | **Merge conflicts** — other developers working on moved files                 | Communicate migration schedule; do large moves in low-activity windows; each phase is a separate PR                |
 | **`app/lib/server/` is a dependency hub** — 62 features import from it        | Migration script handles all import updates atomically per batch; `verify-no-old-imports.mjs` catches stragglers   |
 | **Omnichannel is huge** — 132 files in livechat                               | Move incrementally: API in Phase 3, methods in Phase 5, hooks in Phase 6, lib in Phase 7                           |
