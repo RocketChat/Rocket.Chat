@@ -770,6 +770,12 @@ export const createAccountSettings = () =>
 				type: 'string',
 				public: true,
 			});
+
+			await this.add('Accounts_Default_User_Preferences_receiveReactionNotifications', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Receive_Reaction_Notifications',
+			});
 		});
 
 		await this.section('Avatar', async function () {

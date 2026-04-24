@@ -1,1 +1,2 @@
 import './setReaction';
+import './notifications';
