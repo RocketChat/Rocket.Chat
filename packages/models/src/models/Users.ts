@@ -59,6 +59,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
 			{ key: { statusConnection: 1 }, sparse: true },
+			{ key: { statusExpiresAt: 1 }, sparse: true },
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
