@@ -8,7 +8,6 @@ import type {
 	IMessage,
 	FileProp,
 } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -18,7 +17,6 @@ import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
 
@@ -163,13 +161,6 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
-	}
-}
-
 export const sendFileMessage = async (
 	userId: string,
 	{
@@ -239,17 +230,3 @@ export const sendFileMessage = async (
 
 	return msg;
 };
-
-Meteor.methods<ServerMethods>({
-	async sendFileMessage(roomId, _store, file, msgData = {}) {
-		methodDeprecationLogger.method('sendFileMessage', '9.0.0', '/v1/rooms.mediaConfirm/:rid/:fileId');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'sendFileMessage',
-			} as any);
-		}
-
-		return sendFileMessage(userId, { roomId, file, msgData });
-	},
-});
