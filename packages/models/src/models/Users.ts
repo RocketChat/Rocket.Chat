@@ -1097,6 +1097,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
+	findExpiredStatuses(limit: number) {
+		return this.find({ statusExpiresAt: { $lt: new Date() } }, { projection: { _id: 1 }, limit });
+	}
+
 	findOneForPresenceEngine(userId: IUser['_id']) {
 		return this.findOneById(userId, {
 			projection: {

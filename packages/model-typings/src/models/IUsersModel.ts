@@ -172,6 +172,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
+	findExpiredStatuses(limit: number): FindCursor<Pick<IUser, '_id'>>;
+
 	findOneForPresenceEngine(userId: IUser['_id']): Promise<IUser | null>;
 
 	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[]): Promise<IUser | null>;
@@ -241,8 +243,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			statusText,
 		}: { statusDefault?: UserStatus; status: UserStatus; statusConnection: UserStatus; statusText?: string },
 	): Promise<UpdateResult>;
-
-	updateStatusAndStatusDefault(userId: string, status: UserStatus, statusDefault: UserStatus): Promise<UpdateResult>;
 
 	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
 

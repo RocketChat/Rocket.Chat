@@ -2,6 +2,7 @@ import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
@@ -97,6 +98,25 @@ export class Presence extends ServiceClass implements IPresence {
 			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
 		} catch (e: unknown) {
 			// ignore
+		}
+
+		// TODO: Agenda default lockLifetime is 10 min. This job executes in ms and runs every 1 min.
+		// If an instance crashes mid-execution, expired statuses stay locked for up to 10 min.
+		// Reduce lockLifetime to 60s once @rocket.chat/agenda exposes the option in its typed API.
+		await cronJobs.add('presence-status-expiration', '* * * * *', () => this.processExpiredStatuses());
+	}
+
+	private async processExpiredStatuses(batchSize = 100): Promise<void> {
+		const expiredUsers = await Users.findExpiredStatuses(batchSize).toArray();
+
+		if (expiredUsers.length === 0) {
+			return;
+		}
+
+		await Promise.allSettled(expiredUsers.map(({ _id }) => this.endActiveState(_id)));
+
+		if (expiredUsers.length === batchSize) {
+			return this.processExpiredStatuses(batchSize);
 		}
 	}
 
