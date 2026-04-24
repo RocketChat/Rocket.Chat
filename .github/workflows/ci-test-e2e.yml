@@ -185,10 +185,12 @@ jobs:
           BASE="${BASE%/}"
           QUERY="${CI_MONGO_URL#"$BASE"}"
           FULL_URL="${BASE}/${DB_NAME}${QUERY}"
-          echo "MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
-          echo "DOCKER_MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
-          echo "EXTERNAL_MONGO=true" >> $GITHUB_ENV
-          echo "DOCUMENTDB=true" >> $GITHUB_ENV
+          {
+            echo "MONGO_URL=${FULL_URL}"
+            echo "DOCKER_MONGO_URL=${FULL_URL}"
+            echo "EXTERNAL_MONGO=true"
+            echo "DOCUMENTDB=true"
+          } >> "$GITHUB_ENV"
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
@@ -210,11 +212,11 @@ jobs:
         if: inputs.release == 'ce'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          EXTRA_ARGS=""
+          EXTRA_ARGS=()
           if [ "$EXTERNAL_MONGO" = "true" ]; then
-            EXTRA_ARGS="--scale mongo=0"
+            EXTRA_ARGS=(--scale mongo=0)
           fi
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat $EXTRA_ARGS --wait
+          DEBUG_LOG_LEVEL="${DEBUG_LOG_LEVEL:-0}" docker compose -f docker-compose-ci.yml up -d rocketchat "${EXTRA_ARGS[@]}" --wait
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -223,11 +225,11 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
         run: |
-          EXTRA_ARGS=""
+          EXTRA_ARGS=()
           if [ "$EXTERNAL_MONGO" = "true" ]; then
-            EXTRA_ARGS="--scale mongo=0"
+            EXTRA_ARGS=(--scale mongo=0)
           fi
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d $EXTRA_ARGS --wait
+          DEBUG_LOG_LEVEL="${DEBUG_LOG_LEVEL:-0}" docker compose -f docker-compose-ci.yml up -d "${EXTRA_ARGS[@]}" --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
