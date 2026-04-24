@@ -1,6 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
 import { faker } from '@faker-js/faker';
-import type { BrowserContext, Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
@@ -11,31 +9,17 @@ test.use({ storageState: Users.user3.state });
 test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
-	let page: Page;
-	let context: BrowserContext;
 
 	const token = faker.string.alpha(10);
-	const axe = () =>
-		new AxeBuilder({ page })
-			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-			.include('body')
-			.disableRules(['aria-hidden-focus', 'nested-interactive']);
 
-	test.beforeAll(async ({ browser }) => {
-		context = await browser.newContext({ storageState: Users.user3.state });
-		page = await context.newPage();
+	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
 	});
 
-	test.afterAll(async () => {
-		await page.close();
-		await context.close();
-	});
-
 	// FIXME: solve test intermitencies
 	test.describe('Profile', () => {
-		test.beforeEach(async () => {
+		test.beforeEach(async ({ page }) => {
 			await page.goto('/account/profile');
 		});
 
@@ -90,8 +74,10 @@ test.describe.serial('settings-account-profile', () => {
 		});
 	});
 
-	test('Personal Access Tokens', async () => {
-		await Promise.all([page.waitForResponse('**/api/v1/users.getPersonalAccessTokens'), page.goto('/account/tokens')]);
+	test('Personal Access Tokens', async ({ page }) => {
+		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
+		await page.goto('/account/tokens');
+		await response;
 
 		await test.step('should show empty personal access tokens table', async () => {
 			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
@@ -131,28 +117,28 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Omnichannel', () => {
-		test('should not have any accessibility violations', async () => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/omnichannel');
 
-			const results = await axe().analyze();
+			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
 		});
 	});
 
 	test.describe('Feature Preview', () => {
-		test('should not have any accessibility violations', async () => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/feature-preview');
 
-			const results = await axe().analyze();
+			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
 		});
 	});
 
 	test.describe('Accessibility & Appearance', () => {
-		test('should not have any accessibility violations', async () => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/accessibility-and-appearance');
 
-			const results = await axe().analyze();
+			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
 		});
 	});
