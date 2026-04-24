@@ -15,24 +15,7 @@ test.describe.serial('admin-rooms', () => {
 
 	test.beforeEach(async ({ page }) => {
 		adminRooms = new AdminRooms(page);
-
-		for (let attempt = 0; attempt < 2; attempt++) {
-			await page.goto('/admin/rooms');
-
-			const appError = page.getByRole('heading', { name: 'Application Error' });
-			if (await appError.isVisible().catch(() => false)) {
-				await page
-					.getByRole('button', { name: 'Reload Application' })
-					.click()
-					.catch(() => undefined);
-				continue;
-			}
-
-			await expect(adminRooms.adminPageContent).toBeVisible({ timeout: 15_000 });
-			return;
-		}
-
-		await expect(adminRooms.adminPageContent).toBeVisible({ timeout: 15_000 });
+		await page.goto('/admin/rooms');
 	});
 
 	test.beforeAll(async ({ api }) => {
