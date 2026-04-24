@@ -117,7 +117,7 @@ Prevents regression after Phase 2 completes. Can land in parallel with Phase 2.
    - Uses `poHomeChannel.content.sendMessage` inside `test.beforeEach` or `test.beforeAll`.
    - Declares `test.describe.serial` together with `beforeEach(async ({ page }) => { await page.goto(...) })`.
    Both are strong signals of missed Pattern 1 / Pattern 2 opportunities.
-3. **Timing guardrail** — in place. `playwright.config.ts` now emits a JSON report; [`apps/meteor/tests/e2e/scripts/e2e-timing-report.mts`](../../apps/meteor/tests/e2e/scripts/e2e-timing-report.mts) turns it into a p50>3s/test table; [`.github/workflows/e2e-timing-guardrail.yml`](../../.github/workflows/e2e-timing-guardrail.yml) runs weekly (Mondays 09:00 UTC), pulls the latest successful `ci.yml` trace artifact from `develop` and posts the table as the run summary.
+3. **Timing guardrail** — partial. `playwright.config.ts` emits a JSON report alongside the existing `playwright-test-trace-*` artifact, and [`apps/meteor/tests/e2e/scripts/e2e-timing-report.mts`](../../apps/meteor/tests/e2e/scripts/e2e-timing-report.mts) turns it into a p50>3s/test markdown table. Point it at a downloaded run (`gh run download <id> --pattern 'playwright-test-trace-*'`) to flag recurring offenders. The scheduled-workflow half is deferred — we can wire it up once the pattern 2 rollout is further along.
 
 ## Picking up the work
 
