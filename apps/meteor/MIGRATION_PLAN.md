@@ -67,14 +67,12 @@ apps/meteor/server/
 │   └── index.ts
 │
 ├── bridges/                       # External system adapters
-│   ├── apps-engine/               #   (from app/apps/server/bridges/ + converters/)
-│   │   ├── bridges/
-│   │   └── converters/
 │   ├── irc/                       #   (from app/irc/server/)
 │   ├── slack/                     #   (from app/slackbridge/server/)
 │   ├── smarsh/                    #   (from app/smarsh-connector/server/)
 │   ├── webdav/                    #   (from app/webdav/server/)
 │   └── nextcloud/                 #   (from app/nextcloud/server/)
+│                                  #   (app/apps/server/ is out of scope — handled separately)
 │
 │ ── EXISTING (extended with domain subfolders) ────────────
 │
@@ -210,17 +208,15 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 | Source                         | Destination                              |
 | ------------------------------ | ---------------------------------------- |
-| `app/apps/server/bridges/`     | `server/bridges/apps-engine/bridges/`    |
-| `app/apps/server/converters/`  | `server/bridges/apps-engine/converters/` |
 | `app/irc/server/`              | `server/bridges/irc/`                    |
 | `app/slackbridge/server/`      | `server/bridges/slack/`                  |
 | `app/smarsh-connector/server/` | `server/bridges/smarsh/`                 |
 | `app/webdav/server/`           | `server/bridges/webdav/`                 |
 | `app/nextcloud/server/`        | `server/bridges/nextcloud/`              |
 
-**Note**: `app/apps/server/` contains only `bridges/` and `converters/`. Both move together in this phase.
+**Note**: `app/apps/server/` (Apps-Engine bridges and converters) is explicitly out of scope for this migration. It will be handled manually in a separate initiative — do not move, rename, or touch it during any phase of this plan.
 
-**Verification**: `tsc --noEmit`, test an incoming webhook and an Apps Engine app.
+**Verification**: `tsc --noEmit`, test an incoming webhook.
 
 ---
 
