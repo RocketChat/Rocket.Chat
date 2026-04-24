@@ -1,11 +1,10 @@
 import type { ICalendarService } from '@rocket.chat/core-services';
-import { ServiceClassInternal, api } from '@rocket.chat/core-services';
+import { Presence, ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CalendarEvent, Users } from '@rocket.chat/models';
+import { CalendarEvent } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { applyStatusChange } from './statusEvents/applyStatusChange';
@@ -285,26 +284,10 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
-		if (!user || user.statusDefault === UserStatus.OFFLINE) {
-			return;
-		}
-
-		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime)
-			.sort({ startTime: -1 })
-			.toArray();
-		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.statusDefault;
-
-		if (previousStatus) {
-			await CalendarEvent.updateEvent(event._id, { previousStatus });
-		}
-
 		await applyStatusChange({
 			eventId: event._id,
 			uid: event.uid,
-			startTime: event.startTime,
 			endTime: event.endTime,
-			status: UserStatus.BUSY,
 		});
 	}
 
@@ -313,31 +296,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
-		if (!user) {
-			return;
-		}
-
-		// Only restore status if:
-		// 1. The current statusDefault is BUSY (meaning it was set by our system, not manually changed by user)
-		// 2. We have a previousStatus stored from before the event started
-
-		if (user.statusDefault === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.statusDefault) {
-			await applyStatusChange({
-				eventId: event._id,
-				uid: event.uid,
-				startTime: event.startTime,
-				endTime: event.endTime,
-				status: event.previousStatus,
-			});
-		} else {
-			logger.debug({
-				msg: 'Not restoring status for user',
-				userId: event.uid,
-				currentStatusDefault: user.statusDefault,
-				previousStatus: event.previousStatus,
-			});
-		}
+		await Presence.endActiveState(event.uid);
 	}
 
 	private async sendCurrentNotifications(date: Date): Promise<void> {
