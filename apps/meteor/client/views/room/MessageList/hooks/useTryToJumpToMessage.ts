@@ -1,3 +1,4 @@
+import { isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
@@ -37,7 +38,16 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 	// If the message is loaded, the scrollelement does not resize, not triggering the scroll event
 
 	useEffect(() => {
-		if (!messageJumpParam || !virtualizerRef.current) {
+		if (!messageJumpParam) {
+			return;
+		}
+		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
+		if (message && (isThreadMessage(message) || isThreadMainMessage(message))) {
+			isJumpingToMessage.current = false;
+			return;
+		}
+
+		if (!virtualizerRef.current) {
 			return;
 		}
 

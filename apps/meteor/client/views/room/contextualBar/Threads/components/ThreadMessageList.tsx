@@ -3,10 +3,10 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
-import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useRouter, useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
-import { Fragment, useEffect, useRef } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -15,6 +15,7 @@ import { ThreadMessageItem } from './ThreadMessageItem';
 import { BubbleDate } from '../../../BubbleDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
+import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
@@ -52,6 +53,8 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { t } = useTranslation();
+	const router = useRouter();
+	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
 
 	const { data: messages = [], isLoading: loading } = useThreadMessagesQuery(mainMessage._id);
@@ -71,14 +74,65 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const items = loading ? [] : [mainMessage, ...messages];
 
+	const threadMsgTargetIndex = useMemo(() => {
+		if (!msgJumpParam || loading) {
+			return -1;
+		}
+		if (msgJumpParam === mainMessage._id) {
+			return 0;
+		}
+		const replyIndex = messages.findIndex((m) => m._id === msgJumpParam);
+		return replyIndex >= 0 ? 1 + replyIndex : -1;
+	}, [msgJumpParam, loading, mainMessage._id, messages]);
+
+	const lastThreadJumpKeyRef = useRef<string | undefined>(undefined);
+
+	useEffect(() => {
+		lastThreadJumpKeyRef.current = undefined;
+	}, [mainMessage._id]);
+
 	useEffect(() => {
 		const handle = virtualizerRef.current;
 		if (!handle) return;
 		if (loading) return;
+		// `msg` deep link: jump effect runs below; do not force scroll to bottom
+		if (msgJumpParam && threadMsgTargetIndex >= 0) {
+			return;
+		}
 		if (isAtBottom.current) {
 			handle.scrollToIndex(items.length, { align: 'end' });
 		}
-	}, [loading, items.length]);
+	}, [loading, items.length, msgJumpParam, threadMsgTargetIndex]);
+
+	useEffect(() => {
+		if (threadMsgTargetIndex < 0 || !msgJumpParam) {
+			return;
+		}
+		const jumpKey = `${mainMessage._id}:${msgJumpParam}`;
+		if (lastThreadJumpKeyRef.current === jumpKey) {
+			return;
+		}
+		const handle = virtualizerRef.current;
+		if (!handle) {
+			return;
+		}
+		lastThreadJumpKeyRef.current = jumpKey;
+		isAtBottom.current = false;
+		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
+		setHighlightMessage(msgJumpParam);
+		const t1 = setTimeout(() => {
+			clearHighlightMessage();
+		}, 2000);
+		router.navigate(
+			{
+				pathname: router.getLocationPathname(),
+			},
+			{ replace: true },
+		);
+		return () => {
+			clearTimeout(t1);
+		};
+	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, router]);
 
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;

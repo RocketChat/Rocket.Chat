@@ -206,9 +206,7 @@ export const MessageList = function MessageList({
 						debouncedClearNewMessagesOnScroll();
 
 						const handle = virtualizerRef.current;
-						const topMessage = handle
-							? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)]
-							: undefined;
+						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
 						handleTopVisibleMessage(topMessage);
 						handleDateScroll(topMessage);
 					}}

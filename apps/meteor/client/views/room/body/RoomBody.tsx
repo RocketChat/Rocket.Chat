@@ -30,6 +30,7 @@ import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -52,6 +53,7 @@ const RoomBody = (): ReactElement => {
 
 	const retentionPolicy = useRetentionPolicy(room);
 
+	useTryToJumpToThreadMessage();
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
