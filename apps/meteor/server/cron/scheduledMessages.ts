@@ -33,7 +33,10 @@ export async function processScheduledMessages(): Promise<void> {
 
 			const user = await Users.findOneById(scheduledMessage.u._id);
 			if (!user) {
-				await Messages.deleteOne({ _id: scheduledMessage._id });
+				await Messages.updateOne(
+					{ _id: scheduledMessage._id },
+					{ $set: { scheduled: true } },
+				);
 				continue;
 			}
 
@@ -45,10 +48,34 @@ export async function processScheduledMessages(): Promise<void> {
 				const isRecoverable = ['room_is_archived', 'room_is_blocked', 'You_have_been_muted', 'error-invalid-room'].includes(errorCode);
 				
 				if (isRecoverable) {
-					await Messages.updateOne(
-						{ _id: scheduledMessage._id },
-						{ $set: { scheduled: true } },
-					);
+					const retryCount = ((scheduledMessage as any).scheduledRetryCount || 0) + 1;
+					const maxRetries = 5;
+
+					if (retryCount >= maxRetries) {
+						SystemLogger.error({
+							msg: 'Recoverable error for scheduled message, max retries reached',
+							err: error,
+							messageId: scheduledMessage._id,
+							roomId: scheduledMessage.rid,
+							userId: scheduledMessage.u._id,
+							retryCount,
+						});
+						await Messages.deleteOne({ _id: scheduledMessage._id });
+					} else {
+						const delayMinutes = Math.pow(2, retryCount);
+						const newScheduledAt = new Date(new Date().getTime() + delayMinutes * 60 * 1000);
+
+						await Messages.updateOne(
+							{ _id: scheduledMessage._id },
+							{
+								$set: {
+									scheduledAt: newScheduledAt,
+									scheduledRetryCount: retryCount,
+									scheduled: true,
+								},
+							},
+						);
+					}
 				} else {
 					SystemLogger.error({
 						msg: 'Non-recoverable error for scheduled message, deleting',
@@ -72,48 +99,56 @@ export async function processScheduledMessages(): Promise<void> {
 				...(scheduledMessage.attachments && { attachments: scheduledMessage.attachments }),
 			};
 
-			// Delete before sending to prevent duplicate delivery on partial failure
-			await Messages.deleteOne({ _id: scheduledMessage._id });
-			await sendMessage(user, message, room, {});
-		} catch (error: any) {
-			const retryCount = ((scheduledMessage as any).scheduledRetryCount || 0) + 1;
-			const maxRetries = 5;
-
-			if (retryCount >= maxRetries) {
-				SystemLogger.error({
-					msg: 'Scheduled message failed after max retries',
-					err: error,
-					messageId: scheduledMessage._id,
-					roomId: scheduledMessage.rid,
-					userId: scheduledMessage.u._id,
-					retryCount,
-				});
+			try {
+				await sendMessage(user, message, room, {});
 				await Messages.deleteOne({ _id: scheduledMessage._id });
-			} else {
-				SystemLogger.error({
-					msg: 'Error processing scheduled message',
-					err: error,
-					messageId: scheduledMessage._id,
-					roomId: scheduledMessage.rid,
-					userId: scheduledMessage.u._id,
-					retryCount,
-				});
+			} catch (error: any) {
+				const retryCount = ((scheduledMessage as any).scheduledRetryCount || 0) + 1;
+				const maxRetries = 5;
 
-				// Exponential backoff: 2^retryCount minutes
-				const delayMinutes = Math.pow(2, retryCount);
-				const newScheduledAt = new Date(now.getTime() + delayMinutes * 60 * 1000);
+				if (retryCount >= maxRetries) {
+					SystemLogger.error({
+						msg: 'Scheduled message failed after max retries',
+						err: error,
+						messageId: scheduledMessage._id,
+						roomId: scheduledMessage.rid,
+						userId: scheduledMessage.u._id,
+						retryCount,
+					});
+					await Messages.deleteOne({ _id: scheduledMessage._id });
+				} else {
+					SystemLogger.error({
+						msg: 'Error processing scheduled message',
+						err: error,
+						messageId: scheduledMessage._id,
+						roomId: scheduledMessage.rid,
+						userId: scheduledMessage.u._id,
+						retryCount,
+					});
 
-				await Messages.updateOne(
-					{ _id: scheduledMessage._id },
-					{ 
-						$set: { 
-							scheduled: true,
-							scheduledAt: newScheduledAt,
+					const delayMinutes = Math.pow(2, retryCount);
+					const newScheduledAt = new Date(new Date().getTime() + delayMinutes * 60 * 1000);
+
+					await Messages.updateOne(
+						{ _id: scheduledMessage._id },
+						{
+							$set: {
+								scheduledAt: newScheduledAt,
+								scheduledRetryCount: retryCount,
+								scheduled: true,
+							},
 						},
-						$inc: { scheduledRetryCount: 1 },
-					},
-				);
+					);
+				}
 			}
+		} catch (error: any) {
+			SystemLogger.error({
+				msg: 'Unexpected error processing scheduled message',
+				err: error,
+				messageId: scheduledMessage._id,
+				roomId: scheduledMessage.rid,
+				userId: scheduledMessage.u._id,
+			});
 		}
 	}
 }
