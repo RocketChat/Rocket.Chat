@@ -1,24 +1,30 @@
 import { addMigration } from '../../lib/migrations';
-import { getRawCollection } from '@rocket.chat/models';
+import { ReadReceipts } from '@rocket.chat/models';
 
 addMigration({
 	version: 336,
 	name: 'Drop legacy unique index from read_receipts',
+
 	async up() {
-		const collection = getRawCollection('read_receipts');
+		const collection = ReadReceipts.col;
 
 		const indexes = await collection.indexes();
 
-		const targetIndex = indexes.find((idx) => {
+		const matchingIndexes = indexes.filter((idx) => {
+			const keys = idx.key || {};
+
 			return (
-				idx.key?.roomId === 1 &&
-				idx.key?.userId === 1 &&
-				idx.key?.messageId === 1
+				Object.keys(keys).length === 3 && 
+				keys.roomId === 1 &&
+				keys.userId === 1 &&
+				keys.messageId === 1
 			);
 		});
 
-		if (targetIndex) {
-			await collection.dropIndex(targetIndex.name);
+		for (const idx of matchingIndexes) {
+			if (idx.name) {
+				await collection.dropIndex(idx.name);
+			}
 		}
 	},
 });
