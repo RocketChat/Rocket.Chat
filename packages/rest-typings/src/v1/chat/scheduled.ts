@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -10,11 +10,8 @@ export type ChatScheduleMessageProps = {
 	message: string;
 	scheduledAt: string;
 	tmid?: string;
-	alias?: string;
-	avatar?: string;
-	emoji?: string;
-	attachments?: any[];
-	customFields?: Record<string, any>;
+	attachments?: MessageAttachment[];
+	customFields?: IMessage['customFields'];
 };
 
 const ChatScheduleMessagePropsSchema = {
@@ -23,12 +20,9 @@ const ChatScheduleMessagePropsSchema = {
 		roomId: { type: 'string', minLength: 1 },
 		message: { type: 'string', minLength: 1 },
 		scheduledAt: { type: 'string', minLength: 1 },
-		tmid: { type: 'string', nullable: true },
-		alias: { type: 'string', nullable: true },
-		avatar: { type: 'string', nullable: true },
-		emoji: { type: 'string', nullable: true },
-		attachments: { type: 'array', nullable: true },
-		customFields: { type: 'object', nullable: true },
+		tmid: { type: 'string' },
+		attachments: { type: 'array' },
+		customFields: { type: 'object' },
 	},
 	required: ['roomId', 'message', 'scheduledAt'],
 	additionalProperties: false,
@@ -46,8 +40,8 @@ const ChatGetScheduledMessagesPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: { type: 'string', minLength: 1 },
-		count: { type: 'number', nullable: true },
-		offset: { type: 'number', nullable: true },
+		count: { type: 'number' },
+		offset: { type: 'number' },
 	},
 	required: ['roomId'],
 	additionalProperties: false,

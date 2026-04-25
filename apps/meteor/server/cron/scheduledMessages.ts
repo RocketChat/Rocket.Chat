@@ -3,6 +3,7 @@ import { cronJobs } from '@rocket.chat/cron';
 
 import { sendMessage } from '../../app/lib/server/functions/sendMessage';
 import { canSendMessageAsync } from '../../app/authorization/server/functions/canSendMessage';
+import { SystemLogger } from '../../server/lib/logger/system';
 
 export async function processScheduledMessages(): Promise<void> {
 	const now = new Date();
@@ -10,11 +11,26 @@ export async function processScheduledMessages(): Promise<void> {
 	const pendingMessages = await Messages.find({
 		scheduled: true,
 		scheduledAt: { $lte: now },
-	}).toArray();
+	})
+		.limit(100)
+		.toArray();
 
 	for (const scheduledMessage of pendingMessages) {
-		let messageDeleted = false;
 		try {
+			const claimResult = await Messages.updateOne(
+				{
+					_id: scheduledMessage._id,
+					scheduled: true,
+				},
+				{
+					$set: { scheduled: false },
+				},
+			);
+
+			if (claimResult.modifiedCount === 0) {
+				continue;
+			}
+
 			const user = await Users.findOneById(scheduledMessage.u._id);
 			if (!user) {
 				await Messages.deleteOne({ _id: scheduledMessage._id });
@@ -29,9 +45,6 @@ export async function processScheduledMessages(): Promise<void> {
 				continue;
 			}
 
-			await Messages.deleteOne({ _id: scheduledMessage._id });
-			messageDeleted = true;
-
 			const message: any = {
 				msg: scheduledMessage.msg,
 				rid: scheduledMessage.rid,
@@ -43,10 +56,20 @@ export async function processScheduledMessages(): Promise<void> {
 			};
 
 			await sendMessage(user, message, room, {});
+			await Messages.deleteOne({ _id: scheduledMessage._id });
 		} catch (error: any) {
-			if (!messageDeleted) {
-				await Messages.deleteOne({ _id: scheduledMessage._id });
-			}
+			SystemLogger.error({
+				msg: 'Error processing scheduled message',
+				err: error,
+				messageId: scheduledMessage._id,
+				roomId: scheduledMessage.rid,
+				userId: scheduledMessage.u._id,
+			});
+
+			await Messages.updateOne(
+				{ _id: scheduledMessage._id },
+				{ $set: { scheduled: true } },
+			);
 		}
 	}
 }

@@ -1022,11 +1022,6 @@ export type ChatEndpoints = {
 			message: string;
 			scheduledAt: string;
 			tmid?: string;
-			alias?: string;
-			avatar?: string;
-			emoji?: string;
-			attachments?: any[];
-			customFields?: Record<string, any>;
 		}) => {
 			message: IMessage;
 		};
