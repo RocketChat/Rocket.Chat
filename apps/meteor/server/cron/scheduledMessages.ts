@@ -41,7 +41,16 @@ export async function processScheduledMessages(): Promise<void> {
 			try {
 				room = await canSendMessageAsync(scheduledMessage.rid, user);
 			} catch (error: any) {
-				await Messages.deleteOne({ _id: scheduledMessage._id });
+				const isRecoverable = ['room_is_archived', 'room_is_blocked', 'You_have_been_muted', 'error-room-not-found'].includes(error.error);
+				
+				if (isRecoverable) {
+					await Messages.updateOne(
+						{ _id: scheduledMessage._id },
+						{ $set: { scheduled: true } },
+					);
+				} else {
+					await Messages.deleteOne({ _id: scheduledMessage._id });
+				}
 				continue;
 			}
 
@@ -58,18 +67,37 @@ export async function processScheduledMessages(): Promise<void> {
 			await sendMessage(user, message, room, {});
 			await Messages.deleteOne({ _id: scheduledMessage._id });
 		} catch (error: any) {
-			SystemLogger.error({
-				msg: 'Error processing scheduled message',
-				err: error,
-				messageId: scheduledMessage._id,
-				roomId: scheduledMessage.rid,
-				userId: scheduledMessage.u._id,
-			});
+			const retryCount = ((scheduledMessage as any).scheduledRetryCount || 0) + 1;
+			const maxRetries = 5;
 
-			await Messages.updateOne(
-				{ _id: scheduledMessage._id },
-				{ $set: { scheduled: true } },
-			);
+			if (retryCount >= maxRetries) {
+				SystemLogger.error({
+					msg: 'Scheduled message failed after max retries',
+					err: error,
+					messageId: scheduledMessage._id,
+					roomId: scheduledMessage.rid,
+					userId: scheduledMessage.u._id,
+					retryCount,
+				});
+				await Messages.deleteOne({ _id: scheduledMessage._id });
+			} else {
+				SystemLogger.error({
+					msg: 'Error processing scheduled message',
+					err: error,
+					messageId: scheduledMessage._id,
+					roomId: scheduledMessage.rid,
+					userId: scheduledMessage.u._id,
+					retryCount,
+				});
+
+				await Messages.updateOne(
+					{ _id: scheduledMessage._id },
+					{ 
+						$set: { scheduled: true },
+						$inc: { scheduledRetryCount: 1 },
+					},
+				);
+			}
 		}
 	}
 }

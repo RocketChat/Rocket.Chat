@@ -50,11 +50,14 @@ API.v1.post(
 			throw new Meteor.Error('error-past-date', 'Scheduled date must be in the future', { method: 'chat.scheduleMessage' });
 		}
 
-		try {
-			await canSendMessageAsync(roomId, this.user);
-		} catch (error: any) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'chat.scheduleMessage' });
+		if (tmid) {
+			const parentMessage = await Messages.findOneById(tmid, { projection: { rid: 1 } });
+			if (!parentMessage || parentMessage.rid !== roomId) {
+				throw new Meteor.Error('error-invalid-tmid', 'Thread message does not belong to this room', { method: 'chat.scheduleMessage' });
+			}
 		}
+
+		await canSendMessageAsync(roomId, this.user);
 
 		const messageData = {
 			rid: roomId,
@@ -109,11 +112,7 @@ API.v1.get(
 
 		check(roomId, String);
 
-		try {
-			await canSendMessageAsync(roomId, this.user);
-		} catch (error: any) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'chat.getScheduledMessages' });
-		}
+		await canSendMessageAsync(roomId, this.user);
 
 		const messages = await Messages.find(
 			{
