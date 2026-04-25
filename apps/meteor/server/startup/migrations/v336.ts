@@ -8,8 +8,10 @@ addMigration({
 	async up() {
 		try {
 			await ReadReceipts.col.dropIndex('roomId_1_userId_1_messageId_1');
-		} catch (err: unknown) {
-			console.warn('Error dropping index roomId_1_userId_1_messageId_1 from Read Receipts collection, it might have already been dropped.', err);
+		} catch (e: any) {
+			if (e?.codeName !== 'IndexNotFound') {
+				throw e;
+			}
 		}
 	},
 });
