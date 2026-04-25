@@ -81,7 +81,11 @@
 		"@react-aria/i18n@npm:^3.12.5": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch",
 		"@react-aria/toolbar@npm:^3.0.0-nightly.5042": "3.0.0-nightly-fb28ab3b4-241024",
 		"xml-crypto/@xmldom/xmldom": "0.8.13",
-		"xml-encryption/@xmldom/xmldom": "0.8.13"
+		"xml-encryption/@xmldom/xmldom": "0.8.13",
+		"form-data@npm:^2.5.0": "2.5.5",
+		"form-data@npm:^4.0.0": "4.0.5",
+		"form-data@npm:^4.0.4": "4.0.5",
+		"form-data@npm:^4.0.5": "4.0.5"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
