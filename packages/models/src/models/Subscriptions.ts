@@ -216,6 +216,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
+				reactions: 0,
 				ls: new Date(),
 			},
 		};
@@ -1570,6 +1571,27 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$inc: {
 				unread: incUnread,
 				userMentions: incUser,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	incReactionsForRoomIdAndUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc = 1): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$in: userIds,
+			},
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				reactions: inc,
 			},
 		};
 

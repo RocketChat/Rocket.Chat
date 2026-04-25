@@ -279,6 +279,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		incUser?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
+	incReactionsForRoomIdAndUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc?: number): Promise<UpdateResult | Document>;
 
 	ignoreUser(data: { _id: string; ignoredUser: string; ignore?: boolean }): Promise<UpdateResult>;
 

@@ -17,6 +17,7 @@ export const subscriptionFields = {
 	customFields: 1,
 	userMentions: 1,
 	groupMentions: 1,
+	reactions: 1,
 	archived: 1,
 	audioNotificationValue: 1,
 	desktopNotifications: 1,

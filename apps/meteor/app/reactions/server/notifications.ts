@@ -41,7 +41,7 @@ callbacks.add(
 				return;
 			}
 
-			await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, [recipient._id], 0, 1);
+			await Subscriptions.incReactionsForRoomIdAndUserIds(room._id, [recipient._id], 1);
 			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, recipient._id);
 
 			const useRealName = settings.get<boolean>('UI_Use_Real_Name');
@@ -118,10 +118,10 @@ callbacks.add(
 				{
 					rid: room._id,
 					'u._id': recipientId,
-					unread: { $gt: 0 },
+					reactions: { $gt: 0 },
 				},
 				{
-					$inc: { unread: -1 },
+					$inc: { reactions: -1 },
 				},
 			);
 

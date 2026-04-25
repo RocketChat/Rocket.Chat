@@ -6608,6 +6608,10 @@
     "one": "{{count}} mention",
     "other": "{{count}} mentions"
   },
+  "reactions_counter": {
+    "one": "{{count}} reaction",
+    "other": "{{count}} reactions"
+  },
   "message": "message",
   "message-impersonate": "Impersonate Other Users",
   "message-impersonate_description": "Permission to impersonate other users using message alias",

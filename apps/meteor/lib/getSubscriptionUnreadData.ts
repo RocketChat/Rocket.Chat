@@ -6,11 +6,13 @@ const getUnreadTitle = (
 		mentions,
 		threads,
 		groupMentions,
+		reactions,
 		total,
 	}: {
 		mentions: number;
 		threads: number;
 		groupMentions: number;
+		reactions: number;
 		total: number;
 	},
 	t: TFunction,
@@ -29,23 +31,27 @@ const getUnreadTitle = (
 	if (count > 0) {
 		title.push(t('unread_messages_counter', { count }));
 	}
+	if (reactions) {
+		title.push(t('reactions_counter', { count: reactions }));
+	}
 
 	return title.join(', ');
 };
 
 export type UnreadData = Pick<
 	SubscriptionWithRoom,
-	'alert' | 'userMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'groupMentions' | 'hideMentionStatus' | 'hideUnreadStatus'
+	'alert' | 'userMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'groupMentions' | 'reactions' | 'hideMentionStatus' | 'hideUnreadStatus'
 >;
 
 export const getSubscriptionUnreadData = (
-	{ userMentions, tunreadUser, tunread, unread, groupMentions, hideMentionStatus, hideUnreadStatus, alert }: UnreadData,
+	{ userMentions, tunreadUser, tunread, unread, groupMentions, reactions, hideMentionStatus, hideUnreadStatus, alert }: UnreadData,
 	t: TFunction,
 ) => {
 	const unreadCount = {
 		mentions: userMentions + (tunreadUser?.length || 0),
 		threads: tunread?.length || 0,
 		groupMentions,
+		reactions: reactions || 0,
 		total: unread + (tunread?.length || 0),
 	};
 
