@@ -6,7 +6,7 @@ import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/server/l
 import { settings } from '../../settings/server';
 import { notifyDesktopUser } from '../../lib/server/functions/notifications/desktop';
 import { emoji } from '../../emoji/server';
-import { SystemLogger } from '/server/lib/logger/system';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 callbacks.add(
 	'afterSetReaction',
@@ -23,7 +23,6 @@ callbacks.add(
 			const recipient = await Users.findOneById(message.u._id, {
 				projection: {
 					'active': 1,
-					'status': 1,
 					'settings.preferences.receiveReactionNotifications': 1,
 					'language': 1,
 				},
@@ -70,7 +69,7 @@ callbacks.add(
 				notificationMessage,
 			});
 		} catch (e) {
-			SystemLogger.error('Error sending reaction notification', e);
+			SystemLogger.error({ msg: 'Error sending reaction notification', err: e });
 		}
 	},
 	callbacks.priority.LOW,
@@ -91,12 +90,8 @@ callbacks.add(
 
 			const recipient = await Users.findOneById(message.u._id, {
 				projection: {
-					active: 1,
-					settings: {
-						preferences: {
-							receiveReactionNotifications: 1,
-						},
-					},
+					'active': 1,
+					'settings.preferences.receiveReactionNotifications': 1,
 				},
 			});
 
@@ -127,7 +122,7 @@ callbacks.add(
 
 			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, recipientId);
 		} catch (e) {
-			SystemLogger.error('Error handling reaction notification removal', e);
+			SystemLogger.error({ msg: 'Error handling reaction notification removal', err: e });
 		}
 	},
 	callbacks.priority.LOW,
