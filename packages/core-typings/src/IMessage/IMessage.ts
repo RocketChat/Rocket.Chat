@@ -242,6 +242,8 @@ export interface IMessage extends IRocketChatRecord {
 
 	// Read receipts migration flag
 	receiptsArchived?: boolean;
+	scheduled?: boolean;
+	scheduledAt?: Date;
 }
 
 export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;

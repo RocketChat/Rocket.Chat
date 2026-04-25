@@ -356,6 +356,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			_hidden: {
 				$ne: true,
 			},
+			scheduled: {
+				$ne: true,
+			},
 			rid: roomId,
 			ts: { $lt: ts },
 			...(!showThreadMessages && {
@@ -757,7 +760,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			_hidden: {
 				$ne: true,
 			},
-
+			scheduled: {
+				$ne: true,
+			},
 			rid,
 		};
 
@@ -797,6 +802,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			_hidden: {
 				$ne: true,
 			},
+			scheduled: {
+				$ne: true,
+			},
 			rid: roomId,
 			...(!showThreadMessages && {
 				$or: [
@@ -825,6 +833,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
+				$ne: true,
+			},
+			scheduled: {
 				$ne: true,
 			},
 			rid: roomId,
@@ -866,6 +877,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			_hidden: {
 				$ne: true,
 			},
+			scheduled: {
+				$ne: true,
+			},
 			rid: roomId,
 			ts: {
 				$lt: timestamp,
@@ -895,6 +909,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
+				$ne: true,
+			},
+			scheduled: {
 				$ne: true,
 			},
 			rid: roomId,
@@ -931,6 +948,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
+				$ne: true,
+			},
+			scheduled: {
 				$ne: true,
 			},
 			rid: roomId,
