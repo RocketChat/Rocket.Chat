@@ -33,10 +33,33 @@ export async function processScheduledMessages(): Promise<void> {
 
 			const user = await Users.findOneById(scheduledMessage.u._id);
 			if (!user) {
-				await Messages.updateOne(
-					{ _id: scheduledMessage._id },
-					{ $set: { scheduled: true } },
-				);
+				const retryCount = ((scheduledMessage as any).scheduledRetryCount || 0) + 1;
+				const maxRetries = 5;
+
+				if (retryCount >= maxRetries) {
+					SystemLogger.error({
+						msg: 'Scheduled message user not found, max retries reached',
+						messageId: scheduledMessage._id,
+						roomId: scheduledMessage.rid,
+						userId: scheduledMessage.u._id,
+						retryCount,
+					});
+					await Messages.deleteOne({ _id: scheduledMessage._id });
+				} else {
+					const delayMinutes = Math.pow(2, retryCount);
+					const newScheduledAt = new Date(new Date().getTime() + delayMinutes * 60 * 1000);
+
+					await Messages.updateOne(
+						{ _id: scheduledMessage._id },
+						{
+							$set: {
+								scheduledAt: newScheduledAt,
+								scheduledRetryCount: retryCount,
+								scheduled: true,
+							},
+						},
+					);
+				}
 				continue;
 			}
 
