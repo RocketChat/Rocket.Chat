@@ -76,7 +76,7 @@ export class AppVideoConfProviderManager {
 		this.linkAppProvider(appId, providerName);
 	}
 
-	public registerProviders(appId: string): void {
+	public async registerProviders(appId: string): Promise<void> {
 		if (!this.videoConfProviders.has(appId)) {
 			return;
 		}
@@ -87,18 +87,18 @@ export class AppVideoConfProviderManager {
 		}
 
 		for (const [, providerInfo] of appProviders) {
-			this.registerProvider(appId, providerInfo);
+			await this.registerProvider(appId, providerInfo);
 		}
 	}
 
-	public unregisterProviders(appId: string): void {
+	public async unregisterProviders(appId: string): Promise<void> {
 		if (!this.videoConfProviders.has(appId)) {
 			return;
 		}
 
 		const appProviders = this.videoConfProviders.get(appId);
 		for (const [, providerInfo] of appProviders) {
-			this.unregisterProvider(appId, providerInfo);
+			await this.unregisterProvider(appId, providerInfo);
 		}
 
 		this.videoConfProviders.delete(appId);
@@ -185,7 +185,7 @@ export class AppVideoConfProviderManager {
 			}
 
 			const provider = providers.get(key);
-			if (provider.isRegistered) {
+			if (provider?.isRegistered) {
 				return provider;
 			}
 		}
@@ -195,15 +195,15 @@ export class AppVideoConfProviderManager {
 		this.providerApps.set(providerName, appId);
 	}
 
-	private registerProvider(appId: string, info: AppVideoConfProvider): void {
-		this.bridge.doRegisterProvider(info.provider, appId);
+	private async registerProvider(appId: string, info: AppVideoConfProvider): Promise<void> {
+		await this.bridge.doRegisterProvider(info.provider, appId);
 		info.hasBeenRegistered();
 	}
 
-	private unregisterProvider(appId: string, info: AppVideoConfProvider): void {
+	private async unregisterProvider(appId: string, info: AppVideoConfProvider): Promise<void> {
 		const key = info.provider.name.toLowerCase().trim();
 
-		this.bridge.doUnRegisterProvider(info.provider, appId);
+		await this.bridge.doUnRegisterProvider(info.provider, appId);
 		this.providerApps.delete(key);
 
 		info.isRegistered = false;

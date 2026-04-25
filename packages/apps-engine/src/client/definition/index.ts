@@ -1,4 +1,4 @@
 export * from './AppsEngineUIMethods';
-export * from './IExternalComponentUserInfo';
-export * from './IExternalComponentRoomInfo';
-export * from './IAppsEngineUIResponse';
+export type * from './IExternalComponentUserInfo';
+export type * from './IExternalComponentRoomInfo';
+export type * from './IAppsEngineUIResponse';

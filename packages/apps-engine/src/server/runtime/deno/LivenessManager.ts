@@ -187,7 +187,7 @@ export class LivenessManager {
 						'Subprocess failed to respond to pings %d consecutive times. Attempting restart...',
 						this.options.consecutiveTimeoutLimit,
 					);
-					this.restartProcess('Too many pings timed out');
+					void this.restartProcess('Too many pings timed out');
 					return false;
 				}
 
@@ -202,7 +202,7 @@ export class LivenessManager {
 
 	private handleError(err: Error) {
 		this.debug('App has failed to start.`', err);
-		this.restartProcess(err.message);
+		void this.restartProcess(err.message);
 	}
 
 	private handleExit(exitCode: number, signal: string) {
@@ -223,7 +223,7 @@ export class LivenessManager {
 			reason = `App has exited with code ${exitCode}`;
 		}
 
-		this.restartProcess(reason);
+		void this.restartProcess(reason);
 	}
 
 	private async restartProcess(reason: string, source = 'liveness-manager') {
@@ -231,7 +231,7 @@ export class LivenessManager {
 
 		if (this.restartCount >= this.options.maxRestarts) {
 			this.debug('Limit of restarts reached (%d). Aborting restart...', this.options.maxRestarts);
-			this.controller.stopApp();
+			void this.controller.stopApp();
 			return;
 		}
 
@@ -244,9 +244,9 @@ export class LivenessManager {
 
 		try {
 			await this.controller.restartApp();
-		} catch (e) {
+		} catch {
 			this.debug('Restart attempt failed. Retrying in %dms', this.options.restartAttemptDelayInMS);
-			setTimeout(() => this.restartProcess('Failed restart attempt'), this.options.restartAttemptDelayInMS);
+			setTimeout(() => void this.restartProcess('Failed restart attempt'), this.options.restartAttemptDelayInMS);
 		}
 
 		this.restartCount++;

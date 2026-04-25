@@ -7,7 +7,7 @@ import { randomString } from './utils';
  * Represents the SDK provided to the external component.
  */
 export class AppsEngineUIClient {
-	private listener: (this: Window, ev: MessageEvent) => any;
+	private listener: (this: Window, ev: MessageEvent<{ [MESSAGE_ID]?: { id: string; payload: any } }>) => void;
 
 	private callbacks: Map<string, (response: any) => any>;
 
@@ -39,7 +39,7 @@ export class AppsEngineUIClient {
 	 */
 	public init(): void {
 		this.listener = ({ data }) => {
-			if (!data?.hasOwnProperty(MESSAGE_ID)) {
+			if (!data?.[MESSAGE_ID]) {
 				return;
 			}
 

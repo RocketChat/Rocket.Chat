@@ -9,11 +9,11 @@
 		"lint:fix": "eslint --fix src"
 	},
 	"dependencies": {
-		"@actions/core": "^1.11.1",
-		"@actions/exec": "^1.1.1",
-		"@actions/github": "^6.0.1",
-		"@octokit/core": "^5.0.2",
-		"@octokit/plugin-throttling": "^6.1.0",
+		"@actions/core": "^3.0.1",
+		"@actions/exec": "^3.0.0",
+		"@actions/github": "^9.1.1",
+		"@octokit/core": "^7.0.6",
+		"@octokit/plugin-throttling": "^11.0.3",
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",
 		"remark-stringify": "9.0.1",

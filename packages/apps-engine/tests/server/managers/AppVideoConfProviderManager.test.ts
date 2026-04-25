@@ -91,13 +91,13 @@ describe('AppVideoConfProviderManager', () => {
 		assert.strictEqual((manager as any).videoConfProviders.size, 1);
 	});
 
-	it('ignoreAppsWithoutProviders', () => {
+	it('ignoreAppsWithoutProviders', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 
-		assert.doesNotThrow(() => manager.registerProviders('non-existant'));
+		await assert.doesNotReject(() => manager.registerProviders('non-existant'));
 	});
 
-	it('registerProviders', () => {
+	it('registerProviders', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 
 		manager.addProvider('firstApp', TestData.getVideoConfProvider());
@@ -107,11 +107,11 @@ describe('AppVideoConfProviderManager', () => {
 		assert.ok(regInfo !== undefined);
 
 		assert.strictEqual(regInfo.isRegistered, false);
-		assert.doesNotThrow(() => manager.registerProviders('firstApp'));
+		await assert.doesNotReject(() => manager.registerProviders('firstApp'));
 		assert.strictEqual(regInfo.isRegistered, true);
 	});
 
-	it('registerTwoProviders', () => {
+	it('registerTwoProviders', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 
 		manager.addProvider('firstApp', TestData.getVideoConfProvider());
@@ -125,12 +125,12 @@ describe('AppVideoConfProviderManager', () => {
 
 		assert.strictEqual(firstRegInfo.isRegistered, false);
 		assert.strictEqual(secondRegInfo.isRegistered, false);
-		assert.doesNotThrow(() => manager.registerProviders('firstApp'));
+		await assert.doesNotReject(() => manager.registerProviders('firstApp'));
 		assert.strictEqual(firstRegInfo.isRegistered, true);
 		assert.strictEqual(secondRegInfo.isRegistered, true);
 	});
 
-	it('registerProvidersFromMultipleApps', () => {
+	it('registerProvidersFromMultipleApps', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 
 		manager.addProvider('firstApp', TestData.getVideoConfProvider());
@@ -150,11 +150,11 @@ describe('AppVideoConfProviderManager', () => {
 
 		assert.strictEqual(firstRegInfo.isRegistered, false);
 		assert.strictEqual(secondRegInfo.isRegistered, false);
-		assert.doesNotThrow(() => manager.registerProviders('firstApp'));
+		await assert.doesNotReject(() => manager.registerProviders('firstApp'));
 		assert.strictEqual(firstRegInfo.isRegistered, true);
 		assert.strictEqual(secondRegInfo.isRegistered, true);
 		assert.strictEqual(thirdRegInfo.isRegistered, false);
-		assert.doesNotThrow(() => manager.registerProviders('secondApp'));
+		await assert.doesNotReject(() => manager.registerProviders('secondApp'));
 		assert.strictEqual(thirdRegInfo.isRegistered, true);
 	});
 
@@ -169,16 +169,16 @@ describe('AppVideoConfProviderManager', () => {
 		});
 	});
 
-	it('unregisterProviders', () => {
+	it('unregisterProviders', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 
 		manager.addProvider('testing', TestData.getVideoConfProvider());
 		const regInfo = (manager as any).videoConfProviders.get('testing').get('test') as AppVideoConfProvider;
-		assert.doesNotThrow(() => manager.registerProviders('testing'));
+		await assert.doesNotReject(() => manager.registerProviders('testing'));
 
-		assert.doesNotThrow(() => manager.unregisterProviders('non-existant'));
+		await assert.doesNotReject(() => manager.unregisterProviders('non-existant'));
 		assert.strictEqual(regInfo.isRegistered, true);
-		assert.doesNotThrow(() => manager.unregisterProviders('testing'));
+		await assert.doesNotReject(() => manager.unregisterProviders('testing'));
 		assert.strictEqual(regInfo.isRegistered, false);
 	});
 
@@ -203,7 +203,7 @@ describe('AppVideoConfProviderManager', () => {
 	it('generateUrl', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getVideoConfProvider());
-		manager.registerProviders('testing');
+		await manager.registerProviders('testing');
 
 		const call = TestData.getVideoConfData();
 
@@ -216,9 +216,9 @@ describe('AppVideoConfProviderManager', () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getVideoConfProvider());
 		manager.addProvider('testing', TestData.getVideoConfProvider('test2'));
-		manager.registerProviders('testing');
+		await manager.registerProviders('testing');
 		manager.addProvider('secondApp', TestData.getVideoConfProvider('differentProvider'));
-		manager.registerProviders('secondApp');
+		await manager.registerProviders('secondApp');
 
 		const call = TestData.getVideoConfData();
 
@@ -275,7 +275,7 @@ describe('AppVideoConfProviderManager', () => {
 	it('customizeUrl', async () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getVideoConfProvider());
-		manager.registerProviders('testing');
+		await manager.registerProviders('testing');
 
 		const call = TestData.getVideoConfDataExtended();
 		const user = TestData.getVideoConferenceUser();
@@ -309,9 +309,9 @@ describe('AppVideoConfProviderManager', () => {
 		const manager = new AppVideoConfProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getVideoConfProvider());
 		manager.addProvider('testing', TestData.getVideoConfProvider('test2'));
-		manager.registerProviders('testing');
+		await manager.registerProviders('testing');
 		manager.addProvider('secondApp', TestData.getVideoConfProvider('differentProvider'));
-		manager.registerProviders('secondApp');
+		await manager.registerProviders('secondApp');
 
 		const call = TestData.getVideoConfDataExtended();
 		const user = TestData.getVideoConferenceUser();
@@ -320,9 +320,11 @@ describe('AppVideoConfProviderManager', () => {
 		const test2Provider = (manager as any).videoConfProviders.get('testing').get('test2') as AppVideoConfProvider;
 		const differentProvider = (manager as any).videoConfProviders.get('secondApp').get('differentprovider') as AppVideoConfProvider;
 
-		mock.method(testProvider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'test/first-call#caller' : 'test/first-call#');
-		mock.method(test2Provider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'test2/first-call#caller' : 'test2/first-call#');
-		mock.method(differentProvider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'differentProvider/first-call#caller' : 'differentProvider/first-call#');
+		mock.method(testProvider, 'runCustomizeUrl', (_call: any, user: any) => (user ? 'test/first-call#caller' : 'test/first-call#'));
+		mock.method(test2Provider, 'runCustomizeUrl', (_call: any, user: any) => (user ? 'test2/first-call#caller' : 'test2/first-call#'));
+		mock.method(differentProvider, 'runCustomizeUrl', (_call: any, user: any) =>
+			user ? 'differentProvider/first-call#caller' : 'differentProvider/first-call#',
+		);
 
 		assert.strictEqual(await manager.customizeUrl('test', call, user, {}), 'test/first-call#caller');
 		assert.strictEqual(await manager.customizeUrl('test', call, undefined, {}), 'test/first-call#');
