@@ -41,7 +41,8 @@ export async function processScheduledMessages(): Promise<void> {
 			try {
 				room = await canSendMessageAsync(scheduledMessage.rid, user);
 			} catch (error: any) {
-				const isRecoverable = ['room_is_archived', 'room_is_blocked', 'You_have_been_muted', 'error-room-not-found'].includes(error.error);
+				const errorCode = error.error || error.message;
+				const isRecoverable = ['room_is_archived', 'room_is_blocked', 'You_have_been_muted', 'error-invalid-room'].includes(errorCode);
 				
 				if (isRecoverable) {
 					await Messages.updateOne(
@@ -49,6 +50,13 @@ export async function processScheduledMessages(): Promise<void> {
 						{ $set: { scheduled: true } },
 					);
 				} else {
+					SystemLogger.error({
+						msg: 'Non-recoverable error for scheduled message, deleting',
+						err: error,
+						messageId: scheduledMessage._id,
+						roomId: scheduledMessage.rid,
+						userId: scheduledMessage.u._id,
+					});
 					await Messages.deleteOne({ _id: scheduledMessage._id });
 				}
 				continue;
@@ -64,8 +72,9 @@ export async function processScheduledMessages(): Promise<void> {
 				...(scheduledMessage.attachments && { attachments: scheduledMessage.attachments }),
 			};
 
-			await sendMessage(user, message, room, {});
+			// Delete before sending to prevent duplicate delivery on partial failure
 			await Messages.deleteOne({ _id: scheduledMessage._id });
+			await sendMessage(user, message, room, {});
 		} catch (error: any) {
 			const retryCount = ((scheduledMessage as any).scheduledRetryCount || 0) + 1;
 			const maxRetries = 5;
@@ -90,10 +99,17 @@ export async function processScheduledMessages(): Promise<void> {
 					retryCount,
 				});
 
+				// Exponential backoff: 2^retryCount minutes
+				const delayMinutes = Math.pow(2, retryCount);
+				const newScheduledAt = new Date(now.getTime() + delayMinutes * 60 * 1000);
+
 				await Messages.updateOne(
 					{ _id: scheduledMessage._id },
 					{ 
-						$set: { scheduled: true },
+						$set: { 
+							scheduled: true,
+							scheduledAt: newScheduledAt,
+						},
 						$inc: { scheduledRetryCount: 1 },
 					},
 				);
@@ -103,7 +119,5 @@ export async function processScheduledMessages(): Promise<void> {
 }
 
 export async function scheduledMessagesCron(): Promise<void> {
-	await processScheduledMessages();
-
 	return cronJobs.add('Process Scheduled Messages', '* * * * *', async () => processScheduledMessages());
 }
