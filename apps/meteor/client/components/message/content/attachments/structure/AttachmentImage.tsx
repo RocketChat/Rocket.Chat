@@ -79,15 +79,18 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 					}}
 				>
 					<img
-						data-id={id}
-						className='gallery-item'
-						data-src={dataSrc || src}
-						src={src}
-						alt={alt}
-						width={dimensions.width}
-						height={dimensions.height}
-						loading='lazy'
-					/>
+  data-id={id}
+  className='gallery-item'
+  data-src={dataSrc || src}
+  src={src}
+  alt={alt}
+  style={{
+    maxWidth: '100%',
+    height: 'auto',
+    objectFit: 'contain',
+  }}
+  loading='lazy'
+/>
 				</ImageBox>
 			</Box>
 		</Box>
