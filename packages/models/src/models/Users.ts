@@ -3364,6 +3364,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	findByProfileField(field: string, value: unknown, options?: FindOptions<IUser>) {
+		return this.find({ [field]: value } as Filter<IUser>, options);
+	}
+
 	countByRole(role: IRole['_id']) {
 		return this.countDocuments({ roles: role });
 	}
