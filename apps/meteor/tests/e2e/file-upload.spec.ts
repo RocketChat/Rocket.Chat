@@ -197,7 +197,7 @@ test.describe.serial('file-upload', () => {
 				await poHomeChannel.composer.btnSend.click();
 				await fileUploadWarningModal.waitForDisplay();
 
-				await expect(fileUploadWarningModal.getContent('One file failed to upload')).toBeVisible();
+				await expect(fileUploadWarningModal.getContent('1 file failed to upload')).toBeVisible();
 			});
 
 			await test.step('should close modal when clicking "Cancel" button', async () => {

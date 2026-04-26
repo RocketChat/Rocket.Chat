@@ -1,7 +1,9 @@
+/* eslint-disable dot-notation -- we avoid the dot notation here when testing private methods */
+
 import * as fs from 'fs/promises';
-import * as os from 'os';
 import * as assert from 'node:assert';
 import { describe, it, beforeEach, afterEach, mock, before, after } from 'node:test';
+import * as os from 'os';
 import * as path from 'path';
 
 import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
@@ -45,7 +47,7 @@ describe('DenoRuntimeSubprocessController', () => {
 	beforeEach(async () => {
 		controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
 		await controller.setupApp();
-	})
+	});
 
 	afterEach(async () => {
 		await controller?.stopApp();
@@ -56,7 +58,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
 			console.warn('Failed to delete temporary Deno runtime symlink', reason);
 		});
-	})
+	});
 
 	it('correctly identifies a call to the HTTP accessor', async () => {
 		const httpBridge = manager.getBridges().getHttpBridge();
