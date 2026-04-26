@@ -21,6 +21,9 @@ export const useReplyInDMAction = (
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { t } = useTranslation();
 
+
+	const isOwnMessage = user?._id === message.u._id;
+
 	const roomPredicate = useCallback(
 		(record: IRoom): boolean => {
 			const ids = [user?._id, message.u._id].sort().join('');
@@ -49,19 +52,23 @@ export const useReplyInDMAction = (
 	}, [encrypted, isABACEnabled, t]);
 
 	const canReplyInDM = useMemo(() => {
-		if (!!user && user._id === message.u._id) {
+
+		if (isOwnMessage) {
 			return false;
 		}
+
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
 		}
-		if (!!user && user._id !== message.u._id && !canCreateDM) {
+
+		if (!!user && !isOwnMessage && !canCreateDM) {
 			if (!dmRoom || !dmSubs) {
 				return false;
 			}
 		}
+
 		return true;
-	}, [canCreateDM, dmRoom, dmSubs, isLayoutEmbedded, message.u._id, room.t, subscription, user]);
+	}, [canCreateDM, dmRoom, dmSubs, isLayoutEmbedded, isOwnMessage, room.t, subscription, user]);
 
 	if (!canReplyInDM) {
 		return null;
