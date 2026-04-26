@@ -223,6 +223,7 @@ test.describe.parallel('administration', () => {
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await poAdminRooms.editRoom.archivedLabel.click();
 			await poAdminRooms.editRoom.btnSave.click();
+			await poAdminRooms.editRoom.waitForDismissal();
 
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await expect(poAdminRooms.editRoom.archivedInput).toBeChecked();

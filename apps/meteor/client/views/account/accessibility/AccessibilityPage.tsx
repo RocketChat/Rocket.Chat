@@ -1,12 +1,9 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	FieldDescription,
-	Accordion,
-	AccordionItem,
-	Box,
-	Button,
-	ButtonGroup,
 	Field,
 	FieldGroup,
 	FieldHint,
@@ -15,12 +12,11 @@ import {
 	RadioButton,
 	Select,
 	ToggleSwitch,
-} from '@rocket.chat/fuselage';
+} from '@rocket.chat/fuselage-forms';
 import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting, useLocationHash } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
-import { VisuallyHidden } from 'react-aria';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -38,6 +34,7 @@ const AccessibilityPage = () => {
 
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
+	const shouldExpand = useLocationHash().length > 1;
 
 	const timeFormatOptions = useMemo(
 		(): SelectOption[] => [
@@ -49,11 +46,6 @@ const AccessibilityPage = () => {
 	);
 
 	const pageFormId = useId();
-	const fontSizeId = useId();
-	const mentionsWithSymbolId = useId();
-	const clockModeId = useId();
-	const hideUsernamesId = useId();
-	const hideRolesId = useId();
 	const linkListId = useId();
 
 	const {
@@ -113,14 +105,14 @@ const AccessibilityPage = () => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<FieldRow>
-											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
+											<FieldLabel display='flex' alignItems='center'>
 												{t(title)}
 											</FieldLabel>
 											<Controller
 												control={control}
 												name='themeAppearence'
-												render={({ field: { onChange, value, ref } }) => (
-													<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
+												render={({ field: { value, onChange, ...field } }) => (
+													<RadioButton id={id} {...field} onChange={() => onChange(id)} checked={value === id} />
 												)}
 											/>
 										</FieldRow>
@@ -131,35 +123,25 @@ const AccessibilityPage = () => {
 								);
 							})}
 						</AccordionItem>
-						<AccordionItem title={t('Adjustable_layout')}>
+						<AccordionItem defaultExpanded={shouldExpand} title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<VisuallyHidden>
 									<legend>{t('Adjustable_layout')}</legend>
 								</VisuallyHidden>
 								<Field>
-									<FieldLabel htmlFor={fontSizeId} mbe={12}>
-										{t('Font_size')}
-									</FieldLabel>
+									<FieldLabel mbe={12}>{t('Font_size')}</FieldLabel>
 									<FieldRow>
-										<Controller
-											control={control}
-											name='fontSize'
-											render={({ field: { onChange, value } }) => (
-												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes(t)} />
-											)}
-										/>
+										<Controller control={control} name='fontSize' render={({ field }) => <Select {...field} options={fontSizes(t)} />} />
 									</FieldRow>
 									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>
 								</Field>
 								<Field>
 									<FieldRow>
-										<FieldLabel htmlFor={mentionsWithSymbolId}>{t('Mentions_with_@_symbol')}</FieldLabel>
+										<FieldLabel>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<Controller
 											control={control}
 											name='mentionsWithSymbol'
-											render={({ field: { onChange, value, ref } }) => (
-												<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
-											)}
+											render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 										/>
 									</FieldRow>
 									<FieldDescription
@@ -171,50 +153,38 @@ const AccessibilityPage = () => {
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>
 								</Field>
-								<Field>
-									<FieldLabel htmlFor={clockModeId}>{t('Message_TimeFormat')}</FieldLabel>
+								<Field id='clockMode'>
+									<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='clockMode'
 											control={control}
-											render={({ field: { value, onChange } }) => (
-												<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
-											)}
+											render={({ field: { value, ...field } }) => <Select {...field} value={`${value}`} options={timeFormatOptions} />}
 										/>
 									</FieldRow>
 								</Field>
-								<Field>
+								<Field id='hideUsernames'>
 									<FieldRow>
-										<FieldLabel htmlFor={hideUsernamesId}>{t('Show_usernames')}</FieldLabel>
+										<FieldLabel>{t('Show_usernames')}</FieldLabel>
 										<Controller
 											name='hideUsernames'
 											control={control}
-											render={({ field: { value, onChange, ref } }) => (
-												<ToggleSwitch
-													id={hideUsernamesId}
-													ref={ref}
-													checked={!value}
-													onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
-												/>
+											render={({ field: { value, onChange, ...field } }) => (
+												<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
 											)}
 										/>
 									</FieldRow>
 									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
 								</Field>
 								{displayRolesEnabled && (
-									<Field>
+									<Field id='hideRoles'>
 										<FieldRow>
-											<FieldLabel htmlFor={hideRolesId}>{t('Show_roles')}</FieldLabel>
+											<FieldLabel>{t('Show_roles')}</FieldLabel>
 											<Controller
 												name='hideRoles'
 												control={control}
-												render={({ field: { value, onChange, ref } }) => (
-													<ToggleSwitch
-														id={hideRolesId}
-														ref={ref}
-														checked={!value}
-														onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
-													/>
+												render={({ field: { value, onChange, ...field } }) => (
+													<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
 												)}
 											/>
 										</FieldRow>

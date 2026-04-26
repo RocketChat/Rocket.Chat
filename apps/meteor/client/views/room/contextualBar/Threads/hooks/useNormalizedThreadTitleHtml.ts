@@ -25,19 +25,15 @@ export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) =>
 				pattern: () => pattern,
 				useRealName: () => useRealName,
 				me: () => me,
-				userTemplate: ({ label }) => `<strong> ${label} </strong>`,
-				roomTemplate: ({ prefix, mention }) => `${prefix}<strong> ${mention} </strong>`,
+				userTemplate: ({ label }) => ` ${label} `,
+				roomTemplate: ({ prefix, mention }) => `${prefix} ${mention} `,
 			});
 			const html = emojiParser(filteredMessage);
 			return instance.parse({ ...message, msg: filteredMessage, html }).html ?? '';
 		}
 
 		if (message.attachments) {
-			const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
-
-			if (attachment?.description) {
-				return escapeHTML(attachment.description);
-			}
+			const attachment = message.attachments.find((attachment) => attachment.title);
 
 			if (attachment?.title) {
 				return escapeHTML(attachment.title);

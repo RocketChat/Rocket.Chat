@@ -12,7 +12,7 @@ import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
-import { AppMethod } from '../../../definition/metadata';
+import type { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
@@ -139,11 +139,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
 		try {
-			fs.symlinkSync(
-				path.dirname(this.denoConfigPath),
-				path.dirname(this.denoRuntimePath),
-				'dir'
-			);
+			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
 		} catch (reason: unknown) {
 			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
 				throw reason;
@@ -195,7 +191,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			// If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
 			// If the app requests specific permissions, we need to check whether it requests "networking" or not
-			if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking') !== -1) {
+			if (this.appPackage.info.permissions?.findIndex((p) => p.name === 'networking') !== -1) {
 				options.splice(1, 0, '--allow-net');
 			}
 
@@ -273,7 +269,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	public async getStatus(): Promise<AppStatus> {
 		// If the process has been terminated, we can't get the status
-		if (!this.deno || this.deno.exitCode !== null) {
+		if (this.deno?.exitCode !== null) {
 			return AppStatus.UNKNOWN;
 		}
 
@@ -455,7 +451,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 		this.once('ready', this.onReady.bind(this));
 
-		this.parseStdout(this.deno.stdout);
+		void this.parseStdout(this.deno.stdout);
 	}
 
 	// Probable should extract this to a separate file
@@ -732,7 +728,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const data = JSON.parse(chunk.toString());
 
 			this.debug('Metrics received from subprocess (via stderr): %s', inspect(data));
-		} catch (e) {
+		} catch {
 			console.error('Subprocess stderr', chunk.toString());
 		}
 	}

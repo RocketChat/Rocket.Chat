@@ -83,6 +83,7 @@ const RouterContextMock = ({
 					subscribeToRouteChange: () => () => undefined,
 					getLocationPathname: () => '/',
 					getLocationSearch: () => '',
+					getLocationHash: () => '',
 					getRouteParameters: () => routeParameters,
 					getSearchParameters: () => searchParameters,
 					getRouteName: () => 'home',

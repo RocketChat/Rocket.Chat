@@ -31,16 +31,18 @@ class LoadRotation {
 
 	public async getNextAgent(department?: string, ignoreAgentId?: string): Promise<IOmnichannelCustomAgent | undefined> {
 		const enabledWhenIdle = settings.get<boolean>('Livechat_enabled_when_agent_idle');
+		const enabledWhenOffline = settings.get<boolean>('Livechat_accept_chats_with_no_agents');
 
 		const extraQuery = await getChatLimitsQuery(department);
-		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery, enabledWhenIdle);
-		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department, enabledWhenIdle });
+		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery, enabledWhenIdle, enabledWhenOffline);
+		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department, enabledWhenIdle, enabledWhenOffline });
 
 		const nextAgent = await Users.getLastAvailableAgentRouted(
 			department,
 			ignoreAgentId,
 			enabledWhenIdle,
 			unavailableUsers.map((user) => user.username),
+			enabledWhenOffline,
 		);
 		if (!nextAgent?.username) {
 			return;

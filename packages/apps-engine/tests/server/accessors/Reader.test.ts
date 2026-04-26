@@ -39,43 +39,10 @@ describe('Reader', () => {
 
 	it('useReader', () => {
 		assert.doesNotThrow(
-			() =>
-				new Reader(
-					env,
-					msg,
-					pr,
-					rm,
-					ur,
-					ni,
-					livechat,
-					upload,
-					cloud,
-					videoConf,
-					contact,
-					oauthApps,
-					thread,
-					role,
-					experimental,
-				),
+			() => new Reader(env, msg, pr, rm, ur, ni, livechat, upload, cloud, videoConf, contact, oauthApps, thread, role, experimental),
 		);
 
-		const rd = new Reader(
-			env,
-			msg,
-			pr,
-			rm,
-			ur,
-			ni,
-			livechat,
-			upload,
-			cloud,
-			videoConf,
-			contact,
-			oauthApps,
-			thread,
-			role,
-			experimental,
-		);
+		const rd = new Reader(env, msg, pr, rm, ur, ni, livechat, upload, cloud, videoConf, contact, oauthApps, thread, role, experimental);
 
 		assert.ok(rd.getEnvironmentReader() !== undefined);
 		assert.ok(rd.getMessageReader() !== undefined);
