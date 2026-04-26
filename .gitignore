@@ -53,6 +53,7 @@ storybook-static
 *.sublime-workspace
 
 **/.vim/
+.nvim-session
 
 data/
 registration.yaml

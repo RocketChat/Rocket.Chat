@@ -40,6 +40,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/accessibility-and-appearance';
 			pattern: '/account/accessibility-and-appearance';
 		};
+		'scheduled-messages': {
+			pathname: '/account/scheduled-messages';
+			pattern: '/account/scheduled-messages';
+		};
 	}
 }
 
@@ -87,4 +91,9 @@ registerAccountRoute('/feature-preview', {
 registerAccountRoute('/accessibility-and-appearance', {
 	name: 'accessibility-and-appearance',
 	component: lazy(() => import('./accessibility/AccessibilityPage')),
+});
+
+registerAccountRoute('/scheduled-messages', {
+	name: 'scheduled-messages',
+	component: lazy(() => import('./scheduledMessages/ScheduledMessagesRoute')),
 });

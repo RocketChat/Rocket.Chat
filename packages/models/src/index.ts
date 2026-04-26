@@ -136,7 +136,6 @@ export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
-export { ScheduledMessagesRaw } from './modelClasses';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');
