@@ -49,6 +49,9 @@ export const useReplyInDMAction = (
 	}, [encrypted, isABACEnabled, t]);
 
 	const canReplyInDM = useMemo(() => {
+		if (!!user && user._id === message.u._id) {
+			return false;
+		}
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
 		}

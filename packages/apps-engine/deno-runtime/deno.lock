@@ -7,6 +7,7 @@
     "jsr:@std/streams@^1.0.16": "1.0.16",
     "npm:@msgpack/msgpack@3.0.0-beta2": "3.0.0-beta2",
     "npm:@rocket.chat/ui-kit@~0.31.22": "0.31.25_@rocket.chat+icons@0.32.0",
+    "npm:@types/node@*": "24.2.0",
     "npm:acorn-walk@8.2.0": "8.2.0",
     "npm:acorn@8.10.0": "8.10.0",
     "npm:astring@1.8.6": "1.8.6",
@@ -37,7 +38,8 @@
   },
   "npm": {
     "@msgpack/msgpack@3.0.0-beta2": {
-      "integrity": "sha512-y+l1PNV0XDyY8sM3YtuMLK5vE3/hkfId+Do8pLo/OPxfxuFAUwcGz3oiiUuV46/aBpwTzZ+mRWVMtlSKbradhw=="
+      "integrity": "sha512-y+l1PNV0XDyY8sM3YtuMLK5vE3/hkfId+Do8pLo/OPxfxuFAUwcGz3oiiUuV46/aBpwTzZ+mRWVMtlSKbradhw==",
+      "deprecated": true
     },
     "@rocket.chat/icons@0.32.0": {
       "integrity": "sha512-7yhhELKNLb9kUtXCvau0V+iMXraV2bOsxcPjc/ZtLR5VeeIDTeaflqRWGtLroX6f3bE+J1n5qB5zi8A4YXuH2g=="
@@ -46,6 +48,12 @@
       "integrity": "sha512-yTgTKDw9SMlJ6p8n0PDO6zSvox/nHYUrwCIvILQeAK6PvTrgSe/u9CvU7ATTYjnQiQ603yEGR6dxjF4euCGdNA==",
       "dependencies": [
         "@rocket.chat/icons"
+      ]
+    },
+    "@types/node@24.2.0": {
+      "integrity": "sha512-3xyG3pMCq3oYCNg7/ZP+E1ooTaGB4cG8JWRsqqOYQdbWNY4zbaV0Ennrd7stjiJEFZCaybcIgpTjJWHRfBSIDw==",
+      "dependencies": [
+        "undici-types"
       ]
     },
     "acorn-walk@8.2.0": {
@@ -64,6 +72,9 @@
     },
     "stack-trace@0.0.10": {
       "integrity": "sha512-KGzahc7puUKkzyMt+IqAep+TVNbKP+k2Lmwhub39m1AsTSkaDutx56aDCo+HLDzf/D26BIHTJWNiTG1KAJiQCg=="
+    },
+    "undici-types@7.10.0": {
+      "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
     },
     "uuid@8.3.2": {
       "integrity": "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==",
