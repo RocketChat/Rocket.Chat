@@ -21,8 +21,8 @@ export abstract class AppsEngineUIHost {
 	 * initialize the AppClientUIHost by registering window `message` listener
 	 */
 	public initialize() {
-		window.addEventListener('message', async ({ data, source }) => {
-			if (!data?.hasOwnProperty(MESSAGE_ID)) {
+		window.addEventListener('message', ({ data, source }) => {
+			if (!data?.[MESSAGE_ID]) {
 				return;
 			}
 
@@ -34,10 +34,10 @@ export abstract class AppsEngineUIHost {
 
 			switch (action) {
 				case AppsEngineUIMethods.GET_USER_INFO:
-					this.handleAction(action, id, await this.getClientUserInfo());
+					void this.getClientUserInfo().then((userInfo) => this.handleAction(action, id, userInfo));
 					break;
 				case AppsEngineUIMethods.GET_ROOM_INFO:
-					this.handleAction(action, id, await this.getClientRoomInfo());
+					void this.getClientRoomInfo().then((roomInfo) => this.handleAction(action, id, roomInfo));
 					break;
 			}
 		});

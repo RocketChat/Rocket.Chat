@@ -31,7 +31,7 @@ export class AppVideoConfProvider {
 	}
 
 	public async runIsFullyConfigured(logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<boolean> {
-		return !!(await this.runTheCode(AppMethod._VIDEOCONF_IS_CONFIGURED, logStorage, accessors, [])) as boolean;
+		return !!(await this.runTheCode(AppMethod._VIDEOCONF_IS_CONFIGURED, logStorage, accessors, []));
 	}
 
 	public async runGenerateUrl(call: VideoConfData, logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<string> {

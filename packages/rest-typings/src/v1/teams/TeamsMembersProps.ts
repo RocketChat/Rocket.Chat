@@ -21,7 +21,10 @@ const teamsMembersPropsSchema = {
 		count: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
 	},
-	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }],
+	oneOf: [
+		{ type: 'object', required: ['teamId'] },
+		{ type: 'object', required: ['teamName'] },
+	],
 	additionalProperties: false,
 };
 
