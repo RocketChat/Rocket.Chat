@@ -91,6 +91,6 @@ describe('useGetMore', () => {
 		scrollableElement.scrollTop = 700;
 		scrollableElement.dispatchEvent(new Event('scroll'));
 		expect(screen.getByTestId('scrollable-element')).toBeInTheDocument();
-		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id', expect.anything());
+		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id');
 	});
 });
