@@ -1,5 +1,6 @@
-import type { IPersistence } from '../../definition/accessors';
-import type { RocketChatAssociationRecord } from '../../definition/metadata';
+import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
+import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+
 import type { PersistenceBridge } from '../bridges/PersistenceBridge';
 
 export class Persistence implements IPersistence {
