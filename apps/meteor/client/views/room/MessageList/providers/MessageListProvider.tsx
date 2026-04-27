@@ -1,6 +1,6 @@
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode, RefCallback } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';

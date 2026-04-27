@@ -12,7 +12,7 @@ import { clearHighlightMessage, setHighlightMessage } from '../providers/message
 
 type UseTryToJumpToMessageProps = {
 	rid: string;
-	virtualizerRef: MutableRefObject<WindowVirtualizerHandle>;
+	virtualizerRef: MutableRefObject<WindowVirtualizerHandle | null>;
 	isJumpingToMessage: MutableRefObject<boolean>;
 	messages: { _id: string }[];
 };
