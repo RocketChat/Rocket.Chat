@@ -8,6 +8,7 @@ export interface IReadReceipt {
 	roomId: IRoom['_id'];
 	userId: IUser['_id'];
 	ts: Date;
+	isVisitor?: boolean;
 }
 
 export interface IReadReceiptWithUser extends IReadReceipt {

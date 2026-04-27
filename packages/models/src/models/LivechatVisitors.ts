@@ -119,6 +119,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
+	findByIds(_ids: string[], options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+		return this.find({ _id: { $in: _ids } }, options);
+	}
+
 	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
 		return this.find(
 			{
