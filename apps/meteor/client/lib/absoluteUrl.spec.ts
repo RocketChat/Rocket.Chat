@@ -96,25 +96,12 @@ describe('_relativeToSiteRootUrl', () => {
 	});
 });
 
-describe('module-level initialization', () => {
-	const originalConfig = (globalThis as any).__meteor_runtime_config__;
-
-	afterEach(() => {
-		if (originalConfig === undefined) {
-			delete (globalThis as any).__meteor_runtime_config__;
-		} else {
-			(globalThis as any).__meteor_runtime_config__ = originalConfig;
-		}
+describe('defaultOptions', () => {
+	it('should initialize rootUrl from baseURI', () => {
+		expect(absoluteUrl.defaultOptions.rootUrl).toBe('http://localhost:3000/');
 	});
 
-	it('should set rootUrl from __meteor_runtime_config__.ROOT_URL when available', async () => {
-		(globalThis as any).__meteor_runtime_config__ = { ROOT_URL: 'http://configured.example.com' };
-
-		let mod: typeof import('./absoluteUrl') | undefined;
-		await jest.isolateModulesAsync(async () => {
-			mod = await import('./absoluteUrl');
-		});
-
-		expect(mod!.absoluteUrl.defaultOptions.rootUrl).toBe('http://configured.example.com');
+	it('should initialize secure from window.isSecureContext', () => {
+		expect(absoluteUrl.defaultOptions.secure).toBe(window.isSecureContext);
 	});
 });
