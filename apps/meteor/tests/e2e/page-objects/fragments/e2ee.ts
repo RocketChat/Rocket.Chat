@@ -11,10 +11,7 @@ abstract class E2EEBanner {
 			return;
 		}
 
-		await this.root
-			.page()
-			.keyboard.press('Escape')
-			.catch(() => undefined);
+		await this.root.page().keyboard.press('Escape').catch(() => undefined);
 		await modalBackdrop.waitFor({ state: 'hidden', timeout: 3_000 }).catch(() => undefined);
 	}
 
