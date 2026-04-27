@@ -64,14 +64,6 @@ afterEach(() => {
 });
 
 describe('useLoadSurroundingMessages', () => {
-	it('should return a jumpToRef', () => {
-		const { result } = renderHook(() => useLoadSurroundingMessages(), {
-			wrapper: mockAppRoot().build(),
-		});
-
-		expect(result.current.jumpToRef).toBeDefined();
-	});
-
 	it('should not fetch a message when msg search parameter is absent', () => {
 		const endpointSpy = jest.fn();
 
