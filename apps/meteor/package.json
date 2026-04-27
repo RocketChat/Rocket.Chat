@@ -293,7 +293,7 @@
 		"string-strip-html": "^8.5.0",
 		"swagger-ui-express": "^5.0.1",
 		"swc-plugin-coverage-instrument": "0.0.32",
-		"swiper": "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch",
+		"swiper": "12.1.3",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",
 		"tsyringe": "^4.10.0",
