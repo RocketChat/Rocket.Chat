@@ -37,7 +37,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
-	const customFieldEntries = useValidCustomFields(userCustomFields);
+	const customFieldEntries = useValidCustomFields(userCustomFields, 'visitor');
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
