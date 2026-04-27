@@ -23,6 +23,7 @@ import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
 import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
+import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 
 type MessageListProps = {
 	rid: IRoom['_id'];

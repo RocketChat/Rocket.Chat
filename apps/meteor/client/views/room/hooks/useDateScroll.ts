@@ -51,7 +51,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 			const bubbleOffset = bubbleRef.current?.getBoundingClientRect().bottom || 0;
 
-			type Matched = [string, HTMLElement | undefined, { [key: number]: string | number }?] | [];
+			type Matched = [string, HTMLElement | undefined, { [key: string]: string | number }?] | [];
 			// Gets the first non visible message date and sets the bubble date to it
 			let matched: Matched = [...list].reduce<Matched>((ret, divider) => {
 				// Sanitize elements
