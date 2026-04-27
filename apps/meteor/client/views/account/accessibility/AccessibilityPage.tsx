@@ -14,7 +14,7 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage-forms';
 import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting, useLocationHash } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -34,6 +34,7 @@ const AccessibilityPage = () => {
 
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
+	const shouldExpand = useLocationHash().length > 1;
 
 	const timeFormatOptions = useMemo(
 		(): SelectOption[] => [
@@ -122,7 +123,7 @@ const AccessibilityPage = () => {
 								);
 							})}
 						</AccordionItem>
-						<AccordionItem title={t('Adjustable_layout')}>
+						<AccordionItem defaultExpanded={shouldExpand} title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<VisuallyHidden>
 									<legend>{t('Adjustable_layout')}</legend>
@@ -152,7 +153,7 @@ const AccessibilityPage = () => {
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>
 								</Field>
-								<Field>
+								<Field id='clockMode'>
 									<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
 									<FieldRow>
 										<Controller
@@ -162,7 +163,7 @@ const AccessibilityPage = () => {
 										/>
 									</FieldRow>
 								</Field>
-								<Field>
+								<Field id='hideUsernames'>
 									<FieldRow>
 										<FieldLabel>{t('Show_usernames')}</FieldLabel>
 										<Controller
@@ -176,7 +177,7 @@ const AccessibilityPage = () => {
 									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
 								</Field>
 								{displayRolesEnabled && (
-									<Field>
+									<Field id='hideRoles'>
 										<FieldRow>
 											<FieldLabel>{t('Show_roles')}</FieldLabel>
 											<Controller

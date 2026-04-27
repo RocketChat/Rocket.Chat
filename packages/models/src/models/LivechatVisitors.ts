@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -31,6 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
+			{ key: { 'externalIds.entityId': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
@@ -47,6 +48,51 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.findOne(query);
+	}
+
+	async findOneVisitorByPhoneOrEmailAndAddExternalId(
+		contactData: { phone: string } | { email: string },
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null> {
+		const query =
+			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
+
+		const visitor = await this.findOne(query);
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id: visitor._id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
+	}
+
+	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null> {
+		return this.findOne({
+			'externalIds.entityId': entityId,
+		});
+	}
+
+	async updateExternalIdById(
+		_id: string,
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null> {
+		const visitor = await this.findOne({ _id });
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
 	}
 
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {

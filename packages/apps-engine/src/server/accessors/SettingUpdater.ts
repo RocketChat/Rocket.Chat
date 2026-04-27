@@ -29,7 +29,7 @@ export class SettingUpdater implements ISettingUpdater {
 
 		const setting = this.manager.getAppSetting(appId, id);
 
-		this.manager.updateAppSetting(appId, {
+		await this.manager.updateAppSetting(appId, {
 			...setting,
 			updatedAt: new Date(),
 			value,
@@ -57,7 +57,7 @@ export class SettingUpdater implements ISettingUpdater {
 		// which could lead to loss of selected values. Consider:
 		// Adding warning logs when selected value will be removed
 
-		this.manager.updateAppSetting(appId, {
+		await this.manager.updateAppSetting(appId, {
 			...setting,
 			updatedAt: new Date(),
 			values, // Overwrite the values instead of merging
