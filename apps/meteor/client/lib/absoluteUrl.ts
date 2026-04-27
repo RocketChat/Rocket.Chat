@@ -1,3 +1,5 @@
+// There is a good chance this module may be promoted to root lib/ in the future
+
 import { baseURI } from './baseURI';
 
 type AbsoluteUrlOptions = {
