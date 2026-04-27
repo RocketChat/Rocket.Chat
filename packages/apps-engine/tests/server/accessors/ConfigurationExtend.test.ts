@@ -28,17 +28,7 @@ describe('ConfigurationExtend', () => {
 
 		assert.doesNotThrow(
 			() =>
-				new ConfigurationExtend(
-					he,
-					se,
-					sce,
-					api,
-					externalComponent,
-					schedulerExtend,
-					uiExtend,
-					vcProvidersExtend,
-					outboundCommunication,
-				),
+				new ConfigurationExtend(he, se, sce, api, externalComponent, schedulerExtend, uiExtend, vcProvidersExtend, outboundCommunication),
 		);
 
 		const ce = new ConfigurationExtend(

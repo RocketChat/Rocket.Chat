@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/media-signaling",
 	"description": "Rocket.Chat signaling client for media calls",
 	"version": "0.2.0",
-	"private": false,
 	"license": "MIT",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat/#readme",
 	"repository": {
@@ -37,7 +36,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	}

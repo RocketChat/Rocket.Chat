@@ -1,7 +1,6 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import type { AppOutboundCommunicationProviderManager } from '../../../src/server/managers/AppOutboundCommunicationProviderManager';
 import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppMethod } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
@@ -17,6 +16,7 @@ import type {
 	AppVideoConfProviderManager,
 } from '../../../src/server/managers';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
+import type { AppOutboundCommunicationProviderManager } from '../../../src/server/managers/AppOutboundCommunicationProviderManager';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
 import type { AppsEngineRuntime } from '../../../src/server/runtime/AppsEngineRuntime';
 import type { AppLogStorage } from '../../../src/server/storage';

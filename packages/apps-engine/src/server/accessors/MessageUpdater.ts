@@ -1,5 +1,5 @@
-import type { Reaction } from '../../definition/messages';
 import type { IMessageUpdater } from '../../definition/accessors/IMessageUpdater';
+import type { Reaction } from '../../definition/messages';
 import type { AppBridges } from '../bridges';
 
 export class MessageUpdater implements IMessageUpdater {

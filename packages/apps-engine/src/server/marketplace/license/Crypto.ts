@@ -17,7 +17,7 @@ export class Crypto {
 		let license;
 		try {
 			license = JSON.parse(decoded.toString());
-		} catch (error) {
+		} catch {
 			throw new Error('Invalid license provided');
 		}
 
