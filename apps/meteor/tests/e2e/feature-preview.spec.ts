@@ -569,9 +569,9 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('create a direct message with user1', async () => {
 				await page.goto('/home');
-				await expect(poHomeChannel.navbar.btnCreateNew).toBeVisible();
+				await poHomeChannel.waitForHome();
 
-				await poHomeChannel.navbar.createNewDM(Users.user1.data.username);
+				await poHomeChannel.navbar.openChat(Users.user1.data.username);
 				await poHomeChannel.content.waitForChannel();
 				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 			});

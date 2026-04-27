@@ -12,42 +12,6 @@ test.describe('Admin Device Management Page', () => {
 	test.skip(!IS_EE);
 	test.use({ storageState: Users.admin.state });
 
-	const dismissUniqueIdChangeDialog = async (page: Page): Promise<void> => {
-		for (let attempt = 0; attempt < 3; attempt++) {
-			const uniqueIdDialog = page.getByRole('dialog', { name: 'Unique ID change detected' });
-			const uniqueIdDialogVisible = await uniqueIdDialog
-				.waitFor({ state: 'visible', timeout: 2_000 })
-				.then(() => true)
-				.catch(() => false);
-
-			if (uniqueIdDialogVisible) {
-				await uniqueIdDialog.getByRole('button', { name: 'Configuration update' }).click({ force: true });
-				await uniqueIdDialog.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => undefined);
-			}
-
-			const confirmDialog = page.getByRole('dialog', { name: 'Confirm configuration update' });
-			const confirmDialogVisible = await confirmDialog
-				.waitFor({ state: 'visible', timeout: 2_000 })
-				.then(() => true)
-				.catch(() => false);
-
-			if (confirmDialogVisible) {
-				await confirmDialog.getByRole('button', { name: 'Confirm configuration update' }).click({ force: true });
-				await confirmDialog.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => undefined);
-			}
-
-			await page
-				.locator('#modal-root .rcx-modal__backdrop:visible')
-				.first()
-				.waitFor({ state: 'hidden', timeout: 5_000 })
-				.catch(() => undefined);
-
-			if (!uniqueIdDialogVisible && !confirmDialogVisible) {
-				return;
-			}
-		}
-	};
-
 	let page: Page;
 	let adminDeviceManagement: AdminDeviceManagement;
 	let poLogin: Login;
@@ -57,7 +21,6 @@ test.describe('Admin Device Management Page', () => {
 		adminDeviceManagement = new AdminDeviceManagement(page);
 		poLogin = new Login(page);
 		await page.goto('/admin/device-management');
-		await dismissUniqueIdChangeDialog(page);
 	});
 
 	test.afterEach(async () => {
