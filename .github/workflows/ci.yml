@@ -140,7 +140,7 @@ jobs:
           GH_PR_NUM: ${{ github.event.number }}
         run: |
           if gh pr diff --name-only --repo "${GITHUB_REPOSITORY}" "${GH_PR_NUM}" | grep -q -e .github/workflows -e .github/actions; then
-            echo "Worflow changes detected"
+            echo "Workflow changes detected"
             echo "actions-changed=true" >> "$GITHUB_OUTPUT"
           fi
 
