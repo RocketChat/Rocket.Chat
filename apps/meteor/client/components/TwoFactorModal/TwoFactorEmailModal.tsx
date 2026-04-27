@@ -42,6 +42,10 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 	};
 
 	const onChange = ({ currentTarget }: ChangeEvent<HTMLInputElement>): void => {
+		const { value } = currentTarget;
+		if (value.length === 3 && !value.includes('-')) {
+			currentTarget.value = `${value}-`;
+		}
 		setCode(currentTarget.value);
 	};
 
