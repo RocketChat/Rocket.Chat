@@ -46,18 +46,8 @@ export function absoluteUrl(path?: string, options?: AbsoluteUrlOptions): string
 
 absoluteUrl.defaultOptions = {
 	rootUrl: baseURI,
+	secure: window.isSecureContext,
 } as AbsoluteUrlOptions;
-
-const { defaultOptions } = absoluteUrl;
-const location = typeof window === 'object' && window.location;
-if (typeof __meteor_runtime_config__ === 'object' && __meteor_runtime_config__.ROOT_URL) {
-	defaultOptions.rootUrl = __meteor_runtime_config__.ROOT_URL;
-} else if (location && location.protocol && location.host) {
-	defaultOptions.rootUrl = `${location.protocol}//${location.host}`;
-}
-if (location && location.protocol === 'https:') {
-	defaultOptions.secure = true;
-}
 
 export function _relativeToSiteRootUrl(link: string): string {
 	if (typeof __meteor_runtime_config__ === 'object' && link.slice(0, 1) === '/') {
