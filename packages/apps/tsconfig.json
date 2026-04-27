@@ -4,8 +4,10 @@
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true
+		"strict": false,
+		"noUnusedParameters": false,
+		"noImplicitOverride": false,
+		"noImplicitReturns": false
 	},
 	"include": ["./src/**/*"]
 }
