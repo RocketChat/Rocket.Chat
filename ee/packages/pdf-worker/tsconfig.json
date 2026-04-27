@@ -1,8 +1,0 @@
-{
-	"extends": "@rocket.chat/tsconfig/server.json",
-	"compilerOptions": {
-		"jsx": "react-jsx"
-	},
-	"include": ["./src/**/*", "./**/*.spec.ts", "./jest.config.ts", "./.storybook/**/*"],
-	"exclude": []
-}

@@ -13,7 +13,6 @@
 		"lint:fix": "eslint --fix ."
 	},
 	"devDependencies": {
-		"@rocket.chat/license": "workspace:^",
 		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},

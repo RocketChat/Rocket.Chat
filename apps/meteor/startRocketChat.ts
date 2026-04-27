@@ -1,19 +1,4 @@
-import { startLicense } from './ee/app/license/server/startup';
-import { registerEEBroker } from './ee/server';
-import { startFederationService as startFederationMatrixService } from './ee/server/startup/federation';
-
-const loadBeforeLicense = async () => {
-	await registerEEBroker();
-};
-
-const loadAfterLicense = async () => {
-	await startFederationMatrixService();
-};
-
+// This file is used in FOSS builds of Rocket.Chat to replace the default startRocketChat.ts file, removing references to licensed code.
 export const startRocketChat = async () => {
-	await loadBeforeLicense();
-
-	await startLicense();
-
-	await loadAfterLicense();
+	// Nothing to do here
 };

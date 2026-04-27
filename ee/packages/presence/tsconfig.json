@@ -1,9 +1,0 @@
-{
-	"extends": "@rocket.chat/tsconfig/server.json",
-	"compilerOptions": {
-		"declaration": true,
-		"outDir": "./dist",
-		"rootDir": "./src",
-	},
-	"files": ["./src/Presence.ts"]
-}

@@ -16,10 +16,7 @@
 	"main": "index.js",
 	"workspaces": [
 		"apps/*",
-		"packages/*",
-		"ee/apps/*",
-		"ee/packages/*",
-		"apps/meteor/ee/server/services"
+		"packages/*"
 	],
 	"scripts": {
 		"build": "turbo run build",
