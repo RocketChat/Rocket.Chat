@@ -89,7 +89,9 @@
 		"browserify-aes/cipher-base": "1.0.7",
 		"browserify-des/cipher-base": "1.0.7",
 		"create-hash/cipher-base": "1.0.7",
-		"create-hmac/cipher-base": "1.0.7"
+		"create-hmac/cipher-base": "1.0.7",
+		"create-hash/sha.js": "2.4.12",
+		"create-hmac/sha.js": "2.4.12"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
