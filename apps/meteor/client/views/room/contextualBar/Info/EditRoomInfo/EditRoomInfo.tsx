@@ -23,6 +23,15 @@ import {
 	AccordionItem,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -34,15 +43,6 @@ import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import {
-	ContextualbarHeader,
-	ContextualbarBack,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
@@ -106,7 +106,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		handleSubmit,
 		getFieldState,
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
-	} = useForm<EditRoomInfoFormData>({ mode: 'onBlur', defaultValues });
+	} = useForm<EditRoomInfoFormData>({ defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(
 		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
@@ -170,9 +170,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					rid: room._id,
 					...data,
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
-					...((data.systemMessages || !hideSysMes) && {
-						systemMessages: hideSysMes && data.systemMessages,
-					}),
+					...(data.systemMessages &&
+						!hideSysMes && {
+							systemMessages: data.systemMessages,
+						}),
 					retentionEnabled,
 					retentionOverrideGlobal,
 					...(retentionEnabled &&

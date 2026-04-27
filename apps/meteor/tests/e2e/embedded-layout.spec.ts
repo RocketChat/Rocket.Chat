@@ -32,7 +32,7 @@ test.describe('embedded-layout', () => {
 	test.describe('Layout elements visibility', () => {
 		test('should hide primary navigation elements in embedded layout', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannelId);
+			await poHomeChannel.navbar.openChat(targetChannelId);
 			await expect(poHomeChannel.roomHeaderToolbar).toBeVisible();
 
 			await page.goto(embeddedLayoutURL(page.url()));
@@ -51,7 +51,7 @@ test.describe('embedded-layout', () => {
 
 			test('should show room header toolbar as top navbar when setting enabled', async ({ page }) => {
 				await page.goto('/home');
-				await poHomeChannel.sidenav.openChat(targetChannelId);
+				await poHomeChannel.navbar.openChat(targetChannelId);
 				await page.goto(embeddedLayoutURL(page.url()));
 
 				await expect(poHomeChannel.roomHeaderToolbar).toBeVisible();
@@ -62,17 +62,17 @@ test.describe('embedded-layout', () => {
 	test.describe('Channel member functionality', () => {
 		test('should hide join button and enable messaging for members', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannelId);
+			await poHomeChannel.navbar.openChat(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
-			await expect(poHomeChannel.btnJoinRoom).not.toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
+			await expect(poHomeChannel.composer.btnJoinRoom).not.toBeVisible();
 		});
 
 		test('should allow sending and receiving messages', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannelId);
+			await poHomeChannel.navbar.openChat(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
 			const testMessage = `Embedded test message ${Date.now()}`;
@@ -82,40 +82,40 @@ test.describe('embedded-layout', () => {
 
 		test('should preserve message composer functionality', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannelId);
+			await poHomeChannel.navbar.openChat(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composerToolbar).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.toolbarPrimaryActions).toBeVisible();
 
-			await poHomeChannel.composer.fill('Test message');
-			await expect(poHomeChannel.composer).toHaveValue('Test message');
+			await poHomeChannel.composer.inputMessage.fill('Test message');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('Test message');
 
-			await poHomeChannel.composer.fill('');
-			await expect(poHomeChannel.composer).toHaveValue('');
+			await poHomeChannel.composer.inputMessage.fill('');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 		});
 	});
 
 	test.describe('Channel non-member functionality', () => {
 		test('should display join button and disable composer for non-members', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(notMemberChannelId);
+			await poHomeChannel.navbar.openChat(notMemberChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeDisabled();
-			await expect(poHomeChannel.btnJoinRoom).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeDisabled();
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
 		});
 
 		test('should allow joining channel and enable messaging', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(joinChannelId);
+			await poHomeChannel.navbar.openChat(joinChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await poHomeChannel.btnJoinRoom.click();
+			await poHomeChannel.composer.btnJoinRoom.click();
 
-			await expect(poHomeChannel.btnJoinRoom).not.toBeVisible();
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
+			await expect(poHomeChannel.composer.btnJoinRoom).not.toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 
 			const joinMessage = `Joined and sent message ${Date.now()}`;
 			await poHomeChannel.content.sendMessage(joinMessage);
@@ -127,12 +127,12 @@ test.describe('embedded-layout', () => {
 		test('should allow sending direct messages', async ({ page, api }) => {
 			await createDirectMessage(api);
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(Users.user2.data.username);
+			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
-			await expect(poHomeChannel.btnJoinRoom).not.toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
+			await expect(poHomeChannel.composer.btnJoinRoom).not.toBeVisible();
 
 			const dmMessage = `Embedded DM test ${Date.now()}`;
 			await poHomeChannel.content.sendMessage(dmMessage);

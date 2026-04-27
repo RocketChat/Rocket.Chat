@@ -1,9 +1,10 @@
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
-import { License, ServiceClass } from '@rocket.chat/core-services';
+import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Settings, Users, UsersSessions } from '@rocket.chat/models';
+import { Users, UsersSessions } from '@rocket.chat/models';
 
+import { PresenceReaper } from './lib/PresenceReaper';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 const MAX_CONNECTIONS = 200;
@@ -25,8 +26,16 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private peakConnections = 0;
 
+	private reaper: PresenceReaper;
+
 	constructor() {
 		super();
+
+		this.reaper = new PresenceReaper({
+			batchSize: 500,
+			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
+			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
+		});
 
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
 			if (clientAction === 'removed') {
@@ -42,7 +51,7 @@ export class Presence extends ServiceClass implements IPresence {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
 				this.peakConnections = Math.max(this.peakConnections, this.getTotalConnections());
-				this.validateAvailability();
+				void this.validateAvailability();
 			}
 		});
 
@@ -72,14 +81,15 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
+		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 10000);
 
 		try {
-			await Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.set('Presence_broadcast_disabled', false);
 
 			this.hasScalabilityLicense = await License.hasModule('scalability');
 			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
@@ -89,7 +99,25 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 	}
 
-	async stopped(): Promise<void> {
+	private async handleReaperUpdates(userIds: string[]): Promise<void> {
+		const results = await Promise.allSettled(userIds.map((uid) => this.updateUserPresence(uid)));
+		const fulfilled = results.filter((result) => result.status === 'fulfilled');
+		const rejected = results.filter((result) => result.status === 'rejected');
+
+		if (fulfilled.length > 0) {
+			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+		}
+
+		if (rejected.length > 0) {
+			console.error(
+				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
+				rejected.map(({ reason }) => reason),
+			);
+		}
+	}
+
+	override async stopped(): Promise<void> {
+		this.reaper.stop();
 		if (!this.lostConTimeout) {
 			return;
 		}
@@ -104,7 +132,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		// update the setting only to turn it on, because it may have been disabled via the troubleshooting setting, which doesn't affect the setting
 		if (enabled) {
-			await Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.set('Presence_broadcast_disabled', false);
 		}
 	}
 
@@ -135,6 +163,28 @@ export class Presence extends ServiceClass implements IPresence {
 			uid,
 			connectionId: session,
 		};
+	}
+
+	async updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined> {
+		const query = {
+			'_id': uid,
+			'connections.id': connectionId,
+		};
+
+		const update = {
+			$set: {
+				'connections.$._updatedAt': new Date(),
+			},
+		};
+
+		const result = await UsersSessions.updateOne(query, update);
+		if (result.modifiedCount === 0) {
+			return;
+		}
+
+		await this.updateUserPresence(uid);
+
+		return { uid, connectionId };
 	}
 
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
@@ -248,7 +298,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		this.api?.broadcast('presence.status', {
+		void this.api?.broadcast('presence.status', {
 			user,
 			previousStatus,
 		});
@@ -262,7 +312,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (this.getTotalConnections() > MAX_CONNECTIONS) {
 			this.broadcastEnabled = false;
 
-			await Settings.updateValueById('Presence_broadcast_disabled', true);
+			await Settings.set('Presence_broadcast_disabled', true);
 		}
 	}
 

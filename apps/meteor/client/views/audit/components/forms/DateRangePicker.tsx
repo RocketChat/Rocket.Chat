@@ -1,6 +1,7 @@
-import { Box, InputBox, Menu, Margins, Option } from '@rocket.chat/fuselage';
+import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import moment from 'moment';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
 import type { ReactElement, ComponentProps, SetStateAction, FormEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +24,7 @@ const parseFromStartDateInput = (date: string) => {
 		return undefined;
 	}
 
-	return moment(date, 'YYYY-MM-DD').startOf('day').toDate();
+	return startOfDay(parseISO(date));
 };
 
 const parseFromEndDateInput = (date: string) => {
@@ -31,7 +32,7 @@ const parseFromEndDateInput = (date: string) => {
 		return undefined;
 	}
 
-	return moment(date, 'YYYY-MM-DD').endOf('day').toDate();
+	return endOfDay(parseISO(date));
 };
 
 type DateRangeAction =
@@ -46,46 +47,51 @@ type DateRangeAction =
 	| { newEnd: string };
 
 const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange => {
+	const now = new Date();
+
 	switch (action) {
 		case 'today': {
 			return {
-				start: moment().startOf('day').toDate(),
-				end: moment().endOf('day').toDate(),
+				start: startOfDay(now),
+				end: endOfDay(now),
 			};
 		}
 
 		case 'yesterday': {
+			const yesterday = subDays(now, 1);
 			return {
-				start: moment().subtract(1, 'day').startOf('day').toDate(),
-				end: moment().subtract(1, 'day').endOf('day').toDate(),
+				start: startOfDay(yesterday),
+				end: endOfDay(yesterday),
 			};
 		}
 
 		case 'this-week': {
 			return {
-				start: moment().startOf('week').toDate(),
-				end: moment().endOf('day').toDate(),
+				start: startOfWeek(now),
+				end: endOfDay(now),
 			};
 		}
 
 		case 'last-week': {
+			const lastWeek = subWeeks(now, 1);
 			return {
-				start: moment().subtract(1, 'week').startOf('week').toDate(),
-				end: moment().subtract(1, 'week').endOf('week').toDate(),
+				start: startOfWeek(lastWeek),
+				end: endOfWeek(lastWeek),
 			};
 		}
 
 		case 'this-month': {
 			return {
-				start: moment().startOf('month').toDate(),
-				end: moment().endOf('day').toDate(),
+				start: startOfMonth(now),
+				end: endOfDay(now),
 			};
 		}
 
 		case 'last-month': {
+			const lastMonth = subMonths(now, 1);
 			return {
-				start: moment().subtract(1, 'month').startOf('month').toDate(),
-				end: moment().subtract(1, 'month').endOf('month').toDate(),
+				start: startOfMonth(lastMonth),
+				end: endOfMonth(lastMonth),
 			};
 		}
 
@@ -116,6 +122,8 @@ type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange
 	onChange?: (dateRange: DateRange) => void;
 };
 
+const minDate = (a: Date, b: Date) => (a.getTime() < b.getTime() ? a : b);
+
 const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): ReactElement => {
 	const dispatch = useEffectEvent((action: DateRangeAction): void => {
 		const newRange = dateRangeReducer(value ?? { start: undefined, end: undefined }, action);
@@ -133,7 +141,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	const startDate = useMemo(() => formatToDateInput(value?.start), [value?.start]);
 	const endDate = useMemo(() => formatToDateInput(value?.end), [value?.end]);
 	const maxStartDate = useMemo(() => {
-		return formatToDateInput(value?.end ? moment.min(moment(value.end), moment()).toDate() : new Date());
+		return formatToDateInput(value?.end ? minDate(value.end, new Date()) : new Date());
 	}, [value?.end]);
 	const minEndDate = startDate;
 	const maxEndDate = useMemo(() => formatToDateInput(new Date()), []);
@@ -141,46 +149,53 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	const { t } = useTranslation();
 
 	const presets = useMemo(
-		() =>
-			({
-				today: {
-					label: t('Today'),
-					action: () => dispatch('today'),
-				},
-				yesterday: {
-					label: t('Yesterday'),
-					action: () => dispatch('yesterday'),
-				},
-				thisWeek: {
-					label: t('This_week'),
-					action: () => dispatch('this-week'),
-				},
-				previousWeek: {
-					label: t('Previous_week'),
-					action: () => dispatch('last-week'),
-				},
-				thisMonth: {
-					label: t('This_month'),
-					action: () => dispatch('this-month'),
-				},
-				lastMonth: {
-					label: t('Previous_month'),
-					action: () => dispatch('last-month'),
-				},
-			}) as const,
+		() => [
+			{
+				id: 'today',
+				icon: 'history' as const,
+				content: t('Today'),
+				onClick: () => dispatch('today'),
+			},
+			{
+				id: 'yesterday',
+				icon: 'history' as const,
+				content: t('Yesterday'),
+				onClick: () => dispatch('yesterday'),
+			},
+			{
+				id: 'thisWeek',
+				icon: 'history' as const,
+				content: t('This_week'),
+				onClick: () => dispatch('this-week'),
+			},
+			{
+				id: 'previousWeek',
+				icon: 'history' as const,
+				content: t('Previous_week'),
+				onClick: () => dispatch('last-week'),
+			},
+			{
+				id: 'thisMonth',
+				icon: 'history' as const,
+				content: t('This_month'),
+				onClick: () => dispatch('this-month'),
+			},
+			{
+				id: 'lastMonth',
+				icon: 'history' as const,
+				content: t('Previous_month'),
+				onClick: () => dispatch('last-month'),
+			},
+		],
 		[dispatch, t],
 	);
 
 	return (
-		<Box marginInline={-4} {...props}>
+		<Box marginInline={-4} alignItems='center' {...props}>
 			<Margins inline={4}>
 				<InputBox type='date' value={startDate} max={maxStartDate} flexGrow={1} height={20} onChange={handleChangeStart} />
 				<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} flexGrow={1} height={20} onChange={handleChangeEnd} />
-				<Menu
-					options={presets}
-					renderItem={(props: ComponentProps<typeof Option>) => <Option icon='history' {...props} />}
-					alignSelf='center'
-				/>
+				<GenericMenu title={t('Date_range_presets')} items={presets} small />
 			</Margins>
 		</Box>
 	);

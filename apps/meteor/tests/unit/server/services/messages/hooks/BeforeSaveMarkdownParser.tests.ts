@@ -27,23 +27,6 @@ describe('Markdown parser', () => {
 		expect(message).to.not.have.property('md');
 	});
 
-	it('should do nothing for OTR messages', async () => {
-		const markdownParser = new BeforeSaveMarkdownParser(true);
-
-		const message = await markdownParser.parseMarkdown({
-			message: createMessage('hey', { t: 'otr' }),
-			config: {},
-		});
-
-		const messageAck = await markdownParser.parseMarkdown({
-			message: createMessage('hey', { t: 'otr-ack' }),
-			config: {},
-		});
-
-		expect(message).to.not.have.property('md');
-		expect(messageAck).to.not.have.property('md');
-	});
-
 	it('should do nothing for E2E messages', async () => {
 		const markdownParser = new BeforeSaveMarkdownParser(true);
 
@@ -64,30 +47,5 @@ describe('Markdown parser', () => {
 		});
 
 		expect(message).to.have.property('md');
-	});
-
-	it('should parse markdown on the first attachment only', async () => {
-		const markdownParser = new BeforeSaveMarkdownParser(true);
-
-		const message = await markdownParser.parseMarkdown({
-			message: createMessage('hey', {
-				attachments: [
-					{
-						description: 'hey ho',
-					},
-					{
-						description: 'lets go',
-					},
-				],
-			}),
-			config: {},
-		});
-
-		expect(message).to.have.property('md');
-
-		const [attachment1, attachment2] = message.attachments || [];
-
-		expect(attachment1).to.have.property('descriptionMd');
-		expect(attachment2).to.not.have.property('descriptionMd');
 	});
 });

@@ -13,17 +13,13 @@ type MapViewProps = {
 const MapView = ({ latitude, longitude }: MapViewProps) => {
 	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
 
-	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
-
-	const imageUrl = useAsyncImage(
+	const { data: imageUrl } = useAsyncImage(
 		googleMapsApiKey
 			? `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${latitude},${longitude}&key=${googleMapsApiKey}`
 			: undefined,
 	);
 
-	if (!linkUrl) {
-		return null;
-	}
+	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
 
 	if (!imageUrl) {
 		return <MapViewFallback linkUrl={linkUrl} />;

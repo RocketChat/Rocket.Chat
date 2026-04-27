@@ -181,6 +181,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_AllowAnonymousWrite', false, {
 			type: 'boolean',
 			public: true,
+			alert: 'Accounts_AllowAnonymousWrite_Deprecation_Alert',
 			enableQuery: {
 				_id: 'Accounts_AllowAnonymousRead',
 				value: true,
@@ -456,6 +457,11 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
+			});
+			await this.add('Accounts_Default_User_Preferences_desktopNotificationVoiceCalls', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Notification_Desktop_show_voice_calls',
 			});
 			await this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 				type: 'select',
@@ -804,7 +810,7 @@ export const createAccountSettings = () =>
 		});
 
 		await this.section('Password_Policy', async function () {
-			await this.add('Accounts_Password_Policy_Enabled', false, {
+			await this.add('Accounts_Password_Policy_Enabled', true, {
 				type: 'boolean',
 				public: true,
 			});
@@ -815,7 +821,7 @@ export const createAccountSettings = () =>
 				public: true,
 			};
 
-			await this.add('Accounts_Password_Policy_MinLength', 7, {
+			await this.add('Accounts_Password_Policy_MinLength', 14, {
 				type: 'int',
 				public: true,
 				enableQuery,

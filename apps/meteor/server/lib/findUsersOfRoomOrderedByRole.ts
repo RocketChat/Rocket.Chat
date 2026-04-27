@@ -1,4 +1,4 @@
-import { type IUser, type IRole, ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
+import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, FilterOperators } from 'mongodb';
@@ -16,8 +16,8 @@ type FindUsersParam = {
 	extraQuery?: Document[];
 };
 
-type UserWithRoleData = IUser & {
-	roles: IRole['_id'][];
+type UserWithRoleAndSubscriptionData = IUser & {
+	subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
 };
 
 export async function findUsersOfRoomOrderedByRole({
@@ -29,7 +29,7 @@ export async function findUsersOfRoomOrderedByRole({
 	sort = {},
 	exceptions = [],
 	extraQuery = [],
-}: FindUsersParam): Promise<{ members: UserWithRoleData[]; total: number }> {
+}: FindUsersParam): Promise<{ members: UserWithRoleAndSubscriptionData[]; total: number }> {
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const termRegex = new RegExp(escapeRegExp(filter), 'i');
 	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
@@ -62,7 +62,7 @@ export async function findUsersOfRoomOrderedByRole({
 		],
 	};
 
-	const membersResult = Users.col.aggregate<UserWithRoleData>(
+	const membersResult = Users.col.aggregate<UserWithRoleAndSubscriptionData>(
 		[
 			{
 				$match: matchUserFilter,
@@ -102,7 +102,7 @@ export async function findUsersOfRoomOrderedByRole({
 								},
 							},
 						},
-						{ $project: { roles: 1 } },
+						{ $project: { roles: 1, status: 1, ts: 1 } },
 					],
 				},
 			},
@@ -112,8 +112,13 @@ export async function findUsersOfRoomOrderedByRole({
 				},
 			},
 			{
+				$unwind: {
+					path: '$subscription',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
 				$project: {
-					subscription: 0,
 					statusSortKey: 0,
 				},
 			},

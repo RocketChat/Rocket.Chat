@@ -1,10 +1,10 @@
+import { useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDefaultDownload } from './useDefaultDownload';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { getPeriodRange } from '../../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';

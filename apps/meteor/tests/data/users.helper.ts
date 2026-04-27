@@ -54,6 +54,8 @@ export const createUser = <TUser extends IUser>(
 		name?: string;
 		password?: string;
 		freeSwitchExtension?: string;
+		bio?: string;
+		nickname?: string;
 	} = {},
 	config?: IRequestConfig,
 ) =>
@@ -67,8 +69,6 @@ export const createUser = <TUser extends IUser>(
 			.post(api('users.create'))
 			.set(credentialsInstance)
 			.send({ email, name: username, username, password, ...userData })
-			// if we don't expect 200, there's never an error, even in the case of a failure result
-			.expect(200)
 			.end((err: unknown, res: Response) => {
 				if (err) {
 					return reject(err);

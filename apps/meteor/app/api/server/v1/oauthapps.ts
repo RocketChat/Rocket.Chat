@@ -2,13 +2,13 @@ import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
@@ -88,7 +88,7 @@ const UpdateOAuthAppParamsSchema = {
 
 const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
 
-type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
+type OauthAppsGetParams = { clientId: string } | { _id: string };
 
 const oauthAppsGetParamsSchema = {
 	oneOf: [
@@ -112,27 +112,17 @@ const oauthAppsGetParamsSchema = {
 			required: ['clientId'],
 			additionalProperties: false,
 		},
-		{
-			type: 'object',
-			properties: {
-				appId: {
-					type: 'string',
-				},
-			},
-			required: ['appId'],
-			additionalProperties: false,
-		},
 	],
 };
 
-const isOauthAppsGetParams = ajv.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
+const isOauthAppsGetParams = ajvQuery.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
 
 const oauthAppsEndpoints = API.v1
 	.get(
 		'oauth-apps.list',
 		{
 			authRequired: true,
-			query: ajv.compile<{ uid?: string }>({
+			query: ajvQuery.compile<{ uid?: string }>({
 				type: 'object',
 				properties: {
 					uid: {
@@ -290,10 +280,6 @@ const oauthAppsEndpoints = API.v1
 
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
-			}
-
-			if ('appId' in this.queryParams) {
-				apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
 			}
 
 			return API.v1.success({

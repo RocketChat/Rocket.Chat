@@ -1,4 +1,4 @@
-FROM node:22.16.0-alpine3.21 AS builder
+FROM node:22.16.0-alpine3.22 AS builder
 
 ARG SERVICE
 
@@ -28,7 +28,6 @@ COPY ./packages/media-signaling/dist packages/media-signaling/dist
 
 COPY ./packages/message-parser/package.json packages/message-parser/package.json
 COPY ./packages/message-parser/dist packages/message-parser/dist
-COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
 
 COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
 COPY ./packages/peggy-loader/dist packages/peggy-loader/dist
@@ -70,6 +69,15 @@ COPY ./packages/ui-kit/dist packages/ui-kit/dist
 COPY ./packages/http-router/package.json packages/http-router/package.json
 COPY ./packages/http-router/dist packages/http-router/dist
 
+COPY ./packages/server-fetch/package.json packages/server-fetch/package.json
+COPY ./packages/server-fetch/dist packages/server-fetch/dist
+
+COPY ./packages/tools/package.json packages/tools/package.json
+COPY ./packages/tools/dist packages/tools/dist
+
+COPY ./ee/packages/abac/package.json ee/packages/abac/package.json
+COPY ./ee/packages/abac/dist ee/packages/abac/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
@@ -86,7 +94,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.16.0-alpine3.21
+FROM node:22.16.0-alpine3.22
 
 ARG SERVICE
 
@@ -96,7 +104,7 @@ ENV NODE_ENV=production \
 RUN apk update && \
     apk --no-cache --virtual deps add shadow && \
     # Update OpenSSL
-    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     apk upgrade --no-cache openssl && \
     rm -rf /var/cache/apk/* && \
     groupmod -n rocketchat nogroup && \

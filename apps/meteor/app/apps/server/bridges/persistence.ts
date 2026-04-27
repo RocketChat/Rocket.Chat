@@ -15,7 +15,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	}
 
 	protected async create(data: object, appId: string): Promise<string> {
-		this.orch.debugLog(`The App ${appId} is storing a new object in their persistence.`, data);
+		this.orch.debugLog(`The App ${appId} is storing a new object in their persistence.`);
 
 		if (typeof data !== 'object') {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
@@ -28,11 +28,10 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	}
 
 	protected async createWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
-		this.orch.debugLog(
-			`The App ${appId} is storing a new object in their persistence that is associated with some models.`,
-			data,
+		this.orch.debugLog({
+			msg: `The App ${appId} is storing a new object in their persistence that is associated with some models.`,
 			associations,
-		);
+		});
 
 		if (typeof data !== 'object') {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
@@ -53,7 +52,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	}
 
 	protected async readByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object>> {
-		this.orch.debugLog(`The App ${appId} is searching for records that are associated with the following:`, associations);
+		this.orch.debugLog({ msg: `The App ${appId} is searching for records that are associated with the following:`, associations });
 
 		const records = await this.orch
 			.getPersistenceModel()
@@ -84,7 +83,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		associations: Array<RocketChatAssociationRecord>,
 		appId: string,
 	): Promise<Array<object> | undefined> {
-		this.orch.debugLog(`The App ${appId} is removing records with the following associations:`, associations);
+		this.orch.debugLog({ msg: `The App ${appId} is removing records with the following associations:`, associations });
 
 		const query = {
 			appId,
@@ -105,7 +104,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	}
 
 	protected async update(id: string, data: object, _upsert: boolean, appId: string): Promise<string> {
-		this.orch.debugLog(`The App ${appId} is updating the record "${id}" to:`, data);
+		this.orch.debugLog(`The App ${appId} is updating the record "${id}"`);
 
 		if (typeof data !== 'object') {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
@@ -120,7 +119,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		upsert = true,
 		appId: string,
 	): Promise<string> {
-		this.orch.debugLog(`The App ${appId} is updating the record with association to data as follows:`, associations, data);
+		this.orch.debugLog({ msg: `The App ${appId} is updating the record with association to data as follows:`, associations });
 
 		if (typeof data !== 'object') {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');

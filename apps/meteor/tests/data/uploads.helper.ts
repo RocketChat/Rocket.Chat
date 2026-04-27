@@ -1,15 +1,15 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { api, request, credentials } from './api-data';
 import { imgURL, soundURL } from './interactions';
-import { createVisitor } from './livechat/rooms';
 import { updateSetting } from './permissions.helper';
-import { createRoom, deleteRoom } from './rooms.helper';
+import { addUserToRoom, createRoom, deleteRoom } from './rooms.helper';
 import { password } from './user';
-import { createUser, login, deleteUser } from './users.helper';
+import { createUser, deleteUser, login } from './users.helper';
 
 export async function testFileUploads(
 	filesEndpoint: 'channels.files' | 'groups.files' | 'im.files',
@@ -25,7 +25,7 @@ export async function testFileUploads(
 	let user: any;
 
 	before(async () => {
-		await Promise.all([updateSetting('VoIP_Enabled', true), updateSetting('Message_KeepHistory', true)]);
+		await Promise.all([updateSetting('Message_KeepHistory', true)]);
 		user = await createUser();
 
 		testRoom = (
@@ -37,27 +37,8 @@ export async function testFileUploads(
 	});
 
 	after(() =>
-		Promise.all([
-			deleteRoom({ type: 'c' as const, roomId: testRoom._id }),
-			updateSetting('VoIP_Enabled', false),
-			updateSetting('Message_KeepHistory', false),
-			deleteUser(user),
-		]),
+		Promise.all([deleteRoom({ type: 'c' as const, roomId: testRoom._id }), updateSetting('Message_KeepHistory', false), deleteUser(user)]),
 	);
-
-	const createVoipRoom = async function () {
-		const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
-		const testUserCredentials = await login(testUser.username, password);
-		const visitor = await createVisitor();
-		const roomResponse = await createRoom({
-			token: visitor.token,
-			type: 'v',
-			agentId: testUser._id,
-			credentials: testUserCredentials,
-		});
-
-		return roomResponse.body.room;
-	};
 
 	it('should fail if invalid channel', (done) => {
 		void request
@@ -73,22 +54,6 @@ export async function testFileUploads(
 				expect(res.body).to.have.property('errorType', invalidRoomError);
 			})
 			.end(done);
-	});
-
-	it('should fail for room type v', async () => {
-		const { _id } = await createVoipRoom();
-		void request
-			.get(api(filesEndpoint))
-			.set(credentials)
-			.query({
-				roomId: _id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(400)
-			.expect((res: Response) => {
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'error-room-not-found');
-			});
 	});
 
 	it('should succeed when searching by roomId', (done) => {
@@ -165,16 +130,24 @@ export async function testFileUploads(
 			.end(done);
 	});
 
+	let fileId: string;
 	it('should not return thumbnails', async () => {
 		await request
-			.post(api(`rooms.upload/${testRoom._id}`))
+			.post(api(`rooms.media/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
+				fileId = res.body.file._id;
 			});
+
+		await request
+			.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200);
 
 		await request
 			.get(api(filesEndpoint))
@@ -198,19 +171,25 @@ export async function testFileUploads(
 
 	it('should not return hidden files', async () => {
 		let msgId;
-		let fileId: string;
 
 		await request
-			.post(api(`rooms.upload/${testRoom._id}`))
+			.post(api(`rooms.media/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
-
+				fileId = res.body.file._id;
+			});
+		await request
+			.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res: Response) => {
+				expect(res.body).to.have.property('success', true);
 				msgId = res.body.message._id;
-				fileId = res.body.message.file._id;
 			});
 
 		await request
@@ -323,5 +302,78 @@ export async function testFileUploads(
 			});
 
 		await Promise.all([nameFilterTest, typeGroupFilterTest]);
+	});
+
+	describe('with another user', () => {
+		let anotherUserCreds: Credentials;
+		let anotherUser: IUser;
+		let extraRoom: IRoom;
+
+		before(async () => {
+			anotherUser = await createUser();
+			anotherUserCreds = await login(anotherUser.username, password);
+
+			extraRoom = (
+				await createRoom({
+					type: roomType,
+					...(roomType === 'd' ? { username: user.username } : { name: `channel-files-${Date.now()}` }),
+					credentials: anotherUserCreds,
+				} as any)
+			).body[propertyMap[roomType]];
+
+			if (roomType === 'p') {
+				await addUserToRoom({
+					rid: testRoom._id,
+					usernames: [anotherUser.username!],
+				});
+			}
+		});
+
+		after(() => Promise.all([deleteUser(anotherUser), deleteRoom({ type: roomType, roomId: extraRoom._id })]));
+
+		it('should not allow to confirm a file from another user', async function () {
+			if (roomType === 'd') {
+				this.skip();
+			}
+
+			let fileId: string;
+			await request
+				.post(api(`rooms.media/${testRoom._id}`))
+				.set(anotherUserCreds)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should not allow to confirm a file that was not uploaded to the same room', async () => {
+			let fileId: string;
+
+			await request
+				.post(api(`rooms.media/${extraRoom._id}`))
+				.set(anotherUserCreds)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
 	});
 }

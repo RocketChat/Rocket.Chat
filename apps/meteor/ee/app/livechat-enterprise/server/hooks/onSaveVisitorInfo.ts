@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { removePriorityFromRoom, updateRoomPriority } from '../api/lib/priorities';
 import { removeRoomSLA, updateRoomSLA } from '../api/lib/sla';
 

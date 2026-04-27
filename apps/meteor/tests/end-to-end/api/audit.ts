@@ -136,7 +136,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 					expect(message.result).to.be.an('array').with.lengthOf.greaterThan(1);
 					const entry = message.result.find((audition: any) => {
-						return audition.fields.rids.includes(testChannel._id);
+						return audition.fields?.rids?.includes(testChannel._id);
 					});
 					expect(entry).to.have.property('u').that.is.an('object').deep.equal({
 						_id: 'rocketchat.internal.admin.test',

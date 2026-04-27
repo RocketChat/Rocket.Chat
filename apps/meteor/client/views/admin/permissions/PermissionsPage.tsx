@@ -1,5 +1,6 @@
 import { Margins, Tabs, Button } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
@@ -9,8 +10,6 @@ import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import PermissionsContextBar from './PermissionsContextBar';
 import PermissionsTable from './PermissionsTable';
 import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement => {
 	const { t } = useTranslation();
@@ -60,19 +59,13 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 				<Margins blockEnd={16}>
 					<Tabs>
 						<Tabs.Item
-							data-qa='PermissionTable-Permissions'
 							selected={type === 'permissions'}
 							onClick={canViewPermission ? handlePermissionsTab : undefined}
 							disabled={!canViewPermission}
 						>
 							{t('Permissions')}
 						</Tabs.Item>
-						<Tabs.Item
-							data-qa='PermissionTable-Settings'
-							selected={type === 'settings'}
-							onClick={handleSettingsTab}
-							disabled={!canViewSettingPermission}
-						>
+						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
 							{t('Settings')}
 						</Tabs.Item>
 					</Tabs>

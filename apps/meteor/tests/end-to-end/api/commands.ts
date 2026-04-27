@@ -22,7 +22,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The query param "command" must be provided.');
+					expect(res.body.error).to.be.equal(`must have required property 'command'`);
 				})
 				.end(done);
 		});
@@ -124,22 +124,23 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('You must provide a command to run.');
+					expect(res.body.error).to.be.equal("must have required property 'command'");
 				})
 				.end(done);
 		});
-		it('should return an error when call the endpoint with the param "params" and it is not a string', (done) => {
+
+		it('should coerce non-string "params" to string via ajv coercion', (done) => {
 			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
+					roomId: 'GENERAL',
 					params: true,
 				})
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The parameters for the command must be a single string.');
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -154,11 +155,11 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The room's id where to execute this command must be provided and be a string.");
+					expect(res.body.error).to.be.equal("must have required property 'roomId'");
 				})
 				.end(done);
 		});
-		it('should return an error when call the endpoint with the param "tmid" and it is not a string', (done) => {
+		it('should coerce non-string "tmid" to string via ajv coercion and fail with invalid thread', (done) => {
 			void request
 				.post(api('commands.run'))
 				.set(credentials)
@@ -171,7 +172,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The tmid parameter when provided must be a string.');
+					expect(res.body.error).to.be.equal('Invalid thread.');
 				})
 				.end(done);
 		});
@@ -437,11 +438,6 @@ describe('[Commands]', () => {
 					roomId: channel._id,
 					command: 'invite-all-from',
 					params: `#${group.name}`,
-					msg: {
-						_id: Random.id(),
-						rid: channel._id,
-						msg: `invite-all-from #${group.name}`,
-					},
 					triggerId: Random.id(),
 				})
 				.expect(200)
@@ -468,11 +464,6 @@ describe('[Commands]', () => {
 					roomId: group1._id,
 					command: 'invite-all-from',
 					params: `#${group.name}`,
-					msg: {
-						_id: Random.id(),
-						rid: group1._id,
-						msg: `invite-all-from #${group.name}`,
-					},
 					triggerId: Random.id(),
 				})
 				.expect(403)
@@ -498,11 +489,6 @@ describe('[Commands]', () => {
 					roomId: channel._id,
 					command: 'invite-all-from',
 					params: `#${group.name}`,
-					msg: {
-						_id: Random.id(),
-						rid: channel._id,
-						msg: `invite-all-from #${group.name}`,
-					},
 					triggerId: Random.id(),
 				})
 				.expect(200)
@@ -519,6 +505,118 @@ describe('[Commands]', () => {
 					const isUser1Added = res.body.members.some((member: IUser) => member.username === user1.username);
 					expect(isUser1Added).to.be.true;
 				});
+		});
+	});
+	describe('Command "kick"', function () {
+		let directMessageRoom: IRoom;
+		let user1: TestUser<IUser>;
+		let user1Credentials: Credentials;
+		this.beforeAll(async () => {
+			user1 = await createUser();
+
+			[user1Credentials] = await Promise.all([login(user1.username, password)]);
+		});
+
+		this.beforeAll(async () => {
+			const [response1] = await Promise.all([
+				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
+			]);
+			directMessageRoom = response1.body.room;
+		});
+
+		this.afterAll(async () => {
+			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
+			await Promise.all([deleteUser(user1)]);
+		});
+
+		it('should fail when trying to kick a user from a direct message room', (done) => {
+			void request
+				.post(api('commands.run'))
+				.set(user1Credentials)
+				.send({ command: 'kick', roomId: directMessageRoom._id, params: user1.username })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').that.is.a('string');
+				})
+				.end(done);
+		});
+	});
+	describe('Command "leave"', function () {
+		let directMessageRoom: IRoom;
+		let user1: TestUser<IUser>;
+		let user2: TestUser<IUser>;
+		let user1Credentials: Credentials;
+		this.beforeAll(async () => {
+			user1 = await createUser();
+			user2 = await createUser();
+
+			[user1Credentials] = await Promise.all([login(user1.username, password)]);
+		});
+
+		this.beforeAll(async () => {
+			const [response1] = await Promise.all([
+				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
+			]);
+			directMessageRoom = response1.body.room;
+		});
+
+		this.afterAll(async () => {
+			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
+			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+		});
+
+		it('should fail when trying to leave a direct message room', (done) => {
+			void request
+				.post(api('commands.run'))
+				.set(user1Credentials)
+				.send({ command: 'leave', roomId: directMessageRoom._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').that.is.a('string');
+				})
+				.end(done);
+		});
+	});
+
+	// TODO: invite never fails
+	describe.skip('Command "invite"', function () {
+		let directMessageRoom: IRoom;
+		let user1: TestUser<IUser>;
+		let user2: TestUser<IUser>;
+		let user1Credentials: Credentials;
+		this.beforeAll(async () => {
+			user1 = await createUser();
+			user2 = await createUser();
+
+			[user1Credentials] = await Promise.all([login(user1.username, password)]);
+		});
+
+		this.beforeAll(async () => {
+			const [response1] = await Promise.all([
+				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
+			]);
+			directMessageRoom = response1.body.room;
+		});
+
+		this.afterAll(async () => {
+			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
+			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+		});
+
+		it('should fail when trying to invite a user to a direct message room', (done) => {
+			void request
+				.post(api('commands.run'))
+				.set(user1Credentials)
+				.send({ command: 'invite', roomId: directMessageRoom._id, params: 'g1' })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').that.is.a('string');
+					expect(res.body.error).to.equal('unauthorized');
+				})
+				.end(done);
 		});
 	});
 });

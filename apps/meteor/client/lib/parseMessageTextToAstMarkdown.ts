@@ -1,14 +1,5 @@
 import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
-import {
-	isFileAttachment,
-	isE2EEMessage,
-	isOTRMessage,
-	isOTRAckMessage,
-	isQuoteAttachment,
-	isTranslatedAttachment,
-	isTranslatedMessage,
-	isEncryptedMessageAttachment,
-} from '@rocket.chat/core-typings';
+import { isE2EEMessage, isQuoteAttachment, isTranslatedAttachment, isTranslatedMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -47,10 +38,7 @@ export const parseMessageTextToAstMarkdown = <
 
 	return {
 		...msg,
-		md:
-			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
-				? textToMessageToken(text, parseOptions)
-				: (msg.md ?? textToMessageToken(text, parseOptions)),
+		md: isE2EEMessage(message) || translated ? textToMessageToken(text, parseOptions) : (msg.md ?? textToMessageToken(text, parseOptions)),
 		...(msg.attachments && {
 			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
 		}),
@@ -63,7 +51,7 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 	autoTranslateOptions: { autoTranslateLanguage?: string; translated: boolean },
 ): T => {
 	const { translated, autoTranslateLanguage } = autoTranslateOptions;
-	if (!attachment.text && !attachment.description) {
+	if (!attachment.text) {
 		return attachment;
 	}
 
@@ -74,15 +62,7 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 	const text =
 		(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
 		attachment.text ||
-		attachment.description ||
 		'';
-
-	if (isFileAttachment(attachment) && attachment.description) {
-		attachment.descriptionMd =
-			translated || isEncryptedMessageAttachment(attachment)
-				? textToMessageToken(text, parseOptions)
-				: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
-	}
 
 	return {
 		...attachment,

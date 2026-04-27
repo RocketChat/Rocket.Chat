@@ -1,20 +1,20 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useRemoveTag } from './useRemoveTag';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useRemoveTag } from './useRemoveTag';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type TagEditPayload = {
@@ -35,7 +35,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 	const handleDeleteTag = useRemoveTag();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const saveTag = useMethod('livechat:saveTag');
+	const saveTag = useEndpoint('POST', '/v1/livechat/tags.save');
 
 	const { _id, name, description } = tagData || {};
 
@@ -44,7 +44,6 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		formState: { isDirty, errors },
 		handleSubmit,
 	} = useForm<TagEditPayload>({
-		mode: 'onBlur',
 		values: {
 			name: name || '',
 			description: description || '',
@@ -52,21 +51,27 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		},
 	});
 
-	const handleSave = useEffectEvent(async ({ name, description, departments }: TagEditPayload) => {
-		const departmentsId = departments?.map((dep) => dep.value) || [''];
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ name, description, departments }: TagEditPayload) => {
+			const departmentsId = departments?.map((dep) => dep.value) || [''];
 
-		try {
-			await saveTag(_id as unknown as string, { name, description }, departmentsId);
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries({
-				queryKey: ['livechat-tags'],
-			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onClose();
-		}
-	});
+			try {
+				await saveTag({
+					_id,
+					tagData: { name, description },
+					...(departmentsId.length > 0 && { tagDepartments: departmentsId }),
+				});
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-tags'],
+				});
+				onClose();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		{ isDirty },
+	);
 
 	const formId = useId();
 	const nameField = useId();
@@ -91,11 +96,13 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 									name='name'
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Name') }) }}
-									render={({ field }) => <TextInput {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />}
+									render={({ field }) => (
+										<TextInput id={nameField} {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />
+									)}
 								/>
 							</FieldRow>
 							{errors?.name && (
-								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+								<FieldError role='alert' id={`${nameField}-error`}>
 									{errors?.name?.message}
 								</FieldError>
 							)}
@@ -107,12 +114,14 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+							<FieldLabel id={departmentsField}>{t('Departments')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='departments'
 									control={control}
-									render={({ field }) => <AutoCompleteDepartmentMultiple withCheckbox id={departmentsField} showArchived {...field} />}
+									render={({ field }) => (
+										<AutoCompleteDepartmentMultiple withCheckbox aria-labelledby={departmentsField} showArchived {...field} />
+									)}
 								/>
 							</FieldRow>
 						</Field>
@@ -122,7 +131,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} disabled={!isDirty} type='submit' primary>
+					<Button form={formId} type='submit' primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

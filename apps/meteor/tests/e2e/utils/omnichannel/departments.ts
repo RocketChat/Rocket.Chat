@@ -18,6 +18,7 @@ type CreateDepartmentParams = {
 	departmentsAllowedToForward?: string[];
 	fallbackForwardDepartment?: string;
 	maxNumberSimultaneousChat?: number;
+	allowReceiveForwardOffline?: boolean;
 };
 
 export const createDepartment = async (
@@ -37,6 +38,7 @@ export const createDepartment = async (
 		departmentsAllowedToForward = [],
 		fallbackForwardDepartment = '',
 		maxNumberSimultaneousChat,
+		allowReceiveForwardOffline,
 	}: CreateDepartmentParams = {},
 ) => {
 	const response = await api.post('/livechat/department', {
@@ -55,6 +57,7 @@ export const createDepartment = async (
 			departmentsAllowedToForward,
 			fallbackForwardDepartment,
 			maxNumberSimultaneousChat,
+			allowReceiveForwardOffline,
 		},
 	});
 

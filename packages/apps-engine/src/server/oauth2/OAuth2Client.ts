@@ -36,7 +36,7 @@ export class OAuth2Client implements IOAuth2Client {
 	) {}
 
 	public async setup(configuration: IConfigurationExtend): Promise<void> {
-		configuration.api.provideApi({
+		await configuration.api.provideApi({
 			security: ApiSecurity.UNSECURE,
 			visibility: ApiVisibility.PUBLIC,
 			endpoints: [

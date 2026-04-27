@@ -22,9 +22,6 @@
 		"lint": {
 			"outputs": []
 		},
-		"translation-check": {
-			"outputs": []
-		},
 		"typecheck": {
 			"outputs": []
 		},
@@ -37,7 +34,8 @@
 			"cache": false
 		},
 		"ms": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"cache": false
 		},
 		"@rocket.chat/meteor#build": {
 			"dependsOn": ["^build"],

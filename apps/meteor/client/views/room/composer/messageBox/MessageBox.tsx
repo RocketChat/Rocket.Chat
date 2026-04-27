@@ -1,12 +1,10 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposer,
-	MessageComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
@@ -22,17 +20,21 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import MessageComposerFiles from './MessageComposerFiles';
+import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
+import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom } from '../../contexts/RoomContext';
@@ -45,7 +47,6 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -87,7 +88,6 @@ type MessageBoxProps = {
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
-	onUploadFiles?: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
 	previewUrls?: string[];
 	subscription?: ISubscription;
@@ -101,7 +101,6 @@ const MessageBox = ({
 	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
-	onUploadFiles,
 	onEscape,
 	onTyping,
 	tshow,
@@ -139,12 +138,13 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }));
 		},
-		[chat, storageID, quoteChainLimit],
+		[chat, storageID, quoteChainLimit, room._id, tmid],
 	);
 
-	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
+	const isTouchDevice = useMediaQuery('(pointer: coarse)');
+	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -160,9 +160,14 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
+	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
+
 	const handleSendMessage = useEffectEvent(() => {
+		if (isUploading || isProcessingUploads) {
+			return;
+		}
+
 		const text = chat.composer?.text ?? '';
-		chat.composer?.clear();
 		popup.clear();
 
 		onSend?.({
@@ -180,10 +185,15 @@ const MessageBox = ({
 			event.stopPropagation();
 
 			chat.currentEditingMessage.reset().then((reset) => {
-				if (!reset) {
-					chat.currentEditingMessage.cancel();
-					chat.currentEditingMessage.stop();
+				// NOTE: if the message was reset (i.e. content changed), we just update the popup (to re-apply/remove the preview)
+				if (reset) {
+					popup.update();
+					return;
 				}
+
+				chat.currentEditingMessage.cancel();
+				chat.currentEditingMessage.stop();
+				popup.clear();
 			});
 		}
 	};
@@ -349,7 +359,7 @@ const MessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			onUploadFiles?.(files);
+			handleUploadFiles?.(files);
 		}
 	});
 
@@ -359,9 +369,6 @@ const MessageBox = ({
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLTextAreaElement) => {
-				if (node === null) {
-					return;
-				}
 				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
 				node.addEventListener('keydown', eventHandler);
 
@@ -373,6 +380,20 @@ const MessageBox = ({
 		),
 	);
 
+	const beforeInputHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
+				node.addEventListener('beforeinput', eventHandler);
+
+				return () => {
+					node.removeEventListener('beforeinput', eventHandler);
+				};
+			},
+			[chat],
+		),
+	);
+
 	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		textareaRef,
@@ -380,6 +401,7 @@ const MessageBox = ({
 		callbackRef,
 		autofocusRef,
 		keyDownHandlerCallbackRef,
+		beforeInputHandlerCallbackRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
@@ -424,35 +446,19 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<FeaturePreview feature='expandableMessageComposer'>
-					<FeaturePreviewOn>
-						<MessageComposerInputExpandable
-							dimensions={sizes}
-							ref={mergedRefs}
-							aria-label={composerPlaceholder}
-							name='msg'
-							disabled={isRecording || !canSend}
-							onChange={setTyping}
-							style={textAreaStyle}
-							placeholder={composerPlaceholder}
-							onPaste={handlePaste}
-							aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
-						/>
-					</FeaturePreviewOn>
-					<FeaturePreviewOff>
-						<MessageComposerInput
-							ref={mergedRefs}
-							aria-label={composerPlaceholder}
-							name='msg'
-							disabled={isRecording || !canSend}
-							onChange={setTyping}
-							style={textAreaStyle}
-							placeholder={composerPlaceholder}
-							onPaste={handlePaste}
-							aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
-						/>
-					</FeaturePreviewOff>
-				</FeaturePreview>
+				<MessageComposerInputExpandable
+					dimensions={sizes}
+					ref={mergedRefs}
+					aria-label={composerPlaceholder}
+					name='msg'
+					disabled={isRecording || !canSend || isProcessingUploads}
+					onChange={setTyping}
+					style={textAreaStyle}
+					placeholder={composerPlaceholder}
+					onPaste={handlePaste}
+					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+				/>
+				<MessageComposerFiles />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -478,6 +484,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isEditing={isEditing}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
@@ -492,10 +499,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
+									disabled={!canSend || isUploading || isProcessingUploads || (!typing && !isEditing && !hasUploads)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
+									secondary={typing || isEditing || hasUploads}
+									info={typing || isEditing || hasUploads}
 								/>
 							</>
 						)}

@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { readThread } from '../../app/threads/server/functions';
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../lib/callbacks';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -44,8 +44,7 @@ Meteor.methods<ServerMethods>({
 
 		await callbacks.run('beforeReadMessages', thread.rid, user?._id);
 		if (user?._id) {
-			await readThread({ userId: user._id, rid: thread.rid, tmid });
-			callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
+			await readThread({ user: user as IUser, room, tmid });
 		}
 	},
 });

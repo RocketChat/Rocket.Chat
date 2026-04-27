@@ -1,4 +1,4 @@
-import { isE2EEMessage, isOTRMessage, isOTRAckMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -22,17 +22,13 @@ export class BeforeSaveMarkdownParser {
 			return message;
 		}
 
-		if (isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message)) {
+		if (isE2EEMessage(message)) {
 			return message;
 		}
 
 		try {
 			if (message.msg) {
 				message.md = parse(message.msg, config);
-			}
-
-			if (message.attachments?.[0]?.description) {
-				message.attachments[0].descriptionMd = parse(message.attachments[0].description, config);
 			}
 		} catch (e) {
 			console.error(e); // errors logged while the parser is at experimental stage

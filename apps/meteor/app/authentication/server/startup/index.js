@@ -2,16 +2,16 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInDays } from '@rocket.chat/tools';
+import { getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../server/lib/callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
@@ -24,7 +24,6 @@ import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListen
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
-import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
@@ -41,6 +40,19 @@ Accounts.config({
  * we are removing the status here because meteor send 'offline'
  */
 Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)(getBaseUserFields(true)));
+
+// Override Meteor's _expireTokens to ensure the correct login expiration is used.
+// If loginExpirationInDays is not set (e.g., startup was disrupted before settings watcher fired),
+// read the setting directly from MongoDB before proceeding with token cleanup.
+// This prevents tokens from being incorrectly deleted using Meteor's 90-day default.
+const { _expireTokens } = Accounts;
+Accounts._expireTokens = async function (oldestValidDate, userId) {
+	if (!Accounts._options.loginExpirationInDays) {
+		const loginExpiration = await Settings.getValueById('Accounts_LoginExpiration');
+		Accounts._options.loginExpirationInDays = getLoginExpirationInDays(loginExpiration);
+	}
+	return _expireTokens.call(Accounts, oldestValidDate, userId);
+};
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
@@ -202,9 +214,12 @@ const onCreateUserAsync = async function (options, user = {}) {
 	if (!options.skipBeforeCreateUserCallback) {
 		await beforeCreateUserCallback.run(options, user);
 	}
-
 	user.status = 'offline';
+
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	if (settings.get('Accounts_ManuallyApproveNewUsers') && !user.active) {
+		user.inactiveReason = 'pending_approval';
+	}
 
 	if (!user.name) {
 		if (options.profile) {
@@ -221,8 +236,9 @@ const onCreateUserAsync = async function (options, user = {}) {
 		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 
 		for (const service of Object.values(user.services)) {
-			if (!user.name) {
-				user.name = service.name || service.username;
+			const suggestedName = service.name || service.username;
+			if (!user.name && suggestedName) {
+				user.name = suggestedName;
 			}
 
 			if (!user.emails && service.email) {
@@ -269,7 +285,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		throw new Meteor.Error(403, 'User validation failed');
 	}
 
-	return user;
+	return removeEmpty(user);
 };
 
 Accounts.onCreateUser(function (...args) {
@@ -292,7 +308,12 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	delete user.globalRoles;
 
-	if (user.services && !user.services.password) {
+	// for some reason, the name is not being set in the user object but is being set in the options object
+	if (options.name && typeof options.name === 'string') {
+		user.name = options.name;
+	}
+
+	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
@@ -366,7 +387,7 @@ Accounts.insertUserDoc = async function (options, user) {
 		}
 		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			for await (const service of Object.keys(avatarSuggestions)) {
+			for (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
 					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
@@ -378,8 +399,8 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
-			Apps.self?.getRocketChatLogger().error('Error while executing post user created event:', e);
+		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: options.performedBy }).catch((e) => {
+			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
 		});
 	}
 

@@ -4,6 +4,8 @@ import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
+
 export const useRemoveCustomField = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
@@ -17,7 +19,7 @@ export const useRemoveCustomField = () => {
 				await removeCustomField({ customFieldId: id });
 				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
 				queryClient.invalidateQueries({
-					queryKey: ['livechat-customFields'],
+					queryKey: omnichannelQueryKeys.livechat.customFields(),
 				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

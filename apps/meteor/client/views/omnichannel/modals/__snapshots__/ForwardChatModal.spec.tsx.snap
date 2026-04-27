@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r3:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r3:-title"
+              >
+                Forward_chat
+              </h2>
+            </div>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <fieldset
+              class="rcx-box rcx-box--full rcx-field-group"
+              role="group"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r0:"
+                >
+                  Forward_to_department
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <div
+                    aria-busy="false"
+                    aria-disabled="false"
+                    aria-label="Forward_to_department"
+                    class="rcx-box rcx-box--full rcx-select rcx-css-cjb8sk"
+                    id=":r0:"
+                    name="department"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__wrapper rcx-css-bpb89k"
+                    >
+                      <input
+                        aria-haspopup="listbox"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-select__focus rcx-css-1l0s473"
+                        placeholder="Select_an_option"
+                        value=""
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-6bg1ps"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-message-divider rcx-field-group__item rcx-css-1sjru0w"
+                role="separator"
+              >
+                <div
+                  class="rcx-divider__bar"
+                />
+                <div
+                  class="rcx-divider__wrapper"
+                >
+                  or
+                </div>
+                <div
+                  class="rcx-divider__bar"
+                />
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r1:"
+                >
+                  Forward_to_user
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <div
+                    aria-label="Forward_to_user"
+                    class="rcx-box rcx-box--full rcx-select rcx-css-ue04py"
+                    id=":r1:"
+                    name="username"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__wrapper rcx-css-bpb89k"
+                    >
+                      <input
+                        aria-haspopup="listbox"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-select__focus rcx-css-1l0s473"
+                        placeholder="Username_name_email"
+                        value=""
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-6bg1ps"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item rcx-css-305goq"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r2:"
+                >
+                  Leave_a_comment
+                  <span
+                    class="rcx-box rcx-box--full rcx-css-1im8wz7"
+                  >
+                    (
+                    Optional
+                    )
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <textarea
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-t3n91h"
+                    cols="1"
+                    id=":r2:"
+                    name="comment"
+                    rows="8"
+                    size="1"
+                  />
+                </span>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              disabled=""
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Forward
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;

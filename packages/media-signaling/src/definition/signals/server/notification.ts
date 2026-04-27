@@ -1,4 +1,4 @@
-import type { CallNotification } from '../../call';
+import type { CallFeature, CallNotification } from '../../call';
 
 /** Server is sending a notification about the call state */
 export type ServerMediaSignalNotification = {
@@ -11,4 +11,6 @@ export type ServerMediaSignalNotification = {
 	 * Optional in general, but at least one notification must be sent with it before the callee can join the call
 	 */
 	signedContractId?: string;
+
+	features?: CallFeature[];
 };

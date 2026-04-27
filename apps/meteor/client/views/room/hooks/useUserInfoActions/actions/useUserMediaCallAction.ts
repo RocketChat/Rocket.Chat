@@ -1,23 +1,29 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useUserAvatarPath, useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useMediaCallContext } from '@rocket.chat/ui-voip';
+import { useUserAvatarPath, useUserId, useUserSubscription, useUserCard, useUserRoom } from '@rocket.chat/ui-contexts';
+import { usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
-import { useUserCard } from '../../../contexts/UserCardContext';
 import type { UserInfoAction } from '../useUserInfoActions';
 
 export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'name'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const { t } = useTranslation();
 	const ownUserId = useUserId();
 	const { closeUserCard } = useUserCard();
-	const { state, onToggleWidget } = useMediaCallContext();
+	const state = usePeekMediaSessionState();
+	const { toggleWidget } = useWidgetExternalControls();
 	const getAvatarUrl = useUserAvatarPath();
 
 	const currentSubscription = useUserSubscription(rid);
+	const room = useUserRoom(rid);
 
 	const blocked = currentSubscription?.blocked || currentSubscription?.blocker;
 
-	if (state === 'unauthorized') {
+	if (room && isRoomFederated(room)) {
+		return undefined;
+	}
+
+	if (state === 'unavailable') {
 		return undefined;
 	}
 
@@ -25,7 +31,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 		return undefined;
 	}
 
-	const disabled = !['closed', 'new', 'unlicensed'].includes(state);
+	const disabled = state !== 'available';
 
 	if (user._id === ownUserId) {
 		return undefined;
@@ -39,7 +45,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 		icon: 'phone',
 		onClick: () => {
 			closeUserCard();
-			onToggleWidget({
+			toggleWidget({
 				userId: user._id,
 				displayName: user.name || user.username || '',
 				avatarUrl,

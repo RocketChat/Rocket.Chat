@@ -15,14 +15,18 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const setUserStatusMethod = async (userId: string, statusType: IUser['status'], statusText: IUser['statusText']): Promise<void> => {
+export const setUserStatusMethod = async (
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>,
+	statusType: IUser['status'],
+	statusText: IUser['statusText'],
+): Promise<void> => {
 	if (statusType) {
 		if (statusType === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 			throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 				method: 'setUserStatus',
 			});
 		}
-		await Presence.setStatus(userId, statusType);
+		await Presence.setStatus(user._id, statusType);
 	}
 
 	if (statusText || statusText === '') {
@@ -34,18 +38,18 @@ export const setUserStatusMethod = async (userId: string, statusType: IUser['sta
 			});
 		}
 
-		await setStatusText(userId, statusText);
+		await setStatusText(user, statusText);
 	}
 };
 
 Meteor.methods<ServerMethods>({
 	setUserStatus: async (statusType, statusText) => {
-		const userId = Meteor.userId();
-		if (!userId) {
+		const user = (await Meteor.userAsync()) as IUser;
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
 		}
 
-		await setUserStatusMethod(userId, statusType, statusText);
+		await setUserStatusMethod(user, statusType, statusText);
 	},
 });
 

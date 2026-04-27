@@ -4,9 +4,10 @@ import URL from 'url';
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { isTruthy } from '@rocket.chat/tools';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import _ from 'lodash';
+import sampleSize from 'lodash/sampleSize';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
@@ -21,7 +22,6 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
-import { isTruthy } from '../../../lib/isTruthy';
 import { Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
@@ -345,6 +345,10 @@ class E2E extends Emitter {
 	}
 
 	async startClient(userId: string): Promise<void> {
+		if (!isSecureContext) {
+			throw new Error('E2E encryption can only be enabled in secure contexts (HTTPS)');
+		}
+
 		const span = log.span('startClient');
 		if (this.userId === userId) {
 			return;
@@ -667,7 +671,22 @@ class E2E extends Emitter {
 		const span = log.span('decryptSubscription');
 		const e2eRoom = await this.getInstanceByRoomId(subscription.rid);
 		span.info(subscription._id);
-		await e2eRoom?.decryptSubscription();
+
+		if (!e2eRoom) {
+			span.warn('no e2eRoom found');
+			return;
+		}
+
+		if (e2eRoom.isReady()) {
+			span.info('e2e room ready');
+			await e2eRoom.decryptSubscription();
+			return;
+		}
+
+		e2eRoom.once('READY', async () => {
+			span.info('e2e room ready');
+			await e2eRoom.decryptSubscription();
+		});
 	}
 
 	async decryptSubscriptions(): Promise<void> {
@@ -774,7 +793,7 @@ class E2E extends Emitter {
 			return [];
 		}
 
-		const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
 
 		const sampleIds: string[] = [];
 		for await (const roomId of randomRoomIds) {

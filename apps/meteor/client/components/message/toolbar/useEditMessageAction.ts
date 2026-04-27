@@ -1,7 +1,7 @@
-import { isOTRAckMessage, isOTRMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
+import { differenceInMinutes } from 'date-fns';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useChat } from '../../../views/room/contexts/ChatContext';
@@ -26,18 +26,13 @@ export const useEditMessageAction = (
 			return message.u._id === user?._id;
 		}
 
-		if (isOTRMessage(message) || isOTRAckMessage(message)) {
-			return false;
-		}
-
 		const editOwn = message.u && message.u._id === user?._id;
 		if (!canEditMessage && (!isEditAllowed || !editOwn)) {
 			return false;
 		}
 
 		if (!canBypassBlockTimeLimit && blockEditInMinutes) {
-			const msgTs = message.ts ? moment(message.ts) : undefined;
-			const currentTsDiff = msgTs ? moment().diff(msgTs, 'minutes') : undefined;
+			const currentTsDiff = message.ts ? differenceInMinutes(new Date(), message.ts) : undefined;
 			return typeof currentTsDiff === 'number' && currentTsDiff < blockEditInMinutes;
 		}
 

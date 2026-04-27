@@ -1,22 +1,23 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useSetModal, useToastMessageDispatch, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useToastMessageDispatch, useMethod, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
 import WarningModal from '../../../../../../components/WarningModal';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 
-// TODO implement joined
-export const useRoomLeave = (room: IRoom, joined = true) => {
-	const t = useTranslation();
+export const useRoomLeave = (room: IRoom) => {
+	const { t } = useTranslation();
+	const subscription = useUserSubscription(room._id);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRouter();
 
-	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
+	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && Boolean(subscription);
 
 	const handleLeave = useEffectEvent(() => {
 		const leaveAction = async () => {

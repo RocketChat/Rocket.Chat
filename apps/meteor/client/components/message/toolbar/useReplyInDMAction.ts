@@ -1,11 +1,11 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../stores';
 
@@ -16,7 +16,6 @@ export const useReplyInDMAction = (
 	const user = useUser();
 	const router = useRouter();
 	const encrypted = isE2EEMessage(message);
-	// @ts-expect-error - abacAttributes is not yet implemented in IRoom type
 	const isABACEnabled = !!room.abacAttributes;
 	const canCreateDM = usePermission('create-d');
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -30,7 +29,7 @@ export const useReplyInDMAction = (
 		[message.u._id, user],
 	);
 
-	const shouldFindRoom = useMemo(() => !!user && canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
+	const shouldFindRoom = useMemo(() => !!user && !canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
 	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
@@ -53,7 +52,7 @@ export const useReplyInDMAction = (
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
 		}
-		if (!!user && user._id !== message.u._id && canCreateDM) {
+		if (!!user && user._id !== message.u._id && !canCreateDM) {
 			if (!dmRoom || !dmSubs) {
 				return false;
 			}

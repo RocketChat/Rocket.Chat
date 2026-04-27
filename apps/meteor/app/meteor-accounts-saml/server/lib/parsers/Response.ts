@@ -19,7 +19,7 @@ export class ResponseParser {
 
 	public validate(xml: string, callback: IResponseValidateCallback): void {
 		// We currently use RelayState to save SAML provider
-		SAMLUtils.log(`Validating response with relay state: ${xml}`);
+		SAMLUtils.log({ msg: 'Validating SAML Response', xml });
 
 		let error: Error | null = null;
 
@@ -145,7 +145,7 @@ export class ResponseParser {
 		if (authnStatement) {
 			if (authnStatement.hasAttribute('SessionIndex')) {
 				profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
-				SAMLUtils.log(`Session Index: ${profile.sessionIndex}`);
+				SAMLUtils.log({ msg: 'Session Index Found', sessionIndex: profile.sessionIndex });
 			} else {
 				SAMLUtils.log('No Session Index Found');
 			}
@@ -208,7 +208,9 @@ export class ResponseParser {
 		let newXml = null;
 
 		if (typeof encAssertion !== 'undefined') {
-			const options = { key: this.serviceProviderOptions.privateKey };
+			// disallowDecryptionWithInsecureAlgorithm defaults to true in xml-encryption v4, but AES-CBC/3DES
+			// are still widely used by SAML IdPs in practice, so we keep the pre-v4 behaviour here.
+			const options = { key: this.serviceProviderOptions.privateKey, disallowDecryptionWithInsecureAlgorithm: false };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
 			xmlenc.decrypt(encData, options, (err, result) => {
 				if (err) {
@@ -350,10 +352,10 @@ export class ResponseParser {
 		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
 
 		if (typeof encSubject !== 'undefined') {
-			const options = { key: this.serviceProviderOptions.privateKey };
+			const options = { key: this.serviceProviderOptions.privateKey, disallowDecryptionWithInsecureAlgorithm: false };
 			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, (err, result) => {
 				if (err) {
-					SAMLUtils.error(err);
+					SAMLUtils.error({ err });
 				}
 				subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
 			});
@@ -418,9 +420,9 @@ export class ResponseParser {
 	}
 
 	private mapAttributes(attributeStatement: Element, profile: Record<string, any>): void {
-		SAMLUtils.log(`Attribute Statement found in SAML response: ${attributeStatement}`);
+		SAMLUtils.log({ msg: 'Attribute Statement found, mapping attributes to profile.', attributeStatement });
 		const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
-		SAMLUtils.log(`Attributes will be processed: ${attributes.length}`);
+		SAMLUtils.log({ msg: 'Attributes will be processed', count: attributes.length });
 
 		if (attributes) {
 			for (let i = 0; i < attributes.length; i++) {
@@ -437,8 +439,7 @@ export class ResponseParser {
 
 				const key = attributes[i].getAttribute('Name');
 				if (key) {
-					SAMLUtils.log(`Attribute:  ${attributes[i]} has ${values.length} value(s).`);
-					SAMLUtils.log(`Adding attribute from SAML response to profile: ${key} = ${value}`);
+					SAMLUtils.log({ msg: 'Mapping attribute to profile', attribute: key, value });
 					profile[key] = value;
 				}
 			}

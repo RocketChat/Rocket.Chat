@@ -1,8 +1,14 @@
 import { Banner } from '@rocket.chat/core-services';
-import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
-import type { Cloud, IBanner, IUser } from '@rocket.chat/core-typings';
+import type {
+	IUiKitCoreApp,
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
+} from '@rocket.chat/core-services';
+import type { Cloud, IUser } from '@rocket.chat/core-typings';
 import { Banners } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { isTruthy } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -18,7 +24,7 @@ type CloudAnnouncementInteractant =
 			user: Pick<IUser, '_id' | 'username' | 'name'>;
 	  }
 	| {
-			visitor: Pick<Required<UiKitCoreAppPayload>['visitor'], 'id' | 'username' | 'name' | 'department' | 'phone'>;
+			visitor: Pick<NonNullable<UiKitCoreAppBlockActionPayload['visitor']>, 'id' | 'username' | 'name' | 'department' | 'phone'>;
 	  };
 
 type CloudAnnouncementInteractionRequest = UiKit.UserInteraction & CloudAnnouncementInteractant;
@@ -34,17 +40,17 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		return settings.get('Cloud_Url');
 	}
 
-	blockAction(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction | void> {
+	blockAction(payload: UiKitCoreAppBlockActionPayload): Promise<UiKit.ServerInteraction | undefined> {
 		return this.handlePayload(payload);
 	}
 
-	viewSubmit(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction | void> {
+	viewSubmit(payload: UiKitCoreAppViewSubmitPayload): Promise<UiKit.ServerInteraction | undefined> {
 		return this.handlePayload(payload);
 	}
 
-	async viewClosed(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
+	async viewClosed(payload: UiKitCoreAppViewClosedPayload): Promise<UiKit.ServerInteraction | undefined> {
 		const {
-			payload: { view: { viewId } = {} },
+			payload: { view: { viewId, id } = {} },
 			user: { _id: userId } = {},
 		} = payload;
 
@@ -52,7 +58,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid user');
 		}
 
-		if (!viewId) {
+		if (!id && !viewId) {
 			throw new Error('invalid view');
 		}
 
@@ -60,11 +66,18 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid triggerId');
 		}
 
-		await Banner.dismiss(userId, viewId);
+		// For backwards compatibility: we prefer to use viewId, but some legacy banners
+		// may only have id. We fetch all matching banners and prioritize viewId match.
+		const bannerIds = [viewId, id].filter((bannerId) => isTruthy(bannerId));
+		const banners = await Banners.findByIds(bannerIds).toArray();
+		const announcement = banners.find((b) => b._id === viewId) || banners.find((b) => b._id === id);
+		if (!announcement) {
+			throw new Error('Banner not found');
+		}
 
-		const announcement = await Banners.findOneById<Pick<IBanner, 'surface'>>(viewId, { projection: { surface: 1 } });
+		await Banner.dismiss(userId, announcement._id);
 
-		const type = announcement?.surface === 'banner' ? 'banner.close' : 'modal.close';
+		const type = announcement.surface === 'banner' ? 'banner.close' : 'modal.close';
 
 		// for viewClosed we just need to let Cloud know that the banner was closed, no need to wait for the response
 
@@ -74,11 +87,13 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			type,
 			triggerId: payload.triggerId,
 			appId: payload.appId,
-			viewId,
+			viewId: announcement._id,
 		};
 	}
 
-	protected async handlePayload(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction | void> {
+	protected async handlePayload(
+		payload: UiKitCoreAppBlockActionPayload | UiKitCoreAppViewSubmitPayload | UiKitCoreAppViewClosedPayload,
+	): Promise<UiKit.ServerInteraction | undefined> {
 		const interactant = this.getInteractant(payload);
 		const interaction = this.getInteraction(payload);
 
@@ -94,12 +109,15 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			}
 
 			return serverInteraction;
-		} catch (error) {
-			SystemLogger.error(error);
+		} catch (err) {
+			SystemLogger.error({ err });
+			return undefined;
 		}
 	}
 
-	protected getInteractant(payload: UiKitCoreAppPayload): CloudAnnouncementInteractant {
+	protected getInteractant(
+		payload: UiKitCoreAppBlockActionPayload | UiKitCoreAppViewSubmitPayload | UiKitCoreAppViewClosedPayload,
+	): CloudAnnouncementInteractant {
 		if (payload.user) {
 			return {
 				user: {
@@ -110,7 +128,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			};
 		}
 
-		if (payload.visitor) {
+		if ('visitor' in payload && payload.visitor) {
 			return {
 				visitor: {
 					id: payload.visitor.id,
@@ -128,7 +146,9 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 	/**
 	 * Transform the payload received from the Core App back to the format the UI sends from the client
 	 */
-	protected getInteraction(payload: UiKitCoreAppPayload): UiKit.UserInteraction {
+	protected getInteraction(
+		payload: UiKitCoreAppBlockActionPayload | UiKitCoreAppViewSubmitPayload | UiKitCoreAppViewClosedPayload,
+	): UiKit.UserInteraction {
 		if (payload.type === 'blockAction' && payload.container?.type === 'message') {
 			const {
 				actionId,
@@ -248,6 +268,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 				Authorization: `Bearer ${token}`,
 			},
 			body: JSON.stringify(request),
+			ignoreSsrfValidation: true,
 		});
 
 		if (!response.ok) {

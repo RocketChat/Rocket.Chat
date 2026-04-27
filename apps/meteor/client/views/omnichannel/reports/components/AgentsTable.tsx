@@ -1,7 +1,4 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	GenericTable,
 	GenericTableBody,
@@ -9,7 +6,9 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-} from '../../../../components/GenericTable';
+} from '@rocket.chat/ui-client';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type AgentsTableProps = {
 	data: {

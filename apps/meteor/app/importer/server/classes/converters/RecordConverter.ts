@@ -108,7 +108,11 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 	}
 
 	protected async saveError(importId: string, error: Error): Promise<void> {
-		this._logger.error(error);
+		this._logger.error({
+			msg: 'Import record conversion failed',
+			importId,
+			err: error,
+		});
 		this.saveErrorToMemory(importId, error);
 
 		if (!this._converterOptions.workInMemory) {
@@ -204,7 +208,7 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 		this.failedCount = 0;
 		this.newCount = 0;
 
-		for await (const record of records) {
+		for (const record of records) {
 			const { _id } = record;
 			if (this.aborted) {
 				return;
