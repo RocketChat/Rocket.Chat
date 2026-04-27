@@ -20,6 +20,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
+	const normalizedCode = code.replace(/\D/g, '');
 	const ref = useAutoFocus<HTMLInputElement>();
 
 	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
@@ -38,7 +39,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 
 	const onConfirmEmailCode = (e: SyntheticEvent): void => {
 		e.preventDefault();
-		onConfirm(code, Method.EMAIL);
+		onConfirm(normalizedCode, Method.EMAIL);
 	};
 
 	const onChange = ({ currentTarget }: ChangeEvent<HTMLInputElement>): void => {
@@ -55,7 +56,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 			title={t('Enter_authentication_code')}
 			onClose={onClose}
 			variant='warning'
-			confirmDisabled={!code}
+			confirmDisabled={!normalizedCode}
 			tagline={t('Email_two-factor_authentication')}
 			icon={null}
 		>
@@ -75,7 +76,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 							inputMode='numeric'
 						/>
 					</FieldRow>
-					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
+					{invalidAttempt && <FieldError>{t('Invalid_two_factor_code')}</FieldError>}
 				</Field>
 			</FieldGroup>
 			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small mbs={24}>
