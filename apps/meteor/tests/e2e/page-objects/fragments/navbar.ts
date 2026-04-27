@@ -87,7 +87,7 @@ export class Navbar {
 	}
 
 	get searchInput(): Locator {
-		return this.navbarSearchSection.getByRole('combobox').or(this.navbarSearchSection.getByRole('textbox', { name: 'Search rooms' }));
+		return this.navbarSearchSection.getByRole('combobox');
 	}
 
 	get searchList(): Locator {

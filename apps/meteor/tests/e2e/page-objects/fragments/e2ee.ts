@@ -37,13 +37,14 @@ abstract class E2EEBanner {
 
 export class SaveE2EEPasswordBanner extends E2EEBanner {
 	constructor(page: Page) {
-		super(page.getByRole('button', { name: /Save( your new)? E2EE password/ }));
+		super(page.getByRole('button', { name: 'Save your new E2EE password' }));
 	}
 }
 
 export class EnterE2EEPasswordBanner extends E2EEBanner {
 	constructor(page: Page) {
-		super(page.getByRole('button', { name: /Enter (your E2E|E2EE) password/ }));
+		// TODO: there is a typo in the default translation
+		super(page.getByRole('button', { name: 'Enter your E2E password' }));
 	}
 }
 
