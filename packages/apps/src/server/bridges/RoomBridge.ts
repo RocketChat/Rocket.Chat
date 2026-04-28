@@ -1,11 +1,7 @@
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
-import type {
-	GetMessagesSortableFields,
-	GetMessagesOptions,
-	GetRoomsFilters,
-	GetRoomsOptions,
-} from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
+import { GetMessagesSortableFields } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { BaseBridge } from './BaseBridge';
@@ -13,7 +9,8 @@ import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
 
-export type { GetMessagesSortableFields, GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };
+export { GetMessagesSortableFields };
+export type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };
 
 export abstract class RoomBridge extends BaseBridge {
 	public async doCreate(room: IRoom, members: Array<string>, appId: string): Promise<string> {
