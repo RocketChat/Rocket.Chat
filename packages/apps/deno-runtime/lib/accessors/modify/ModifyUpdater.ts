@@ -1,16 +1,16 @@
-import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater.ts';
-import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater.ts';
-import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater.ts';
-import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater.ts';
-import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder.ts';
-import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
+import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater';
+import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater';
+import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater';
+import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater';
+import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
+import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 
-import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper.ts';
-import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
+import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper';
+import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 import * as Messenger from '../../messenger.ts';
 

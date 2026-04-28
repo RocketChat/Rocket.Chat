@@ -1,7 +1,7 @@
-import type { IVideoConferenceBuilder } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceBuilder.ts';
-import type { IGroupVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference.ts';
+import type { IVideoConferenceBuilder } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceBuilder';
+import type { IGroupVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
 
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 import { require } from '../../../lib/require.ts';
 

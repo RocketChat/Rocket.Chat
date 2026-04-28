@@ -1,12 +1,12 @@
 import { LayoutBlock } from '@rocket.chat/ui-kit';
 
-import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder.ts';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
-import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks.ts';
+import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 
 import { BlockBuilder } from './BlockBuilder.ts';
 import { require } from '../../../lib/require.ts';

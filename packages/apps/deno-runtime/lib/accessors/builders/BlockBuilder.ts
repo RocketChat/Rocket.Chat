@@ -10,7 +10,7 @@ import type {
 	IImageBlock,
 	IInputBlock,
 	ISectionBlock,
-} from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks.ts';
+} from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import type {
 	BlockElementType as _BlockElementType,
 	IBlockElement,
@@ -23,8 +23,8 @@ import type {
 	IPlainTextInputElement,
 	ISelectElement,
 	IStaticSelectElement,
-} from '@rocket.chat/apps-engine/definition/uikit/blocks/Elements.ts';
-import type { ITextObject, TextObjectType as _TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects.ts';
+} from '@rocket.chat/apps-engine/definition/uikit/blocks/Elements';
+import type { ITextObject, TextObjectType as _TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { require } from '../../../lib/require.ts';

@@ -1,7 +1,7 @@
-import type { IMessageExtender } from '@rocket.chat/apps-engine/definition/accessors/IMessageExtender.ts';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
-import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment.ts';
+import type { IMessageExtender } from '@rocket.chat/apps-engine/definition/accessors/IMessageExtender';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment';
 
 import { require } from '../../../lib/require.ts';
 

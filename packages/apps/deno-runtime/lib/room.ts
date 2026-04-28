@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
 /** Minimal interface covering the only AppManager capability used by Room */
 interface IRoomManager {

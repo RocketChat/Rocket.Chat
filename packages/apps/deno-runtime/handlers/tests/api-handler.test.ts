@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.ts';
+import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
 import { assertEquals, assertObjectMatch } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';

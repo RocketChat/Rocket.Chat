@@ -1,5 +1,5 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';

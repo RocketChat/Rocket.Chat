@@ -1,4 +1,4 @@
-import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.ts';
+import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';

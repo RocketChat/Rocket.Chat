@@ -1,22 +1,22 @@
-import type { IAppAccessors } from '@rocket.chat/apps-engine/definition/accessors/IAppAccessors.ts';
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata.ts';
-import type { IEnvironmentWrite } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentWrite.ts';
-import type { IEnvironmentRead } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentRead.ts';
-import type { IConfigurationModify } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationModify.ts';
-import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead.ts';
-import type { IModify } from '@rocket.chat/apps-engine/definition/accessors/IModify.ts';
-import type { INotifier } from '@rocket.chat/apps-engine/definition/accessors/INotifier.ts';
-import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence.ts';
-import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp.ts';
-import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationExtend.ts';
-import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand.ts';
-import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
-import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi.ts';
-import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+import type { IAppAccessors } from '@rocket.chat/apps-engine/definition/accessors/IAppAccessors';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata';
+import type { IEnvironmentWrite } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentWrite';
+import type { IEnvironmentRead } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentRead';
+import type { IConfigurationModify } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationModify';
+import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
+import type { IModify } from '@rocket.chat/apps-engine/definition/accessors/IModify';
+import type { INotifier } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
+import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
+import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
+import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationExtend';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
+import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor';
+import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider';
 import type {
 	IOutboundPhoneMessageProvider,
 	IOutboundEmailMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
 
 import { Http } from './http.ts';
 import { HttpExtend } from './extenders/HttpExtender.ts';

@@ -1,7 +1,7 @@
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand.ts';
-import type { SlashCommandContext as _SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.ts';
-import type { Room as _Room } from '@rocket.chat/apps-engine/server/rooms/Room.ts';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
+import type { SlashCommandContext as _SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
+import type { Room as _Room } from '@rocket.chat/apps-engine/server/rooms/Room';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';

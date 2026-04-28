@@ -1,6 +1,6 @@
-import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors/IHttp.ts';
-import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence.ts';
-import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead.ts';
+import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
+import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
+import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
 
 import * as Messenger from '../messenger.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';

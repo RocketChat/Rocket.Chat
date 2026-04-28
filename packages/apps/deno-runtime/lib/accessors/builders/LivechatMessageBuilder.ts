@@ -1,14 +1,14 @@
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
-import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 
-import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder.ts';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
-import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment.ts';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
-import type { ILivechatMessage as EngineLivechatMessage } from '@rocket.chat/apps-engine/definition/livechat/ILivechatMessage.ts';
-import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat/IVisitor.ts';
-import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder.ts';
+import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { ILivechatMessage as EngineLivechatMessage } from '@rocket.chat/apps-engine/definition/livechat/ILivechatMessage';
+import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat/IVisitor';
+import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
 
 import { MessageBuilder } from './MessageBuilder.ts';
 import { require } from '../../../lib/require.ts';
