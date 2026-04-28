@@ -1,4 +1,4 @@
-import type { IAppServerOrchestrator, IAppsLivechatMessage, IAppsMessage } from '@rocket.chat/apps';
+import type { IAppServerOrchestrator, IAppsLivechatMessage } from '@rocket.chat/apps';
 import { LivechatBridge } from '@rocket.chat/apps/server/bridges/LivechatBridge';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import type {
@@ -11,7 +11,7 @@ import type {
 } from '@rocket.chat/apps-engine/definition/livechat';
 import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
@@ -28,12 +28,6 @@ import { createRoom } from '../../../livechat/server/lib/rooms';
 import { online } from '../../../livechat/server/lib/service-status';
 import { transfer } from '../../../livechat/server/lib/transfer';
 import { settings } from '../../../settings/server';
-
-declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
-	export interface IAppMessagesConverter {
-		convertMessage(message: IMessage, cacheObj?: object): Promise<IAppsMessage>;
-	}
-}
 
 declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
 	interface IExtraRoomParams {
@@ -65,7 +59,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const guest = this.orch.getConverters().get('visitors').convertAppVisitor(message.visitor);
-		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
+		const appMessage = await this.orch.getConverters().get('messages').convertAppMessage(message);
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
 
 		const msg = await sendMessage({

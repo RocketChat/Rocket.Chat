@@ -1,6 +1,6 @@
-import type { IMarketplaceInfo } from '@rocket.chat/apps/server/marketplace';
-import type { IAppStorageItem } from '@rocket.chat/apps/server/storage';
-import { AppMetadataStorage } from '@rocket.chat/apps/server/storage';
+import type { IMarketplaceInfo } from '@rocket.chat/apps/server/marketplace/IMarketplaceInfo';
+import { AppMetadataStorage } from '@rocket.chat/apps/server/storage/AppMetadataStorage';
+import type { IAppStorageItem } from '@rocket.chat/apps/server/storage/IAppStorageItem';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
