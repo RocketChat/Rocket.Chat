@@ -222,7 +222,7 @@ jobs:
         run: |
           docker ps
 
-          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "NetworkBroker started successfully"; do
+          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -qE "(Moleculer|Nats)Broker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10

@@ -146,7 +146,7 @@ export function startMoleculerBroker(options: Moleculer.BrokerOptions = {}): Mol
 
 		errorRegenerator: new CustomRegenerator(),
 		started(): void {
-			console.log('NetworkBroker started successfully.');
+			console.log('MoleculerBroker started successfully.');
 		},
 		...options,
 	});
