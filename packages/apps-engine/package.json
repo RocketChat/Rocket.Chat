@@ -34,10 +34,6 @@
 			"email": "douglas.gubert@rocket.chat"
 		}
 	],
-	"exports": {
-		"./definition/*": "./definition/*.js",
-		"./lib/*": "./lib/*.js"
-	},
 	"files": [
 		"definition/**",
 		"lib/**"
