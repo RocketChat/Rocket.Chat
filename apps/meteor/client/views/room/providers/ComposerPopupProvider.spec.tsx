@@ -10,10 +10,10 @@ import { createFakeRoom } from '../../../../tests/mocks/data';
 const mockGrantedPermissions = new Set<string>();
 
 jest.mock('../../../../app/authorization/client', () => ({
-	hasAtLeastOnePermission: (permissions: string[] | string) => {
+	hasAtLeastOnePermission: (permissions: string[] | string, scope?: string) => {
 		const permissionList = Array.isArray(permissions) ? permissions : [permissions];
 
-		return permissionList.some((permission) => mockGrantedPermissions.has(permission));
+		return permissionList.some((permission) => mockGrantedPermissions.has(`${scope}:${permission}`));
 	},
 }));
 
@@ -38,10 +38,11 @@ const PopupOptionsConsumer = ({ onReady }: PopupOptionsConsumerProps) => {
 };
 
 const renderProvider = async (permissions: string[] = []) => {
-	mockGrantedPermissions.clear();
-	permissions.forEach((permission) => mockGrantedPermissions.add(permission));
+	const room = createFakeRoom({ _id: 'permission-scoped-room', t: 'c' });
 
-	const room = createFakeRoom({ t: 'c' });
+	mockGrantedPermissions.clear();
+	permissions.forEach((permission) => mockGrantedPermissions.add(`${room._id}:${permission}`));
+
 	const appRoot = mockAppRoot().build();
 
 	let popupOptions: ReturnType<typeof useComposerPopupOptions> | undefined;
