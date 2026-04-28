@@ -1,5 +1,5 @@
-import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '../rooms/IGetMessagesOptions';
 import type { IMessageRaw } from '../messages/index';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '../rooms/IGetMessagesOptions';
 import type { IRoom, IRoomRaw } from '../rooms/index';
 import type { IUser } from '../users/index';
 
