@@ -4,27 +4,36 @@ import { Meteor } from 'meteor/meteor';
 import { userIdStore } from '../../lib/user';
 
 /**
- * Permanently close the WebSocket that Meteor opens on boot.
+ * Reset Meteor.connection's revival/quiescence bookkeeping at boot.
  *
- * Every DDP method now flows through ddpOverREST (→ DDPSDK), every
- * subscription through subscribeViaSDK (→ DDPSDK), and every inbound
- * collection frame is replayed via ddpSdkCollectionBridge. That leaves
- * Meteor.connection._stream carrying only heartbeats and the initial
- * `connect` handshake — it's dead weight on the server.
+ * Meteor's bootstrap subscriptions (loginServiceConfiguration,
+ * autoupdate) are opened before our overrides load. Until those are
+ * "revived" against the live DDP session, `_waitingForQuiescence()`
+ * returns true and `_livedata_data` buffers every incoming frame
+ * instead of processing it — including the synthetic `updated` frame
+ * that ddpOverREST.processResult emits to drive method invoker
+ * callbacks. Wiping the revival/quiescence state lets that synthetic
+ * frame reach the invoker in the same tick.
  *
- * After permanent-disconnect, Meteor.connection still expects the next
- * connection to "revive" the subscriptions Meteor's own packages opened
- * before our overrides loaded (loginServiceConfiguration, autoupdate).
- * Until those are revived, _waitingForQuiescence() returns true and
- * _livedata_data buffers every incoming frame instead of processing
- * it. Clear the revival/quiescence state so the synthetic `updated`
- * frame ddpOverREST.processResult emits is processed in the same tick.
+ * NOTE: an earlier revision of this file also called
+ * `_stream.disconnect({ _permanent: true })` to make DDPSDK the sole
+ * transport. That broke `MethodInvoker.sendMessage()`'s
+ * `if (this.connection._stream._connected) { _send(...) }` gate — with
+ * the stream dead, sendMessage queues the invoker waiting for a
+ * connection that never returns and ddpOverREST's `_send` wrapper
+ * never fires for any method. Lying `_connected = true` after the
+ * disconnect makes `sendMessage` proceed but causes other Meteor
+ * internals to dispatch on the dead socket and crash the page. So
+ * Meteor's WS now stays connected — invokers reach `_send`, which
+ * ddpOverREST intercepts and routes to REST (or DDPSDK for `login`).
  */
-type PermanentDisconnect = { disconnect: (options: { _permanent: boolean }) => void };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const conn: any = Meteor.connection;
-const stream = conn._stream as PermanentDisconnect | undefined;
-stream?.disconnect({ _permanent: true });
+const conn = Meteor.connection as unknown as {
+	_subsBeingRevived: Record<string, unknown>;
+	_methodsBlockingQuiescence: Record<string, unknown>;
+	_messagesBufferedUntilQuiescence: unknown[];
+	_outstandingMethodBlocks: unknown[];
+	_methodInvokers: Record<string, unknown>;
+};
 
 conn._subsBeingRevived = Object.create(null);
 conn._methodsBlockingQuiescence = Object.create(null);
@@ -53,8 +62,7 @@ userIdStore.subscribe((next) => {
 	if (next === saw) return;
 	saw = next;
 	if (next) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(Accounts as any)._setLoggingIn?.(false);
+		(Accounts as unknown as { _setLoggingIn?: (v: boolean) => void })._setLoggingIn?.(false);
 	}
 });
 

@@ -2,19 +2,30 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { getUserId } from '../../lib/user';
 
-const bypassMethods: string[] = [];
+const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
 const isResumeLogin = ({ method, params }: Meteor.IDDPMessage): boolean => method === 'login' && Boolean(params?.[0]?.resume);
 
-const shouldBypass = ({ msg, method }: Meteor.IDDPMessage): boolean => {
+const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 	if (msg !== 'method') {
 		return true;
 	}
 
-	if (bypassMethods.includes(method)) {
+	// In microservices CI, ddp-streamer-service registers `login`, `logout`,
+	// `setUserStatus`, and `UserPresence:*` as native methods (configureServer.ts
+	// in ee/apps/ddp-streamer); every other method delegates to the Meteor
+	// service via callMethodWithToken (extra hop). Bypassing these to Meteor's
+	// own WS routes them straight to ddp-streamer for the fast path; routing
+	// them through REST would wedge them on the slow rocketchat-main path
+	// instead, blowing past the 5s `expect(...).toBeVisible()` timeouts the
+	// post-relogin tests rely on.
+	if (method === 'login' && params?.[0]?.resume) {
+		return true;
+	}
+
+	if (method.startsWith('UserPresence:') || bypassMethods.includes(method)) {
 		return true;
 	}
 
@@ -25,41 +36,16 @@ const shouldBypass = ({ msg, method }: Meteor.IDDPMessage): boolean => {
 	return false;
 };
 
-/**
- * DDPSDK can route a method call only when its socket is BOTH connected AND
- * the underlying DDP session is authenticated (or the method itself is the
- * login that performs that authentication). After a fresh re-login (logout →
- * login), the SDK socket is reconnected before sdk.account.loginWithToken
- * lands, so its session is briefly unauthenticated. If we route cached-store
- * gets (`private-settings/get`, `permissions/get`, etc.) through the SDK in
- * that window, the server treats them as anonymous and returns []. The
- * cached store then persists those empty arrays and the admin UI shows "No
- * results found". REST is safe in that window because it auths each request
- * via X-User-Id / X-Auth-Token cookies, which the resume token populated.
- */
-const isDdpSdkReady = (message: Meteor.IDDPMessage): boolean => {
-	const sdk = getDdpSdk();
-	if (sdk.connection.status !== 'connected') return false;
-	if (sdk.account.uid) return true;
-	// The login itself is the call that authenticates the socket — let it through.
-	return message.method === 'login';
-};
-
-/**
- * Route Meteor.apply DDP method calls through our SDK when it is live; fall
- * back to REST when DDPSDK hasn't handshaken yet. The collection frames the
- * server pushes in response land on DDPSDK's socket, which the
- * ddpSdkCollectionBridge override re-feeds into
- * Meteor.connection._streamHandlers so the Mongo.Collection registry keeps
- * updating as the user logs in.
- */
-const withDDPOverSDK = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]) => void) => {
-	return function _sendOverSDK(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]): void {
+const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]) => void) => {
+	return function _sendOverREST(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]): void {
 		if (shouldBypass(message)) {
 			return _send.call(this, message, ...args);
 		}
 
 		const processResult = (resultMessage: string): void => {
+			// Prevent error on reconnections and method retry: on those cases the
+			// API will be called twice but the handler is deleted after the first
+			// execution.
 			if (!this._methodInvokers[message.id]) {
 				return;
 			}
@@ -70,57 +56,33 @@ const withDDPOverSDK = (_send: (this: Meteor.IMeteorConnection, message: Meteor.
 			this._streamHandlers.onMessage(resultMessage);
 		};
 
-		if (isDdpSdkReady(message)) {
-			const params = Array.isArray(message.params) ? message.params : [];
-			const wasResumeLogin = isResumeLogin(message);
-			getDdpSdk()
-				.client.callAsync(message.method, ...params)
-				.then((result: unknown) => {
-					if (message.method === 'login') {
-						// Sync DDPSDK's account state with the login result so a downstream
-						// ensureConnectedAndAuthenticated call won't fire a second redundant
-						// login on the same socket.
-						adoptAccountFromMeteorLoginResult(result);
-					}
+		const wasResumeLogin = isResumeLogin(message);
 
-					if (
-						!wasResumeLogin &&
-						message.method === 'login' &&
-						typeof result === 'object' &&
-						result !== null &&
-						'token' in result &&
-						typeof (result as { token?: unknown }).token === 'string'
-					) {
-						Meteor.loginWithToken((result as { token: string }).token);
-					}
+		// Note on login routing: `login + resume` is bypassed in shouldBypass
+		// (handled by Meteor's own WS → ddp-streamer's native handler). Other
+		// login flavours (SAML credential exchange, password, OAuth) MUST route
+		// through REST below — never through the DDPSDK socket. ddp-streamer
+		// only exposes `login` natively for the resume shape; non-resume logins
+		// get delegated via MeteorService.callMethodWithToken (extra hop), and
+		// the SDK socket would also race the follow-up `Meteor.loginWithToken`
+		// resume that gets queued from the success handler — two logins on
+		// different sockets for the same user, with diverging account state.
+		// REST → rocketchat-main is one hop and lets the resume follow-up
+		// settle the SDK auth via ensureConnectedAndAuthenticated.
 
-					const resultMessage = DDPCommon.stringifyDDP({ msg: 'result', id: message.id, result } as Parameters<
-						typeof DDPCommon.stringifyDDP
-					>[0]);
-					processResult(resultMessage);
-				})
-				.catch((error: unknown) => {
-					const errorMessage = DDPCommon.stringifyDDP({
-						msg: 'result',
-						id: message.id,
-						error: error as Meteor.Error,
-					});
-					processResult(errorMessage);
-					console.error(error);
-				});
-			return;
-		}
-
-		// Fallback: DDPSDK still connecting / offline. Use REST so early-boot
-		// method calls (public settings, etc.) keep working.
-		const endpoint = !getUserId() ? 'method.callAnon' : 'method.call';
+		// Login itself is the call that establishes auth — running it through
+		// `method.call` would force the REST middleware to validate the very
+		// token we're trying to use, and the server would 401 with "You must
+		// be logged in" before even invoking the login method. The 401 then
+		// short-circuits the resume callback, leaving the stale token in
+		// localStorage and the user wedged on /home with no main UI.
+		const endpoint = !getUserId() || wasResumeLogin ? 'method.callAnon' : 'method.call';
 
 		const restParams = {
 			message: DDPCommon.stringifyDDP({ ...message }),
 		};
 
 		const method = encodeURIComponent(message.method.replace(/\//g, ':'));
-		const wasResumeLogin = isResumeLogin(message);
 
 		sdk.rest
 			.post(`/v1/${endpoint}/${method}`, restParams)
@@ -128,9 +90,8 @@ const withDDPOverSDK = (_send: (this: Meteor.IMeteorConnection, message: Meteor.
 				// Skip Meteor.loginWithToken on resume responses: Meteor itself called
 				// us with `login({resume})` and is already wiring up the new token via
 				// its invoker. Calling loginWithToken again would re-enter this _send
-				// override, dispatch another login method, and recurse — locking the
-				// boot in a loop of resume calls and leaving Meteor.loggingIn() pinned
-				// to true forever.
+				// override, dispatch another login method, and loop — locking the
+				// boot in a chain of resume calls and rate-limiting the server.
 				if (!wasResumeLogin && message.method === 'login') {
 					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
@@ -139,13 +100,32 @@ const withDDPOverSDK = (_send: (this: Meteor.IMeteorConnection, message: Meteor.
 				}
 				processResult(_message);
 			})
-			.catch(async (error) => {
-				if ('message' in error && error.message) {
-					processResult(error.message);
-				}
+			.catch((error: unknown) => {
+				// The Rocket.Chat REST middleware throws the parsed JSON body, which
+				// is shaped like { success: false, error, status, message } for a 401
+				// — NOT as a DDP-encoded result frame. If we feed `error.message`
+				// (just a plain string) to processResult, Meteor's `_streamHandlers`
+				// can't parse it and the invoker never sees the rejection: the
+				// stored token stays in localStorage, Meteor.userId() stays set, and
+				// the user is wedged on /home with no main UI and no login form.
+				// Re-encode it as a proper DDP error result so Accounts' resume
+				// callback runs and clears the stale credentials.
+				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
+				const errorMessage = DDPCommon.stringifyDDP({
+					msg: 'result',
+					id: message.id,
+					error: {
+						isClientSafe: true,
+						error: e.error ?? 'unknown',
+						reason: (e.reason as string) ?? (e.message as string) ?? 'Unknown error',
+						message: (e.message as string) ?? (e.reason as string) ?? 'Unknown error',
+						errorType: 'Meteor.Error',
+					} as unknown as Meteor.Error,
+				});
+				processResult(errorMessage);
 				console.error(error);
 			});
 	};
 };
 
-Meteor.connection._send = withDDPOverSDK(Meteor.connection._send);
+Meteor.connection._send = withDDPOverREST(Meteor.connection._send);

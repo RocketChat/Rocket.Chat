@@ -2,6 +2,7 @@ import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../../../client/lib/sdk/ddpSdk';
@@ -45,26 +46,49 @@ const createNewDdpSdkStream = (
 	}>();
 	const meta = { ready: false };
 
-	const sdk = getDdpSdk();
-	const subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+	// Defer the actual `subscribe` until DDPSDK is authenticated. Without this,
+	// stream subscriptions fired immediately after re-login (e.g. the
+	// SubscriptionsCachedStore's `notify-user/<uid>/subscriptions-changed`
+	// listener that re-arms via onLoggedIn) hit the SDK socket while it's
+	// still anonymous — server rejects with `not-allowed`/`nosub`, the
+	// stream's `ready` promise emits an error, and the cached store never
+	// receives subsequent server events. The visible failure: an agent that
+	// just took a livechat chat post-relogin sees the chat work but the
+	// "Move to the queue" button never appears, because the new subscription
+	// the server creates for that agent is never replicated to the client's
+	// Subscriptions store, and pseudoRoom (= {...sub, ...room}) ends up with
+	// no `u` for the canMoveQueue check.
+	let subscription: ReturnType<ReturnType<typeof getDdpSdk>['client']['subscribe']> | undefined;
+	let offCollection: (() => void) | undefined;
+	let stopped = false;
 
-	subscription
-		.ready()
+	void ensureConnectedAndAuthenticated()
+		.catch(() => undefined)
 		.then(() => {
-			meta.ready = true;
-			ee.emit('ready', [undefined, { msg: 'ready', subs: [subscription.id] }]);
-		})
-		.catch((err) => {
-			ee.emit('ready', [err]);
-			ee.emit('error', err);
-		});
+			if (stopped) return;
+			const sdk = getDdpSdk();
+			subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
 
-	const offCollection = sdk.client.onCollection(`stream-${streamName}`, (data: any) => {
-		if (data?.msg !== 'changed') return;
-		if (data.collection !== `stream-${streamName}`) return;
-		if (data.fields?.eventName !== key) return;
-		streamProxy.emit(`stream-${streamName}/${key}` as keyof EventMap, data.fields.args);
-	});
+			subscription
+				.ready()
+				.then(() => {
+					if (stopped) return;
+					meta.ready = true;
+					ee.emit('ready', [undefined, { msg: 'ready', subs: [subscription!.id] }]);
+				})
+				.catch((err) => {
+					if (stopped) return;
+					ee.emit('ready', [err]);
+					ee.emit('error', err);
+				});
+
+			offCollection = sdk.client.onCollection(`stream-${streamName}`, (data: any) => {
+				if (data?.msg !== 'changed') return;
+				if (data.collection !== `stream-${streamName}`) return;
+				if (data.fields?.eventName !== key) return;
+				streamProxy.emit(`stream-${streamName}/${key}` as keyof EventMap, data.fields.args);
+			});
+		});
 
 	const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
 		if (meta.ready) {
@@ -86,8 +110,9 @@ const createNewDdpSdkStream = (
 			// 'stop' event (onStop is reserved for server-initiated closures).
 			// Emitting it here would recurse through the onStop handler that
 			// createStreamManager registers, which itself iterates the unsubList.
-			offCollection();
-			subscription.stop();
+			stopped = true;
+			offCollection?.();
+			subscription?.stop();
 		},
 		onChange,
 		ready: () => {
@@ -209,18 +234,12 @@ export const createSDK = (rest: RestClientInterface) => {
 		void getDdpSdk().client.callAsync(`stream-${name}`, ...args);
 	};
 
-	const call = async <T extends keyof ServerMethods>(
-		method: T,
-		...args: Parameters<ServerMethods[T]>
-	): Promise<ReturnType<ServerMethods[T]>> => {
-		// Block on the SDK socket being connected and (if a stored token exists)
-		// authenticated before dispatching. Without this, on a fresh re-login
-		// (logout → login) the cached-store gets fire on the SDK socket BEFORE
-		// sdk.account.loginWithToken lands. The server treats them as anonymous
-		// and returns empty arrays; the cached stores persist the empty result
-		// and the admin UI shows "No results found" until next reload.
-		await ensureConnectedAndAuthenticated();
-		return getDdpSdk().client.callAsync(method, ...args) as ReturnType<ServerMethods[T]>;
+	// Methods route through Meteor.callAsync which goes through
+	// Meteor.connection._send → ddpOverREST → REST. Going via the DDPSDK
+	// socket directly would bypass that wrapper and hit the same
+	// authenticated-but-empty-result race the cached stores caught.
+	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
+		return Meteor.callAsync(method, ...args);
 	};
 
 	return {

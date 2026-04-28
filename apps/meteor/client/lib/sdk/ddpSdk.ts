@@ -1,5 +1,6 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { userIdStore } from '../user';
@@ -25,7 +26,6 @@ const applyEjsonEncoding = (sdk: DDPSDK): void => {
 const startConnect = (sdk: DDPSDK): Promise<unknown> => {
 	if (connectPromise) return connectPromise;
 	connectPromise = sdk.connection.connect().catch((err) => {
-		// eslint-disable-next-line no-console
 		console.warn('[ddpSdk] connect failed', err);
 		// Allow a retry on the next call.
 		connectPromise = undefined;
@@ -82,24 +82,24 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 		await sdk.account.loginWithToken(token);
 	} catch (error) {
 		if (isAuthError(error) && readStoredLoginToken() === token) {
-			// Server rejected the stored token (revoked via force-logout, expired,
-			// or user deleted). Without this branch we'd silently swallow the
-			// error and the UI would think it's still authenticated — the test
-			// suite caught this as e.g. e2ee-passphrase-management not landing on
-			// /login after `e2e.resetOwnE2EKey` blanked the user's loginTokens.
-			// The token-stable guard (readStoredLoginToken() === token) avoids
-			// kicking the user out when localStorage was updated mid-flight by
-			// a parallel flow (fresh registration, Meteor's own resume): the
-			// 401 is then on a stale token a newer login already replaced.
-			// Drive Meteor's logout flow so onLogout callbacks fire (cached
-			// stores cleared, router redirects to login). Meteor.logout() will
-			// dispatch a `logout` method server-side which the dead session
-			// will reject — that's fine, the client-side cleanup runs either
-			// way.
-			Meteor.logout();
+			// Server rejected the stored token. Without this branch the stored
+			// token stays in localStorage forever and the router keeps the user
+			// wedged on /home with no main UI and no login form: ddpOverREST
+			// routes Meteor's resume login through DDPSDK / REST (not Meteor's
+			// own WS), and on rejection the resume invoker errors but the
+			// account state isn't cleared automatically. The token-stable
+			// guard (readStoredLoginToken() === token) avoids kicking the user
+			// out when localStorage was updated mid-flight by a parallel flow
+			// (fresh registration, Meteor's own resume) — the 401 is then on a
+			// stale token a newer credential already replaced. Drop the local
+			// credentials manually instead of calling Meteor.logout(): the
+			// latter dispatches a `logout` method which itself races against
+			// parallel re-auth flows in CI's parallel-shard environment and
+			// kicked otherwise-healthy tests out.
+			Accounts._unstoreLoginToken();
+			(Meteor.connection as unknown as { setUserId: (uid: string | null) => void }).setUserId(null);
 			return;
 		}
-		// eslint-disable-next-line no-console
 		console.warn('[ddpSdk] loginWithToken failed', error);
 	}
 };
