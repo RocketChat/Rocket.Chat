@@ -6,7 +6,7 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 interface IRoomManager {
 	getBridges(): {
 		getInternalBridge(): {
-			doGetUsernamesOfRoomById(id: string | undefined): Promise<Array<string>>;
+			doGetUsernamesOfRoomById(id: string): Promise<Array<string>>;
 		};
 	};
 }
@@ -50,6 +50,8 @@ export class Room {
 	 * @deprecated
 	 */
 	public get usernames(): Promise<Array<string>> {
+		if (!this.id) return Promise.resolve([]);
+
 		if (!this._USERNAMES) {
 			this._USERNAMES = this[PrivateManager]?.getBridges().getInternalBridge().doGetUsernamesOfRoomById(this.id);
 		}
