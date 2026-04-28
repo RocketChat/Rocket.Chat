@@ -14,6 +14,7 @@ import type {
 	IMedsensePharmacy,
 } from '@rocket.chat/core-typings';
 import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from 'crypto';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import {
 	MedsensePharmacies,
 	MedsensePharmacyMemberships,
@@ -30,6 +31,7 @@ import {
 	Users,
 	Rooms,
 	Messages,
+	Uploads,
 	Subscriptions,
 	Roles,
 } from '@rocket.chat/models';
@@ -38,6 +40,7 @@ import { check, Match } from 'meteor/check';
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { Cookies } from 'meteor/ostrio:cookies';
 import { Apps } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -53,6 +56,7 @@ import { ensureUserInRoom } from '../../../lib/server/functions/ensureUserInRoom
 import { checkEmailAvailability } from '../../../lib/server/functions/checkEmailAvailability';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { loadMessageHistory } from '../../../lib/server/functions/loadMessageHistory';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
@@ -69,6 +73,9 @@ import { registerUser } from '../../../../server/methods/registerUser';
 import { API } from '../api';
 import * as Mailer from '../../../mailer/server/api';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { omit } from '../../../../lib/utils/omit';
+
+const medsenseCookieParser = new Cookies();
 
 type MedsenseRegistrationStatus = 'pending' | 'verified' | 'locked' | 'completed' | 'expired';
 
@@ -418,7 +425,20 @@ const buildAfterHoursVoicemailInstruction = ({
 const normalizeRecordingStatus = (value: unknown): 'completed' | 'in-progress' | 'absent' | 'failed' | 'unknown' => {
 	const normalized = String(value || '')
 		.trim()
-		.toLowerCase();
+		.toLowerCase()
+		.replace(/\s+/g, '_');
+	if (['finished', 'success'].includes(normalized)) {
+		return 'completed';
+	}
+	if (normalized === 'no_input') {
+		return 'absent';
+	}
+	if (normalized === 'error') {
+		return 'failed';
+	}
+	if (normalized === 'in_progress') {
+		return 'in-progress';
+	}
 	if (['completed', 'in-progress', 'absent', 'failed'].includes(normalized)) {
 		return normalized as 'completed' | 'in-progress' | 'absent' | 'failed';
 	}
@@ -520,7 +540,89 @@ const uploadAfterHoursVoicemailRecording = async ({
 		buffer,
 	);
 	uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+	await Uploads.updateFileComplete(uploadedFile._id, userId, omit(uploadedFile, '_id'));
 	return uploadedFile;
+};
+
+const resolveAuthenticatedRequestUserId = async (request: Request, userId?: string | null): Promise<string> => {
+	if (userId) {
+		return userId;
+	}
+
+	const cookieHeader = request.headers.get('cookie') || '';
+	const resolvedUserId = request.headers.get('x-user-id') || medsenseCookieParser.get('rc_uid', cookieHeader) || '';
+	const authToken = request.headers.get('x-auth-token') || medsenseCookieParser.get('rc_token', cookieHeader) || '';
+	if (!resolvedUserId || !authToken) {
+		return '';
+	}
+
+	const user = await Users.findOneByIdAndLoginToken(resolvedUserId, hashLoginToken(authToken), { projection: { _id: 1 } });
+	return user?._id || '';
+};
+
+const buildAudioPlaybackResponse = (buffer: Buffer, contentType: string, rangeHeader?: string | null) => {
+	const size = buffer.length;
+	const headers: Record<string, string> = {
+		'Content-Type': normalizeVoiceRecordingContentType(contentType),
+		'Accept-Ranges': 'bytes',
+		'Cache-Control': 'no-store',
+	};
+
+	if (!rangeHeader) {
+		return {
+			statusCode: 200,
+			headers: {
+				...headers,
+				'Content-Length': String(size),
+			},
+			body: buffer,
+		};
+	}
+
+	const match = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader.trim());
+	if (!match || size <= 0) {
+		return {
+			statusCode: 416,
+			headers: {
+				...headers,
+				'Content-Range': `bytes */${size}`,
+			},
+			body: '',
+		};
+	}
+
+	const [, rawStart, rawEnd] = match;
+	let start = rawStart ? Number.parseInt(rawStart, 10) : 0;
+	let end = rawEnd ? Number.parseInt(rawEnd, 10) : size - 1;
+
+	if (!rawStart && rawEnd) {
+		const suffixLength = Number.parseInt(rawEnd, 10);
+		start = Math.max(size - suffixLength, 0);
+		end = size - 1;
+	}
+
+	if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end < start || start >= size) {
+		return {
+			statusCode: 416,
+			headers: {
+				...headers,
+				'Content-Range': `bytes */${size}`,
+			},
+			body: '',
+		};
+	}
+
+	end = Math.min(end, size - 1);
+	const body = buffer.subarray(start, end + 1);
+	return {
+		statusCode: 206,
+		headers: {
+			...headers,
+			'Content-Length': String(body.length),
+			'Content-Range': `bytes ${start}-${end}/${size}`,
+		},
+		body,
+	};
 };
 
 const DOCUMENTATION_SECTION_TYPES = new Set([
@@ -7886,8 +7988,16 @@ API.v1.addRoute(
 
 			const botUsername = String(settings.get<string>('Medsense_Bot_User') || 'bot').trim();
 			const botUser = await Users.findOneByUsernameIgnoringCase(botUsername, { projection: { _id: 1, username: 1, name: 1, type: 1 } });
-			if (!botUser?._id) {
-				return API.v1.failure('Medsense bot user not found');
+			const botUserId = String(botUser?._id || '');
+			let botUserError: string | null = null;
+			if (!botUserId) {
+				botUserError = `Medsense bot user not found: ${botUsername}`;
+				console.error('[MedsenseVoice] after-hours voicemail bot user unavailable', {
+					roomId,
+					requestId,
+					sessionId,
+					botUsername,
+				});
 			}
 
 			const transcriptRecords = Array.isArray((voice as any).transcriptRecords) ? (voice as any).transcriptRecords : [];
@@ -7896,49 +8006,44 @@ API.v1.addRoute(
 				.find((record: any) => record?.afterHoursVoicemail && (!sessionId || !record?.sessionId || record.sessionId === sessionId));
 			let transcriptMessageId = latestTranscriptRecord?.messageId || null;
 			const resolvedTranscriptText = transcriptText || latestTranscriptRecord?.text || '';
-			if (transcriptText && !latestTranscriptRecord) {
-				const transcriptMessage = await sendMessage(
-					botUser,
-					{
-						rid: roomId,
-						msg: `[After-hours voicemail transcript] ${transcriptText}`,
-					},
-					room,
-				);
-				transcriptMessageId = (transcriptMessage as any)?._id || null;
+			if (transcriptText && !latestTranscriptRecord && botUserId && botUser) {
+				try {
+					const transcriptMessage = await sendMessage(
+						botUser,
+						{
+							rid: roomId,
+							msg: `[After-hours voicemail transcript] ${transcriptText}`,
+						},
+						room,
+					);
+					transcriptMessageId = (transcriptMessage as any)?._id || null;
+				} catch (error: any) {
+					console.error('[MedsenseVoice] after-hours voicemail transcript message failed', {
+						roomId,
+						requestId,
+						sessionId,
+						error: String(error?.message || error || 'Transcript message failed'),
+					});
+				}
 			}
 
 			let uploadedFile: any = null;
 			let fileMessageId: string | null = null;
 			let uploadError: string | null = null;
-			const canDownloadRecording = recordingStatus !== 'absent' && recordingStatus !== 'failed' && Boolean(recordingUrl);
+			let fileMessageError: string | null = null;
+			let noteMessageError: string | null = null;
+			const canDownloadRecording = recordingStatus !== 'absent' && recordingStatus !== 'failed' && Boolean(recordingUrl) && Boolean(botUserId);
 			if (canDownloadRecording) {
 				try {
 					const recording = await downloadVoiceRecording(recordingUrl, String((payload as any).contentType || ''));
 					uploadedFile = await uploadAfterHoursVoicemailRecording({
 						roomId,
-						userId: botUser._id,
+						userId: botUserId,
 						recordingSid: recordingSid || eventId || null,
 						buffer: recording.buffer,
 						contentType: recording.contentType,
 						durationSeconds,
 					});
-					await sendFileMessage(
-						botUser._id,
-						{
-							roomId,
-							file: uploadedFile,
-							msgData: {
-								msg:
-									typeof durationSeconds === 'number' && Number.isFinite(durationSeconds)
-										? `[Voice] After-hours voicemail audio (${durationSeconds}s).`
-										: '[Voice] After-hours voicemail audio.',
-							},
-						},
-						{ parseAttachmentsForE2EE: false },
-					);
-					const fileMessage = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, botUser._id);
-					fileMessageId = String((fileMessage as any)?._id || '');
 				} catch (error: any) {
 					uploadError = String(error?.message || error || 'Recording storage failed');
 					console.error('[MedsenseVoice] after-hours voicemail recording storage failed', {
@@ -7949,26 +8054,70 @@ API.v1.addRoute(
 						error: uploadError,
 					});
 				}
+				if (uploadedFile?._id) {
+					try {
+						await sendFileMessage(
+							botUserId,
+							{
+								roomId,
+								file: uploadedFile,
+								msgData: {
+									msg:
+										typeof durationSeconds === 'number' && Number.isFinite(durationSeconds)
+											? `[Voice] After-hours voicemail audio (${durationSeconds}s).`
+											: '[Voice] After-hours voicemail audio.',
+								},
+							},
+							{ parseAttachmentsForE2EE: false },
+						);
+						const fileMessage = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, botUserId);
+						fileMessageId = String((fileMessage as any)?._id || '');
+					} catch (error: any) {
+						fileMessageError = String(error?.message || error || 'Recording file message failed');
+						console.error('[MedsenseVoice] after-hours voicemail file message failed', {
+							roomId,
+							requestId,
+							sessionId,
+							recordingSid,
+							uploadId: uploadedFile._id,
+							error: fileMessageError,
+						});
+					}
+				}
 			}
 
-			if (!uploadedFile) {
+			if (!uploadedFile && botUserId && botUser) {
 				const reason =
 					recordingStatus === 'absent'
 						? 'SignalWire reported no voicemail audio was captured.'
 						: uploadError
 							? `Voicemail audio could not be stored: ${uploadError}`
 							: 'Voicemail recording URL was not provided.';
-				await sendMessage(
-					botUser,
-					{
-						rid: roomId,
-						msg: `[Voice] After-hours voicemail ended. ${reason}`,
-					},
-					room,
-				);
+				try {
+					await sendMessage(
+						botUser,
+						{
+							rid: roomId,
+							msg: `[Voice] After-hours voicemail ended. ${reason}`,
+						},
+						room,
+					);
+				} catch (error: any) {
+					noteMessageError = String(error?.message || error || 'Voicemail room note failed');
+					console.error('[MedsenseVoice] after-hours voicemail room note failed', {
+						roomId,
+						requestId,
+						sessionId,
+						recordingSid,
+						error: noteMessageError,
+					});
+				}
 			}
 
 			const nowIso = new Date().toISOString();
+			const storageError =
+				uploadError ||
+				(recordingUrl && recordingStatus !== 'absent' && recordingStatus !== 'failed' && !botUserId ? botUserError : null);
 			const voicemailRecord = {
 				eventId: eventId || null,
 				recordingSid: recordingSid || null,
@@ -7980,7 +8129,9 @@ API.v1.addRoute(
 				fileMessageId: fileMessageId || null,
 				transcriptMessageId,
 				transcriptText: resolvedTranscriptText || null,
-				storageError: uploadError,
+				storageError,
+				fileMessageError,
+				noteMessageError,
 				receivedAt: nowIso,
 			};
 			const nextProcessedEventIds = [...processedEventIds, ...eventIds].filter(Boolean).slice(-500);
@@ -8002,27 +8153,51 @@ API.v1.addRoute(
 
 			const linkedRequestId = requestId || String((room as any).medsenseActiveRequestId || '').trim();
 			let afterHoursNotifications = null;
+			let afterHoursNotificationError: string | null = null;
 			if (linkedRequestId) {
-				const request = await MedsenseRequests.findOne({ _id: linkedRequestId });
-				const pharmacyId = String((request as any)?.pharmacyId || '').trim();
-				const pharmacy = pharmacyId ? await MedsensePharmacies.findOneById(pharmacyId) : null;
-				if (request && pharmacy) {
-					afterHoursNotifications = await sendAfterHoursNotificationsForVoicemail({
-						pharmacy,
-						requestId: linkedRequestId,
-						voice: nextVoice,
-						transcriptText: resolvedTranscriptText,
-						recordingAvailable: Boolean(uploadedFile),
-					});
-					await MedsenseRequests.updateOne(
-						{ _id: linkedRequestId },
-						{
-							$set: {
-								afterHoursNotifications,
-								_updatedAt: new Date(),
+				try {
+					const request = await MedsenseRequests.findOne({ _id: linkedRequestId });
+					const pharmacyId = String((request as any)?.pharmacyId || '').trim();
+					const pharmacy = pharmacyId ? await MedsensePharmacies.findOneById(pharmacyId) : null;
+					if (request && pharmacy) {
+						afterHoursNotifications = await sendAfterHoursNotificationsForVoicemail({
+							pharmacy,
+							requestId: linkedRequestId,
+							voice: nextVoice,
+							transcriptText: resolvedTranscriptText,
+							recordingAvailable: Boolean(uploadedFile),
+						});
+						await MedsenseRequests.updateOne(
+							{ _id: linkedRequestId },
+							{
+								$set: {
+									afterHoursNotifications,
+									_updatedAt: new Date(),
+								},
 							},
-						},
-					);
+						);
+					}
+				} catch (error: any) {
+					afterHoursNotificationError = String(error?.message || error || 'After-hours notification failed');
+					console.error('[MedsenseVoice] after-hours voicemail notification failed', {
+						roomId,
+						requestId: linkedRequestId,
+						sessionId,
+						error: afterHoursNotificationError,
+					});
+					try {
+						await MedsenseRequests.updateOne(
+							{ _id: linkedRequestId },
+							{
+								$set: {
+									afterHoursNotificationError,
+									_updatedAt: new Date(),
+								},
+							},
+						);
+					} catch {
+						// The recording webhook is already acknowledged; request metadata can be repaired separately.
+					}
 				}
 			}
 
@@ -8036,7 +8211,72 @@ API.v1.addRoute(
 				fileMessageId,
 				transcriptMessageId,
 				afterHoursNotifications,
+				afterHoursNotificationError,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/voice.voicemail.playback',
+	{ authRequired: false },
+	{
+		async get() {
+			check(this.queryParams, Match.ObjectIncluding({ roomId: String, uploadId: String }));
+
+			const roomId = String(this.queryParams.roomId || '').trim();
+			const uploadId = String(this.queryParams.uploadId || '').trim();
+			if (!roomId || !uploadId) {
+				return API.v1.failure('Missing roomId or uploadId');
+			}
+
+			const playbackUserId = await resolveAuthenticatedRequestUserId(this.request, this.userId);
+			if (!playbackUserId) {
+				return API.v1.unauthorized('Unauthorized');
+			}
+
+			const room = await Rooms.findOneById(roomId, {
+				projection: {
+					_id: 1,
+					medsenseSessionInfo: 1,
+				},
+			});
+			if (!room?._id) {
+				return API.v1.notFound('Room not found');
+			}
+
+			const canViewMedsenseRequests = await hasPermissionAsync(playbackUserId, 'medsense-view-request');
+			const canAccessRoom = await canAccessRoomIdAsync(roomId, playbackUserId);
+			if (!canViewMedsenseRequests && !canAccessRoom) {
+				return API.v1.forbidden('Not allowed to access voicemail audio');
+			}
+
+			const sessionInfo = _normalizeSessionInfo((room as any).medsenseSessionInfo);
+			const voicemailRecords = Array.isArray((sessionInfo.voice as any)?.voicemailRecords)
+				? (sessionInfo.voice as any).voicemailRecords
+				: [];
+			const voicemailRecord = voicemailRecords.find((record: any) => String(record?.uploadId || '') === uploadId);
+			if (!voicemailRecord) {
+				return API.v1.notFound('Voicemail recording not found');
+			}
+
+			const file = await Uploads.findOneById(uploadId);
+			if (!file?._id || file.rid !== roomId) {
+				return API.v1.notFound('Voicemail audio file not found');
+			}
+
+			const rawContentType = String(file.type || '')
+				.split(';')[0]
+				.trim()
+				.toLowerCase();
+			if (!/^audio\/[a-z0-9.+-]+$/.test(rawContentType)) {
+				return API.v1.failure('Voicemail upload is not an audio file');
+			}
+
+			const contentType = normalizeVoiceRecordingContentType(rawContentType);
+			const buffer = await FileUpload.getBuffer(file);
+			const rangeHeader = this.request.headers.get('range');
+			return buildAudioPlaybackResponse(buffer, contentType, rangeHeader) as any;
 		},
 	},
 );

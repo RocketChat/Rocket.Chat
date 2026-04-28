@@ -38,6 +38,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import PatientUserAutoComplete from './PatientUserAutoComplete';
+import { getURL } from '../../../../app/utils/client';
 import '../uikit/medsenseUIKit.css';
 
 const useFormatDate = () => {
@@ -166,7 +167,20 @@ const previewTagVariant = (kind: string) => {
 	}
 };
 
-const normalizePreviewVoicemailRecords = (sessionInfo: any) => {
+const buildPreviewVoicemailPlaybackUrl = (roomId: string | undefined, uploadId: unknown): string | null => {
+	const safeRoomId = String(roomId || '').trim();
+	const safeUploadId = String(uploadId || '').trim();
+	if (!safeRoomId || !safeUploadId) {
+		return null;
+	}
+
+	return getURL(
+		`/api/v1/medsense/voice.voicemail.playback?roomId=${encodeURIComponent(safeRoomId)}&uploadId=${encodeURIComponent(safeUploadId)}`,
+		{ cdn: false },
+	);
+};
+
+const normalizePreviewVoicemailRecords = (sessionInfo: any, roomId?: string) => {
 	const records = Array.isArray(sessionInfo?.voice?.voicemailRecords) ? sessionInfo.voice.voicemailRecords : [];
 	return records
 		.map((record: any) => ({
@@ -175,7 +189,8 @@ const normalizePreviewVoicemailRecords = (sessionInfo: any) => {
 			durationSeconds: typeof record?.durationSeconds === 'number' ? record.durationSeconds : Number(record?.durationSeconds || 0) || null,
 			recordingStatus: String(record?.recordingStatus || 'unknown'),
 			uploadUrl: typeof record?.uploadUrl === 'string' && record.uploadUrl.trim() ? record.uploadUrl.trim() : null,
-			uploadId: record?.uploadId || null,
+			uploadId: typeof record?.uploadId === 'string' && record.uploadId.trim() ? record.uploadId.trim() : null,
+			playbackUrl: buildPreviewVoicemailPlaybackUrl(roomId, record?.uploadId),
 			transcriptText: typeof record?.transcriptText === 'string' && record.transcriptText.trim() ? record.transcriptText.trim() : '',
 			storageError: typeof record?.storageError === 'string' && record.storageError.trim() ? record.storageError.trim() : '',
 		}))
@@ -256,6 +271,7 @@ const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => 
 	const getRoomSessionInfo = useEndpoint('GET', '/v1/medsense/room.sessionInfo');
 	const getRoomPreview = useEndpoint('GET', '/v1/medsense/room.preview');
 	const [pastAnswerIndex, setPastAnswerIndex] = useState(0);
+	const [voicemailPlaybackErrors, setVoicemailPlaybackErrors] = useState<Record<string, string>>({});
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['queue-preview-modal', request?.roomId],
@@ -280,13 +296,20 @@ const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => 
 		return typeof data?.sessionInfo?.summary?.text === 'string' ? data.sessionInfo.summary.text : '';
 	}, [data?.sessionInfo]);
 	const pastAnswers = useMemo(() => normalizePreviewPastAnswers(data?.sessionInfo), [data?.sessionInfo]);
-	const voicemailRecords = useMemo(() => normalizePreviewVoicemailRecords(data?.sessionInfo), [data?.sessionInfo]);
+	const voicemailRecords = useMemo(
+		() => normalizePreviewVoicemailRecords(data?.sessionInfo, request?.roomId),
+		[data?.sessionInfo, request?.roomId],
+	);
 	const activePastAnswer = pastAnswers[clampPreviewIndex(pastAnswerIndex, pastAnswers.length)];
 	const themeClass = isDarkMode ? 'medsenseUIKit--theme-dark' : 'medsenseUIKit--theme-light';
 
 	useEffect(() => {
 		setPastAnswerIndex((current) => clampPreviewIndex(current, pastAnswers.length));
 	}, [pastAnswers.length]);
+
+	useEffect(() => {
+		setVoicemailPlaybackErrors({});
+	}, [request?.roomId]);
 
 	return (
 		<Modal {...({ style: { width: 'min(960px, 92vw)' } } as any)}>
@@ -388,41 +411,60 @@ const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => 
 								After-hours voicemail
 							</Box>
 							<Box display='flex' flexDirection='column' gap='x12'>
-								{voicemailRecords.map((record: any) => (
-									<Box
-										key={record.id}
-										p='x12'
-										borderRadius='x8'
-										bg='surface-light'
-										{...({ style: { border: '1px solid var(--rcx-color-stroke-light)' } } as any)}
-									>
-										<Box display='flex' justifyContent='space-between' alignItems='center' gap='x8' mbe='x8' flexWrap='wrap'>
-											<Box display='flex' alignItems='center' gap='x8' flexWrap='wrap'>
-												<Tag variant={record.uploadUrl ? ('featured' as any) : ('secondary-warning' as any)}>
-													{record.uploadUrl ? 'audio ready' : record.recordingStatus}
-												</Tag>
-												{record.durationSeconds ? <Tag variant='secondary'>{Math.round(record.durationSeconds)}s</Tag> : null}
+								{voicemailRecords.map((record: any) => {
+									const playbackError = voicemailPlaybackErrors[record.id];
+									return (
+										<Box
+											key={record.id}
+											p='x12'
+											borderRadius='x8'
+											bg='surface-light'
+											{...({ style: { border: '1px solid var(--rcx-color-stroke-light)' } } as any)}
+										>
+											<Box display='flex' justifyContent='space-between' alignItems='center' gap='x8' mbe='x8' flexWrap='wrap'>
+												<Box display='flex' alignItems='center' gap='x8' flexWrap='wrap'>
+													<Tag variant={record.uploadId ? ('featured' as any) : ('secondary-warning' as any)}>
+														{record.uploadId ? 'audio ready' : record.recordingStatus}
+													</Tag>
+													{record.durationSeconds ? <Tag variant='secondary'>{Math.round(record.durationSeconds)}s</Tag> : null}
+												</Box>
+												<Box fontScale='c1' color='hint'>
+													{formatDate(record.receivedAt)}
+												</Box>
 											</Box>
-											<Box fontScale='c1' color='hint'>
-												{formatDate(record.receivedAt)}
-											</Box>
+											{record.transcriptText ? (
+												<Box whiteSpace='pre-wrap' mbe='x8'>
+													{record.transcriptText}
+												</Box>
+											) : null}
+											{record.playbackUrl ? (
+												<>
+													<audio
+														controls
+														preload='none'
+														src={record.playbackUrl}
+														style={{ width: '100%' }}
+														onError={() =>
+															setVoicemailPlaybackErrors((current) => ({
+																...current,
+																[record.id]: 'Voicemail audio could not be played. Please check your access or try again.',
+															}))
+														}
+													>
+														Your browser does not support audio playback.
+													</audio>
+													{playbackError ? <Callout type='warning'>{playbackError}</Callout> : null}
+												</>
+											) : record.uploadId ? (
+												<Callout type='warning'>Voicemail audio could not be prepared for playback.</Callout>
+											) : record.storageError ? (
+												<Callout type='warning'>{record.storageError}</Callout>
+											) : (
+												<Callout type='warning'>No voicemail audio captured.</Callout>
+											)}
 										</Box>
-										{record.transcriptText ? (
-											<Box whiteSpace='pre-wrap' mbe='x8'>
-												{record.transcriptText}
-											</Box>
-										) : null}
-										{record.uploadUrl ? (
-											<audio controls preload='none' src={record.uploadUrl} style={{ width: '100%' }}>
-												Your browser does not support audio playback.
-											</audio>
-										) : record.storageError ? (
-											<Callout type='warning'>{record.storageError}</Callout>
-										) : (
-											<Callout type='warning'>No voicemail audio captured.</Callout>
-										)}
-									</Box>
-								))}
+									);
+								})}
 							</Box>
 						</Box>
 					)}
