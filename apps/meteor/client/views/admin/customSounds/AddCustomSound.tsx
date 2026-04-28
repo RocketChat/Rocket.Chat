@@ -24,7 +24,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState<File | undefined>();
 
-	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.create', {
+	const { mutate: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.create', {
 		onSuccess: ({ sound }) => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			onChange();
@@ -66,7 +66,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			formData.append('sound', sound);
 		}
 		formData.append('name', trimmedName);
-		await saveAction(formData);
+		saveAction(formData);
 	}, [sound, name, saveAction, t, dispatchToastMessage]);
 
 	return (

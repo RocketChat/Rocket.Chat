@@ -38,7 +38,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
 
-	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.update', {
+	const { mutate: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.update', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			onChange();
@@ -70,7 +70,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		if (file) {
 			formData.append('sound', file);
 		}
-		await saveAction(formData);
+		saveAction(formData);
 	}, [_id, dispatchToastMessage, name, saveAction, file, t]);
 
 	const handleDeleteButtonClick = useCallback(() => {
