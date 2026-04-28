@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps/server/managers';
+import type { AppVideoConfProviderManager } from '@rocket.chat/apps/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';

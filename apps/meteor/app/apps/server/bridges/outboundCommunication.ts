@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { OutboundMessageBridge } from '@rocket.chat/apps/server/bridges';
+import { OutboundMessageBridge } from '@rocket.chat/apps/server/bridges/OutboundMessagesBridge';
 import type {
 	IOutboundEmailMessageProvider,
 	IOutboundMessageProviders,

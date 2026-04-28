@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import { AppInstallationSource } from '@rocket.chat/apps/server/storage';
+import { AppInstallationSource } from '@rocket.chat/apps/server/storage/IAppStorageItem';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import mem from 'mem';
 
