@@ -1,6 +1,7 @@
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
-import type { NatsConnection } from 'nats';
+import type { ConnectionOptions, NatsConnection } from 'nats';
+import { connect } from 'nats';
 
 import { getInstanceMethods } from './getInstanceMethods';
 
@@ -19,14 +20,32 @@ const serviceEvents = new Set<{
 export class NatsBroker implements IBroker {
 	metrics?: IServiceMetrics | undefined;
 
-	constructor(private nc: NatsConnection) {}
+	private nc?: NatsConnection;
+
+	private started = false;
+
+	private pendingServices: IServiceClass[] = [];
+
+	constructor(private options: ConnectionOptions) {}
 
 	async destroyService(_service: IServiceClass): Promise<void> {
-		console.log('Method not implemented. destroyService');
+		// TODO implement
 	}
 
 	async createService(instance: IServiceClass, _serviceDependencies?: string[]): Promise<void> {
-		// TODO remove
+		if (!this.started) {
+			this.pendingServices.push(instance);
+			return;
+		}
+
+		await this.registerService(instance);
+	}
+
+	private async registerService(instance: IServiceClass): Promise<void> {
+		if (!this.nc) {
+			throw new Error('NatsBroker not connected');
+		}
+
 		const name = instance.getName() ?? 'error';
 
 		const serviceInstance = instance as any;
@@ -36,12 +55,12 @@ export class NatsBroker implements IBroker {
 			version: '0.1.0',
 		});
 
-		instance.getEvents().forEach((event) => {
+		for (const event of instance.getEvents()) {
 			// TODO need to add a routine to remove the events once the service is destroyed
 			serviceEvents.add(event);
 
-			event.listeners.forEach((listener) => {
-				this.nc.subscribe(event.eventName, {
+			for (const listener of event.listeners) {
+				this.nc.subscribe(String(event.eventName), {
 					callback: (_error, msg) => {
 						const decoded = TD.decode(msg.data);
 						const params = decoded ? EJSON.parse(decoded) : [];
@@ -49,32 +68,16 @@ export class NatsBroker implements IBroker {
 						listener(...params);
 					},
 				});
-			});
-		});
+			}
+		}
 
 		const group = natsService.addGroup(name);
 
 		const methods = getInstanceMethods(instance);
 		for (const method of methods) {
 			if (method.match(/^on[A-Z]/)) {
-				// service.events[events[method]] = serviceInstance[method].bind(serviceInstance);
 				continue;
 			}
-
-			// if (lifecycle[method]) {
-			// 	service[method] = (): void => {
-			// 		asyncLocalStorage.run(
-			// 			{
-			// 				id: '',
-			// 				nodeID: this.broker.nodeID,
-			// 				requestID: null,
-			// 				broker: this,
-			// 			},
-			// 			serviceInstance[method].bind(serviceInstance),
-			// 		);
-			// 	};
-			// 	continue;
-			// }
 
 			group.addEndpoint(method, async (_error, msg) => {
 				try {
@@ -88,38 +91,21 @@ export class NatsBroker implements IBroker {
 					console.error('error', e);
 				}
 			});
-
-			// service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
-			// 	return tracerSpan(
-			// 		`action ${name}:${method}`,
-			// 		{},
-			// 		() => {
-			// 			return asyncLocalStorage.run(
-			// 				{
-			// 					id: ctx.id,
-			// 					nodeID: ctx.nodeID,
-			// 					requestID: ctx.requestID,
-			// 					broker: this,
-			// 					ctx,
-			// 				},
-			// 				() => serviceInstance[method](...ctx.params),
-			// 			);
-			// 		},
-			// 		ctx.meta?.optl,
-			// 	);
-			// };
 		}
 	}
 
 	async call(method: string, data: any): Promise<any> {
+		if (!this.started || !this.nc) {
+			return;
+		}
+
 		try {
-			console.log('Calling', method, data);
 			const params = data ? TE.encode(EJSON.stringify(data)) : new Uint8Array(0);
 			const res = await this.nc.request(method, params);
 
 			return EJSON.parse(TD.decode(res.data));
 		} catch (e) {
-			console.error('deu ruim', e);
+			console.error(e);
 		}
 	}
 
@@ -128,16 +114,18 @@ export class NatsBroker implements IBroker {
 		_event: T,
 		..._args: Parameters<EventSignatures[T]>
 	): Promise<void> {
-		console.log('Method not implemented. broadcastToServices');
+		// TODO implement
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.nc.publish(event, TE.encode(EJSON.stringify(args)));
+		if (!this.started || !this.nc) {
+			return;
+		}
+
+		this.nc.publish(String(event), TE.encode(EJSON.stringify(args)));
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		// loop through service events and call the listener
-		console.log('broadcastLocal', event, args);
 		for (const serviceEvent of serviceEvents) {
 			if (serviceEvent.eventName === event) {
 				serviceEvent.listeners.forEach((listener) => {
@@ -148,11 +136,18 @@ export class NatsBroker implements IBroker {
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {
-		console.log('Method not implemented. nodeList');
 		return [];
 	}
 
 	async start(): Promise<void> {
-		console.log('Method not implemented. start');
+		this.nc = await connect(this.options);
+		this.started = true;
+
+		const pending = this.pendingServices;
+		this.pendingServices = [];
+
+		for (const instance of pending) {
+			await this.registerService(instance);
+		}
 	}
 }
