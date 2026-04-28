@@ -161,6 +161,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 						style={{ height: '100%' }}
 						aria-label={t('Thread_message_list')}
 						aria-busy={loading}
+						role='list'
 						onScroll={(offset: number) => {
 							const handle = virtualizerRef.current;
 							if (!handle) return;

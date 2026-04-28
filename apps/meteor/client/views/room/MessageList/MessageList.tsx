@@ -193,6 +193,8 @@ export const MessageList = function MessageList({
 		[setUnreadCount, setLastMessageDate],
 	);
 
+	unreadMarkIndex.current = null;
+
 	return (
 		<MessageListProvider>
 			<SelectedMessagesProvider>
@@ -202,6 +204,7 @@ export const MessageList = function MessageList({
 					style={{ height: '100%' }}
 					aria-label={t('Message_list')}
 					aria-busy={isLoadingMoreMessages}
+					role='list'
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();
@@ -233,9 +236,6 @@ export const MessageList = function MessageList({
 
 						if (showUnreadDivider) {
 							unreadMarkIndex.current = index;
-						} else {
-							// Manually unsets the unread mark index when the divider is not visible to avoid stale state
-							unreadMarkIndex.current = null;
 						}
 
 						return (
