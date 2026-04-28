@@ -35,11 +35,15 @@ export abstract class CreateNewModal extends Modal {
 		return this.root.getByRole('button', { name: 'Create' });
 	}
 
+	get inputAddMembers(): Locator {
+		return this.root.getByRole('combobox', { name: 'Members' });
+	}
+
 	async addMember(memberName: string): Promise<void> {
-		await this.root.getByRole('combobox', { name: 'Add people' }).click();
-		await this.root.getByRole('combobox', { name: 'Add people' }).fill(memberName, { force: true });
+		await this.inputAddMembers.click();
+		await this.inputAddMembers.fill(memberName, { force: true });
 		await this.listbox.selectOption(memberName);
-		await this.root.getByRole('combobox', { name: 'Add people' }).click();
+		await this.root.getByRole('combobox', { name: 'Members' }).click();
 	}
 }
 
@@ -52,13 +56,9 @@ export class CreateNewChannelModal extends CreateNewModal {
 		return this.root.getByRole('button', { name: 'Advanced settings', exact: true });
 	}
 
-	get autocompleteUser(): Locator {
-		return this.root.getByRole('combobox', { name: 'Add people' });
-	}
-
 	async inviteUserToChannel(username: string) {
-		await this.autocompleteUser.click();
-		await this.autocompleteUser.fill(username);
+		await this.inputAddMembers.click();
+		await this.inputAddMembers.fill(username);
 		await this.listbox.selectOption(username);
 	}
 }
