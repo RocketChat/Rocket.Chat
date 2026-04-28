@@ -447,12 +447,15 @@ export class AppListenerBridge {
 					throw new Error(`Transfer to entity with id ${transferData.to} not found`);
 				}
 
-				return this.orch.getManager().getListenerManager().executeListener(args.event, {
-					room,
-					from, // type definition in the apps-engine seems to be incorrect
-					to,
-					type: transferData.type,
-				});
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(args.event, {
+						room,
+						from: from as NonNullable<typeof from>, // type definition in the apps-engine seems to be incorrect
+						to,
+						type: transferData.type,
+					});
 			}
 
 			case AppInterface.IPostLivechatGuestSaved: {
