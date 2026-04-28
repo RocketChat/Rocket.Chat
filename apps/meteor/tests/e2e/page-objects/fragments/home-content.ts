@@ -55,11 +55,11 @@ export class HomeContent {
 	}
 
 	get mainMessageListScroller(): Locator {
-		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.mainMessageList });
+		return this.page.locator('[data-overlayscrollbars]', { has: this.mainMessageList });
 	}
 
 	get threadMessageListScroller(): Locator {
-		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.threadMessageList });
+		return this.page.locator('[data-overlayscrollbars]', { has: this.threadMessageList });
 	}
 
 	get systemMessageListItems(): Locator {
