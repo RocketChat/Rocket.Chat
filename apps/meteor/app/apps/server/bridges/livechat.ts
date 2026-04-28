@@ -1,4 +1,5 @@
 import type { IAppServerOrchestrator, IAppsLivechatMessage, IAppsMessage } from '@rocket.chat/apps';
+import { LivechatBridge } from '@rocket.chat/apps/server/bridges/LivechatBridge';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import type {
 	IVisitorExternalIdentifier,
@@ -10,7 +11,6 @@ import type {
 } from '@rocket.chat/apps-engine/definition/livechat';
 import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { LivechatBridge } from '@rocket.chat/apps/server/bridges/LivechatBridge';
 import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
@@ -129,13 +129,12 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					...(source &&
-						source.type === 'app' && {
-							sidebarIcon: source.sidebarIcon,
-							defaultIcon: source.defaultIcon,
-							label: source.label,
-							destination: source.destination,
-						}),
+					...(source?.type === 'app' && {
+						sidebarIcon: source.sidebarIcon,
+						defaultIcon: source.defaultIcon,
+						label: source.label,
+						destination: source.destination,
+					}),
 				},
 			},
 			agent: agentRoom,

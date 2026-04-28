@@ -5,7 +5,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 export class AppActivationBridge extends ActivationBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
