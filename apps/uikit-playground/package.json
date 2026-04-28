@@ -25,7 +25,7 @@
 		"@rocket.chat/fuselage-ui-kit": "workspace:~",
 		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/logo": "^0.32.4",
-		"@rocket.chat/styled": "~0.32.0",
+		"@rocket.chat/styled": "^0.32.1",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"codemirror": "^6.0.2",

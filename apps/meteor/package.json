@@ -148,7 +148,7 @@
 		"@rocket.chat/server-fetch": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.32.0",
-		"@rocket.chat/styled": "~0.32.0",
+		"@rocket.chat/styled": "^0.32.1",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
 		"@rocket.chat/ui-avatar": "workspace:^",

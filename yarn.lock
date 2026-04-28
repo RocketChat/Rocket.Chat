@@ -9373,7 +9373,7 @@ __metadata:
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9461,7 +9461,7 @@ __metadata:
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9950,7 +9950,7 @@ __metadata:
     "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": "npm:~0.32.0"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10826,12 +10826,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:^0.32.0, @rocket.chat/styled@npm:~0.32.0":
+"@rocket.chat/styled@npm:^0.32.0":
   version: 0.32.0
   resolution: "@rocket.chat/styled@npm:0.32.0"
   dependencies:
     "@rocket.chat/css-in-js": "npm:^0.31.25"
   checksum: 10/43439b6742fcd13860af860d38d687394345be5278b06ce820189e59a0878c5bfab10bc7576d16c1a596985ab8a047e27f6707461e635872d789fa052e7e0e72
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/styled@npm:^0.32.1":
+  version: 0.32.1
+  resolution: "@rocket.chat/styled@npm:0.32.1"
+  dependencies:
+    "@rocket.chat/css-in-js": "npm:^0.32.0"
+  checksum: 10/92130f9d4d7d0f41a41d520be520557129f7c21d44163270d5bf3e38496911cfa57bbb7aca8ce19345b3d9517997e0c654da7dbc789693baf5cfdc42a9a083cb
   languageName: node
   linkType: hard
 
@@ -10924,7 +10933,7 @@ __metadata:
     "@rocket.chat/models": "workspace:~"
     "@rocket.chat/onboarding-ui": "npm:~0.36.2"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -11078,7 +11087,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -11134,7 +11143,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/media-signaling": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
@@ -11204,7 +11213,7 @@ __metadata:
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/logo": "npm:^0.32.4"
-    "@rocket.chat/styled": "npm:~0.32.0"
+    "@rocket.chat/styled": "npm:^0.32.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:~"
