@@ -1,5 +1,5 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { require } from '../../lib/require.ts';

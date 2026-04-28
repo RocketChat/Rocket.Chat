@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer';
 
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
-import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.ts'
+import type { App } from '@rocket.chat/apps-engine/definition/App';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
+import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext'
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails'
 import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 

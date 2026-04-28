@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 
-import type { App as _App } from '@rocket.chat/apps-engine/definition/App.ts';
+import type { App as _App } from '@rocket.chat/apps-engine/definition/App';
 import { require } from './require.ts';
 
 const { App } = require('@rocket.chat/apps-engine/definition/App.js') as {

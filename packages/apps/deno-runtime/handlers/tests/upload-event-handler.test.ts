@@ -1,9 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
 import { Buffer } from 'node:buffer';
 
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload.ts';
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { assertInstanceOf, assertNotInstanceOf, assertEquals, assertStringIncludes } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { assertSpyCalls, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';

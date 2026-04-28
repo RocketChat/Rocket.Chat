@@ -1,8 +1,8 @@
-import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors/IUserBuilder.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
-import type { IUserSettings } from '@rocket.chat/apps-engine/definition/users/IUserSettings.ts';
-import type { IUserEmail } from '@rocket.chat/apps-engine/definition/users/IUserEmail.ts';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
+import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors/IUserBuilder';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IUserSettings } from '@rocket.chat/apps-engine/definition/users/IUserSettings';
+import type { IUserEmail } from '@rocket.chat/apps-engine/definition/users/IUserEmail';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 import { require } from '../../../lib/require.ts';
 

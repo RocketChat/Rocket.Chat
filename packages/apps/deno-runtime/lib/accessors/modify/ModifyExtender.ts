@@ -1,12 +1,12 @@
-import type { IModifyExtender } from '@rocket.chat/apps-engine/definition/accessors/IModifyExtender.ts';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
-import type { IMessageExtender } from '@rocket.chat/apps-engine/definition/accessors/IMessageExtender.ts';
-import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender.ts';
-import type { IVideoConferenceExtender } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceExtend.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference.ts';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
+import type { IModifyExtender } from '@rocket.chat/apps-engine/definition/accessors/IModifyExtender';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import type { IMessageExtender } from '@rocket.chat/apps-engine/definition/accessors/IMessageExtender';
+import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender';
+import type { IVideoConferenceExtender } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceExtend';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 import * as Messenger from '../../messenger.ts';
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';

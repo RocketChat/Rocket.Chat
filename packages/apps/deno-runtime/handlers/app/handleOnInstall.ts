@@ -1,4 +1,4 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';

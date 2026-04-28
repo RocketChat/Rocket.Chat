@@ -1,6 +1,6 @@
 import type { IMessageBuilder, INotifier } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier.ts';
-import type { _TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier.ts';
+import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
+import type { _TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';

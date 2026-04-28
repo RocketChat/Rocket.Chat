@@ -1,7 +1,7 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { AppsEngineException as _AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { AppsEngineException as _AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';

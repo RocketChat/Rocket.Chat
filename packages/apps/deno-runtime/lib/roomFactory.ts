@@ -1,5 +1,5 @@
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager.ts';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
 import { AppAccessors } from './accessors/mod.ts';
 import { Room } from './room.ts';

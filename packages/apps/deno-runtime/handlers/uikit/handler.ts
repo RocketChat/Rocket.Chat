@@ -1,4 +1,4 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { require } from '../../lib/require.ts';

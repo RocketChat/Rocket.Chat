@@ -1,9 +1,9 @@
-import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.ts';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
+import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
-import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 import { require } from '../../../lib/require.ts';
 
