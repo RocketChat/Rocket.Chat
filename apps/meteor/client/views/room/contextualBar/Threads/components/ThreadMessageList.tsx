@@ -12,6 +12,7 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
@@ -123,12 +124,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 		const t1 = setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
-		router.navigate(
-			{
-				pathname: router.getLocationPathname(),
-			},
-			{ replace: true },
-		);
+		setMessageJumpQueryStringParameter(null);
 		return () => {
 			clearTimeout(t1);
 		};

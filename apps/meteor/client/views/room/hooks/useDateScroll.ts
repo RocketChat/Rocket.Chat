@@ -100,7 +100,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 					undefined,
 					{
 						position: 'absolute',
-						to: `${margin}px`,
+						top: `${margin}px`,
 						left: ' 50%',
 						translate: '-50%',
 						zIndex: 11,

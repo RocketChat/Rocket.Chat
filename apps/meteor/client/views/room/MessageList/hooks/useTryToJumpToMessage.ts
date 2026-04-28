@@ -8,6 +8,7 @@ import type { WindowVirtualizerHandle } from 'virtua';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
+import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { clearHighlightMessage, setHighlightMessage } from '../providers/messageHighlightSubscription';
 
 type UseTryToJumpToMessageProps = {
@@ -84,12 +85,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 			isJumpingToMessage.current = false;
 		}, 500);
 
-		router.navigate(
-			{
-				pathname: router.getLocationPathname(),
-			},
-			{ replace: true },
-		);
+		setMessageJumpQueryStringParameter(null);
 	}, [messageJumpParam, virtualizerRef, isJumpingToMessage, rid, messages, router, message]);
 };
 

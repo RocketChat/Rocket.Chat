@@ -13,8 +13,15 @@ type UseStoreScrollPositionProps = {
 export function useStoreScrollPosition({ rid, isAtBottom, virtualizerRef }: UseStoreScrollPositionProps) {
 	return useDebouncedCallback(
 		() => {
+			const scroll = virtualizerRef.current?.scrollOffset;
+
+			if (scroll == null) {
+				return;
+			}
+
 			const store = RoomManager.getStore(rid);
-			store?.update({ scroll: virtualizerRef.current?.scrollOffset ?? 0, atBottom: isAtBottom.current });
+
+			store?.update({ scroll, atBottom: isAtBottom.current });
 		},
 		100,
 		[rid, isAtBottom, virtualizerRef],

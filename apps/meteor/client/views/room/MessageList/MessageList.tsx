@@ -43,7 +43,7 @@ type MessageListProps = {
 	handleDateScroll: (topMessage: IMessage | undefined) => void;
 };
 
-const lastViewportSize = 0;
+let lastViewportSize = 0;
 
 export const MessageList = function MessageList({
 	rid,
@@ -139,6 +139,7 @@ export const MessageList = function MessageList({
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom
 		if (isAtBottom.current && lastViewportSize !== handle?.viewportSize) {
+			lastViewportSize = handle?.viewportSize ?? 0;
 			handle?.scrollToIndex(lastItemIndex + 1, {
 				align: 'end',
 			});
@@ -232,6 +233,9 @@ export const MessageList = function MessageList({
 
 						if (showUnreadDivider) {
 							unreadMarkIndex.current = index;
+						} else {
+							// Manually unsets the unread mark index when the divider is not visible to avoid stale state
+							unreadMarkIndex.current = null;
 						}
 
 						return (
