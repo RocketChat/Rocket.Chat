@@ -9,7 +9,6 @@ export class ExternalComponentsExtend implements IExternalComponentsExtend {
 		private readonly appId: string,
 	) {}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public async register(externalComponent: IExternalComponent): Promise<void> {
 		return Promise.resolve(this.manager.addExternalComponent(this.appId, externalComponent));
 	}
