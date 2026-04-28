@@ -32,7 +32,7 @@ export const canonicalizeTimezone = (name: string): string => {
 export const getTimezoneNames = (): string[] => {
 	const intl = Intl as typeof Intl & { supportedValuesOf?(key: 'timeZone'): string[] };
 	const zones = typeof intl.supportedValuesOf === 'function' ? intl.supportedValuesOf('timeZone') : [];
-	return zones.map((name) => LEGACY_TO_CANONICAL[name] ?? name);
+	return zones.map((name) => LEGACY_TO_CANONICAL[name] ?? name).sort();
 };
 
 export const guessTimezoneFromOffset = (offset: string | number): string => {
