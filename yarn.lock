@@ -9300,9 +9300,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-forms@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@rocket.chat/fuselage-forms@npm:1.1.1"
+"@rocket.chat/fuselage-forms@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@rocket.chat/fuselage-forms@npm:1.2.0"
   dependencies:
     "@rocket.chat/emitter": "npm:^0.32.0"
     react-aria: "npm:~3.37.0"
@@ -9311,7 +9311,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     react: "*"
     react-dom: "*"
-  checksum: 10/2a9fbba4521df687fe103d10415088ce69fe810a08ad0e6b2b134a66e51bb408f78642e58092b674cebded14c51459b844f2f28bdab5cdab5292be763df85afe
+  checksum: 10/44f39e2547dee940aa4e3f57e6d952bc58d62b0cd0613aef97a2906d9b64b7409f38216080786322fd8c4b14b803fb252126efe574cb181dc2a41df1b73f48ae
   languageName: node
   linkType: hard
 
@@ -9906,7 +9906,7 @@ __metadata:
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/fuselage": "npm:^0.77.0"
-    "@rocket.chat/fuselage-forms": "npm:^1.1.1"
+    "@rocket.chat/fuselage-forms": "npm:^1.2.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-toastbar": "npm:^0.35.2"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
