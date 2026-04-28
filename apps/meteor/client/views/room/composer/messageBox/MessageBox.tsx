@@ -12,8 +12,8 @@ import {
 	MessageComposerButton,
 	MessageComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useTranslation, useUserPreference, useLayout, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { Fragment, memo, useRef, useReducer, useCallback, useMemo, useSyncExternalStore } from 'react';
 
@@ -199,6 +199,11 @@ type MessageBoxProps = {
 	isEmbedded?: boolean;
 };
 
+type SmartFormsComposerState = {
+	pendingCount?: number;
+	viewerCanAnswer?: boolean;
+};
+
 const MessageBox = ({
 	tmid,
 	onSend,
@@ -217,17 +222,29 @@ const MessageBox = ({
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
-	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
+	const getRoomSmartForms = useEndpoint('GET', '/v1/medsense/room.smartforms' as any);
 
 	if (!chat) {
 		throw new Error('Chat context not found');
 	}
+
+	const { data: smartFormsState } = useQuery({
+		queryKey: ['medsense-room-smartforms', room._id],
+		queryFn: async () => (await getRoomSmartForms({ roomId: room._id })) as SmartFormsComposerState,
+		enabled: Boolean(room._id),
+		refetchInterval: 5000,
+	});
+	const isMedsenseFormLocked = Boolean(smartFormsState?.viewerCanAnswer) && Number(smartFormsState?.pendingCount || 0) > 0;
+	const composerPlaceholder = useMessageBoxPlaceholder(
+		isMedsenseFormLocked ? 'Complete the Smart Form above to continue' : t('Message'),
+		room,
+	);
 
 	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
@@ -408,6 +425,7 @@ const MessageBox = ({
 			return true;
 		}, [room, federationMatrixEnabled]),
 	);
+	const canInteractWithComposer = canSend && !isMedsenseFormLocked;
 
 	const sizes = useContentBoxSize(textareaRef);
 
@@ -534,7 +552,7 @@ const MessageBox = ({
 					ref={mergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
-					disabled={isRecording || !canSend}
+					disabled={isRecording || !canInteractWithComposer}
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
@@ -545,7 +563,7 @@ const MessageBox = ({
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
 							icon='emoji'
-							disabled={!useEmojis || isRecording || !canSend}
+							disabled={!useEmojis || isRecording || !canInteractWithComposer}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
 						/>
@@ -555,11 +573,11 @@ const MessageBox = ({
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording || !canSend}
+								disabled={isRecording || !canInteractWithComposer}
 							/>
 						)}
 						<MessageBoxActionsToolbar
-							canSend={canSend}
+							canSend={canInteractWithComposer}
 							typing={typing}
 							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
@@ -580,7 +598,7 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
+									disabled={!canInteractWithComposer || (!typing && !isEditing)}
 									onClick={handleSendMessage}
 									secondary={typing || isEditing}
 									info={typing || isEditing}

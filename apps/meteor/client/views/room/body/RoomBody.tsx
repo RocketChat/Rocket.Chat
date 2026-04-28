@@ -36,6 +36,7 @@ import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
 import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
+import MedsenseSmartFormsDock from '../../medsense/smartforms/MedsenseSmartFormsDock';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -275,6 +276,7 @@ const RoomBody = (): ReactElement => {
 								</div>
 							</div>
 							<RoomComposer>
+								<MedsenseSmartFormsDock roomId={room._id} />
 								<ComposerContainer
 									subscription={subscription}
 									onResize={handleComposerResize}

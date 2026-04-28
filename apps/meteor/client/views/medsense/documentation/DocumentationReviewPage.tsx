@@ -41,7 +41,7 @@ type TemplateSection = NonNullable<IMedsenseDocumentationTemplate['sections']>[n
 type TemplateField = NonNullable<TemplateSection['fields']>[number];
 
 const css = `
-.ms-doc-scroll{height:100%;overflow-y:auto;overflow-x:hidden}.ms-doc-shell{min-height:100%;background:radial-gradient(circle at top left,rgba(70,130,92,.16),transparent 30%),linear-gradient(180deg,#121b20 0%,#18232b 100%);padding:24px}.ms-doc-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,.9fr);gap:24px}.ms-doc-main,.ms-doc-side{display:flex;flex-direction:column;gap:20px}.ms-doc-card{background:rgba(18,28,33,.92);border:1px solid rgba(255,255,255,.07);border-radius:20px;box-shadow:0 24px 50px rgba(0,0,0,.26)}.ms-doc-pad{padding:20px}.ms-doc-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.ms-doc-eyebrow{color:#8fb498;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}.ms-doc-title{font-size:30px;font-weight:700;color:#f3f7f4;margin:0 0 8px}.ms-doc-subtitle{color:#aac0b1;margin:0;max-width:680px;line-height:1.5}.ms-doc-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}.ms-doc-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.ms-doc-pill{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}.ms-doc-pill strong{display:block;color:#f7fbf8;font-size:22px}.ms-doc-pill span{color:#a6b7ad;font-size:12px}.ms-doc-section{padding:18px 20px 20px}.ms-doc-section-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}.ms-doc-section-title{color:#f7fbf8;font-size:18px;font-weight:700}.ms-doc-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.ms-doc-field{position:relative;border-radius:18px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}.ms-doc-field--repeater{grid-column:1/-1}.ms-doc-field.pending{background:linear-gradient(180deg,rgba(40,74,49,.55) 0%,rgba(20,33,25,.92) 100%);border-color:rgba(95,190,117,.72)}.ms-doc-field.accepted,.ms-doc-field.modified{border-color:rgba(131,180,145,.36)}.ms-doc-field.rejected{border-color:rgba(166,142,87,.36)}.ms-doc-field.editing{border-color:rgba(245,200,93,.62)}.ms-doc-label{color:#edf6f0;font-size:14px;font-weight:700;margin-bottom:10px}.ms-doc-value{color:#f9fcfa;font-size:15px;line-height:1.5;min-height:24px;white-space:pre-wrap}.ms-doc-meta{margin-top:10px;font-size:12px;color:#9dc8a8}.ms-doc-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.ms-doc-ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#f5faf7;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:600}.ms-doc-ghost.accept{background:rgba(74,150,91,.24)}.ms-doc-ghost.reject{background:rgba(184,120,55,.16)}.ms-doc-ghost.modify{background:rgba(102,139,186,.18)}.ms-doc-control input,.ms-doc-control textarea,.ms-doc-control select{width:100%;background:rgba(5,11,14,.52);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#f7fbf8;padding:12px 14px;font-size:14px}.ms-doc-control textarea{min-height:120px;resize:vertical}.ms-doc-table{width:100%;border-collapse:separate;border-spacing:0 12px}.ms-doc-table th{text-align:left;font-size:12px;color:#8eb29c;font-weight:700;padding:0 12px 8px}.ms-doc-table td{vertical-align:top;padding:0 8px}.ms-doc-repeater{display:flex;flex-direction:column;gap:12px}.ms-doc-repeater-tableWrap{overflow-x:auto}.ms-doc-repeater-table{width:100%;border-collapse:collapse}.ms-doc-repeater-table th,.ms-doc-repeater-table td{border:1px solid rgba(255,255,255,.09);padding:10px;vertical-align:top}.ms-doc-repeater-table th{font-size:12px;color:#9fc4ad;text-align:left;background:rgba(255,255,255,.03)}.ms-doc-repeater-table td{min-width:140px}.ms-doc-repeater-empty{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.03);color:#8ea39b}.ms-doc-sign{border-radius:16px;border:1px dashed rgba(255,255,255,.16);background:rgba(5,11,14,.42);padding:12px}.ms-doc-sign canvas{width:100%;height:180px;background:#fff;border-radius:12px;display:block;touch-action:none}.ms-doc-muted{color:#8ea39b;font-size:12px}.ms-doc-status{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(255,255,255,.06);color:#eef5f0}.ms-doc-loading-title{font-size:24px;font-weight:700;color:#f3f7f4;margin:0 0 8px}.ms-doc-loading-subtitle{color:#aac0b1;line-height:1.6;margin:0}.ms-doc-disabled{opacity:.58;pointer-events:none;filter:saturate(.82)}@media (max-width:1100px){.ms-doc-grid,.ms-doc-summary,.ms-doc-fields{grid-template-columns:1fr}}
+.ms-doc-scroll{height:100%;overflow-y:auto;overflow-x:hidden}.ms-doc-shell{min-height:100%;background:radial-gradient(circle at top left,rgba(70,130,92,.16),transparent 30%),linear-gradient(180deg,#121b20 0%,#18232b 100%);padding:24px}.ms-doc-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:1180px;margin:0 auto}.ms-doc-main,.ms-doc-side,.ms-doc-signatures{display:flex;flex-direction:column;gap:20px}.ms-doc-card{background:rgba(18,28,33,.92);border:1px solid rgba(255,255,255,.07);border-radius:20px;box-shadow:0 24px 50px rgba(0,0,0,.26)}.ms-doc-pad{padding:20px}.ms-doc-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.ms-doc-eyebrow{color:#8fb498;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}.ms-doc-title{font-size:30px;font-weight:700;color:#f3f7f4;margin:0 0 8px}.ms-doc-subtitle{color:#aac0b1;margin:0;max-width:680px;line-height:1.5}.ms-doc-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}.ms-doc-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.ms-doc-pill{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}.ms-doc-pill strong{display:block;color:#f7fbf8;font-size:22px}.ms-doc-pill span{color:#a6b7ad;font-size:12px}.ms-doc-section{padding:18px 20px 20px}.ms-doc-section-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}.ms-doc-section-title{color:#f7fbf8;font-size:18px;font-weight:700}.ms-doc-fields{display:grid;grid-template-columns:1fr;gap:14px}.ms-doc-field{position:relative;border-radius:18px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}.ms-doc-field--repeater{grid-column:1/-1}.ms-doc-field.pending{background:linear-gradient(180deg,rgba(40,74,49,.55) 0%,rgba(20,33,25,.92) 100%);border-color:rgba(95,190,117,.72)}.ms-doc-field.accepted,.ms-doc-field.modified{border-color:rgba(131,180,145,.36)}.ms-doc-field.rejected{border-color:rgba(166,142,87,.36)}.ms-doc-field.editing{border-color:rgba(245,200,93,.62)}.ms-doc-field.required-empty{background:linear-gradient(180deg,rgba(104,34,34,.42) 0%,rgba(39,17,20,.92) 100%);border-color:rgba(248,113,113,.86);box-shadow:0 0 0 1px rgba(248,113,113,.18)}.ms-doc-field.required-empty .ms-doc-label{color:#fecaca}.ms-doc-required-message{margin-top:10px;color:#fecaca;font-size:12px;font-weight:700}.ms-doc-label{color:#edf6f0;font-size:14px;font-weight:700;margin-bottom:10px}.ms-doc-value{color:#f9fcfa;font-size:15px;line-height:1.5;min-height:24px;white-space:pre-wrap}.ms-doc-meta{margin-top:10px;font-size:12px;color:#9dc8a8}.ms-doc-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.ms-doc-ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#f5faf7;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:600}.ms-doc-ghost.accept{background:rgba(74,150,91,.24)}.ms-doc-ghost.reject{background:rgba(184,120,55,.16)}.ms-doc-ghost.modify{background:rgba(102,139,186,.18)}.ms-doc-control input,.ms-doc-control textarea,.ms-doc-control select{width:100%;background:rgba(5,11,14,.52);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#f7fbf8;padding:12px 14px;font-size:14px}.ms-doc-control input:required:invalid,.ms-doc-control textarea:required:invalid,.ms-doc-control select:required:invalid{border-color:rgba(248,113,113,.9);box-shadow:0 0 0 1px rgba(248,113,113,.22)}.ms-doc-control textarea{min-height:120px;resize:vertical}.ms-doc-table{width:100%;border-collapse:separate;border-spacing:0 12px}.ms-doc-table th{text-align:left;font-size:12px;color:#8eb29c;font-weight:700;padding:0 12px 8px}.ms-doc-table td{vertical-align:top;padding:0 8px}.ms-doc-repeater{display:flex;flex-direction:column;gap:12px}.ms-doc-repeater-tableWrap{overflow-x:auto}.ms-doc-repeater-table{width:100%;border-collapse:collapse}.ms-doc-repeater-table th,.ms-doc-repeater-table td{border:1px solid rgba(255,255,255,.09);padding:10px;vertical-align:top}.ms-doc-repeater-table th{font-size:12px;color:#9fc4ad;text-align:left;background:rgba(255,255,255,.03)}.ms-doc-repeater-table td{min-width:140px}.ms-doc-repeater-empty{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.03);color:#8ea39b}.ms-doc-sign{border-radius:16px;border:1px dashed rgba(255,255,255,.16);background:rgba(5,11,14,.42);padding:12px}.ms-doc-sign canvas{width:100%;height:180px;background:#fff;border-radius:12px;display:block;touch-action:none}.ms-doc-muted{color:#8ea39b;font-size:12px}.ms-doc-status{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(255,255,255,.06);color:#eef5f0}.ms-doc-loading-title{font-size:24px;font-weight:700;color:#f3f7f4;margin:0 0 8px}.ms-doc-loading-subtitle{color:#aac0b1;line-height:1.6;margin:0}.ms-doc-disabled{opacity:.58;pointer-events:none;filter:saturate(.82)}@media (max-width:900px){.ms-doc-hero{flex-direction:column}.ms-doc-actions{justify-content:flex-start}.ms-doc-summary{grid-template-columns:1fr}}
 `;
 
 const isFilled = (value: any): boolean =>
@@ -80,6 +80,9 @@ const cloneFieldValue = (value: any): any =>
 			: value;
 const getRepeaterRows = (value: any): Array<Record<string, any>> =>
 	Array.isArray(value) ? value.filter((row) => row && typeof row === 'object') : [];
+const hasRepeaterValue = (value: any): boolean =>
+	getRepeaterRows(value).some((row) => Object.values(row || {}).some((entry) => isFilled(entry)));
+const hasFieldValue = (field: TemplateField, value: any): boolean => (field.type === 'repeater' ? hasRepeaterValue(value) : isFilled(value));
 const findSuggestion = (suggestions: Suggestion[], target: SuggestionTarget, fieldKey: string, rowIndex?: number) =>
 	suggestions.find(
 		(suggestion) =>
@@ -502,6 +505,42 @@ export const DocumentationReviewScreen = ({
 		prefillRequestRef.current += 1;
 		setPrefillLoading(false);
 	}, []);
+	const regeneratePrefill = useCallback(async () => {
+		setPrefillRequested(true);
+		setPrefillLoading(true);
+		prefillRequestRef.current += 1;
+		const requestId = prefillRequestRef.current;
+
+		try {
+			const prefillResponse: any = await prefill({ interventionId, roomId, forceRefresh: true });
+			if (prefillRequestRef.current !== requestId) {
+				return;
+			}
+			if (!prefillResponse?.intervention || !prefillResponse?.template) {
+				dispatchToastMessage({ type: 'error', message: 'Unable to regenerate documentation prefill' });
+				return;
+			}
+
+			const nextBundle = {
+				intervention: prefillResponse.intervention,
+				template: prefillResponse.template,
+				prefill: prefillResponse.prefill,
+			} as BundleResponse;
+			setBundle(nextBundle);
+			setDraft(buildDraft(nextBundle));
+			setEditing({});
+			setEditingValues({});
+			dispatchToastMessage({ type: 'success', message: 'Documentation prefill regenerated' });
+		} catch {
+			if (prefillRequestRef.current === requestId) {
+				dispatchToastMessage({ type: 'error', message: 'Unable to regenerate documentation prefill' });
+			}
+		} finally {
+			if (prefillRequestRef.current === requestId) {
+				setPrefillLoading(false);
+			}
+		}
+	}, [dispatchToastMessage, interventionId, prefill, roomId]);
 	const reportValidity = useCallback(() => {
 		if (formRef.current && !formRef.current.reportValidity()) {
 			return false;
@@ -511,21 +550,31 @@ export const DocumentationReviewScreen = ({
 		}
 
 		for (const section of template.sections || []) {
-			if (section.type === 'signatures' || section.type === 'prescriptions') {
+			if (section.type === 'signatures') {
 				continue;
 			}
 
 			const target: SuggestionTarget = section.type === 'follow_up' ? 'follow_up' : 'documentation';
 			for (const field of section.fields || []) {
-				if (field.type !== 'repeater' || !field.required) {
+				if (!field.required) {
 					continue;
 				}
 
-				const rows = getRepeaterRows(getValue(draft, target, field.key)).filter((row) =>
-					Object.values(row || {}).some((entry) => isFilled(entry)),
-				);
-				if (!rows.length) {
-					dispatchToastMessage({ type: 'error', message: `${field.label} requires at least one row.` });
+				if (section.type === 'prescriptions') {
+					const hasPrescriptionValue = draft.prescriptions.some((row) => hasFieldValue(field, row?.[field.key]));
+					if (!hasPrescriptionValue) {
+						dispatchToastMessage({ type: 'error', message: `${field.label} is required.` });
+						return false;
+					}
+					continue;
+				}
+
+				const value = getValue(draft, target, field.key);
+				if (!hasFieldValue(field, value)) {
+					dispatchToastMessage({
+						type: 'error',
+						message: field.type === 'repeater' ? `${field.label} requires at least one row.` : `${field.label} is required.`,
+					});
 					return false;
 				}
 			}
@@ -694,7 +743,6 @@ export const DocumentationReviewScreen = ({
 		},
 		[renderInput],
 	);
-
 	const renderField = useCallback(
 		(field: TemplateField, target: SuggestionTarget, rowIndex?: number) => {
 			if (!draft) return null;
@@ -703,11 +751,16 @@ export const DocumentationReviewScreen = ({
 			const status = suggestion?.reviewStatus || 'pending';
 			const editingNow = Boolean(editing[key]);
 			const committed = getValue(draft, target, field.key, rowIndex);
-			const value = isFilled(committed) ? committed : suggestion?.suggestedValue;
-			const fieldClassName = `ms-doc-field${field.type === 'repeater' ? ' ms-doc-field--repeater' : ''} ${status}`;
+			const value = isFilled(committed) ? committed : status === 'pending' ? suggestion?.suggestedValue : undefined;
+			const requiredMessage = <div className='ms-doc-required-message'>Required field is empty.</div>;
+			const baseFieldClassName = `ms-doc-field${field.type === 'repeater' ? ' ms-doc-field--repeater' : ''}`;
+			const isRequiredEmpty = Boolean(field.required) && !hasFieldValue(field, value);
+			const fieldClassName = `${baseFieldClassName} ${status}${isRequiredEmpty ? ' required-empty' : ''}`;
+
 			if (!suggestion) {
+				const isManualRequiredEmpty = Boolean(field.required) && !hasFieldValue(field, committed);
 				return (
-					<div className={`ms-doc-field${field.type === 'repeater' ? ' ms-doc-field--repeater' : ''}`}>
+					<div className={`${baseFieldClassName}${isManualRequiredEmpty ? ' required-empty' : ''}`}>
 						<div className='ms-doc-label'>{field.label}</div>
 						<div className='ms-doc-control'>
 							{field.type === 'repeater'
@@ -719,12 +772,15 @@ export const DocumentationReviewScreen = ({
 									)
 								: renderInput(field, committed, (nextValue) => updateManual(target, field.key, nextValue, rowIndex), prefillLoading)}
 						</div>
+						{isManualRequiredEmpty && requiredMessage}
 					</div>
 				);
 			}
+
 			if (editingNow) {
+				const isEditingRequiredEmpty = Boolean(field.required) && !hasFieldValue(field, editingValues[key]);
 				return (
-					<div className={`ms-doc-field${field.type === 'repeater' ? ' ms-doc-field--repeater' : ''} editing`}>
+					<div className={`${baseFieldClassName} editing${isEditingRequiredEmpty ? ' required-empty' : ''}`}>
 						<div className='ms-doc-label'>{field.label}</div>
 						<div className='ms-doc-control'>
 							{field.type === 'repeater'
@@ -741,6 +797,7 @@ export const DocumentationReviewScreen = ({
 										prefillLoading,
 									)}
 						</div>
+						{isEditingRequiredEmpty && requiredMessage}
 						<div className='ms-doc-buttons'>
 							<button type='button' className='ms-doc-ghost accept' onClick={() => completeEdit(suggestion)} disabled={prefillLoading}>
 								Complete
@@ -749,10 +806,12 @@ export const DocumentationReviewScreen = ({
 					</div>
 				);
 			}
+
 			return (
 				<div className={fieldClassName}>
 					<div className='ms-doc-label'>{field.label}</div>
 					<div className='ms-doc-value'>{field.type === 'repeater' ? renderRepeaterValue(field, value) : displayValue(value)}</div>
+					{isRequiredEmpty && requiredMessage}
 					<div className='ms-doc-meta'>
 						{status === 'pending'
 							? `AI suggestion • ${Math.round((suggestion.confidence || 0) * 100)}% confidence`
@@ -871,101 +930,119 @@ export const DocumentationReviewScreen = ({
 			<div className='ms-doc-grid'>
 				<div className='ms-doc-main'>
 					<form ref={formRef} onSubmit={(event) => event.preventDefault()} noValidate={false}>
-						<div className='ms-doc-card'>
-							<div className='ms-doc-pad'>
-								<div className='ms-doc-hero'>
-									<div>
-										<div className='ms-doc-eyebrow'>Intervention documentation review</div>
-										<h1 className='ms-doc-title'>{template.label}</h1>
-										<p className='ms-doc-subtitle'>
-											Review the AI suggestions first. Accepted or modified fields become the committed documentation and drive final PDF
-											export.
-										</p>
-									</div>
-									<div className='ms-doc-actions'>
-										<Button small primary onClick={acceptAllPending} disabled={!counts.pending || prefillLoading}>
-											Accept all pending
-										</Button>
-										<Button
-											small
-											onClick={() => {
-												if (reportValidity()) saveMutation.mutate();
-											}}
-											disabled={saveMutation.isPending || prefillLoading}
-										>
-											{saveMutation.isPending ? 'Saving…' : 'Save draft'}
-										</Button>
-										<Button
-											small
-											onClick={() => {
-												if (reportValidity()) finalizeMutation.mutate();
-											}}
-											disabled={counts.pending > 0 || finalizeMutation.isPending || prefillLoading}
-										>
-											{finalizeMutation.isPending ? 'Finalizing…' : 'Finalize'}
-										</Button>
-										<Button
-											small
-											disabled={prefillLoading}
-											onClick={async () => {
-												if (!reportValidity()) return;
-												await downloadInterventionDocumentationPdf(
-													{
-														...intervention,
-														documentationValues: draft.documentationValues,
-														followUp: draft.followUp,
-														prescriptions: draft.prescriptions,
-														documentationPrefill: { ...(intervention.documentationPrefill || {}), fields: draft.suggestions },
-													} as IMedsenseIntervention,
-													template,
-												);
-											}}
-										>
-											Download PDF
-										</Button>
-									</div>
-								</div>
-							</div>
-						</div>
-						{prefillLoading && (
 							<div className='ms-doc-card'>
 								<div className='ms-doc-pad'>
-									<div className='ms-doc-eyebrow'>MedSense AI</div>
-									<h2 className='ms-doc-loading-title'>MedSense AI is summarizing</h2>
-									<p className='ms-doc-loading-subtitle'>
-										Please wait while the selected documentation form is being reviewed against room context and submitted answers. Inputs
-										are temporarily locked until the initial prefill completes or fails.
-									</p>
-									<div className='ms-doc-buttons'>
-										<button type='button' className='ms-doc-ghost reject' onClick={cancelInitialPrefill}>
-											Exit AI Prefill
-										</button>
+									<div className='ms-doc-hero'>
+										<div>
+											<div className='ms-doc-eyebrow'>Intervention documentation review</div>
+											<h1 className='ms-doc-title'>{template.label}</h1>
+											<p className='ms-doc-subtitle'>
+												Review the AI suggestions first. Accepted or modified fields become the committed documentation and drive final PDF
+												export.
+											</p>
+										</div>
+										<div className='ms-doc-actions'>
+											<Button small onClick={regeneratePrefill} disabled={prefillLoading}>
+												{prefillLoading ? 'Regenerating…' : 'Regenerate AI'}
+											</Button>
+											<Button small primary onClick={acceptAllPending} disabled={!counts.pending || prefillLoading}>
+												Accept all pending
+											</Button>
+											<Button
+												small
+												onClick={() => {
+													if (reportValidity()) saveMutation.mutate();
+												}}
+												disabled={saveMutation.isPending || prefillLoading}
+											>
+												{saveMutation.isPending ? 'Saving…' : 'Save draft'}
+											</Button>
+											<Button
+												small
+												onClick={() => {
+													if (reportValidity()) finalizeMutation.mutate();
+												}}
+												disabled={counts.pending > 0 || finalizeMutation.isPending || prefillLoading}
+											>
+												{finalizeMutation.isPending ? 'Finalizing…' : 'Finalize'}
+											</Button>
+											<Button
+												small
+												disabled={prefillLoading}
+												onClick={async () => {
+													if (!reportValidity()) return;
+													await downloadInterventionDocumentationPdf(
+														{
+															...intervention,
+															documentationValues: draft.documentationValues,
+															followUp: draft.followUp,
+															prescriptions: draft.prescriptions,
+															documentationPrefill: { ...(intervention.documentationPrefill || {}), fields: draft.suggestions },
+														} as IMedsenseIntervention,
+														template,
+													);
+												}}
+											>
+												Download PDF
+											</Button>
+										</div>
 									</div>
 								</div>
 							</div>
-						)}
-						<div className={prefillLoading ? 'ms-doc-disabled' : ''}>
-							<div className='ms-doc-summary'>
-								<div className='ms-doc-pill'>
-									<strong>{counts.pending}</strong>
-									<span>Pending review</span>
+							{prefillLoading && (
+								<div className='ms-doc-card'>
+									<div className='ms-doc-pad'>
+										<div className='ms-doc-eyebrow'>MedSense AI</div>
+										<h2 className='ms-doc-loading-title'>MedSense AI is preparing suggestions</h2>
+										<p className='ms-doc-loading-subtitle'>
+											Please wait while the selected documentation form is being reviewed against room context and submitted answers. Inputs
+											are temporarily locked until prefill completes or fails.
+										</p>
+										<div className='ms-doc-buttons'>
+											<button type='button' className='ms-doc-ghost reject' onClick={cancelInitialPrefill}>
+												Exit AI Prefill
+											</button>
+										</div>
+									</div>
 								</div>
-								<div className='ms-doc-pill'>
-									<strong>{counts.accepted}</strong>
-									<span>Accepted</span>
-								</div>
-								<div className='ms-doc-pill'>
-									<strong>{counts.modified}</strong>
-									<span>Modified</span>
-								</div>
-								<div className='ms-doc-pill'>
-									<strong>{counts.rejected}</strong>
-									<span>Rejected</span>
+							)}
+							<div className='ms-doc-card'>
+								<div className='ms-doc-pad'>
+									<div className='ms-doc-section-head'>
+										<div className='ms-doc-section-title'>Review state</div>
+										<span className='ms-doc-status'>
+											{intervention.documentationStatus || 'draft'}
+											{bundle.prefill?.model ? ` • ${bundle.prefill.model}` : ''}
+										</span>
+									</div>
+									<div className='ms-doc-summary'>
+										<div className='ms-doc-pill'>
+											<strong>{counts.total}</strong>
+											<span>Suggested</span>
+										</div>
+										<div className='ms-doc-pill'>
+											<strong>{counts.pending}</strong>
+											<span>Pending</span>
+										</div>
+										<div className='ms-doc-pill'>
+											<strong>{counts.accepted}</strong>
+											<span>Accepted</span>
+										</div>
+										<div className='ms-doc-pill'>
+											<strong>{counts.modified}</strong>
+											<span>Modified</span>
+										</div>
+										<div className='ms-doc-pill'>
+											<strong>{counts.rejected}</strong>
+											<span>Rejected</span>
+										</div>
+									</div>
 								</div>
 							</div>
-							{template.sections
-								.filter((section) => section.type !== 'signatures' && section.type !== 'prescriptions')
-								.map((section) => {
+							<div className={prefillLoading ? 'ms-doc-disabled' : ''}>
+								{template.sections
+									.filter((section) => section.type !== 'signatures' && section.type !== 'prescriptions')
+									.map((section) => {
 									const target: SuggestionTarget = section.type === 'follow_up' ? 'follow_up' : 'documentation';
 									return (
 										<div key={section.key} className='ms-doc-card ms-doc-section'>
@@ -1010,45 +1087,31 @@ export const DocumentationReviewScreen = ({
 										</tbody>
 									</table>
 								</div>
+								)}
+							</div>
+						</form>
+						<div className='ms-doc-signatures'>
+							<SignaturePad
+								title='Pharmacist signature'
+								helperText='Finalize first, then apply the pharmacist signature.'
+								buttonLabel='Save pharmacist signature'
+								disabled={prefillLoading || (intervention.documentationStatus || 'draft') === 'draft' || signMutation.isPending}
+								onSubmit={(signatureImageData) => signMutation.mutateAsync({ role: 'pharmacist', signatureImageData })}
+							/>
+							{template.signatureRules?.allowPatientSignature && (
+								<SignaturePad
+									title='Patient signature'
+									helperText='Optional unless the selected template requires it.'
+									buttonLabel='Save patient signature'
+									requireSignerName
+									disabled={prefillLoading || (intervention.documentationStatus || 'draft') === 'draft' || signMutation.isPending}
+									onSubmit={(signatureImageData, signerName) => signMutation.mutateAsync({ role: 'patient', signatureImageData, signerName })}
+								/>
 							)}
 						</div>
-					</form>
-				</div>
-				<div className='ms-doc-side'>
-					<div className='ms-doc-card'>
-						<div className='ms-doc-pad'>
-							<h3>Review state</h3>
-							<ul>
-								<li>Pending fields are suggestions only. They do not enter the final document until you accept or modify them.</li>
-								<li>Reject clears the AI value and opens manual completion immediately.</li>
-								<li>Finalize is blocked while any suggestion is still pending.</li>
-							</ul>
-							<div className='ms-doc-muted'>
-								Status: {intervention.documentationStatus || 'draft'}
-								{bundle.prefill?.model ? ` • ${bundle.prefill.model}` : ''}
-							</div>
-						</div>
 					</div>
-					<SignaturePad
-						title='Pharmacist signature'
-						helperText='Finalize first, then apply the pharmacist signature.'
-						buttonLabel='Save pharmacist signature'
-						disabled={prefillLoading || (intervention.documentationStatus || 'draft') === 'draft' || signMutation.isPending}
-						onSubmit={(signatureImageData) => signMutation.mutateAsync({ role: 'pharmacist', signatureImageData })}
-					/>
-					{template.signatureRules?.allowPatientSignature && (
-						<SignaturePad
-							title='Patient signature'
-							helperText='Optional unless the selected template requires it.'
-							buttonLabel='Save patient signature'
-							requireSignerName
-							disabled={prefillLoading || (intervention.documentationStatus || 'draft') === 'draft' || signMutation.isPending}
-							onSubmit={(signatureImageData, signerName) => signMutation.mutateAsync({ role: 'patient', signatureImageData, signerName })}
-						/>
-					)}
 				</div>
 			</div>
-		</div>
 	);
 
 	return (

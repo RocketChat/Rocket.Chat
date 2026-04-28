@@ -35,15 +35,21 @@ type ArgumentsObject = {
 	owner?: IUser;
 	user?: IUser;
 	sessionSummaryPayload?: Record<string, any>;
+	smartFormsSubmitPayload?: Record<string, any>;
 };
 type IntegrationData = {
 	token: string;
 	bot: boolean;
 	event?: OutgoingIntegrationEvent;
+	trigger?: string;
 	trigger_word?: string;
 	roomId?: string;
 	requestId?: string | null;
 	patientUserId?: string | null;
+	formId?: string;
+	answers?: Array<Record<string, any>>;
+	freeText?: string;
+	formContext?: Record<string, any>;
 	latestMessage?: Record<string, any>;
 	session?: Record<string, any>;
 	channel_id?: string;
@@ -63,7 +69,9 @@ type IntegrationData = {
 	room?: IRoom;
 	message?: IMessage;
 	owner?: Partial<IUser>;
+	smartFormSubmission?: Record<string, any>;
 };
+type DocumentationPrefillPayload = Record<string, any>;
 
 const isNonBotNonUserStaff = (roles?: string[], userType?: string, isBotMessage = false): boolean => {
 	if (isBotMessage || userType === 'bot' || roles?.includes('bot')) {
@@ -135,13 +143,7 @@ class RocketChatIntegrationHandler {
 			},
 		}).toArray();
 
-		const memberIds = Array.from(
-			new Set(
-				subscriptions
-					.map((sub) => sub?.u?._id)
-					.filter((id): id is string => Boolean(id)),
-			),
-		);
+		const memberIds = Array.from(new Set(subscriptions.map((sub) => sub?.u?._id).filter((id): id is string => Boolean(id))));
 		if (memberIds.length === 0) {
 			return false;
 		}
@@ -260,6 +262,17 @@ class RocketChatIntegrationHandler {
 					argObject.sessionSummaryPayload = args[3] as Record<string, any>;
 				}
 				break;
+			case 'medsenseSmartFormsSubmit':
+				if (args.length >= 2) {
+					argObject.room = args[1] as IRoom;
+				}
+				if (args.length >= 3) {
+					argObject.user = args[2] as IUser;
+				}
+				if (args.length >= 4) {
+					argObject.smartFormsSubmitPayload = args[3] as Record<string, any>;
+				}
+				break;
 			case 'fileUploaded':
 				if (args.length >= 2) {
 					const arghhh: Record<string, any> = args[1] as Record<string, any>;
@@ -313,7 +326,10 @@ class RocketChatIntegrationHandler {
 		return argObject;
 	}
 
-	async mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user, sessionSummaryPayload }: ArgumentsObject) {
+	async mapEventArgsToData(
+		data: IntegrationData,
+		{ event, message, room, owner, user, sessionSummaryPayload, smartFormsSubmitPayload }: ArgumentsObject,
+	) {
 		/* The "services" field contains sensitive information such as
 		the user's password hash. To prevent this information from being
 		sent to the webhook, we're checking and removing it by destructuring
@@ -328,7 +344,7 @@ class RocketChatIntegrationHandler {
 		const userWithoutServicesField = user?.services ? omitServicesField(user) : user;
 		const ownerWithoutServicesField = owner?.services ? omitServicesField(owner) : owner;
 
-		if (!room || !message) {
+		if (event !== 'medsenseSmartFormsSubmit' && (!room || !message)) {
 			outgoingLogger.warn(`The integration ${event} was called but the room or message was not defined.`);
 			return;
 		}
@@ -401,7 +417,8 @@ class RocketChatIntegrationHandler {
 					name: room.name,
 					medsenseActiveRequestId: (room as any).medsenseActiveRequestId ?? roomWithRequest?.medsenseActiveRequestId,
 					medsenseActiveRequestStatus: (room as any).medsenseActiveRequestStatus ?? roomWithRequest?.medsenseActiveRequestStatus,
-					medsenseAssigned: (room as any).medsenseAssigned === 'Staff' || (roomWithRequest as any)?.medsenseAssigned === 'Staff' ? 'Staff' : 'AI',
+					medsenseAssigned:
+						(room as any).medsenseAssigned === 'Staff' || (roomWithRequest as any)?.medsenseAssigned === 'Staff' ? 'Staff' : 'AI',
 					medsenseSessionInfo: compactSession,
 				} as any;
 				data.room_has_non_bot_non_user_staff = await this.hasNonBotNonUserStaffInRoom(
@@ -440,6 +457,27 @@ class RocketChatIntegrationHandler {
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
+				break;
+			case 'medsenseSmartFormsSubmit':
+				if (!room) {
+					outgoingLogger.warn(`The integration ${event} was called but the room was not defined.`);
+					return;
+				}
+
+				Object.assign(data, {
+					event: 'medsenseSmartFormsSubmit',
+					trigger: 'smartforms_submit',
+					roomId: room._id,
+					...(smartFormsSubmitPayload && typeof smartFormsSubmitPayload === 'object' ? smartFormsSubmitPayload : {}),
+				});
+				data.channel_id = room._id;
+				data.channel_name = room.name;
+				data.timestamp = new Date();
+				data.user_id = user?._id;
+				data.user_name = user?.username;
+				data.user = userWithoutServicesField;
+				data.room = room;
+				data.smartFormSubmission = smartFormsSubmitPayload;
 				break;
 			case 'fileUploaded':
 				data.channel_id = room._id;
@@ -725,8 +763,8 @@ class RocketChatIntegrationHandler {
 			updatedAt,
 			lastProcessedMessageId: clearBufferThroughMessageId,
 		};
-			const setPatch: Record<string, any> = {
-				'medsenseSessionInfo.version': MEDSENSE_SESSION_INFO_VERSION,
+		const setPatch: Record<string, any> = {
+			'medsenseSessionInfo.version': MEDSENSE_SESSION_INFO_VERSION,
 			'medsenseSessionInfo.summary': nextSummary,
 			'medsenseSessionInfo.sessionBuffer': nextSessionBuffer,
 			'medsenseSessionInfo.summaryUpdate': {
@@ -752,7 +790,105 @@ class RocketChatIntegrationHandler {
 		});
 	}
 
-	async executeTriggerUrl(url: string, trigger: IOutgoingIntegration, { event, message, room, owner, user, sessionSummaryPayload }: ArgumentsObject, tries = 0) {
+	async executeDocumentationPrefillTrigger(payload: DocumentationPrefillPayload, timeoutMs: number): Promise<Record<string, any> | null> {
+		const triggers = Object.values(this.triggers.__any || {}).filter(
+			(trigger): trigger is IOutgoingIntegration =>
+				trigger.enabled === true &&
+				trigger.event === 'medsenseDocumentationPrefill' &&
+				this.isTriggerEnabled(trigger) &&
+				Array.isArray(trigger.urls) &&
+				trigger.urls.length > 0,
+		);
+
+		if (!triggers.length) {
+			outgoingLogger.warn('Medsense documentation prefill webhook is not configured');
+			return null;
+		}
+
+		for (const trigger of triggers) {
+			for (const url of trigger.urls || []) {
+				const trimmedUrl = typeof url === 'string' ? url.trim() : '';
+				if (!trimmedUrl) {
+					continue;
+				}
+
+				const historyId = await updateHistory({
+					step: 'start-execute-documentation-prefill',
+					integration: trigger,
+					event: 'medsenseDocumentationPrefill',
+					historyId: '',
+				});
+
+				await updateHistory({
+					historyId,
+					step: 'pre-http-call',
+					url: trimmedUrl,
+					httpCallData: payload,
+				});
+
+				try {
+					const response = await fetch(
+						trimmedUrl,
+						{
+							method: 'POST',
+							timeout: timeoutMs,
+							headers: {
+								'Content-Type': 'application/json',
+								'X-Rocketchat-Secret': trigger.token,
+							},
+							body: JSON.stringify(payload),
+						},
+						settings.get('Allow_Invalid_SelfSigned_Certs'),
+					);
+					const content = await response.text();
+					const contentType = (response.headers.get('content-type') || '').split(';')[0];
+					let responseData: Record<string, any> | null = null;
+
+					if (['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+						try {
+							const parsed = content ? JSON.parse(content) : null;
+							responseData = parsed && typeof parsed === 'object' ? parsed : null;
+						} catch (_error) {
+							responseData = null;
+						}
+					}
+
+					await updateHistory({
+						historyId,
+						step: 'after-http-call',
+						httpError: null,
+						httpResult: content,
+						finished: true,
+						...(this.successResults.includes(response.status) && responseData ? {} : { error: true }),
+					});
+
+					if (this.successResults.includes(response.status) && responseData) {
+						return responseData;
+					}
+				} catch (error: any) {
+					outgoingLogger.error(error);
+					await updateHistory({
+						historyId,
+						step: 'after-http-call',
+						httpError: error,
+						httpResult: null,
+						error: true,
+						errorStack: error?.stack,
+						finished: true,
+					});
+				}
+			}
+		}
+
+		return null;
+	}
+
+	async executeTriggerUrl(
+		url: string,
+		trigger: IOutgoingIntegration,
+		{ event, message, room, owner, user, sessionSummaryPayload, smartFormsSubmitPayload }: ArgumentsObject,
+		tries = 0,
+	) {
 		if (!this.isTriggerEnabled(trigger)) {
 			outgoingLogger.warn(`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`);
 			return;
@@ -803,7 +939,7 @@ class RocketChatIntegrationHandler {
 			data.trigger_word = word;
 		}
 
-		await this.mapEventArgsToData(data, { event, message, room, owner, user, sessionSummaryPayload });
+		await this.mapEventArgsToData(data, { event, message, room, owner, user, sessionSummaryPayload, smartFormsSubmitPayload });
 		await updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		outgoingLogger.info(`Will be executing the Integration "${trigger.name}" to the url: ${url}`);
@@ -827,7 +963,7 @@ class RocketChatIntegrationHandler {
 			return;
 		}
 
-		if (opts.message && event === 'medsenseSessionSummary') {
+		if (opts.message && (event === 'medsenseSessionSummary' || event === 'medsenseSmartFormsSubmit')) {
 			await updateHistory({ historyId, step: 'after-prepare-message-suppressed', finished: false });
 		} else if (opts.message) {
 			const prepareMessage = await this.sendMessage({ trigger, room, message: opts.message, data });
@@ -1012,7 +1148,12 @@ class RocketChatIntegrationHandler {
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 							setTimeout(() => {
-								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user, sessionSummaryPayload }, tries + 1);
+								void this.executeTriggerUrl(
+									url,
+									trigger,
+									{ event, message, room, owner, user, sessionSummaryPayload, smartFormsSubmitPayload },
+									tries + 1,
+								);
 							}, waitTime);
 						} else {
 							await updateHistory({ historyId, step: 'too-many-retries', error: true });

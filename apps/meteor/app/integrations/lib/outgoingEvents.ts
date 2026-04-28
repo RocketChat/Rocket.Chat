@@ -23,6 +23,24 @@ export const outgoingEvents: Record<
 			targetRoom: false,
 		},
 	},
+	medsenseSmartFormsSubmit: {
+		label: 'Integrations_Outgoing_Type_MedsenseSmartFormsSubmit' as TranslationKey,
+		value: 'medsenseSmartFormsSubmit',
+		use: {
+			channel: true,
+			triggerWords: false,
+			targetRoom: false,
+		},
+	},
+	medsenseDocumentationPrefill: {
+		label: 'Integrations_Outgoing_Type_MedsenseDocumentationPrefill' as TranslationKey,
+		value: 'medsenseDocumentationPrefill',
+		use: {
+			channel: false,
+			triggerWords: false,
+			targetRoom: false,
+		},
+	},
 	fileUploaded: {
 		label: 'Integrations_Outgoing_Type_FileUploaded',
 		value: 'fileUploaded',

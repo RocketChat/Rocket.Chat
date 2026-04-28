@@ -279,7 +279,7 @@ const EditPharmacy = ({ id }: { id?: string }) => {
 								<Controller
 									name='voiceInboundNumber'
 									control={control}
-									render={({ field }) => <TextInput {...field} id={voiceInboundNumberId} placeholder='+12262413336' />}
+									render={({ field }) => <TextInput {...field} id={voiceInboundNumberId} placeholder='+15551234567' />}
 								/>
 							</FieldRow>
 						</Field>
@@ -383,7 +383,7 @@ const EditPharmacy = ({ id }: { id?: string }) => {
 								<Controller
 									name='pharmacySmsRecipientsText'
 									control={control}
-									render={({ field }) => <TextInput {...field} id={pharmacySmsRecipientsId} placeholder='+12262413336, +14165551234' />}
+									render={({ field }) => <TextInput {...field} id={pharmacySmsRecipientsId} placeholder='+15551234567, +15557654321' />}
 								/>
 							</FieldRow>
 						</Field>

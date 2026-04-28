@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { addUserToRoom } from './addUserToRoom';
 import { createRoom } from './createRoom';
+import { withDefaultMedsenseSessionInfo } from './medsenseSessionInfo';
 
 type CreateMedsenseBotRoomOptions = {
 	botUser: Pick<IUser, '_id' | 'username' | 'name'>;
@@ -59,8 +60,9 @@ export const createMedsenseBotRoom = async ({
 	const seed = normalizeRoomSeed(roomNameSeed || patientUser?.username || owner.username);
 	const roomName = `medsense-${seed}-${botUser.username}-${Random.id(6)}`;
 	const members = patientUser ? [botUser.username] : owner._id === botUser._id ? [] : [botUser.username];
+	const roomData = withDefaultMedsenseSessionInfo(roomExtraData);
 
-	const { rid } = await createRoom<'p'>('p', roomName, owner as IUser, members, false, false, roomExtraData);
+	const { rid } = await createRoom<'p'>('p', roomName, owner as IUser, members, false, false, roomData);
 	const room = await Rooms.findOneById(rid);
 
 	if (!room) {

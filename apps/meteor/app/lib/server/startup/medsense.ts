@@ -250,20 +250,6 @@ export const addMedsenseSettings = async function (): Promise<void> {
 			},
 		);
 
-		await this.add('Medsense_Documentation_Prefill_Webhook_Url', '', {
-			type: 'string',
-			public: false,
-			i18nLabel: 'Medsense_Documentation_Prefill_Webhook_Url',
-			i18nDescription: 'Medsense_Documentation_Prefill_Webhook_Url_Description',
-		});
-
-		await this.add('Medsense_Documentation_Prefill_Webhook_Secret', '', {
-			type: 'password',
-			public: false,
-			i18nLabel: 'Medsense_Documentation_Prefill_Webhook_Secret',
-			i18nDescription: 'Medsense_Documentation_Prefill_Webhook_Secret_Description',
-		});
-
 		await this.add('Medsense_Documentation_Prefill_Timeout_MS', '15000', {
 			type: 'string',
 			public: false,

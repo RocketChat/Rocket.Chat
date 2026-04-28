@@ -30,6 +30,7 @@ import {
 	TextAreaInput,
 	Pagination,
 } from '@rocket.chat/fuselage';
+import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, Page, PageContent, PageHeader, usePagination } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { PhoneNumberInput } from '@rocket.chat/web-ui-registration';
@@ -37,6 +38,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import PatientUserAutoComplete from './PatientUserAutoComplete';
+import '../uikit/medsenseUIKit.css';
 
 const useFormatDate = () => {
 	return useCallback((value?: string | Date) => {
@@ -113,17 +115,20 @@ const hasVoiceSessionContext = (request: any) => {
 const isVoiceSessionCallable = (request: any) => {
 	const voice = request?.voice;
 	const patientPresent = voice?.participants?.patient?.present;
-	const state = String(voice?.state || '').trim().toLowerCase();
+	const state = String(voice?.state || '')
+		.trim()
+		.toLowerCase();
 	const isTerminalState = ['ended', 'disconnected', 'closed'].includes(state);
 	return voice?.active === true && patientPresent === true && !isTerminalState;
 };
 
 const normalizePreviewMessages = (messages: any[], request: any) => {
-	const requestedBy = String(request?.requestedByUsername || '').trim().toLowerCase();
+	const requestedBy = String(request?.requestedByUsername || '')
+		.trim()
+		.toLowerCase();
 	return (Array.isArray(messages) ? messages : [])
 		.map((message: any) => {
-			const senderName =
-				String(message?.u?.name || message?.u?.username || message?.username || message?.alias || '').trim() || 'System';
+			const senderName = String(message?.u?.name || message?.u?.username || message?.username || message?.alias || '').trim() || 'System';
 			const text = String(message?.msg || '').trim() || (message?.t ? `[${String(message.t).replace(/_/g, ' ')}]` : '');
 			const loweredSender = senderName.toLowerCase();
 			const kind = message?.t
@@ -161,11 +166,96 @@ const previewTagVariant = (kind: string) => {
 	}
 };
 
+const normalizePreviewVoicemailRecords = (sessionInfo: any) => {
+	const records = Array.isArray(sessionInfo?.voice?.voicemailRecords) ? sessionInfo.voice.voicemailRecords : [];
+	return records
+		.map((record: any) => ({
+			id: String(record?.eventId || record?.recordingSid || record?.uploadId || record?.receivedAt || Math.random()),
+			receivedAt: record?.receivedAt || record?.timestamp || null,
+			durationSeconds: typeof record?.durationSeconds === 'number' ? record.durationSeconds : Number(record?.durationSeconds || 0) || null,
+			recordingStatus: String(record?.recordingStatus || 'unknown'),
+			uploadUrl: typeof record?.uploadUrl === 'string' && record.uploadUrl.trim() ? record.uploadUrl.trim() : null,
+			uploadId: record?.uploadId || null,
+			transcriptText: typeof record?.transcriptText === 'string' && record.transcriptText.trim() ? record.transcriptText.trim() : '',
+			storageError: typeof record?.storageError === 'string' && record.storageError.trim() ? record.storageError.trim() : '',
+		}))
+		.sort((left, right) => new Date(right.receivedAt || 0).getTime() - new Date(left.receivedAt || 0).getTime());
+};
+
+type PreviewPastAnswer = {
+	question: string;
+	answer: string;
+	timestamp: string | null;
+};
+
+const clampPreviewIndex = (index: number, length: number): number => {
+	if (length <= 0) {
+		return 0;
+	}
+
+	return Math.max(0, Math.min(index, length - 1));
+};
+
+const normalizePreviewPastAnswers = (sessionInfo: any): PreviewPastAnswer[] => {
+	const rawEntries = Array.isArray(sessionInfo?.roomFormSubmissions)
+		? sessionInfo.roomFormSubmissions
+		: Array.isArray(sessionInfo?.recentSubmittedAnswers)
+			? sessionInfo.recentSubmittedAnswers
+			: [];
+
+	return rawEntries
+		.map((entry: any) => {
+			const rawAnswer = entry?.answer ?? entry?.selection ?? entry?.value;
+			let answer = '';
+
+			if (typeof rawAnswer === 'string') {
+				answer = rawAnswer.trim();
+			} else if (Array.isArray(rawAnswer)) {
+				answer = rawAnswer
+					.map((item) => (typeof item === 'string' ? item.trim() : ''))
+					.filter(Boolean)
+					.join(', ');
+			} else if (rawAnswer && typeof rawAnswer === 'object') {
+				try {
+					answer = JSON.stringify(rawAnswer);
+				} catch {
+					answer = '';
+				}
+			}
+
+			const question =
+				typeof entry?.question === 'string' && entry.question.trim()
+					? entry.question.trim()
+					: typeof entry?.prompt === 'string' && entry.prompt.trim()
+						? entry.prompt.trim()
+						: 'Question';
+
+			const timestamp =
+				typeof entry?.timestamp === 'string'
+					? entry.timestamp
+					: typeof entry?.submittedAt === 'string'
+						? entry.submittedAt
+						: typeof entry?.ts === 'string'
+							? entry.ts
+							: null;
+
+			return {
+				question,
+				answer: answer || 'No answer provided',
+				timestamp,
+			};
+		})
+		.filter((entry) => Boolean(entry.question || entry.answer))
+		.sort((left, right) => new Date(left.timestamp || 0).getTime() - new Date(right.timestamp || 0).getTime());
+};
+
 const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => void }): JSX.Element => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
+	const isDarkMode = useDarkMode();
 	const getRoomSessionInfo = useEndpoint('GET', '/v1/medsense/room.sessionInfo');
 	const getRoomPreview = useEndpoint('GET', '/v1/medsense/room.preview');
+	const [pastAnswerIndex, setPastAnswerIndex] = useState(0);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['queue-preview-modal', request?.roomId],
@@ -189,6 +279,14 @@ const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => 
 	const contextSummary = useMemo(() => {
 		return typeof data?.sessionInfo?.summary?.text === 'string' ? data.sessionInfo.summary.text : '';
 	}, [data?.sessionInfo]);
+	const pastAnswers = useMemo(() => normalizePreviewPastAnswers(data?.sessionInfo), [data?.sessionInfo]);
+	const voicemailRecords = useMemo(() => normalizePreviewVoicemailRecords(data?.sessionInfo), [data?.sessionInfo]);
+	const activePastAnswer = pastAnswers[clampPreviewIndex(pastAnswerIndex, pastAnswers.length)];
+	const themeClass = isDarkMode ? 'medsenseUIKit--theme-dark' : 'medsenseUIKit--theme-light';
+
+	useEffect(() => {
+		setPastAnswerIndex((current) => clampPreviewIndex(current, pastAnswers.length));
+	}, [pastAnswers.length]);
 
 	return (
 		<Modal {...({ style: { width: 'min(960px, 92vw)' } } as any)}>
@@ -236,6 +334,100 @@ const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => 
 					</Box>
 
 					<Box p='x16' borderRadius='x8' bg='neutral-100'>
+						<Box display='flex' justifyContent='space-between' alignItems='center' gap='x12' mbe='x12'>
+							<Box fontScale='c2' color='default'>
+								Past Answers
+							</Box>
+							{pastAnswers.length > 1 ? (
+								<div className='medsenseSmartFormsDock__switcher'>
+									<button
+										type='button'
+										className='medsenseSmartFormsDock__switcherButton'
+										onClick={() => setPastAnswerIndex((current) => clampPreviewIndex(current - 1, pastAnswers.length))}
+										disabled={pastAnswerIndex <= 0}
+									>
+										&lt;
+									</button>
+									<span className='medsenseSmartFormsDock__switcherCount'>
+										{pastAnswerIndex + 1} of {pastAnswers.length}
+									</span>
+									<button
+										type='button'
+										className='medsenseSmartFormsDock__switcherButton'
+										onClick={() => setPastAnswerIndex((current) => clampPreviewIndex(current + 1, pastAnswers.length))}
+										disabled={pastAnswerIndex >= pastAnswers.length - 1}
+									>
+										&gt;
+									</button>
+								</div>
+							) : null}
+						</Box>
+						{isLoading && (
+							<Box display='flex' justifyContent='center' p='x24'>
+								<Throbber size='x24' />
+							</Box>
+						)}
+						{!isLoading && error && <Callout type='danger'>{t('Error')}</Callout>}
+						{!isLoading && !error && pastAnswers.length === 0 && <Callout type='info'>No past answers yet.</Callout>}
+						{!isLoading && !error && activePastAnswer ? (
+							<div className={`medsenseUIKit ${themeClass}`}>
+								<div className='medsenseSmartFormsDock__responseCard'>
+									<div className='medsenseSmartFormsDock__responseQuestion'>{activePastAnswer.question}</div>
+									<div className='medsenseSmartFormsDock__responseAnswer'>{activePastAnswer.answer}</div>
+									{activePastAnswer.timestamp ? (
+										<div className='medsenseSmartFormsDock__responseMeta'>{formatDate(activePastAnswer.timestamp)}</div>
+									) : null}
+								</div>
+							</div>
+						) : null}
+					</Box>
+
+					{!isLoading && !error && voicemailRecords.length > 0 && (
+						<Box p='x16' borderRadius='x8' bg='neutral-100'>
+							<Box fontScale='c2' color='default' mbe='x12'>
+								After-hours voicemail
+							</Box>
+							<Box display='flex' flexDirection='column' gap='x12'>
+								{voicemailRecords.map((record: any) => (
+									<Box
+										key={record.id}
+										p='x12'
+										borderRadius='x8'
+										bg='surface-light'
+										{...({ style: { border: '1px solid var(--rcx-color-stroke-light)' } } as any)}
+									>
+										<Box display='flex' justifyContent='space-between' alignItems='center' gap='x8' mbe='x8' flexWrap='wrap'>
+											<Box display='flex' alignItems='center' gap='x8' flexWrap='wrap'>
+												<Tag variant={record.uploadUrl ? ('featured' as any) : ('secondary-warning' as any)}>
+													{record.uploadUrl ? 'audio ready' : record.recordingStatus}
+												</Tag>
+												{record.durationSeconds ? <Tag variant='secondary'>{Math.round(record.durationSeconds)}s</Tag> : null}
+											</Box>
+											<Box fontScale='c1' color='hint'>
+												{formatDate(record.receivedAt)}
+											</Box>
+										</Box>
+										{record.transcriptText ? (
+											<Box whiteSpace='pre-wrap' mbe='x8'>
+												{record.transcriptText}
+											</Box>
+										) : null}
+										{record.uploadUrl ? (
+											<audio controls preload='none' src={record.uploadUrl} style={{ width: '100%' }}>
+												Your browser does not support audio playback.
+											</audio>
+										) : record.storageError ? (
+											<Callout type='warning'>{record.storageError}</Callout>
+										) : (
+											<Callout type='warning'>No voicemail audio captured.</Callout>
+										)}
+									</Box>
+								))}
+							</Box>
+						</Box>
+					)}
+
+					<Box p='x16' borderRadius='x8' bg='neutral-100'>
 						<Box fontScale='c2' color='default' mbe='x12'>
 							Recent Messages
 						</Box>
@@ -245,17 +437,9 @@ const QueuePreviewModal = ({ request, onClose }: { request: any; onClose: () => 
 							</Box>
 						)}
 						{!isLoading && error && <Callout type='danger'>{t('Error')}</Callout>}
-						{!isLoading && !error && (!data?.messages || data.messages.length === 0) && (
-							<Callout type='info'>No recent messages</Callout>
-						)}
+						{!isLoading && !error && (!data?.messages || data.messages.length === 0) && <Callout type='info'>No recent messages</Callout>}
 						{!isLoading && !error && Array.isArray(data?.messages) && data.messages.length > 0 && (
-							<Box
-								display='flex'
-								flexDirection='column'
-								gap='x8'
-								overflow='auto'
-								{...({ style: { maxHeight: '360px' } } as any)}
-							>
+							<Box display='flex' flexDirection='column' gap='x8' overflow='auto' {...({ style: { maxHeight: '360px' } } as any)}>
 								{data.messages.map((message: any) => (
 									<Box
 										key={message.id}
@@ -295,6 +479,7 @@ const useStatusColors = (): Record<string, string> => {
 			invite_sent: 'secondary',
 			waiting_patient: 'warning',
 			ai_preassessment: 'secondary',
+			after_hours: 'secondary-warning',
 			waiting_staff: 'warning',
 			ready_for_staff: 'featured',
 			taken: 'primary',
@@ -428,7 +613,7 @@ export const WaitingQueueContent = ({
 	const handleTake = async (requestId: string) => {
 		try {
 			await takeMutation.mutateAsync({ requestId });
-		} catch { }
+		} catch {}
 	};
 
 	if (isLoading) {
@@ -659,10 +844,7 @@ export const FollowedQueueContent = ({
 						text,
 						eventId,
 						final: true,
-						confidence:
-							typeof result?.[0]?.confidence === 'number'
-								? result[0].confidence
-								: undefined,
+						confidence: typeof result?.[0]?.confidence === 'number' ? result[0].confidence : undefined,
 						timestamp: new Date().toISOString(),
 					});
 				}
@@ -791,9 +973,12 @@ export const FollowedQueueContent = ({
 		[dispatchToastMessage, staffPhoneJoinAction],
 	);
 
-	useEffect(() => () => {
-		void leaveVoiceJoin();
-	}, [leaveVoiceJoin]);
+	useEffect(
+		() => () => {
+			void leaveVoiceJoin();
+		},
+		[leaveVoiceJoin],
+	);
 
 	const endVoiceMutation = useMutation({
 		mutationFn: async ({ roomId }: { roomId: string }) => endVoiceAction({ roomId, reason: 'staff_end_from_queue' }),
@@ -857,11 +1042,7 @@ export const FollowedQueueContent = ({
 									{hasVoiceSessionContext(request) && (
 										<Button
 											small
-											onClick={() =>
-												joinedVoiceRoomId === request.roomId
-													? void leaveVoiceJoin()
-													: void joinVoiceAudio(request)
-											}
+											onClick={() => (joinedVoiceRoomId === request.roomId ? void leaveVoiceJoin() : void joinVoiceAudio(request))}
 											disabled={!isVoiceSessionCallable(request) || joiningVoiceRoomId === request.roomId}
 										>
 											{joinedVoiceRoomId === request.roomId && isVoiceSessionCallable(request)

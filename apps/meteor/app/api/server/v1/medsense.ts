@@ -2,6 +2,8 @@ import { api, OmnichannelIntegration } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import type {
 	ILivechatVisitor,
+	IRoom,
+	IUser,
 	IMedsenseAfterHoursContacts,
 	IMedsenseAfterHoursPolicy,
 	IMedsenseDocumentationTemplate,
@@ -27,6 +29,7 @@ import {
 	Settings,
 	Users,
 	Rooms,
+	Messages,
 	Subscriptions,
 	Roles,
 } from '@rocket.chat/models';
@@ -44,6 +47,7 @@ import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { archiveRoom } from '../../../lib/server/functions/archiveRoom';
 import { closeLivechatRoom } from '../../../lib/server/functions/closeLivechatRoom';
 import { createMedsenseBotRoom as createMedsenseBotRoomForUsers } from '../../../lib/server/functions/createMedsenseBotRoom';
+import { createDefaultMedsenseSessionInfo } from '../../../lib/server/functions/medsenseSessionInfo';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { ensureUserInRoom } from '../../../lib/server/functions/ensureUserInRoom';
 import { checkEmailAvailability } from '../../../lib/server/functions/checkEmailAvailability';
@@ -53,8 +57,11 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { loadMessageHistory } from '../../../lib/server/functions/loadMessageHistory';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
+import { FileUpload } from '../../../file-upload/server';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { sendMessage as sendLivechatMessage } from '../../../livechat/server/lib/messages';
 import { createRoom as createLivechatRoom } from '../../../livechat/server/lib/rooms';
+import { triggerHandler } from '../../../integrations/server/lib/triggerHandler';
 import { settings } from '../../../settings/server';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -374,6 +381,146 @@ const postToMedsenseVoiceService = async (path: string, payload: Record<string, 
 		timeout,
 		data: payload,
 	});
+};
+
+const buildMedsenseApiCallbackUrl = (route: string): string => Meteor.absoluteUrl(`api/v1/${route.replace(/^\/+/, '')}`);
+
+const buildAfterHoursVoicemailInstruction = ({
+	roomId,
+	requestId,
+	sessionId,
+}: {
+	roomId: string;
+	requestId: string;
+	sessionId: string;
+}) => ({
+	mode: 'after_hours_voicemail',
+	prompt: {
+		source: 'voice_service_static_tts',
+		config: 'MEDSENSE_AFTER_HOURS_PROMPT_TEXT',
+	},
+	beep: true,
+	maxDurationSeconds: 120,
+	transcribe: true,
+	endAfterRecording: true,
+	context: {
+		roomId,
+		requestId,
+		sessionId,
+	},
+	callbacks: {
+		transcriptUrl: buildMedsenseApiCallbackUrl('medsense/voice.transcript.ingest'),
+		recordingUrl: buildMedsenseApiCallbackUrl('medsense/voice.voicemail.ingest'),
+		stateUrl: buildMedsenseApiCallbackUrl('medsense/voice.session.state.upsert'),
+	},
+});
+
+const normalizeRecordingStatus = (value: unknown): 'completed' | 'in-progress' | 'absent' | 'failed' | 'unknown' => {
+	const normalized = String(value || '')
+		.trim()
+		.toLowerCase();
+	if (['completed', 'in-progress', 'absent', 'failed'].includes(normalized)) {
+		return normalized as 'completed' | 'in-progress' | 'absent' | 'failed';
+	}
+	return 'unknown';
+};
+
+const normalizeVoiceRecordingContentType = (value: unknown): string => {
+	const normalized = String(value || '')
+		.split(';')[0]
+		.trim()
+		.toLowerCase();
+	if (/^audio\/[a-z0-9.+-]+$/.test(normalized)) {
+		return normalized;
+	}
+	return 'audio/mpeg';
+};
+
+const getVoiceRecordingExtension = (contentType: string): string => {
+	switch (normalizeVoiceRecordingContentType(contentType)) {
+		case 'audio/wav':
+		case 'audio/wave':
+		case 'audio/x-wav':
+			return 'wav';
+		case 'audio/mp4':
+		case 'audio/m4a':
+			return 'm4a';
+		case 'audio/ogg':
+			return 'ogg';
+		case 'audio/webm':
+			return 'webm';
+		case 'audio/mpeg':
+		default:
+			return 'mp3';
+	}
+};
+
+const downloadVoiceRecording = async (
+	recordingUrl: string,
+	fallbackContentType?: string,
+): Promise<{ buffer: Buffer; contentType: string }> => {
+	const url = String(recordingUrl || '').trim();
+	if (!/^https?:\/\//i.test(url)) {
+		throw new Error('Recording URL must be http or https');
+	}
+
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), getMedsenseVoiceServiceTimeoutMs());
+	try {
+		const response = await fetch(url, {
+			method: 'GET',
+			redirect: 'follow',
+			signal: controller.signal,
+		});
+		if (!response.ok) {
+			throw new Error(`Recording download failed with HTTP ${response.status}`);
+		}
+		const contentType = normalizeVoiceRecordingContentType(response.headers.get('content-type') || fallbackContentType || '');
+		const buffer = Buffer.from(await response.arrayBuffer());
+		if (!buffer.length) {
+			throw new Error('Recording download returned an empty file');
+		}
+		return { buffer, contentType };
+	} finally {
+		clearTimeout(timeout);
+	}
+};
+
+const uploadAfterHoursVoicemailRecording = async ({
+	roomId,
+	userId,
+	recordingSid,
+	buffer,
+	contentType,
+	durationSeconds,
+}: {
+	roomId: string;
+	userId: string;
+	recordingSid?: string | null;
+	buffer: Buffer;
+	contentType: string;
+	durationSeconds?: number | null;
+}) => {
+	const safeRecordingId = String(recordingSid || randomBytes(4).toString('hex')).replace(/[^a-z0-9_-]/gi, '').slice(0, 48);
+	const extension = getVoiceRecordingExtension(contentType);
+	const name = `after-hours-voicemail-${safeRecordingId}.${extension}`;
+	const fileStore = FileUpload.getStore('Uploads');
+	const uploadedFile = await fileStore.insert(
+		{
+			name,
+			size: buffer.length,
+			type: normalizeVoiceRecordingContentType(contentType),
+			rid: roomId,
+			userId,
+			description:
+				typeof durationSeconds === 'number' && Number.isFinite(durationSeconds)
+					? `After-hours voicemail (${durationSeconds}s)`
+					: 'After-hours voicemail',
+		},
+		buffer,
+	);
+	uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+	return uploadedFile;
 };
 
 const DOCUMENTATION_SECTION_TYPES = new Set([
@@ -896,9 +1043,7 @@ const deriveDocumentationAiRefs = ({
 	roomId?: string;
 	patientUserId?: string;
 }) => {
-	const secret = String(
-		process.env.RC_SECRET || settings.get<string>('Medsense_Documentation_Prefill_Webhook_Secret') || 'medsense',
-	).trim();
+	const secret = String(process.env.RC_SECRET || 'medsense').trim();
 	const derive = (prefix: string, basis: string) =>
 		`${prefix}-${createHmac('sha256', secret).update(basis).digest('hex').slice(0, 6).toUpperCase()}`;
 	const requestBasis = requestId || roomId || patientUserId || 'unknown-request';
@@ -1121,17 +1266,9 @@ const callDocumentationPrefillWebhook = async ({
 	context: Record<string, any>;
 	forceRefresh?: boolean;
 }): Promise<Record<string, any> | null> => {
-	const webhookUrl =
-		settings.get<string>('Medsense_Documentation_Prefill_Webhook_Url') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_WEBHOOK_URL;
-	const webhookSecret =
-		settings.get<string>('Medsense_Documentation_Prefill_Webhook_Secret') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_WEBHOOK_SECRET;
 	const timeoutMsRaw =
 		settings.get<string>('Medsense_Documentation_Prefill_Timeout_MS') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_TIMEOUT_MS || '15000';
 	const timeoutMs = Number.parseInt(String(timeoutMsRaw), 10) || 15000;
-
-	if (!webhookUrl || !webhookSecret) {
-		return null;
-	}
 
 	const aiRefs = deriveDocumentationAiRefs({
 		requestId,
@@ -1194,16 +1331,18 @@ const callDocumentationPrefillWebhook = async ({
 	};
 
 	try {
-		const response = await HTTP.post(webhookUrl, {
-			timeout: timeoutMs,
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Rocketchat-Secret': webhookSecret,
-			},
-			data: payload,
-		});
-
-		return response?.data && typeof response.data === 'object' ? response.data : null;
+		const response = await triggerHandler.executeDocumentationPrefillTrigger(payload, timeoutMs);
+		if (!response || typeof response !== 'object') {
+			return null;
+		}
+		if (String((response as any).interventionId || '') !== String(intervention._id || '')) {
+			console.error('Documentation prefill webhook returned mismatched interventionId', {
+				expectedInterventionId: intervention._id,
+				responseInterventionId: (response as any).interventionId,
+			});
+			return null;
+		}
+		return response;
 	} catch (error) {
 		console.error('Documentation prefill webhook failed', error);
 		return null;
@@ -1383,13 +1522,22 @@ const DEFAULT_MEDSENSE_AFTER_HOURS_CONTACTS: IMedsenseAfterHoursContacts = {
 	pharmacyEmailRecipients: [],
 };
 
-const normalizeMedsenseNotificationChannel = (value: unknown, fallback: IMedsenseNotificationChannel = 'both'): IMedsenseNotificationChannel => {
-	switch (String(value || '').trim().toLowerCase()) {
+const normalizeMedsenseNotificationChannel = (
+	value: unknown,
+	fallback: IMedsenseNotificationChannel = 'both',
+): IMedsenseNotificationChannel => {
+	switch (
+		String(value || '')
+			.trim()
+			.toLowerCase()
+	) {
 		case 'none':
 		case 'sms':
 		case 'email':
 		case 'both':
-			return String(value || '').trim().toLowerCase() as IMedsenseNotificationChannel;
+			return String(value || '')
+				.trim()
+				.toLowerCase() as IMedsenseNotificationChannel;
 		default:
 			return fallback;
 	}
@@ -1417,7 +1565,11 @@ const normalizeEmailRecipientList = (value: unknown): string[] => {
 	return Array.from(
 		new Set(
 			rawValues
-				.map((item) => String(item || '').trim().toLowerCase())
+				.map((item) =>
+					String(item || '')
+						.trim()
+						.toLowerCase(),
+				)
 				.filter(Boolean),
 		),
 	);
@@ -1430,11 +1582,7 @@ const normalizePhoneRecipientList = (value: unknown): string[] => {
 				.split(/[\n,]+/)
 				.map((item) => item.trim());
 	return Array.from(
-		new Set(
-			rawValues
-				.map((item) => normalizeVoiceInboundNumber(String(item || '')))
-				.filter((item): item is string => Boolean(item)),
-		),
+		new Set(rawValues.map((item) => normalizeVoiceInboundNumber(String(item || ''))).filter((item): item is string => Boolean(item))),
 	);
 };
 
@@ -1533,7 +1681,9 @@ const getZonedDateParts = (date: Date, timezone: string): { weekday: IMedsenseOp
 		minute: '2-digit',
 		hourCycle: 'h23',
 	}).formatToParts(date);
-	const weekday = String(parts.find((part) => part.type === 'weekday')?.value || '').trim().toLowerCase() as IMedsenseOperatingHoursWeekday;
+	const weekday = String(parts.find((part) => part.type === 'weekday')?.value || '')
+		.trim()
+		.toLowerCase() as IMedsenseOperatingHoursWeekday;
 	const hour = Number(parts.find((part) => part.type === 'hour')?.value || 0);
 	const minute = Number(parts.find((part) => part.type === 'minute')?.value || 0);
 	return { weekday, hour, minute };
@@ -1721,6 +1871,56 @@ const sendAfterHoursNotifications = async ({
 	}
 
 	return results;
+};
+
+const sendAfterHoursNotificationsForVoicemail = async ({
+	pharmacy,
+	requestId,
+	voice,
+	transcriptText,
+	recordingAvailable,
+}: {
+	pharmacy: IMedsensePharmacy;
+	requestId: string;
+	voice: Record<string, any>;
+	transcriptText?: string | null;
+	recordingAvailable: boolean;
+}) => {
+	const patientUserId = String(voice?.patientUserId || '').trim();
+	const patientUser = patientUserId
+		? await Users.findOneById(patientUserId, { projection: { _id: 1, name: 1, emails: 1, phoneNumber: 1, phones: 1, phone: 1 } })
+		: null;
+	const patientEmail = Array.isArray((patientUser as any)?.emails) ? (patientUser as any).emails[0]?.address : null;
+	const patientPhone =
+		normalizeVoiceInboundNumber(String(voice?.callerNumber || '')) ||
+		normalizeVoiceInboundNumber((patientUser as any)?.phoneNumber) ||
+		normalizeVoiceInboundNumber((patientUser as any)?.phones?.[0]?.phoneNumber) ||
+		normalizeVoiceInboundNumber((patientUser as any)?.phone?.[0]?.phoneNumber);
+	const queueUrl = Meteor.absoluteUrl('medsense/queue');
+	const patientMessage = buildPatientAfterHoursMessage({
+		pharmacyName: pharmacy.name,
+		template: pharmacy.afterHoursContacts?.patientMessageTemplate,
+	});
+	const pharmacyMessageParts = [
+		buildPharmacyAfterHoursMessage({
+			pharmacyName: pharmacy.name,
+			callerNumber: typeof voice?.callerNumber === 'string' ? voice.callerNumber : null,
+			patientName: typeof (patientUser as any)?.name === 'string' ? (patientUser as any).name : undefined,
+			requestId,
+		}),
+		recordingAvailable ? 'Voicemail audio and transcript are available in MedSense.' : 'No voicemail audio was captured.',
+		transcriptText ? `Transcript: ${transcriptText}` : '',
+		`Review: ${queueUrl}`,
+	].filter(Boolean);
+
+	return sendAfterHoursNotifications({
+		pharmacy,
+		requestId,
+		patientMessage,
+		pharmacyMessage: pharmacyMessageParts.join(' '),
+		patientEmail,
+		patientPhone,
+	});
 };
 
 const buildRegistrationSMS = ({ linkUrl, code, patientName }: { linkUrl: string; code: string; patientName?: string }): string => {
@@ -1957,8 +2157,23 @@ const extractSpecialtyExecutionResult = (payload: any): Record<string, any> | nu
 	return payload as Record<string, any>;
 };
 
+const ensureRoomHasMedsenseSessionInfo = async (roomId: string): Promise<void> => {
+	await Rooms.update(
+		{
+			_id: roomId,
+			$or: [{ medsenseSessionInfo: { $exists: false } }, { medsenseSessionInfo: null }],
+		} as any,
+		{
+			$set: {
+				medsenseSessionInfo: createDefaultMedsenseSessionInfo(),
+			},
+		},
+	);
+};
+
 const updateRoomRequestStatus = async (roomId: string, status: string, requestId?: string): Promise<void> => {
 	const medsenseAssigned = status === 'taken' ? 'Staff' : 'AI';
+	await ensureRoomHasMedsenseSessionInfo(roomId);
 	await Rooms.update(
 		{ _id: roomId },
 		{
@@ -2397,9 +2612,7 @@ API.v1.addRoute(
 				{ userId: { $in: patientUserIds }, active: { $ne: false } },
 				{ projection: { userId: 1 } },
 			).toArray();
-			const staffUserIds = new Set(
-				staffMemberships.map((membership: any) => String(membership.userId || '')).filter(Boolean),
-			);
+			const staffUserIds = new Set(staffMemberships.map((membership: any) => String(membership.userId || '')).filter(Boolean));
 
 			const userQuery: any = { _id: { $in: patientUserIds }, type: 'user' };
 			if (text) {
@@ -2836,6 +3049,8 @@ API.v1.addRoute(
 				preAssessmentExpiresAt,
 				createdAt: now,
 			});
+
+			await ensureRoomHasMedsenseSessionInfo(roomId);
 
 			// Lightweight pointer on Room
 			await Rooms.update(
@@ -3593,6 +3808,7 @@ API.v1.addRoute(
 
 					specialtyRequestId = String(result.requestId);
 					specialtyRoomId = String(result.roomId);
+					await ensureRoomHasMedsenseSessionInfo(specialtyRoomId);
 				} catch (error: any) {
 					return API.v1.failure(error?.message || 'Failed to initialize specialty flow');
 				}
@@ -4006,6 +4222,8 @@ API.v1.addRoute(
 					if (!specialtyRoom) {
 						throw new Meteor.Error('error-invalid-room', 'Invalid specialty room');
 					}
+
+					await ensureRoomHasMedsenseSessionInfo(String(specialtyRoomId));
 
 					await ensureUserInRoom(
 						String(specialtyRoomId),
@@ -5230,7 +5448,9 @@ const _buildLegacySessionId = (ownerId: string, source: Record<string, any>) =>
 		.slice(0, 24)}`;
 
 const _inferOwnerKind = (ownerId: string | null) => {
-	const normalized = String(ownerId || '').trim().toLowerCase();
+	const normalized = String(ownerId || '')
+		.trim()
+		.toLowerCase();
 	if (!normalized) {
 		return null;
 	}
@@ -5254,9 +5474,7 @@ const _normalizeCurrentOwner = (raw: any, fallbackOwnerId: string | null, fallba
 			reason: fallbackOwnerId ? 'legacy_migration' : null,
 		};
 	}
-	const normalizedKind = _inferOwnerKind(
-		typeof raw.kind === 'string' ? raw.kind : typeof raw.id === 'string' ? raw.id : fallbackOwnerId,
-	);
+	const normalizedKind = _inferOwnerKind(typeof raw.kind === 'string' ? raw.kind : typeof raw.id === 'string' ? raw.id : fallbackOwnerId);
 	return {
 		kind: normalizedKind,
 		id: typeof raw.id === 'string' && raw.id.trim() ? raw.id.trim() : fallbackOwnerId,
@@ -5280,10 +5498,7 @@ const _normalizePending = (raw: any) =>
 		? {
 				kind: typeof raw.kind === 'string' ? raw.kind : null,
 				recoverable: Boolean(raw.recoverable),
-				waitingFor:
-					typeof raw.waitingFor === 'string' && ['user', 'staff', 'system'].includes(raw.waitingFor)
-						? raw.waitingFor
-						: null,
+				waitingFor: typeof raw.waitingFor === 'string' && ['user', 'staff', 'system'].includes(raw.waitingFor) ? raw.waitingFor : null,
 				formId: typeof raw.formId === 'string' ? raw.formId : null,
 				toolCallIds: Array.isArray(raw.toolCallIds) ? raw.toolCallIds.filter((value: any) => typeof value === 'string') : [],
 				markedAt: typeof raw.markedAt === 'string' ? raw.markedAt : null,
@@ -5397,10 +5612,7 @@ const _buildSessionContextView = (
 	const sessionForms = Array.isArray(sessionInfo.sessionForms) ? sessionInfo.sessionForms : [];
 	const roomFormSubmissions = Array.isArray(sessionInfo.roomFormSubmissions) ? sessionInfo.roomFormSubmissions : [];
 	const roomFormSubmissionsTail = roomFormSubmissions.slice(-Math.max(1, formTailLimit));
-	const recentSubmittedAnswers = _normalizeRecentSubmittedAnswers(
-		sessionForms,
-		roomFormSubmissions,
-	).slice(-Math.max(1, recentAnswerLimit));
+	const recentSubmittedAnswers = _normalizeRecentSubmittedAnswers(sessionForms, roomFormSubmissions).slice(-Math.max(1, recentAnswerLimit));
 	const currentSession = {
 		sessionId: sessionInfo.sessionId,
 		sessionStartTs: sessionInfo.sessionStartTs,
@@ -5424,6 +5636,769 @@ const _buildSessionContextView = (
 		session: currentSession,
 		voice: sessionInfo.voice,
 	};
+};
+
+type MedsenseSmartFormOption = {
+	label: string;
+	value: string;
+};
+
+type MedsenseSmartFormEntry = {
+	entryId: string;
+	formId: string;
+	stepId: string;
+	requestId?: string;
+	flowId?: string;
+	title?: string;
+	prompt: string;
+	options: MedsenseSmartFormOption[];
+	multi: boolean;
+	allowCustomText: boolean;
+	customLabel: string;
+	submitUrl?: string;
+	context?: Record<string, unknown>;
+	reason?: string;
+	source: 'medsenseForm' | 'selection_form';
+	rawPayload: Record<string, any>;
+	createdAt: string;
+	status: 'pending';
+};
+
+const MEDSENSE_SMARTFORM_DEFAULT_CUSTOM_LABEL = 'Tell us what to do differently';
+const MEDSENSE_SMARTFORM_SUBMISSION_SOURCE = 'smart_forms_dock';
+const MEDSENSE_SMARTFORM_DEFAULT_EXPIRY_MINUTES = 10;
+const _getSmartFormExpiryMinutes = (): number => {
+	const rawValue =
+		typeof process.env.MEDSENSE_SMARTFORM_EXPIRY_MINUTES === 'string' ? process.env.MEDSENSE_SMARTFORM_EXPIRY_MINUTES.trim() : '';
+	const parsedValue = Number.parseInt(rawValue, 10);
+	return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : MEDSENSE_SMARTFORM_DEFAULT_EXPIRY_MINUTES;
+};
+
+const _getExpiredSmartFormAnswer = (): string => `No response submitted (expired after ${_getSmartFormExpiryMinutes()} minutes)`;
+
+const _normalizeSmartFormOption = (option: any): MedsenseSmartFormOption | null => {
+	if (!option || typeof option !== 'object') {
+		return null;
+	}
+
+	const label =
+		typeof option.text === 'string' && option.text.trim()
+			? option.text.trim()
+			: typeof option.label === 'string'
+				? option.label.trim()
+				: '';
+	const value = typeof option.value === 'string' && option.value.trim() ? option.value.trim() : '';
+
+	if (!label || !value) {
+		return null;
+	}
+
+	return { label, value };
+};
+
+const _buildSmartFormEntryId = (formId: string, stepId: string): string => `${formId}::${stepId}`;
+
+const _normalizeSmartFormEntries = (rawPayload: any, createdAt = new Date().toISOString()): MedsenseSmartFormEntry[] => {
+	let payload = rawPayload;
+	if (typeof rawPayload === 'string') {
+		try {
+			payload = JSON.parse(rawPayload);
+		} catch {
+			return [];
+		}
+	}
+	if (!payload || typeof payload !== 'object') {
+		return [];
+	}
+
+	const entries: MedsenseSmartFormEntry[] = [];
+
+	if (payload.medsenseForm && typeof payload.medsenseForm === 'object') {
+		const medsenseForm = payload.medsenseForm;
+		const formId = String(
+			medsenseForm.form?.id || medsenseForm.formId || `req-${String(medsenseForm.requestId || '').trim()}` || '',
+		).trim();
+		const fields = Array.isArray(medsenseForm.form?.fields) ? medsenseForm.form.fields : [];
+
+		for (const field of fields) {
+			const stepId = typeof field?.id === 'string' && field.id.trim() ? field.id.trim() : '';
+			if (!formId || !stepId) {
+				continue;
+			}
+
+			const options = Array.isArray(field?.options)
+				? (field.options.map(_normalizeSmartFormOption).filter(Boolean) as MedsenseSmartFormOption[])
+				: [];
+			entries.push({
+				entryId: _buildSmartFormEntryId(formId, stepId),
+				formId,
+				stepId,
+				requestId: typeof medsenseForm.requestId === 'string' && medsenseForm.requestId.trim() ? medsenseForm.requestId.trim() : undefined,
+				flowId: typeof medsenseForm.flowId === 'string' && medsenseForm.flowId.trim() ? medsenseForm.flowId.trim() : undefined,
+				title: typeof field?.title === 'string' && field.title.trim() ? field.title.trim() : undefined,
+				prompt:
+					typeof field?.label === 'string' && field.label.trim()
+						? field.label.trim()
+						: typeof field?.prompt === 'string' && field.prompt.trim()
+							? field.prompt.trim()
+							: 'Please make a selection.',
+				options,
+				multi: field?.type === 'multi_static_select',
+				allowCustomText: field?.allowCustomText !== false,
+				customLabel:
+					typeof field?.customLabel === 'string' && field.customLabel.trim()
+						? field.customLabel.trim()
+						: MEDSENSE_SMARTFORM_DEFAULT_CUSTOM_LABEL,
+				source: 'medsenseForm',
+				rawPayload: { medsenseForm },
+				createdAt,
+				status: 'pending',
+			});
+		}
+
+		return entries;
+	}
+
+	const formId = typeof payload.formId === 'string' && payload.formId.trim() ? payload.formId.trim() : '';
+	const steps = Array.isArray(payload.steps) ? payload.steps : [];
+	for (const step of steps) {
+		const stepId = typeof step?.id === 'string' && step.id.trim() ? step.id.trim() : '';
+		if (!formId || !stepId) {
+			continue;
+		}
+
+		const options = Array.isArray(step?.options)
+			? (step.options.map(_normalizeSmartFormOption).filter(Boolean) as MedsenseSmartFormOption[])
+			: [];
+		entries.push({
+			entryId: _buildSmartFormEntryId(formId, stepId),
+			formId,
+			stepId,
+			title: typeof step?.title === 'string' && step.title.trim() ? step.title.trim() : undefined,
+			prompt:
+				typeof step?.prompt === 'string' && step.prompt.trim()
+					? step.prompt.trim()
+					: typeof step?.label === 'string' && step.label.trim()
+						? step.label.trim()
+						: 'Please make a selection.',
+			options,
+			multi: Boolean(step?.multi),
+			allowCustomText: step?.allowCustomText !== false,
+			customLabel:
+				typeof step?.customLabel === 'string' && step.customLabel.trim()
+					? step.customLabel.trim()
+					: MEDSENSE_SMARTFORM_DEFAULT_CUSTOM_LABEL,
+			submitUrl: typeof payload.submitUrl === 'string' && payload.submitUrl.trim() ? payload.submitUrl.trim() : undefined,
+			context: payload.context && typeof payload.context === 'object' && !Array.isArray(payload.context) ? payload.context : undefined,
+			reason: typeof payload.reason === 'string' && payload.reason.trim() ? payload.reason.trim() : undefined,
+			source: 'selection_form',
+			rawPayload: payload,
+			createdAt,
+			status: 'pending',
+		});
+	}
+
+	return entries;
+};
+
+const _normalizeSmartFormEntry = (entry: any): MedsenseSmartFormEntry | null => {
+	if (!entry || typeof entry !== 'object') {
+		return null;
+	}
+
+	const formId = typeof entry.formId === 'string' && entry.formId.trim() ? entry.formId.trim() : '';
+	const stepId = typeof entry.stepId === 'string' && entry.stepId.trim() ? entry.stepId.trim() : '';
+	if (!formId || !stepId) {
+		return null;
+	}
+
+	return {
+		entryId: typeof entry.entryId === 'string' && entry.entryId.trim() ? entry.entryId.trim() : _buildSmartFormEntryId(formId, stepId),
+		formId,
+		stepId,
+		requestId: typeof entry.requestId === 'string' && entry.requestId.trim() ? entry.requestId.trim() : undefined,
+		flowId: typeof entry.flowId === 'string' && entry.flowId.trim() ? entry.flowId.trim() : undefined,
+		title: typeof entry.title === 'string' && entry.title.trim() ? entry.title.trim() : undefined,
+		prompt: typeof entry.prompt === 'string' && entry.prompt.trim() ? entry.prompt.trim() : 'Please make a selection.',
+		options: Array.isArray(entry.options)
+			? (entry.options.map(_normalizeSmartFormOption).filter(Boolean) as MedsenseSmartFormOption[])
+			: [],
+		multi: Boolean(entry.multi),
+		allowCustomText: entry.allowCustomText !== false,
+		customLabel:
+			typeof entry.customLabel === 'string' && entry.customLabel.trim()
+				? entry.customLabel.trim()
+				: MEDSENSE_SMARTFORM_DEFAULT_CUSTOM_LABEL,
+		submitUrl: typeof entry.submitUrl === 'string' && entry.submitUrl.trim() ? entry.submitUrl.trim() : undefined,
+		context: entry.context && typeof entry.context === 'object' && !Array.isArray(entry.context) ? entry.context : undefined,
+		reason: typeof entry.reason === 'string' && entry.reason.trim() ? entry.reason.trim() : undefined,
+		source: entry.source === 'medsenseForm' ? 'medsenseForm' : 'selection_form',
+		rawPayload: entry.rawPayload && typeof entry.rawPayload === 'object' ? entry.rawPayload : {},
+		createdAt: typeof entry.createdAt === 'string' && entry.createdAt.trim() ? entry.createdAt.trim() : new Date().toISOString(),
+		status: 'pending',
+	};
+};
+
+const _mergeSmartFormEntries = (existingEntries: any[], incomingEntries: MedsenseSmartFormEntry[]): MedsenseSmartFormEntry[] => {
+	const merged = new Map<string, MedsenseSmartFormEntry>();
+
+	for (const rawEntry of existingEntries || []) {
+		const entry = _normalizeSmartFormEntry(rawEntry);
+		if (!entry) {
+			continue;
+		}
+		merged.set(entry.entryId, entry);
+	}
+
+	for (const entry of incomingEntries) {
+		merged.set(entry.entryId, entry);
+	}
+
+	return Array.from(merged.values()).sort((left, right) => {
+		return new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime();
+	});
+};
+
+const _normalizeSmartFormAnswerText = (entry: MedsenseSmartFormEntry, selection: string[], customText: string): string => {
+	const trimmedCustomText = String(customText || '').trim();
+	if (trimmedCustomText) {
+		return trimmedCustomText;
+	}
+
+	if (!Array.isArray(selection) || selection.length === 0) {
+		return '';
+	}
+
+	const selectedLabels = selection.map((value) => entry.options.find((option) => option.value === value)?.label || value).filter(Boolean);
+	return selectedLabels.join(', ');
+};
+
+const _buildSmartFormSubmissionEntry = (
+	entry: MedsenseSmartFormEntry,
+	selection: string[],
+	customText: string,
+	submittedAt: string,
+): Record<string, any> => {
+	return {
+		entryId: entry.entryId,
+		formId: entry.formId,
+		stepId: entry.stepId,
+		requestId: entry.requestId || null,
+		flowId: entry.flowId || null,
+		question: entry.prompt,
+		answer: _normalizeSmartFormAnswerText(entry, selection, customText),
+		selection,
+		customText: String(customText || '').trim(),
+		timestamp: submittedAt,
+		status: 'submitted',
+	};
+};
+
+const _buildSmartFormExpiredEntry = (entry: MedsenseSmartFormEntry, expiredAt: string): Record<string, any> => ({
+	entryId: entry.entryId,
+	formId: entry.formId,
+	stepId: entry.stepId,
+	requestId: entry.requestId || null,
+	flowId: entry.flowId || null,
+	question: entry.prompt,
+	answer: _getExpiredSmartFormAnswer(),
+	selection: [],
+	customText: '',
+	timestamp: expiredAt,
+	status: 'expired',
+});
+
+const _applySmartFormExpiry = (
+	sessionInfo: ReturnType<typeof _normalizeSessionInfo>,
+	nowIso = new Date().toISOString(),
+): {
+	sessionInfo: ReturnType<typeof _normalizeSessionInfo>;
+	didExpire: boolean;
+	expiredCount: number;
+} => {
+	const normalizedEntries = (Array.isArray(sessionInfo.sessionForms) ? sessionInfo.sessionForms : [])
+		.map(_normalizeSmartFormEntry)
+		.filter(Boolean) as MedsenseSmartFormEntry[];
+	if (normalizedEntries.length === 0) {
+		return { sessionInfo, didExpire: false, expiredCount: 0 };
+	}
+
+	const nowMs = Date.parse(nowIso);
+	if (!Number.isFinite(nowMs)) {
+		return { sessionInfo, didExpire: false, expiredCount: 0 };
+	}
+
+	const expiryMs = _getSmartFormExpiryMinutes() * 60 * 1000;
+	const activeEntries: MedsenseSmartFormEntry[] = [];
+	const expiredEntries: MedsenseSmartFormEntry[] = [];
+
+	for (const entry of normalizedEntries) {
+		const createdAtMs = Date.parse(entry.createdAt);
+		if (!Number.isFinite(createdAtMs) || nowMs - createdAtMs < expiryMs) {
+			activeEntries.push(entry);
+			continue;
+		}
+
+		expiredEntries.push(entry);
+	}
+
+	if (expiredEntries.length === 0) {
+		return { sessionInfo, didExpire: false, expiredCount: 0 };
+	}
+
+	const existingSubmissions = Array.isArray(sessionInfo.roomFormSubmissions) ? sessionInfo.roomFormSubmissions : [];
+	const existingSubmissionKeys = new Set(
+		existingSubmissions.map((entry: any) => {
+			const entryId = typeof entry?.entryId === 'string' && entry.entryId.trim() ? entry.entryId.trim() : null;
+			const status = typeof entry?.status === 'string' && entry.status.trim() ? entry.status.trim() : 'submitted';
+			return entryId ? `${entryId}::${status}` : null;
+		}),
+	);
+
+	const nextExpiredSubmissions = expiredEntries
+		.filter((entry) => !existingSubmissionKeys.has(`${entry.entryId}::expired`))
+		.map((entry) => _buildSmartFormExpiredEntry(entry, nowIso));
+
+	const nextSessionInfo = {
+		...sessionInfo,
+		sessionForms: activeEntries,
+		roomFormSubmissions: [...existingSubmissions, ...nextExpiredSubmissions].slice(-100),
+		lastActivityTs: nowIso,
+		status: activeEntries.length > 0 ? 'waiting_for_user' : 'running',
+		pending:
+			activeEntries.length > 0
+				? {
+						kind: 'form_submission',
+						recoverable: true,
+						waitingFor: 'user',
+						formId: activeEntries[0].formId,
+						toolCallIds: [],
+						markedAt: nowIso,
+						context: {
+							entryIds: activeEntries.map((entry) => entry.entryId),
+						},
+					}
+				: _emptyPending(),
+	};
+
+	return {
+		sessionInfo: nextSessionInfo,
+		didExpire: true,
+		expiredCount: expiredEntries.length,
+	};
+};
+
+const _isMedsenseStaffViewer = async (userId: string): Promise<boolean> => {
+	if (!userId) {
+		return false;
+	}
+
+	if (
+		(await hasPermissionAsync(userId, 'admin')) ||
+		(await hasPermissionAsync(userId, 'medsense-view-request')) ||
+		(await hasPermissionAsync(userId, 'medsense-take-request')) ||
+		(await hasPermissionAsync(userId, 'medsense-create-interventions'))
+	) {
+		return true;
+	}
+
+	const user = await Users.findOneById(userId, { projection: { roles: 1 } });
+	const roles = Array.isArray(user?.roles) ? user.roles : [];
+	return roles.some((role) => ['admin', 'bot', 'pharmacy-manager', 'pharmacy-staff'].includes(role));
+};
+
+const _hasValidMedsenseWebhookSecret = (headers: Record<string, any>): boolean => {
+	const configuredSecret = typeof process.env.RC_SECRET === 'string' ? process.env.RC_SECRET.trim() : '';
+	if (!configuredSecret) {
+		return true;
+	}
+
+	const providedSecret = String(headers['x-rocketchat-secret'] || headers['X-Rocketchat-Secret'] || '').trim();
+	if (!providedSecret) {
+		return false;
+	}
+
+	return safeHashEqual(hashRegistrationValue(providedSecret), hashRegistrationValue(configuredSecret));
+};
+
+const _buildSmartFormAnswerValue = (selection: string[], customText: string): string | string[] => {
+	const trimmedCustomText = String(customText || '').trim();
+	if (trimmedCustomText) {
+		return trimmedCustomText;
+	}
+
+	const normalizedSelection = Array.isArray(selection) ? selection.filter((value) => typeof value === 'string' && value.trim()) : [];
+	if (normalizedSelection.length <= 1) {
+		return normalizedSelection[0] || '';
+	}
+
+	return normalizedSelection;
+};
+
+type MedsenseSmartFormSubmissionDraft = {
+	entry: MedsenseSmartFormEntry;
+	selection: string[];
+	customText: string;
+};
+
+type MedsenseSmartFormAnswer = {
+	id: string;
+	value: string | string[];
+};
+
+const _normalizeSmartFormSubmissionDraft = (
+	entry: MedsenseSmartFormEntry,
+	input: { selection?: string[]; customText?: string },
+): MedsenseSmartFormSubmissionDraft => ({
+	entry,
+	selection: Array.isArray(input.selection) ? input.selection.map((value) => String(value).trim()).filter(Boolean) : [],
+	customText: typeof input.customText === 'string' ? input.customText.trim() : '',
+});
+
+const _firstNonEmptyString = (...values: unknown[]): string | null => {
+	for (const value of values) {
+		if (typeof value === 'string' && value.trim()) {
+			return value.trim();
+		}
+	}
+
+	return null;
+};
+
+const _buildSmartFormSubmitAnswers = (submissions: MedsenseSmartFormSubmissionDraft[]): MedsenseSmartFormAnswer[] =>
+	submissions.map(({ entry, selection, customText }) => ({
+		id: entry.stepId,
+		value: _buildSmartFormAnswerValue(selection, customText),
+	}));
+
+const _buildSmartFormFreeText = (submissions: MedsenseSmartFormSubmissionDraft[]): string =>
+	submissions
+		.map(({ customText }) => String(customText || '').trim())
+		.filter(Boolean)
+		.join('\n');
+
+const _buildSelectionFormFields = (submissions: MedsenseSmartFormSubmissionDraft[]): Array<Record<string, any>> =>
+	submissions.map(({ entry }) => ({
+		id: entry.stepId,
+		type: entry.multi ? 'multi_select' : 'single_select',
+		label: entry.prompt,
+		prompt: entry.prompt,
+		options: entry.options,
+		allowCustomText: entry.allowCustomText,
+		customLabel: entry.customLabel,
+	}));
+
+const _buildCanonicalMedsenseFormSubmitPayload = ({
+	formId,
+	submissions,
+	room,
+	sessionInfo,
+	answers,
+	freeText,
+}: {
+	formId: string;
+	submissions: MedsenseSmartFormSubmissionDraft[];
+	room: Record<string, any>;
+	sessionInfo: ReturnType<typeof _normalizeSessionInfo>;
+	answers: MedsenseSmartFormAnswer[];
+	freeText: string;
+}): Record<string, any> => {
+	const primaryEntry = submissions[0].entry;
+	const rawMedsenseForm =
+		primaryEntry.rawPayload?.medsenseForm && typeof primaryEntry.rawPayload.medsenseForm === 'object'
+			? primaryEntry.rawPayload.medsenseForm
+			: null;
+	const rawSelectionPayload = primaryEntry.rawPayload && typeof primaryEntry.rawPayload === 'object' ? primaryEntry.rawPayload : {};
+	const context =
+		(primaryEntry.context && typeof primaryEntry.context === 'object' ? primaryEntry.context : null) ||
+		(rawSelectionPayload.context && typeof rawSelectionPayload.context === 'object' ? rawSelectionPayload.context : null) ||
+		(rawMedsenseForm?.context && typeof rawMedsenseForm.context === 'object' ? rawMedsenseForm.context : null) ||
+		{};
+	const originalForm = rawMedsenseForm?.form && typeof rawMedsenseForm.form === 'object' ? rawMedsenseForm.form : null;
+	const fallbackFields = _buildSelectionFormFields(submissions);
+	const form =
+		originalForm ||
+		(rawSelectionPayload.form && typeof rawSelectionPayload.form === 'object'
+			? rawSelectionPayload.form
+			: {
+					id: formId,
+					fields: fallbackFields,
+				});
+	const requestId = _firstNonEmptyString(
+		rawMedsenseForm?.requestId,
+		primaryEntry.requestId,
+		context.requestId,
+		room.medsenseActiveRequestId,
+	);
+	const flowId = _firstNonEmptyString(rawMedsenseForm?.flowId, primaryEntry.flowId, context.flowId);
+	const visitorToken = _firstNonEmptyString(
+		rawMedsenseForm?.visitorToken,
+		context.visitorToken,
+		rawSelectionPayload.visitorToken,
+		sessionInfo.voice?.patientVisitorToken,
+	);
+
+	return {
+		...(rawMedsenseForm || {}),
+		formId: _firstNonEmptyString(rawMedsenseForm?.formId, formId) || formId,
+		...(requestId ? { requestId } : {}),
+		...(flowId ? { flowId } : {}),
+		roomId: _firstNonEmptyString(rawMedsenseForm?.roomId, context.roomId, room._id) || room._id,
+		visitorToken: visitorToken || null,
+		submitAction: _firstNonEmptyString(rawMedsenseForm?.submitAction, context.submitAction, rawSelectionPayload.submitAction) || null,
+		formType: _firstNonEmptyString(rawMedsenseForm?.formType, context.formType, rawSelectionPayload.formType) || null,
+		form: {
+			...form,
+			id: _firstNonEmptyString(form.id, formId) || formId,
+			fields: Array.isArray(form.fields) ? form.fields : fallbackFields,
+		},
+		answers,
+		freeText,
+	};
+};
+
+const _buildSmartFormSubmitIntegrationPayload = ({
+	formId,
+	submissions,
+	room,
+	user,
+	sessionInfo,
+}: {
+	formId: string;
+	submissions: MedsenseSmartFormSubmissionDraft[];
+	room: Record<string, any>;
+	user?: IUser;
+	sessionInfo: ReturnType<typeof _normalizeSessionInfo>;
+}): Record<string, any> => {
+	const primarySubmission = submissions[0];
+	const primaryEntry = primarySubmission.entry;
+	const submittedAt = new Date().toISOString();
+	const roomName =
+		typeof room?.fname === 'string' && room.fname.trim()
+			? room.fname.trim()
+			: typeof room?.name === 'string' && room.name.trim()
+				? room.name.trim()
+				: null;
+	const freeTextValues = submissions.map(({ customText }) => String(customText || '').trim()).filter(Boolean);
+	const answers = _buildSmartFormSubmitAnswers(submissions);
+	const freeText = _buildSmartFormFreeText(submissions);
+	const medsenseForm = _buildCanonicalMedsenseFormSubmitPayload({
+		formId,
+		submissions,
+		room,
+		sessionInfo,
+		answers,
+		freeText,
+	});
+
+	return {
+		trigger: 'smartforms_submit',
+		submittedAt,
+		source: MEDSENSE_SMARTFORM_SUBMISSION_SOURCE,
+		medsenseForm,
+		formId,
+		answers,
+		...(freeTextValues.length === 1 ? { freeText: freeTextValues[0] } : {}),
+		roomId: room._id,
+		room: {
+			_id: room._id,
+			name: roomName,
+			t: room.t,
+			medsenseActiveRequestId: room.medsenseActiveRequestId || null,
+			medsenseActiveRequestStatus: room.medsenseActiveRequestStatus || null,
+			medsenseAssigned: room.medsenseAssigned === 'Staff' ? 'Staff' : 'AI',
+		},
+		userId: user?._id || null,
+		userName: user?.username || null,
+		userDisplayName: user?.name || null,
+		user: user
+			? {
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+					roles: Array.isArray(user.roles) ? user.roles : [],
+				}
+			: null,
+		requestId: primaryEntry.requestId || room.medsenseActiveRequestId || null,
+		flowId: primaryEntry.flowId || null,
+		formContext: {
+			entryId: primaryEntry.entryId,
+			stepId: primaryEntry.stepId,
+			title: primaryEntry.title || null,
+			prompt: primaryEntry.prompt,
+			source: primaryEntry.source,
+			reason: primaryEntry.reason || null,
+			context: primaryEntry.context || null,
+			rawPayload: primaryEntry.rawPayload || {},
+			entries: submissions.map(({ entry }) => ({
+				entryId: entry.entryId,
+				stepId: entry.stepId,
+				title: entry.title || null,
+				prompt: entry.prompt,
+				source: entry.source,
+				reason: entry.reason || null,
+				context: entry.context || null,
+			})),
+		},
+		session: {
+			sessionId: sessionInfo.sessionId,
+			status: sessionInfo.status,
+			currentOwner: sessionInfo.currentOwner,
+			pending: sessionInfo.pending,
+			activeRun: sessionInfo.activeRun,
+		},
+	};
+};
+
+const _roomHasEnabledSmartFormsSubmitWebhook = (room: IRoom): boolean =>
+	triggerHandler
+		.getTriggersToExecute(room)
+		.some(
+			(trigger) => trigger.enabled === true && trigger.event === 'medsenseSmartFormsSubmit' && triggerHandler.isTriggerEnabled(trigger),
+		);
+
+const _emitSmartFormSubmitIntegration = async ({
+	formId,
+	submissions,
+	room,
+	user,
+	sessionInfo,
+}: {
+	formId: string;
+	submissions: MedsenseSmartFormSubmissionDraft[];
+	room: IRoom & Record<string, any>;
+	user?: IUser;
+	sessionInfo: ReturnType<typeof _normalizeSessionInfo>;
+}): Promise<Record<string, any>> => {
+	if (!_roomHasEnabledSmartFormsSubmitWebhook(room)) {
+		throw new Error('Smart Forms submit webhook is not configured');
+	}
+
+	const payload = _buildSmartFormSubmitIntegrationPayload({
+		formId,
+		submissions,
+		room,
+		user,
+		sessionInfo,
+	});
+
+	await triggerHandler.executeTriggers('medsenseSmartFormsSubmit', room, user, payload);
+	return payload;
+};
+
+const _buildSmartFormSummaryMessagePayload = (entry: Record<string, any>) => ({
+	messageId: String(entry?.messageId || ''),
+	ts: typeof entry?.ts === 'string' ? entry.ts : new Date().toISOString(),
+	role: entry?.role || 'context',
+	evidenceWeight:
+		entry?.evidenceWeight === 'primary' ||
+		entry?.evidenceWeight === 'secondary' ||
+		entry?.evidenceWeight === 'workflow_artifact' ||
+		entry?.evidenceWeight === 'context'
+			? entry.evidenceWeight
+			: entry?.role === 'patient'
+				? 'primary'
+				: entry?.role === 'staff'
+					? 'secondary'
+					: entry?.role === 'ai' || entry?.role === 'bot' || entry?.role === 'system'
+						? 'workflow_artifact'
+						: 'context',
+	text: typeof entry?.text === 'string' ? entry.text : '',
+});
+
+const _resetMedsenseSessionSummaryUpdate = async (roomId: string, triggerMessageId?: string | null): Promise<void> => {
+	const selector: Record<string, any> = { _id: roomId };
+	if (triggerMessageId) {
+		selector['medsenseSessionInfo.summaryUpdate.triggerMessageId'] = triggerMessageId;
+	}
+
+	await Rooms.update(selector, {
+		$set: {
+			'medsenseSessionInfo.summaryUpdate': {
+				inProgress: false,
+				triggerMessageId: null,
+				startedAt: null,
+			},
+		},
+	});
+};
+
+const _roomHasEnabledMedsenseSummaryWebhook = (room: IRoom, message: IMessage): boolean =>
+	triggerHandler
+		.getTriggersToExecute(room, message)
+		.some((trigger) => trigger.enabled === true && trigger.event === 'medsenseSessionSummary' && triggerHandler.isTriggerEnabled(trigger));
+
+const _triggerMedsenseSessionSummaryForSmartForms = async ({
+	room,
+	user,
+	sessionInfo,
+}: {
+	room: IRoom & Record<string, any>;
+	user?: IUser;
+	sessionInfo: ReturnType<typeof _normalizeSessionInfo>;
+}): Promise<void> => {
+	const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
+	const nowIso = new Date().toISOString();
+	const lastBufferEntry = sessionBuffer.length ? sessionBuffer[sessionBuffer.length - 1] : null;
+	const triggerMessageId =
+		typeof lastBufferEntry?.messageId === 'string' && lastBufferEntry.messageId.trim()
+			? lastBufferEntry.messageId.trim()
+			: `smartform-summary-${randomBytes(8).toString('hex')}`;
+	const triggerMessageTs = typeof lastBufferEntry?.ts === 'string' && lastBufferEntry.ts.trim() ? new Date(lastBufferEntry.ts) : new Date();
+	const syntheticMessage = {
+		_id: triggerMessageId,
+		rid: room._id,
+		msg: '[Smart Forms Submission]',
+		ts: triggerMessageTs,
+		u: {
+			_id: user?._id || 'medsense-smartforms',
+			username: user?.username || 'medsense-smartforms',
+			name: user?.name || user?.username || 'Smart Forms',
+		},
+	} as IMessage;
+
+	if (!_roomHasEnabledMedsenseSummaryWebhook(room, syntheticMessage)) {
+		return;
+	}
+
+	await Rooms.update(
+		{ _id: room._id },
+		{
+			$set: {
+				'medsenseSessionInfo.summaryUpdate': {
+					inProgress: true,
+					triggerMessageId,
+					startedAt: nowIso,
+				},
+			},
+		},
+	);
+
+	const patientUserId = await _resolvePatientUserIdForRoom(room._id, undefined);
+	const payload = {
+		roomId: room._id,
+		requestId: room.medsenseActiveRequestId || null,
+		patientUserId: patientUserId || null,
+		finalMessageId: triggerMessageId,
+		reason: 'smartforms_submit',
+		previousSummary: sessionInfo.summary,
+		sessionContext: {
+			sessionId: sessionInfo.sessionId,
+			sessionStatus: sessionInfo.status,
+			currentOwner: sessionInfo.currentOwner,
+			assigned: room.medsenseAssigned === 'Staff' ? 'Staff' : 'AI',
+		},
+		messages: sessionBuffer.map(_buildSmartFormSummaryMessagePayload),
+		submittedForms: [...sessionInfo.sessionForms, ...sessionInfo.roomFormSubmissions],
+		patientSafetySnapshot: {},
+	};
+
+	try {
+		await triggerHandler.executeTriggers('medsenseSessionSummary', syntheticMessage, room, payload);
+	} catch (error) {
+		console.error('[MedsenseSessionSummary] Smart Forms submit trigger failed:', error);
+		await _resetMedsenseSessionSummaryUpdate(room._id, triggerMessageId);
+	}
 };
 
 const _defaultSessionInfo = () => ({
@@ -5466,6 +6441,7 @@ const _defaultSessionInfo = () => ({
 		lastEventAt: null as string | null,
 		lastEventId: null as string | null,
 		processedEventIds: [] as string[],
+		voicemailRecords: [] as Array<Record<string, any>>,
 	},
 });
 
@@ -5532,6 +6508,9 @@ const _normalizeSessionInfo = (raw: any) => {
 								.filter(Boolean)
 								.slice(-500)
 						: base.voice.processedEventIds,
+					voicemailRecords: Array.isArray(source.voice.voicemailRecords)
+						? source.voice.voicemailRecords.filter((value: any) => value && typeof value === 'object').slice(-50)
+						: base.voice.voicemailRecords,
 				}
 			: base.voice;
 	delete (normalized as any).assignedAgent;
@@ -5549,15 +6528,31 @@ API.v1.addRoute(
 			const roomId = String(this.queryParams.roomId);
 
 			const room = await Rooms.findOneById(roomId, {
-				projection: { medsenseSessionInfo: 1 },
+				projection: {
+					_id: 1,
+					t: 1,
+					name: 1,
+					fname: 1,
+					uids: 1,
+					usernames: 1,
+					medsenseSessionInfo: 1,
+					medsenseActiveRequestId: 1,
+					medsenseActiveRequestStatus: 1,
+					medsenseAssigned: 1,
+				},
 			});
 			if (!room) {
 				return API.v1.failure('Room not found');
 			}
 
+			const expiryResult = _applySmartFormExpiry(_normalizeSessionInfo((room as any).medsenseSessionInfo));
+			if (expiryResult.didExpire) {
+				await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: expiryResult.sessionInfo } });
+			}
+
 			return API.v1.success({
 				sessionInfoVersion: MEDSENSE_SESSION_INFO_VERSION,
-				sessionInfo: _normalizeSessionInfo((room as any).medsenseSessionInfo),
+				sessionInfo: expiryResult.sessionInfo,
 			});
 		},
 	},
@@ -5705,7 +6700,9 @@ API.v1.addRoute(
 
 			const roomId = String(this.bodyParams.roomId);
 			const isTyping = Boolean((this.bodyParams as any).isTyping);
-			const status = String((this.bodyParams as any).status || '').trim().toLowerCase();
+			const status = String((this.bodyParams as any).status || '')
+				.trim()
+				.toLowerCase();
 			const activityByStatus: Record<string, string> = {
 				thinking: 'user-typing',
 				agent_processing: 'user-typing',
@@ -5746,7 +6743,18 @@ API.v1.addRoute(
 			const incoming = (this.bodyParams as any).sessionInfo || {};
 
 			const room = await Rooms.findOneById(roomId, {
-				projection: { medsenseSessionInfo: 1 },
+				projection: {
+					_id: 1,
+					t: 1,
+					name: 1,
+					fname: 1,
+					uids: 1,
+					usernames: 1,
+					medsenseSessionInfo: 1,
+					medsenseActiveRequestId: 1,
+					medsenseActiveRequestStatus: 1,
+					medsenseAssigned: 1,
+				},
 			});
 			if (!room) {
 				return API.v1.failure('Room not found');
@@ -5828,6 +6836,286 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'medsense/room.smartforms',
+	{ authRequired: true },
+	{
+		async get() {
+			check(this.queryParams, Match.ObjectIncluding({ roomId: String }));
+			const roomId = String(this.queryParams.roomId);
+
+			const room = await Rooms.findOneById(roomId, {
+				projection: { medsenseSessionInfo: 1, medsenseActiveRequestId: 1 },
+			});
+			if (!room) {
+				return API.v1.failure('Room not found');
+			}
+
+			const expiryResult = _applySmartFormExpiry(_normalizeSessionInfo((room as any).medsenseSessionInfo));
+			if (expiryResult.didExpire) {
+				await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: expiryResult.sessionInfo } });
+			}
+			const sessionInfo = expiryResult.sessionInfo;
+			const pendingForms = (Array.isArray(sessionInfo.sessionForms) ? sessionInfo.sessionForms : [])
+				.map(_normalizeSmartFormEntry)
+				.filter(Boolean) as MedsenseSmartFormEntry[];
+			const pastResponses = Array.isArray(sessionInfo.roomFormSubmissions) ? sessionInfo.roomFormSubmissions : [];
+			const viewerCanAnswer = !(await _isMedsenseStaffViewer(this.userId));
+
+			return API.v1.success({
+				pendingForms,
+				pendingCount: pendingForms.length,
+				pastResponses,
+				viewerCanAnswer,
+				showCompactReview: pendingForms.length === 0 && pastResponses.length > 0,
+				activeFormIndex: pendingForms.length > 0 ? 0 : -1,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/room.smartforms.intake',
+	{ authRequired: false },
+	{
+		async post() {
+			if (!_hasValidMedsenseWebhookSecret(this.request.headers as Record<string, any>)) {
+				return API.v1.forbidden();
+			}
+
+			const rawPayload =
+				(this.bodyParams.smartForm && typeof this.bodyParams.smartForm === 'object' ? this.bodyParams.smartForm : null) ||
+				(this.bodyParams.medsenseForm ? { medsenseForm: this.bodyParams.medsenseForm } : null) ||
+				this.bodyParams.payload ||
+				this.bodyParams;
+
+			const roomId =
+				typeof this.bodyParams.roomId === 'string' && this.bodyParams.roomId.trim()
+					? this.bodyParams.roomId.trim()
+					: typeof rawPayload?.medsenseForm?.roomId === 'string' && rawPayload.medsenseForm.roomId.trim()
+						? rawPayload.medsenseForm.roomId.trim()
+						: typeof rawPayload?.context?.roomId === 'string' && rawPayload.context.roomId.trim()
+							? rawPayload.context.roomId.trim()
+							: '';
+			if (!roomId) {
+				return API.v1.failure('Room not found');
+			}
+
+			const room = await Rooms.findOneById(roomId, { projection: { medsenseSessionInfo: 1 } });
+			if (!room) {
+				return API.v1.failure('Room not found');
+			}
+
+			const nowIso = new Date().toISOString();
+			const incomingEntries = _normalizeSmartFormEntries(rawPayload, nowIso);
+			if (incomingEntries.length === 0) {
+				return API.v1.failure('No Smart Forms payload found');
+			}
+
+			const current = _applySmartFormExpiry(_normalizeSessionInfo((room as any).medsenseSessionInfo), nowIso).sessionInfo;
+			const nextSessionInfo = {
+				...current,
+				sessionForms: _mergeSmartFormEntries(current.sessionForms, incomingEntries),
+				lastActivityTs: nowIso,
+				status: 'waiting_for_user',
+				pending: {
+					kind: 'form_submission',
+					recoverable: true,
+					waitingFor: 'user',
+					formId: incomingEntries[0].formId,
+					toolCallIds: [],
+					markedAt: nowIso,
+					context: {
+						entryIds: incomingEntries.map((entry) => entry.entryId),
+					},
+				},
+			};
+
+			await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: nextSessionInfo } });
+
+			return API.v1.success({
+				pendingForms: nextSessionInfo.sessionForms,
+				pendingCount: nextSessionInfo.sessionForms.length,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/room.smartforms.submit',
+	{ authRequired: true },
+	{
+		async post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					roomId: String,
+					formId: String,
+					stepId: Match.Maybe(String),
+					selection: Match.Maybe([String]),
+					customText: Match.Maybe(String),
+					responses: Match.Maybe([
+						Match.ObjectIncluding({
+							stepId: String,
+							selection: Match.Maybe([String]),
+							customText: Match.Maybe(String),
+						}),
+					]),
+				}),
+			);
+
+			if (await _isMedsenseStaffViewer(this.userId)) {
+				return API.v1.forbidden();
+			}
+
+			const roomId = String(this.bodyParams.roomId);
+			const formId = String(this.bodyParams.formId);
+			const stepId = typeof this.bodyParams.stepId === 'string' ? String(this.bodyParams.stepId).trim() : '';
+			const selection = Array.isArray(this.bodyParams.selection)
+				? this.bodyParams.selection.map((value: string) => String(value).trim()).filter(Boolean)
+				: [];
+			const customText = typeof this.bodyParams.customText === 'string' ? this.bodyParams.customText.trim() : '';
+			const requestedResponses = Array.isArray((this.bodyParams as any).responses)
+				? ((this.bodyParams as any).responses as Array<any>)
+				: [];
+
+			const room = await Rooms.findOneById(roomId, {
+				projection: {
+					_id: 1,
+					t: 1,
+					name: 1,
+					fname: 1,
+					uids: 1,
+					usernames: 1,
+					medsenseSessionInfo: 1,
+					medsenseActiveRequestId: 1,
+					medsenseActiveRequestStatus: 1,
+					medsenseAssigned: 1,
+				},
+			});
+			if (!room) {
+				return API.v1.failure('Room not found');
+			}
+
+			const expiryResult = _applySmartFormExpiry(_normalizeSessionInfo((room as any).medsenseSessionInfo));
+			const sessionInfo = expiryResult.sessionInfo;
+			if (expiryResult.didExpire) {
+				await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: sessionInfo } });
+			}
+			const pendingForms = (Array.isArray(sessionInfo.sessionForms) ? sessionInfo.sessionForms : [])
+				.map(_normalizeSmartFormEntry)
+				.filter(Boolean) as MedsenseSmartFormEntry[];
+			const pendingFormIds = Array.from(new Set(pendingForms.map((entry) => entry.formId)));
+			if (pendingFormIds.length > 1) {
+				return API.v1.failure('All pending Smart Forms must belong to the same form before submission.');
+			}
+			if (pendingForms.some((entry) => entry.formId !== formId)) {
+				return API.v1.failure('Complete all pending Smart Forms before submitting.');
+			}
+
+			const responseMap = new Map<string, { selection?: string[]; customText?: string }>();
+			if (requestedResponses.length > 0) {
+				for (const response of requestedResponses) {
+					const responseStepId = typeof response?.stepId === 'string' ? response.stepId.trim() : '';
+					if (!responseStepId) {
+						continue;
+					}
+					responseMap.set(responseStepId, {
+						selection: Array.isArray(response?.selection)
+							? response.selection.map((value: string) => String(value).trim()).filter(Boolean)
+							: [],
+						customText: typeof response?.customText === 'string' ? response.customText.trim() : '',
+					});
+				}
+			} else if (stepId) {
+				responseMap.set(stepId, { selection, customText });
+			}
+
+			if (pendingForms.length > 1 && responseMap.size < pendingForms.length) {
+				return API.v1.failure('Complete all pending Smart Forms before submitting.');
+			}
+
+			const submissions: MedsenseSmartFormSubmissionDraft[] = [];
+			for (const pendingEntry of pendingForms) {
+				const incomingResponse = responseMap.get(pendingEntry.stepId);
+				if (!incomingResponse) {
+					if (pendingForms.length > 1) {
+						return API.v1.failure('Complete all pending Smart Forms before submitting.');
+					}
+					continue;
+				}
+
+				const draft = _normalizeSmartFormSubmissionDraft(pendingEntry, incomingResponse);
+				if (!draft.selection.length && !draft.customText) {
+					return API.v1.failure('A response is required for every pending Smart Form.');
+				}
+				submissions.push(draft);
+			}
+
+			if (submissions.length === 0) {
+				return API.v1.failure('Pending Smart Form not found');
+			}
+
+			const submittedEntryIds = new Set(submissions.map(({ entry }) => entry.entryId));
+			const response = await _emitSmartFormSubmitIntegration({
+				formId,
+				submissions,
+				room: room as IRoom & Record<string, any>,
+				user: this.user,
+				sessionInfo,
+			});
+
+			const submittedAt = new Date().toISOString();
+			const remainingForms = pendingForms.filter((entry) => !submittedEntryIds.has(entry.entryId));
+			const roomFormSubmissions = Array.isArray(sessionInfo.roomFormSubmissions) ? sessionInfo.roomFormSubmissions : [];
+			const nextRoomFormSubmissions = [
+				...roomFormSubmissions,
+				...submissions.map(({ entry, selection, customText }) => _buildSmartFormSubmissionEntry(entry, selection, customText, submittedAt)),
+			].slice(-100);
+			const nextSessionInfo = {
+				...sessionInfo,
+				sessionForms: remainingForms,
+				roomFormSubmissions: nextRoomFormSubmissions,
+				lastActivityTs: submittedAt,
+				status: remainingForms.length > 0 ? 'waiting_for_user' : 'running',
+				pending:
+					remainingForms.length > 0
+						? {
+								kind: 'form_submission',
+								recoverable: true,
+								waitingFor: 'user',
+								formId: remainingForms[0].formId,
+								toolCallIds: [],
+								markedAt: submittedAt,
+								context: {
+									entryIds: remainingForms.map((entry) => entry.entryId),
+								},
+							}
+						: _emptyPending(),
+			};
+
+			await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: nextSessionInfo } });
+			if (remainingForms.length === 0) {
+				await _triggerMedsenseSessionSummaryForSmartForms({
+					room: {
+						...(room as IRoom & Record<string, any>),
+						medsenseSessionInfo: nextSessionInfo,
+					},
+					user: this.user,
+					sessionInfo: nextSessionInfo,
+				});
+			}
+
+			return API.v1.success({
+				success: true,
+				response,
+				pendingCount: remainingForms.length,
+				showCompactReview: remainingForms.length === 0 && nextRoomFormSubmissions.length > 0,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
 	'medsense/voice.pharmacy.resolve',
 	{ authRequired: false },
 	{
@@ -5854,7 +7142,7 @@ API.v1.addRoute(
 				timezone: pharmacy.timezone || null,
 				isOpen: getPharmacyVoiceAvailability(pharmacy, normalizedTo).isOpen,
 				matchedInboundNumber: normalizedTo,
-				afterHoursPolicy: (pharmacy.afterHoursPolicy || DEFAULT_MEDSENSE_AFTER_HOURS_POLICY),
+				afterHoursPolicy: pharmacy.afterHoursPolicy || DEFAULT_MEDSENSE_AFTER_HOURS_POLICY,
 				pharmacy: {
 					_id: pharmacy._id,
 					name: pharmacy.name,
@@ -5969,14 +7257,24 @@ API.v1.addRoute(
 				);
 				if (existingRoom) {
 					const sessionInfo = _normalizeSessionInfo((existingRoom as any).medsenseSessionInfo);
+					const existingRequestId = (existingRoom as any).medsenseActiveRequestId || null;
+					const existingAvailability = getPharmacyVoiceAvailability(pharmacy, normalizedTo);
 					return API.v1.success({
 						mapped: true,
 						pharmacyId: pharmacy._id,
 						roomId: existingRoom._id,
-						requestId: (existingRoom as any).medsenseActiveRequestId || null,
+						requestId: existingRequestId,
 						sessionId: sessionInfo.voice?.sessionId || null,
 						roomName: sessionInfo.voice?.roomName || null,
-						availability: getPharmacyVoiceAvailability(pharmacy, normalizedTo),
+						availability: existingAvailability,
+						afterHoursVoicemail:
+							!existingAvailability.isOpen && existingRequestId && sessionInfo.voice?.sessionId
+								? buildAfterHoursVoicemailInstruction({
+										roomId: existingRoom._id,
+										requestId: String(existingRequestId),
+										sessionId: String(sessionInfo.voice.sessionId),
+									})
+								: undefined,
 					});
 				}
 			}
@@ -6084,7 +7382,8 @@ API.v1.addRoute(
 							alias: 'medsense_voice',
 							destination: normalizedTo,
 						},
-					},
+						medsenseSessionInfo: createDefaultMedsenseSessionInfo(),
+					} as any,
 				});
 				const now = new Date();
 				const existingBotSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, botUser._id, {
@@ -6157,7 +7456,7 @@ API.v1.addRoute(
 					patientUserId: patientUser?._id || null,
 					patientVisitorToken: patientVisitorToken || null,
 					patientIdentityType,
-					state: availability.isOpen ? 'ai_active' : 'after_hours',
+					state: availability.isOpen ? 'ai_active' : 'after_hours_voicemail',
 					transport: String((payload as any).transport || 'signalwire_swml'),
 					roomName: `medsense-room-${sessionId}`,
 					callId: callId || null,
@@ -6201,6 +7500,13 @@ API.v1.addRoute(
 			});
 
 			let afterHoursNotifications = undefined;
+			const afterHoursVoicemail = availability.isOpen
+				? undefined
+				: buildAfterHoursVoicemailInstruction({
+						roomId: room._id,
+						requestId,
+						sessionId,
+					});
 			if (availability.isOpen) {
 				await sendMessage(
 					botUser,
@@ -6211,43 +7517,11 @@ API.v1.addRoute(
 					room,
 				);
 			} else {
-				const patientEmail = Array.isArray((patientUser as any)?.emails) ? (patientUser as any).emails[0]?.address : null;
-				const patientPhone =
-					normalizedFrom ||
-					normalizeVoiceInboundNumber((patientUser as any)?.phoneNumber) ||
-					normalizeVoiceInboundNumber((patientVisitor as any)?.phone?.number);
-				const patientMessage = buildPatientAfterHoursMessage({
-					pharmacyName: pharmacy.name,
-					template: availability.afterHoursContacts?.patientMessageTemplate,
-				});
-				const pharmacyMessage = buildPharmacyAfterHoursMessage({
-					pharmacyName: pharmacy.name,
-					callerNumber: normalizedFrom,
-					patientName: patientUser?.name || undefined,
-					requestId,
-				});
-				afterHoursNotifications = await sendAfterHoursNotifications({
-					pharmacy,
-					requestId,
-					patientMessage,
-					pharmacyMessage,
-					patientEmail,
-					patientPhone,
-				});
-				await MedsenseRequests.updateOne(
-					{ _id: requestId },
-					{
-						$set: {
-							afterHoursNotifications,
-							_updatedAt: new Date(),
-						},
-					},
-				);
 				await sendMessage(
 					botUser,
 					{
 						rid: room._id,
-						msg: `[Voice] Pharmacy ${pharmacy.name} is currently closed. After-hours handling is active.`,
+						msg: `[Voice] Pharmacy ${pharmacy.name} is currently closed. After-hours voicemail capture is active.`,
 					},
 					room,
 				);
@@ -6266,6 +7540,7 @@ API.v1.addRoute(
 				patientVisitorToken: patientVisitorToken || null,
 				patientIdentityType,
 				availability,
+				afterHoursVoicemail,
 				afterHoursNotifications,
 			});
 		},
@@ -6385,7 +7660,10 @@ API.v1.addRoute(
 
 			const current = _normalizeSessionInfo((room as any).medsenseSessionInfo);
 			const voice = current.voice || _defaultSessionInfo().voice;
-			if (voice.active === false) {
+			const isAfterHoursVoicemailTranscript =
+				Boolean((payload as any).afterHoursVoicemail || (payload as any).isAfterHoursVoicemail) ||
+				String(voice.state || '').startsWith('after_hours');
+			if (voice.active === false && !isAfterHoursVoicemailTranscript) {
 				return API.v1.success({ ignored: true, reason: 'voice_session_inactive' });
 			}
 			if (eventId && Array.isArray(voice.processedEventIds) && voice.processedEventIds.includes(eventId)) {
@@ -6421,7 +7699,9 @@ API.v1.addRoute(
 						}
 					}
 				}
-				if (messageUser?._id === botUser._id) {
+				if (isAfterHoursVoicemailTranscript) {
+					messageText = `[After-hours voicemail transcript] ${text}`;
+				} else if (messageUser?._id === botUser._id) {
 					messageText = `[Patient voice] ${text}`;
 				}
 			} else if (speaker === 'system') {
@@ -6506,6 +7786,9 @@ API.v1.addRoute(
 					eventId: eventId || null,
 					sessionId: sessionId || voice.sessionId || null,
 					staffUserId: speaker === 'staff' ? String((payload as any).staffUserId || '') : null,
+					text,
+					messageText,
+					afterHoursVoicemail: isAfterHoursVoicemailTranscript,
 					timestamp: String((payload as any).timestamp || new Date().toISOString()),
 					confidence: typeof (payload as any).confidence === 'number' ? (payload as any).confidence : undefined,
 				},
@@ -6534,6 +7817,225 @@ API.v1.addRoute(
 				ok: true,
 				roomId,
 				messageId: (messageRecord as any)?._id || null,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/voice.voicemail.ingest',
+	{ authRequired: false },
+	{
+		async post() {
+			const rawPayload = this.bodyParams || {};
+			const signatureCheck = verifyVoiceSignature(this.request.headers as Record<string, any>, rawPayload);
+			if (!signatureCheck.ok) {
+				return API.v1.failure(`Invalid voice service signature (${signatureCheck.reason})`);
+			}
+			const payload = stripVoiceAuthFromPayload(rawPayload);
+
+			check(
+				payload,
+				Match.ObjectIncluding({
+					roomId: String,
+					sessionId: Match.Maybe(String),
+					requestId: Match.Maybe(String),
+					eventId: Match.Maybe(String),
+					recordingUrl: Match.Maybe(String),
+					recordingSid: Match.Maybe(String),
+					durationSeconds: Match.Maybe(Match.OneOf(Number, String)),
+					contentType: Match.Maybe(String),
+				}),
+			);
+
+			const roomId = String((payload as any).roomId || '').trim();
+			const sessionId = String((payload as any).sessionId || '').trim();
+			const requestId = String((payload as any).requestId || '').trim();
+			const eventId = String((payload as any).eventId || '').trim();
+			const recordingUrl = String((payload as any).recordingUrl || (payload as any).RecordingUrl || '').trim();
+			const recordingSid = String((payload as any).recordingSid || (payload as any).RecordingSid || '').trim();
+			const recordingStatus = normalizeRecordingStatus((payload as any).recordingStatus || (payload as any).RecordingStatus);
+			const rawDuration = (payload as any).durationSeconds ?? (payload as any).RecordingDuration;
+			const durationSeconds = Number.isFinite(Number(rawDuration)) ? Number(rawDuration) : null;
+			const transcriptText = normalizeText(
+				String((payload as any).transcriptText || (payload as any).transcript || (payload as any).TranscriptionText || ''),
+			);
+			const eventIds = [eventId, recordingSid ? `recording:${recordingSid}` : ''].filter(Boolean);
+
+			const room = await Rooms.findOneById(roomId, {
+				projection: {
+					medsenseSessionInfo: 1,
+					medsenseActiveRequestId: 1,
+					t: 1,
+				},
+			});
+			if (!room?.t) {
+				return API.v1.failure('Room not found');
+			}
+
+			const current = _normalizeSessionInfo((room as any).medsenseSessionInfo);
+			const voice = current.voice || _defaultSessionInfo().voice;
+			const processedEventIds = Array.isArray(voice.processedEventIds) ? voice.processedEventIds : [];
+			const voicemailRecords = Array.isArray((voice as any).voicemailRecords) ? (voice as any).voicemailRecords : [];
+			const isDuplicate =
+				eventIds.some((id) => processedEventIds.includes(id)) ||
+				(recordingSid && voicemailRecords.some((record: any) => String(record?.recordingSid || '') === recordingSid));
+			if (isDuplicate) {
+				return API.v1.success({ ignored: true, reason: 'duplicate_voicemail', eventId, recordingSid });
+			}
+
+			const botUsername = String(settings.get<string>('Medsense_Bot_User') || 'bot').trim();
+			const botUser = await Users.findOneByUsernameIgnoringCase(botUsername, { projection: { _id: 1, username: 1, name: 1, type: 1 } });
+			if (!botUser?._id) {
+				return API.v1.failure('Medsense bot user not found');
+			}
+
+			const transcriptRecords = Array.isArray((voice as any).transcriptRecords) ? (voice as any).transcriptRecords : [];
+			const latestTranscriptRecord = [...transcriptRecords]
+				.reverse()
+				.find((record: any) => record?.afterHoursVoicemail && (!sessionId || !record?.sessionId || record.sessionId === sessionId));
+			let transcriptMessageId = latestTranscriptRecord?.messageId || null;
+			const resolvedTranscriptText = transcriptText || latestTranscriptRecord?.text || '';
+			if (transcriptText && !latestTranscriptRecord) {
+				const transcriptMessage = await sendMessage(
+					botUser,
+					{
+						rid: roomId,
+						msg: `[After-hours voicemail transcript] ${transcriptText}`,
+					},
+					room,
+				);
+				transcriptMessageId = (transcriptMessage as any)?._id || null;
+			}
+
+			let uploadedFile: any = null;
+			let fileMessageId: string | null = null;
+			let uploadError: string | null = null;
+			const canDownloadRecording = recordingStatus !== 'absent' && recordingStatus !== 'failed' && Boolean(recordingUrl);
+			if (canDownloadRecording) {
+				try {
+					const recording = await downloadVoiceRecording(recordingUrl, String((payload as any).contentType || ''));
+					uploadedFile = await uploadAfterHoursVoicemailRecording({
+						roomId,
+						userId: botUser._id,
+						recordingSid: recordingSid || eventId || null,
+						buffer: recording.buffer,
+						contentType: recording.contentType,
+						durationSeconds,
+					});
+					await sendFileMessage(
+						botUser._id,
+						{
+							roomId,
+							file: uploadedFile,
+							msgData: {
+								msg:
+									typeof durationSeconds === 'number' && Number.isFinite(durationSeconds)
+										? `[Voice] After-hours voicemail audio (${durationSeconds}s).`
+										: '[Voice] After-hours voicemail audio.',
+							},
+						},
+						{ parseAttachmentsForE2EE: false },
+					);
+					const fileMessage = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, botUser._id);
+					fileMessageId = String((fileMessage as any)?._id || '');
+				} catch (error: any) {
+					uploadError = String(error?.message || error || 'Recording storage failed');
+					console.error('[MedsenseVoice] after-hours voicemail recording storage failed', {
+						roomId,
+						requestId,
+						sessionId,
+						recordingSid,
+						error: uploadError,
+					});
+				}
+			}
+
+			if (!uploadedFile) {
+				const reason =
+					recordingStatus === 'absent'
+						? 'SignalWire reported no voicemail audio was captured.'
+						: uploadError
+							? `Voicemail audio could not be stored: ${uploadError}`
+							: 'Voicemail recording URL was not provided.';
+				await sendMessage(
+					botUser,
+					{
+						rid: roomId,
+						msg: `[Voice] After-hours voicemail ended. ${reason}`,
+					},
+					room,
+				);
+			}
+
+			const nowIso = new Date().toISOString();
+			const voicemailRecord = {
+				eventId: eventId || null,
+				recordingSid: recordingSid || null,
+				recordingStatus,
+				sessionId: sessionId || voice.sessionId || null,
+				durationSeconds,
+				uploadId: uploadedFile?._id || null,
+				uploadUrl: uploadedFile?.path || null,
+				fileMessageId: fileMessageId || null,
+				transcriptMessageId,
+				transcriptText: resolvedTranscriptText || null,
+				storageError: uploadError,
+				receivedAt: nowIso,
+			};
+			const nextProcessedEventIds = [...processedEventIds, ...eventIds].filter(Boolean).slice(-500);
+			const nextVoice = {
+				...voice,
+				active: false,
+				state: 'ended',
+				lastRecordingAt: nowIso,
+				lastEventAt: nowIso,
+				lastEventId: eventId || voice.lastEventId || null,
+				processedEventIds: nextProcessedEventIds,
+				voicemailRecords: [...voicemailRecords.slice(-49), voicemailRecord],
+			};
+			const next = {
+				...current,
+				voice: nextVoice,
+			};
+			await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: next } });
+
+			const linkedRequestId = requestId || String((room as any).medsenseActiveRequestId || '').trim();
+			let afterHoursNotifications = null;
+			if (linkedRequestId) {
+				const request = await MedsenseRequests.findOne({ _id: linkedRequestId });
+				const pharmacyId = String((request as any)?.pharmacyId || '').trim();
+				const pharmacy = pharmacyId ? await MedsensePharmacies.findOneById(pharmacyId) : null;
+				if (request && pharmacy) {
+					afterHoursNotifications = await sendAfterHoursNotificationsForVoicemail({
+						pharmacy,
+						requestId: linkedRequestId,
+						voice: nextVoice,
+						transcriptText: resolvedTranscriptText,
+						recordingAvailable: Boolean(uploadedFile),
+					});
+					await MedsenseRequests.updateOne(
+						{ _id: linkedRequestId },
+						{
+							$set: {
+								afterHoursNotifications,
+								_updatedAt: new Date(),
+							},
+						},
+					);
+				}
+			}
+
+			return API.v1.success({
+				ok: true,
+				roomId,
+				requestId: linkedRequestId || null,
+				sessionId: sessionId || voice.sessionId || null,
+				recordingStored: Boolean(uploadedFile),
+				uploadId: uploadedFile?._id || null,
+				fileMessageId,
+				transcriptMessageId,
+				afterHoursNotifications,
 			});
 		},
 	},
@@ -6573,7 +8075,8 @@ API.v1.addRoute(
 					staffUsername: this.user.username,
 					staffName: this.user.name || '',
 				});
-				const activeRequestId = typeof (room as any).medsenseActiveRequestId === 'string' ? (room as any).medsenseActiveRequestId : undefined;
+				const activeRequestId =
+					typeof (room as any).medsenseActiveRequestId === 'string' ? (room as any).medsenseActiveRequestId : undefined;
 				const staffJoinedAt = new Date().toISOString();
 				const nextSessionInfo = {
 					...sessionInfo,
@@ -6667,7 +8170,8 @@ API.v1.addRoute(
 					staffName: this.user.name || '',
 					staffPhone,
 				});
-				const activeRequestId = typeof (room as any).medsenseActiveRequestId === 'string' ? (room as any).medsenseActiveRequestId : undefined;
+				const activeRequestId =
+					typeof (room as any).medsenseActiveRequestId === 'string' ? (room as any).medsenseActiveRequestId : undefined;
 				const staffPhoneJoinRequestedAt = new Date().toISOString();
 				const nextSessionInfo = {
 					...sessionInfo,
