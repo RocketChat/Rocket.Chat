@@ -150,5 +150,7 @@ export class NatsBroker implements IBroker {
 		for (const instance of pending) {
 			await this.registerService(instance);
 		}
+
+		console.log('NatsBroker started successfully.');
 	}
 }
