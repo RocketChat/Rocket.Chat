@@ -1,15 +1,8 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useValidCustomFields } from './useValidCustomFields';
-import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
-
-jest.mock('../../hooks/useCustomFieldsQuery', () => ({
-	useCustomFieldsQuery: jest.fn(),
-}));
-
-const mockedUseCustomFieldsQuery = jest.mocked(useCustomFieldsQuery);
 
 const makeField = (partial: Pick<ILivechatCustomField, '_id' | 'scope'> & Partial<ILivechatCustomField>): ILivechatCustomField => ({
 	_updatedAt: new Date(),
@@ -18,19 +11,29 @@ const makeField = (partial: Pick<ILivechatCustomField, '_id' | 'scope'> & Partia
 	...partial,
 });
 
+const buildWrapper = ({ withPermission, customFields }: { withPermission: boolean; customFields: ILivechatCustomField[] }) => {
+	const builder = mockAppRoot().withEndpoint(
+		'GET',
+		'/v1/livechat/custom-fields',
+		() =>
+			({
+				customFields,
+				total: customFields.length,
+				offset: 0,
+				count: customFields.length,
+			}) as any,
+	);
+
+	if (withPermission) {
+		builder.withPermission('view-livechat-room-customfields');
+	}
+
+	return builder.build();
+};
+
 describe('useValidCustomFields', () => {
 	const visitorField = makeField({ _id: 'cf_visitor', scope: 'visitor' });
 	const roomField = makeField({ _id: 'cf_room', scope: 'room' });
-
-	const withViewPermission = mockAppRoot().withPermission('view-livechat-room-customfields').build();
-	const withoutViewPermission = mockAppRoot().build();
-
-	beforeEach(() => {
-		mockedUseCustomFieldsQuery.mockReturnValue({
-			data: { customFields: [visitorField, roomField] },
-			isError: false,
-		} as ReturnType<typeof useCustomFieldsQuery>);
-	});
 
 	describe('scope', () => {
 		const userCustomFields = {
@@ -38,54 +41,47 @@ describe('useValidCustomFields', () => {
 			cf_room: 'room value',
 		};
 
-		it('keeps only visitor-scoped custom fields when scope is visitor', () => {
+		it('keeps only visitor-scoped custom fields when scope is visitor', async () => {
 			const { result } = renderHook(() => useValidCustomFields(userCustomFields, 'visitor'), {
-				wrapper: withViewPermission,
+				wrapper: buildWrapper({ withPermission: true, customFields: [visitorField, roomField] }),
 			});
 
-			expect(result.current).toEqual([['cf_visitor', 'visitor value']]);
+			await waitFor(() => expect(result.current).toEqual([['cf_visitor', 'visitor value']]));
 		});
 
-		it('keeps only room-scoped custom fields when scope is room', () => {
-			const { result } = renderHook(() => useValidCustomFields(userCustomFields, 'room'), { wrapper: withViewPermission });
+		it('keeps only room-scoped custom fields when scope is room', async () => {
+			const { result } = renderHook(() => useValidCustomFields(userCustomFields, 'room'), {
+				wrapper: buildWrapper({ withPermission: true, customFields: [visitorField, roomField] }),
+			});
 
-			expect(result.current).toEqual([['cf_room', 'room value']]);
+			await waitFor(() => expect(result.current).toEqual([['cf_room', 'room value']]));
 		});
 
-		it('omits a key when the field is defined for the other scope', () => {
-			mockedUseCustomFieldsQuery.mockReturnValue({
-				data: { customFields: [roomField] },
-				isError: false,
-			} as ReturnType<typeof useCustomFieldsQuery>);
-
+		it('omits a key when the field is defined for the other scope', async () => {
 			const { result } = renderHook(() => useValidCustomFields({ cf_room: 'room only' }, 'visitor'), {
-				wrapper: withViewPermission,
+				wrapper: buildWrapper({ withPermission: true, customFields: [roomField] }),
 			});
 
-			expect(result.current).toEqual([]);
+			await waitFor(() => expect(result.current).toEqual([]));
 		});
 	});
 
 	describe('other filters (baseline)', () => {
-		it('returns an empty list without view permission even when scope matches', () => {
-			const { result } = renderHook(() => useValidCustomFields({ cf_visitor: 'x' }, 'visitor'), { wrapper: withoutViewPermission });
-
-			expect(result.current).toEqual([]);
-		});
-
-		it('excludes fields that are not set as visible', () => {
-			mockedUseCustomFieldsQuery.mockReturnValue({
-				data: {
-					customFields: [makeField({ _id: 'cf_hidden', scope: 'visitor', visibility: 'hidden' }), visitorField],
-				},
-				isError: false,
-			} as ReturnType<typeof useCustomFieldsQuery>);
-
-			const { result } = renderHook(() => useValidCustomFields({ cf_hidden: 'secret', cf_visitor: 'ok' }, 'visitor'), {
-				wrapper: withViewPermission,
+		it('returns an empty list without view permission even when scope matches', async () => {
+			const { result } = renderHook(() => useValidCustomFields({ cf_visitor: 'x' }, 'visitor'), {
+				wrapper: buildWrapper({ withPermission: false, customFields: [visitorField] }),
 			});
 
-			expect(result.current).toEqual([['cf_visitor', 'ok']]);
+			await waitFor(() => expect(result.current).toEqual([]));
+		});
+
+		it('excludes fields that are not set as visible', async () => {
+			const hiddenField = makeField({ _id: 'cf_hidden', scope: 'visitor', visibility: 'hidden' });
+			const { result } = renderHook(() => useValidCustomFields({ cf_hidden: 'secret', cf_visitor: 'ok' }, 'visitor'), {
+				wrapper: buildWrapper({ withPermission: true, customFields: [hiddenField, visitorField] }),
+			});
+
+			await waitFor(() => expect(result.current).toEqual([['cf_visitor', 'ok']]));
 		});
 	});
 });
