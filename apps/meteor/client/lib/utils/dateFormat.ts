@@ -3,68 +3,135 @@ import type { Locale } from 'date-fns';
 
 export type DateInput = string | Date | number;
 
+const FALLBACK_FORMAT = 'PPP p'; // date-fns equivalent of moment's LLL
+
 /**
- * Map moment-style locale format tokens to date-fns format string.
- * Used for Message_DateFormat and Message_TimeFormat settings (defaults: LL, LT).
- * Moment's `[literal]` escape syntax is translated to date-fns' `'literal'` syntax.
+ * Translate a Moment.js format string to a date-fns format string.
+ *
+ * The two libraries diverge in two important ways that this function bridges:
+ *  1. Moment treats unrecognized letters as literals (so `T` in `YYYY-MM-DDTHH:mm:ss`
+ *     prints as a literal `T`); date-fns reserves every letter as a token, so an
+ *     unmapped letter either produces wrong output (`T` = ms timestamp) or throws.
+ *  2. Moment uses `Z`/`ZZ` for timezone offsets; date-fns has no `Z` token at all.
+ *
+ * The translator tokenizes left-to-right: it recognizes Moment's `[literal]` escape
+ * syntax, longest-matches a known Moment token, and quotes any other letter as a
+ * date-fns literal so admin-configured formats keep working after the moment→date-fns
+ * migration. Used by Message_DateFormat / Message_TimeFormat / Message_TimeAndDateFormat.
  */
 export const momentFormatToDateFns = (momentFormat: string): string => {
-	const tokenMap: Record<string, string> = {
-		L: 'P', // 09/04/1986
-		LT: 'p', // 8:30 PM
-		LTS: 'pp', // 8:30:00 PM
-		LL: 'PPP', // September 4, 1986
-		LLL: 'PPP p', // September 4, 1986 8:30 PM
-		LLLL: 'EEEE, PPP p',
-		// Common tokens
-		YYYY: 'yyyy',
-		YY: 'yy',
-		Y: 'yyyy',
-		MMMM: 'MMMM',
-		MMM: 'MMM',
-		MM: 'MM',
-		M: 'M',
-		Do: 'do', // 4th
-		DD: 'dd',
-		D: 'd',
-		dddd: 'EEEE',
-		ddd: 'EEE',
-		HH: 'HH',
-		H: 'H',
-		hh: 'hh',
-		h: 'h',
-		mm: 'mm',
-		m: 'm',
-		ss: 'ss',
-		s: 's',
-		A: 'a',
-		a: 'a',
-	};
-	const entries = Object.entries(tokenMap).sort(([a], [b]) => b.length - a.length);
+	const tokens: [moment: string, dateFns: string][] = [
+		// Locale formats (longest first within each group)
+		['LLLL', 'EEEE, PPP p'],
+		['LTS', 'pp'],
+		['LLL', 'PPP p'],
+		['LL', 'PPP'],
+		['LT', 'p'],
+		['L', 'P'],
+		// Year
+		['YYYY', 'yyyy'],
+		['YY', 'yy'],
+		['Y', 'yyyy'],
+		// Month
+		['MMMM', 'MMMM'],
+		['MMM', 'MMM'],
+		['MM', 'MM'],
+		['Mo', 'Mo'],
+		['M', 'M'],
+		// Day of month
+		['Do', 'do'],
+		['DD', 'dd'],
+		['D', 'd'],
+		// Day of week
+		['dddd', 'EEEE'],
+		['ddd', 'EEE'],
+		['dd', 'EEEEEE'],
+		// Hour
+		['HH', 'HH'],
+		['H', 'H'],
+		['hh', 'hh'],
+		['h', 'h'],
+		// Minute
+		['mm', 'mm'],
+		['m', 'm'],
+		// Second
+		['ss', 'ss'],
+		['s', 's'],
+		// Fractional second
+		['SSS', 'SSS'],
+		['SS', 'SS'],
+		['S', 'S'],
+		// AM/PM
+		['A', 'a'],
+		['a', 'a'],
+		// Timezone offset (Moment Z = +05:00, ZZ = +0500)
+		['ZZ', 'xx'],
+		['Z', 'xxx'],
+		// Unix timestamp (Moment X = seconds, x = milliseconds)
+		['X', 't'],
+		['x', 'T'],
+	];
+	tokens.sort((a, b) => b[0].length - a[0].length);
 
-	const replaceTokens = (input: string): string => {
-		let out = input;
-		for (const [mom, df] of entries) {
-			out = out.replace(new RegExp(mom.replace(/([.*+?^${}()|[\]\\])/g, '\\$1'), 'g'), df);
+	let out = '';
+	let literal = '';
+	let i = 0;
+
+	const flushLiteral = () => {
+		if (literal) {
+			out += `'${literal.replace(/'/g, "''")}'`;
+			literal = '';
 		}
-		return out;
 	};
 
-	return momentFormat
-		.split(/(\[[^\]]*\])/g)
-		.map((part) => {
-			if (part.startsWith('[') && part.endsWith(']')) {
-				return `'${part.slice(1, -1).replace(/'/g, "''")}'`;
+	while (i < momentFormat.length) {
+		const ch = momentFormat[i];
+
+		if (ch === '[') {
+			const end = momentFormat.indexOf(']', i + 1);
+			if (end !== -1) {
+				literal += momentFormat.slice(i + 1, end);
+				i = end + 1;
+				continue;
 			}
-			return replaceTokens(part);
-		})
-		.join('');
+		}
+
+		let matched = false;
+		for (const [mom, df] of tokens) {
+			if (momentFormat.startsWith(mom, i)) {
+				flushLiteral();
+				out += df;
+				i += mom.length;
+				matched = true;
+				break;
+			}
+		}
+		if (matched) continue;
+
+		if (/[a-zA-Z]/.test(ch)) {
+			literal += ch;
+		} else {
+			flushLiteral();
+			out += ch;
+		}
+		i++;
+	}
+
+	flushLiteral();
+	return out;
+};
+
+const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
+	try {
+		return format(d, momentFormatToDateFns(momentFormat), locale ? { locale } : undefined);
+	} catch {
+		return format(d, FALLBACK_FORMAT, locale ? { locale } : undefined);
+	}
 };
 
 export const formatDate = (date: DateInput, formatStr: string, locale?: Locale): string => {
 	const d = typeof date === 'object' && date instanceof Date ? date : new Date(date);
-	const dfFormat = momentFormatToDateFns(formatStr);
-	return format(d, dfFormat, locale ? { locale } : undefined);
+	return safeFormat(d, formatStr, locale);
 };
 
 export const formatTimeAgo = (
@@ -84,20 +151,20 @@ export const formatTimeAgo = (
 	const diffDays = differenceInCalendarDays(now, d);
 
 	if (diffDays === 0) {
-		return format(d, momentFormatToDateFns(options.sameDayFormat), locale ? { locale } : undefined);
+		return safeFormat(d, options.sameDayFormat, locale);
 	}
 	if (diffDays === 1) {
 		if (options.lastDayFormat) {
-			return `${options.yesterdayLabel} ${format(d, momentFormatToDateFns(options.lastDayFormat), locale ? { locale } : undefined)}`;
+			return `${options.yesterdayLabel} ${safeFormat(d, options.lastDayFormat, locale)}`;
 		}
 		return options.yesterdayLabel;
 	}
 	if (diffDays > 1 && diffDays < 7) {
-		return format(d, momentFormatToDateFns(options.lastWeekFormat), locale ? { locale } : undefined);
+		return safeFormat(d, options.lastWeekFormat, locale);
 	}
 	const diffYears = now.getFullYear() - d.getFullYear();
 	const fmt = diffYears !== 0 ? options.otherYearFormat : options.otherFormat;
-	return format(d, momentFormatToDateFns(fmt), locale ? { locale } : undefined);
+	return safeFormat(d, fmt, locale);
 };
 
 export const formatFromNow = (date: DateInput, addSuffix: boolean, locale?: Locale): string => {

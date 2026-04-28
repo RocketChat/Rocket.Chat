@@ -24,8 +24,22 @@ describe('momentFormatToDateFns', () => {
 		expect(momentFormatToDateFns("[it's] LT")).toBe("'it''s' p");
 	});
 
-	it('preserves empty literal blocks', () => {
-		expect(momentFormatToDateFns('[] LT')).toBe("'' p");
+	it('drops empty literal blocks since date-fns has no empty-string syntax', () => {
+		// In date-fns, '' represents a literal apostrophe, not an empty string.
+		expect(momentFormatToDateFns('[] LT')).toBe(' p');
+	});
+
+	it('quotes letters that are not Moment tokens (T in ISO 8601 separator)', () => {
+		// In Moment, T is a literal; in date-fns T = ms timestamp. Must quote.
+		expect(momentFormatToDateFns('YYYY-MM-DDTHH:mm:ss')).toBe("yyyy-MM-dd'T'HH:mm:ss");
+	});
+
+	it('maps Moment timezone offset tokens to date-fns equivalents', () => {
+		expect(momentFormatToDateFns('Z')).toBe('xxx');
+		expect(momentFormatToDateFns('ZZ')).toBe('xx');
+		expect(momentFormatToDateFns('Z ZZ')).toBe('xxx xx');
+		expect(momentFormatToDateFns('LT Z')).toBe('p xxx');
+		expect(momentFormatToDateFns('YYYY-MM-DDTHH:mm:ssZ')).toBe("yyyy-MM-dd'T'HH:mm:ssxxx");
 	});
 });
 
@@ -39,5 +53,20 @@ describe('formatDate', () => {
 
 	it('formats date with year-month-day token string', () => {
 		expect(formatDate(sample, 'YYYY-MM-DD')).toBe('2026-04-24');
+	});
+
+	it('keeps the ISO 8601 T as a literal instead of inserting a ms timestamp', () => {
+		expect(formatDate(sample, 'YYYY-MM-DDTHH:mm:ss')).toBe('2026-04-24T20:30:45');
+	});
+
+	it('does not throw on Moment timezone tokens', () => {
+		expect(() => formatDate(sample, 'LT Z')).not.toThrow();
+		expect(() => formatDate(sample, 'Z ZZ')).not.toThrow();
+		expect(() => formatDate(sample, 'YYYY-MM-DDTHH:mm:ssZ')).not.toThrow();
+	});
+
+	it('falls back instead of crashing on a malformed format', () => {
+		// Unterminated bracket — translator buffers but date-fns may still refuse.
+		expect(() => formatDate(sample, '[unterminated')).not.toThrow();
 	});
 });
