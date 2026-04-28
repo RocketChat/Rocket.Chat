@@ -102,6 +102,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "^0.32.0",
+		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/federation-matrix": "workspace:^",

@@ -2,10 +2,9 @@ import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
-import { DDPCommon } from 'meteor/ddp-common';
-import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
+import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../../../client/lib/sdk/ddpSdk';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,30 +17,6 @@ declare module '@rocket.chat/ddp-client' {
 		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
-
-const isChangedCollectionPayload = (
-	msg: any,
-): msg is { msg: 'changed'; collection: string; fields: { eventName: string; args: unknown[] } } => {
-	if (typeof msg !== 'object' && (msg !== null || msg !== undefined)) {
-		return false;
-	}
-	if (msg.msg !== 'changed') {
-		return false;
-	}
-	if (typeof msg.collection !== 'string') {
-		return false;
-	}
-	if (typeof msg.fields !== 'object' && (msg.fields !== null || msg.fields !== undefined)) {
-		return false;
-	}
-	if (typeof msg.fields.eventName !== 'string') {
-		return false;
-	}
-	if (!Array.isArray(msg.fields.args)) {
-		return false;
-	}
-	return true;
-};
 
 type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = StreamKeys<N>> = {
 	[key in `stream-${N}/${K}`]: StreamerCallbackArgs<N, K>;
@@ -57,83 +32,77 @@ type StreamMapValue = {
 	unsubList: Set<() => void>;
 };
 
-const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNames>, args: unknown[]): StreamMapValue => {
+const createNewDdpSdkStream = (
+	streamProxy: Emitter<EventMap>,
+	streamName: StreamNames,
+	key: StreamKeys<StreamNames>,
+	args: unknown[],
+): StreamMapValue => {
 	const ee = new Emitter<{
 		ready: [error: any] | [undefined, any];
 		error: [error: any];
 		stop: undefined;
 	}>();
-	const meta = {
-		ready: false,
-	};
+	const meta = { ready: false };
 
-	const sub = Meteor.connection.subscribe(
-		`stream-${streamName}`,
-		key,
-		{ useCollection: false, args },
-		{
-			onReady: (args: any) => {
-				meta.ready = true;
-				ee.emit('ready', [undefined, args]);
-			},
-			onError: (err: any) => {
-				ee.emit('ready', [err]);
-				ee.emit('error', err);
-			},
-			onStop: () => {
-				ee.emit('stop');
-			},
-		},
-	);
+	const sdk = getDdpSdk();
+	const subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+
+	subscription
+		.ready()
+		.then(() => {
+			meta.ready = true;
+			ee.emit('ready', [undefined, { msg: 'ready', subs: [subscription.id] }]);
+		})
+		.catch((err) => {
+			ee.emit('ready', [err]);
+			ee.emit('error', err);
+		});
+
+	const offCollection = sdk.client.onCollection(`stream-${streamName}`, (data: any) => {
+		if (data?.msg !== 'changed') return;
+		if (data.collection !== `stream-${streamName}`) return;
+		if (data.fields?.eventName !== key) return;
+		streamProxy.emit(`stream-${streamName}/${key}` as keyof EventMap, data.fields.args);
+	});
 
 	const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
 		if (meta.ready) {
-			cb({
-				msg: 'ready',
-
-				subs: [],
-			});
+			cb({ msg: 'ready', subs: [] });
 			return;
 		}
 		ee.once('ready', ([error, result]) => {
 			if (error) {
-				cb({
-					msg: 'nosub',
-
-					id: '',
-					error,
-				});
+				cb({ msg: 'nosub', id: '', error });
 				return;
 			}
-
 			cb(result);
 		});
 	};
 
-	const ready = () => {
-		if (meta.ready) {
-			return Promise.resolve();
-		}
-		return new Promise<void>((resolve, reject) => {
-			ee.once('ready', ([err]) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve();
-			});
-		});
-	};
-
 	return {
-		stop: sub.stop,
+		stop: () => {
+			// Mirror Meteor's subscription semantics: explicit stop() does not fire the
+			// 'stop' event (onStop is reserved for server-initiated closures).
+			// Emitting it here would recurse through the onStop handler that
+			// createStreamManager registers, which itself iterates the unsubList.
+			offCollection();
+			subscription.stop();
+		},
 		onChange,
-		ready,
-		onError: (cb: (...args: any[]) => void) =>
-			ee.once('error', (error) => {
-				cb(error);
-			}),
-
+		ready: () => {
+			if (meta.ready) return Promise.resolve();
+			return new Promise<void>((resolve, reject) => {
+				ee.once('ready', ([err]) => {
+					if (err) {
+						reject(err);
+						return;
+					}
+					resolve();
+				});
+			});
+		},
+		onError: (cb: (...args: any[]) => void) => ee.once('error', (error) => cb(error)),
 		onStop: (cb: () => void) => ee.once('stop', cb),
 		get isReady() {
 			return meta.ready;
@@ -157,14 +126,6 @@ const createStreamManager = () => {
 		});
 	});
 
-	Meteor.connection._stream.on('message', (rawMsg: string) => {
-		const msg = DDPCommon.parseDDP(rawMsg);
-		if (!isChangedCollectionPayload(msg)) {
-			return;
-		}
-		streamProxy.emit(`${msg.collection}/${msg.fields.eventName}` as any, msg.fields.args as any);
-	});
-
 	const stream: SDK['stream'] = <N extends StreamNames, K extends StreamKeys<N>>(
 		name: N,
 		data: [key: K, ...args: unknown[]],
@@ -186,7 +147,8 @@ const createStreamManager = () => {
 
 		streamProxy.on(eventLiteral, proxyCallback);
 
-		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+		const stream =
+			streams.get(eventLiteral) || createNewDdpSdkStream(streamProxy, name as StreamNames, key as StreamKeys<StreamNames>, args);
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
@@ -242,19 +204,23 @@ export const createSDK = (rest: RestClientInterface) => {
 	const { stream, stopAll } = createStreamManager();
 
 	const publish = (name: string, args: unknown[]) => {
-		Meteor.call(`stream-${name}`, ...args);
+		// DDPSDK queues outbound frames until the WebSocket handshake completes,
+		// so there's no need to gate on an isReady flag here.
+		void getDdpSdk().client.callAsync(`stream-${name}`, ...args);
 	};
 
-	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
-		return Meteor.callAsync(method, ...args);
-	};
-
-	const disconnect = () => {
-		Meteor.disconnect();
-	};
-
-	const reconnect = () => {
-		Meteor.reconnect();
+	const call = async <T extends keyof ServerMethods>(
+		method: T,
+		...args: Parameters<ServerMethods[T]>
+	): Promise<ReturnType<ServerMethods[T]>> => {
+		// Block on the SDK socket being connected and (if a stored token exists)
+		// authenticated before dispatching. Without this, on a fresh re-login
+		// (logout → login) the cached-store gets fire on the SDK socket BEFORE
+		// sdk.account.loginWithToken lands. The server treats them as anonymous
+		// and returns empty arrays; the cached stores persist the empty result
+		// and the admin UI shows "No results found" until next reload.
+		await ensureConnectedAndAuthenticated();
+		return getDdpSdk().client.callAsync(method, ...args) as ReturnType<ServerMethods[T]>;
 	};
 
 	return {
@@ -263,8 +229,6 @@ export const createSDK = (rest: RestClientInterface) => {
 		stream,
 		publish,
 		call,
-		disconnect,
-		reconnect,
 	};
 };
 
