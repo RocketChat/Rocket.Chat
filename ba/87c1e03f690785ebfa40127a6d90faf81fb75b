@@ -1,0 +1,14 @@
+docker-compose-ci.yml
+  h_3b4d628c7b932e 22,62,83,104,125,152,174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ba87c1e03f690785ebfa40127a6d90faf81fb75b",
+  "prompts": {},
+  "humans": {
+    "h_3b4d628c7b932e": {
+      "author": "Diego Sampaio"
+    }
+  }
+}
