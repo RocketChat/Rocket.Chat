@@ -103,7 +103,8 @@ export class NatsBroker implements IBroker {
 			const params = data ? TE.encode(EJSON.stringify(data)) : new Uint8Array(0);
 			const res = await this.nc.request(method, params);
 
-			return EJSON.parse(TD.decode(res.data));
+			const decoded = TD.decode(res.data);
+			return decoded ? EJSON.parse(decoded) : undefined;
 		} catch (e) {
 			console.error(e);
 		}
