@@ -24,7 +24,7 @@
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/core-typings": "workspace:~",
-		"@rocket.chat/css-in-js": "~0.31.25",
+		"@rocket.chat/css-in-js": "^0.32.0",
 		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/fuselage": "^0.77.0",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
