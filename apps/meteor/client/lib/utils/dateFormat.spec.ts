@@ -12,7 +12,13 @@ describe('momentFormatToDateFns', () => {
 
 	it('maps common tokens', () => {
 		expect(momentFormatToDateFns('YYYY-MM-DD HH:mm:ss')).toBe('yyyy-MM-dd HH:mm:ss');
-		expect(momentFormatToDateFns('MMMM Do YYYY, h:mm:ss a')).toBe('MMMM do yyyy, h:mm:ss a');
+		expect(momentFormatToDateFns('MMMM Do YYYY, h:mm:ss a')).toBe('MMMM do yyyy, h:mm:ss aaa');
+	});
+
+	it('preserves AM/PM casing (Moment A = uppercase, a = lowercase)', () => {
+		// date-fns `a` is always uppercase; `aaa` is lowercase. So Moment `a` → `aaa`.
+		expect(momentFormatToDateFns('A')).toBe('a');
+		expect(momentFormatToDateFns('a')).toBe('aaa');
 	});
 
 	it('translates moment [literal] escape to date-fns single-quoted literal', () => {

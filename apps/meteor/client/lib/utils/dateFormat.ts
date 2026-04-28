@@ -88,9 +88,9 @@ const MOMENT_TO_DATE_FNS_TOKENS: ReadonlyArray<readonly [moment: string, dateFns
 		['SSS', 'SSS'],
 		['SS', 'SS'],
 		['S', 'S'],
-		// AM/PM
+		// AM/PM — date-fns `a`/`aa` are always uppercase (AM/PM); `aaa` is lowercase (am/pm)
 		['A', 'a'],
-		['a', 'a'],
+		['a', 'aaa'],
 		// Quarter
 		['QQQQ', 'QQQQ'],
 		['QQQ', 'QQQ'],
