@@ -5,6 +5,117 @@ export type DateInput = string | Date | number;
 
 const FALLBACK_FORMAT = 'PPP p'; // date-fns equivalent of moment's LLL
 
+const MOMENT_TO_DATE_FNS_TOKENS: ReadonlyArray<readonly [moment: string, dateFns: string]> = [
+	// Locale formats (longest first within each group)
+	['LLLL', 'EEEE, PPP p'],
+	['LTS', 'pp'],
+	['LLL', 'PPP p'],
+	['LL', 'PPP'],
+	['LT', 'p'],
+	['L', 'P'],
+	// Locale formats — short variants (Moment lowercase l = no zero-padding;
+	// date-fns has no equivalent without zero-padding, so PP/P is the closest match)
+	['llll', 'EEE, PP p'],
+	['lll', 'PP p'],
+	['ll', 'PP'],
+	['l', 'P'],
+	// Year
+	['YYYYYY', 'yyyyyy'], // 6-digit padded; Moment includes a +/- sign that date-fns omits
+	['YYYY', 'yyyy'],
+	['YY', 'yy'],
+	['Y', 'yyyy'],
+	['y', 'y'], // Moment lowercase y = era year (always positive); equivalent to calendar year for AD dates
+	// Era — Moment N/NN/NNN are abbreviated, NNNN wide, NNNNN narrow
+	['NNNNN', 'GGGGG'],
+	['NNNN', 'GGGG'],
+	['NNN', 'GGG'],
+	['NN', 'GG'],
+	['N', 'G'],
+	// Month
+	['MMMM', 'MMMM'],
+	['MMM', 'MMM'],
+	['MM', 'MM'],
+	['Mo', 'Mo'],
+	['M', 'M'],
+	// Day of month
+	['Do', 'do'],
+	['DD', 'dd'],
+	['D', 'd'],
+	// Day of year — needs `useAdditionalDayOfYearTokens` on date-fns
+	['DDDD', 'DDD'],
+	['DDDo', 'Do'],
+	['DDD', 'D'],
+	// Day of week
+	['dddd', 'EEEE'],
+	['ddd', 'EEE'],
+	['dd', 'EEEEEE'],
+	// Numeric day of week — semantics shift: Moment d/e produce 0-6 (Sun=0),
+	// date-fns i/c produce 1-7. No exact equivalent exists.
+	['do', 'io'],
+	['d', 'i'],
+	['e', 'c'],
+	// ISO week of year
+	['WW', 'II'],
+	['Wo', 'Io'],
+	['W', 'I'],
+	// Week-numbering year — Moment gg/gggg = locale, GG/GGGG = ISO.
+	// date-fns Y/YY/YYYY (locale) requires `useAdditionalWeekYearTokens`.
+	['gggg', 'YYYY'],
+	['gg', 'YY'],
+	['GGGG', 'RRRR'],
+	['GG', 'RR'],
+	// Hour (H = 0-23, h = 1-12, k = 1-24)
+	['HH', 'HH'],
+	['H', 'H'],
+	['hh', 'hh'],
+	['h', 'h'],
+	['kk', 'kk'],
+	['k', 'k'],
+	// Minute
+	['mm', 'mm'],
+	['m', 'm'],
+	// Second
+	['ss', 'ss'],
+	['s', 's'],
+	// Fractional second — JS Date only has ms precision; SSSS+ pad with zeros in both
+	['SSSSSSSSS', 'SSSSSSSSS'],
+	['SSSSSSSS', 'SSSSSSSS'],
+	['SSSSSSS', 'SSSSSSS'],
+	['SSSSSS', 'SSSSSS'],
+	['SSSSS', 'SSSSS'],
+	['SSSS', 'SSSS'],
+	['SSS', 'SSS'],
+	['SS', 'SS'],
+	['S', 'S'],
+	// AM/PM
+	['A', 'a'],
+	['a', 'a'],
+	// Quarter
+	['QQQQ', 'QQQQ'],
+	['QQQ', 'QQQ'],
+	['QQ', 'QQ'],
+	['Qo', 'Qo'],
+	['Q', 'Q'],
+	// Week of year (locale)
+	['ww', 'ww'],
+	['wo', 'wo'],
+	['w', 'w'],
+	// ISO day of week (Moment E = 1-7 → date-fns i)
+	['E', 'i'],
+	// Timezone offset (Moment Z = +05:00, ZZ = +0500)
+	['ZZ', 'xx'],
+	['Z', 'xxx'],
+	// Timezone abbreviated name (Moment z/zz = "EST"). date-fns has no
+	// real abbreviation; zzz produces "GMT-3" in browsers. Closest available.
+	['zz', 'zzz'],
+	['z', 'zzz'],
+	// Unix timestamp (Moment X = seconds, x = milliseconds)
+	['X', 't'],
+	['x', 'T'],
+].sort((a, b) => b[0].length - a[0].length);
+
+const LITERAL_LETTER = /[a-zA-Z]/;
+
 /**
  * Translate a Moment.js format string to a date-fns format string.
  *
@@ -20,59 +131,6 @@ const FALLBACK_FORMAT = 'PPP p'; // date-fns equivalent of moment's LLL
  * migration. Used by Message_DateFormat / Message_TimeFormat / Message_TimeAndDateFormat.
  */
 export const momentFormatToDateFns = (momentFormat: string): string => {
-	const tokens: [moment: string, dateFns: string][] = [
-		// Locale formats (longest first within each group)
-		['LLLL', 'EEEE, PPP p'],
-		['LTS', 'pp'],
-		['LLL', 'PPP p'],
-		['LL', 'PPP'],
-		['LT', 'p'],
-		['L', 'P'],
-		// Year
-		['YYYY', 'yyyy'],
-		['YY', 'yy'],
-		['Y', 'yyyy'],
-		// Month
-		['MMMM', 'MMMM'],
-		['MMM', 'MMM'],
-		['MM', 'MM'],
-		['Mo', 'Mo'],
-		['M', 'M'],
-		// Day of month
-		['Do', 'do'],
-		['DD', 'dd'],
-		['D', 'd'],
-		// Day of week
-		['dddd', 'EEEE'],
-		['ddd', 'EEE'],
-		['dd', 'EEEEEE'],
-		// Hour
-		['HH', 'HH'],
-		['H', 'H'],
-		['hh', 'hh'],
-		['h', 'h'],
-		// Minute
-		['mm', 'mm'],
-		['m', 'm'],
-		// Second
-		['ss', 'ss'],
-		['s', 's'],
-		// Fractional second
-		['SSS', 'SSS'],
-		['SS', 'SS'],
-		['S', 'S'],
-		// AM/PM
-		['A', 'a'],
-		['a', 'a'],
-		// Timezone offset (Moment Z = +05:00, ZZ = +0500)
-		['ZZ', 'xx'],
-		['Z', 'xxx'],
-		// Unix timestamp (Moment X = seconds, x = milliseconds)
-		['X', 't'],
-		['x', 'T'],
-	];
-	tokens.sort((a, b) => b[0].length - a[0].length);
-
 	let out = '';
 	let literal = '';
 	let i = 0;
@@ -97,7 +155,7 @@ export const momentFormatToDateFns = (momentFormat: string): string => {
 		}
 
 		let matched = false;
-		for (const [mom, df] of tokens) {
+		for (const [mom, df] of MOMENT_TO_DATE_FNS_TOKENS) {
 			if (momentFormat.startsWith(mom, i)) {
 				flushLiteral();
 				out += df;
@@ -108,7 +166,7 @@ export const momentFormatToDateFns = (momentFormat: string): string => {
 		}
 		if (matched) continue;
 
-		if (/[a-zA-Z]/.test(ch)) {
+		if (LITERAL_LETTER.test(ch)) {
 			literal += ch;
 		} else {
 			flushLiteral();
@@ -122,10 +180,15 @@ export const momentFormatToDateFns = (momentFormat: string): string => {
 };
 
 const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
+	const options = {
+		...(locale && { locale }),
+		useAdditionalWeekYearTokens: true,
+		useAdditionalDayOfYearTokens: true,
+	};
 	try {
-		return format(d, momentFormatToDateFns(momentFormat), locale ? { locale } : undefined);
+		return format(d, momentFormatToDateFns(momentFormat), options);
 	} catch {
-		return format(d, FALLBACK_FORMAT, locale ? { locale } : undefined);
+		return format(d, FALLBACK_FORMAT, options);
 	}
 };
 
