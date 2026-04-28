@@ -14,7 +14,7 @@ server/<responsibility>/<domain>/<file>
 
 This migration extends that pattern by:
 
-1. Adding domain subfolders to existing responsibility folders (e.g., `server/methods/rooms/`)
+1. Adding domain subfolders to existing responsibility folders (e.g., `server/meteor-methods/rooms/`)
 2. Creating new responsibility folders where needed (e.g., `server/api/`, `server/slashcommands/`)
 3. Extending `server/lib/` with domain subfolders for functions and shared libraries
 4. Preserving all existing `server/` folders untouched
@@ -67,7 +67,7 @@ apps/meteor/server/
 │
 │ ── EXISTING (extended with domain subfolders) ────────────
 │
-├── methods/                       # EXISTING — Meteor methods (deprecated)
+├── meteor-methods/                # EXISTING (renamed from methods/) — Meteor methods (deprecated)
 │   ├── rooms/                     #   from app/lib/server/methods/ + app/channel-settings/... + existing flat files
 │   ├── users/                     #   from app/lib/server/methods/ + existing flat files
 │   ├── messages/                  #   from app/lib/server/methods/ + existing flat files
@@ -353,110 +353,114 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 ---
 
-### Phase 5: Meteor Methods (from app/\*/server/methods/ → `server/methods/<domain>/`)
+### Phase 5: Meteor Methods (from app/\*/server/methods/ → `server/meteor-methods/<domain>/`)
 
-**Goal**: Consolidate all Meteor methods from feature folders into `server/methods/` with domain subfolders.
+**Goal**: Consolidate all Meteor methods from feature folders into `server/meteor-methods/` with domain subfolders.
 
 **Risk**: Medium. Methods are entry points — nothing imports them, they just need to be loaded at startup. The main risk is missing a method registration.
 
 **Scope**: ~148 files
 
-**Note**: The existing flat files in `server/methods/` are also moved into the appropriate domain subfolder as part of this phase.
+**Naming**: This phase introduces the `meteor-methods/` folder name (renamed from the existing `methods/`) to make it explicit that these are Meteor-specific RPC handlers — not generic class methods, REST handlers, or service methods. The rename clarifies intent and reinforces that this directory is deprecated and slated for removal as features migrate off Meteor.
+
+**Phase 5 first step — rename the existing folder**: Before moving any new files in, rename `apps/meteor/server/methods/` → `apps/meteor/server/meteor-methods/` with a single `git mv`, and update every importer accordingly. Run `yarn lint --quiet` to confirm no broken imports before proceeding to the moves below.
+
+**Note**: After the rename above, the existing flat files (now under `server/meteor-methods/`) are also moved into the appropriate domain subfolder as part of this phase.
 
 | Source                                            | Destination                                     |
 | ------------------------------------------------- | ----------------------------------------------- |
-| `app/lib/server/methods/setRealName.ts`           | `server/methods/users/setRealName.ts`           |
-| `app/lib/server/methods/setEmail.ts`              | `server/methods/users/setEmail.ts`              |
-| `app/lib/server/methods/blockUser.ts`             | `server/methods/users/blockUser.ts`             |
-| `app/lib/server/methods/unblockUser.ts`           | `server/methods/users/unblockUser.ts`           |
-| `app/lib/server/methods/deleteUserOwnAccount.ts`  | `server/methods/users/deleteUserOwnAccount.ts`  |
-| `app/lib/server/methods/getUsernameSuggestion.ts` | `server/methods/users/getUsernameSuggestion.ts` |
-| `app/lib/server/methods/createChannel.ts`         | `server/methods/rooms/createChannel.ts`         |
-| `app/lib/server/methods/createPrivateGroup.ts`    | `server/methods/rooms/createPrivateGroup.ts`    |
-| `app/lib/server/methods/addUserToRoom.ts`         | `server/methods/rooms/addUserToRoom.ts`         |
-| `app/lib/server/methods/addUsersToRoom.ts`        | `server/methods/rooms/addUsersToRoom.ts`        |
-| `app/lib/server/methods/archiveRoom.ts`           | `server/methods/rooms/archiveRoom.ts`           |
-| `app/lib/server/methods/unarchiveRoom.ts`         | `server/methods/rooms/unarchiveRoom.ts`         |
-| `app/lib/server/methods/leaveRoom.ts`             | `server/methods/rooms/leaveRoom.ts`             |
-| `app/lib/server/methods/joinRoom.ts`              | `server/methods/rooms/joinRoom.ts`              |
-| `app/lib/server/methods/joinDefaultChannels.ts`   | `server/methods/rooms/joinDefaultChannels.ts`   |
-| `app/lib/server/methods/cleanRoomHistory.ts`      | `server/methods/rooms/cleanRoomHistory.ts`      |
-| `app/lib/server/methods/getRoomJoinCode.ts`       | `server/methods/rooms/getRoomJoinCode.ts`       |
-| `app/lib/server/methods/sendMessage.ts`           | `server/methods/messages/sendMessage.ts`        |
-| `app/lib/server/methods/updateMessage.ts`         | `server/methods/messages/updateMessage.ts`      |
-| `app/lib/server/methods/getChannelHistory.ts`     | `server/methods/messages/getChannelHistory.ts`  |
-| `app/lib/server/methods/getMessages.ts`           | `server/methods/messages/getMessages.ts`        |
-| `app/lib/server/methods/getSingleMessage.ts`      | `server/methods/messages/getSingleMessage.ts`   |
-| `app/lib/server/methods/addOAuthService.ts`       | `server/methods/auth/addOAuthService.ts`        |
-| `app/lib/server/methods/refreshOAuthService.ts`   | `server/methods/auth/refreshOAuthService.ts`    |
-| `app/lib/server/methods/removeOAuthService.ts`    | `server/methods/auth/removeOAuthService.ts`     |
-| `app/lib/server/methods/createToken.ts`           | `server/methods/auth/createToken.ts`            |
-| `app/lib/server/methods/saveSetting.ts`           | `server/methods/settings/saveSetting.ts`        |
-| `app/lib/server/methods/saveSettings.ts`          | `server/methods/settings/saveSettings.ts`       |
-| `app/authorization/server/methods/*.ts`           | `server/methods/auth/`                          |
-| `app/2fa/server/methods/*.ts`                     | `server/methods/auth/`                          |
-| `app/channel-settings/server/methods/*.ts`        | `server/methods/rooms/`                         |
-| `app/threads/server/methods/*.ts`                 | `server/methods/messages/`                      |
-| `app/discussion/server/methods/*.ts`              | `server/methods/messages/`                      |
-| `app/livechat/server/methods/*.ts`                | `server/methods/omnichannel/`                   |
-| `app/integrations/server/methods/*.ts`            | `server/methods/integrations/`                  |
-| `app/importer/server/methods/*.ts`                | `server/methods/import/`                        |
-| `app/autotranslate/server/methods/*.ts`           | `server/methods/platform/`                      |
-| `app/e2e/server/methods/*.ts`                     | `server/methods/platform/`                      |
+| `app/lib/server/methods/setRealName.ts`           | `server/meteor-methods/users/setRealName.ts`           |
+| `app/lib/server/methods/setEmail.ts`              | `server/meteor-methods/users/setEmail.ts`              |
+| `app/lib/server/methods/blockUser.ts`             | `server/meteor-methods/users/blockUser.ts`             |
+| `app/lib/server/methods/unblockUser.ts`           | `server/meteor-methods/users/unblockUser.ts`           |
+| `app/lib/server/methods/deleteUserOwnAccount.ts`  | `server/meteor-methods/users/deleteUserOwnAccount.ts`  |
+| `app/lib/server/methods/getUsernameSuggestion.ts` | `server/meteor-methods/users/getUsernameSuggestion.ts` |
+| `app/lib/server/methods/createChannel.ts`         | `server/meteor-methods/rooms/createChannel.ts`         |
+| `app/lib/server/methods/createPrivateGroup.ts`    | `server/meteor-methods/rooms/createPrivateGroup.ts`    |
+| `app/lib/server/methods/addUserToRoom.ts`         | `server/meteor-methods/rooms/addUserToRoom.ts`         |
+| `app/lib/server/methods/addUsersToRoom.ts`        | `server/meteor-methods/rooms/addUsersToRoom.ts`        |
+| `app/lib/server/methods/archiveRoom.ts`           | `server/meteor-methods/rooms/archiveRoom.ts`           |
+| `app/lib/server/methods/unarchiveRoom.ts`         | `server/meteor-methods/rooms/unarchiveRoom.ts`         |
+| `app/lib/server/methods/leaveRoom.ts`             | `server/meteor-methods/rooms/leaveRoom.ts`             |
+| `app/lib/server/methods/joinRoom.ts`              | `server/meteor-methods/rooms/joinRoom.ts`              |
+| `app/lib/server/methods/joinDefaultChannels.ts`   | `server/meteor-methods/rooms/joinDefaultChannels.ts`   |
+| `app/lib/server/methods/cleanRoomHistory.ts`      | `server/meteor-methods/rooms/cleanRoomHistory.ts`      |
+| `app/lib/server/methods/getRoomJoinCode.ts`       | `server/meteor-methods/rooms/getRoomJoinCode.ts`       |
+| `app/lib/server/methods/sendMessage.ts`           | `server/meteor-methods/messages/sendMessage.ts`        |
+| `app/lib/server/methods/updateMessage.ts`         | `server/meteor-methods/messages/updateMessage.ts`      |
+| `app/lib/server/methods/getChannelHistory.ts`     | `server/meteor-methods/messages/getChannelHistory.ts`  |
+| `app/lib/server/methods/getMessages.ts`           | `server/meteor-methods/messages/getMessages.ts`        |
+| `app/lib/server/methods/getSingleMessage.ts`      | `server/meteor-methods/messages/getSingleMessage.ts`   |
+| `app/lib/server/methods/addOAuthService.ts`       | `server/meteor-methods/auth/addOAuthService.ts`        |
+| `app/lib/server/methods/refreshOAuthService.ts`   | `server/meteor-methods/auth/refreshOAuthService.ts`    |
+| `app/lib/server/methods/removeOAuthService.ts`    | `server/meteor-methods/auth/removeOAuthService.ts`     |
+| `app/lib/server/methods/createToken.ts`           | `server/meteor-methods/auth/createToken.ts`            |
+| `app/lib/server/methods/saveSetting.ts`           | `server/meteor-methods/settings/saveSetting.ts`        |
+| `app/lib/server/methods/saveSettings.ts`          | `server/meteor-methods/settings/saveSettings.ts`       |
+| `app/authorization/server/methods/*.ts`           | `server/meteor-methods/auth/`                          |
+| `app/2fa/server/methods/*.ts`                     | `server/meteor-methods/auth/`                          |
+| `app/channel-settings/server/methods/*.ts`        | `server/meteor-methods/rooms/`                         |
+| `app/threads/server/methods/*.ts`                 | `server/meteor-methods/messages/`                      |
+| `app/discussion/server/methods/*.ts`              | `server/meteor-methods/messages/`                      |
+| `app/livechat/server/methods/*.ts`                | `server/meteor-methods/omnichannel/`                   |
+| `app/integrations/server/methods/*.ts`            | `server/meteor-methods/integrations/`                  |
+| `app/importer/server/methods/*.ts`                | `server/meteor-methods/import/`                        |
+| `app/autotranslate/server/methods/*.ts`           | `server/meteor-methods/platform/`                      |
+| `app/e2e/server/methods/*.ts`                     | `server/meteor-methods/platform/`                      |
 
-**Existing `server/methods/` flat files** — also moved into domain subfolders:
+**Existing `server/meteor-methods/` flat files** — also moved into domain subfolders:
 
 | Source                                        | Destination                                        |
 | --------------------------------------------- | -------------------------------------------------- |
-| `server/methods/deleteUser.ts`                | `server/methods/users/deleteUser.ts`               |
-| `server/methods/setUserActiveStatus.ts`       | `server/methods/users/setUserActiveStatus.ts`      |
-| `server/methods/registerUser.ts`              | `server/methods/users/registerUser.ts`             |
-| `server/methods/resetAvatar.ts`               | `server/methods/users/resetAvatar.ts`              |
-| `server/methods/setAvatarFromService.ts`      | `server/methods/users/setAvatarFromService.ts`     |
-| `server/methods/saveUserPreferences.ts`       | `server/methods/users/saveUserPreferences.ts`      |
-| `server/methods/saveUserProfile.ts`           | `server/methods/users/saveUserProfile.ts`          |
-| `server/methods/getUsersOfRoom.ts`            | `server/methods/users/getUsersOfRoom.ts`           |
-| `server/methods/userPresence.ts`              | `server/methods/users/userPresence.ts`             |
-| `server/methods/userSetUtcOffset.ts`          | `server/methods/users/userSetUtcOffset.ts`         |
-| `server/methods/ignoreUser.ts`                | `server/methods/users/ignoreUser.ts`               |
-| `server/methods/addAllUserToRoom.ts`          | `server/methods/rooms/addAllUserToRoom.ts`         |
-| `server/methods/addRoomLeader.ts`             | `server/methods/rooms/addRoomLeader.ts`            |
-| `server/methods/addRoomModerator.ts`          | `server/methods/rooms/addRoomModerator.ts`         |
-| `server/methods/addRoomOwner.ts`              | `server/methods/rooms/addRoomOwner.ts`             |
-| `server/methods/removeRoomLeader.ts`          | `server/methods/rooms/removeRoomLeader.ts`         |
-| `server/methods/removeRoomModerator.ts`       | `server/methods/rooms/removeRoomModerator.ts`      |
-| `server/methods/removeRoomOwner.ts`           | `server/methods/rooms/removeRoomOwner.ts`          |
-| `server/methods/removeUserFromRoom.ts`        | `server/methods/rooms/removeUserFromRoom.ts`       |
-| `server/methods/getRoomById.ts`               | `server/methods/rooms/getRoomById.ts`              |
-| `server/methods/getRoomIdByNameOrId.ts`       | `server/methods/rooms/getRoomIdByNameOrId.ts`      |
-| `server/methods/getRoomNameById.ts`           | `server/methods/rooms/getRoomNameById.ts`          |
-| `server/methods/browseChannels.ts`            | `server/methods/rooms/browseChannels.ts`           |
-| `server/methods/channelsList.ts`              | `server/methods/rooms/channelsList.ts`             |
-| `server/methods/getTotalChannels.ts`          | `server/methods/rooms/getTotalChannels.ts`         |
-| `server/methods/hideRoom.ts`                  | `server/methods/rooms/hideRoom.ts`                 |
-| `server/methods/openRoom.ts`                  | `server/methods/rooms/openRoom.ts`                 |
-| `server/methods/toggleFavorite.ts`            | `server/methods/rooms/toggleFavorite.ts`           |
-| `server/methods/createDirectMessage.ts`       | `server/methods/messages/createDirectMessage.ts`   |
-| `server/methods/deleteFileMessage.ts`         | `server/methods/messages/deleteFileMessage.ts`     |
-| `server/methods/messageSearch.ts`             | `server/methods/messages/messageSearch.ts`         |
-| `server/methods/loadHistory.ts`               | `server/methods/messages/loadHistory.ts`           |
-| `server/methods/loadMissedMessages.ts`        | `server/methods/messages/loadMissedMessages.ts`    |
-| `server/methods/loadNextMessages.ts`          | `server/methods/messages/loadNextMessages.ts`      |
-| `server/methods/loadSurroundingMessages.ts`   | `server/methods/messages/loadSurroundingMessages.ts` |
-| `server/methods/readMessages.ts`              | `server/methods/messages/readMessages.ts`          |
-| `server/methods/readThreads.ts`               | `server/methods/messages/readThreads.ts`           |
-| `server/methods/muteUserInRoom.ts`            | `server/methods/rooms/muteUserInRoom.ts`           |
-| `server/methods/unmuteUserInRoom.ts`          | `server/methods/rooms/unmuteUserInRoom.ts`         |
-| `server/methods/afterVerifyEmail.ts`          | `server/methods/auth/afterVerifyEmail.ts`          |
-| `server/methods/sendConfirmationEmail.ts`     | `server/methods/auth/sendConfirmationEmail.ts`     |
-| `server/methods/sendForgotPasswordEmail.ts`   | `server/methods/auth/sendForgotPasswordEmail.ts`   |
-| `server/methods/logoutCleanUp.ts`             | `server/methods/auth/logoutCleanUp.ts`             |
-| `server/methods/getSetupWizardParameters.ts`  | `server/methods/settings/getSetupWizardParameters.ts` |
-| `server/methods/loadLocale.ts`                | `server/methods/platform/loadLocale.ts`            |
-| `server/methods/OEmbedCacheCleanup.ts`        | `server/methods/platform/OEmbedCacheCleanup.ts`    |
-| `server/methods/requestDataDownload.ts`       | `server/methods/platform/requestDataDownload.ts`   |
+| `server/meteor-methods/deleteUser.ts`                | `server/meteor-methods/users/deleteUser.ts`               |
+| `server/meteor-methods/setUserActiveStatus.ts`       | `server/meteor-methods/users/setUserActiveStatus.ts`      |
+| `server/meteor-methods/registerUser.ts`              | `server/meteor-methods/users/registerUser.ts`             |
+| `server/meteor-methods/resetAvatar.ts`               | `server/meteor-methods/users/resetAvatar.ts`              |
+| `server/meteor-methods/setAvatarFromService.ts`      | `server/meteor-methods/users/setAvatarFromService.ts`     |
+| `server/meteor-methods/saveUserPreferences.ts`       | `server/meteor-methods/users/saveUserPreferences.ts`      |
+| `server/meteor-methods/saveUserProfile.ts`           | `server/meteor-methods/users/saveUserProfile.ts`          |
+| `server/meteor-methods/getUsersOfRoom.ts`            | `server/meteor-methods/users/getUsersOfRoom.ts`           |
+| `server/meteor-methods/userPresence.ts`              | `server/meteor-methods/users/userPresence.ts`             |
+| `server/meteor-methods/userSetUtcOffset.ts`          | `server/meteor-methods/users/userSetUtcOffset.ts`         |
+| `server/meteor-methods/ignoreUser.ts`                | `server/meteor-methods/users/ignoreUser.ts`               |
+| `server/meteor-methods/addAllUserToRoom.ts`          | `server/meteor-methods/rooms/addAllUserToRoom.ts`         |
+| `server/meteor-methods/addRoomLeader.ts`             | `server/meteor-methods/rooms/addRoomLeader.ts`            |
+| `server/meteor-methods/addRoomModerator.ts`          | `server/meteor-methods/rooms/addRoomModerator.ts`         |
+| `server/meteor-methods/addRoomOwner.ts`              | `server/meteor-methods/rooms/addRoomOwner.ts`             |
+| `server/meteor-methods/removeRoomLeader.ts`          | `server/meteor-methods/rooms/removeRoomLeader.ts`         |
+| `server/meteor-methods/removeRoomModerator.ts`       | `server/meteor-methods/rooms/removeRoomModerator.ts`      |
+| `server/meteor-methods/removeRoomOwner.ts`           | `server/meteor-methods/rooms/removeRoomOwner.ts`          |
+| `server/meteor-methods/removeUserFromRoom.ts`        | `server/meteor-methods/rooms/removeUserFromRoom.ts`       |
+| `server/meteor-methods/getRoomById.ts`               | `server/meteor-methods/rooms/getRoomById.ts`              |
+| `server/meteor-methods/getRoomIdByNameOrId.ts`       | `server/meteor-methods/rooms/getRoomIdByNameOrId.ts`      |
+| `server/meteor-methods/getRoomNameById.ts`           | `server/meteor-methods/rooms/getRoomNameById.ts`          |
+| `server/meteor-methods/browseChannels.ts`            | `server/meteor-methods/rooms/browseChannels.ts`           |
+| `server/meteor-methods/channelsList.ts`              | `server/meteor-methods/rooms/channelsList.ts`             |
+| `server/meteor-methods/getTotalChannels.ts`          | `server/meteor-methods/rooms/getTotalChannels.ts`         |
+| `server/meteor-methods/hideRoom.ts`                  | `server/meteor-methods/rooms/hideRoom.ts`                 |
+| `server/meteor-methods/openRoom.ts`                  | `server/meteor-methods/rooms/openRoom.ts`                 |
+| `server/meteor-methods/toggleFavorite.ts`            | `server/meteor-methods/rooms/toggleFavorite.ts`           |
+| `server/meteor-methods/createDirectMessage.ts`       | `server/meteor-methods/messages/createDirectMessage.ts`   |
+| `server/meteor-methods/deleteFileMessage.ts`         | `server/meteor-methods/messages/deleteFileMessage.ts`     |
+| `server/meteor-methods/messageSearch.ts`             | `server/meteor-methods/messages/messageSearch.ts`         |
+| `server/meteor-methods/loadHistory.ts`               | `server/meteor-methods/messages/loadHistory.ts`           |
+| `server/meteor-methods/loadMissedMessages.ts`        | `server/meteor-methods/messages/loadMissedMessages.ts`    |
+| `server/meteor-methods/loadNextMessages.ts`          | `server/meteor-methods/messages/loadNextMessages.ts`      |
+| `server/meteor-methods/loadSurroundingMessages.ts`   | `server/meteor-methods/messages/loadSurroundingMessages.ts` |
+| `server/meteor-methods/readMessages.ts`              | `server/meteor-methods/messages/readMessages.ts`          |
+| `server/meteor-methods/readThreads.ts`               | `server/meteor-methods/messages/readThreads.ts`           |
+| `server/meteor-methods/muteUserInRoom.ts`            | `server/meteor-methods/rooms/muteUserInRoom.ts`           |
+| `server/meteor-methods/unmuteUserInRoom.ts`          | `server/meteor-methods/rooms/unmuteUserInRoom.ts`         |
+| `server/meteor-methods/afterVerifyEmail.ts`          | `server/meteor-methods/auth/afterVerifyEmail.ts`          |
+| `server/meteor-methods/sendConfirmationEmail.ts`     | `server/meteor-methods/auth/sendConfirmationEmail.ts`     |
+| `server/meteor-methods/sendForgotPasswordEmail.ts`   | `server/meteor-methods/auth/sendForgotPasswordEmail.ts`   |
+| `server/meteor-methods/logoutCleanUp.ts`             | `server/meteor-methods/auth/logoutCleanUp.ts`             |
+| `server/meteor-methods/getSetupWizardParameters.ts`  | `server/meteor-methods/settings/getSetupWizardParameters.ts` |
+| `server/meteor-methods/loadLocale.ts`                | `server/meteor-methods/platform/loadLocale.ts`            |
+| `server/meteor-methods/OEmbedCacheCleanup.ts`        | `server/meteor-methods/platform/OEmbedCacheCleanup.ts`    |
+| `server/meteor-methods/requestDataDownload.ts`       | `server/meteor-methods/platform/requestDataDownload.ts`   |
 
-**Import updates**: Update `server/importPackages.ts` and any `server/methods/index.ts` that aggregates method registrations.
+**Import updates**: Update `server/importPackages.ts` and any `server/meteor-methods/index.ts` that aggregates method registrations.
 
 **Verification**: `yarn lint --quiet`, test several Meteor methods via DDP client.
 
@@ -657,7 +661,7 @@ This file is the main import aggregator for the app/lib module. As files move ou
 
 - **No code refactoring.** Files move as-is. Business logic stays the same.
 - **No service consolidation.** Services stay in `server/services/` untouched.
-- **No Meteor method removal.** Methods move to `server/methods/<domain>/` but continue to work.
+- **No Meteor method removal.** Methods move to `server/meteor-methods/<domain>/` but continue to work.
 - **No new abstractions.** No port interfaces, no dependency injection, no new TypeScript patterns.
 - **No reorganization of existing `server/` files.** Everything already in `server/` stays in place. Domain subfolders are additive.
 
@@ -668,7 +672,7 @@ This file is the main import aggregator for the app/lib module. As files move ou
 Once all files are in `server/`, the following improvements become possible (but are separate work):
 
 1. **Move business logic from `lib/` domain folders into `services/`** — the service layer becomes the single source of truth
-2. **Delete Meteor methods** — the `server/methods/` directory can be emptied feature by feature
+2. **Delete Meteor methods** — the `server/meteor-methods/` directory can be emptied feature by feature
 3. **Delete publications** — `server/publications/` can be emptied as DDP is removed
 4. **Add `index.ts` exports** to each `lib/<domain>/` for a clean public API
 5. **Add ESLint layer rules** — e.g., `methods/` cannot import from `api/`, `lib/` domain folders cannot import from `methods/`
