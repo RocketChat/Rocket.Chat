@@ -6,28 +6,26 @@
 	"typings": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"require": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"require": "./dist/index.js"
 		},
 		"./server/*": {
-			"require": "./dist/server/*.js",
-			"types": "./dist/server/*.d.ts"
+			"types": "./dist/server/*.d.ts",
+			"require": "./dist/server/*.js"
 		},
 		"./client/*": {
-			"require": "./dist/client/*.js",
-			"types": "./dist/client/*.d.ts"
+			"types": "./dist/client/*.d.ts",
+			"require": "./dist/client/*.js"
 		}
 	},
 	"typesVersions": {
 		"*": {
-			"server/*": ["./dist/server/*"],
-			"client/*": ["./dist/client/*"]
+			"*": ["./dist/*"]
 		}
 	},
 	"files": [
 		"/dist",
-		"/deno-runtime",
-		"/scripts"
+		"/deno-runtime"
 	],
 	"scripts": {
 		"build": "run-s build:clean build:default build:deno-cache",
