@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { OAuthAppsBridge } from '@rocket.chat/apps/server/bridges/OAuthAppsBridge';
+import { OAuthAppsBridge } from '@rocket.chat/apps/dist/server/bridges/OAuthAppsBridge';
 import type { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApp';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';

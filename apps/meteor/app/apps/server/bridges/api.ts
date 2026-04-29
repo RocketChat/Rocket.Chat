@@ -1,6 +1,6 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { ApiBridge } from '@rocket.chat/apps/server/bridges/ApiBridge';
-import type { AppApi } from '@rocket.chat/apps/server/managers/AppApi';
+import { ApiBridge } from '@rocket.chat/apps/dist/server/bridges/ApiBridge';
+import type { AppApi } from '@rocket.chat/apps/dist/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
 import type { Response, Request, IRouter, RequestHandler } from 'express';

@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator, IAppsLivechatMessage } from '@rocket.chat/apps';
-import { LivechatBridge } from '@rocket.chat/apps/server/bridges/LivechatBridge';
+import { LivechatBridge } from '@rocket.chat/apps/dist/server/bridges/LivechatBridge';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import type {
 	IVisitorExternalIdentifier,

@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { UploadBridge } from '@rocket.chat/apps/server/bridges/UploadBridge';
+import { UploadBridge } from '@rocket.chat/apps/dist/server/bridges/UploadBridge';
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 

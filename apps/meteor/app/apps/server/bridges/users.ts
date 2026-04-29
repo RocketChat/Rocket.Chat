@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { UserBridge } from '@rocket.chat/apps/server/bridges/UserBridge';
+import { UserBridge } from '@rocket.chat/apps/dist/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';

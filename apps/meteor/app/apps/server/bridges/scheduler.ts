@@ -1,7 +1,7 @@
 import type { Job } from '@rocket.chat/agenda';
 import { Agenda } from '@rocket.chat/agenda';
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { SchedulerBridge } from '@rocket.chat/apps/server/bridges/SchedulerBridge';
+import { SchedulerBridge } from '@rocket.chat/apps/dist/server/bridges/SchedulerBridge';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { ObjectId } from 'bson';

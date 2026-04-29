@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs';
 import { join, normalize } from 'path';
 
-import { AppSourceStorage } from '@rocket.chat/apps/server/storage/AppSourceStorage';
-import type { IAppStorageItem } from '@rocket.chat/apps/server/storage/IAppStorageItem';
+import { AppSourceStorage } from '@rocket.chat/apps/dist/server/storage/AppSourceStorage';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 
 export class AppFileSystemSourceStorage extends AppSourceStorage {
 	private pathPrefix = 'fs:/';

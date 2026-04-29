@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { AppDetailChangesBridge as DetailChangesBridge } from '@rocket.chat/apps/server/bridges/AppDetailChangesBridge';
+import { AppDetailChangesBridge as DetailChangesBridge } from '@rocket.chat/apps/dist/server/bridges/AppDetailChangesBridge';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 
 export class AppDetailChangesBridge extends DetailChangesBridge {

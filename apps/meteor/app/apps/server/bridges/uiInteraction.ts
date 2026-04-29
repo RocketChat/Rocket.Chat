@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { UiInteractionBridge as AppsEngineUiInteractionBridge } from '@rocket.chat/apps/server/bridges/UiInteractionBridge';
+import { UiInteractionBridge as AppsEngineUiInteractionBridge } from '@rocket.chat/apps/dist/server/bridges/UiInteractionBridge';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { api } from '@rocket.chat/core-services';

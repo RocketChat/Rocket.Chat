@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import type { IAppStorageItem } from '@rocket.chat/apps/server/storage/IAppStorageItem';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 
 import { addMigration } from '../../lib/migrations';
 
