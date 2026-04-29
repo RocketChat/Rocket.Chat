@@ -2,28 +2,12 @@
 	"name": "@rocket.chat/apps",
 	"version": "0.6.9",
 	"private": true,
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"require": "./dist/index.js"
-		},
-		"./server/*": {
-			"types": "./dist/server/*.d.ts",
-			"require": "./dist/server/*.js"
-		},
-		"./client/*": {
-			"types": "./dist/client/*.d.ts",
-			"require": "./dist/client/*.js"
-		}
-	},
-	"typesVersions": {
-		"*": {
-			"*": ["./dist/*"]
-		}
-	},
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"files": [
-		"/dist",
-		"/deno-runtime"
+		"dist/",
+		"deno-runtime/",
+		".deno-cache/"
 	],
 	"scripts": {
 		"build": "run-s build:clean build:default build:deno-cache",
