@@ -8,6 +8,8 @@ import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { watchUserId } from '../meteor/user';
 
+import '../styles/custom.css';
+
 Meteor.startup(() => {
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
