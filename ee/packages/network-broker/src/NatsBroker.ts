@@ -10,6 +10,8 @@ export { connect } from 'nats';
 const TE = new TextEncoder();
 const TD = new TextDecoder();
 
+const lifecycleMethods = new Set(['created', 'started', 'stopped']);
+
 const serviceEvents = new Set<{
 	eventName: keyof EventSignatures;
 	listeners: {
@@ -28,8 +30,8 @@ export class NatsBroker implements IBroker {
 
 	constructor(private options: ConnectionOptions) {}
 
-	async destroyService(_service: IServiceClass): Promise<void> {
-		// TODO implement
+	async destroyService(service: IServiceClass): Promise<void> {
+		await service.stopped();
 	}
 
 	async createService(instance: IServiceClass, _serviceDependencies?: string[]): Promise<void> {
@@ -39,6 +41,8 @@ export class NatsBroker implements IBroker {
 		}
 
 		await this.registerService(instance);
+		await instance.created();
+		await instance.started();
 	}
 
 	private async registerService(instance: IServiceClass): Promise<void> {
@@ -75,7 +79,7 @@ export class NatsBroker implements IBroker {
 
 		const methods = getInstanceMethods(instance);
 		for (const method of methods) {
-			if (method.match(/^on[A-Z]/)) {
+			if (method.match(/^on[A-Z]/) || lifecycleMethods.has(method)) {
 				continue;
 			}
 
@@ -107,6 +111,7 @@ export class NatsBroker implements IBroker {
 			return decoded ? EJSON.parse(decoded) : undefined;
 		} catch (e) {
 			console.error(e);
+			throw e;
 		}
 	}
 
@@ -147,8 +152,20 @@ export class NatsBroker implements IBroker {
 		const pending = this.pendingServices;
 		this.pendingServices = [];
 
+		// Two-phase init: register all endpoints/events for every pending
+		// service before invoking any lifecycle hooks, so that a service's
+		// started() can call into another local service that was registered
+		// later in the list.
 		for (const instance of pending) {
 			await this.registerService(instance);
+		}
+
+		for (const instance of pending) {
+			await instance.created();
+		}
+
+		for (const instance of pending) {
+			await instance.started();
 		}
 
 		console.log('NatsBroker started successfully.');
