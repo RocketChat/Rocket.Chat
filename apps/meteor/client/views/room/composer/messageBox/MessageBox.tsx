@@ -478,7 +478,6 @@ const MessageBox = ({
 						)}
 						<MessageBoxActionsToolbar
 							canSend={canSend}
-							typing={typing}
 							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
 							tmid={tmid}
