@@ -921,10 +921,6 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.media/:rid': {
-		POST: (params: { file: File }) => { file: { url: string } };
-	};
-
 	'/v1/rooms.mediaConfirm/:rid/:fileId': {
 		POST: (params: {
 			description?: string;
