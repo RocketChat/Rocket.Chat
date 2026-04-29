@@ -13,7 +13,7 @@ onLoggedIn(() => {
 		msg.private = true;
 
 		return Messages.state.store(msg);
-	});
+	}).stop;
 });
 
 onLoggedIn(() => {
@@ -28,5 +28,5 @@ onLoggedIn(() => {
 				(record) => ({ ...record, ignored: true }),
 			);
 		}
-	});
+	}).stop;
 });
