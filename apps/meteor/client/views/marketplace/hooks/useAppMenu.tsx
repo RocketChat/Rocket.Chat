@@ -66,7 +66,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
 	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
 
-	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
+	const button = appButtonProps({ ...app, isAdminUser, requestedEndUser });
 	const buttonLabel = button?.label.replace(' ', '_') as
 		| 'Update'
 		| 'Install'

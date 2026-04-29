@@ -35,7 +35,7 @@ export type appStatusSpanResponseProps = {
 	tooltipText?: string;
 };
 
-type appButtonPropsType = App & { isAdminUser: boolean; endUserRequested: boolean };
+type appButtonPropsType = App & { isAdminUser: boolean };
 
 export const appButtonProps = ({
 	installed,
@@ -49,12 +49,10 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
-	// TODO: Unify this two variables
 	requestedEndUser,
-	endUserRequested,
 }: appButtonPropsType): appButtonResponseProps | undefined => {
 	if (!isAdminUser) {
-		if (requestedEndUser || endUserRequested) {
+		if (requestedEndUser) {
 			return {
 				action: 'request',
 				label: 'Requested',
