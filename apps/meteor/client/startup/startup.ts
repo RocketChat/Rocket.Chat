@@ -42,27 +42,48 @@ const runUserDataSync = async (uid: string) => {
 	emitStatusChange(user.status);
 };
 
-onLoggedIn(async () => {
-	const uid = userIdStore.getState();
-	if (!uid) return;
-	await runUserDataSync(uid);
+// Both `onLoggedIn` (from accounts-base) and `userIdStore.subscribe`
+// (belt-and-braces in case the loggedInAndDataReadyCallback's user-await
+// autorun gets wedged on logout → fresh login) fire for the same uid on a
+// successful login. runUserDataSync calls userSetUtcOffset which is
+// rate-limited on CI/prod, so without a shared guard the second call
+// returns 400 too-many-requests and downstream REST calls (sessions/list
+// etc.) start coming back 401 because the rate limiter throttles auth
+// checks for the rest of the window. Use a single guarded sync gate, but
+// reset it on failure so SAML/oauth/post-logout flows can retry — those
+// flows depend on a second runUserDataSync after the SDK socket finishes
+// authenticating, otherwise the userData stream subscription comes back
+// nosub and synchronizeUserData throws, leaving useUserDataSyncReady
+// false and the page stuck on PageLoading.
+let lastSyncedUid: string | undefined;
+const syncOnce = (uid: string | undefined): void => {
+	// Reset on logout transitions so a subsequent re-login (same uid or different)
+	// runs a fresh sync. Force-logout via the SDK loginWithToken wrap clears
+	// creds via Accounts._unstoreLoginToken() + setUserId(null), which does NOT
+	// fire Accounts.onLogout — so without this branch, lastSyncedUid stays set,
+	// the next login is deduped, runUserDataSync is skipped, and
+	// useUserDataSyncReady stays false (page wedged on PageLoading).
+	if (!uid) {
+		lastSyncedUid = undefined;
+		return;
+	}
+	if (uid === lastSyncedUid) return;
+	lastSyncedUid = uid;
+	void runUserDataSync(uid).catch((err) => {
+		console.warn('[startup] runUserDataSync failed; clearing dedup to allow a retry', err);
+		if (lastSyncedUid === uid) lastSyncedUid = undefined;
+	});
+};
+
+onLoggedIn(() => {
+	syncOnce(userIdStore.getState());
 });
 
-// Belt-and-braces: also drive synchronizeUserData directly off userIdStore so
-// that even if the onLoggedIn / Accounts.onLogin / Tracker chain misses a
-// re-login (we've seen this fail on logout → fresh login while
-// loggedInAndDataReadyCallback's user-await autorun is wedged), the user doc
-// still lands in the Users store. The sync function itself is idempotent.
-let lastSyncedUid: string | undefined;
 userIdStore.subscribe((uid) => {
-	if (!uid || uid === lastSyncedUid) return;
-	lastSyncedUid = uid;
-	void runUserDataSync(uid);
+	syncOnce(uid);
 });
-if (userIdStore.getState()) {
-	lastSyncedUid = userIdStore.getState();
-	void runUserDataSync(userIdStore.getState() as string);
-}
+
+syncOnce(userIdStore.getState());
 
 Users.use.subscribe(() => {
 	const uid = userIdStore.getState();

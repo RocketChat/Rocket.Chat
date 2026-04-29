@@ -54,6 +54,8 @@ export const getDdpSdk = (): DDPSDK => {
 
 const readStoredLoginToken = (): string | null => (typeof window !== 'undefined' ? window.localStorage.getItem('Meteor.loginToken') : null);
 
+let inflightLogin: Promise<void> | undefined;
+
 export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 	const sdk = getDdpSdk();
 
@@ -78,8 +80,45 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 		return;
 	}
 
+	if (inflightLogin) {
+		await inflightLogin;
+		return;
+	}
+
+	// Wait for Meteor's own login (resume) flow to settle before issuing our
+	// own loginWithToken. Meteor's resume goes through Connection._send →
+	// stubMeteorStream → SDK socket and the response triggers
+	// adoptAccountFromMeteorLoginResult which sets sdk.account.uid. If we
+	// race ahead and call sdk.account.loginWithToken here, the SDK socket
+	// receives TWO `login` method frames; ddp-streamer's Account.login
+	// has no dedup, so each fires Accounts.onLogin → Presence.newConnection
+	// → a duplicate connection in usersSessions. The duplicate stays
+	// 'online' while the active one flips to 'away' on idle, and
+	// processConnectionStatus prefers ONLINE over AWAY in the aggregate —
+	// so auto-away never propagates and the navbar badge stays online.
+	const accountsLoggingIn = (Accounts as unknown as { loggingIn?: () => boolean }).loggingIn;
+	const start = Date.now();
+	while (accountsLoggingIn?.() && Date.now() - start < 2000) {
+		await new Promise<void>((resolve) => setTimeout(resolve, 50));
+		if (sdk.account.uid) return;
+	}
+	// One more microtask so the adopt callback (registered as ddp.onResult
+	// in the stub) has a chance to fire ahead of us.
+	await new Promise<void>((resolve) => setTimeout(resolve, 0));
+	if (sdk.account.uid) {
+		return;
+	}
+
+	inflightLogin = (async () => {
+		try {
+			await sdk.account.loginWithToken(token);
+		} finally {
+			inflightLogin = undefined;
+		}
+	})();
+
 	try {
-		await sdk.account.loginWithToken(token);
+		await inflightLogin;
 	} catch (error) {
 		if (isAuthError(error) && readStoredLoginToken() === token) {
 			// Server rejected the stored token. Without this branch the stored
@@ -173,12 +212,22 @@ if (typeof window !== 'undefined') {
 	const sdk = getDdpSdk();
 	window.__rocketChatSdk = sdk;
 
-	if (userIdStore.getState()) {
-		void ensureConnectedAndAuthenticated();
-	}
+	// Boot-time auth is now driven by Meteor's login resume routed through
+	// stubMeteorStream, which calls adoptAccountFromMeteorLoginResult on
+	// success. Calling ensureConnectedAndAuthenticated here as well would
+	// fire a *second* loginWithToken on the SDK socket before the Meteor
+	// resume completes — server-side that ends up as TWO Accounts.onLogin
+	// fires → TWO Presence.newConnection inserts in usersSessions, with
+	// duplicate entries that confuse processConnectionStatus (one stays
+	// online while the other goes away, aggregating to online — auto-away
+	// never propagates).
 
 	userIdStore.subscribe((uid) => {
 		if (uid) {
+			// Subsequent userId transitions (logout → login) still need to
+			// re-establish auth on the SDK socket; adopt only kicks in for
+			// login frames going through the stub, not for the post-logout
+			// re-auth that doesn't necessarily go through Meteor.
 			void ensureConnectedAndAuthenticated();
 		} else {
 			teardownAuthenticatedConnection();
