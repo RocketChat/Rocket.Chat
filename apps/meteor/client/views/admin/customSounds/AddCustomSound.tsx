@@ -1,6 +1,6 @@
 import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, type UploadResult } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, FormEvent } from 'react';
 import { useState, useCallback } from 'react';
@@ -17,6 +17,12 @@ type AddCustomSoundProps = {
 	onChange: () => void;
 };
 
+type CustomSoundCreateResult = UploadResult & {
+	sound: {
+		_id: string;
+	};
+};
+
 const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -24,13 +30,16 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState<File | undefined>();
 
-	const { mutate: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.create', {
-		onSuccess: ({ sound }) => {
-			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
-			onChange();
-			goToNew(sound._id)();
+	const { mutate: saveAction } = useEndpointUploadMutation<'/v1/custom-sounds.create', CustomSoundCreateResult>(
+		'/v1/custom-sounds.create',
+		{
+			onSuccess: ({ sound }) => {
+				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+				onChange();
+				goToNew(sound._id)();
+			},
 		},
-	});
+	);
 
 	const handleChangeFile = useCallback((soundFile: File) => {
 		setSound(soundFile);
