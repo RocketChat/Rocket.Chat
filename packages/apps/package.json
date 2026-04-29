@@ -17,8 +17,9 @@
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"test:deno": "cd deno-runtime && deno task test",
-		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test \"tests/**/*.test.ts\""
+		"test:deno": "deno task --config=deno-runtime/deno.jsonc test",
+		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test \"tests/**/*.test.ts\"",
+		"testunit": "yarn test:node && yarn test:deno"
 	},
 	"dependencies": {
 		"@msgpack/msgpack": "3.0.0-beta2",
