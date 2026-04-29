@@ -1,16 +1,11 @@
 import type { PathFor, PathPattern } from '@rocket.chat/rest-typings';
-import { useToastMessageDispatch, useUpload } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useUpload, type UploadResult } from '@rocket.chat/ui-contexts';
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import { t } from 'i18next';
 
-interface IUploadResult {
-	success: boolean;
-	status?: string;
-	[key: string]: any;
-}
+type UseEndpointUploadOptions<TData extends UploadResult> = Omit<UseMutationOptions<TData, Error, FormData>, 'mutationFn'>;
 
-type UseEndpointUploadOptions<TData> = Omit<UseMutationOptions<TData, Error, FormData>, 'mutationFn'>;
-
-export const useEndpointUploadMutation = <TPathPattern extends PathPattern, TData = IUploadResult>(
+export const useEndpointUploadMutation = <TPathPattern extends PathPattern, TData extends UploadResult = UploadResult>(
 	endpoint: TPathPattern,
 	options?: UseEndpointUploadOptions<TData>,
 ) => {
@@ -24,7 +19,15 @@ export const useEndpointUploadMutation = <TPathPattern extends PathPattern, TDat
 			const result = await promise;
 
 			if (!result.success) {
-				throw new Error(result.status || (typeof result.error === 'string' ? result.error : 'Unknown upload error'));
+				if (result.status) {
+					throw new Error(result.status);
+				}
+
+				if (typeof result.error === 'string') {
+					throw new Error(result.error);
+				}
+
+				throw new Error(t('FileUpload_Error'));
 			}
 			return result as TData;
 		},
