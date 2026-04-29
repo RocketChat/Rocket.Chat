@@ -148,6 +148,20 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
+	async roomAnnouncement({ room, value }) {
+		if (!value && !room.announcement) {
+			return;
+		}
+		if (value === room.announcement) {
+			return;
+		}
+		if (isABACManagedRoom(room)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing announcement of an ABAC managed room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			});
+		}
+	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
 			if (!(await roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
