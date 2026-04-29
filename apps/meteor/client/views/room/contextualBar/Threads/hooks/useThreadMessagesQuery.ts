@@ -13,6 +13,29 @@ const processMessages = async (messages: IMessage[]): Promise<IMessage[]> => {
 	return Promise.all(messages.map((msg) => onClientMessageReceived(msg)));
 };
 
+const mergeThreadMessages = (cachedMessages: IThreadMessage[], fetchedMessages: IThreadMessage[]): IThreadMessage[] => {
+	const messageMap = new Map<string, IThreadMessage>();
+
+	for (const msg of cachedMessages) {
+		messageMap.set(msg._id, msg);
+	}
+
+	for (const msg of fetchedMessages) {
+		const existing = messageMap.get(msg._id);
+		if (!existing) {
+			messageMap.set(msg._id, msg);
+		} else {
+			const msgTime = new Date(msg._updatedAt ?? msg.ts).getTime();
+			const existingTime = new Date(existing._updatedAt ?? existing.ts).getTime();
+			if (msgTime > existingTime) {
+				messageMap.set(msg._id, msg);
+			}
+		}
+	}
+
+	return Array.from(messageMap.values()).sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
+};
+
 export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IRoom['_id']) => {
 	const room = useRoom();
 	const roomId = rid ?? room._id;
@@ -28,7 +51,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 
 		const unsubscribeFromRoomMessages = subscribeToRoomMessages(roomId, async (event) => {
-			if (event.tmid !== tmid) {
+			if (event.tmid !== tmid || event._hidden === true) {
 				return;
 			}
 
@@ -97,11 +120,14 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 	return useQuery({
 		queryKey,
 		queryFn: async () => {
+			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
+
 			const messages = await getThreadMessages({ tmid });
 			const filtered = messages.filter(
 				(msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true,
 			);
-			const sorted = filtered.sort((a, b) => a.ts.getTime() - b.ts.getTime());
+
+			const sorted = mergeThreadMessages(cachedMessages, filtered);
 			return processMessages(sorted) as Promise<Array<IThreadMessage>>;
 		},
 	});
