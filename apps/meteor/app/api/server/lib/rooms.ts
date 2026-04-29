@@ -42,9 +42,17 @@ export async function findAdminRooms({
 
 	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
 
+	const sanitizedRooms = rooms.map((room) => {
+		if (!isABACManagedRoom(room)) {
+			return room;
+		}
+		const { announcement, ...rest } = room;
+		return rest;
+	});
+
 	return {
-		rooms,
-		count: rooms.length,
+		rooms: sanitizedRooms,
+		count: sanitizedRooms.length,
 		offset,
 		total,
 	};

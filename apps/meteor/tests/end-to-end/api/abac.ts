@@ -2576,7 +2576,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let owner: IUser;
 		let ownerCredentials: Credentials;
 
-		const createPrivateRoomWithAnnouncement = async (announcement: string | undefined): Promise<string> => {
+		const createPrivateRoomWithAnnouncement = async (announcement: string | undefined): Promise<{ rid: string; name: string }> => {
 			const name = `abac-ann-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 			const created = (await createRoom({ type: 'p', name })).body.group as IRoom;
 			if (announcement !== undefined) {
@@ -2587,7 +2587,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 			}
 			createdRids.push(created._id);
-			return created._id;
+			return { rid: created._id, name };
 		};
 
 		const assignAbacAttribute = async (rid: string): Promise<void> => {
@@ -2616,7 +2616,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should strip announcement from rooms.adminRooms.getRoom on ABAC managed room', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('SECRET');
+			const { rid } = await createPrivateRoomWithAnnouncement('SECRET');
 			await assignAbacAttribute(rid);
 
 			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
@@ -2625,15 +2625,26 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should return announcement from rooms.adminRooms.getRoom on non-ABAC private room (control)', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('VISIBLE');
+			const { rid } = await createPrivateRoomWithAnnouncement('VISIBLE');
 
 			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
 
 			expect(res.body).to.have.property('announcement', 'VISIBLE');
 		});
 
+		it('should strip announcement from rooms.adminRooms list on ABAC managed rows', async () => {
+			const { rid, name } = await createPrivateRoomWithAnnouncement('LIST_SECRET');
+			await assignAbacAttribute(rid);
+
+			const res = await request.get(`${v1}/rooms.adminRooms`).set(credentials).query({ 'filter': name, 'types[]': 'p' }).expect(200);
+
+			const found = (res.body.rooms as Array<IRoom>).find((r) => r._id === rid);
+			expect(found, 'created room should appear in admin list').to.exist;
+			expect(found).to.not.have.property('announcement');
+		});
+
 		it('should reject roomAnnouncement save on ABAC managed room (admin)', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('original');
+			const { rid } = await createPrivateRoomWithAnnouncement('original');
 			await assignAbacAttribute(rid);
 
 			const res = await request
@@ -2646,7 +2657,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should reject roomAnnouncement save on ABAC managed room (non-admin owner)', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('original');
+			const { rid } = await createPrivateRoomWithAnnouncement('original');
 
 			await request.post(`${v1}/groups.invite`).set(credentials).send({ roomId: rid, userId: owner._id }).expect(200);
 			await request.post(`${v1}/groups.addOwner`).set(credentials).send({ roomId: rid, userId: owner._id }).expect(200);
@@ -2663,27 +2674,27 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should accept idempotent roomAnnouncement re-submit on ABAC managed room', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('keep-me');
+			const { rid } = await createPrivateRoomWithAnnouncement('keep-me');
 			await assignAbacAttribute(rid);
 
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'keep-me' }).expect(200);
 		});
 
 		it('should accept roomAnnouncement save on non-ABAC private room (control)', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('original');
+			const { rid } = await createPrivateRoomWithAnnouncement('original');
 
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'changed' }).expect(200);
 		});
 
 		it('should accept roomTopic save on ABAC managed room (control — only announcement is blocked)', async () => {
-			const rid = await createPrivateRoomWithAnnouncement(undefined);
+			const { rid } = await createPrivateRoomWithAnnouncement(undefined);
 			await assignAbacAttribute(rid);
 
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomTopic: 'new topic' }).expect(200);
 		});
 
 		it('should reject empty-string unset on ABAC managed room with announcement set', async () => {
-			const rid = await createPrivateRoomWithAnnouncement('X');
+			const { rid } = await createPrivateRoomWithAnnouncement('X');
 			await assignAbacAttribute(rid);
 
 			const res = await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: '' }).expect(400);
@@ -2692,7 +2703,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should accept idempotent empty submit on ABAC room with no announcement set (direct API contract)', async () => {
-			const rid = await createPrivateRoomWithAnnouncement(undefined);
+			const { rid } = await createPrivateRoomWithAnnouncement(undefined);
 			await assignAbacAttribute(rid);
 
 			// Form path cannot reach this state — field is hidden and never registered.
