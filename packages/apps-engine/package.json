@@ -43,11 +43,8 @@
 		".:build:clean": "rimraf definition lib",
 		".:build:default": "tsc -p tsconfig.json",
 		"dev": "yarn .:build:default --watch",
-		".:eslint:fix": "eslint --fix .",
-		".:lint:eslint": "eslint .",
-		"fix-lint": "yarn .:eslint:fix",
 		"gen-doc": "typedoc",
-		"lint": "yarn .:lint:eslint",
+		"lint": "yarn eslint .",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"nyc": {
