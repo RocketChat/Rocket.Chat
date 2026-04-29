@@ -1,9 +1,10 @@
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
+import { ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import type { IPolicyDecisionPoint } from './types';
+import type { IPolicyDecisionPoint, IDryRunMember } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	async isAvailable(): Promise<boolean> {
@@ -97,5 +98,73 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		if (nonCompliantSet.size) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
+	}
+
+	async dryRunRoomAttributes(rid: string, attributes: IAbacAttributeDefinition[]): Promise<IDryRunMember[]> {
+		const complianceExpr = attributes.length
+			? {
+					$allElementsTrue: {
+						$map: {
+							input: attributes,
+							as: 'req',
+							in: {
+								$gt: [
+									{
+										$size: {
+											$filter: {
+												input: { $ifNull: ['$abacAttributes', []] },
+												as: 'ua',
+												cond: {
+													$and: [{ $eq: ['$$ua.key', '$$req.key'] }, { $setIsSubset: ['$$req.values', '$$ua.values'] }],
+												},
+											},
+										},
+									},
+									0,
+								],
+							},
+						},
+					},
+				}
+			: { $literal: true };
+
+		return Users.col
+			.aggregate<IDryRunMember>(
+				[
+					{
+						$match: {
+							__rooms: rid,
+							active: true,
+							username: { $exists: true },
+						},
+					},
+					{
+						$addFields: {
+							rolePriority: {
+								$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
+							},
+							compliant: complianceExpr,
+							_sortName: { $ifNull: ['$name', '$username'] },
+						},
+					},
+					{ $sort: { compliant: 1, _sortName: 1 } },
+					{
+						$project: {
+							_id: 1,
+							name: 1,
+							username: 1,
+							nickname: 1,
+							status: 1,
+							avatarETag: 1,
+							_updatedAt: 1,
+							federated: 1,
+							rolePriority: 1,
+							compliant: 1,
+						},
+					},
+				],
+				{ allowDiskUse: true },
+			)
+			.toArray();
 	}
 }

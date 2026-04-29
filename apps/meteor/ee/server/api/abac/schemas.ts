@@ -1,3 +1,4 @@
+import type { IAbacDryRunResult } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition, IAuditServerActor, IRoom, IServerEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
@@ -229,13 +230,88 @@ export const GETAbacAuditEventsResponseSchema = ajv.compile<{
 	total: number;
 }>(GetAbacAuditEventsResponseSchemaObject);
 
+const RoomAttributesRecord = {
+	type: 'object',
+	propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
+	minProperties: 1,
+	maxProperties: MAX_ROOM_ATTRIBUTE_KEYS,
+	additionalProperties: {
+		type: 'array',
+		items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
+		maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+		uniqueItems: true,
+	},
+} as const;
+
 const PostRoomAbacAttributesBody = {
+	type: 'object',
+	properties: {
+		attributes: RoomAttributesRecord,
+		confirmed: { type: 'boolean' },
+	},
+	required: ['attributes'],
+	additionalProperties: false,
+};
+
+export const POSTRoomAbacAttributesBodySchema = ajv.compile<{
+	attributes: Record<string, string[]>;
+	confirmed?: boolean;
+}>(PostRoomAbacAttributesBody);
+
+const PostSingleRoomAbacAttributeBody = {
+	type: 'object',
+	properties: {
+		values: {
+			type: 'array',
+			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
+			minItems: 1,
+			maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+			uniqueItems: true,
+		},
+		confirmed: { type: 'boolean' },
+	},
+	required: ['values'],
+	additionalProperties: false,
+};
+
+export const POSTSingleRoomAbacAttributeBodySchema = ajv.compile<{ values: string[]; confirmed?: boolean }>(
+	PostSingleRoomAbacAttributeBody,
+);
+
+const PutRoomAbacAttributeValuesBody = {
+	type: 'object',
+	properties: {
+		values: {
+			type: 'array',
+			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
+			minItems: 1,
+			maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+			uniqueItems: true,
+		},
+		confirmed: { type: 'boolean' },
+	},
+	required: ['values'],
+	additionalProperties: false,
+};
+
+export const PUTRoomAbacAttributeValuesBodySchema = ajv.compile<{ values: string[]; confirmed?: boolean }>(PutRoomAbacAttributeValuesBody);
+
+const DeleteRoomAbacAttributesQuery = {
+	type: 'object',
+	properties: {
+		confirmed: { type: 'boolean' },
+	},
+	additionalProperties: false,
+};
+
+export const DELETERoomAbacAttributesQuerySchema = ajvQuery.compile<{ confirmed?: boolean }>(DeleteRoomAbacAttributesQuery);
+
+const PostRoomAbacAttributesDryRunBody = {
 	type: 'object',
 	properties: {
 		attributes: {
 			type: 'object',
 			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
-			minProperties: 1,
 			maxProperties: MAX_ROOM_ATTRIBUTE_KEYS,
 			additionalProperties: {
 				type: 'array',
@@ -249,41 +325,42 @@ const PostRoomAbacAttributesBody = {
 	additionalProperties: false,
 };
 
-export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(PostRoomAbacAttributesBody);
+export const POSTRoomAbacAttributesDryRunBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(
+	PostRoomAbacAttributesDryRunBody,
+);
 
-const PostSingleRoomAbacAttributeBody = {
+const DryRunMember = {
 	type: 'object',
 	properties: {
-		values: {
-			type: 'array',
-			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
-			minItems: 1,
-			maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
-			uniqueItems: true,
-		},
+		_id: { type: 'string' },
+		name: { type: 'string', nullable: true },
+		username: { type: 'string', nullable: true },
+		nickname: { type: 'string', nullable: true },
+		status: { type: 'string', nullable: true },
+		avatarETag: { type: 'string', nullable: true },
+		_updatedAt: { type: 'string' },
+		federated: { type: 'boolean', nullable: true },
+		rolePriority: { type: 'number' },
+		compliant: { type: 'boolean' },
 	},
-	required: ['values'],
+	required: ['_id', 'rolePriority', 'compliant'],
+	additionalProperties: true,
+};
+
+const PostRoomAbacAttributesDryRunResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		members: { type: 'array', items: DryRunMember },
+		compliantCount: { type: 'number' },
+		nonCompliantCount: { type: 'number' },
+		total: { type: 'number' },
+	},
+	required: ['members', 'compliantCount', 'nonCompliantCount', 'total'],
 	additionalProperties: false,
 };
 
-export const POSTSingleRoomAbacAttributeBodySchema = ajv.compile<{ values: string[] }>(PostSingleRoomAbacAttributeBody);
-
-const PutRoomAbacAttributeValuesBody = {
-	type: 'object',
-	properties: {
-		values: {
-			type: 'array',
-			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
-			minItems: 1,
-			maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
-			uniqueItems: true,
-		},
-	},
-	required: ['values'],
-	additionalProperties: false,
-};
-
-export const PUTRoomAbacAttributeValuesBodySchema = ajv.compile<{ values: string[] }>(PutRoomAbacAttributeValuesBody);
+export const POSTRoomAbacAttributesDryRunResponseSchema = ajv.compile<IAbacDryRunResult>(PostRoomAbacAttributesDryRunResponse);
 
 const GenericError = {
 	type: 'object',

@@ -2,6 +2,18 @@ import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.ch
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
+export type IDryRunMember = Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag' | '_updatedAt' | 'federated'> & {
+	rolePriority: number;
+	compliant: boolean;
+};
+
+export interface IDryRunResult {
+	members: IDryRunMember[];
+	compliantCount: number;
+	nonCompliantCount: number;
+	total: number;
+}
+
 export interface IGetDecisionRequest {
 	actions: Array<{ standard: number }>;
 	resourceAttributes: Array<{
@@ -71,6 +83,8 @@ export interface IPolicyDecisionPoint {
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+
+	dryRunRoomAttributes(rid: string, attributes: IAbacAttributeDefinition[]): Promise<IDryRunMember[]>;
 }
 
 export interface IVirtruPDPConfig {

@@ -1,11 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 type DeleteRoomModalProps = {
@@ -19,10 +18,15 @@ const DeleteRoomModal = ({ rid, roomName, onClose }: DeleteRoomModalProps) => {
 
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const deleteMutation = useEndpointMutation('DELETE', '/v1/abac/rooms/:rid/attributes', {
-		keys: { rid },
+	const deleteRoomAttributes = useEndpoint('DELETE', '/v1/abac/rooms/:rid/attributes', { rid });
+
+	const deleteMutation = useMutation({
+		mutationFn: () => deleteRoomAttributes({ confirmed: true }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('ABAC_Room_removed', { roomName }) });
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSettled: () => {
 			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.rooms.all() });
@@ -37,7 +41,7 @@ const DeleteRoomModal = ({ rid, roomName, onClose }: DeleteRoomModalProps) => {
 			title={t('ABAC_Delete_room')}
 			annotation={t('ABAC_Delete_room_annotation')}
 			confirmText={t('Remove')}
-			onConfirm={() => deleteMutation.mutate(undefined)}
+			onConfirm={() => deleteMutation.mutate()}
 			onCancel={onClose}
 		>
 			<Trans i18nKey='ABAC_Delete_room_content' values={{ roomName }} components={{ bold: <Box is='span' fontWeight='bold' /> }} />

@@ -1,4 +1,5 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import { ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import pLimit from 'p-limit';
@@ -7,6 +8,7 @@ import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../erro
 import { logger } from '../logger';
 import type {
 	Decision,
+	IDryRunMember,
 	IEntityIdentifier,
 	IPolicyDecisionPoint,
 	IGetDecisionRequest,
@@ -454,6 +456,86 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		});
 
 		return nonCompliant;
+	}
+
+	async dryRunRoomAttributes(rid: string, attributes: IAbacAttributeDefinition[]): Promise<IDryRunMember[]> {
+		type MemberRow = IDryRunMember & { emails?: IUser['emails'] };
+
+		const members = await Users.col
+			.aggregate<MemberRow>(
+				[
+					{
+						$match: {
+							__rooms: rid,
+							active: true,
+							username: { $exists: true },
+						},
+					},
+					{
+						$addFields: {
+							rolePriority: {
+								$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
+							},
+							_sortName: { $ifNull: ['$name', '$username'] },
+						},
+					},
+					{ $sort: { _sortName: 1 } },
+					{
+						$project: {
+							_id: 1,
+							name: 1,
+							username: 1,
+							nickname: 1,
+							status: 1,
+							avatarETag: 1,
+							_updatedAt: 1,
+							federated: 1,
+							emails: 1,
+							rolePriority: 1,
+						},
+					},
+				],
+				{ allowDiskUse: true },
+			)
+			.toArray();
+
+		if (!attributes.length) {
+			return members.map(({ emails: _emails, ...rest }) => ({ ...rest, compliant: true }));
+		}
+
+		const fqns = this.buildAttributeFqns(attributes);
+		const enriched: IDryRunMember[] = [];
+		const requests: IGetDecisionBulkRequest[] = [];
+		const queriedIdx: number[] = [];
+
+		for (const m of members) {
+			const entityKey = this.getUserEntityKey(m);
+			const { emails: _emails, ...rest } = m;
+			if (entityKey) {
+				queriedIdx.push(enriched.length);
+				requests.push({
+					entityIdentifier: { entityChain: { entities: [this.buildEntityIdentifier(entityKey)] } },
+					action: { name: 'read' },
+					resources: [{ ephemeralId: rid, attributeValues: { fqns } }],
+				});
+			}
+			enriched.push({ ...rest, compliant: false });
+		}
+
+		if (requests.length) {
+			const responses = await this.getDecisionBulk(requests);
+			for (let k = 0; k < responses.length; k++) {
+				const resp = responses[k];
+				const permitted = !!resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
+				if (permitted) {
+					enriched[queriedIdx[k]].compliant = true;
+				}
+			}
+		}
+
+		enriched.sort((a, b) => Number(a.compliant) - Number(b.compliant));
+
+		return enriched;
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {

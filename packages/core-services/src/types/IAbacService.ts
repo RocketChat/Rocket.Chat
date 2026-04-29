@@ -10,6 +10,18 @@ import type {
 
 export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
 
+export interface IAbacDryRunResult {
+	members: Array<
+		Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag' | '_updatedAt' | 'federated'> & {
+			rolePriority: number;
+			compliant: boolean;
+		}
+	>;
+	compliantCount: number;
+	nonCompliantCount: number;
+	total: number;
+}
+
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor | undefined): Promise<void>;
 	listAbacAttributes(
@@ -35,6 +47,7 @@ export interface IAbacService {
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
 	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
+	dryRunRoomAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<IAbacDryRunResult>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;

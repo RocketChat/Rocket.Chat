@@ -17,6 +17,9 @@ import {
 	POSTRoomAbacAttributesBodySchema,
 	POSTSingleRoomAbacAttributeBodySchema,
 	PUTRoomAbacAttributeValuesBodySchema,
+	DELETERoomAbacAttributesQuerySchema,
+	POSTRoomAbacAttributesDryRunBodySchema,
+	POSTRoomAbacAttributesDryRunResponseSchema,
 	POSTAbacUsersSyncBodySchema,
 	GenericErrorSchema,
 	GETAbacRoomsListQueryValidator,
@@ -29,6 +32,7 @@ import {
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { syncRolePrioritiesForRoomIfRequired } from '../../../../app/lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { settings } from '../../../../app/settings/server';
 import { LDAPEE } from '../../sdk';
 
@@ -58,7 +62,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { rid } = this.urlParams;
-			const { attributes } = this.bodyParams;
+			const { attributes, confirmed } = this.bodyParams;
+
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
@@ -70,11 +78,40 @@ const abacEndpoints = API.v1
 			return API.v1.success();
 		},
 	)
+	.post(
+		'abac/rooms/:rid/attributes/dry-run',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			body: POSTRoomAbacAttributesDryRunBodySchema,
+			response: {
+				200: POSTRoomAbacAttributesDryRunResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid } = this.urlParams;
+			const { attributes } = this.bodyParams;
+
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			await syncRolePrioritiesForRoomIfRequired(rid);
+
+			const result = await Abac.dryRunRoomAttributes(rid, attributes, getActorFromUser(this.user));
+			return API.v1.success(result);
+		},
+	)
 	.delete(
 		'abac/rooms/:rid/attributes',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
+			query: DELETERoomAbacAttributesQuerySchema,
 			response: {
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -84,6 +121,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { rid } = this.urlParams;
+			const { confirmed } = this.queryParams;
+
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			// We don't need to check if ABAC is enabled to clear attributes
 			// Since we're always allowing this operation
@@ -109,7 +151,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { rid, key } = this.urlParams;
-			const { values } = this.bodyParams;
+			const { values, confirmed } = this.bodyParams;
+
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
@@ -136,7 +182,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { rid, key } = this.urlParams;
-			const { values } = this.bodyParams;
+			const { values, confirmed } = this.bodyParams;
+
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
@@ -152,6 +202,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
+			query: DELETERoomAbacAttributesQuerySchema,
 			response: {
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -161,6 +212,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { rid, key } = this.urlParams;
+			const { confirmed } = this.queryParams;
+
+			if (confirmed !== true) {
+				throw new Error('error-abac-modification-not-confirmed');
+			}
 
 			await Abac.removeRoomAbacAttribute(rid, key, getActorFromUser(this.user));
 			return API.v1.success();
@@ -445,6 +501,6 @@ const abacEndpoints = API.v1
 export type AbacEndpoints = ExtractRoutesFromAPI<typeof abacEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 	interface Endpoints extends AbacEndpoints {}
 }
