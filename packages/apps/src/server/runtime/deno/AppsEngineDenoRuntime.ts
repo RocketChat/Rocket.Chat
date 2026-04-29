@@ -1,6 +1,5 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
-import os from 'os';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -82,19 +81,13 @@ function getDenoConfigPath(): string {
 	return require.resolve('../../../../deno-runtime/deno.jsonc');
 }
 
-function getDenoConfig(): DenoConfigurationFileSchema {
-	// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-return, import/no-dynamic-require
-	return require(getDenoConfigPath());
-}
-
 /**
  * Resolves the absolute path to @rocket.chat/apps-engine's src/ directory.
  * Uses require.resolve so it works regardless of the runtime environment
  * (monorepo dev, Meteor bundle, standalone node_modules).
  */
 function getAppsEngineDir(): string {
-	const pkgJsonPath = require.resolve('@rocket.chat/apps-engine/package.json');
-	return path.dirname(pkgJsonPath);
+	return path.dirname(require.resolve('@rocket.chat/apps-engine/package.json'));
 }
 
 /**
@@ -105,16 +98,20 @@ function getAppsEngineDir(): string {
  *
  * Returns the path to the generated config file.
  */
-function generateEphemeralDenoConfig(targetPath: string, appsEnginePath: string, staticConfig: DenoConfigurationFileSchema): void {
-	if (!targetPath.startsWith(os.tmpdir())) {
-		throw new Error(`Temp directory "${targetPath}" is not inside the system temp directory`);
+function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string, appsEnginePath: string): void {
+	let staticConfig: DenoConfigurationFileSchema;
+
+	try {
+		staticConfig = JSON.parse(fs.readFileSync(denoConfigPath, 'utf8'));
+	} catch {
+		throw new Error(`Failed to read the static Deno config at "${denoConfigPath}"`);
 	}
 
 	const runtimeConfig = {
 		...staticConfig,
 		imports: {
 			...staticConfig.imports,
-			'@rocket.chat/apps-engine/': appsEnginePath,
+			'@rocket.chat/apps-engine/': `${appsEnginePath}/`,
 		},
 	};
 
@@ -178,11 +175,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.tempFilePath = manager.getTempFilePath();
 		this.denoConfigPath = getDenoConfigPath();
 		this.appsEnginePath = getAppsEngineDir();
-		this.denoEphemeralConfigPath = path.join(this.tempFilePath, 'deno_ephemeral.jsonc');
+
+		this.packagePath = path.join(path.dirname(this.denoConfigPath), '..');
+		this.denoDir = process.env.DENO_DIR ?? path.join(this.packagePath, '.deno-cache');
 
 		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
-		this.denoDir = process.env.DENO_DIR ?? path.join(this.denoConfigPath, '..', '.deno-cache');
-		this.packagePath = path.dirname(this.denoConfigPath);
+		this.denoEphemeralConfigPath = this.denoConfigPath.replace('.jsonc', '.runtime.jsonc');
 
 		/**
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
@@ -197,7 +195,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		}
 
 		// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/
-		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.appsEnginePath, getDenoConfig());
+		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
 
 		this.debug = baseDebug.extend(appPackage.info.id);
 		this.messenger = new ProcessMessenger();
@@ -217,7 +215,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	public spawnProcess(): void {
 		try {
-			const allowedDirs = [this.appsEnginePath, this.packagePath, this.tempFilePath];
+			const allowedDirs = [this.tempFilePath, this.denoDir, this.packagePath, this.appsEnginePath];
 
 			const options = [
 				'run',
