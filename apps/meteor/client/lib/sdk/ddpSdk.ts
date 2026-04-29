@@ -85,26 +85,18 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 		return;
 	}
 
-	// Wait for Meteor's own login (resume) flow to settle before issuing our
-	// own loginWithToken. Meteor's resume goes through Connection._send →
-	// stubMeteorStream → SDK socket and the response triggers
-	// adoptAccountFromMeteorLoginResult which sets sdk.account.uid. If we
-	// race ahead and call sdk.account.loginWithToken here, the SDK socket
-	// receives TWO `login` method frames; ddp-streamer's Account.login
-	// has no dedup, so each fires Accounts.onLogin → Presence.newConnection
-	// → a duplicate connection in usersSessions. The duplicate stays
-	// 'online' while the active one flips to 'away' on idle, and
-	// processConnectionStatus prefers ONLINE over AWAY in the aggregate —
-	// so auto-away never propagates and the navbar badge stays online.
-	const accountsLoggingIn = (Accounts as unknown as { loggingIn?: () => boolean }).loggingIn;
-	const start = Date.now();
-	while (accountsLoggingIn?.() && Date.now() - start < 2000) {
-		await new Promise<void>((resolve) => setTimeout(resolve, 50));
-		if (sdk.account.uid) return;
+	// Give Meteor's own login flow (resume routed through stubMeteorStream
+	// + adoptAccountFromMeteorLoginResult) time to populate sdk.account
+	// before we issue our own loginWithToken. If adopt fires first, we can
+	// short-circuit and avoid sending a second login frame on the SDK
+	// socket — which would otherwise create a duplicate Presence
+	// connection (processConnectionStatus prefers ONLINE over AWAY in the
+	// aggregate, breaking the auto-away flow). 500ms covers a single
+	// server roundtrip in CI; if the stub-routed login hasn't completed by
+	// then, fall back to issuing our own loginWithToken below.
+	for (let i = 0; i < 20 && !sdk.account.uid; i++) {
+		await new Promise<void>((resolve) => setTimeout(resolve, 25));
 	}
-	// One more microtask so the adopt callback (registered as ddp.onResult
-	// in the stub) has a chance to fire ahead of us.
-	await new Promise<void>((resolve) => setTimeout(resolve, 0));
 	if (sdk.account.uid) {
 		return;
 	}
@@ -211,6 +203,47 @@ declare global {
 if (typeof window !== 'undefined') {
 	const sdk = getDdpSdk();
 	window.__rocketChatSdk = sdk;
+
+	// DDPSDK auto-fires loginWithToken on every `connected` event using the
+	// in-memory account.user.token (DDPSDK.create line 115-122). When the
+	// server force-logs the user out (resetUserE2EKey →
+	// Users.unsetLoginTokens → meteor.service force_logout listener closes
+	// the user's WebSocket sessions), the SDK reconnects and immediately
+	// retries the now-dead token. DDPSDK calls this with `void` so the
+	// rejection is swallowed; account.user stays populated, Meteor.userId()
+	// stays set, and the navbar continues to render Home with stale creds.
+	//
+	// Wrap account.loginWithToken so we can observe rejections from the
+	// auto-retry. To avoid breaking the SAML/password login flows where a
+	// fresh login is concurrently in flight, only act when:
+	//  - the error is auth-shaped (`isAuthError`) AND
+	//  - the token in localStorage still matches the one we tried with
+	//    (nothing rotated it mid-flight) AND
+	//  - the SDK account didn't get refreshed by a successful adopt while
+	//    we were awaiting (sdk.account.uid still maps to this token's user)
+	// Wrap account.loginWithToken so the SDK's auto-relogin rejection (called
+	// with `void` in DDPSDK.create) doesn't surface as an unhandled rejection
+	// (window.onunhandledrejection → pageError). The actual recovery from a
+	// failed auto-relogin is now driven by Meteor's `DDP.onReconnect`
+	// callback (registered by `callLoginMethod`), which fires after
+	// stubMeteorStream re-emits `reset` on each SDK 'connected' event. That
+	// callback retries login with the latest stored token and calls
+	// `makeClientLoggedOut` on failure — no need to duplicate that logic.
+	const account = sdk.account as unknown as { loginWithToken: (token: string) => Promise<unknown> };
+	const originalLogin = account.loginWithToken.bind(sdk.account);
+	account.loginWithToken = async (token: string) => {
+		try {
+			return await originalLogin(token);
+		} catch (error) {
+			if (isAuthError(error)) {
+				// Meteor's onReconnect path will retry through stubMeteorStream
+				// with the current localStorage token; nothing for us to do here
+				// beyond not letting the rejection escape.
+				return undefined;
+			}
+			throw error;
+		}
+	};
 
 	// Boot-time auth is now driven by Meteor's login resume routed through
 	// stubMeteorStream, which calls adoptAccountFromMeteorLoginResult on

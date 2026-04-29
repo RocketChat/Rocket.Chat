@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -209,5 +210,69 @@ queueMicrotask(() => {
 		fire('reset');
 	} catch (err) {
 		console.warn('[stubMeteorStream] failed to bootstrap connected state', err);
+	}
+});
+
+// When the underlying SDK socket reconnects (e.g. after a server-side
+// ws.close / ws.terminate from force-logout in microservices), Meteor's
+// connection sees no transport event because the stub keeps reporting
+// 'connected'. Without help, both the in-flight method machinery and
+// accounts-base's reconnect-time login retry stay dormant — methods sent
+// on the prior SDK session are stranded with sentMessage=true, and the
+// per-call _reconnectStopper from callLoginMethod (accounts_client.js:292)
+// never runs. Force-logout flows then leave the user with stale
+// credentials.
+//
+// Fire `reset` on every subsequent SDK 'connected' event: this drives
+// _streamHandlers.onReset → _handleOutstandingMethodsOnReset (resends
+// pending methods so message-actions / report-message tests don't wedge)
+// AND _callOnReconnectAndSendAppropriateOutstandingMethods → DDP._reconnectHook
+// callbacks → the _reconnectStopper that retries login with the latest
+// stored token and calls makeClientLoggedOut on failure (so the
+// account-manage-devices / admin-device-management / e2ee-key-reset
+// force-logout tests recover). The first connect is handled by the
+// queueMicrotask above; skip it here. The "method result but no methods
+// outstanding" / "No callback invoker" warnings the resent blocks
+// occasionally generate are caught by the bridge's async catch in
+// ddpSdkCollectionBridge.
+const sdk = getDdpSdk();
+let firstConnectHandled = false;
+sdk.connection.on('connected', () => {
+	if (!firstConnectHandled) {
+		firstConnectHandled = true;
+		return;
+	}
+	try {
+		fire('reset');
+	} catch (err) {
+		console.warn('[stubMeteorStream] reset on SDK reconnect failed', err);
+	}
+});
+
+// Belt-and-suspenders: when the underlying SDK socket disconnects, also reset
+// `Accounts._lastLoginTokenWhenPolled` so the next `_pollStoredLoginToken`
+// (whether triggered by the 3s polling timer or an external poke like a test's
+// `loginByUserState`) is forced to compare against `null` and fire a fresh
+// login if the stored token still exists. This covers the gap where neither
+// `useForceLogout` (stream message lost in the broker race) nor
+// `_reconnectStopper`'s `makeClientLoggedOut` ran — without this, a stored
+// token equal to the cached `_lastLoginTokenWhenPolled` short-circuits the
+// poller and the user sits with stale credentials until the next genuine
+// token rotation.
+// Belt-and-suspenders for the EE force-logout path. The existing recovery
+// mechanisms (useForceLogout via stream message; _reconnectStopper via
+// fire('reset') calling makeClientLoggedOut on auth failure) BOTH clear
+// _lastLoginTokenWhenPolled when they run, but in microservices the
+// notify-user/<uid>/force_logout stream traverses
+// rocketchat-main → broker → ddp-streamer → WS while the close fires
+// directly on ddp-streamer — so the stream message can be lost mid-flight.
+// Wire a direct sdk.connection.on('disconnected') listener that nulls
+// _lastLoginTokenWhenPolled so the next _pollStoredLoginToken call always
+// compares against null and fires a login if a token is stored.
+sdk.connection.on('disconnected', () => {
+	try {
+		(Accounts as unknown as { _lastLoginTokenWhenPolled?: string | null })._lastLoginTokenWhenPolled = null;
+	} catch {
+		// ignore — we just want the poller to wake up next time
 	}
 });
