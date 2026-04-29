@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import * as UiKit from '@rocket.chat/ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { MouseEventHandler, ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
@@ -14,7 +14,7 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps): ReactEle
 	const { icon: iconName, variant } = icon;
 
 	const handleClick: MouseEventHandler = (e) => {
-		action({ target: e.currentTarget });
+		void action({ target: e.currentTarget });
 	};
 
 	if (url) {

@@ -4,11 +4,11 @@ import {
 	AppsLogsModel,
 	AppsModel,
 	AppsPersistenceModel,
-	AppsTokensRaw,
 	AvatarsRaw,
 	BannersDismissRaw,
 	BannersRaw,
 	CalendarEventRaw,
+	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
 	CustomSoundsRaw,
@@ -19,10 +19,6 @@ import {
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	FederationRoomEventsRaw,
-	FederationServersRaw,
-	FreeSwitchChannelRaw,
-	FreeSwitchChannelEventRaw,
-	FreeSwitchChannelEventDeltaRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -56,7 +52,6 @@ import {
 	OAuthAuthCodesRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
-	PbxEventsRaw,
 	PermissionsRaw,
 	PushTokenRaw,
 	ReadReceiptsDummy,
@@ -77,9 +72,9 @@ import {
 	UsersRaw,
 	UsersSessionsRaw,
 	VideoConferenceRaw,
-	VoipRoomRaw,
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
+	AbacAttributesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -90,11 +85,11 @@ registerModel('IAnalyticsModel', new AnalyticsRaw(db));
 registerModel('IAppLogsModel', new AppsLogsModel(db));
 registerModel('IAppsModel', new AppsModel(db));
 registerModel('IAppsPersistenceModel', new AppsPersistenceModel(db));
-registerModel('IAppsTokensModel', new AppsTokensRaw(db));
 registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
+registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
@@ -105,10 +100,6 @@ registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IFederationRoomEventsModel', new FederationRoomEventsRaw(db));
-registerModel('IFederationServersModel', new FederationServersRaw(db));
-registerModel('IFreeSwitchChannelModel', new FreeSwitchChannelRaw(db));
-registerModel('IFreeSwitchChannelEventModel', new FreeSwitchChannelEventRaw(db));
-registerModel('IFreeSwitchChannelEventDeltaModel', new FreeSwitchChannelEventDeltaRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));
@@ -148,7 +139,6 @@ registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
-registerModel('IPbxEventsModel', new PbxEventsRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
 registerModel('IPushTokenModel', new PushTokenRaw(db));
 registerModel('IReadReceiptsModel', new ReadReceiptsDummy(), false);
@@ -168,6 +158,6 @@ registerModel('IUserDataFilesModel', new UserDataFilesRaw(db));
 registerModel('IUsersModel', new UsersRaw(db, trashCollection));
 registerModel('IUsersSessionsModel', new UsersSessionsRaw(db));
 registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
-registerModel('IVoipRoomModel', new VoipRoomRaw(db, trashCollection));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
+registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));

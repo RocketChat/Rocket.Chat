@@ -30,12 +30,28 @@ export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel:
 		i18nLabel: 'Message_HideType_au',
 	},
 	{
+		key: 'ui', // user invited to room
+		i18nLabel: 'Message_HideType_ui',
+	},
+	{
+		key: 'uir', // user rejected invitation to room
+		i18nLabel: 'Message_HideType_uir',
+	},
+	{
 		key: 'added-user-to-team',
 		i18nLabel: 'Message_HideType_added_user_to_team',
 	},
 	{
 		key: 'mute_unmute',
 		i18nLabel: 'Message_HideType_mute_unmute',
+	},
+	{
+		key: 'user-banned',
+		i18nLabel: 'Message_HideType_user_banned',
+	},
+	{
+		key: 'user-unbanned',
+		i18nLabel: 'Message_HideType_user_unbanned',
 	},
 	{
 		key: 'r', // room name changed

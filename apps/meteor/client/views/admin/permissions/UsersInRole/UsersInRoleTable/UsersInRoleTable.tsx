@@ -1,18 +1,18 @@
 import type { IUserInRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useTranslation } from 'react-i18next';
-
-import UsersInRoleTableRow from './UsersInRoleTableRow';
-import GenericError from '../../../../../components/GenericError';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '../../../../../components/GenericTable';
-import type { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+} from '@rocket.chat/ui-client';
+import type { usePagination } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
+
+import UsersInRoleTableRow from './UsersInRoleTableRow';
+import GenericError from '../../../../../components/GenericError';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 
 type UsersInRoleTableProps = {
 	isLoading: boolean;

@@ -88,12 +88,13 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 
 				processResult(_message);
 			})
-			.catch((error) => {
+			.catch(async (error) => {
+				if ('message' in error && error.message) {
+					processResult(error.message);
+				}
 				console.error(error);
 			});
 	};
 };
 
-if (window.USE_REST_FOR_DDP_CALLS) {
-	Meteor.connection._send = withDDPOverREST(Meteor.connection._send);
-}
+Meteor.connection._send = withDDPOverREST(Meteor.connection._send);

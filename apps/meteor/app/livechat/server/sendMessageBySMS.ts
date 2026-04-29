@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbackLogger } from './lib/logger';
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { settings } from '../../settings/server';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
@@ -63,9 +63,13 @@ callbacks.add(
 
 		try {
 			await SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg, extraData);
-			callbackLogger.debug(`SMS message sent to ${visitor.phone[0].phoneNumber} via ${service}`);
-		} catch (e) {
-			callbackLogger.error(e);
+			callbackLogger.debug({
+				msg: 'SMS message sent',
+				phoneNumber: visitor.phone[0].phoneNumber,
+				service,
+			});
+		} catch (err) {
+			callbackLogger.error({ msg: 'Error sending SMS message', err });
 		}
 
 		return message;

@@ -1,18 +1,14 @@
 import { faker } from '@faker-js/faker';
 
+import { resetOwnE2EKey } from './resetOwnE2EKey';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
-import { AccountProfile, HomeChannel } from '../page-objects';
+import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
-import { AccountSecurityPage } from '../page-objects/account-security';
-import { EncryptedRoomPage } from '../page-objects/encrypted-room';
-import { HomeSidenav } from '../page-objects/fragments';
-import {
-	E2EEKeyDecodeFailureBanner,
-	EnterE2EEPasswordBanner,
-	EnterE2EEPasswordModal,
-	ResetE2EEPasswordModal,
-} from '../page-objects/fragments/e2ee';
+import { Navbar } from '../page-objects/fragments';
+import { E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
+import { EnterE2EEPasswordModal, ResetE2EEPasswordModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -28,29 +24,12 @@ const originalSettings = preserveSettings(settingsList);
 
 test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	test.use({ storageState: Users.admin.state });
-	let loginPage: LoginPage;
-	let enterE2EEPasswordBanner: EnterE2EEPasswordBanner;
-	let enterE2EEPasswordModal: EnterE2EEPasswordModal;
-	let e2EEKeyDecodeFailureBanner: E2EEKeyDecodeFailureBanner;
-	let sidenav: HomeSidenav;
-	let accountSecurityPage: AccountSecurityPage;
-	let resetE2EEPasswordModal: ResetE2EEPasswordModal;
 
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
-	});
-
-	test.beforeEach(async ({ page }) => {
-		loginPage = new LoginPage(page);
-		enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
-		enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
-		e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
-		sidenav = new HomeSidenav(page);
-		accountSecurityPage = new AccountSecurityPage(page);
-		resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -61,10 +40,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	});
 
 	test.describe('Generate', () => {
-		test.beforeEach(async ({ page, api }) => {
-			await api.post('/method.call/e2e.resetOwnE2EKey', {
-				message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-			});
+		test.beforeEach(async ({ page }) => {
+			const loginPage = new LoginPage(page);
+
+			await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 			await page.goto('/home');
 			await loginPage.waitForIt();
@@ -72,10 +51,16 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('expect the randomly generated password to work', async ({ page }) => {
+			const loginPage = new LoginPage(page);
+			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
+			const navbar = new Navbar(page);
+
 			const password = await setupE2EEPassword(page);
 
 			// Log out
-			await sidenav.logout();
+			await navbar.logout();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -88,7 +73,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			await e2EEKeyDecodeFailureBanner.expectToNotBeVisible();
 		});
 
-		test('expect to manually reset the password', async () => {
+		test('expect to manually reset the password', async ({ page }) => {
+			const accountSecurityPage = new AccountSecurity(page);
+			const loginPage = new LoginPage(page);
+
 			// Reset the E2EE key to start the flow from the beginning
 			await accountSecurityPage.goto();
 			await accountSecurityPage.resetE2EEPassword();
@@ -97,10 +85,16 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('should reset e2e password from the modal', async ({ page }) => {
+			const navbar = new Navbar(page);
+			const loginPage = new LoginPage(page);
+			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+			const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
+
 			await setupE2EEPassword(page);
 
 			// Logout
-			await sidenav.logout();
+			await navbar.logout();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -115,6 +109,13 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('expect to manually set a new password', async ({ page }) => {
+			const accountSecurityPage = new AccountSecurity(page);
+			const loginPage = new LoginPage(page);
+			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
+			const navbar = new Navbar(page);
+
 			const newPassword = faker.internet.password({
 				length: 30,
 				prefix:
@@ -129,10 +130,9 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			// Set a new password
 			await accountSecurityPage.goto();
 			await accountSecurityPage.setE2EEPassword(newPassword);
-			await accountSecurityPage.close();
 
 			// Log out
-			await sidenav.logout();
+			await navbar.logout();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -154,9 +154,16 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 				await page.goto('/home');
 				await injectInitialData();
 				await restoreState(page, Users.userE2EE);
-				await sidenav.logout();
+				const navbar = new Navbar(page);
 
+				await navbar.logout();
+
+				const loginPage = new LoginPage(page);
 				await loginPage.loginByUserState(Users.userE2EE, { except: ['private_key', 'public_key'] });
+
+				const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+				const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+				const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
 
 				await enterE2EEPasswordBanner.click();
 				await enterE2EEPasswordModal.enterPassword('minus mobile dexter forest elvis');
@@ -171,23 +178,15 @@ test.use({ storageState: Users.admin.state });
 const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
-	let poAccountProfile: AccountProfile;
+	let poAccountSecurity: AccountSecurity;
 	let poHomeChannel: HomeChannel;
-	let encryptedRoomPage: EncryptedRoomPage;
-	let loginPage: LoginPage;
-	let accountSecurityPage: AccountSecurityPage;
-	let enterE2EEPasswordModal: EnterE2EEPasswordModal;
 	let e2eePassword: string;
 
 	preserveSettings(roomSetupSettingsList);
 
 	test.beforeEach(async ({ page }) => {
-		poAccountProfile = new AccountProfile(page);
+		poAccountSecurity = new AccountSecurity(page);
 		poHomeChannel = new HomeChannel(page);
-		encryptedRoomPage = new EncryptedRoomPage(page);
-		loginPage = new LoginPage(page);
-		accountSecurityPage = new AccountSecurityPage(page);
-		enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -201,8 +200,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 	test('expect save password state on encrypted room', async ({ page }) => {
 		await page.goto('/account/security');
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await poAccountSecurity.securityE2EEncryptionSection.click();
+		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -216,7 +215,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -228,7 +227,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
 		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 
@@ -239,26 +238,26 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await poHomeChannel.btnSavedMyPassword.click();
 
-		await poHomeChannel.content.inputMessage.waitFor();
+		await poHomeChannel.composer.inputMessage.waitFor();
 
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
 		await page.goto('/home');
 
 		// Logout to remove e2ee keys
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -273,22 +272,24 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
 		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 
 		await poHomeChannel.btnRoomEnterE2EEPassword.click();
 
-		await enterE2EEPasswordModal.enterPassword(e2eePassword);
+		await page.locator('#modal-root input').fill(e2eePassword);
+
+		await page.locator('#modal-root .rcx-button--primary').click();
 
 		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
-		await poHomeChannel.content.inputMessage.waitFor();
+		await poHomeChannel.composer.inputMessage.waitFor();
 		// For E2EE to complete init setup
 		await page.waitForTimeout(300);
 
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await storeState(page, Users.admin);
 	});
@@ -298,7 +299,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -307,30 +308,32 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await accountSecurityPage.goto();
+		await poHomeChannel.navbar.btnUserMenu.click();
+		await poHomeChannel.navbar.getUserProfileMenuOption('Profile').click();
 
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await poAccountSecurity.sidebar.linkSecurity.click();
 
-		await loginPage.waitForIt();
+		await poAccountSecurity.securityE2EEncryptionSection.click();
+		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
+
+		await page.locator('role=button[name="Login"]').waitFor();
 
 		await page.reload();
 
-		await loginPage.waitForIt();
+		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
-		await poHomeChannel.sidenav.openSearch();
-		await poHomeChannel.sidenav.inputSearch.fill(channelName);
-		await poHomeChannel.sidenav.getSearchItemByName(channelName).click();
+		await poHomeChannel.navbar.typeSearch(channelName);
+		await poHomeChannel.navbar.getSearchRoomByName(channelName).click();
 
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 		await poHomeChannel.btnSavedMyPassword.click();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
 
 		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.waitFor();

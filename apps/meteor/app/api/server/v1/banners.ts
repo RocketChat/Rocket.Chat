@@ -1,72 +1,31 @@
 import { Banner } from '@rocket.chat/core-services';
-import { isBannersDismissProps, isBannersGetNewProps, isBannersProps } from '@rocket.chat/rest-typings';
+import type { IBanner } from '@rocket.chat/core-typings';
+import {
+	ajv,
+	isBannersDismissProps,
+	isBannersProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 
-/**
- * @deprecated
- * @openapi
- *  /api/v1/banners.getNew:
- *    get:
- *      description: Gets the banners to be shown to the authenticated user
- *      deprecated: true
- *      security:
- *        $ref: '#/security/authenticated'
- *      parameters:
- *        - name: platform
- *          in: query
- *          description: The platform rendering the banner
- *          required: true
- *          schema:
- *            type: string
- *            enum: [web, mobile]
- *          example: web
- *        - name: bid
- *          in: query
- *          description: The id of a single banner
- *          required: false
- *          schema:
- *            type: string
- *          example: ByehQjC44FwMeiLbX
- *      responses:
- *        200:
- *          description: The banners matching the criteria
- *          content:
- *            application/json:
- *              schema:
- *                allOf:
- *                  - $ref: '#/components/schemas/ApiSuccessV1'
- *                  - type: object
- *                    properties:
- *                      banners:
- *                        type: array
- *                        items:
- *                           $ref: '#/components/schemas/IBanner'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'banners.getNew',
-	{
-		authRequired: true,
-		validateParams: isBannersGetNewProps,
-		deprecation: { version: '8.0.0', alternatives: ['/v1/banners/:id', '/v1/banners'] },
+const bannersResponseSchema = ajv.compile<{ banners: IBanner[] }>({
+	type: 'object',
+	properties: {
+		banners: { type: 'array', items: { $ref: '#/components/schemas/IBanner' } },
+		success: { type: 'boolean', enum: [true] },
 	},
-	{
-		// deprecated
-		async get() {
-			const { platform, bid: bannerId } = this.queryParams;
+	required: ['banners', 'success'],
+	additionalProperties: false,
+});
 
-			const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
-
-			return API.v1.success({ banners });
-		},
-	},
-);
+const dismissResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
 
 /**
  * @openapi
@@ -114,19 +73,24 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+API.v1.get(
 	'banners/:id',
-	{ authRequired: true, validateParams: isBannersProps },
 	{
-		// TODO: move to users/:id/banners
-		async get() {
-			const { platform } = this.queryParams;
-			const { id } = this.urlParams;
-
-			const banners = await Banner.getBannersForUser(this.userId, platform, id);
-
-			return API.v1.success({ banners });
+		authRequired: true,
+		query: isBannersProps,
+		response: {
+			200: bannersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { platform } = this.queryParams;
+		const { id } = this.urlParams;
+
+		const banners = await Banner.getBannersForUser(this.userId, platform, id);
+
+		return API.v1.success({ banners });
 	},
 );
 
@@ -167,17 +131,23 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+API.v1.get(
 	'banners',
-	{ authRequired: true, validateParams: isBannersProps },
 	{
-		async get() {
-			const { platform } = this.queryParams;
-
-			const banners = await Banner.getBannersForUser(this.userId, platform);
-
-			return API.v1.success({ banners });
+		authRequired: true,
+		query: isBannersProps,
+		response: {
+			200: bannersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { platform } = this.queryParams;
+
+		const banners = await Banner.getBannersForUser(this.userId, platform);
+
+		return API.v1.success({ banners });
 	},
 );
 
@@ -214,15 +184,21 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+API.v1.post(
 	'banners.dismiss',
-	{ authRequired: true, validateParams: isBannersDismissProps },
 	{
-		async post() {
-			const { bannerId } = this.bodyParams;
-
-			await Banner.dismiss(this.userId, bannerId);
-			return API.v1.success();
+		authRequired: true,
+		body: isBannersDismissProps,
+		response: {
+			200: dismissResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { bannerId } = this.bodyParams;
+
+		await Banner.dismiss(this.userId, bannerId);
+		return API.v1.success();
 	},
 );

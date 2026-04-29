@@ -1,10 +1,19 @@
-import { HomeContent, HomeFlextab } from './fragments';
-import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/e2ee';
+import type { Page } from '@playwright/test';
+
+import { EncryptedRoomToolbar, HomeContent } from './fragments';
 import { Message } from './fragments/message';
+import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/modals';
 
 export class EncryptedRoomPage extends HomeContent {
-	get encryptedIcon() {
-		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
+	readonly toolbar: EncryptedRoomToolbar;
+
+	constructor(page: Page) {
+		super(page);
+		this.toolbar = new EncryptedRoomToolbar(page);
+	}
+
+	get encryptedTitle() {
+		return this.page.getByRole('button', { name: '- encrypted' });
 	}
 
 	get encryptionNotReadyIndicator() {
@@ -12,36 +21,31 @@ export class EncryptedRoomPage extends HomeContent {
 	}
 
 	get lastMessage() {
-		return new Message(this.page.locator('[data-qa-type="message"]').last());
+		return new Message(this.lastUserMessage);
 	}
 
 	lastNthMessage(index: number) {
-		return new Message(this.page.locator(`[data-qa-type="message"]`).nth(-index - 1));
+		return new Message(this.nthMessage(-index - 1));
 	}
 
 	async enableEncryption() {
-		const tabs = new HomeFlextab(this.page);
-
 		const enableRoomEncryptionModal = new EnableRoomEncryptionModal(this.page);
 
-		await tabs.kebab.click();
-		await tabs.btnEnableE2E.click();
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemEnableE2EEncryption.click();
 		await enableRoomEncryptionModal.enable();
 	}
 
 	async disableEncryption() {
-		const tabs = new HomeFlextab(this.page);
 		const disableRoomEncryptionModal = new DisableRoomEncryptionModal(this.page);
 
-		await tabs.kebab.click();
-		await tabs.btnDisableE2E.click();
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemDisableE2EEncryption.click();
 		await disableRoomEncryptionModal.disable();
 	}
 
 	async showExportMessagesTab() {
-		const tabs = new HomeFlextab(this.page);
-
-		await tabs.kebab.click();
-		await tabs.btnExportMessages.click();
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemExportMessages.click();
 	}
 }

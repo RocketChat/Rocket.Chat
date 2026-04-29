@@ -1,6 +1,16 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import {
+	VirtualizedScrollbars,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,24 +18,13 @@ import { Virtuoso } from 'react-virtuoso';
 
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
-import {
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarContent,
-	ContextualbarFooter,
-	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
-import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
 type CannedResponseListProps = {
-	loadMoreItems: (start: number, end: number) => void;
-	cannedItems: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] })[];
+	loadMoreItems: () => void;
+	cannedItems: (IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] })[];
 	itemCount: number;
-	onClose: any;
-	loading: boolean;
+	onClose: () => void;
 	options: [string, string][];
 	text: string;
 	setText: FormEventHandler<HTMLInputElement>;
@@ -43,7 +42,6 @@ const CannedResponseList = ({
 	cannedItems,
 	itemCount,
 	onClose,
-	loading,
 	options,
 	text,
 	setText,
@@ -110,7 +108,7 @@ const CannedResponseList = ({
 							<Virtuoso
 								style={{ width: inlineSize }}
 								totalCount={itemCount}
-								endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
+								endReached={loadMoreItems}
 								overscan={25}
 								data={cannedItems}
 								itemContent={(_index, data): ReactElement => (

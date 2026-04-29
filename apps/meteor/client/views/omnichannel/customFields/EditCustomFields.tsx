@@ -13,21 +13,22 @@ import {
 	ToggleSwitch,
 	Box,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
-import { FormProvider, useForm, Controller } from 'react-hook-form';
-
 import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarFooter,
 	ContextualbarScrollableContent,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { FormProvider, useForm, Controller } from 'react-hook-form';
+
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 export type EditCustomFieldsFormData = {
 	field: string;
@@ -65,7 +66,9 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 
 	const handleDelete = useRemoveCustomField();
 
-	const methods = useForm<EditCustomFieldsFormData>({ mode: 'onBlur', values: getInitialValues(customFieldData) });
+	const methods = useForm<EditCustomFieldsFormData>({
+		values: getInitialValues(customFieldData),
+	});
 	const {
 		control,
 		handleSubmit,
@@ -74,25 +77,28 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 
 	const saveCustomField = useEndpoint('POST', '/v1/livechat/custom-fields.save');
 
-	const handleSave = useEffectEvent(async ({ visibility, ...data }: EditCustomFieldsFormData) => {
-		try {
-			await saveCustomField({
-				customFieldId: customFieldData?._id as unknown as string,
-				customFieldData: {
-					visibility: visibility ? 'visible' : 'hidden',
-					...data,
-				},
-			});
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ visibility, ...data }: EditCustomFieldsFormData) => {
+			try {
+				await saveCustomField({
+					customFieldId: customFieldData?._id as unknown as string,
+					customFieldData: {
+						visibility: visibility ? 'visible' : 'hidden',
+						...data,
+					},
+				});
 
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries({
-				queryKey: ['livechat-customFields'],
-			});
-			onClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				queryClient.invalidateQueries({
+					queryKey: omnichannelQueryKeys.livechat.customFields(),
+				});
+				onClose();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		{ isDirty },
+	);
 
 	const scopeOptions: SelectOption[] = useMemo(
 		() => [
@@ -220,7 +226,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} data-qa-id='BtnSaveEditCustomFieldsPage' primary type='submit' disabled={!isDirty}>
+					<Button form={formId} primary type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

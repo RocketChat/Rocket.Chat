@@ -1,8 +1,9 @@
 import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
 import ModerationConsoleActions from './ModerationConsoleActions';
 import UserColumn from './helpers/UserColumn';
-import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type ModerationConsoleRowProps = {
@@ -12,7 +13,8 @@ export type ModerationConsoleRowProps = {
 };
 
 const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps): JSX.Element => {
-	const { userId: _id, rooms, name, count, username, ts } = report;
+	const { userId: _id, rooms, name, count, ts } = report;
+	const username = report.username ? normalizeUsername(report.username) : undefined;
 
 	const roomNames = rooms.map((room) => {
 		if (room.t === 'd') {

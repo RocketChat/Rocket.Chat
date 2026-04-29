@@ -9,7 +9,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../lib/callbacks';
 
 export async function createDirectMessage(
 	usernames: IUser['username'][],
@@ -42,7 +42,6 @@ export async function createDirectMessage(
 	const users = await Promise.all(usernames.filter((username) => username !== me.username));
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	const roomUsers = excludeSelf ? users : [me, ...users];
-	const federated = false;
 
 	// allow self-DMs
 	if (roomUsers.length === 1 && roomUsers[0] !== undefined && typeof roomUsers[0] !== 'string' && roomUsers[0]._id !== me._id) {
@@ -74,8 +73,11 @@ export async function createDirectMessage(
 	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
+
+	const extraData = {};
+
 	try {
-		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
+		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers, extraData);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
@@ -83,18 +85,7 @@ export async function createDirectMessage(
 		_id: rid,
 		inserted,
 		...room
-	} = await createRoom<'d'>(
-		'd',
-		undefined,
-		undefined,
-		roomUsers as IUser[],
-		false,
-		undefined,
-		{
-			federated,
-		},
-		options,
-	);
+	} = await createRoom<'d'>('d', undefined, undefined, roomUsers as IUser[], false, undefined, extraData, options);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type

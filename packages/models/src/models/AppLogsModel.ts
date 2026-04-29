@@ -8,7 +8,7 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 		super(db, 'apps_logs', undefined);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			// This index is used to expire logs after 30 days
 			{

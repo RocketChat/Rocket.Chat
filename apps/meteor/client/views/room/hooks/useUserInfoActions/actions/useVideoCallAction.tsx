@@ -1,6 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName, useSetting, usePermission } from '@rocket.chat/ui-contexts';
+import {
+	useTranslation,
+	useUserRoom,
+	useUserId,
+	useUserSubscriptionByName,
+	useSetting,
+	usePermission,
+	useUserCard,
+} from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -9,7 +17,6 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useUserCard } from '../../../contexts/UserCardContext';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
 

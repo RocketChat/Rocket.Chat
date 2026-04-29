@@ -5,6 +5,7 @@ import type {
 	MediaCallSignedContact,
 	MediaCallContact,
 	IUser,
+	MediaCallActor,
 } from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
 import type {
@@ -26,7 +27,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		super(db, 'media_calls', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { createdAt: 1 }, unique: false },
 			{ key: { ended: 1, uids: 1, expiresAt: 1 }, unique: false },
@@ -35,6 +36,22 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 				sparse: true,
 			},
 		];
+	}
+
+	public async findOneByIdAndCallee<T extends Document = IMediaCall>(
+		id: IMediaCall['_id'],
+		callee: MediaCallActor,
+		options?: FindOptions<IMediaCall>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				'_id': id,
+				'callee.type': callee.type,
+				'callee.id': callee.id,
+				...(callee.contractId && { 'callee.contractId': callee.contractId }),
+			},
+			options,
+		);
 	}
 
 	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(
@@ -70,7 +87,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(callId: string, data: { calleeContractId: string }, expiresAt: Date): Promise<UpdateResult> {
+	public async acceptCallById(
+		callId: string,
+		data: { calleeContractId: string; supportedFeatures: string[] },
+		expiresAt: Date,
+	): Promise<UpdateResult> {
 		const { calleeContractId } = data;
 
 		return this.updateOne(
@@ -84,6 +105,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'callee.contractId': calleeContractId,
 					'acceptedAt': new Date(),
 					expiresAt,
+				},
+				$pull: {
+					features: {
+						$nin: data.supportedFeatures,
+					},
 				},
 			},
 		);

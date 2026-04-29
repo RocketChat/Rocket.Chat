@@ -1,7 +1,6 @@
-import { createFocusManager } from '@react-aria/focus';
+import { createFocusManager, useFocusManager } from '@react-aria/focus';
 import type { RefCallback } from 'react';
 import { useCallback } from 'react';
-import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) =>
 	(node as HTMLElement).getAttribute('role') === 'listitem' || (node as HTMLElement).getAttribute('role') === 'link';
@@ -73,7 +72,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 				'blur',
 				(e) => {
 					if (
-						!(e.relatedTarget as HTMLElement)?.classList.contains('focus-visible') ||
+						!(e.relatedTarget as HTMLElement)?.matches(':focus-visible') ||
 						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
 					) {
 						return;
@@ -89,7 +88,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
-					const triggeredByKeyboard = (e.target as HTMLElement)?.classList.contains('focus-visible');
+					const triggeredByKeyboard = (e.target as HTMLElement)?.matches(':focus-visible');
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}

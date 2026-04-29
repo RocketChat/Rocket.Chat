@@ -9,7 +9,7 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		super(db, 'integrations', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { type: 1 } }];
 	}
 

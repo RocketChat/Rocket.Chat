@@ -1,8 +1,8 @@
 import type { LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import { PriorityIcon } from './PriorityIcon';
-import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 
 type PrioritiesTableRowProps = {
 	id: string;
@@ -16,7 +16,7 @@ type PrioritiesTableRowProps = {
 const PrioritiesTableRow = ({ id, name, i18n, sortItem, dirty, onClick }: PrioritiesTableRowProps) => {
 	const { t } = useTranslation();
 	return (
-		<GenericTableRow tabIndex={0} role='link' onClick={onClick} action qa-row-id={id}>
+		<GenericTableRow tabIndex={0} onClick={onClick} action qa-row-id={id}>
 			<GenericTableCell withTruncatedText>
 				<PriorityIcon level={sortItem} />
 			</GenericTableCell>

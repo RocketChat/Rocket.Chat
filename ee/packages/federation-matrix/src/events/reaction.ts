@@ -1,14 +1,13 @@
 import { Message, FederationMatrix } from '@rocket.chat/core-services';
-import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 import emojione from 'emojione';
 
 const logger = new Logger('federation-matrix:reaction');
 
-export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.reaction', async ({ event, event_id: eventId }) => {
+export function reaction() {
+	federationSDK.eventEmitterService.on('homeserver.matrix.reaction', async ({ event, event_id: eventId }) => {
 		try {
 			const isSetReaction = event.content?.['m.relates_to'];
 
@@ -17,37 +16,37 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			const [userPart, domain] = event.sender.split(':');
 			if (!userPart || !domain) {
-				logger.error('Invalid Matrix sender ID format:', event.sender);
+				logger.error({ sender: event.sender, msg: 'Invalid Matrix sender ID format' });
 				return;
 			}
 
 			const internalUsername = event.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.error(`No RC user mapping found for Matrix event ${reactionTargetEventId} ${internalUsername}`);
+				logger.error({ reactionTargetEventId, internalUsername, msg: 'No RC user mapping found for Matrix event' });
 				return;
 			}
 
 			if (!isSetReaction) {
-				logger.debug(`No relates_to content in reaction event`);
+				logger.debug('No relates_to content in reaction event');
 				return;
 			}
 
 			const rcMessage = await Messages.findOneByFederationId(reactionTargetEventId);
 			if (!rcMessage) {
-				logger.debug(`No RC message mapping found for Matrix event ${reactionTargetEventId}`);
+				logger.debug({ msg: 'No RC message mapping found for Matrix event', eventId: reactionTargetEventId });
 				return;
 			}
 
 			const reactionEmoji = emojione.toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
 			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
-		} catch (error) {
-			logger.error('Failed to process Matrix reaction:', error);
+		} catch (err) {
+			logger.error({ msg: 'Failed to process Matrix reaction', err });
 		}
 	});
 
-	emitter.on('homeserver.matrix.redaction', async ({ event }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
 		try {
 			const redactedEventId = event.redacts;
 			if (!redactedEventId) {
@@ -57,7 +56,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			const reactionEvent = await FederationMatrix.getEventById(redactedEventId);
 			if (!reactionEvent || reactionEvent.event.type !== 'm.reaction') {
-				logger.debug(`Event ${redactedEventId} is not a reaction event`);
+				logger.debug({ msg: 'Event is not a reaction event', eventId: redactedEventId });
 				return;
 			}
 
@@ -72,22 +71,22 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			const rcMessage = await Messages.findOneByFederationId(targetMessageEventId);
 			if (!rcMessage) {
-				logger.debug(`No RC message found for event ${targetMessageEventId}`);
+				logger.debug({ msg: 'No RC message found for event', eventId: targetMessageEventId });
 				return;
 			}
 
 			const internalUsername = event.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.debug(`User not found: ${internalUsername}`);
+				logger.debug({ msg: 'User not found', username: internalUsername });
 				return;
 			}
 
 			const reactionEmoji = emojione.toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, false);
 			await Messages.unsetFederationReactionEventId(redactedEventId, rcMessage._id, reactionEmoji);
-		} catch (error) {
-			logger.error('Failed to process Matrix reaction redaction:', error);
+		} catch (err) {
+			logger.error({ msg: 'Failed to process Matrix reaction redaction', err });
 		}
 	});
 }

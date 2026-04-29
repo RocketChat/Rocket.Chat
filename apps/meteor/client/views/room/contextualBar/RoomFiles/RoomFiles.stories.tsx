@@ -1,8 +1,8 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomFiles from './RoomFiles';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	component: RoomFiles,
@@ -11,50 +11,43 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	args: {
+		type: 'all',
+		text: '',
+		loadMoreItems: action('loadMoreItems'),
+		setText: action('setText'),
+		setType: action('setType'),
+	},
 } satisfies Meta<typeof RoomFiles>;
 
 const Template: StoryFn<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
 
+const fakeItems = Array.from({ length: 10 }, (_, i) => ({
+	_id: String(i),
+	name: `File ${i}`,
+	url: '#',
+	uploadedAt: new Date(),
+	user: {
+		_id: 'rocket.cat',
+		username: 'rocket.cat',
+	},
+}));
+
 export const Default = Template.bind({});
 Default.args = {
-	filesItems: [
-		{
-			_id: '1',
-			name: 'Lorem Ipsum Indolor Dolor',
-			url: '#',
-			uploadedAt: new Date(),
-			user: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-			},
-		},
-		{
-			_id: '2',
-			name: 'Lorem Ipsum Indolor Dolor',
-			url: '#',
-			uploadedAt: new Date(),
-			user: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-			},
-		},
-	],
-	text: 'Ipsum',
-	type: 'text',
-	setText: action('setText'),
-	setType: action('setType'),
-	total: 2,
-	loadMoreItems: action('loadMoreItems'),
+	filesItems: fakeItems,
+	total: fakeItems.length,
+	isSuccess: true,
 };
 
 export const Loading = Template.bind({});
 Loading.args = {
-	loading: true,
+	isPending: true,
 };
 
 export const Empty = Template.bind({});
 Empty.args = {
-	setText: action('setText'),
-	setType: action('setType'),
-	loadMoreItems: action('loadMoreItems'),
+	isSuccess: true,
+	filesItems: [],
+	total: 0,
 };

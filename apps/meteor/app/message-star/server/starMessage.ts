@@ -1,11 +1,12 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 
@@ -16,7 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const starMessage = async (userId: string, message: Pick<IMessage, 'rid' | '_id'> & { starred: boolean }): Promise<boolean> => {
+export const starMessage = async (user: IUser, message: Pick<IMessage, 'rid' | '_id'> & { starred: boolean }): Promise<boolean> => {
 	if (!settings.get('Message_AllowStarring')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
 			method: 'starMessage',
@@ -24,7 +25,7 @@ export const starMessage = async (userId: string, message: Pick<IMessage, 'rid' 
 		});
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(message.rid, userId, {
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id, {
 		projection: { _id: 1 },
 	});
 	if (!subscription) {
@@ -40,18 +41,18 @@ export const starMessage = async (userId: string, message: Pick<IMessage, 'rid' 
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'starMessage' });
 	}
 
-	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
+	if (!(await canAccessRoomAsync(room, { _id: user._id }))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
 	}
 
 	if (isTheLastMessage(room, message)) {
-		await Rooms.updateLastMessageStar(room._id, userId, message.starred);
+		await Rooms.updateLastMessageStar(room._id, user._id, message.starred);
 		void notifyOnRoomChangedById(room._id);
 	}
 
-	await Apps.self?.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessageStarred, message, user, message.starred);
 
-	await Messages.updateUserStarById(message._id, userId, message.starred);
+	await Messages.updateUserStarById(message._id, user._id, message.starred);
 
 	void notifyOnMessageChange({
 		id: message._id,
@@ -62,14 +63,15 @@ export const starMessage = async (userId: string, message: Pick<IMessage, 'rid' 
 
 Meteor.methods<ServerMethods>({
 	async starMessage(message) {
-		const uid = Meteor.userId();
+		methodDeprecationLogger.method('starMessage', '9.0.0', '/v1/chat.starMessage');
+		const user = (await Meteor.userAsync()) as IUser;
 
-		if (!uid) {
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'starMessage',
 			});
 		}
 
-		return starMessage(uid, message);
+		return starMessage(user, message);
 	},
 });

@@ -1,6 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
@@ -1178,8 +1179,8 @@ describe('/teams.info', () => {
 	before(async () => {
 		testUser = await createUser();
 		testUserCredentials = await login(testUser.username, password);
-		testTeam = await createTeam(credentials, teamName, TEAM_TYPE.PUBLIC);
-		testTeam2 = await createTeam(credentials, `${teamName}-2`, TEAM_TYPE.PRIVATE);
+		testTeam = await createTeam(credentials, teamName, TeamType.PUBLIC);
+		testTeam2 = await createTeam(credentials, `${teamName}-2`, TeamType.PRIVATE);
 	});
 
 	after(() => Promise.all([deleteTeam(credentials, testTeam.name), deleteTeam(credentials, testTeam2.name), deleteUser(testUser)]));
@@ -1481,6 +1482,163 @@ describe('/teams.delete', () => {
 				.catch(done);
 		});
 	});
+
+	describe("delete team when team's main room id is provided in roomsToRemove", () => {
+		const tempTeamName = `temporaryTeam-${Random.id()}`;
+		const channel1Name = `${tempTeamName}-channel1`;
+		const channel2Name = `${tempTeamName}-channel2`;
+		let teamId: ITeam['_id'];
+		let channel1Id: IRoom['_id'];
+		let channel2Id: IRoom['_id'];
+		let teamMainRoomId: IRoom['_id'];
+
+		before('create team', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: tempTeamName,
+					type: 0,
+				})
+				.then((response) => {
+					teamId = response.body.team._id;
+					teamMainRoomId = response.body.team.roomId;
+				});
+		});
+
+		before('create channel 1', async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channel1Name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					channel1Id = res.body.channel._id;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channel1Name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				});
+		});
+
+		before('add channel 1 to team', async () => {
+			await request
+				.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({
+					rooms: [channel1Id],
+					teamId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms');
+					expect(res.body.rooms[0]).to.have.property('teamId', teamId);
+					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
+				});
+		});
+
+		before('create channel 2', async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channel2Name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					channel2Id = res.body.channel._id;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channel2Name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				});
+		});
+
+		before('add channel 2 to team', async () => {
+			await request
+				.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({
+					rooms: [channel2Id],
+					teamId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms');
+					expect(res.body.rooms[0]).to.have.property('teamId', teamId);
+					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
+				});
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: channel1Id }));
+
+		it('should delete the specified room and move the other back to the workspace', async () => {
+			await request
+				.post(api('teams.delete'))
+				.set(credentials)
+				.send({
+					teamName: tempTeamName,
+					roomsToRemove: [channel2Id, teamMainRoomId],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: teamMainRoomId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error');
+					expect(response.body.error).to.include('[error-room-not-found]');
+				});
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: channel2Id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error');
+					expect(response.body.error).to.include('[error-room-not-found]');
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: channel1Id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('channel');
+					expect(response.body.channel).to.have.property('_id', channel1Id);
+					expect(response.body.channel).to.not.have.property('teamId');
+				});
+		});
+	});
 });
 
 describe('/teams.addRooms', () => {
@@ -1502,8 +1660,8 @@ describe('/teams.addRooms', () => {
 		privateRoom3 = (await createRoom({ type: 'p', name: `community-channel-private-3-${Date.now()}` })).body.group;
 		publicRoom = (await createRoom({ type: 'c', name: `community-channel-public-1-${Date.now()}` })).body.channel;
 		publicRoom2 = (await createRoom({ type: 'c', name: `community-channel-public-2-${Date.now()}` })).body.channel;
-		publicTeam = await createTeam(credentials, `team-name-c-${Date.now()}`, TEAM_TYPE.PUBLIC);
-		privateTeam = await createTeam(credentials, `team-name-p-${Date.now()}`, TEAM_TYPE.PRIVATE);
+		publicTeam = await createTeam(credentials, `team-name-c-${Date.now()}`, TeamType.PUBLIC);
+		privateTeam = await createTeam(credentials, `team-name-p-${Date.now()}`, TeamType.PRIVATE);
 	});
 
 	after(async () => {
@@ -1678,8 +1836,8 @@ describe('/teams.listRooms', () => {
 	before(async () => {
 		testUser = await createUser();
 		testUserCredentials = await login(testUser.username, password);
-		privateTeam = await createTeam(credentials, `teamName-private-${Date.now()}`, TEAM_TYPE.PRIVATE);
-		publicTeam = await createTeam(testUserCredentials, `teamName-public-${Date.now()}`, TEAM_TYPE.PUBLIC);
+		privateTeam = await createTeam(credentials, `teamName-private-${Date.now()}`, TeamType.PRIVATE);
+		publicTeam = await createTeam(testUserCredentials, `teamName-public-${Date.now()}`, TeamType.PUBLIC);
 
 		privateRoom = (await createRoom({ type: 'p', name: `test-p-${Date.now()}` })).body.group;
 		publicRoom = (await createRoom({ type: 'c', name: `test-c-${Date.now()}` })).body.channel;
@@ -2177,7 +2335,7 @@ describe('/teams.updateRoom', () => {
 
 	before(async () => {
 		publicRoom = (await createRoom({ type: 'c', name: `public-update-room-${Date.now()}` })).body.channel;
-		publicTeam = await createTeam(credentials, name, TEAM_TYPE.PUBLIC);
+		publicTeam = await createTeam(credentials, name, TeamType.PUBLIC);
 		await request
 			.post(api('teams.addRooms'))
 			.set(credentials)
@@ -2555,7 +2713,7 @@ describe('/teams.removeRoom', () => {
 
 	before(async () => {
 		publicRoom = (await createRoom({ type: 'c', name: `public-remove-room-${Date.now()}` })).body.channel;
-		publicTeam = await createTeam(credentials, name, TEAM_TYPE.PUBLIC);
+		publicTeam = await createTeam(credentials, name, TeamType.PUBLIC);
 		await request
 			.post(api('teams.addRooms'))
 			.set(credentials)

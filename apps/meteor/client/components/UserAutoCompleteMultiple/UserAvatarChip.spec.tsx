@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
@@ -25,5 +26,12 @@ describe('UserAvatarChip', () => {
 		render(<UserAvatarChip username='testuser' onClick={handleClick} />);
 		screen.getByRole('button').click();
 		expect(handleClick).toHaveBeenCalled();
+	});
+
+	it('should render real name if the setting is enabled', () => {
+		render(<UserAvatarChip username='testuser' name='Test User' />, {
+			wrapper: mockAppRoot().withSetting('UI_Use_Real_Name', true).build(),
+		});
+		expect(screen.getByText('Test User')).toBeInTheDocument();
 	});
 });

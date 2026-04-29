@@ -33,10 +33,11 @@ const getUnreadTitle = (
 	return title.join(', ');
 };
 
-type UnreadData = Pick<
+export type UnreadData = Pick<
 	SubscriptionWithRoom,
 	'alert' | 'userMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'groupMentions' | 'hideMentionStatus' | 'hideUnreadStatus'
 >;
+
 export const getSubscriptionUnreadData = (
 	{ userMentions, tunreadUser, tunread, unread, groupMentions, hideMentionStatus, hideUnreadStatus, alert }: UnreadData,
 	t: TFunction,

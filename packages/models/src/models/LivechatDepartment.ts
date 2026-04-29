@@ -47,7 +47,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		throw new Error('Method not implemented.');
 	}
 
-	protected modelIndexes(): Array<IndexDescription> {
+	protected override modelIndexes(): Array<IndexDescription> {
 		return [
 			{
 				key: {

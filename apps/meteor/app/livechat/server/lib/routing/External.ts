@@ -51,6 +51,8 @@ class ExternalQueue implements IRoutingMethod {
 					...(department && { departmentId: department }),
 					...(ignoreAgentId && { ignoreAgentId }),
 				},
+				// // SECURITY: The URL is a value that is only configurable by admins/users with the right permissions. It's ok to disable it here.
+				ignoreSsrfValidation: true,
 			});
 			const result = (await request.json()) as { username?: string };
 
@@ -59,6 +61,7 @@ class ExternalQueue implements IRoutingMethod {
 					result.username,
 					{},
 					settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+					settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 				);
 
 				if (!agent?.username) {

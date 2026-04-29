@@ -67,6 +67,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 			name: 1,
 			t: 1,
 			avatarETag: 1,
+			encrypted: 1,
 		},
 		limit: 10,
 		sort: {
@@ -152,7 +153,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 	};
 }
 
-export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name: string }): Promise<{
+export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name?: string }): Promise<{
 	items: IRoom[];
 }> {
 	const options: FindOptions<IRoom> = {

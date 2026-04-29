@@ -10,9 +10,9 @@ export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
 		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'callout', 'tab_navigation']);
 	}
 
-	plain_text = renderTextObject;
+	override plain_text = renderTextObject;
 
-	mrkdwn = renderTextObject;
+	override mrkdwn = renderTextObject;
 
 	tab_navigation(block: UiKit.ExperimentalTabNavigationBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
 		if (context === UiKit.BlockContext.BLOCK) {

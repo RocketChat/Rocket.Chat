@@ -71,7 +71,7 @@ type AppState = {
 };
 
 export class App extends Component<AppProps, AppState> {
-	state = {
+	override state = {
 		initialized: false,
 		poppedOut: false,
 	};
@@ -96,12 +96,14 @@ export class App extends Component<AppProps, AppState> {
 			setInitCookies();
 
 			if (gdprRequired && !gdprAccepted) {
-				return route('/gdpr');
+				route('/gdpr');
+				return;
 			}
 
 			if (!online) {
 				parentCall('callback', 'no-agent-online');
-				return route('/leave-message');
+				route('/leave-message');
+				return;
 			}
 
 			const showDepartment = departments.some((dept) => dept.showOnRegistration);
@@ -109,7 +111,7 @@ export class App extends Component<AppProps, AppState> {
 			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggersBeforeRegistration();
 
 			if (url === '/' && showRegistrationForm) {
-				return route('/register');
+				route('/register');
 			}
 		}, 100);
 	};
@@ -122,7 +124,7 @@ export class App extends Component<AppProps, AppState> {
 			Triggers.init();
 		}
 
-		Triggers.processTriggers();
+		void Triggers.processTriggers();
 	}
 
 	protected handleVisibilityChange = async () => {
@@ -151,7 +153,7 @@ export class App extends Component<AppProps, AppState> {
 
 		visibility.addListener(this.handleVisibilityChange);
 
-		this.handleVisibilityChange();
+		void this.handleVisibilityChange();
 
 		window.addEventListener('beforeunload', () => {
 			visibility.removeListener(this.handleVisibilityChange);
@@ -179,15 +181,15 @@ export class App extends Component<AppProps, AppState> {
 		visibility.removeListener(this.handleVisibilityChange);
 	}
 
-	componentDidMount() {
-		this.initialize();
+	override componentDidMount() {
+		void this.initialize();
 	}
 
-	componentWillUnmount() {
-		this.finalize();
+	override componentWillUnmount() {
+		void this.finalize();
 	}
 
-	componentDidUpdate() {
+	override componentDidUpdate() {
 		const { i18n } = this.props;
 
 		if (i18n.t) {

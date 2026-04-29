@@ -36,6 +36,8 @@ export class AppVisitorsConverter {
 			visitorEmails: 'visitorEmails',
 			livechatData: 'livechatData',
 			status: 'status',
+			activity: 'activity',
+			externalIds: 'externalIds',
 		};
 
 		return transformMappedData(visitor, map);
@@ -56,6 +58,7 @@ export class AppVisitorsConverter {
 			status: visitor.status || 'online',
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
+			...(visitor.externalIds && { externalIds: visitor.externalIds }),
 		};
 
 		return Object.assign(newVisitor, visitor._unmappedProperties_);

@@ -1,9 +1,6 @@
 import type { LicenseInfo, Cloud } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv, ajvQuery } from './Ajv';
 
 type licensesAddProps = {
 	license: string;
@@ -37,7 +34,7 @@ const licensesInfoPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLicensesInfoProps = ajv.compile<licensesInfoProps>(licensesInfoPropsSchema);
+export const isLicensesInfoProps = ajvQuery.compile<licensesInfoProps>(licensesInfoPropsSchema);
 
 export type LicensesEndpoints = {
 	'/v1/licenses.info': {

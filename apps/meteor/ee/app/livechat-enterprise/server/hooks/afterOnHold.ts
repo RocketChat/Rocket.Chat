@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
@@ -18,7 +18,7 @@ const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<a
 		return;
 	}
 
-	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
+	cbLogger.debug({ msg: 'Scheduling room to be closed', rid, autoCloseOnHoldChatTimeout });
 	const closeComment =
 		settings.get<string>('Livechat_auto_close_on_hold_chats_custom_message') ||
 		i18n.t('Closed_automatically_because_chat_was_onhold_for_seconds', {

@@ -40,7 +40,7 @@ test.describe('E2EE Server Settings', () => {
 		test.skip(!IS_EE, 'Premium Only');
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -84,7 +84,7 @@ test.describe('E2EE Server Settings', () => {
 		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
 			const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+			await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 

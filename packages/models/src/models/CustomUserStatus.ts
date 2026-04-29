@@ -9,7 +9,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		super(db, 'custom_user_status', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }];
 	}
 

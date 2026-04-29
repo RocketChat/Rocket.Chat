@@ -29,25 +29,25 @@ test.describe('Messaging', () => {
 	test.describe.serial('Navigation', () => {
 		test('should navigate on messages using keyboard', async ({ page }) => {
 			await test.step('open chat and send message', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
+				await poHomeChannel.navbar.openChat(targetChannel);
 				await poHomeChannel.content.sendMessage('msg1');
 				await poHomeChannel.content.sendMessage('msg2');
 			});
 
 			await test.step('move focus to the second message', async () => {
 				await page.keyboard.press('Shift+Tab');
-				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+				await expect(poHomeChannel.content.lastUserMessage).toBeFocused();
 			});
 
 			await test.step('move focus to the first system message', async () => {
 				await page.keyboard.press('ArrowUp');
 				await page.keyboard.press('ArrowUp');
-				await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
+				await expect(poHomeChannel.content.systemMessageListItems.first()).toBeFocused();
 			});
 
 			await test.step('move focus to the first typed message', async () => {
 				await page.keyboard.press('ArrowDown');
-				await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+				await expect(poHomeChannel.content.getMessageByText('msg1')).toBeFocused();
 			});
 
 			await test.step('move focus to the room title', async () => {
@@ -59,20 +59,21 @@ test.describe('Messaging', () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+				await expect(poHomeChannel.content.getMessageByText('msg1')).toBeFocused();
 			});
 
 			await test.step('move focus to the message toolbar', async () => {
-				await page
-					.locator('[data-qa-type="message"]:has-text("msg1")')
+				await poHomeChannel.content
+					.getMessageByText('msg1')
 					.locator('[role=toolbar][aria-label="Message actions"]')
 					.getByRole('button', { name: 'Add reaction' })
 					.waitFor();
+
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await expect(
-					page
-						.locator('[data-qa-type="message"]:has-text("msg1")')
+					poHomeChannel.content
+						.getMessageByText('msg1')
 						.locator('[role=toolbar][aria-label="Message actions"]')
 						.getByRole('button', { name: 'Add reaction' }),
 				).toBeFocused();
@@ -80,19 +81,19 @@ test.describe('Messaging', () => {
 
 			await test.step('move focus to the composer', async () => {
 				await page.keyboard.press('Tab');
-				await page
-					.locator('[data-qa-type="message"]:has-text("msg2")')
+				await poHomeChannel.content
+					.getMessageByText('msg2')
 					.locator('[role=toolbar][aria-label="Message actions"]')
 					.getByRole('button', { name: 'Add reaction' })
 					.waitFor();
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(poHomeChannel.composer).toBeFocused();
+				await expect(poHomeChannel.composer.inputMessage).toBeFocused();
 			});
 		});
 
 		test('should navigate properly on the user card', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await test.step('open UserCard', async () => {
 				await page.keyboard.press('Shift+Tab');
@@ -122,30 +123,31 @@ test.describe('Messaging', () => {
 		});
 
 		test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
-			await poHomeChannel.composer.click();
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.content.getMessageByText('msg1').click();
+
+			await poHomeChannel.composer.inputMessage.click();
 			await page.keyboard.press('Shift+Tab');
 
-			await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
+			await expect(poHomeChannel.content.getMessageByText('msg2')).toBeFocused();
 		});
 
-		test('should not focus on the last message when focusing by click', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
+		test('should not focus on the last message when focusing by click', async () => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.content.getMessageByText('msg1').click();
 
-			await expect(page.locator('[data-qa-type="message"]').last()).not.toBeFocused();
+			await expect(poHomeChannel.content.lastUserMessage).not.toBeFocused();
 		});
 
 		test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await page.getByRole('button', { name: targetChannel }).first().focus();
 
 			await test.step('move focus to the list', async () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+				await expect(poHomeChannel.content.lastUserMessage).toBeFocused();
 			});
 
 			await test.step('move focus to the list again', async () => {
@@ -153,19 +155,19 @@ test.describe('Messaging', () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+				await expect(poHomeChannel.content.lastUserMessage).toBeFocused();
 			});
 		});
 	});
 
 	test.describe.serial('Message edition', () => {
 		test('should edit messages', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await test.step('focus on the second message', async () => {
 				await page.keyboard.press('ArrowUp');
 
-				expect(await poHomeChannel.composer.inputValue()).toBe('msg2');
+				expect(await poHomeChannel.composer.inputMessage.inputValue()).toBe('msg2');
 			});
 
 			await test.step('send edited message', async () => {
@@ -185,9 +187,8 @@ test.describe('Messaging', () => {
 				);
 
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
-					// eslint-disable-next-line no-await-in-loop
 					await page.keyboard.press('ArrowUp');
-					// eslint-disable-next-line no-await-in-loop
+
 					await poHomeChannel.content.sendMessage(element, false);
 				}
 
@@ -201,7 +202,7 @@ test.describe('Messaging', () => {
 		test('expect show a message', async ({ api }) => {
 			const messageText = faker.lorem.sentence();
 
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -215,7 +216,7 @@ test.describe('Messaging', () => {
 			const messageText = faker.lorem.sentence();
 			const attachmentText = faker.lorem.sentence();
 
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -234,7 +235,7 @@ test.describe('Messaging', () => {
 			const messageText = faker.lorem.sentence();
 			const attachmentText = faker.lorem.sentence();
 
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -253,7 +254,7 @@ test.describe('Messaging', () => {
 			const messageText = faker.lorem.sentence();
 			const attachmentText = faker.lorem.sentence();
 
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -281,9 +282,9 @@ test.describe('Messaging', () => {
 		});
 
 		test('expect show "hello word" in both contexts (targetChannel)', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
-			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+			await auxContext.poHomeChannel.navbar.openChat(targetChannel);
 
 			await poHomeChannel.content.sendMessage('hello world');
 
@@ -294,8 +295,8 @@ test.describe('Messaging', () => {
 		});
 
 		test('expect show "hello word" in both contexts (direct)', async () => {
-			await poHomeChannel.sidenav.openChat('user2');
-			await auxContext.poHomeChannel.sidenav.openChat('user1');
+			await poHomeChannel.navbar.openChat('user2');
+			await auxContext.poHomeChannel.navbar.openChat('user1');
 
 			await poHomeChannel.content.sendMessage('hello world');
 
