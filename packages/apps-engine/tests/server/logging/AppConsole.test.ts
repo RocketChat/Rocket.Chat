@@ -1,6 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 import type { TestContext } from 'node:test';
+
 import type * as stackTrace from 'stack-trace';
 
 import { LogMessageSeverity } from '../../../src/definition/accessors';

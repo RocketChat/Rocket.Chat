@@ -1,5 +1,5 @@
 import { Match, check } from 'meteor/check';
-import Twit from 'twit';
+import { TwitterApi } from 'twitter-api-v2';
 import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
@@ -7,19 +7,17 @@ import { registerAccessTokenService } from './oauth';
 const whitelistedFields = ['id', 'name', 'description', 'profile_image_url', 'profile_image_url_https', 'lang', 'email'];
 
 const getIdentity = async function (accessToken, appId, appSecret, accessTokenSecret) {
-	const Twitter = new Twit({
-		consumer_key: appId,
-		consumer_secret: appSecret,
-		access_token: accessToken,
-		access_token_secret: accessTokenSecret,
+	const client = new TwitterApi({
+		appKey: appId,
+		appSecret,
+		accessToken,
+		accessSecret: accessTokenSecret,
 	});
 	try {
-		const result = await Twitter.get('account/verify_credentials.json?include_email=true');
-
-		return result.data;
+		return await client.v1.verifyCredentials({ include_email: true });
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Twwiter. ${err.message}`), {
-			response: err.response,
+		throw _.extend(new Error(`Failed to fetch identity from Twitter. ${err.message}`), {
+			data: err.data ?? err.response,
 		});
 	}
 };
