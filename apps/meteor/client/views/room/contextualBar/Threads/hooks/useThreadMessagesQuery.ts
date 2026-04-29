@@ -66,8 +66,8 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			});
 		});
 
-		const unsubscribeFromMessagesRead = subscribeToNotifyRoom(`${roomId}/messagesRead`, ({ tmid: eventTmid, until }) => {
-			if (eventTmid !== tmid) {
+		const unsubscribeFromMessagesRead = subscribeToNotifyRoom(`${roomId}/messagesRead`, ({ tmid: eventTmid }) => {
+			if (eventTmid && eventTmid !== tmid) {
 				return;
 			}
 
@@ -77,7 +77,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 				}
 
 				return old.map((msg) => {
-					if (msg.unread && new Date(msg.ts).getTime() <= new Date(until).getTime()) {
+					if (msg.unread) {
 						const { unread: _, ...rest } = msg;
 						return rest as IThreadMessage;
 					}

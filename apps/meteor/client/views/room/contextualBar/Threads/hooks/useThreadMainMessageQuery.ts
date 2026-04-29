@@ -25,10 +25,12 @@ const useSubscribeToMessage = () => {
 				onMutate,
 				onDelete,
 				onFilesDelete,
+				onMessagesRead,
 			}: {
 				onMutate?: (message: IMessage) => void | Promise<void>;
 				onDelete?: () => void | Promise<void>;
 				onFilesDelete?: (replaceFileAttachmentsWith?: MessageAttachment) => void | Promise<void>;
+				onMessagesRead?: (event: { tmid?: string; until: Date }) => void | Promise<void>;
 			},
 		) => {
 			const unsubscribeFromRoomMessages = subscribeToRoomMessages(message.rid, (event: RoomMessagesRidEvent) => {
@@ -49,10 +51,15 @@ const useSubscribeToMessage = () => {
 				}
 			});
 
+			const unsubscribeFromMessagesRead = subscribeToNotifyRoom(`${message.rid}/messagesRead`, (event) => {
+				onMessagesRead?.(event);
+			});
+
 			return () => {
 				unsubscribeFromRoomMessages();
 				unsubscribeFromDeleteMessage();
 				unsubscribeFromDeleteMessageBulk();
+				unsubscribeFromMessagesRead();
 			};
 		},
 		[subscribeToNotifyRoom, subscribeToRoomMessages],
@@ -114,6 +121,24 @@ export const useThreadMainMessageQuery = (
 						const msg = await onClientMessageReceived(updated);
 						queryClient.setQueryData(queryKey, () => msg);
 						debouncedInvalidate();
+					},
+					onMessagesRead: ({ tmid: eventTmid, until }) => {
+						if (eventTmid) {
+							return;
+						}
+
+						queryClient.setQueryData<IThreadMainMessage>(queryKey, (old) => {
+							if (!old?.unread) {
+								return old;
+							}
+
+							if (new Date(old.ts).getTime() <= new Date(until).getTime()) {
+								const { unread: _, ...rest } = old;
+								return rest as IThreadMainMessage;
+							}
+
+							return old;
+						});
 					},
 				});
 
