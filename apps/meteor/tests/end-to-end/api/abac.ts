@@ -2615,6 +2615,23 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await deleteUser(owner);
 		});
 
+		it('should strip announcement from rooms.adminRooms.getRoom on ABAC managed room', async () => {
+			const rid = await createPrivateRoomWithAnnouncement('SECRET');
+			await assignAbacAttribute(rid);
+
+			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
+
+			expect(res.body).to.not.have.property('announcement');
+		});
+
+		it('should return announcement from rooms.adminRooms.getRoom on non-ABAC private room (control)', async () => {
+			const rid = await createPrivateRoomWithAnnouncement('VISIBLE');
+
+			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
+
+			expect(res.body).to.have.property('announcement', 'VISIBLE');
+		});
+
 		it('should reject roomAnnouncement save on ABAC managed room (admin)', async () => {
 			const rid = await createPrivateRoomWithAnnouncement('original');
 			await assignAbacAttribute(rid);

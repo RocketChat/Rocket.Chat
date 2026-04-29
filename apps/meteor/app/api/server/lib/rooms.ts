@@ -4,6 +4,7 @@ import type { FindOptions, Sort } from 'mongodb';
 
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { isABACManagedRoom } from '../../../authorization/server/lib/isABACManagedRoom';
 
 export async function findAdminRooms({
 	uid,
@@ -54,7 +55,15 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 		throw new Error('error-not-authorized');
 	}
 
-	return Rooms.findOneById(rid, { projection: adminFields });
+	const room = await Rooms.findOneById(rid, { projection: adminFields });
+	if (!room) {
+		return null;
+	}
+	if (isABACManagedRoom(room)) {
+		const { announcement, ...rest } = room;
+		return rest;
+	}
+	return room;
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
