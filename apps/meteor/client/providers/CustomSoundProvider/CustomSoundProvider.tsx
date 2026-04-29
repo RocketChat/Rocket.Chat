@@ -35,11 +35,12 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	});
 
 	const play = useEffectEvent((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
-		stop(soundId);
+		const resolvedSoundId = soundId === 'default' ? newMessageNotification : soundId;
+		stop(resolvedSoundId);
 
-		const item = list?.find(({ _id }) => _id === soundId);
+		const item = list?.find(({ _id }) => _id === resolvedSoundId);
 		if (!item?.src) {
-			console.error('Unable to play sound', soundId);
+			console.error('Unable to play sound', resolvedSoundId);
 			return;
 		}
 
@@ -52,7 +53,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		audioRefs.current = [...audioRefs.current, audio];
 
 		return () => {
-			stop(soundId);
+			stop(resolvedSoundId);
 		};
 	});
 
