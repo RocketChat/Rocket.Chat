@@ -8912,6 +8912,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     typedoc: "npm:~0.28.16"
     typescript: "npm:~5.9.3"
+    uuid: "npm:~11.0.5"
   languageName: unknown
   linkType: soft
 

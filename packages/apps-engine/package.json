@@ -65,6 +65,9 @@
 			"html"
 		]
 	},
+	"dependencies": {
+		"uuid": "~11.0.5"
+	},
 	"devDependencies": {
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@types/node": "~22.16.5",
