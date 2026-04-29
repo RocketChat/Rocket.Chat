@@ -1,3 +1,4 @@
+import { UIHelper } from '@rocket.chat/apps/dist/server/misc/UIHelper';
 import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater';
 import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater';
 import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater';
@@ -8,7 +9,6 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 
-import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper';
 import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
@@ -21,7 +21,6 @@ import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { require } from '../../../lib/require.ts';
 import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
 
-const { UIHelper } = require('@rocket.chat/apps-engine/server/misc/UIHelper.js') as { UIHelper: typeof _UIHelper };
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
 const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
 	RocketChatAssociationModel: typeof _RocketChatAssociationModel;

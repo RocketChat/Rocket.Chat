@@ -1,6 +1,6 @@
 import { Socket } from 'node:net';
 
-import type { IParseAppPackageResult } from '@rocket.chat/apps-engine/server/compiler/IParseAppPackageResult';
+import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { require } from '../../lib/require.ts';

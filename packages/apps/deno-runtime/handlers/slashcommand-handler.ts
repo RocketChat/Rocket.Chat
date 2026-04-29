@@ -1,20 +1,13 @@
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
-import type { SlashCommandContext as _SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
-import type { Room as _Room } from '@rocket.chat/apps-engine/server/rooms/Room';
+import { SlashCommandContext  } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessors, AppAccessorsInstance } from '../lib/accessors/mod.ts';
-import { require } from '../lib/require.ts';
 import createRoom from '../lib/roomFactory.ts';
 import { RequestContext } from '../lib/requestContext.ts';
 import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
-
-// For some reason Deno couldn't understand the typecast to the original interfaces and said it wasn't a constructor type
-const { SlashCommandContext } = require('@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.js') as {
-	SlashCommandContext: typeof _SlashCommandContext;
-};
 
 export default async function slashCommandHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
@@ -76,11 +69,11 @@ export function handleExecutor(deps: Deps, command: ISlashCommand, method: 'exec
 	const { sender, room, params: args, threadId, triggerId } = params[0] as Record<string, unknown>;
 
 	const context = new SlashCommandContext(
-		sender as _SlashCommandContext['sender'],
+		sender as SlashCommandContext['sender'],
 		createRoom(room as IRoom, deps.AppAccessorsInstance.getSenderFn()),
-		args as _SlashCommandContext['params'],
-		threadId as _SlashCommandContext['threadId'],
-		triggerId as _SlashCommandContext['triggerId'],
+		args as SlashCommandContext['params'],
+		threadId as SlashCommandContext['threadId'],
+		triggerId as SlashCommandContext['triggerId'],
 	);
 
 	return executor.apply(wrapComposedApp(command, deps.request), [
@@ -109,11 +102,11 @@ export function handlePreviewItem(deps: Deps, command: ISlashCommand, params: un
 	const [previewItem, { sender, room, params: args, threadId, triggerId }] = params as [Record<string, unknown>, Record<string, unknown>];
 
 	const context = new SlashCommandContext(
-		sender as _SlashCommandContext['sender'],
+		sender as SlashCommandContext['sender'],
 		createRoom(room as IRoom, deps.AppAccessorsInstance.getSenderFn()),
-		args as _SlashCommandContext['params'],
-		threadId as _SlashCommandContext['threadId'],
-		triggerId as _SlashCommandContext['triggerId'],
+		args as SlashCommandContext['params'],
+		threadId as SlashCommandContext['threadId'],
+		triggerId as SlashCommandContext['triggerId'],
 	);
 
 	return command.executePreviewItem.call(

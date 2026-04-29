@@ -1,3 +1,6 @@
+import { randomBytes } from 'node:crypto';
+
+import { UIHelper } from '@rocket.chat/apps/dist/server/misc/UIHelper';
 import type { IModifyCreator } from '@rocket.chat/apps-engine/definition/accessors/IModifyCreator';
 import type { IUploadCreator } from '@rocket.chat/apps-engine/definition/accessors/IUploadCreator';
 import type { IEmailCreator } from '@rocket.chat/apps-engine/definition/accessors/IEmailCreator';
@@ -14,10 +17,8 @@ import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors
 import type { IVideoConferenceBuilder } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceBuilder';
 import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder';
-import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper';
 
 import * as Messenger from '../../messenger.ts';
-import { randomBytes } from 'node:crypto';
 
 import { BlockBuilder } from '../builders/BlockBuilder.ts';
 import { MessageBuilder } from '../builders/MessageBuilder.ts';
@@ -30,7 +31,6 @@ import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { require } from '../../../lib/require.ts';
 import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
 
-const { UIHelper } = require('@rocket.chat/apps-engine/server/misc/UIHelper.js') as { UIHelper: typeof _UIHelper };
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
 const { UserType } = require('@rocket.chat/apps-engine/definition/users/UserType.js') as { UserType: typeof _UserType };
 const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
@@ -107,7 +107,7 @@ export class ModifyCreator implements IModifyCreator {
 										throw formatErrorResponse(err);
 									}),
 			},
-		);
+		) as IEmailCreator;
 	}
 
 	getContactCreator(): IContactCreator {
@@ -128,7 +128,7 @@ export class ModifyCreator implements IModifyCreator {
 										throw formatErrorResponse(err);
 									}),
 			},
-		);
+		) as IContactCreator;
 	}
 
 	getBlockBuilder() {
