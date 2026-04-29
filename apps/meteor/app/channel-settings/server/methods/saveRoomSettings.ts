@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { isABACManagedRoom } from '../../../authorization/server/lib/isABACManagedRoom';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -62,10 +63,6 @@ type RoomSettingsValidators = {
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
-const isAbacManagedRoom = (room: IRoom): boolean => {
-	return room.t === 'p' && settings.get<boolean>('ABAC_Enabled') && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
-};
-
 const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
 	return (
 		team?.type === TeamType.PRIVATE &&
@@ -83,7 +80,7 @@ const validators: RoomSettingsValidators = {
 				action: 'Viewing_room_administration',
 			});
 		}
-		if (isAbacManagedRoom(room) && value) {
+		if (isABACManagedRoom(room) && value) {
 			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
@@ -118,7 +115,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (isAbacManagedRoom(room) && value !== 'p') {
+		if (isABACManagedRoom(room) && value !== 'p') {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
