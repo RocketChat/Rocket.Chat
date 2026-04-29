@@ -48,6 +48,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): FindCursor<IRoom>;
 
 	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
+	findOneByAbacAttributeKey(key: string): Promise<IRoom | null>;
 
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 

@@ -1,7 +1,9 @@
+import { Abac } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { AbacAttributes, Rooms } from '@rocket.chat/models';
+import { AbacAttributes, Roles, Rooms } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { RC_USER_ROLE_ATTRIBUTE_KEY } from './constants';
 import {
 	AbacAttributeDefinitionNotFoundError,
 	AbacCannotConvertDefaultRoomToAbacError,
@@ -150,6 +152,15 @@ const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
 	cacheKey: JSON.stringify,
 });
 
+const getAllRoleIdsFromDb = (): Promise<string[]> =>
+	Roles.find({}, { projection: { _id: 1 } })
+		.map((r) => r._id)
+		.toArray();
+
+export const getAllRoleIdsCached = mem(getAllRoleIdsFromDb, {
+	maxAge: 5 * 60_000,
+});
+
 export async function ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {
 	if (!normalized.length) {
 		return;
@@ -158,7 +169,14 @@ export async function ensureAttributeDefinitionsExist(normalized: IAbacAttribute
 	const uniqueKeys = [...new Set(normalized.map((a) => a.key))];
 	const attributeDefinitions = await getAttributeDefinitionsCached(uniqueKeys);
 
-	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def) => [def.key, new Set(def.values)]));
+	const needsRoleAttribute = uniqueKeys.includes(RC_USER_ROLE_ATTRIBUTE_KEY) && (await Abac.isRoleAttributeFeatureActive());
+	const roleAttributeDefinition: IAbacAttributeDefinition[] = needsRoleAttribute
+		? [{ key: RC_USER_ROLE_ATTRIBUTE_KEY, values: await getAllRoleIdsCached() }]
+		: [];
+
+	const allDefinitions = [...roleAttributeDefinition, ...attributeDefinitions];
+
+	const definitionValuesMap = new Map<string, Set<string>>(allDefinitions.map((def) => [def.key, new Set(def.values)]));
 	if (definitionValuesMap.size !== uniqueKeys.length) {
 		throw new AbacAttributeDefinitionNotFoundError();
 	}

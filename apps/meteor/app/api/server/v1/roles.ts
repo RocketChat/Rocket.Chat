@@ -1,4 +1,4 @@
-import { api, Authorization } from '@rocket.chat/core-services';
+import { Abac, api, Authorization } from '@rocket.chat/core-services';
 import type { IRole, IUserInRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import {
@@ -231,6 +231,13 @@ const rolesRoutes = API.v1
 
 			if ((await Roles.countUsersInRole(role._id)) > 0) {
 				throw new Meteor.Error('error-role-in-use', "Cannot delete role because it's in use");
+			}
+
+			if (await Abac.isRoleInUseByAbacRooms(role._id)) {
+				throw new Meteor.Error(
+					'error-abac-role-in-use-by-room',
+					`Cannot delete role "${role.name}": it is referenced by ABAC room policies using the RC-user-role attribute.`,
+				);
 			}
 
 			await Roles.removeById(role._id);

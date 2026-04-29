@@ -1,10 +1,12 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Button, FieldError, FieldRow, MultiSelect, SelectFiltered } from '@rocket.chat/fuselage';
+import { useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { RoomFormData } from './RoomForm';
+import { RC_USER_ROLE_ATTRIBUTE_KEY } from '../constants';
 
 type ABACAttributeAutocompleteProps = {
 	labelId: string;
@@ -16,6 +18,7 @@ type ABACAttributeAutocompleteProps = {
 
 const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
+	const getRolesDescription = useRolesDescription();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
 
@@ -52,9 +55,19 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 		}
 
 		const selectedAttributeData = attributeList.find((option) => option.value === keyField.value);
+		if (!selectedAttributeData) {
+			return [];
+		}
 
-		return selectedAttributeData?.attributeValues.map((value) => [value, value]) || [];
-	}, [attributeList, keyField.value]);
+		const { attributeValues } = selectedAttributeData;
+
+		if (keyField.value === RC_USER_ROLE_ATTRIBUTE_KEY) {
+			const labels = getRolesDescription(attributeValues);
+			return attributeValues.map((value, i) => [value, labels[i] ?? value]);
+		}
+
+		return attributeValues.map((value) => [value, value]);
+	}, [attributeList, keyField.value, getRolesDescription]);
 
 	return (
 		<Box display='flex' flexDirection='column' w='full'>

@@ -4,7 +4,7 @@
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"lib": ["es2022"]
+		"lib": ["es2024", "ESNext.Collection"]
 	},
 	"include": ["./src/**/*"]
 }

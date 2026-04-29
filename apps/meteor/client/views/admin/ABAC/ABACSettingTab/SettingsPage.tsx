@@ -19,6 +19,7 @@ const SettingsPage = () => {
 				<AbacEnabledToggle hasABAC={hasABAC} />
 				<SettingField settingId='ABAC_PDP_Type' />
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
+				<SettingField settingId='ABAC_Use_User_Roles_As_Attributes' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 
 				{pdpType === 'local' && (

@@ -13,6 +13,9 @@ jest.mock('@rocket.chat/core-services', () => ({
 		removeUserFromRoom: jest.fn(),
 	},
 	MeteorError: class extends Error {},
+	Settings: {
+		get: jest.fn().mockResolvedValue(false),
+	},
 }));
 
 const makeUser = (overrides: Partial<IUser> = {}): IUser =>

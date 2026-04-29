@@ -1,7 +1,7 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingsDispatch, useSettingStructure } from '@rocket.chat/ui-contexts';
+import { useSettingsDispatch, useSettingStructure, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
@@ -33,29 +33,35 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 	}
 
 	const dispatch = useSettingsDispatch();
-
-	const update = useDebouncedCallback(
-		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
-			if (!persistedSetting) {
-				return;
-			}
-
-			dispatch([
-				{
-					_id: persistedSetting._id,
-					...(value !== undefined && { value }),
-					...(editor !== undefined && { editor }),
-				},
-			]);
-		},
-		230,
-		[persistedSetting, dispatch],
-	);
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { t, i18n } = useTranslation();
 
 	const [value, setValue] = useState(setting.value);
 	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
+
+	const update = useDebouncedCallback(
+		async ({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
+			if (!persistedSetting) {
+				return;
+			}
+
+			try {
+				await dispatch([
+					{
+						_id: persistedSetting._id,
+						...(value !== undefined && { value }),
+						...(editor !== undefined && { editor }),
+					},
+				]);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setValue(setting.value);
+			}
+		},
+		230,
+		[persistedSetting, dispatch, dispatchToastMessage, setting],
+	);
 
 	useEffect(() => {
 		setValue(setting.value);

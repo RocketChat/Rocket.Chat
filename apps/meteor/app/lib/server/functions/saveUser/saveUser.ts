@@ -3,6 +3,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { hasSameElements } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
@@ -16,6 +17,7 @@ import { validateUserEditing } from './validateUserEditing';
 import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
 import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
 import { callbacks } from '../../../../../server/lib/callbacks';
+import { afterUserRolesChanged } from '../../../../../server/lib/roles/afterUserRolesChanged';
 import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { generatePassword } from '../../lib/generatePassword';
@@ -218,6 +220,10 @@ const _saveUser = (session?: ClientSession) =>
 				user: userUpdated,
 				oldUser: oldUserData,
 			});
+
+			if (userData._id && userData.roles && !hasSameElements(userData.roles, oldUserData?.roles)) {
+				await afterUserRolesChanged(userData._id);
+			}
 
 			await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 				user: userUpdated,

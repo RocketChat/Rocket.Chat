@@ -8,6 +8,7 @@ import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSett
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { beforeSaveSetting } from '../../../settings/server/lib/beforeSaveSetting';
 import { disableCustomScripts } from '../functions/disableCustomScripts';
 import { notifyOnSettingChanged } from '../lib/notifyListener';
 
@@ -66,6 +67,8 @@ Meteor.methods<ServerMethods>({
 				check(value, String);
 				break;
 		}
+
+		await beforeSaveSetting(_id, value);
 
 		const auditSettingOperation = updateAuditedByUser({
 			_id: uid,

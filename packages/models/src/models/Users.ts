@@ -143,6 +143,46 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
 	}
 
+	upsertAbacAttributeByKey(_id: IUser['_id'], key: string, values: string[]) {
+		return this.updateOne({ _id }, [
+			{
+				$set: {
+					abacAttributes: {
+						$concatArrays: [
+							{
+								$filter: {
+									input: { $ifNull: ['$abacAttributes', []] },
+									cond: { $ne: ['$$this.key', key] },
+								},
+							},
+							[{ key, values }],
+						],
+					},
+				},
+			},
+		]);
+	}
+
+	addRolesAsAbacAttributeForRoomMembers(key: string, rid: IRoom['_id']) {
+		return this.col.updateMany({ __rooms: rid }, [
+			{
+				$set: {
+					abacAttributes: {
+						$concatArrays: [
+							{
+								$filter: {
+									input: { $ifNull: ['$abacAttributes', []] },
+									cond: { $ne: ['$$this.key', key] },
+								},
+							},
+							[{ key, values: { $ifNull: ['$roles', []] } }],
+						],
+					},
+				},
+			},
+		]);
+	}
+
 	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>) {
 		return this.find({ active: true, __rooms: { $in: roomIds } }, options);
 	}

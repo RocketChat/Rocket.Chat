@@ -10,6 +10,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
+import { beforeSaveSetting } from '../../../settings/server/lib/beforeSaveSetting';
 import { disableCustomScripts } from '../functions/disableCustomScripts';
 import { checkSettingValueBounds } from '../lib/checkSettingValueBonds';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
@@ -125,6 +126,10 @@ Meteor.methods<ServerMethods>({
 				method: 'saveSettings',
 				settingIds: settingsNotAllowed,
 			});
+		}
+
+		for (const { _id, value } of params) {
+			await beforeSaveSetting(_id, value);
 		}
 
 		const auditSettingOperation = updateAuditedByUser({

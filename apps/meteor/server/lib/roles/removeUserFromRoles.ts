@@ -2,6 +2,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Roles } from '@rocket.chat/models';
 
+import { afterUserRolesChanged } from './afterUserRolesChanged';
 import { syncRoomRolePriorityForUserAndRoom } from './syncRoomRolePriority';
 import { validateRoleList } from './validateRoleList';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
@@ -24,6 +25,7 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roles: IRol
 		throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
 	}
 
+	let userRolesChanged = false;
 	for await (const roleId of roles) {
 		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 		if (!role) {
@@ -38,7 +40,12 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roles: IRol
 			}
 		} else {
 			await Users.removeRolesByUserId(userId, [roleId]);
+			userRolesChanged = true;
 		}
+	}
+
+	if (userRolesChanged) {
+		await afterUserRolesChanged(userId);
 	}
 
 	return true;
