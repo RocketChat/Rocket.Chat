@@ -66,10 +66,31 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			});
 		});
 
+		const unsubscribeFromMessagesRead = subscribeToNotifyRoom(`${roomId}/messagesRead`, ({ tmid: eventTmid, until }) => {
+			if (eventTmid !== tmid) {
+				return;
+			}
+
+			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
+				if (!old) {
+					return old;
+				}
+
+				return old.map((msg) => {
+					if (msg.unread && new Date(msg.ts).getTime() <= new Date(until).getTime()) {
+						const { unread: _, ...rest } = msg;
+						return rest as IThreadMessage;
+					}
+					return msg;
+				});
+			});
+		});
+
 		return () => {
 			unsubscribeFromRoomMessages();
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
+			unsubscribeFromMessagesRead();
 		};
 	}, [tmid, roomId, queryClient, subscribeToRoomMessages, subscribeToNotifyRoom]);
 
