@@ -26,14 +26,39 @@ import { getDdpSdk } from '../../lib/sdk/ddpSdk';
  * through DDPSDK). Duplicating them would confuse Meteor's invoker state.
  */
 
-type ParsedDdpFrame = { msg?: string } & Record<string, unknown>;
+type ParsedDdpFrame = { msg?: string; id?: unknown; methods?: unknown } & Record<string, unknown>;
 
 const COLLECTION_FRAMES = new Set(['added', 'changed', 'removed', 'addedBefore', 'movedBefore']);
 const SUBSCRIPTION_LIFECYCLE_FRAMES = new Set(['ready', 'nosub']);
 
+// SDK-internal ids are 'rc-ddp-client-N'; Meteor's are numeric strings ('1',
+// '2', ...). Method-result frames addressed to SDK-internal ids must NOT
+// reach Meteor's _streamHandlers — Meteor's `updated` handler throws "No
+// callback invoker for method ..." when the id is missing from
+// _methodInvokers (document_processors.js:168). Filter those out at the
+// bridge so SDK's own callAsync flows aren't surfaced into Meteor.
+const isSdkInternalId = (id: unknown): boolean => typeof id === 'string' && id.startsWith('rc-ddp-client-');
+
 const shouldBridgeToMeteor = (frame: ParsedDdpFrame): boolean => {
 	if (!frame || typeof frame.msg !== 'string') return false;
-	return COLLECTION_FRAMES.has(frame.msg) || SUBSCRIPTION_LIFECYCLE_FRAMES.has(frame.msg);
+
+	if (COLLECTION_FRAMES.has(frame.msg) || SUBSCRIPTION_LIFECYCLE_FRAMES.has(frame.msg)) {
+		return true;
+	}
+
+	if (frame.msg === 'result') {
+		return !isSdkInternalId(frame.id);
+	}
+	if (frame.msg === 'updated') {
+		const methods = Array.isArray(frame.methods) ? (frame.methods as unknown[]) : [];
+		// If any of the methodIds in the `updated` frame is SDK-internal, drop
+		// the whole frame: Meteor processes every id and would throw on the
+		// first miss. In practice an `updated` frame carries ids from a single
+		// originating method call, so this is all-or-nothing anyway.
+		return methods.length > 0 && !methods.some(isSdkInternalId);
+	}
+
+	return false;
 };
 
 export const installDdpSdkCollectionBridge = (): void => {
@@ -44,14 +69,25 @@ export const installDdpSdkCollectionBridge = (): void => {
 	ddp.onMessage((frame) => {
 		if (!shouldBridgeToMeteor(frame)) return;
 
-		// Guard against frames that would collide with Meteor's own subscription
-		// ids. DDPSDK generates its own ids (rc-ddp-client-<n>); Meteor.connection's
-		// invokers ignore frames whose id is not in its tables, so a plain
-		// re-feed is safe.
+		// `_streamHandlers.onMessage` returns a Promise (the message handler is an
+		// async generator). A throw inside the inner `_process_updated` /
+		// `_process_result` (e.g. "No callback invoker for method N" when a
+		// stale frame arrives after a force-logout cycle invalidates the
+		// invoker) would otherwise escape this scope as an unhandled rejection,
+		// aborting Meteor's frame queue and leaving subsequent login result
+		// frames unprocessed. Wrap the call so both sync throws and async
+		// rejections are contained — Meteor keeps draining the queue even when
+		// individual frames hit dead invokers.
 		try {
-			Meteor.connection._streamHandlers.onMessage(DDPCommon.stringifyDDP(frame as Parameters<typeof DDPCommon.stringifyDDP>[0]));
+			const result = Meteor.connection._streamHandlers.onMessage(
+				DDPCommon.stringifyDDP(frame as Parameters<typeof DDPCommon.stringifyDDP>[0]),
+			) as unknown;
+			if (result && typeof (result as Promise<unknown>).then === 'function') {
+				(result as Promise<unknown>).catch((err) => {
+					console.warn('[ddpSdk] bridge frame drop (async)', frame.msg, err);
+				});
+			}
 		} catch (err) {
-			// eslint-disable-next-line no-console
 			console.warn('[ddpSdk] bridge frame drop', frame.msg, err);
 		}
 	});
