@@ -135,7 +135,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await test.step('should be able to record a video with text content in composer ', async () => {
-			await poHomeChannel.content.sendMessage('this is a message with video message');
+			await poHomeChannel.composer.inputMessage.fill('this is a message with video message');
 			await expect(poHomeChannel.composer.btnVideoMessage).toBeEnabled();
 		});
 

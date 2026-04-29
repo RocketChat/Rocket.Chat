@@ -177,7 +177,7 @@ test.describe.serial('message-composer', () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await test.step('should be able to record an audio with text content in composer ', async () => {
-				await poHomeChannel.content.sendMessage('this is a message with audio message');
+				await poHomeChannel.composer.inputMessage.fill('this is a message with audio message');
 				await expect(poHomeChannel.composer.btnAudioMessage).toBeEnabled();
 			});
 
