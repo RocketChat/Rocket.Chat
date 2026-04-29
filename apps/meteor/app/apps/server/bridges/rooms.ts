@@ -1,6 +1,6 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps/server/bridges/RoomBridge';
-import { RoomBridge } from '@rocket.chat/apps/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
+import { RoomBridge } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';

@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import { PersistenceBridge } from '@rocket.chat/apps/server/bridges/PersistenceBridge';
+import { PersistenceBridge } from '@rocket.chat/apps/dist/server/bridges/PersistenceBridge';
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import type { InsertOneResult } from 'mongodb';
 

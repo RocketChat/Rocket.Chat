@@ -1,4 +1,4 @@
-import type { ProxiedApp } from '@rocket.chat/apps/server/ProxiedApp';
+import type { ProxiedApp } from '@rocket.chat/apps/dist/server/ProxiedApp';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { cronJobs } from '@rocket.chat/cron';
 import { Settings, Users } from '@rocket.chat/models';
