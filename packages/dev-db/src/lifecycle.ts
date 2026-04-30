@@ -1,10 +1,3 @@
-import { acquireLock, releaseLock } from './lock';
-import { DEV_DB_EXIT_CODES } from './exit-codes';
-import { DevDbError } from './errors';
-import { externalBackend } from './backends/external';
-import { dockerBackend } from './backends/docker';
-import { binaryBackend } from './backends/binary';
-import { applySeedProfile, type SeedProfile } from './seeds';
 import {
 	resolveBackendSelection,
 	resolveExternalMongoUrl,
@@ -12,14 +5,14 @@ import {
 	type DevDbBackendRunMode,
 	type DevDbBackendSelection,
 } from './backend';
-import {
-	clearState,
-	ensureStateDirectory,
-	getDevDbPaths,
-	loadState,
-	saveState,
-	type DevDbState,
-} from './state-store';
+import { binaryBackend } from './backends/binary';
+import { dockerBackend } from './backends/docker';
+import { externalBackend } from './backends/external';
+import { DevDbError } from './errors';
+import { DEV_DB_EXIT_CODES } from './exit-codes';
+import { acquireLock, releaseLock } from './lock';
+import { applySeedProfile, type SeedProfile } from './seeds';
+import { clearState, ensureStateDirectory, getDevDbPaths, loadState, saveState, type DevDbState } from './state-store';
 
 export type LifecycleCommand = 'up' | 'down' | 'status' | 'url' | 'logs' | 'doctor' | 'reset';
 
@@ -69,6 +62,37 @@ const stateToJson = (state: DevDbState | undefined, selection?: DevDbBackendSele
 	selection: selection || null,
 });
 
+const buildUrlsFromState = (state: DevDbState): { mongoUrl: string; mongoOplogUrl?: string } => {
+	if (state.backend === 'external') {
+		const mongoUrl = resolveExternalMongoUrl();
+		if (!mongoUrl) {
+			throw new DevDbError(
+				'External backend state found but no DEV_DB_EXTERNAL_MONGO_URL/MONGO_URL is set.',
+				DEV_DB_EXIT_CODES.BACKEND_NOT_AVAILABLE,
+			);
+		}
+
+		return {
+			mongoUrl,
+			mongoOplogUrl: state.replicaSetName ? mongoUrl.replace(/\/[^/?]*/, '/local') : undefined,
+		};
+	}
+
+	const baseMongoUrl = `mongodb://127.0.0.1:${state.port}/meteor`;
+	const baseOplogUrl = `mongodb://127.0.0.1:${state.port}/local`;
+
+	if (!state.replicaSetName) {
+		return {
+			mongoUrl: baseMongoUrl,
+		};
+	}
+
+	return {
+		mongoUrl: `${baseMongoUrl}?replicaSet=${state.replicaSetName}`,
+		mongoOplogUrl: `${baseOplogUrl}?replicaSet=${state.replicaSetName}`,
+	};
+};
+
 const withLock = async (fn: () => Promise<LifecycleResult>): Promise<LifecycleResult> => {
 	const paths = getDevDbPaths();
 	await ensureStateDirectory(paths);
@@ -80,11 +104,7 @@ const withLock = async (fn: () => Promise<LifecycleResult>): Promise<LifecycleRe
 	}
 };
 
-const runBackendUp = async (
-	backend: DevDbBackend,
-	options: LifecycleOptions,
-	paths: ReturnType<typeof getDevDbPaths>,
-) => {
+const runBackendUp = async (backend: DevDbBackend, options: LifecycleOptions, paths: ReturnType<typeof getDevDbPaths>) => {
 	const replicaSetEnabled = options.replicaSetEnabled ?? true;
 	const replicaSetName = options.replicaSetName || DEFAULT_REPLICA_SET_NAME;
 	const port = options.port || DEFAULT_PORT;
@@ -105,7 +125,7 @@ const up = async (options: LifecycleOptions): Promise<LifecycleResult> => {
 		const backend = getBackendRegistry()[selection.selectedBackend];
 
 		const existing = await loadState(paths);
-		if (existing && existing.backend === selection.selectedBackend) {
+		if (existing?.backend === selection.selectedBackend) {
 			return {
 				exitCode: DEV_DB_EXIT_CODES.OK,
 				text: `dev-db is already up (${existing.backend})`,
@@ -173,11 +193,30 @@ const status = async (options: LifecycleOptions): Promise<LifecycleResult> => {
 	return {
 		exitCode: DEV_DB_EXIT_CODES.OK,
 		text: `dev-db status: up (${state.backend})`,
-		json: stateToJson(state, selection),
+		json: {
+			...stateToJson(state, selection),
+			urls: buildUrlsFromState(state),
+		},
 	};
 };
 
 const url = async (): Promise<LifecycleResult> => {
+	const paths = getDevDbPaths();
+	await ensureStateDirectory(paths);
+	const state = await loadState(paths);
+
+	if (state) {
+		const urls = buildUrlsFromState(state);
+		return {
+			exitCode: DEV_DB_EXIT_CODES.OK,
+			text: urls.mongoUrl,
+			json: {
+				urls,
+				state,
+			},
+		};
+	}
+
 	const mongoUrl = resolveExternalMongoUrl();
 	if (!mongoUrl) {
 		throw new DevDbError(
@@ -304,10 +343,7 @@ export const runLifecycleCommand = async (command: LifecycleCommand, options: Li
 		process.exitCode = result.exitCode;
 		return format(result, mode);
 	} catch (error) {
-		const devDbError =
-			error instanceof DevDbError
-				? error
-				: new DevDbError((error as Error).message, DEV_DB_EXIT_CODES.UNEXPECTED_ERROR);
+		const devDbError = error instanceof DevDbError ? error : new DevDbError((error as Error).message, DEV_DB_EXIT_CODES.UNEXPECTED_ERROR);
 		process.exitCode = devDbError.code;
 
 		if (mode === 'json') {
