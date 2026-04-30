@@ -50,6 +50,7 @@ const openExternalWindow = (title: string) => {
 
 const MediaCallPopoutWindow = () => {
 	const [container, setContainer] = useState<{ root: HTMLDivElement; externalWindow: Window } | null>(null);
+	const [fullscreen, setFullscreen] = useState(false);
 	const { setCurrentViews } = useMediaCallInstance();
 
 	const closePopout = useCallback(
@@ -124,6 +125,23 @@ const MediaCallPopoutWindow = () => {
 		};
 	}, [closePopout, setCurrentViews]);
 
+	const onClickFullscreen = useCallback(() => {
+		const requestFullScreen = async () => {
+			try {
+				if (!fullscreen) {
+					await container?.externalWindow.document.documentElement.requestFullscreen();
+					setFullscreen(true);
+				} else {
+					await container?.externalWindow.document.exitFullscreen();
+					setFullscreen(false);
+				}
+			} catch (error) {
+				console.error('Error requesting fullscreen', error);
+			}
+		};
+		void requestFullScreen();
+	}, [container?.externalWindow, fullscreen]);
+
 	const contextValue = useMemo(() => ({ document: container?.externalWindow.document || document }), [container?.externalWindow.document]);
 
 	if (!container) {
@@ -135,7 +153,12 @@ const MediaCallPopoutWindow = () => {
 			<StyledTargetDocument.Provider value={contextValue}>
 				{createPortal(
 					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
-						<MediaCallPopoutView user={ownUser} onClickClosePopout={() => closePopout(false)} />
+						<MediaCallPopoutView
+							user={ownUser}
+							onClickClosePopout={() => closePopout(false)}
+							onClickFullscreen={onClickFullscreen}
+							fullscreen={fullscreen}
+						/>
 					</Box>,
 					container.root,
 				)}
