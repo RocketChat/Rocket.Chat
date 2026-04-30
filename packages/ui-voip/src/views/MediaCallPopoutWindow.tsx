@@ -1,14 +1,13 @@
-import { TargetDocument as FuselageTargetDocument } from '@rocket.chat/fuselage';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { Box, TargetDocument as FuselageTargetDocument } from '@rocket.chat/fuselage';
 import { TargetDocument as StyledTargetDocument } from '@rocket.chat/styled';
-import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-type MediaCallPopoutWindowProps = {
-	children: ReactNode;
-	restoreDefaultView: () => void;
-};
+import { MediaCallRoomSection } from './MediaCallRoomSection';
+import { useMediaCallInstance } from '../context';
+import type { AvailableViews } from '../context/MediaCallInstanceContext';
 
 const createRootElement = (externalWindow: Window) => {
 	const newRoot = externalWindow.document.createElement('div');
@@ -49,12 +48,38 @@ const openExternalWindow = (title: string) => {
 	}
 };
 
-const MediaCallPopoutWindow = ({ children, restoreDefaultView }: MediaCallPopoutWindowProps) => {
+const MediaCallPopoutWindow = () => {
 	const [container, setContainer] = useState<{ root: HTMLDivElement; externalWindow: Window } | null>(null);
-	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const triggerClose = useStableCallback(restoreDefaultView);
+	const { currentViews, setCurrentViews } = useMediaCallInstance();
 
-	useEffect(() => {
+	const closePopout = useCallback(
+		(windowClosed = false) => {
+			setCurrentViews((prev) => {
+				if (!prev.has('popout')) {
+					return prev;
+				}
+
+				prev.delete('popout');
+				return new Set<AvailableViews>(prev);
+			});
+			if (!windowClosed) {
+				container?.externalWindow.close();
+			}
+		},
+		[container?.externalWindow, setCurrentViews],
+	);
+
+	const user = useUser();
+	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
+	const getUserAvatarPath = useUserAvatarPath();
+	const ownUser = useMemo(() => {
+		return {
+			displayName: displayName || '',
+			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
+		};
+	}, [displayName, getUserAvatarPath, user?._id]);
+
+	useLayoutEffect(() => {
 		setContainer((prev) => {
 			if (prev?.externalWindow && prev?.root) {
 				return prev;
@@ -63,7 +88,7 @@ const MediaCallPopoutWindow = ({ children, restoreDefaultView }: MediaCallPopout
 			const externalWindow = !prev?.externalWindow ? openExternalWindow('Call with Peer X') : prev?.externalWindow;
 
 			if (!externalWindow) {
-				triggerClose();
+				closePopout(true);
 				return null;
 			}
 
@@ -71,25 +96,24 @@ const MediaCallPopoutWindow = ({ children, restoreDefaultView }: MediaCallPopout
 
 			return { root, externalWindow };
 		});
-	}, [triggerClose]);
+	}, [closePopout]);
 
 	useEffect(() => {
-		if (timeoutRef.current) {
-			clearTimeout(timeoutRef.current);
-		}
-
-		container?.externalWindow.addEventListener('beforeunload', triggerClose);
-		window.addEventListener('beforeunload', triggerClose);
+		const handleBeforeUnload = () => closePopout(true);
+		container?.externalWindow.addEventListener('beforeunload', handleBeforeUnload);
+		window.addEventListener('beforeunload', handleBeforeUnload);
 
 		return () => {
-			timeoutRef.current = setTimeout(() => {
-				window.removeEventListener('beforeunload', triggerClose);
-				container?.externalWindow.removeEventListener('beforeunload', triggerClose);
-				container?.externalWindow.close();
-				triggerClose();
-			}, 400);
+			container?.externalWindow.removeEventListener('beforeunload', handleBeforeUnload);
+			window.removeEventListener('beforeunload', handleBeforeUnload);
 		};
-	}, [container?.externalWindow, triggerClose]);
+	}, [container?.externalWindow, closePopout]);
+
+	useLayoutEffect(() => {
+		if (!currentViews.has('popout')) {
+			closePopout(false);
+		}
+	}, [closePopout, currentViews]);
 
 	const contextValue = useMemo(() => ({ document: container?.externalWindow.document || document }), [container?.externalWindow.document]);
 
@@ -99,7 +123,21 @@ const MediaCallPopoutWindow = ({ children, restoreDefaultView }: MediaCallPopout
 
 	return (
 		<FuselageTargetDocument.Provider value={contextValue}>
-			<StyledTargetDocument.Provider value={contextValue}>{createPortal(children, container.root)}</StyledTargetDocument.Provider>
+			<StyledTargetDocument.Provider value={contextValue}>
+				{createPortal(
+					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
+						<MediaCallRoomSection
+							showChat={true}
+							onToggleChat={() => undefined}
+							user={ownUser}
+							containerHeight={0}
+							onPopout={() => closePopout(false)}
+							isPopout={true}
+						/>
+					</Box>,
+					container.root,
+				)}
+			</StyledTargetDocument.Provider>
 		</FuselageTargetDocument.Provider>
 	);
 };
