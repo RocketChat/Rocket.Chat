@@ -113,4 +113,24 @@ describe('CustomSoundProvider - play()', () => {
 		expect(consoleSpy).not.toHaveBeenCalled();
 		consoleSpy.mockRestore();
 	});
+
+	it('should stop the previous playback when play() is called repeatedly with "default"', async () => {
+		const wrapper = buildWrapper(mockAppRoot().withUserPreference('newMessageNotification', 'ringtone'));
+
+		const { result } = renderHook(() => useCustomSound(), { wrapper });
+
+		await act(async () => {
+			result.current.play('default');
+		});
+
+		expect(mockPlay).toHaveBeenCalledTimes(1);
+		expect(mockLoad).not.toHaveBeenCalled();
+
+		await act(async () => {
+			result.current.play('default');
+		});
+
+		expect(mockPlay).toHaveBeenCalledTimes(2);
+		expect(mockLoad).toHaveBeenCalledTimes(1);
+	});
 });
