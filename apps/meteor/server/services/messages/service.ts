@@ -16,7 +16,6 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
-import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
 import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
 import { SystemLogger } from '../../lib/logger/system';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
@@ -26,7 +25,6 @@ import { updateMessage } from '../../lib/messages/updateMessage';
 import { incrementAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/notifyListener';
-import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
 import { settings } from '../../settings';
@@ -248,11 +246,6 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
-		// TODO: Auto-close unclosed markdown code blocks for server versions below 9.0.0
-		// In 9.0.0, this behavior is handled on the client side, so this block should be removed.
-		if (!shouldBreakInVersion('9.0.0') && message.msg) {
-			message = { ...message, msg: closeUnclosedCodeBlock(message.msg) };
-		}
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await mentionServer.execute(message);
 		if (parseUrls) {
