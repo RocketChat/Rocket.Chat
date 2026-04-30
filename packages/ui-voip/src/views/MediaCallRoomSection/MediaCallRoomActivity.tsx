@@ -3,9 +3,11 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import MediaCallRoomSection from './MediaCallRoomSection';
+import { useMediaCallInstance } from '../../context';
+import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 import MediaCallPopoutWindow from '../MediaCallPopoutWindow';
 
@@ -15,7 +17,21 @@ type MediaCallRoomActivityProps = {
 
 const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	const [showChat, setShowChat] = useState(true);
-	const [isPopout, setIsPopout] = useState(false);
+	const { currentViews, setCurrentViews } = useMediaCallInstance();
+
+	const isPopout = currentViews.has('popout');
+
+	const togglePopout = useCallback(() => {
+		setCurrentViews((prev) => {
+			if (prev.has('popout')) {
+				prev.delete('popout');
+			} else {
+				prev.add('popout');
+			}
+
+			return new Set<AvailableViews>(prev);
+		});
+	}, [setCurrentViews]);
 
 	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -37,7 +53,7 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 				onToggleChat={() => setShowChat((prev) => !prev)}
 				user={ownUser}
 				containerHeight={borderBoxSize?.blockSize || 0}
-				onPopout={() => setIsPopout((prev) => !prev)}
+				onPopout={togglePopout}
 				isPopout={isPopout}
 				key={isPopout ? 'popout' : 'normal'}
 			/>
@@ -48,7 +64,7 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	if (isPopout) {
 		return (
 			<>
-				<MediaCallPopoutWindow restoreDefaultView={() => setIsPopout(false)}>
+				<MediaCallPopoutWindow restoreDefaultView={togglePopout}>
 					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
 						{mediaCallRoomSection}
 					</Box>

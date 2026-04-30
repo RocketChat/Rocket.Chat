@@ -1,15 +1,21 @@
+import { useCallback } from 'react';
+
 import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
 import OngoingCallWithScreen from './OngoingCallWithScreen';
-import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
+import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import useRegisterView from '../../context/useRegisterView';
 
 const MediaCallWidget = () => {
-	const { inRoomView } = useMediaCallInstance();
+	const currentViews = useRegisterView(
+		'widget',
+		useCallback((views: Set<AvailableViews>) => !views.has('room'), []),
+	);
 	const {
 		sessionState: { state, hidden, transferredBy, peerInfo, supportedFeatures },
 	} = useMediaCallView();
 
-	if (hidden || inRoomView) {
+	if (hidden || !currentViews.has('widget')) {
 		return null;
 	}
 

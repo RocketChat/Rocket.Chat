@@ -17,7 +17,7 @@ import {
 	ActionToggleChat,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRoomView from '../../context/useRoomView';
+import useRegisterView from '../../context/useRegisterView';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
 type MediaCallRoomSectionProps = {
@@ -70,7 +70,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight, o
 	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
 	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
 
-	useRoomView();
+	useRegisterView('room');
 
 	const onClickFocusRemoteCard = () => {
 		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));
