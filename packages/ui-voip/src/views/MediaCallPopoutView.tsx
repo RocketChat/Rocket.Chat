@@ -27,9 +27,11 @@ type MediaCallPopoutViewProps = {
 		avatarUrl: string;
 	};
 	onClickClosePopout: () => void;
+	onClickFullscreen: () => void;
+	fullscreen: boolean;
 };
 
-const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewProps) => {
+const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, fullscreen }: MediaCallPopoutViewProps) => {
 	const { t } = useTranslation();
 
 	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
@@ -131,7 +133,13 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 						{/* TODO: translation string */}
 						<ActionButton label={t('Close_popout')} icon='arrow-collapse' onClick={onClickClosePopout} />
 						{/* Todo: translation string */}
-						<ActionButton label={t('Fullscreen')} icon='arrow-expand' onClick={onClickClosePopout} />
+						<ToggleButton
+							label={t('Fullscreen')}
+							titles={[t('Fullscreen'), t('Exit_fullscreen')]}
+							icons={['arrow-expand', 'arrow-collapse']}
+							pressed={fullscreen}
+							onToggle={onClickFullscreen}
+						/>
 						<DevicePicker secondary />
 					</ButtonGroup>
 				}
