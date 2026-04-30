@@ -1,13 +1,13 @@
-import { StyleOptions as FuselageStyleOptions } from '@rocket.chat/fuselage';
+import { TargetDocument as FuselageTargetDocument } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { StyledOptions } from '@rocket.chat/styled';
+import { TargetDocument as StyledTargetDocument } from '@rocket.chat/styled';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 type MediaCallPopoutWindowProps = {
 	children: ReactNode;
-	onClose: () => void;
+	restoreDefaultView: () => void;
 };
 
 const createRootElement = (externalWindow: Window) => {
@@ -49,10 +49,10 @@ const openExternalWindow = (title: string) => {
 	}
 };
 
-const MediaCallPopoutWindow = ({ children, onClose }: MediaCallPopoutWindowProps) => {
+const MediaCallPopoutWindow = ({ children, restoreDefaultView }: MediaCallPopoutWindowProps) => {
 	const [container, setContainer] = useState<{ root: HTMLDivElement; externalWindow: Window } | null>(null);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const triggerClose = useStableCallback(onClose);
+	const triggerClose = useStableCallback(restoreDefaultView);
 
 	useEffect(() => {
 		setContainer((prev) => {
@@ -78,28 +78,29 @@ const MediaCallPopoutWindow = ({ children, onClose }: MediaCallPopoutWindowProps
 			clearTimeout(timeoutRef.current);
 		}
 
-		const handleUnload = () => triggerClose();
-		container?.externalWindow.addEventListener('beforeunload', handleUnload);
+		container?.externalWindow.addEventListener('beforeunload', triggerClose);
+		window.addEventListener('beforeunload', triggerClose);
 
 		return () => {
 			timeoutRef.current = setTimeout(() => {
-				container?.externalWindow.removeEventListener('beforeunload', handleUnload);
+				window.removeEventListener('beforeunload', triggerClose);
+				container?.externalWindow.removeEventListener('beforeunload', triggerClose);
 				container?.externalWindow.close();
 				triggerClose();
 			}, 400);
 		};
 	}, [container?.externalWindow, triggerClose]);
 
-	const contextValue = useMemo(() => ({ document: container?.externalWindow.document }), [container?.externalWindow.document]);
+	const contextValue = useMemo(() => ({ document: container?.externalWindow.document || document }), [container?.externalWindow.document]);
 
 	if (!container) {
 		return null;
 	}
 
 	return (
-		<FuselageStyleOptions.Provider value={contextValue}>
-			<StyledOptions.Provider value={contextValue}>{createPortal(children, container.root)}</StyledOptions.Provider>
-		</FuselageStyleOptions.Provider>
+		<FuselageTargetDocument.Provider value={contextValue}>
+			<StyledTargetDocument.Provider value={contextValue}>{createPortal(children, container.root)}</StyledTargetDocument.Provider>
+		</FuselageTargetDocument.Provider>
 	);
 };
 
