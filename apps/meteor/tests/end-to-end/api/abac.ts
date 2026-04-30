@@ -2573,6 +2573,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	describe('[Admin Rooms - Announcement] (ABAC managed rooms)', () => {
 		const announceKey = `attr_announce_${Date.now()}`;
 		const createdRids: string[] = [];
+		let announceAttrId: string;
 		let owner: IUser;
 		let ownerCredentials: Credentials;
 
@@ -2590,18 +2591,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			return { rid: created._id, name };
 		};
 
-		const assignAbacAttribute = async (rid: string): Promise<void> => {
-			await request
-				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
-				.set(credentials)
-				.send({ values: ['v1'] })
-				.expect(200);
-		};
-
-		const removeAllAbacAttributes = async (rid: string): Promise<void> => {
-			await request.delete(`${v1}/abac/rooms/${rid}/attributes`).set(credentials).expect(200);
-		};
-
 		before(async () => {
 			await updateSetting('ABAC_Enabled', true);
 
@@ -2611,25 +2600,28 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.send({ key: announceKey, values: ['v1'] })
 				.expect(200);
 
+			const listRes = await request.get(`${v1}/abac/attributes`).query({ key: announceKey }).set(credentials).expect(200);
+			const attr = listRes.body.attributes.find((a: { _id: string; key: string }) => a.key === announceKey);
+			expect(attr, 'attribute should have been created').to.exist;
+			announceAttrId = attr._id;
+
 			owner = await createUser();
 			ownerCredentials = await login(owner.username, password);
 		});
 
 		after(async () => {
 			await Promise.all(createdRids.map((rid) => deleteRoom({ type: 'p', roomId: rid })));
-
-			const listRes = await request.get(`${v1}/abac/attributes`).query({ key: announceKey }).set(credentials).expect(200);
-			const attr = listRes.body.attributes.find((a: { _id: string; key: string }) => a.key === announceKey);
-			if (attr) {
-				await request.delete(`${v1}/abac/attributes/${attr._id}`).set(credentials).expect(200);
-			}
-
+			await request.delete(`${v1}/abac/attributes/${announceAttrId}`).set(credentials).expect(200);
 			await deleteUser(owner);
 		});
 
 		it('should strip announcement from rooms.adminRooms.getRoom on ABAC managed room', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement('SECRET');
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
 
@@ -2646,7 +2638,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should strip announcement from rooms.adminRooms list on ABAC managed rows', async () => {
 			const { rid, name } = await createPrivateRoomWithAnnouncement('LIST_SECRET');
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			const res = await request.get(`${v1}/rooms.adminRooms`).set(credentials).query({ 'filter': name, 'types[]': 'p' }).expect(200);
 
@@ -2657,7 +2653,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should reject roomAnnouncement save on ABAC managed room (admin)', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement('original');
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			const res = await request
 				.post(`${v1}/rooms.saveRoomSettings`)
@@ -2674,7 +2674,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request.post(`${v1}/groups.invite`).set(credentials).send({ roomId: rid, userId: owner._id }).expect(200);
 			await request.post(`${v1}/groups.addOwner`).set(credentials).send({ roomId: rid, userId: owner._id }).expect(200);
 
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			const res = await request
 				.post(`${v1}/rooms.saveRoomSettings`)
@@ -2687,7 +2691,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should accept idempotent roomAnnouncement re-submit on ABAC managed room', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement('keep-me');
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'keep-me' }).expect(200);
 		});
@@ -2700,14 +2708,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should accept roomTopic save on ABAC managed room (control — only announcement is blocked)', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement(undefined);
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomTopic: 'new topic' }).expect(200);
 		});
 
 		it('should reject empty-string unset on ABAC managed room with announcement set', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement('X');
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
 			const res = await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: '' }).expect(400);
 
@@ -2716,22 +2732,26 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should accept idempotent empty submit on ABAC room with no announcement set (direct API contract)', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement(undefined);
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
-			// Form path cannot reach this state — field is hidden and never registered.
-			// This test locks the server-side `?? ''` normalization for direct API callers.
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: '' }).expect(200);
 		});
 
 		it('should accept roomAnnouncement save after the last ABAC attribute is removed (transition)', async () => {
 			const { rid } = await createPrivateRoomWithAnnouncement('initial');
-			await assignAbacAttribute(rid);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${announceKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
 
-			// Sanity: room is currently ABAC-managed and the save is rejected.
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'changed' }).expect(400);
 
-			// Remove the last attribute, room is no longer ABAC-managed.
-			await removeAllAbacAttributes(rid);
+			await request.delete(`${v1}/abac/rooms/${rid}/attributes`).set(credentials).expect(200);
 
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'changed' }).expect(200);
 		});
