@@ -2,7 +2,8 @@ import { acquireLock, releaseLock } from './lock';
 import { DEV_DB_EXIT_CODES } from './exit-codes';
 import { DevDbError } from './errors';
 import { externalBackend } from './backends/external';
-import { binaryBackend, dockerBackend } from './backends/not-implemented';
+import { dockerBackend } from './backends/docker';
+import { binaryBackend } from './backends/binary';
 import {
 	resolveBackendSelection,
 	resolveExternalMongoUrl,

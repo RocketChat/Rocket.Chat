@@ -5,3 +5,4 @@ export * from './errors';
 export * from './state-store';
 export * from './backend';
 export * from './lifecycle';
+export * from './backends/docker';

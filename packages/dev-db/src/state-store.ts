@@ -11,6 +11,7 @@ export type DevDbState = {
 		hostname: string;
 		command: string;
 	};
+	ownershipMarker?: string;
 	backend: DevDbBackendKind;
 	dbPath?: string;
 	volumeName?: string;
