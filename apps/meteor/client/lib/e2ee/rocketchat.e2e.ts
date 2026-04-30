@@ -522,20 +522,22 @@ class E2E extends Emitter {
 	}
 
 	openEnterE2EEPasswordModal(onEnterE2EEPassword: (password: string) => Promise<void>) {
+		const close = () => {
+			this.closeAlert();
+			imperativeModal.close();
+		};
 		imperativeModal.open({
 			component: EnterE2EPasswordModal,
 			props: {
-				onClose: imperativeModal.close,
+				onClose: close,
 				onCancel: () => {
 					failedToDecodeKey = false;
 					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-					this.closeAlert();
-					imperativeModal.close();
+					close();
 				},
 				onConfirm: async (password) => {
 					await onEnterE2EEPassword(password);
-					this.closeAlert();
-					imperativeModal.close();
+					close();
 				},
 			},
 		});
