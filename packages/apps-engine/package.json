@@ -34,13 +34,10 @@
 			"email": "douglas.gubert@rocket.chat"
 		}
 	],
-	"files": [
-		"definition/**",
-		"lib/**"
-	],
+	"files": ["definition/**"],
 	"scripts": {
 		"build": "run-s .:build:clean .:build:default",
-		".:build:clean": "rimraf definition lib",
+		".:build:clean": "rimraf definition",
 		".:build:default": "tsc -p tsconfig.json",
 		"dev": "yarn .:build:default --watch",
 		"gen-doc": "typedoc",
