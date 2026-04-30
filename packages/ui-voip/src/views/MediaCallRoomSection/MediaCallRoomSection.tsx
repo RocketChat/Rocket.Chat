@@ -1,4 +1,4 @@
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -148,12 +148,25 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			{...getSplitStyles(showChat)}
 		>
 			<CardListSection>
-				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
-					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
-					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
-					{focusedCard !== 'remote' && remoteStreamCard}
-					{focusedCard !== 'local' && localStreamCard}
-				</CardListContainer>
+				{isPopout && (
+					<Box mb={20} p={24} w='full' display='flex' flexDirection='column' justifyContent='space-between' alignItems='center'>
+						<Box is='h1' color='font-default' mbe={40}>
+							{t('Call_open_separate_window')}
+						</Box>
+						{/* TODO: new icon missing */}
+						<Button onClick={togglePopout} icon='arrow-collapse' large>
+							{t('Show_call_here')}
+						</Button>
+					</Box>
+				)}
+				{!isPopout && (
+					<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
+						<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
+						<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
+						{focusedCard !== 'remote' && remoteStreamCard}
+						{focusedCard !== 'local' && localStreamCard}
+					</CardListContainer>
+				)}
 			</CardListSection>
 			<ActionStrip
 				leftSlot={

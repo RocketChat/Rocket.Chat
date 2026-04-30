@@ -1,4 +1,5 @@
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Callout } from '@rocket.chat/fuselage';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,6 +18,8 @@ import {
 	CardWidgetContainer,
 	StreamCard,
 } from '../../components';
+import { useMediaCallInstance } from '../../context';
+import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
@@ -35,6 +38,18 @@ const OngoingCall = () => {
 		widgetPositionTracker,
 	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const { currentViews, setCurrentViews } = useMediaCallInstance();
+	const isPopout = currentViews.has('popout');
+
+	const closePopout = useCallback(() => {
+		setCurrentViews((prev) => {
+			if (!prev.has('popout')) {
+				return prev;
+			}
+			prev.delete('popout');
+			return new Set<AvailableViews>(prev);
+		});
+	}, [setCurrentViews]);
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -59,28 +74,36 @@ const OngoingCall = () => {
 				{onClickDirectMessage && (
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
+				{/* TODO: translation and icon */}
+				{isPopout && <ActionButton tiny secondary={false} label={t('Close_popout')} icon='arrow-collapse' onClick={closePopout} />}
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 
-					{remoteScreen?.active && (
-						<StreamCard autoHeight maxHeight={120} onClickOpenInRoom={onClickDirectMessage}>
-							<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
-								<track kind='captions' />
-							</video>
-						</StreamCard>
-					)}
-					{localScreen?.active && (
-						<Box display='flex' flexDirection='column'>
-							<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
-								<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-									<track kind='captions' />
-								</video>
-							</StreamCard>
-							<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
-						</Box>
+					{isPopout && <Callout>{t('Call_open_separate_window')}</Callout>}
+
+					{!isPopout && (
+						<>
+							{remoteScreen?.active && (
+								<StreamCard autoHeight maxHeight={120} onClickOpenInRoom={onClickDirectMessage}>
+									<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
+										<track kind='captions' />
+									</video>
+								</StreamCard>
+							)}
+							{localScreen?.active && (
+								<Box display='flex' flexDirection='column'>
+									<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
+										<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
+											<track kind='captions' />
+										</video>
+									</StreamCard>
+									<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
+								</Box>
+							)}
+						</>
 					)}
 				</CardWidgetContainer>
 			</WidgetContent>
