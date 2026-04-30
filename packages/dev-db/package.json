@@ -1,0 +1,26 @@
+{
+	"name": "@rocket.chat/dev-db",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Development MongoDB orchestration contract and lifecycle tooling",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
+		"eslint": "~9.39.4",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

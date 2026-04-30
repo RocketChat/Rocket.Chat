@@ -9200,6 +9200,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/dev-db@workspace:packages/dev-db":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/dev-db@workspace:packages/dev-db"
+  dependencies:
+    "@rocket.chat/tsconfig": "workspace:*"
+    eslint: "npm:~9.39.4"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/emitter@npm:^0.32.0":
   version: 0.32.0
   resolution: "@rocket.chat/emitter@npm:0.32.0"
