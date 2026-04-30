@@ -43,7 +43,7 @@ type MessageListProps = {
 	handleDateScroll: (topMessage: IMessage | undefined) => void;
 };
 
-let lastViewportSize = 0;
+let lastScrollSize = 0;
 
 export const MessageList = function MessageList({
 	rid,
@@ -84,7 +84,14 @@ export const MessageList = function MessageList({
 				isPrepend.current = true;
 			}
 
-			isAtBottom.current = offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0) >= -20;
+			const scrollSize = virtualizerRef.current?.scrollSize ?? 0;
+			const viewportSize = virtualizerRef.current?.viewportSize ?? 0;
+
+			if (scrollSize >= viewportSize) {
+				isAtBottom.current = true;
+			}
+
+			isAtBottom.current = offset - scrollSize + viewportSize >= -60;
 			if (shouldJumpToBottom.current && isAtBottom.current) {
 				shouldJumpToBottom.current = false;
 			}
@@ -138,8 +145,8 @@ export const MessageList = function MessageList({
 			});
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom
-		if (isAtBottom.current && lastViewportSize !== handle?.viewportSize) {
-			lastViewportSize = handle?.viewportSize ?? 0;
+		if (isAtBottom.current && lastScrollSize !== handle?.scrollSize) {
+			lastScrollSize = handle?.scrollSize ?? 0;
 			handle?.scrollToIndex(lastItemIndex + 1, {
 				align: 'end',
 			});
