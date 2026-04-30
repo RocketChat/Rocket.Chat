@@ -3,7 +3,10 @@ import { Users } from '@rocket.chat/models';
 
 import type { IPublication } from './types';
 
-type CacheEntry = { user: Pick<IUser, '_id' | 'roles'>; timeout: NodeJS.Timeout };
+type CacheEntry = {
+	user: IUser; // Pick<IUser, '_id' | 'roles'>
+	timeout: NodeJS.Timeout;
+};
 
 const CACHE_PROJECTION = { _id: 1, roles: 1 } as const;
 const CACHE_TIMEOUT = 1000 * 60;
