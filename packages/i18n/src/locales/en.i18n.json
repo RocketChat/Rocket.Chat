@@ -7218,5 +7218,7 @@
   "message_attachment": "message attachment",
   "system_message_body": "system message body",
   "No_changes_to_save": "No changes to save",
-  "Avatar_preview_updated": "Avatar preview updated"
+  "Avatar_preview_updated": "Avatar preview updated",
+  "Select_message_from_user": "Select message from {{username}}",
+  "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}"
 }
