@@ -15,7 +15,6 @@ import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from './hooks/useAutoupdate';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
-import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useEmojiOne } from './hooks/useEmojiOne';
@@ -66,7 +65,6 @@ const AppLayout = () => {
 	useAppleOAuth();
 	useWordPressOAuth();
 	useCustomOAuth();
-	useCorsSSLConfig();
 	useAutoupdate();
 	useCodeHighlight();
 	useLoginViaQuery();
