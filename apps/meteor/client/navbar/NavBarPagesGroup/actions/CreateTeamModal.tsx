@@ -177,7 +177,12 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 									validate: (value) => validateTeamName(value),
 								}}
 								render={({ field }) => (
-									<TextInput {...field} addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />} error={errors.name?.message} />
+									<TextInput
+										{...field}
+										addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
+										error={errors.name?.message}
+										aria-required='true'
+									/>
 								)}
 							/>
 						</FieldRow>
