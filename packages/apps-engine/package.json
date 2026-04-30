@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.Apps-engine.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
 	},
 	"license": "MIT",
 	"author": {
@@ -36,10 +36,10 @@
 	],
 	"files": ["definition/**"],
 	"scripts": {
-		"build": "run-s .:build:clean .:build:default",
-		".:build:clean": "rimraf definition",
-		".:build:default": "tsc -p tsconfig.json",
-		"dev": "yarn .:build:default --watch",
+		"build": "run-s build:clean build:default",
+		"build:clean": "rimraf definition",
+		"build:default": "tsc -p tsconfig.json",
+		"dev": "yarn build:default --watch",
 		"gen-doc": "typedoc",
 		"lint": "yarn eslint .",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
