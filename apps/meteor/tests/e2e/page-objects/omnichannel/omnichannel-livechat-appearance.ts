@@ -4,7 +4,7 @@ import { OmnichannelAdmin } from './omnichannel-admin';
 
 export class OmnichannelLivechatAppearance extends OmnichannelAdmin {
 	get inputHideSystemMessages(): Locator {
-		return this.page.locator('[name="Livechat_hide_system_messages"]');
+		return this.page.locator('label', { hasText: 'Hide system messages' });
 	}
 
 	get inputLivechatBackground(): Locator {

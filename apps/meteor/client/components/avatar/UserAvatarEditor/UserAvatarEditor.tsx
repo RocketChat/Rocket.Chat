@@ -101,9 +101,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					alt={t('__username__profile_picture', { username: currentUsername || 'user' })}
 					username={currentUsername || ''}
 					etag={etag}
+					objectFit='contain'
 					style={{
 						imageOrientation: rotateImages ? 'from-image' : 'none',
-						objectFit: 'contain',
 					}}
 					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
