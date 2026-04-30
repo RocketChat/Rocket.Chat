@@ -54,7 +54,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 
 		isJumpingToMessage.current = true;
 
-		if (RoomHistoryManager.isLoading(rid)) {
+		if (RoomHistoryManager.isLoading(rid) || messages.length === 0) {
 			return;
 		}
 
