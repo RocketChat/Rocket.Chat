@@ -2598,6 +2598,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 		};
 
+		const removeAllAbacAttributes = async (rid: string): Promise<void> => {
+			await request.delete(`${v1}/abac/rooms/${rid}/attributes`).set(credentials).expect(200);
+		};
+
 		before(async () => {
 			await request
 				.post(`${v1}/abac/attributes`)
@@ -2709,6 +2713,19 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			// Form path cannot reach this state — field is hidden and never registered.
 			// This test locks the server-side `?? ''` normalization for direct API callers.
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: '' }).expect(200);
+		});
+
+		it('should accept roomAnnouncement save after the last ABAC attribute is removed (transition)', async () => {
+			const { rid } = await createPrivateRoomWithAnnouncement('initial');
+			await assignAbacAttribute(rid);
+
+			// Sanity: room is currently ABAC-managed and the save is rejected.
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'changed' }).expect(400);
+
+			// Remove the last attribute, room is no longer ABAC-managed.
+			await removeAllAbacAttributes(rid);
+
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, roomAnnouncement: 'changed' }).expect(200);
 		});
 	});
 });
