@@ -48,7 +48,7 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	if (isPopout) {
 		return (
 			<>
-				<MediaCallPopoutWindow onClose={() => setIsPopout(false)}>
+				<MediaCallPopoutWindow restoreDefaultView={() => setIsPopout(false)}>
 					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
 						{mediaCallRoomSection}
 					</Box>
