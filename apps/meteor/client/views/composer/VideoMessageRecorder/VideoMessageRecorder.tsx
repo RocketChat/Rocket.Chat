@@ -44,8 +44,9 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	const [time, setTime] = useState<string | undefined>('00:00');
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+	const [recordingAvailable, setRecordingAvailable] = useState(false);
 	const isRecording = recordingState === 'recording';
-	const sendButtonDisabled = !(VideoRecorder.cameraStarted.get() && !(recordingState === 'recording'));
+	const sendButtonDisabled = !recordingAvailable || recordingState === 'recording';
 
 	const chat = useChat();
 
@@ -54,7 +55,8 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			clearInterval(recordingInterval);
 		}
 		setRecordingInterval(null);
-		VideoRecorder.stopRecording();
+		const hadRecording = VideoRecorder.stopRecording();
+		setRecordingAvailable(hadRecording);
 		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 		setRecordingState('idle');
 	};
@@ -64,6 +66,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
+			setRecordingAvailable(false);
 			setRecordingState('recording');
 			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 			setTime('00:00');
@@ -91,6 +94,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);
 		stopVideoRecording(rid, tmid);
+		setRecordingAvailable(false);
 	};
 
 	const handleCancel = useEffectEvent(() => {
@@ -98,6 +102,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);
 		stopVideoRecording(rid, tmid);
+		setRecordingAvailable(false);
 	});
 
 	useEffect(() => {

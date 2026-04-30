@@ -142,12 +142,13 @@ class VideoRecorder {
 
 	public stopRecording() {
 		if (!this.started || !this.recording || !this.mediaRecorder) {
-			return;
+			return false;
 		}
 
 		this.mediaRecorder.stop();
 		this.recording.set(false);
 		delete this.mediaRecorder;
+		return true;
 	}
 }
 
