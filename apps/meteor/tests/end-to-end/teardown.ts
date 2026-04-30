@@ -8,7 +8,7 @@ let lastUrl: string;
 let lastMethod: string;
 let lastBody: unknown;
 let lastQuery: unknown;
-let lastResponse: Response;
+let lastResponse: Response | undefined;
 
 methods.forEach((method) => {
 	const original = request[method];
@@ -17,6 +17,7 @@ methods.forEach((method) => {
 		lastMethod = method;
 		lastBody = undefined;
 		lastQuery = undefined;
+		lastResponse = undefined;
 
 		const test = original(url);
 		const originalSend = test.send.bind(test);
