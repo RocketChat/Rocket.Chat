@@ -9,7 +9,7 @@ import MediaCallRoomSection from './MediaCallRoomSection';
 import { useMediaCallInstance } from '../../context';
 import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
-import MediaCallPopoutWindow from '../MediaCallPopoutWindow';
+// import MediaCallPopoutWindow from '../MediaCallPopoutWindow';
 
 type MediaCallRoomActivityProps = {
 	children: ReactNode;
@@ -17,9 +17,7 @@ type MediaCallRoomActivityProps = {
 
 const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	const [showChat, setShowChat] = useState(true);
-	const { currentViews, setCurrentViews } = useMediaCallInstance();
-
-	const isPopout = currentViews.has('popout');
+	const { setCurrentViews } = useMediaCallInstance();
 
 	const togglePopout = useCallback(() => {
 		setCurrentViews((prev) => {
@@ -46,37 +44,18 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 		};
 	}, [displayName, getUserAvatarPath, user?._id]);
 
-	const mediaCallRoomSection = (
-		<MediaCallViewProvider>
-			<MediaCallRoomSection
-				showChat={showChat}
-				onToggleChat={() => setShowChat((prev) => !prev)}
-				user={ownUser}
-				containerHeight={borderBoxSize?.blockSize || 0}
-				onPopout={togglePopout}
-				isPopout={isPopout}
-				key={isPopout ? 'popout' : 'normal'}
-			/>
-		</MediaCallViewProvider>
-	);
-
-	// TODO: this shouldn't be inside here, since the popout has to be always rendered.
-	if (isPopout) {
-		return (
-			<>
-				<MediaCallPopoutWindow restoreDefaultView={togglePopout}>
-					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
-						{mediaCallRoomSection}
-					</Box>
-				</MediaCallPopoutWindow>
-				{children}
-			</>
-		);
-	}
-
 	return (
 		<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
-			{mediaCallRoomSection}
+			<MediaCallViewProvider>
+				<MediaCallRoomSection
+					showChat={showChat}
+					onToggleChat={() => setShowChat((prev) => !prev)}
+					user={ownUser}
+					containerHeight={borderBoxSize?.blockSize || 0}
+					onPopout={togglePopout}
+					isPopout={false}
+				/>
+			</MediaCallViewProvider>
 			{showChat && (
 				<Box w='full' flexGrow={2} flexShrink={0}>
 					{children}
