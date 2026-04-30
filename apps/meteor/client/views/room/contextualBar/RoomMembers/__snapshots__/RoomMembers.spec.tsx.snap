@@ -68,6 +68,31 @@ exports[`renders Default without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="online"
+                    >
+                      online
+                    </option>
+                    <option
+                      value="all"
+                    >
+                      all
+                    </option>
+                  </select>
+                </label>
+              </div>
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
@@ -75,31 +100,6 @@ exports[`renders Default without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
-                <div
-                  aria-hidden="true"
-                  data-a11y-ignore="aria-hidden-focus"
-                  data-react-aria-prevent-focus="true"
-                  data-testid="hidden-select-container"
-                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                >
-                  <label>
-                    <select
-                      tabindex="-1"
-                    >
-                      <option />
-                      <option
-                        value="online"
-                      >
-                        online
-                      </option>
-                      <option
-                        value="all"
-                      >
-                        all
-                      </option>
-                    </select>
-                  </label>
-                </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
                   id="react-aria-:r9:"
@@ -280,6 +280,31 @@ exports[`renders Empty without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="online"
+                    >
+                      online
+                    </option>
+                    <option
+                      value="all"
+                    >
+                      all
+                    </option>
+                  </select>
+                </label>
+              </div>
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
@@ -287,31 +312,6 @@ exports[`renders Empty without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
-                <div
-                  aria-hidden="true"
-                  data-a11y-ignore="aria-hidden-focus"
-                  data-react-aria-prevent-focus="true"
-                  data-testid="hidden-select-container"
-                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                >
-                  <label>
-                    <select
-                      tabindex="-1"
-                    >
-                      <option />
-                      <option
-                        value="online"
-                      >
-                        online
-                      </option>
-                      <option
-                        value="all"
-                      >
-                        all
-                      </option>
-                    </select>
-                  </label>
-                </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
                   id="react-aria-:rj:"
@@ -469,6 +469,31 @@ exports[`renders Loading without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="online"
+                    >
+                      online
+                    </option>
+                    <option
+                      value="all"
+                    >
+                      all
+                    </option>
+                  </select>
+                </label>
+              </div>
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
@@ -476,31 +501,6 @@ exports[`renders Loading without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
-                <div
-                  aria-hidden="true"
-                  data-a11y-ignore="aria-hidden-focus"
-                  data-react-aria-prevent-focus="true"
-                  data-testid="hidden-select-container"
-                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                >
-                  <label>
-                    <select
-                      tabindex="-1"
-                    >
-                      <option />
-                      <option
-                        value="online"
-                      >
-                        online
-                      </option>
-                      <option
-                        value="all"
-                      >
-                        all
-                      </option>
-                    </select>
-                  </label>
-                </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
                   id="react-aria-:rt:"
@@ -650,6 +650,31 @@ exports[`renders WithABACRoom without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="online"
+                    >
+                      online
+                    </option>
+                    <option
+                      value="all"
+                    >
+                      all
+                    </option>
+                  </select>
+                </label>
+              </div>
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
@@ -657,31 +682,6 @@ exports[`renders WithABACRoom without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
-                <div
-                  aria-hidden="true"
-                  data-a11y-ignore="aria-hidden-focus"
-                  data-react-aria-prevent-focus="true"
-                  data-testid="hidden-select-container"
-                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                >
-                  <label>
-                    <select
-                      tabindex="-1"
-                    >
-                      <option />
-                      <option
-                        value="online"
-                      >
-                        online
-                      </option>
-                      <option
-                        value="all"
-                      >
-                        all
-                      </option>
-                    </select>
-                  </label>
-                </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
                   id="react-aria-:r17:"
@@ -862,6 +862,31 @@ exports[`renders WithInvitedMember without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="online"
+                    >
+                      online
+                    </option>
+                    <option
+                      value="all"
+                    >
+                      all
+                    </option>
+                  </select>
+                </label>
+              </div>
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
@@ -869,31 +894,6 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
-                <div
-                  aria-hidden="true"
-                  data-a11y-ignore="aria-hidden-focus"
-                  data-react-aria-prevent-focus="true"
-                  data-testid="hidden-select-container"
-                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                >
-                  <label>
-                    <select
-                      tabindex="-1"
-                    >
-                      <option />
-                      <option
-                        value="online"
-                      >
-                        online
-                      </option>
-                      <option
-                        value="all"
-                      >
-                        all
-                      </option>
-                    </select>
-                  </label>
-                </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
                   id="react-aria-:r1h:"

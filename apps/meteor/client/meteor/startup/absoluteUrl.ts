@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { baseURI } from '../../lib/baseURI';
+import { _relativeToSiteRootUrl, absoluteUrl } from '../../lib/absoluteUrl';
 
-Meteor.absoluteUrl.defaultOptions.rootUrl = baseURI;
+Object.assign(Meteor, {
+	absoluteUrl,
+	_relativeToSiteRootUrl,
+});
