@@ -1,5 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo, useState } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -70,7 +70,11 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight, o
 	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
 	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
 
-	useRegisterView('room');
+	useRegisterView(
+		'room',
+		// temporary fix while there's not a custom view for the popout
+		useCallback(() => !isPopout, [isPopout]),
+	);
 
 	const onClickFocusRemoteCard = () => {
 		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));

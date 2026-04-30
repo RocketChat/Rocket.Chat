@@ -50,7 +50,7 @@ const openExternalWindow = (title: string) => {
 
 const MediaCallPopoutWindow = () => {
 	const [container, setContainer] = useState<{ root: HTMLDivElement; externalWindow: Window } | null>(null);
-	const { currentViews, setCurrentViews } = useMediaCallInstance();
+	const { setCurrentViews } = useMediaCallInstance();
 
 	const closePopout = useCallback(
 		(windowClosed = false) => {
@@ -110,10 +110,19 @@ const MediaCallPopoutWindow = () => {
 	}, [container?.externalWindow, closePopout]);
 
 	useLayoutEffect(() => {
-		if (!currentViews.has('popout')) {
-			closePopout(false);
-		}
-	}, [closePopout, currentViews]);
+		return () => {
+			// Since this happens during cleanup, we need the most up-to-date state of the current views
+			// to avoid closing the window prematurely
+			// so we use the setter functions "previous value", as it should contain the newest state.
+			// If we were to use the current state, it would always be outdated on the cleanup.
+			setCurrentViews((prev) => {
+				if (!prev.has('popout')) {
+					closePopout(false);
+				}
+				return prev;
+			});
+		};
+	}, [closePopout, setCurrentViews]);
 
 	const contextValue = useMemo(() => ({ document: container?.externalWindow.document || document }), [container?.externalWindow.document]);
 
