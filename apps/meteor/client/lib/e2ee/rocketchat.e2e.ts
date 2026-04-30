@@ -537,6 +537,7 @@ class E2E extends Emitter {
 				},
 				onConfirm: async (password) => {
 					await onEnterE2EEPassword(password);
+					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 					close();
 				},
 			},
@@ -586,19 +587,19 @@ class E2E extends Emitter {
 			return;
 		}
 
-		let privateKey: string | undefined;
-		await this.requestPasswordModal(async (password) => {
-			privateKey = await this.keychain.decryptKey(this.db_private_key as string, password);
-		});
-
 		try {
+			let privateKey: string | undefined;
+			await this.requestPasswordModal(async (password) => {
+				privateKey = await this.keychain.decryptKey(this.db_private_key as string, password);
+			});
+
 			if (this.db_public_key && privateKey) {
 				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
-				this.setState('READY');
 			} else {
 				await this.createAndLoadKeys();
-				this.setState('READY');
 			}
+			this.setState('READY');
+
 			dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
