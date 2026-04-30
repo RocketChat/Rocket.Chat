@@ -1,4 +1,4 @@
-import { AnchorPortal, useGoToDirectMessage } from '@rocket.chat/ui-client';
+import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useSetOutputMediaDevice,
@@ -23,7 +23,6 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
-import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
 
 type MediaCallViewProviderProps = {
@@ -249,14 +248,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		},
 	};
 
-	return (
-		<MediaCallViewContext.Provider value={contextValue}>
-			<AnchorPortal id='rcx-media-call-widget-portal'>
-				<MediaCallWidget />
-			</AnchorPortal>
-			{children}
-		</MediaCallViewContext.Provider>
-	);
+	return <MediaCallViewContext.Provider value={contextValue}>{children}</MediaCallViewContext.Provider>;
 };
 
 export default MediaCallViewProvider;
