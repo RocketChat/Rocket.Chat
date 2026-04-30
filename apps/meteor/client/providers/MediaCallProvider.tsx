@@ -14,8 +14,8 @@ const MediaCallProvider = ({ children }: { children: ReactNode }) => {
 
 	const unauthorizedContextValue = useMemo(
 		() => ({
-			inRoomView: false,
-			setInRoomView: () => undefined,
+			currentViews: new Set<never>(),
+			setCurrentViews: () => undefined,
 			instance: undefined,
 			signalEmitter: new Emitter<any>(),
 			audioElement: undefined,
