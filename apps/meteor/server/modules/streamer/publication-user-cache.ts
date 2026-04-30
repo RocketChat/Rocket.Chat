@@ -29,7 +29,7 @@ export async function getCachedUserForPublication(publication: IPublication): Pr
 
 		cacheByPublication.set(userId, { user, timeout });
 	}
-	return value;
+	return user;
 }
 
 export function invalidate(userId: string): CacheEntry['user'] | null {
