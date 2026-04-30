@@ -1,5 +1,6 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo, useState, useCallback } from 'react';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -12,41 +13,23 @@ import {
 	PeerCard,
 	StreamCard,
 	useShouldWrapCards,
-	CARD_LIST_SECTION_MAX_HEIGHT,
+	// CARD_LIST_SECTION_MAX_HEIGHT,
 	ActionStrip,
-	ActionToggleChat,
-} from '../../components';
-import type { AvailableViews } from '../../context/MediaCallInstanceContext';
-import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRegisterView from '../../context/useRegisterView';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+	// ActionToggleChat,
+} from '../components';
+import { useMediaCallView } from '../context/MediaCallViewContext';
+// import useRegisterView from '../context/useRegisterView';
+import { usePlayMediaStream } from '../providers/usePlayMediaStream';
 
-type MediaCallRoomSectionProps = {
-	showChat: boolean;
-	onToggleChat: () => void;
+type MediaCallPopoutViewProps = {
 	user: {
 		displayName: string;
 		avatarUrl: string;
 	};
-	containerHeight: number;
+	onClickClosePopout: () => void;
 };
 
-const getSplitStyles = (showChat?: boolean) => {
-	if (showChat) {
-		return {
-			maxHeight: `${CARD_LIST_SECTION_MAX_HEIGHT}vh`,
-		};
-	}
-	return {
-		height: '100%',
-		// This is a workaround to match the border height with the sidebar footer
-		// The sidebar footer uses a divider instead of a border, so it's 1px taller than it should be.
-		paddingBlockEnd: '1px',
-	};
-};
-
-const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
+const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewProps) => {
 	const { t } = useTranslation();
 
 	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
@@ -57,35 +40,21 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
+		onClickDirectMessage,
 		streams: { remoteScreen, localScreen },
 	} = useMediaCallView();
-	const { setCurrentViews, currentViews } = useMediaCallInstance();
-
-	const isPopout = currentViews.has('popout');
-
-	const togglePopout = useCallback(() => {
-		setCurrentViews((prev) => {
-			if (prev.has('popout')) {
-				prev.delete('popout');
-			} else {
-				prev.add('popout');
-			}
-
-			return new Set<AvailableViews>(prev);
-		});
-	}, [setCurrentViews]);
 
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
-	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
+	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
+
+	const shouldWrapCards = useShouldWrapCards(false, borderBoxSize?.blockSize || 0);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
 	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
 	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
-
-	useRegisterView('room');
 
 	const onClickFocusRemoteCard = () => {
 		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));
@@ -138,15 +107,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
-		<Box
-			id='outer-element'
-			w='full'
-			bg='surface-tint'
-			overflow='hidden'
-			display='flex'
-			flexDirection='column'
-			{...getSplitStyles(showChat)}
-		>
+		<Box id='outer-element' w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' ref={ref}>
 			<CardListSection>
 				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
 					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
@@ -163,14 +124,14 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 				}
 				rightSlot={
 					<ButtonGroup>
-						<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
-						<ToggleButton
-							label={t('Popout')}
-							titles={[t('Popout'), t('Close_popout')]}
-							icons={['arrow-expand', 'arrow-collapse']}
-							pressed={isPopout}
-							onToggle={togglePopout}
-						/>
+						{/* TODO: trigger focus back to window */}
+						<ActionButton label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+						{/* TODO: new icon */}
+						{/* TODO: trigger focus back to window */}
+						{/* TODO: translation string */}
+						<ActionButton label={t('Close_popout')} icon='arrow-collapse' onClick={onClickClosePopout} />
+						{/* Todo: translation string */}
+						<ActionButton label={t('Fullscreen')} icon='arrow-expand' onClick={onClickClosePopout} />
 						<DevicePicker secondary />
 					</ButtonGroup>
 				}
@@ -197,4 +158,4 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	);
 };
 
-export default memo(MediaCallRoomSection);
+export default memo(MediaCallPopoutView);

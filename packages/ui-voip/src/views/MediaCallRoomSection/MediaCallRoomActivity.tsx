@@ -3,13 +3,10 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import MediaCallRoomSection from './MediaCallRoomSection';
-import { useMediaCallInstance } from '../../context';
-import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
-// import MediaCallPopoutWindow from '../MediaCallPopoutWindow';
 
 type MediaCallRoomActivityProps = {
 	children: ReactNode;
@@ -17,19 +14,6 @@ type MediaCallRoomActivityProps = {
 
 const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	const [showChat, setShowChat] = useState(true);
-	const { setCurrentViews } = useMediaCallInstance();
-
-	const togglePopout = useCallback(() => {
-		setCurrentViews((prev) => {
-			if (prev.has('popout')) {
-				prev.delete('popout');
-			} else {
-				prev.add('popout');
-			}
-
-			return new Set<AvailableViews>(prev);
-		});
-	}, [setCurrentViews]);
 
 	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -52,8 +36,6 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 					onToggleChat={() => setShowChat((prev) => !prev)}
 					user={ownUser}
 					containerHeight={borderBoxSize?.blockSize || 0}
-					onPopout={togglePopout}
-					isPopout={false}
 				/>
 			</MediaCallViewProvider>
 			{showChat && (

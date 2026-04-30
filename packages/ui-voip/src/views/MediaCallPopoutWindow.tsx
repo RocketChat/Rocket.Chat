@@ -5,8 +5,8 @@ import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { MediaCallRoomSection } from './MediaCallRoomSection';
 import { useMediaCallInstance } from '../context';
+import MediaCallPopoutView from './MediaCallPopoutView';
 import type { AvailableViews } from '../context/MediaCallInstanceContext';
 
 const createRootElement = (externalWindow: Window) => {
@@ -135,14 +135,7 @@ const MediaCallPopoutWindow = () => {
 			<StyledTargetDocument.Provider value={contextValue}>
 				{createPortal(
 					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
-						<MediaCallRoomSection
-							showChat={true}
-							onToggleChat={() => undefined}
-							user={ownUser}
-							containerHeight={0}
-							onPopout={() => closePopout(false)}
-							isPopout={true}
-						/>
+						<MediaCallPopoutView user={ownUser} onClickClosePopout={() => closePopout(false)} />
 					</Box>,
 					container.root,
 				)}
