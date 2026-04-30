@@ -307,11 +307,12 @@ test.describe.serial('message-actions', () => {
 
 	test('keeps edit mode after cancel and deletes on confirm', async ({ page }) => {
 		const composer = page.getByLabel('Room composer');
+		const composerTextbox = page.getByRole('textbox', { name: `Message #${targetChannel}` });
 
 		const editLastMessageBlank = async () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await page.getByRole('menuitem', { name: 'Edit' }).click();
-			await page.getByRole('textbox', { name: `Message #${targetChannel}` }).fill('');
+			await composerTextbox.fill('');
 			await page.keyboard.press('Enter');
 		};
 
@@ -327,7 +328,7 @@ test.describe.serial('message-actions', () => {
 			await poHomeChannel.content.btnModalCancel.click();
 
 			await expect(composer).toContainText('Editing message');
-			await expect(composer.locator('textarea[name="msg"]')).toHaveValue('');
+			await expect(composerTextbox).toHaveValue('');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is a message to edit');
 		});
 
