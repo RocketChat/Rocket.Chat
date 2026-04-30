@@ -4,7 +4,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r6:-title"
+      aria-labelledby=":r1:-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -23,7 +23,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r6:-title"
+                id=":r1:-title"
               >
                 Discussion_title
               </h2>
@@ -63,7 +63,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r0:"
+                  for="react-aria-:r2:-label"
                 >
                   Parent channel or team
                   <span
@@ -84,11 +84,10 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                       role="group"
                     >
                       <input
-                        aria-describedby=":r0:-error"
                         aria-invalid="false"
+                        aria-label="Parent channel or team"
                         aria-required="true"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
-                        id=":r0:"
                         name="parentRoom"
                         placeholder="Search_options"
                         value=""
@@ -112,7 +111,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r2:"
+                  for="react-aria-:r3:-label"
                 >
                   Name
                   <span
@@ -129,10 +128,11 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
                   >
                     <input
+                      aria-describedby=""
                       aria-invalid="false"
                       aria-required="true"
                       class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
-                      id=":r2:"
+                      id="react-aria-:r3:-label"
                       name="name"
                       size="1"
                       type="text"
@@ -156,7 +156,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r5:"
+                  for="react-aria-:r4:-label"
                 >
                   Topic
                 </label>
@@ -164,9 +164,10 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <input
-                    aria-describedby=":r5:-hint"
+                    aria-describedby="react-aria-:r4:-hint"
+                    aria-invalid="false"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-                    id=":r5:"
+                    id="react-aria-:r4:-label"
                     name="topic"
                     size="1"
                     type="text"
@@ -178,7 +179,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                 >
                   <span
                     class="rcx-box rcx-box--full rcx-field__hint"
-                    id=":r5:-hint"
+                    id="react-aria-:r4:-hint"
                   >
                     Displayed_next_to_name
                   </span>
@@ -187,12 +188,12 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
               <div
                 class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
               >
-                <label
+                <span
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r3:"
+                  id="react-aria-:r5:-label"
                 >
                   Members
-                </label>
+                </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
@@ -206,11 +207,14 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-w398ts"
                       >
                         <input
-                          aria-controls=":r3:-listbox"
+                          aria-controls="react-aria-:r5:-listbox"
+                          aria-describedby=""
                           aria-expanded="false"
                           aria-haspopup="listbox"
+                          aria-invalid="false"
+                          aria-labelledby="react-aria-:r5:-label"
                           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
-                          id=":r3:"
+                          id="react-aria-:r5:"
                           name="usernames"
                           placeholder="Add_people"
                           role="combobox"
@@ -236,7 +240,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r4:"
+                  for="react-aria-:r6:-label"
                 >
                   Message
                 </label>
@@ -244,10 +248,11 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <textarea
-                    aria-describedby=":r4:-hint"
+                    aria-describedby="react-aria-:r6:-hint"
+                    aria-invalid="false"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box"
                     cols="1"
-                    id=":r4:"
+                    id="react-aria-:r6:-label"
                     name="firstMessage"
                     rows="5"
                     size="1"
@@ -255,7 +260,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r4:-hint"
+                  id="react-aria-:r6:-hint"
                 >
                   First_message_hint
                 </span>
@@ -266,18 +271,24 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                 <span
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
-                  <label
+                  <span
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r1:"
                   >
                     Encrypted
-                  </label>
+                  </span>
                   <label
                     class="rcx-box rcx-box--full rcx-toggle-switch"
                   >
+                    <div
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      Encrypted
+                    </div>
                     <input
+                      aria-describedby="react-aria-:r7:-hint"
+                      aria-invalid="false"
                       class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                      id=":r1:"
+                      id="react-aria-:r7:-label"
                       name="encrypted"
                       type="checkbox"
                     />
@@ -289,7 +300,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r1:-hint"
+                  id="react-aria-:r7:-hint"
                 >
                   Not_available_for_this_workspace
                 </span>
