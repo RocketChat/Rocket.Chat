@@ -39,19 +39,13 @@ export const createComposerAPI = (
 
 	let _quotedMessages: IMessage[] = [];
 
-	let ready = false;
-
 	const persist = withDebouncing({ wait: 300 })(() => {
-		if (ready) {
-			persistDraft(input.value);
-		}
+		persistDraft(input.value);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
-
-	input.addEventListener('input', persist);
 
 	const setText = (
 		text: string,
@@ -285,7 +279,7 @@ export const createComposerAPI = (
 		skipFocus: true,
 	});
 
-	ready = true;
+	input.addEventListener('input', persist);
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
