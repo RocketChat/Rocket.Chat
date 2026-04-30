@@ -4,6 +4,7 @@ import { DevDbError } from './errors';
 import { externalBackend } from './backends/external';
 import { dockerBackend } from './backends/docker';
 import { binaryBackend } from './backends/binary';
+import { applySeedProfile, type SeedProfile } from './seeds';
 import {
 	resolveBackendSelection,
 	resolveExternalMongoUrl,
@@ -29,7 +30,7 @@ export type LifecycleOptions = {
 	replicaSetEnabled?: boolean;
 	replicaSetName?: string;
 	port?: number;
-	seedProfile?: 'minimal' | 'demo' | 'integration';
+	seedProfile?: SeedProfile;
 };
 
 export type LifecycleResult = {
@@ -79,6 +80,24 @@ const withLock = async (fn: () => Promise<LifecycleResult>): Promise<LifecycleRe
 	}
 };
 
+const runBackendUp = async (
+	backend: DevDbBackend,
+	options: LifecycleOptions,
+	paths: ReturnType<typeof getDevDbPaths>,
+) => {
+	const replicaSetEnabled = options.replicaSetEnabled ?? true;
+	const replicaSetName = options.replicaSetName || DEFAULT_REPLICA_SET_NAME;
+	const port = options.port || DEFAULT_PORT;
+
+	return backend.up({
+		paths,
+		externalMongoUrl: resolveExternalMongoUrl(),
+		replicaSetEnabled,
+		replicaSetName,
+		port,
+	});
+};
+
 const up = async (options: LifecycleOptions): Promise<LifecycleResult> => {
 	return withLock(async () => {
 		const paths = getDevDbPaths();
@@ -94,17 +113,7 @@ const up = async (options: LifecycleOptions): Promise<LifecycleResult> => {
 			};
 		}
 
-		const replicaSetEnabled = options.replicaSetEnabled ?? true;
-		const replicaSetName = options.replicaSetName || DEFAULT_REPLICA_SET_NAME;
-		const port = options.port || DEFAULT_PORT;
-
-		const result = await backend.up({
-			paths,
-			externalMongoUrl: resolveExternalMongoUrl(),
-			replicaSetEnabled,
-			replicaSetName,
-			port,
-		});
+		const result = await runBackendUp(backend, options, paths);
 
 		await saveState(paths, result.state);
 
@@ -227,6 +236,7 @@ const doctor = async (): Promise<LifecycleResult> => {
 const reset = async (options: LifecycleOptions): Promise<LifecycleResult> => {
 	return withLock(async () => {
 		const paths = getDevDbPaths();
+		const selection = resolveBackendSelection({ policy: options.policy, runMode: options.backend });
 		const state = await loadState(paths);
 		if (state) {
 			const backend = getBackendRegistry()[state.backend];
@@ -234,12 +244,33 @@ const reset = async (options: LifecycleOptions): Promise<LifecycleResult> => {
 		}
 
 		await clearState(paths);
+
+		if (!options.seedProfile) {
+			return {
+				exitCode: DEV_DB_EXIT_CODES.OK,
+				text: 'dev-db reset completed',
+				json: {
+					state: null,
+				},
+			};
+		}
+
+		const backend = getBackendRegistry()[selection.selectedBackend];
+		const result = await runBackendUp(backend, options, paths);
+		await applySeedProfile(result.mongoUrl, options.seedProfile);
+		await saveState(paths, result.state);
+
 		return {
 			exitCode: DEV_DB_EXIT_CODES.OK,
-			text: `dev-db reset completed${options.seedProfile ? ` (seed=${options.seedProfile})` : ''}`,
+			text: `dev-db reset completed (seed=${options.seedProfile})`,
 			json: {
-				seedProfile: options.seedProfile || 'minimal',
-				state: null,
+				selection,
+				seedProfile: options.seedProfile,
+				urls: {
+					mongoUrl: result.mongoUrl,
+					mongoOplogUrl: result.mongoOplogUrl,
+				},
+				state: result.state,
 			},
 		};
 	});

@@ -8,3 +8,4 @@ export * from './lifecycle';
 export * from './backends/docker';
 export * from './backends/binary';
 export * from './backends/binary-manifest';
+export * from './seeds';

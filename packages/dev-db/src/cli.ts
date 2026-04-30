@@ -3,6 +3,16 @@
 import { DEV_DB_COMMANDS } from './product-contract';
 import { runLifecycleCommand, type LifecycleCommand, type LifecycleOptions } from './lifecycle';
 
+const SEED_PROFILES = ['minimal', 'demo', 'integration'] as const;
+
+const isSeedProfile = (value: string | undefined): value is NonNullable<LifecycleOptions['seedProfile']> => {
+	if (!value) {
+		return false;
+	}
+
+	return (SEED_PROFILES as readonly string[]).includes(value);
+};
+
 const isCommand = (value: string): value is LifecycleCommand => {
 	return (DEV_DB_COMMANDS as readonly string[]).includes(value);
 };
@@ -48,7 +58,11 @@ const parseArgs = (argv: string[]): { command: LifecycleCommand; options: Lifecy
 				options.replicaSetEnabled = false;
 				break;
 			case '--seed':
-				options.seedProfile = next as LifecycleOptions['seedProfile'];
+				if (!isSeedProfile(next)) {
+					throw new Error(`Invalid seed profile: ${next}. Expected one of: ${SEED_PROFILES.join(', ')}`);
+				}
+
+				options.seedProfile = next;
 				index += 1;
 				break;
 			default:
