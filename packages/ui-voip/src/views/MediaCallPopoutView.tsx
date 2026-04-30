@@ -139,6 +139,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 							icons={['arrow-expand', 'arrow-collapse']}
 							pressed={fullscreen}
 							onToggle={onClickFullscreen}
+							danger={false}
 						/>
 						<DevicePicker secondary />
 					</ButtonGroup>
