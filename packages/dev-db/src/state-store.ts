@@ -15,6 +15,8 @@ export type DevDbState = {
 	backend: DevDbBackendKind;
 	dbPath?: string;
 	volumeName?: string;
+	logPath?: string;
+	binaryPath?: string;
 	port: number;
 	replicaSetName?: string;
 	processId?: number;
