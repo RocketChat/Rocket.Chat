@@ -4,11 +4,31 @@ import { Tracker } from 'meteor/tracker';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { forgetUserSessionOnWindowClose } from '../lib/forgetUserSessionOnWindowClose';
+import { settings } from '../lib/settings';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { watchUserId } from '../meteor/user';
 
 Meteor.startup(() => {
+	let shouldForgetUserSessionOnWindowClose = Boolean(settings.peek('Accounts_ForgetUserSessionOnWindowClose'));
+
+	settings.observe('Accounts_ForgetUserSessionOnWindowClose', (_key, value) => {
+		shouldForgetUserSessionOnWindowClose = Boolean(value);
+	});
+
+	window.addEventListener(
+		'load',
+		() => {
+			if (!shouldForgetUserSessionOnWindowClose) {
+				return;
+			}
+
+			forgetUserSessionOnWindowClose();
+		},
+		{ once: true },
+	);
+
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
 		const uid = watchUserId();
