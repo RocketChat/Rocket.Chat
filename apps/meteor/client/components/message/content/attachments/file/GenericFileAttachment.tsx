@@ -21,6 +21,7 @@ const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 type GenericFileAttachmentProps = MessageAttachmentBase;
 
 const GenericFileAttachment = ({
+	id,
 	title,
 	title_link: link,
 	title_link_download: hasDownload,
@@ -68,7 +69,7 @@ const GenericFileAttachment = ({
 
 	return (
 		<>
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed} storageKey={id}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
