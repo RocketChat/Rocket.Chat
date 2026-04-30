@@ -11,10 +11,10 @@ type ToggleButtonProps = {
 	onToggle?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
-const ToggleButton = ({ disabled, label, pressed, icons, titles, onToggle, ...props }: ToggleButtonProps) => {
+const ToggleButton = ({ disabled, label, pressed, icons, titles, onToggle, danger = true, ...props }: ToggleButtonProps) => {
 	const iconName = icons[pressed ? 1 : 0];
 	const title = titles[pressed ? 1 : 0];
-	const iconColor = pressed ? 'font-danger' : undefined;
+	const iconColor = pressed && danger ? 'font-danger' : undefined;
 
 	return (
 		<IconButton

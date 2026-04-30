@@ -170,6 +170,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 							icons={['arrow-expand', 'arrow-collapse']}
 							pressed={isPopout}
 							onToggle={togglePopout}
+							danger={false}
 						/>
 						<DevicePicker secondary />
 					</ButtonGroup>
