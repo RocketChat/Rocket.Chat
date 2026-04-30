@@ -13,7 +13,6 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -32,10 +31,14 @@ type MessageListTabProps = {
 	title: ReactNode;
 	emptyResultMessage: string;
 	context: MessageActionContext;
-	queryResult: UseQueryResult<IMessage[]>;
+	messages: IMessage[];
+	isLoading: boolean;
+	isSuccess: boolean;
+	isFetchingNextPage?: boolean;
+	onEndReached?: () => void;
 };
 
-const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
+const MessageListTab = ({ iconName, title, emptyResultMessage, context, messages, isLoading, isSuccess, isFetchingNextPage, onEndReached }: MessageListTabProps): ReactElement => {
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
@@ -54,26 +57,27 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
-				{queryResult.isLoading && (
+				{isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{queryResult.isSuccess && (
+				{isSuccess && (
 					<>
-						{queryResult.data.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
+						{messages.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
 
-						{queryResult.data.length > 0 && (
+						{messages.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
 									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 										<VirtualizedScrollbars>
 											<Virtuoso
-												totalCount={queryResult.data.length}
+												totalCount={messages.length}
 												overscan={25}
-												data={queryResult.data}
+												data={messages}
+												endReached={onEndReached}
 												itemContent={(index, message) => {
-													const previous = queryResult.data[index - 1];
+													const previous = messages[index - 1];
 
 													const newDay = isMessageNewDay(message, previous);
 
@@ -110,6 +114,11 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 							</MessageListErrorBoundary>
 						)}
 					</>
+				)}
+				{isFetchingNextPage && (
+					<Box paddingInline={24} paddingBlock={8}>
+						<Throbber size='x12' />
+					</Box>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
