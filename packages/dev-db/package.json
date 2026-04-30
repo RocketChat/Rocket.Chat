@@ -5,9 +5,15 @@
 	"description": "Development MongoDB orchestration contract and lifecycle tooling",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
+	"bin": {
+		"dev-db": "./dist/cli.js"
+	},
 	"files": [
 		"/dist"
 	],
+	"dependencies": {
+		"mongodb": "6.16.0"
+	},
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
@@ -17,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/node": "~22.16.5",
 		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
