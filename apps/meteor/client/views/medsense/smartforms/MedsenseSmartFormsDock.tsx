@@ -159,6 +159,34 @@ const MedsenseSmartFormsDock = ({ roomId }: { roomId: string }): ReactElement | 
 		},
 	});
 
+	const dismissMutation = useMutation({
+		mutationFn: async () => {
+			if (!activeForm) {
+				return null;
+			}
+
+			return submitSmartForm({
+				roomId,
+				formId: activeForm.formId,
+				dismiss: true,
+			});
+		},
+		onSuccess: async (result: any) => {
+			await queryClient.invalidateQueries({ queryKey: ['medsense-room-smartforms', roomId] });
+			setDraftResponses({});
+			setSelectedValues([]);
+			setCustomText('');
+
+			if (Number(result?.pendingCount || 0) === 0) {
+				setSelectedTab('past');
+				setIsReviewExpanded(false);
+			}
+		},
+		onError: (error: any) => {
+			dispatchToastMessage({ type: 'error', message: error?.message || 'Unable to dismiss Smart Form.' });
+		},
+	});
+
 	const canSubmit = useMemo(() => {
 		if (pendingForms.length > 1) {
 			return pendingForms.every((form) => {
@@ -340,9 +368,17 @@ const MedsenseSmartFormsDock = ({ roomId }: { roomId: string }): ReactElement | 
 				<div className='medsenseUIKit-inlineForm__footer'>
 					<button
 						type='button'
+						className='medsenseUIKit-inlineForm__dismiss'
+						onClick={() => dismissMutation.mutate()}
+						disabled={submitMutation.isPending || dismissMutation.isPending}
+					>
+						{dismissMutation.isPending ? 'Dismissing...' : 'Dismiss'}
+					</button>
+					<button
+						type='button'
 						className='medsenseUIKit-inlineForm__submit'
 						onClick={() => submitMutation.mutate()}
-						disabled={!canSubmit || submitMutation.isPending}
+						disabled={!canSubmit || submitMutation.isPending || dismissMutation.isPending}
 					>
 						{submitMutation.isPending ? 'Submitting...' : pendingForms.length > 1 ? 'Submit all' : 'Submit'}
 					</button>

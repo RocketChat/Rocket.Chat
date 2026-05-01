@@ -1,20 +1,20 @@
  START CAPTURE 0 downloading the command-line tool took NaN
    START CAPTURE 1 undefined took NaN
      START 2 checking for meteor-tool@3.3.1
-     DONE 2 checking for meteor-tool@3.3.1 took 20
-   END CAPTURE 1 undefined took 20
- END CAPTURE 0 downloading the command-line tool took 21
+     DONE 2 checking for meteor-tool@3.3.1 took 27
+   END CAPTURE 1 undefined took 27
+ END CAPTURE 0 downloading the command-line tool took 28
  START CAPTURE 0 undefined took NaN
    START 1 preparing project
      START 2 reading project metadata
-     DONE 2 reading project metadata took 50
+     DONE 2 reading project metadata took 46
      START CAPTURE 2 undefined took NaN
        START 3 scanning local packages
          START 4 looking for packages
-         DONE 4 looking for packages took 27
+         DONE 4 looking for packages took 2
          START 4 initializing packages
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/autoupdate`
-           DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/autoupdate` took 4
+           DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/autoupdate` took 3
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/linkedin-oauth`
            DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/linkedin-oauth` took 1
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/meteor-cookies`
@@ -30,43 +30,43 @@
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-livechat`
            DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-livechat` took 1
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-mongo-config`
-           DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-mongo-config` took 1
+           DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-mongo-config` took 2
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-postcss`
            DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-postcss` took 1
            START 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-version`
-           DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-version` took 1
+           DONE 5 reading package from `/home/builder/medsense.webchat/apps/meteor/packages/rocketchat-version` took 0
          DONE 4 initializing packages took 16
-       DONE 3 scanning local packages took 46
-     END CAPTURE 2 undefined took 46
+       DONE 3 scanning local packages took 19
+     END CAPTURE 2 undefined took 20
      START CAPTURE 2 undefined took NaN
        START 3 selecting package versions
          START CAPTURE 4 loading isopacket `combined` took NaN
-         END CAPTURE 4 loading isopacket `combined` took 2063
-       DONE 3 selecting package versions took 106158
-     END CAPTURE 2 undefined took 106159
+         END CAPTURE 4 loading isopacket `combined` took 1888
+       DONE 3 selecting package versions took 109190
+     END CAPTURE 2 undefined took 109191
      START CAPTURE 2 undefined took NaN
        START 3 downloading missing packages
          START 4 checking for accounts-base@3.1.2
 Local package version is up-to-date: accounts-base@3.1.2
-         DONE 4 checking for accounts-base@3.1.2 took 59
+         DONE 4 checking for accounts-base@3.1.2 took 55
          START 4 checking for accounts-facebook@1.3.4
 Local package version is up-to-date: accounts-facebook@1.3.4
-         DONE 4 checking for accounts-facebook@1.3.4 took 52
+         DONE 4 checking for accounts-facebook@1.3.4 took 49
          START 4 checking for accounts-github@1.5.1
 Local package version is up-to-date: accounts-github@1.5.1
-         DONE 4 checking for accounts-github@1.5.1 took 21
+         DONE 4 checking for accounts-github@1.5.1 took 19
          START 4 checking for accounts-google@1.4.1
 Local package version is up-to-date: accounts-google@1.4.1
-         DONE 4 checking for accounts-google@1.4.1 took 2
+         DONE 4 checking for accounts-google@1.4.1 took 4
          START 4 checking for accounts-meteor-developer@1.5.1
 Local package version is up-to-date: accounts-meteor-developer@1.5.1
-         DONE 4 checking for accounts-meteor-developer@1.5.1 took 6
+         DONE 4 checking for accounts-meteor-developer@1.5.1 took 12
          START 4 checking for accounts-oauth@1.4.6
 Local package version is up-to-date: accounts-oauth@1.4.6
-         DONE 4 checking for accounts-oauth@1.4.6 took 2
+         DONE 4 checking for accounts-oauth@1.4.6 took 3
          START 4 checking for accounts-password@3.2.1
 Local package version is up-to-date: accounts-password@3.2.1
-         DONE 4 checking for accounts-password@3.2.1 took 79
+         DONE 4 checking for accounts-password@3.2.1 took 70
          START 4 checking for accounts-twitter@1.5.2
 Local package version is up-to-date: accounts-twitter@1.5.2
          DONE 4 checking for accounts-twitter@1.5.2 took 2
@@ -75,52 +75,52 @@ Local package version is up-to-date: allow-deny@2.1.0
          DONE 4 checking for allow-deny@2.1.0 took 2
          START 4 checking for babel-compiler@7.12.2
 Local package version is up-to-date: babel-compiler@7.12.2
-         DONE 4 checking for babel-compiler@7.12.2 took 79
+         DONE 4 checking for babel-compiler@7.12.2 took 82
          START 4 checking for babel-runtime@1.5.2
 Local package version is up-to-date: babel-runtime@1.5.2
-         DONE 4 checking for babel-runtime@1.5.2 took 2
+         DONE 4 checking for babel-runtime@1.5.2 took 3
          START 4 checking for base64@1.0.13
 Local package version is up-to-date: base64@1.0.13
-         DONE 4 checking for base64@1.0.13 took 13
+         DONE 4 checking for base64@1.0.13 took 10
          START 4 checking for binary-heap@1.0.12
 Local package version is up-to-date: binary-heap@1.0.12
          DONE 4 checking for binary-heap@1.0.12 took 12
          START 4 checking for boilerplate-generator@2.0.2
 Local package version is up-to-date: boilerplate-generator@2.0.2
-         DONE 4 checking for boilerplate-generator@2.0.2 took 52
+         DONE 4 checking for boilerplate-generator@2.0.2 took 47
          START 4 checking for callback-hook@1.6.1
 Local package version is up-to-date: callback-hook@1.6.1
          DONE 4 checking for callback-hook@1.6.1 took 2
          START 4 checking for check@1.4.4
 Local package version is up-to-date: check@1.4.4
-         DONE 4 checking for check@1.4.4 took 66
+         DONE 4 checking for check@1.4.4 took 68
          START 4 checking for core-runtime@1.0.0
 Local package version is up-to-date: core-runtime@1.0.0
-         DONE 4 checking for core-runtime@1.0.0 took 2
+         DONE 4 checking for core-runtime@1.0.0 took 3
          START 4 checking for ddp@1.4.2
 Local package version is up-to-date: ddp@1.4.2
-         DONE 4 checking for ddp@1.4.2 took 1
+         DONE 4 checking for ddp@1.4.2 took 2
          START 4 checking for ddp-client@3.1.1
 Local package version is up-to-date: ddp-client@3.1.1
          DONE 4 checking for ddp-client@3.1.1 took 2
          START 4 checking for ddp-common@1.4.4
 Local package version is up-to-date: ddp-common@1.4.4
-         DONE 4 checking for ddp-common@1.4.4 took 2
+         DONE 4 checking for ddp-common@1.4.4 took 4
          START 4 checking for ddp-rate-limiter@1.2.2
 Local package version is up-to-date: ddp-rate-limiter@1.2.2
-         DONE 4 checking for ddp-rate-limiter@1.2.2 took 1
+         DONE 4 checking for ddp-rate-limiter@1.2.2 took 2
          START 4 checking for ddp-server@3.1.2
 Local package version is up-to-date: ddp-server@3.1.2
          DONE 4 checking for ddp-server@3.1.2 took 2
          START 4 checking for diff-sequence@1.1.3
 Local package version is up-to-date: diff-sequence@1.1.3
-         DONE 4 checking for diff-sequence@1.1.3 took 27
+         DONE 4 checking for diff-sequence@1.1.3 took 20
          START 4 checking for dynamic-import@0.7.4
 Local package version is up-to-date: dynamic-import@0.7.4
-         DONE 4 checking for dynamic-import@0.7.4 took 1
+         DONE 4 checking for dynamic-import@0.7.4 took 3
          START 4 checking for ecmascript@0.16.13
 Local package version is up-to-date: ecmascript@0.16.13
-         DONE 4 checking for ecmascript@0.16.13 took 64
+         DONE 4 checking for ecmascript@0.16.13 took 56
          START 4 checking for ecmascript-runtime@0.8.3
 Local package version is up-to-date: ecmascript-runtime@0.8.3
          DONE 4 checking for ecmascript-runtime@0.8.3 took 2
@@ -132,100 +132,100 @@ Local package version is up-to-date: ecmascript-runtime-server@0.11.1
          DONE 4 checking for ecmascript-runtime-server@0.11.1 took 2
          START 4 checking for ejson@1.1.5
 Local package version is up-to-date: ejson@1.1.5
-         DONE 4 checking for ejson@1.1.5 took 15
+         DONE 4 checking for ejson@1.1.5 took 13
          START 4 checking for email@3.1.2
 Local package version is up-to-date: email@3.1.2
-         DONE 4 checking for email@3.1.2 took 1
+         DONE 4 checking for email@3.1.2 took 3
          START 4 checking for es5-shim@4.8.1
 Local package version is up-to-date: es5-shim@4.8.1
          DONE 4 checking for es5-shim@4.8.1 took 2
          START 4 checking for facebook-oauth@1.11.6
 Local package version is up-to-date: facebook-oauth@1.11.6
-         DONE 4 checking for facebook-oauth@1.11.6 took 17
+         DONE 4 checking for facebook-oauth@1.11.6 took 13
          START 4 checking for facts-base@1.0.2
 Local package version is up-to-date: facts-base@1.0.2
-         DONE 4 checking for facts-base@1.0.2 took 18
+         DONE 4 checking for facts-base@1.0.2 took 17
          START 4 checking for fetch@0.1.6
 Local package version is up-to-date: fetch@0.1.6
-         DONE 4 checking for fetch@0.1.6 took 17
+         DONE 4 checking for fetch@0.1.6 took 23
          START 4 checking for geojson-utils@1.0.12
 Local package version is up-to-date: geojson-utils@1.0.12
-         DONE 4 checking for geojson-utils@1.0.12 took 40
+         DONE 4 checking for geojson-utils@1.0.12 took 20
          START 4 checking for github-oauth@1.4.2
 Local package version is up-to-date: github-oauth@1.4.2
-         DONE 4 checking for github-oauth@1.4.2 took 3
+         DONE 4 checking for github-oauth@1.4.2 took 2
          START 4 checking for google-oauth@1.4.5
 Local package version is up-to-date: google-oauth@1.4.5
          DONE 4 checking for google-oauth@1.4.5 took 2
          START 4 checking for hot-code-push@1.0.5
 Local package version is up-to-date: hot-code-push@1.0.5
-         DONE 4 checking for hot-code-push@1.0.5 took 3
+         DONE 4 checking for hot-code-push@1.0.5 took 2
          START 4 checking for http@3.0.0
 Local package version is up-to-date: http@3.0.0
-         DONE 4 checking for http@3.0.0 took 48
+         DONE 4 checking for http@3.0.0 took 35
          START 4 checking for id-map@1.2.0
 Local package version is up-to-date: id-map@1.2.0
-         DONE 4 checking for id-map@1.2.0 took 21
+         DONE 4 checking for id-map@1.2.0 took 36
          START 4 checking for inter-process-messaging@0.1.2
 Local package version is up-to-date: inter-process-messaging@0.1.2
-         DONE 4 checking for inter-process-messaging@0.1.2 took 16
+         DONE 4 checking for inter-process-messaging@0.1.2 took 14
          START 4 checking for localstorage@1.2.1
 Local package version is up-to-date: localstorage@1.2.1
-         DONE 4 checking for localstorage@1.2.1 took 2
+         DONE 4 checking for localstorage@1.2.1 took 18
          START 4 checking for logging@1.3.6
 Local package version is up-to-date: logging@1.3.6
          DONE 4 checking for logging@1.3.6 took 2
          START 4 checking for meteor@2.1.1
 Local package version is up-to-date: meteor@2.1.1
-         DONE 4 checking for meteor@2.1.1 took 41
+         DONE 4 checking for meteor@2.1.1 took 31
          START 4 checking for meteor-base@1.5.2
 Local package version is up-to-date: meteor-base@1.5.2
-         DONE 4 checking for meteor-base@1.5.2 took 2
+         DONE 4 checking for meteor-base@1.5.2 took 3
          START 4 checking for meteor-developer-oauth@1.3.3
 Local package version is up-to-date: meteor-developer-oauth@1.3.3
-         DONE 4 checking for meteor-developer-oauth@1.3.3 took 2
+         DONE 4 checking for meteor-developer-oauth@1.3.3 took 3
          START 4 checking for minifier-css@2.0.1
 Local package version is up-to-date: minifier-css@2.0.1
-         DONE 4 checking for minifier-css@2.0.1 took 2
+         DONE 4 checking for minifier-css@2.0.1 took 19
          START 4 checking for minimongo@2.0.4
 Local package version is up-to-date: minimongo@2.0.4
-         DONE 4 checking for minimongo@2.0.4 took 15
+         DONE 4 checking for minimongo@2.0.4 took 16
          START 4 checking for modern-browsers@0.2.3
 Local package version is up-to-date: modern-browsers@0.2.3
          DONE 4 checking for modern-browsers@0.2.3 took 2
          START 4 checking for modules@0.20.3
 Local package version is up-to-date: modules@0.20.3
-         DONE 4 checking for modules@0.20.3 took 10
+         DONE 4 checking for modules@0.20.3 took 11
          START 4 checking for modules-runtime@0.13.2
 Local package version is up-to-date: modules-runtime@0.13.2
-         DONE 4 checking for modules-runtime@0.13.2 took 2
+         DONE 4 checking for modules-runtime@0.13.2 took 3
          START 4 checking for mongo@2.1.4
 Local package version is up-to-date: mongo@2.1.4
-         DONE 4 checking for mongo@2.1.4 took 16
+         DONE 4 checking for mongo@2.1.4 took 20
          START 4 checking for mongo-decimal@0.2.0
 Local package version is up-to-date: mongo-decimal@0.2.0
-         DONE 4 checking for mongo-decimal@0.2.0 took 28
+         DONE 4 checking for mongo-decimal@0.2.0 took 27
          START 4 checking for mongo-dev-server@1.1.1
 Local package version is up-to-date: mongo-dev-server@1.1.1
-         DONE 4 checking for mongo-dev-server@1.1.1 took 25
+         DONE 4 checking for mongo-dev-server@1.1.1 took 39
          START 4 checking for mongo-id@1.0.9
 Local package version is up-to-date: mongo-id@1.0.9
-         DONE 4 checking for mongo-id@1.0.9 took 2
+         DONE 4 checking for mongo-id@1.0.9 took 4
          START 4 checking for npm-mongo@6.16.1
 Local package version is up-to-date: npm-mongo@6.16.1
-         DONE 4 checking for npm-mongo@6.16.1 took 15
+         DONE 4 checking for npm-mongo@6.16.1 took 12
          START 4 checking for oauth@3.0.2
 Local package version is up-to-date: oauth@3.0.2
          DONE 4 checking for oauth@3.0.2 took 2
          START 4 checking for oauth1@1.5.2
 Local package version is up-to-date: oauth1@1.5.2
-         DONE 4 checking for oauth1@1.5.2 took 31
+         DONE 4 checking for oauth1@1.5.2 took 29
          START 4 checking for oauth2@1.3.3
 Local package version is up-to-date: oauth2@1.3.3
          DONE 4 checking for oauth2@1.3.3 took 2
          START 4 checking for ordered-dict@1.2.0
 Local package version is up-to-date: ordered-dict@1.2.0
-         DONE 4 checking for ordered-dict@1.2.0 took 2
+         DONE 4 checking for ordered-dict@1.2.0 took 3
          START 4 checking for promise@1.0.0
 Local package version is up-to-date: promise@1.0.0
          DONE 4 checking for promise@1.0.0 took 2
@@ -237,132 +237,132 @@ Local package version is up-to-date: rate-limit@1.1.2
          DONE 4 checking for rate-limit@1.1.2 took 3
          START 4 checking for react-fast-refresh@0.2.9
 Local package version is up-to-date: react-fast-refresh@0.2.9
-         DONE 4 checking for react-fast-refresh@0.2.9 took 50
+         DONE 4 checking for react-fast-refresh@0.2.9 took 36
          START 4 checking for reactive-dict@1.3.2
 Local package version is up-to-date: reactive-dict@1.3.2
-         DONE 4 checking for reactive-dict@1.3.2 took 26
+         DONE 4 checking for reactive-dict@1.3.2 took 24
          START 4 checking for reactive-var@1.0.13
 Local package version is up-to-date: reactive-var@1.0.13
          DONE 4 checking for reactive-var@1.0.13 took 2
          START 4 checking for reload@1.3.2
 Local package version is up-to-date: reload@1.3.2
-         DONE 4 checking for reload@1.3.2 took 3
+         DONE 4 checking for reload@1.3.2 took 2
          START 4 checking for retry@1.1.1
 Local package version is up-to-date: retry@1.1.1
          DONE 4 checking for retry@1.1.1 took 3
          START 4 checking for rocketchat:streamer@1.1.0
 Local package version is up-to-date: rocketchat:streamer@1.1.0
-         DONE 4 checking for rocketchat:streamer@1.1.0 took 30
+         DONE 4 checking for rocketchat:streamer@1.1.0 took 28
          START 4 checking for routepolicy@1.1.2
 Local package version is up-to-date: routepolicy@1.1.2
-         DONE 4 checking for routepolicy@1.1.2 took 2
+         DONE 4 checking for routepolicy@1.1.2 took 3
          START 4 checking for service-configuration@1.3.5
 Local package version is up-to-date: service-configuration@1.3.5
-         DONE 4 checking for service-configuration@1.3.5 took 30
+         DONE 4 checking for service-configuration@1.3.5 took 26
          START 4 checking for session@1.2.2
 Local package version is up-to-date: session@1.2.2
-         DONE 4 checking for session@1.2.2 took 17
+         DONE 4 checking for session@1.2.2 took 2
          START 4 checking for sha@1.0.10
 Local package version is up-to-date: sha@1.0.10
-         DONE 4 checking for sha@1.0.10 took 25
+         DONE 4 checking for sha@1.0.10 took 2
          START 4 checking for shell-server@0.6.2
 Local package version is up-to-date: shell-server@0.6.2
-         DONE 4 checking for shell-server@0.6.2 took 11
+         DONE 4 checking for shell-server@0.6.2 took 12
          START 4 checking for socket-stream-client@0.6.1
 Local package version is up-to-date: socket-stream-client@0.6.1
-         DONE 4 checking for socket-stream-client@0.6.1 took 1
+         DONE 4 checking for socket-stream-client@0.6.1 took 16
          START 4 checking for standard-minifier-css@1.9.3
 Local package version is up-to-date: standard-minifier-css@1.9.3
-         DONE 4 checking for standard-minifier-css@1.9.3 took 69
+         DONE 4 checking for standard-minifier-css@1.9.3 took 82
          START 4 checking for tracker@1.3.4
 Local package version is up-to-date: tracker@1.3.4
-         DONE 4 checking for tracker@1.3.4 took 38
+         DONE 4 checking for tracker@1.3.4 took 35
          START 4 checking for twitter-oauth@1.3.4
 Local package version is up-to-date: twitter-oauth@1.3.4
-         DONE 4 checking for twitter-oauth@1.3.4 took 16
+         DONE 4 checking for twitter-oauth@1.3.4 took 2
          START 4 checking for typescript@5.6.6
 Local package version is up-to-date: typescript@5.6.6
-         DONE 4 checking for typescript@5.6.6 took 29
+         DONE 4 checking for typescript@5.6.6 took 32
          START 4 checking for underscore@1.6.4
 Local package version is up-to-date: underscore@1.6.4
-         DONE 4 checking for underscore@1.6.4 took 36
+         DONE 4 checking for underscore@1.6.4 took 33
          START 4 checking for url@1.3.5
 Local package version is up-to-date: url@1.3.5
-         DONE 4 checking for url@1.3.5 took 2
+         DONE 4 checking for url@1.3.5 took 22
          START 4 checking for webapp@2.0.7
 Local package version is up-to-date: webapp@2.0.7
-         DONE 4 checking for webapp@2.0.7 took 41
+         DONE 4 checking for webapp@2.0.7 took 33
          START 4 checking for webapp-hashing@1.1.2
 Local package version is up-to-date: webapp-hashing@1.1.2
-         DONE 4 checking for webapp-hashing@1.1.2 took 18
+         DONE 4 checking for webapp-hashing@1.1.2 took 2
          START 4 checking for zodern:caching-minifier@0.5.0
 Local package version is up-to-date: zodern:caching-minifier@0.5.0
-         DONE 4 checking for zodern:caching-minifier@0.5.0 took 18
+         DONE 4 checking for zodern:caching-minifier@0.5.0 took 23
          START 4 checking for zodern:standard-minifier-js@5.3.1
 Local package version is up-to-date: zodern:standard-minifier-js@5.3.1
-         DONE 4 checking for zodern:standard-minifier-js@5.3.1 took 48
+         DONE 4 checking for zodern:standard-minifier-js@5.3.1 took 43
          START 4 checking for zodern:types@1.0.13
 Local package version is up-to-date: zodern:types@1.0.13
-         DONE 4 checking for zodern:types@1.0.13 took 27
-       DONE 3 downloading missing packages took 1523
-     END CAPTURE 2 undefined took 1523
+         DONE 4 checking for zodern:types@1.0.13 took 26
+       DONE 3 downloading missing packages took 1474
+     END CAPTURE 2 undefined took 1475
      START 2 building local packages
        START 3 loading package accounts-base@3.1.2
-       DONE 3 loading package accounts-base@3.1.2 took 82
+       DONE 3 loading package accounts-base@3.1.2 took 68
        START 3 loading package meteor@2.1.1
-       DONE 3 loading package meteor@2.1.1 took 41
+       DONE 3 loading package meteor@2.1.1 took 67
        START 3 loading package core-runtime@1.0.0
-       DONE 3 loading package core-runtime@1.0.0 took 67
+       DONE 3 loading package core-runtime@1.0.0 took 65
        START 3 loading package ecmascript@0.16.13
-       DONE 3 loading package ecmascript@0.16.13 took 883
+       DONE 3 loading package ecmascript@0.16.13 took 772
        START 3 loading package react-fast-refresh@0.2.9
-       DONE 3 loading package react-fast-refresh@0.2.9 took 39
+       DONE 3 loading package react-fast-refresh@0.2.9 took 21
        START 3 loading package modules@0.20.3
-       DONE 3 loading package modules@0.20.3 took 166
+       DONE 3 loading package modules@0.20.3 took 151
        START 3 loading package modules-runtime@0.13.2
-       DONE 3 loading package modules-runtime@0.13.2 took 171
+       DONE 3 loading package modules-runtime@0.13.2 took 141
        START 3 loading package ecmascript-runtime@0.8.3
-       DONE 3 loading package ecmascript-runtime@0.8.3 took 91
+       DONE 3 loading package ecmascript-runtime@0.8.3 took 80
        START 3 loading package ecmascript-runtime-client@0.12.3
-       DONE 3 loading package ecmascript-runtime-client@0.12.3 took 115
+       DONE 3 loading package ecmascript-runtime-client@0.12.3 took 120
        START 3 loading package promise@1.0.0
-       DONE 3 loading package promise@1.0.0 took 158
+       DONE 3 loading package promise@1.0.0 took 109
        START 3 loading package modern-browsers@0.2.3
-       DONE 3 loading package modern-browsers@0.2.3 took 48
+       DONE 3 loading package modern-browsers@0.2.3 took 56
        START 3 loading package ecmascript-runtime-server@0.11.1
-       DONE 3 loading package ecmascript-runtime-server@0.11.1 took 71
+       DONE 3 loading package ecmascript-runtime-server@0.11.1 took 60
        START 3 loading package babel-runtime@1.5.2
-       DONE 3 loading package babel-runtime@1.5.2 took 52
+       DONE 3 loading package babel-runtime@1.5.2 took 54
        START 3 loading package dynamic-import@0.7.4
-       DONE 3 loading package dynamic-import@0.7.4 took 37
+       DONE 3 loading package dynamic-import@0.7.4 took 32
        START 3 loading package fetch@0.1.6
-       DONE 3 loading package fetch@0.1.6 took 130
+       DONE 3 loading package fetch@0.1.6 took 114
        START 3 loading package inter-process-messaging@0.1.2
-       DONE 3 loading package inter-process-messaging@0.1.2 took 57
+       DONE 3 loading package inter-process-messaging@0.1.2 took 84
        START 3 loading package ddp-rate-limiter@1.2.2
-       DONE 3 loading package ddp-rate-limiter@1.2.2 took 71
+       DONE 3 loading package ddp-rate-limiter@1.2.2 took 94
        START 3 loading package rate-limit@1.1.2
        DONE 3 loading package rate-limit@1.1.2 took 8
        START 3 loading package random@1.2.2
-       DONE 3 loading package random@1.2.2 took 18
+       DONE 3 loading package random@1.2.2 took 17
        START 3 loading package check@1.4.4
-       DONE 3 loading package check@1.4.4 took 68
+       DONE 3 loading package check@1.4.4 took 25
        START 3 loading package ejson@1.1.5
-       DONE 3 loading package ejson@1.1.5 took 38
+       DONE 3 loading package ejson@1.1.5 took 28
        START 3 loading package base64@1.0.13
        DONE 3 loading package base64@1.0.13 took 7
        START 3 loading package callback-hook@1.6.1
-       DONE 3 loading package callback-hook@1.6.1 took 7
+       DONE 3 loading package callback-hook@1.6.1 took 22
        START 3 loading package url@1.3.5
-       DONE 3 loading package url@1.3.5 took 130
+       DONE 3 loading package url@1.3.5 took 117
        START 3 loading package ddp@1.4.2
-       DONE 3 loading package ddp@1.4.2 took 41
+       DONE 3 loading package ddp@1.4.2 took 37
        START 3 loading package ddp-client@3.1.1
-       DONE 3 loading package ddp-client@3.1.1 took 137
+       DONE 3 loading package ddp-client@3.1.1 took 106
        START 3 loading package tracker@1.3.4
-       DONE 3 loading package tracker@1.3.4 took 86
+       DONE 3 loading package tracker@1.3.4 took 70
        START 3 loading package retry@1.1.1
-       DONE 3 loading package retry@1.1.1 took 26
+       DONE 3 loading package retry@1.1.1 took 32
        START 3 loading package id-map@1.2.0
        DONE 3 loading package id-map@1.2.0 took 6
        START 3 loading package ddp-common@1.4.4
@@ -370,106 +370,106 @@ Local package version is up-to-date: zodern:types@1.0.13
        START 3 loading package reload@1.3.2
        DONE 3 loading package reload@1.3.2 took 7
        START 3 loading package socket-stream-client@0.6.1
-       DONE 3 loading package socket-stream-client@0.6.1 took 59
+       DONE 3 loading package socket-stream-client@0.6.1 took 52
        START 3 loading package diff-sequence@1.1.3
        DONE 3 loading package diff-sequence@1.1.3 took 7
        START 3 loading package mongo-id@1.0.9
-       DONE 3 loading package mongo-id@1.0.9 took 37
+       DONE 3 loading package mongo-id@1.0.9 took 31
        START 3 loading package ddp-server@3.1.2
        DONE 3 loading package ddp-server@3.1.2 took 17
        START 3 loading package typescript@5.6.6
-       DONE 3 loading package typescript@5.6.6 took 1148
+       DONE 3 loading package typescript@5.6.6 took 1134
        START 3 loading package babel-compiler@7.12.2
-       DONE 3 loading package babel-compiler@7.12.2 took 751
+       DONE 3 loading package babel-compiler@7.12.2 took 687
        START 3 loading package webapp@2.0.7
-       DONE 3 loading package webapp@2.0.7 took 295
+       DONE 3 loading package webapp@2.0.7 took 317
        START 3 loading package logging@1.3.6
-       DONE 3 loading package logging@1.3.6 took 184
+       DONE 3 loading package logging@1.3.6 took 175
        START 3 loading package routepolicy@1.1.2
-       DONE 3 loading package routepolicy@1.1.2 took 53
+       DONE 3 loading package routepolicy@1.1.2 took 46
        START 3 loading package boilerplate-generator@2.0.2
-       DONE 3 loading package boilerplate-generator@2.0.2 took 61
+       DONE 3 loading package boilerplate-generator@2.0.2 took 48
        START 3 loading package webapp-hashing@1.1.2
-       DONE 3 loading package webapp-hashing@1.1.2 took 43
+       DONE 3 loading package webapp-hashing@1.1.2 took 47
        START 3 loading package mongo@2.1.4
-       DONE 3 loading package mongo@2.1.4 took 179
+       DONE 3 loading package mongo@2.1.4 took 171
        START 3 loading package npm-mongo@6.16.1
-       DONE 3 loading package npm-mongo@6.16.1 took 209
+       DONE 3 loading package npm-mongo@6.16.1 took 222
        START 3 loading package allow-deny@2.1.0
-       DONE 3 loading package allow-deny@2.1.0 took 63
+       DONE 3 loading package allow-deny@2.1.0 took 57
        START 3 loading package minimongo@2.0.4
-       DONE 3 loading package minimongo@2.0.4 took 192
+       DONE 3 loading package minimongo@2.0.4 took 174
        START 3 loading package geojson-utils@1.0.12
-       DONE 3 loading package geojson-utils@1.0.12 took 61
+       DONE 3 loading package geojson-utils@1.0.12 took 55
        START 3 loading package ordered-dict@1.2.0
-       DONE 3 loading package ordered-dict@1.2.0 took 55
+       DONE 3 loading package ordered-dict@1.2.0 took 50
        START 3 loading package mongo-decimal@0.2.0
-       DONE 3 loading package mongo-decimal@0.2.0 took 80
+       DONE 3 loading package mongo-decimal@0.2.0 took 72
        START 3 loading package mongo-dev-server@1.1.1
-       DONE 3 loading package mongo-dev-server@1.1.1 took 14
+       DONE 3 loading package mongo-dev-server@1.1.1 took 13
        START 3 loading package binary-heap@1.0.12
-       DONE 3 loading package binary-heap@1.0.12 took 28
+       DONE 3 loading package binary-heap@1.0.12 took 26
        START 3 loading package localstorage@1.2.1
-       DONE 3 loading package localstorage@1.2.1 took 18
+       DONE 3 loading package localstorage@1.2.1 took 15
        START 3 loading package reactive-var@1.0.13
-       DONE 3 loading package reactive-var@1.0.13 took 61
+       DONE 3 loading package reactive-var@1.0.13 took 63
        START 3 loading package accounts-facebook@1.3.4
-       DONE 3 loading package accounts-facebook@1.3.4 took 56
+       DONE 3 loading package accounts-facebook@1.3.4 took 51
        START 3 loading package accounts-oauth@1.4.6
-       DONE 3 loading package accounts-oauth@1.4.6 took 45
+       DONE 3 loading package accounts-oauth@1.4.6 took 24
        START 3 loading package oauth@3.0.2
-       DONE 3 loading package oauth@3.0.2 took 199
+       DONE 3 loading package oauth@3.0.2 took 177
        START 3 loading package service-configuration@1.3.5
-       DONE 3 loading package service-configuration@1.3.5 took 21
+       DONE 3 loading package service-configuration@1.3.5 took 18
        START 3 loading package facebook-oauth@1.11.6
-       DONE 3 loading package facebook-oauth@1.11.6 took 50
+       DONE 3 loading package facebook-oauth@1.11.6 took 81
        START 3 loading package oauth2@1.3.3
-       DONE 3 loading package oauth2@1.3.3 took 23
+       DONE 3 loading package oauth2@1.3.3 took 28
        START 3 loading package accounts-github@1.5.1
-       DONE 3 loading package accounts-github@1.5.1 took 16
+       DONE 3 loading package accounts-github@1.5.1 took 25
        START 3 loading package github-oauth@1.4.2
-       DONE 3 loading package github-oauth@1.4.2 took 30
+       DONE 3 loading package github-oauth@1.4.2 took 20
        START 3 loading package accounts-google@1.4.1
        DONE 3 loading package accounts-google@1.4.1 took 7
        START 3 loading package google-oauth@1.4.5
-       DONE 3 loading package google-oauth@1.4.5 took 12
+       DONE 3 loading package google-oauth@1.4.5 took 11
        START 3 loading package accounts-meteor-developer@1.5.1
-       DONE 3 loading package accounts-meteor-developer@1.5.1 took 8
+       DONE 3 loading package accounts-meteor-developer@1.5.1 took 7
        START 3 loading package meteor-developer-oauth@1.3.3
-       DONE 3 loading package meteor-developer-oauth@1.3.3 took 46
+       DONE 3 loading package meteor-developer-oauth@1.3.3 took 43
        START 3 loading package accounts-password@3.2.1
-       DONE 3 loading package accounts-password@3.2.1 took 488
+       DONE 3 loading package accounts-password@3.2.1 took 516
        START 3 loading package sha@1.0.10
-       DONE 3 loading package sha@1.0.10 took 23
+       DONE 3 loading package sha@1.0.10 took 20
        START 3 loading package email@3.1.2
-       DONE 3 loading package email@3.1.2 took 209
+       DONE 3 loading package email@3.1.2 took 149
        START 3 loading package accounts-twitter@1.5.2
-       DONE 3 loading package accounts-twitter@1.5.2 took 8
+       DONE 3 loading package accounts-twitter@1.5.2 took 9
        START 3 loading package twitter-oauth@1.3.4
-       DONE 3 loading package twitter-oauth@1.3.4 took 64
+       DONE 3 loading package twitter-oauth@1.3.4 took 47
        START 3 loading package oauth1@1.5.2
-       DONE 3 loading package oauth1@1.5.2 took 28
+       DONE 3 loading package oauth1@1.5.2 took 33
        START 3 preparing to build package autoupdate
          START 4 building package autoupdate
            START 5 determining active plugins
              START 6 loading plugin `basicFileTypes` from package `meteor`
              DONE 6 loading plugin `basicFileTypes` from package `meteor` took 1
              START 6 running registerCompiler callback in package meteor
-             DONE 6 running registerCompiler callback in package meteor took 0
+             DONE 6 running registerCompiler callback in package meteor took 1
              START 6 loading plugin `compile-ecmascript` from package `ecmascript`
-             DONE 6 loading plugin `compile-ecmascript` from package `ecmascript` took 1218
+             DONE 6 loading plugin `compile-ecmascript` from package `ecmascript` took 1030
              START 6 running registerCompiler callback in package ecmascript
              DONE 6 running registerCompiler callback in package ecmascript took 0
-           DONE 5 determining active plugins took 1220
+           DONE 5 determining active plugins took 1033
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-         DONE 4 building package autoupdate took 1262
-       DONE 3 preparing to build package autoupdate took 1262
+         DONE 4 building package autoupdate took 1050
+       DONE 3 preparing to build package autoupdate took 1051
        START 3 preparing to build package dispatch:run-as-user
          START 4 loading package underscore@1.6.4
-         DONE 4 loading package underscore@1.6.4 took 57
+         DONE 4 loading package underscore@1.6.4 took 35
          START 4 building package dispatch:run-as-user
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
@@ -477,18 +477,18 @@ Local package version is up-to-date: zodern:types@1.0.13
            DONE 5 determining active plugins took 1
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-         DONE 4 building package dispatch:run-as-user took 16
-       DONE 3 preparing to build package dispatch:run-as-user took 73
+         DONE 4 building package dispatch:run-as-user took 12
+       DONE 3 preparing to build package dispatch:run-as-user took 49
        START 3 loading package es5-shim@4.8.1
-       DONE 3 loading package es5-shim@4.8.1 took 25
+       DONE 3 loading package es5-shim@4.8.1 took 34
        START 3 loading package facts-base@1.0.2
-       DONE 3 loading package facts-base@1.0.2 took 8
+       DONE 3 loading package facts-base@1.0.2 took 9
        START 3 loading package hot-code-push@1.0.5
-       DONE 3 loading package hot-code-push@1.0.5 took 3
+       DONE 3 loading package hot-code-push@1.0.5 took 2
        START 3 loading package http@3.0.0
-       DONE 3 loading package http@3.0.0 took 60
+       DONE 3 loading package http@3.0.0 took 126
        START 3 loading package meteor-base@1.5.2
-       DONE 3 loading package meteor-base@1.5.2 took 4
+       DONE 3 loading package meteor-base@1.5.2 took 3
        START 3 preparing to build package meteorhacks:inject-initial
          START 4 building package meteorhacks:inject-initial
            START 5 determining active plugins
@@ -497,10 +497,10 @@ Local package version is up-to-date: zodern:types@1.0.13
            DONE 5 determining active plugins took 0
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-         DONE 4 building package meteorhacks:inject-initial took 12
-       DONE 3 preparing to build package meteorhacks:inject-initial took 13
+         DONE 4 building package meteorhacks:inject-initial took 10
+       DONE 3 preparing to build package meteorhacks:inject-initial took 11
        START 3 loading package minifier-css@2.0.1
-       DONE 3 loading package minifier-css@2.0.1 took 294
+       DONE 3 loading package minifier-css@2.0.1 took 284
        START 3 preparing to build package ostrio:cookies
          START 4 building package ostrio:cookies
            START 5 determining active plugins
@@ -509,63 +509,63 @@ Local package version is up-to-date: zodern:types@1.0.13
            DONE 5 determining active plugins took 1
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-         DONE 4 building package ostrio:cookies took 23
-       DONE 3 preparing to build package ostrio:cookies took 23
+         DONE 4 building package ostrio:cookies took 9
+       DONE 3 preparing to build package ostrio:cookies took 9
        START 3 loading package reactive-dict@1.3.2
-       DONE 3 loading package reactive-dict@1.3.2 took 44
+       DONE 3 loading package reactive-dict@1.3.2 took 97
        START 3 preparing to build package rocketchat:livechat
          START 4 building package rocketchat:livechat
            START 5 building plugin `Livechat` in package `rocketchat:livechat`
              START 6 determining active plugins
-             DONE 6 determining active plugins took 1
+             DONE 6 determining active plugins took 0
              START 6 building for os.linux.x86_64
                START 7 linking the program
                DONE 7 linking the program took 1
                START 7 processing files with ecmascript (for target os.linux.x86_64)
-               DONE 7 processing files with ecmascript (for target os.linux.x86_64) took 28
-Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+               DONE 7 processing files with ecmascript (for target os.linux.x86_64) took 33
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
-               START 7 linking
-                 START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 5
-               DONE 7 linking took 7
-               START 7 linking
-                 START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 10
-               DONE 7 linking took 12
                START 7 linking
                  START 8 computing assigned variables
                  DONE 8 computing assigned variables took 5
                DONE 7 linking took 6
                START 7 linking
                  START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 0
-               DONE 7 linking took 3
+                 DONE 8 computing assigned variables took 9
+               DONE 7 linking took 11
                START 7 linking
                  START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 1
-               DONE 7 linking took 1
-               START 7 linking
-                 START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 0
-               DONE 7 linking took 2
-               START 7 linking
-                 START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 1
-               DONE 7 linking took 1
-               START 7 linking
-                 START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 0
-               DONE 7 linking took 1
+                 DONE 8 computing assigned variables took 4
+               DONE 7 linking took 6
                START 7 linking
                  START 8 computing assigned variables
                  DONE 8 computing assigned variables took 1
                DONE 7 linking took 2
                START 7 linking
                  START 8 computing assigned variables
+                 DONE 8 computing assigned variables took 0
+               DONE 7 linking took 2
+               START 7 linking
+                 START 8 computing assigned variables
+                 DONE 8 computing assigned variables took 0
+               DONE 7 linking took 2
+               START 7 linking
+                 START 8 computing assigned variables
+                 DONE 8 computing assigned variables took 0
+               DONE 7 linking took 1
+               START 7 linking
+                 START 8 computing assigned variables
+                 DONE 8 computing assigned variables took 1
+               DONE 7 linking took 1
+               START 7 linking
+                 START 8 computing assigned variables
                  DONE 8 computing assigned variables took 1
                DONE 7 linking took 2
+               START 7 linking
+                 START 8 computing assigned variables
+                 DONE 8 computing assigned variables took 1
+               DONE 7 linking took 1
                START 7 linking
                  START 8 computing assigned variables
                  DONE 8 computing assigned variables took 0
@@ -580,40 +580,40 @@ Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
                DONE 7 linking took 4
                START 7 linking
                  START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 0
+                 DONE 8 computing assigned variables took 1
+               DONE 7 linking took 1
+               START 7 linking
+                 START 8 computing assigned variables
+                 DONE 8 computing assigned variables took 1
                DONE 7 linking took 1
                START 7 linking
                  START 8 computing assigned variables
                  DONE 8 computing assigned variables took 0
-               DONE 7 linking took 0
-               START 7 linking
-                 START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 0
                DONE 7 linking took 2
-             DONE 6 building for os.linux.x86_64 took 2083
-           DONE 5 building plugin `Livechat` in package `rocketchat:livechat` took 2178
+             DONE 6 building for os.linux.x86_64 took 2011
+           DONE 5 building plugin `Livechat` in package `rocketchat:livechat` took 2109
            START 5 determining active plugins
              START 6 loading plugin `Livechat` from package `rocketchat:livechat`
-             DONE 6 loading plugin `Livechat` from package `rocketchat:livechat` took 631
-           DONE 5 determining active plugins took 631
+             DONE 6 loading plugin `Livechat` from package `rocketchat:livechat` took 535
+           DONE 5 determining active plugins took 535
+           START 5 determining active plugins
+           DONE 5 determining active plugins took 1
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-           START 5 determining active plugins
-           DONE 5 determining active plugins took 0
-         DONE 4 building package rocketchat:livechat took 7051
-       DONE 3 preparing to build package rocketchat:livechat took 7052
+         DONE 4 building package rocketchat:livechat took 6485
+       DONE 3 preparing to build package rocketchat:livechat took 6485
        START 3 preparing to build package rocketchat:mongo-config
          START 4 building package rocketchat:mongo-config
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
            START 5 determining active plugins
-           DONE 5 determining active plugins took 1
+           DONE 5 determining active plugins took 0
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-         DONE 4 building package rocketchat:mongo-config took 40
-       DONE 3 preparing to build package rocketchat:mongo-config took 40
+         DONE 4 building package rocketchat:mongo-config took 10
+       DONE 3 preparing to build package rocketchat:mongo-config took 10
        START 3 loading package rocketchat:streamer@1.1.0
-       DONE 3 loading package rocketchat:streamer@1.1.0 took 31
+       DONE 3 loading package rocketchat:streamer@1.1.0 took 47
        START 3 preparing to build package rocketchat:version
          START 4 building package rocketchat:version
            START 5 building plugin `compileVersion` in package `rocketchat:version`
@@ -626,115 +626,182 @@ Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
                DONE 7 processing files with ecmascript (for target os.linux.x86_64) took 0
                START 7 linking
                  START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 0
-               DONE 7 linking took 2
+                 DONE 8 computing assigned variables took 1
+               DONE 7 linking took 1
                START 7 linking
                  START 8 computing assigned variables
-                 DONE 8 computing assigned variables took 1
-               DONE 7 linking took 6
-             DONE 6 building for os.linux.x86_64 took 158
-           DONE 5 building plugin `compileVersion` in package `rocketchat:version` took 186
+                 DONE 8 computing assigned variables took 2
+               DONE 7 linking took 5
+             DONE 6 building for os.linux.x86_64 took 146
+           DONE 5 building plugin `compileVersion` in package `rocketchat:version` took 148
            START 5 determining active plugins
              START 6 loading plugin `compileVersion` from package `rocketchat:version`
-             DONE 6 loading plugin `compileVersion` from package `rocketchat:version` took 32
+             DONE 6 loading plugin `compileVersion` from package `rocketchat:version` took 30
              START 6 running registerCompiler callback in package rocketchat:version
              DONE 6 running registerCompiler callback in package rocketchat:version took 0
-           DONE 5 determining active plugins took 33
+           DONE 5 determining active plugins took 30
            START 5 determining active plugins
            DONE 5 determining active plugins took 1
            START 5 determining active plugins
            DONE 5 determining active plugins took 0
-         DONE 4 building package rocketchat:version took 892
-       DONE 3 preparing to build package rocketchat:version took 893
+         DONE 4 building package rocketchat:version took 869
+       DONE 3 preparing to build package rocketchat:version took 869
        START 3 loading package session@1.2.2
-       DONE 3 loading package session@1.2.2 took 64
+       DONE 3 loading package session@1.2.2 took 148
        START 3 loading package shell-server@0.6.2
-       DONE 3 loading package shell-server@0.6.2 took 5
+       DONE 3 loading package shell-server@0.6.2 took 4
        START 3 loading package standard-minifier-css@1.9.3
-       DONE 3 loading package standard-minifier-css@1.9.3 took -881
+       DONE 3 loading package standard-minifier-css@1.9.3 took 1559
        START 3 loading package zodern:caching-minifier@0.5.0
-       DONE 3 loading package zodern:caching-minifier@0.5.0 took 487
+       DONE 3 loading package zodern:caching-minifier@0.5.0 took 95
        START 3 loading package zodern:standard-minifier-js@5.3.1
-       DONE 3 loading package zodern:standard-minifier-js@5.3.1 took 357
+       DONE 3 loading package zodern:standard-minifier-js@5.3.1 took 554
        START 3 loading package zodern:types@1.0.13
-       DONE 3 loading package zodern:types@1.0.13 took 93
-     DONE 2 building local packages took 17779
-   DONE 1 preparing project took 125565
- END CAPTURE 0 undefined took 125566
+       DONE 3 loading package zodern:types@1.0.13 took 86
+     DONE 2 building local packages took 18872
+   DONE 1 preparing project took 129611
+ END CAPTURE 0 undefined took 129613
  START CAPTURE 0 building the application took NaN
    START 1 determining active plugins
      START 2 loading plugin `minifyStdCSS` from package `standard-minifier-css`
-     DONE 2 loading plugin `minifyStdCSS` from package `standard-minifier-css` took 438
+     DONE 2 loading plugin `minifyStdCSS` from package `standard-minifier-css` took 360
      START 2 running registerMinifier callback in package standard-minifier-css
-     DONE 2 running registerMinifier callback in package standard-minifier-css took 1
+     DONE 2 running registerMinifier callback in package standard-minifier-css took 0
      START 2 loading plugin `compile-typescript` from package `typescript`
-     DONE 2 loading plugin `compile-typescript` from package `typescript` took 929
+     DONE 2 loading plugin `compile-typescript` from package `typescript` took 1429
      START 2 running registerCompiler callback in package typescript
      DONE 2 running registerCompiler callback in package typescript took 0
      START 2 loading plugin `types` from package `zodern:types`
-     DONE 2 loading plugin `types` from package `zodern:types` took 33
+     DONE 2 loading plugin `types` from package `zodern:types` took 73
      START 2 running registerCompiler callback in package zodern:types
      DONE 2 running registerCompiler callback in package zodern:types took 0
      START 2 running registerLinter callback in package zodern:types
      DONE 2 running registerLinter callback in package zodern:types took 1
      START 2 loading plugin `fastMinifier` from package `zodern:standard-minifier-js`
-     DONE 2 loading plugin `fastMinifier` from package `zodern:standard-minifier-js` took 73
+     DONE 2 loading plugin `fastMinifier` from package `zodern:standard-minifier-js` took 135
      START 2 running registerMinifier callback in package zodern:standard-minifier-js
      DONE 2 running registerMinifier callback in package zodern:standard-minifier-js took 1
-   DONE 1 determining active plugins took 1477
+   DONE 1 determining active plugins took 2001
    START 1 determining active plugins
-   DONE 1 determining active plugins took 1
+   DONE 1 determining active plugins took 0
    START 1 determining active plugins
    DONE 1 determining active plugins took 0
    START 1 building for web.browser
      START 2 linking the program
-     DONE 2 linking the program took 7
+     DONE 2 linking the program took 6
      START 2 processing files with ecmascript (for target web.browser)
-     DONE 2 processing files with ecmascript (for target web.browser) took 17
+     DONE 2 processing files with ecmascript (for target web.browser) took 16
      START 2 processing files with typescript (for target web.browser)
-     DONE 2 processing files with typescript (for target web.browser) took 52
+     DONE 2 processing files with typescript (for target web.browser) took 41
      START 2 processing files with zodern:types (for target web.browser)
-     DONE 2 processing files with zodern:types (for target web.browser) took 8
+     DONE 2 processing files with zodern:types (for target web.browser) took 5
      START 2 processing files with meteor (for target web.browser)
-     DONE 2 processing files with meteor (for target web.browser) took 22
+     DONE 2 processing files with meteor (for target web.browser) took 18
      START 2 processing files with rocketchat:version (for target web.browser)
 Processing file /app/utils/rocketchat-supported-versions.info
 Getting supported versions from https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=develop&includeDraftTag=8.1.0-develop
 Processed file /app/utils/rocketchat-supported-versions.info
 Processing file /app/utils/rocketchat.info
 Processed file /app/utils/rocketchat.info
-     DONE 2 processing files with rocketchat:version (for target web.browser) took 4451
-Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+     DONE 2 processing files with rocketchat:version (for target web.browser) took 3995
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
      START 2 minifying app stylesheet
- > Merging [ app/node_modules/overlayscrollbars/styles/overlayscrollbars.css ] > 18k > minifyingBrowserslist: caniuse-lite is outdated. Please run:
+ > Merging [ app/node_modules/overlayscrollbars/styles/overlayscrollbars.css ]Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ > 18k > minifyingBrowserslist: caniuse-lite is outdated. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
  > 15k
-Adding CSS     DONE 2 minifying app stylesheet took 5847
+Adding CSS     DONE 2 minifying app stylesheet took 5270
      START 2 minifying app stylesheet
  > Merging [ app/node_modules/swiper/swiper.css ] > 10k > minifying > 8k
-Adding CSS     DONE 2 minifying app stylesheet took 46
+Adding CSS     DONE 2 minifying app stylesheet took 48
      START 2 minifying app stylesheet
  > Merging [ app/node_modules/swiper/modules/zoom.css ] > 672 bytes > minifying > 480 bytes
-Adding CSS     DONE 2 minifying app stylesheet took 14
-     START 2 minifying app stylesheet
- > Merging [ app/node_modules/highlight.js/styles/github.css ] > 1k > minifying > 1k
-Adding CSS     DONE 2 minifying app stylesheet took 14
-     START 2 minifying app stylesheet
- > Merging [ app/node_modules/codemirror/addon/fold/foldgutter.css ] > 434 bytes > minifying > 375 bytes
 Adding CSS     DONE 2 minifying app stylesheet took 8
      START 2 minifying app stylesheet
+ > Merging [ app/node_modules/highlight.js/styles/github.css ] > 1k > minifying > 1k
+Adding CSS     DONE 2 minifying app stylesheet took 11
+     START 2 minifying app stylesheet
+ > Merging [ app/node_modules/codemirror/addon/fold/foldgutter.css ] > 434 bytes > minifying > 375 bytes
+Adding CSS     DONE 2 minifying app stylesheet took 7
+     START 2 minifying app stylesheet
  > Merging [ app/node_modules/codemirror/addon/dialog/dialog.css ] > 506 bytes > minifying > 409 bytes
-Adding CSS     DONE 2 minifying app stylesheet took 9
+Adding CSS     DONE 2 minifying app stylesheet took 8
      START 2 minifying app stylesheet
  > Merging [ app/node_modules/codemirror/lib/codemirror.css ] > 9k > minifying > 6k
-Adding CSS     DONE 2 minifying app stylesheet took 60
+Adding CSS     DONE 2 minifying app stylesheet took 48
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 17
+     DONE 2 linking took 733
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 8
+     DONE 2 linking took 11
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 13
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 3
@@ -745,11 +812,443 @@ Adding CSS     DONE 2 minifying app stylesheet took 60
      DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 19
-     DONE 2 linking took 821
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 5
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 10
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 24
+     DONE 2 linking took 63
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 6
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 12
+     DONE 2 linking took 67
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 8
+     DONE 2 linking took 32
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 7
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 13
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 6
+     DONE 2 linking took 17
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 4
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 4
+     DONE 2 linking took 17
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 8
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 9
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 6
+     DONE 2 linking took 7
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 7
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+     DONE 2 linking took 1990
+     START 2 minifying app code
+     DONE 2 minifying app code took 19862
+     START 2 minifying app stylesheet
+ > Merging [ app/app/theme/client/vendor/fontello/css/fontello.css app/client/views/room/contextualBar/Threads/components/threads.css app/client/views/room/composer/ComposerUserActionIndicator/ComposerUserActionIndicator.css app/client/views/medsense/uikit/medsenseUIKit.css app/app/emoji-emojione/client/activity-sprites.css app/app/emoji-emojione/client/emojione-sprites.css app/app/emoji-emojione/client/flags-sprites.css app/app/emoji-emojione/client/food-sprites.css app/app/emoji-emojione/client/modifier-sprites.css app/app/emoji-emojione/client/nature-sprites.css app/app/emoji-emojione/client/objects-sprites.css app/app/emoji-emojione/client/people-sprites.css app/app/emoji-emojione/client/regional-sprites.css app/app/emoji-emojione/client/symbols-sprites.css app/app/emoji-emojione/client/travel-sprites.css app/app/gitlab/client/gitlab-login-button.css app/app/theme/client/rocketchat.font.css app/app/wordpress/client/wordpress-login-button.css app/app/theme/client/main.css ] > 1385k > minifying > 757k
+Adding CSS     DONE 2 minifying app stylesheet took 4187
+   DONE 1 building for web.browser took 128237
+   START 1 building for web.browser.legacy
+     START 2 linking the program
+     DONE 2 linking the program took 5
+     START 2 processing files with ecmascript (for target web.browser.legacy)
+     DONE 2 processing files with ecmascript (for target web.browser.legacy) took 20
+     START 2 processing files with typescript (for target web.browser.legacy)
+     DONE 2 processing files with typescript (for target web.browser.legacy) took 52
+     START 2 processing files with zodern:types (for target web.browser.legacy)
+     DONE 2 processing files with zodern:types (for target web.browser.legacy) took 11
+     START 2 processing files with meteor (for target web.browser.legacy)
+     DONE 2 processing files with meteor (for target web.browser.legacy) took 20
+     START 2 processing files with rocketchat:version (for target web.browser.legacy)
+Processing file /app/utils/rocketchat-supported-versions.info
+Getting supported versions from https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=develop&includeDraftTag=8.1.0-develop
+Processed file /app/utils/rocketchat-supported-versions.info
+Processing file /app/utils/rocketchat.info
+Processed file /app/utils/rocketchat.info
+     DONE 2 processing files with rocketchat:version (for target web.browser.legacy) took 414
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 1
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 1
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 0
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 0
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 1
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 0
+     START 2 minifying app stylesheet
+     DONE 2 minifying app stylesheet took 0
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 7
+     DONE 2 linking took 788
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 9
+     DONE 2 linking took 11
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 34
+     DONE 2 linking took 47
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 6
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 20
+     DONE 2 linking took 68
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 10
+     DONE 2 linking took 14
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 23
+     DONE 2 linking took 68
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 7
+     DONE 2 linking took 46
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
      DONE 2 linking took 7
      START 2 linking
        START 3 computing assigned variables
@@ -757,271 +1256,59 @@ Adding CSS     DONE 2 minifying app stylesheet took 60
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 0
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 11
-     DONE 2 linking took 15
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 4
-     DONE 2 linking took 17
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
      DONE 2 linking took 12
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 32
-     DONE 2 linking took 78
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 9
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 13
-     DONE 2 linking took 70
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 9
-     DONE 2 linking took 35
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 6
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 0
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 12
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 6
+       DONE 3 computing assigned variables took 5
      DONE 2 linking took 20
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 4
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 0
      START 2 linking
        START 3 computing assigned variables
+       DONE 3 computing assigned variables took 24
+     DONE 2 linking took 30
+     START 2 linking
+       START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 4
-     DONE 2 linking took 16
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
      DONE 2 linking took 4
      START 2 linking
        START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 8
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 12
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 6
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 6
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 8
+       DONE 3 computing assigned variables took 3
      DONE 2 linking took 10
      START 2 linking
        START 3 computing assigned variables
@@ -1029,12 +1316,72 @@ Adding CSS     DONE 2 minifying app stylesheet took 60
      DONE 2 linking took 3
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 6
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
@@ -1045,23 +1392,43 @@ Adding CSS     DONE 2 minifying app stylesheet took 60
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 4
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
+     DONE 2 linking took 6
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
@@ -1070,439 +1437,79 @@ Adding CSS     DONE 2 minifying app stylesheet took 60
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 4
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
-     DONE 2 linking took 2337
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+     DONE 2 linking took 2425
      START 2 minifying app code
-     DONE 2 minifying app code took 20714
-     START 2 minifying app stylesheet
- > Merging [ app/app/theme/client/vendor/fontello/css/fontello.css app/client/views/room/contextualBar/Threads/components/threads.css app/client/views/room/composer/ComposerUserActionIndicator/ComposerUserActionIndicator.css app/client/views/medsense/uikit/medsenseUIKit.css app/app/emoji-emojione/client/activity-sprites.css app/app/emoji-emojione/client/emojione-sprites.css app/app/emoji-emojione/client/flags-sprites.css app/app/emoji-emojione/client/food-sprites.css app/app/emoji-emojione/client/modifier-sprites.css app/app/emoji-emojione/client/nature-sprites.css app/app/emoji-emojione/client/objects-sprites.css app/app/emoji-emojione/client/people-sprites.css app/app/emoji-emojione/client/regional-sprites.css app/app/emoji-emojione/client/symbols-sprites.css app/app/emoji-emojione/client/travel-sprites.css app/app/gitlab/client/gitlab-login-button.css app/app/theme/client/rocketchat.font.css app/app/wordpress/client/wordpress-login-button.css app/app/theme/client/main.css ] > 1384k > minifying > 757k
-Adding CSS     DONE 2 minifying app stylesheet took 4258
-   DONE 1 building for web.browser took 126046
-   START 1 building for web.browser.legacy
-     START 2 linking the program
-     DONE 2 linking the program took 6
-     START 2 processing files with ecmascript (for target web.browser.legacy)
-     DONE 2 processing files with ecmascript (for target web.browser.legacy) took 14
-     START 2 processing files with typescript (for target web.browser.legacy)
-     DONE 2 processing files with typescript (for target web.browser.legacy) took 54
-     START 2 processing files with zodern:types (for target web.browser.legacy)
-     DONE 2 processing files with zodern:types (for target web.browser.legacy) took 10
-     START 2 processing files with meteor (for target web.browser.legacy)
-     DONE 2 processing files with meteor (for target web.browser.legacy) took 19
-     START 2 processing files with rocketchat:version (for target web.browser.legacy)
-Processing file /app/utils/rocketchat-supported-versions.info
-Getting supported versions from https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=develop&includeDraftTag=8.1.0-develop
-Processed file /app/utils/rocketchat-supported-versions.info
-Processing file /app/utils/rocketchat.info
-Processed file /app/utils/rocketchat.info
-     DONE 2 processing files with rocketchat:version (for target web.browser.legacy) took 426
+     DONE 2 minifying app code took 14508
      START 2 minifying app stylesheet
      DONE 2 minifying app stylesheet took 1
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 0
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 1
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 0
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 1
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 1
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 8
-     DONE 2 linking took 827
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 11
-     DONE 2 linking took 15
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 47
-     DONE 2 linking took 67
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 9
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 6
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 27
-     DONE 2 linking took 91
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 12
-     DONE 2 linking took 17
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 26
-     DONE 2 linking took 80
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 12
-     DONE 2 linking took 55
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 8
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 15
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 16
-     DONE 2 linking took 25
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 0
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 28
-     DONE 2 linking took 36
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 0
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 4
-     DONE 2 linking took 11
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 4
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 6
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 0
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-     DONE 2 linking took 864
-     START 2 minifying app code
-     DONE 2 minifying app code took 16116
-     START 2 minifying app stylesheet
-     DONE 2 minifying app stylesheet took 1
-   DONE 1 building for web.browser.legacy took 132931
+   DONE 1 building for web.browser.legacy took 131986
    START 1 building for os.linux.x86_64
      START 2 linking the program
-     DONE 2 linking the program took 6
+     DONE 2 linking the program took 15
      START 2 processing files with ecmascript (for target os.linux.x86_64)
-     DONE 2 processing files with ecmascript (for target os.linux.x86_64) took 20
+     DONE 2 processing files with ecmascript (for target os.linux.x86_64) took 18
      START 2 processing files with typescript (for target os.linux.x86_64)
-     DONE 2 processing files with typescript (for target os.linux.x86_64) took 45
+     DONE 2 processing files with typescript (for target os.linux.x86_64) took 44
      START 2 processing files with zodern:types (for target os.linux.x86_64)
-     DONE 2 processing files with zodern:types (for target os.linux.x86_64) took 13
+     DONE 2 processing files with zodern:types (for target os.linux.x86_64) took 11
      START 2 processing files with rocketchat:version (for target os.linux.x86_64)
 Processing file /app/utils/rocketchat-supported-versions.info
 Getting supported versions from https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=develop&includeDraftTag=8.1.0-develop
-minifyStdCSS: Total CSS 1425k, minified 789k, reduction 45%
+minifyStdCSS: Total CSS 1425k, minified 790k, reduction 45%
 Processed file /app/utils/rocketchat-supported-versions.info
 Processing file /app/utils/rocketchat.info
 Processed file /app/utils/rocketchat.info
-     DONE 2 processing files with rocketchat:version (for target os.linux.x86_64) took 529
+     DONE 2 processing files with rocketchat:version (for target os.linux.x86_64) took 424
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
+       DONE 3 computing assigned variables took 0
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 2
-     DONE 2 linking took 340
+     DONE 2 linking took 339
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
@@ -1517,6 +1524,18 @@ Processed file /app/utils/rocketchat.info
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 1
      START 2 linking
@@ -1529,28 +1548,32 @@ Processed file /app/utils/rocketchat.info
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 3
-     DONE 2 linking took 6
+     DONE 2 linking took 7
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 19
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
@@ -1558,71 +1581,111 @@ Processed file /app/utils/rocketchat.info
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 13
+     DONE 2 linking took 68
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 15
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 5
+     DONE 2 linking took 35
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 3
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 13
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 2
-     DONE 2 linking took 24
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 14
-     DONE 2 linking took 82
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 22
+     DONE 2 linking took 5
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
+       DONE 3 computing assigned variables took 4
+     DONE 2 linking took 21
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 16
+     DONE 2 linking took 37
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 5
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 3
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 24
+     DONE 2 linking took 82
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 4
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 6
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 6
-     DONE 2 linking took 41
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 4
-     DONE 2 linking took 5
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
+     DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
@@ -1633,52 +1696,44 @@ Processed file /app/utils/rocketchat.info
      DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 18
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
+     DONE 2 linking took 12
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 5
      DONE 2 linking took 24
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 19
-     DONE 2 linking took 45
-     START 2 linking
-       START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 2
-     DONE 2 linking took 5
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 4
-     DONE 2 linking took 6
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 15
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
      DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 27
-     DONE 2 linking took 93
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 5
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
@@ -1686,7 +1741,15 @@ Processed file /app/utils/rocketchat.info
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
+     DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 2
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 1
@@ -1695,6 +1758,18 @@ Processed file /app/utils/rocketchat.info
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 4
+     DONE 2 linking took 19
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 2
@@ -1705,79 +1780,7 @@ Processed file /app/utils/rocketchat.info
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 5
-     DONE 2 linking took 29
-     START 2 linking
-       START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 18
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 2
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 5
-     DONE 2 linking took 20
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 17
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
@@ -1786,26 +1789,34 @@ Processed file /app/utils/rocketchat.info
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
-     DONE 2 linking took 0
+     DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 2
      DONE 2 linking took 4
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 2
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 1
+     START 2 linking
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 2
+     DONE 2 linking took 5
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 3
-     DONE 2 linking took 6
+       DONE 3 computing assigned variables took 1
+     DONE 2 linking took 12
      START 2 linking
        START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
+       DONE 3 computing assigned variables took 1
      DONE 2 linking took 1
      START 2 linking
        START 3 computing assigned variables
@@ -1822,24 +1833,16 @@ Processed file /app/utils/rocketchat.info
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 3
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 1
-     DONE 2 linking took 1
-     START 2 linking
-       START 3 computing assigned variables
-       DONE 3 computing assigned variables took 0
-     DONE 2 linking took 1
+     DONE 2 linking took 0
      START 2 linking
        START 3 computing assigned variables
        DONE 3 computing assigned variables took 0
      DONE 2 linking took 0
      START 2 linking
-     DONE 2 linking took 3646
-   DONE 1 building for os.linux.x86_64 took 61828
- END CAPTURE 0 building the application took 812030
+       START 3 computing assigned variables
+       DONE 3 computing assigned variables took 0
+     DONE 2 linking took 0
+     START 2 linking
+     DONE 2 linking took 3354
+   DONE 1 building for os.linux.x86_64 took 58486
+ END CAPTURE 0 building the application took 839723

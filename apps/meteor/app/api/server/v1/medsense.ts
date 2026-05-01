@@ -521,7 +521,9 @@ const uploadAfterHoursVoicemailRecording = async ({
 	contentType: string;
 	durationSeconds?: number | null;
 }) => {
-	const safeRecordingId = String(recordingSid || randomBytes(4).toString('hex')).replace(/[^a-z0-9_-]/gi, '').slice(0, 48);
+	const safeRecordingId = String(recordingSid || randomBytes(4).toString('hex'))
+		.replace(/[^a-z0-9_-]/gi, '')
+		.slice(0, 48);
 	const extension = getVoiceRecordingExtension(contentType);
 	const name = `after-hours-voicemail-${safeRecordingId}.${extension}`;
 	const fileStore = FileUpload.getStore('Uploads');
@@ -639,6 +641,7 @@ const DOCUMENTATION_SECTION_TYPES = new Set([
 ]);
 
 const DOCUMENTATION_FIELD_TYPES = new Set(['text', 'textarea', 'date', 'number', 'select', 'boolean', 'drug', 'repeater']);
+const DOCUMENTATION_SECTION_VISIBILITY_OPERATORS = new Set(['equals', 'includes']);
 
 const DEFAULT_DOCUMENTATION_PREFILL_CONFIDENCE_THRESHOLD = 0.8;
 
@@ -678,6 +681,33 @@ const normalizeTemplateOptions = (options: any): string[] | undefined => {
 		.filter(Boolean);
 
 	return normalized.length ? normalized : undefined;
+};
+
+const normalizeTemplateVisibilityCondition = (condition: any, path: string): any => {
+	if (condition === undefined || condition === null) {
+		return undefined;
+	}
+
+	const fieldKey = typeof condition?.fieldKey === 'string' ? condition.fieldKey.trim() : '';
+	const operator = typeof condition?.operator === 'string' ? condition.operator.trim() : '';
+
+	if (!fieldKey) {
+		throw new Meteor.Error('invalid-template-section', `Missing visibleWhen.fieldKey at ${path}`);
+	}
+
+	if (!DOCUMENTATION_SECTION_VISIBILITY_OPERATORS.has(operator)) {
+		throw new Meteor.Error('invalid-template-section', `Unsupported visibleWhen.operator "${operator}" at ${path}`);
+	}
+
+	if (condition?.value === undefined || condition?.value === null || String(condition.value).trim() === '') {
+		throw new Meteor.Error('invalid-template-section', `Missing visibleWhen.value at ${path}`);
+	}
+
+	return {
+		fieldKey,
+		operator,
+		value: String(condition.value).trim(),
+	};
 };
 
 const normalizeTemplateField = (field: any, index: number, path: string): any => {
@@ -757,6 +787,7 @@ const normalizeTemplateSection = (section: any, index: number): any => {
 		sortOrder: typeof section?.sortOrder === 'number' ? section.sortOrder : index,
 		pdfTitle: typeof section?.pdfTitle === 'string' ? section.pdfTitle.trim() : undefined,
 		visibleInPdf: section?.visibleInPdf !== false,
+		visibleWhen: normalizeTemplateVisibilityCondition(section?.visibleWhen, `sections[${index}].visibleWhen`),
 		fields: Array.isArray(section?.fields)
 			? section.fields.map((field: any, fieldIndex: number) =>
 					normalizeTemplateField(field, fieldIndex, `sections[${index}].fields[${fieldIndex}]`),
@@ -1394,6 +1425,7 @@ const callDocumentationPrefillWebhook = async ({
 				key: section.key,
 				title: section.title,
 				type: section.type,
+				visibleWhen: section.visibleWhen,
 				fields: (section.fields || []).map((field: any) => ({
 					key: field.key,
 					label: field.label,
@@ -7055,6 +7087,7 @@ API.v1.addRoute(
 					stepId: Match.Maybe(String),
 					selection: Match.Maybe([String]),
 					customText: Match.Maybe(String),
+					dismiss: Match.Maybe(Boolean),
 					responses: Match.Maybe([
 						Match.ObjectIncluding({
 							stepId: String,
@@ -7079,6 +7112,7 @@ API.v1.addRoute(
 			const requestedResponses = Array.isArray((this.bodyParams as any).responses)
 				? ((this.bodyParams as any).responses as Array<any>)
 				: [];
+			const shouldDismiss = Boolean((this.bodyParams as any).dismiss);
 
 			const room = await Rooms.findOneById(roomId, {
 				projection: {
@@ -7115,7 +7149,14 @@ API.v1.addRoute(
 			}
 
 			const responseMap = new Map<string, { selection?: string[]; customText?: string }>();
-			if (requestedResponses.length > 0) {
+			if (shouldDismiss) {
+				for (const pendingEntry of pendingForms) {
+					responseMap.set(pendingEntry.stepId, {
+						selection: ['decline'],
+						customText: '',
+					});
+				}
+			} else if (requestedResponses.length > 0) {
 				for (const response of requestedResponses) {
 					const responseStepId = typeof response?.stepId === 'string' ? response.stepId.trim() : '';
 					if (!responseStepId) {
@@ -7209,6 +7250,7 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				success: true,
+				dismissed: shouldDismiss,
 				response,
 				pendingCount: remainingForms.length,
 				showCompactReview: remainingForms.length === 0 && nextRoomFormSubmissions.length > 0,
@@ -8032,7 +8074,8 @@ API.v1.addRoute(
 			let uploadError: string | null = null;
 			let fileMessageError: string | null = null;
 			let noteMessageError: string | null = null;
-			const canDownloadRecording = recordingStatus !== 'absent' && recordingStatus !== 'failed' && Boolean(recordingUrl) && Boolean(botUserId);
+			const canDownloadRecording =
+				recordingStatus !== 'absent' && recordingStatus !== 'failed' && Boolean(recordingUrl) && Boolean(botUserId);
 			if (canDownloadRecording) {
 				try {
 					const recording = await downloadVoiceRecording(recordingUrl, String((payload as any).contentType || ''));
@@ -8116,8 +8159,7 @@ API.v1.addRoute(
 
 			const nowIso = new Date().toISOString();
 			const storageError =
-				uploadError ||
-				(recordingUrl && recordingStatus !== 'absent' && recordingStatus !== 'failed' && !botUserId ? botUserError : null);
+				uploadError || (recordingUrl && recordingStatus !== 'absent' && recordingStatus !== 'failed' && !botUserId ? botUserError : null);
 			const voicemailRecord = {
 				eventId: eventId || null,
 				recordingSid: recordingSid || null,

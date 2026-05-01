@@ -14,6 +14,14 @@ export type TemplateSectionCategory =
 
 export type TemplateFieldType = 'text' | 'textarea' | 'date' | 'number' | 'select' | 'boolean' | 'drug' | 'repeater';
 
+export type TemplateVisibilityOperator = 'equals' | 'includes';
+
+export interface ITemplateVisibilityCondition {
+	fieldKey: string;
+	operator: TemplateVisibilityOperator;
+	value: string;
+}
+
 export interface ITemplateField {
 	key: string;
 	label: string;
@@ -39,6 +47,7 @@ export interface ITemplateSection {
 	sortOrder: number;
 	pdfTitle?: string;
 	visibleInPdf: boolean;
+	visibleWhen?: ITemplateVisibilityCondition;
 	fields?: ITemplateField[];
 }
 

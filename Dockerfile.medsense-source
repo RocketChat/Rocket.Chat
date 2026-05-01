@@ -139,11 +139,44 @@ RUN echo "[build] patch apps-engine deno flags start" \
     done \
   && rm -f /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.lock \
   && echo "[build] patch apps-engine deno flags done"
+
+RUN echo "[build] patch apps-engine deno std imports start" \
+  && deno_runtime_lib=/app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/lib \
+  && if [ -d "$deno_runtime_lib" ]; then \
+    printf '%s\n' \
+      'export async function writeAll(writer: { write(p: Uint8Array): Promise<number> }, data: Uint8Array): Promise<void> {' \
+      '	let written = 0;' \
+      '	while (written < data.length) {' \
+      '		written += await writer.write(data.subarray(written));' \
+      '	}' \
+      '}' \
+      > "$deno_runtime_lib/writeAll.ts"; \
+    for deno_runtime_file in "$deno_runtime_lib/messenger.ts" "$deno_runtime_lib/metricsCollector.ts"; do \
+      if [ -f "$deno_runtime_file" ]; then \
+        sed -i "s|https://deno.land/std@0.216.0/io/write_all.ts|./writeAll.ts|g" "$deno_runtime_file"; \
+      else \
+        echo "[build] skip missing $deno_runtime_file"; \
+      fi; \
+    done; \
+  else \
+    echo "[build] skip deno std import patch; apps-engine deno runtime lib not found"; \
+  fi \
+  && echo "[build] patch apps-engine deno std imports done"
+
 RUN echo "[build] deno cache start" \
   && deno_config=/app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.jsonc \
   && deno_entry=/app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/main.ts \
   && if [ -f "$deno_config" ] && [ -f "$deno_entry" ]; then \
-    deno cache --no-lock --config "$deno_config" "$deno_entry"; \
+    for attempt in 1 2 3; do \
+      if deno cache --no-lock --config "$deno_config" "$deno_entry"; then \
+        break; \
+      fi; \
+      if [ "$attempt" -eq 3 ]; then \
+        exit 1; \
+      fi; \
+      echo "[build] deno cache failed; retrying in $((attempt * 10))s"; \
+      sleep $((attempt * 10)); \
+    done; \
   else \
     echo "[build] skip deno cache; apps-engine deno runtime files not found"; \
   fi \

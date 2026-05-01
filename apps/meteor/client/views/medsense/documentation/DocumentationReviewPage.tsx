@@ -60,6 +60,35 @@ const displayValue = (value: any): string =>
 					? 'Yes'
 					: 'No'
 				: String(value);
+const getConditionalValue = (draft: DraftState, fieldKey: string): any =>
+	draft.documentationValues[fieldKey] !== undefined ? draft.documentationValues[fieldKey] : draft.followUp[fieldKey];
+const conditionValueMatches = (actualValue: any, expectedValue: string, operator: 'equals' | 'includes'): boolean => {
+	if (operator === 'equals') {
+		return String(actualValue ?? '') === expectedValue;
+	}
+
+	if (Array.isArray(actualValue)) {
+		return actualValue.some((item) => String(item) === expectedValue);
+	}
+
+	if (typeof actualValue === 'string') {
+		return actualValue
+			.split(',')
+			.map((item) => item.trim())
+			.filter(Boolean)
+			.includes(expectedValue);
+	}
+
+	return String(actualValue ?? '') === expectedValue;
+};
+const isTemplateSectionVisible = (section: TemplateSection, draft: DraftState): boolean => {
+	if (!section.visibleWhen) {
+		return true;
+	}
+
+	const actualValue = getConditionalValue(draft, section.visibleWhen.fieldKey);
+	return conditionValueMatches(actualValue, section.visibleWhen.value, section.visibleWhen.operator);
+};
 const suggestionKey = (suggestion: Pick<Suggestion, 'fieldKey' | 'target' | 'rowIndex'>) =>
 	`${suggestion.target || 'documentation'}::${suggestion.fieldKey}::${suggestion.rowIndex ?? -1}`;
 const buildDraft = (bundle: BundleResponse): DraftState => ({
@@ -550,7 +579,7 @@ export const DocumentationReviewScreen = ({
 		}
 
 		for (const section of template.sections || []) {
-			if (section.type === 'signatures') {
+			if (section.type === 'signatures' || !isTemplateSectionVisible(section, draft)) {
 				continue;
 			}
 
@@ -872,7 +901,9 @@ export const DocumentationReviewScreen = ({
 		],
 	);
 
-	const prescriptionSection = template?.sections?.find((section) => section.type === 'prescriptions');
+	const prescriptionSection = template?.sections?.find(
+		(section) => section.type === 'prescriptions' && (!draft || isTemplateSectionVisible(section, draft)),
+	);
 	const prescriptionSuggestionRows =
 		draft?.suggestions
 			.filter((suggestion) => (suggestion.target || 'documentation') === 'prescription')
@@ -1041,7 +1072,10 @@ export const DocumentationReviewScreen = ({
 							</div>
 							<div className={prefillLoading ? 'ms-doc-disabled' : ''}>
 								{template.sections
-									.filter((section) => section.type !== 'signatures' && section.type !== 'prescriptions')
+									.filter(
+										(section) =>
+											section.type !== 'signatures' && section.type !== 'prescriptions' && isTemplateSectionVisible(section, draft),
+									)
 									.map((section) => {
 									const target: SuggestionTarget = section.type === 'follow_up' ? 'follow_up' : 'documentation';
 									return (

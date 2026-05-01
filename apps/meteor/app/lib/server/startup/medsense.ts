@@ -971,23 +971,6 @@ const seedMedsenseDocumentationTemplates = async () => {
 		console.log('[Medsense] Seeded UTI Documentation Template (uti_v1)');
 	}
 
-	if (
-		existingUTI &&
-		(!Array.isArray((existingUTI as any).interventionTypes) ||
-			!(existingUTI as any).interventionTypes.length ||
-			((existingUTI as any).interventionTypes.length === 1 && (existingUTI as any).interventionTypes[0] === 'other'))
-	) {
-		await MedsenseDocumentationTemplates.updateOne(
-			{ _id: existingUTI._id },
-			{
-				$set: {
-					interventionTypes: ['uti'],
-					_updatedAt: new Date(),
-				},
-			},
-		);
-	}
-
 	const existingMedsCheck = await MedsenseDocumentationTemplates.findOne({ key: 'medscheck_v1' });
 	if (!existingMedsCheck) {
 		await MedsenseDocumentationTemplates.insertOne({
@@ -1335,51 +1318,12 @@ const seedMedsenseDocumentationTemplates = async () => {
 		console.log('[Medsense] Seeded MedsCheck Documentation Template (medscheck_v1)');
 		return;
 	}
-
-	if (
-		!Array.isArray((existingMedsCheck as any).interventionTypes) ||
-		!(existingMedsCheck as any).interventionTypes.length ||
-		((existingMedsCheck as any).interventionTypes.length === 1 && (existingMedsCheck as any).interventionTypes[0] === 'other')
-	) {
-		await MedsenseDocumentationTemplates.updateOne(
-			{ _id: existingMedsCheck._id },
-			{
-				$set: {
-					interventionTypes: ['medication_review'],
-					_updatedAt: new Date(),
-				},
-			},
-		);
-	}
-
-	await MedsenseDocumentationTemplates.updateOne(
-		{ _id: existingMedsCheck._id },
-		{
-			$set: {
-				label: 'Medication Review',
-				specialtyActionIds: ['medsense-medication-review-app:medication_review_assessment'],
-				'pdfConfig.documentTitle': 'Medication Review Documentation Record',
-				'sections.1.fields.0.sourceKey': 'request.answers.medscheck_service_type',
-				'sections.2.fields.0.sourceKey': 'request.answers.allergies_and_intolerances',
-				'sections.2.fields.1.sourceKey': 'request.answers.no_known_allergies',
-				'sections.2.fields.2.sourceKey': 'request.answers.lifestyle_information',
-				'sections.3.fields.0.sourceKey': 'request.answers.medication_rows',
-				'sections.4.fields.0.sourceKey': 'request.answers.therapeutic_issue_rows',
-				'sections.5.fields.0.sourceKey': 'request.answers.discussion_topic_rows',
-				'sections.5.fields.1.sourceKey': 'request.answers.goal_rows',
-				'sections.5.fields.2.sourceKey': 'request.answers.resource_rows',
-				'sections.5.fields.3.sourceKey': 'request.answers.referral_rows',
-				_updatedAt: new Date(),
-			},
-		},
-	);
 };
 
 Meteor.startup(async () => {
 	await addMedsenseSettings();
 	await enforceMedsenseSettingGroup();
 	await removeLegacyVoiceSettings();
-	await seedMedsenseDocumentationTemplates();
 	registerMedsensePendingCallbacks();
 	registerMedsenseSessionSummaryCallbacks();
 	registerMedsenseVoiceCallbacks();

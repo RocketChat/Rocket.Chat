@@ -2,6 +2,8 @@ import { Document, Image, Page, StyleSheet, Text, View, pdf } from '@react-pdf/r
 import type { IMedsenseDocumentationTemplate, IMedsenseIntervention } from '@rocket.chat/core-typings';
 import React from 'react';
 
+type TemplateSection = NonNullable<IMedsenseDocumentationTemplate['sections']>[number];
+
 const styles = StyleSheet.create({
 	page: { padding: 30, fontSize: 11, fontFamily: 'Helvetica' },
 	header: { fontSize: 16, marginBottom: 20, textAlign: 'center', fontWeight: 'bold' },
@@ -39,6 +41,38 @@ const formatPdfValue = (value: any): string =>
 					? 'Yes'
 					: 'No'
 				: String(value);
+
+const getConditionalValue = (values: Record<string, any>, followUp: Record<string, any>, fieldKey: string): any =>
+	values[fieldKey] !== undefined ? values[fieldKey] : followUp[fieldKey];
+
+const conditionValueMatches = (actualValue: any, expectedValue: string, operator: 'equals' | 'includes'): boolean => {
+	if (operator === 'equals') {
+		return String(actualValue ?? '') === expectedValue;
+	}
+
+	if (Array.isArray(actualValue)) {
+		return actualValue.some((item) => String(item) === expectedValue);
+	}
+
+	if (typeof actualValue === 'string') {
+		return actualValue
+			.split(',')
+			.map((item) => item.trim())
+			.filter(Boolean)
+			.includes(expectedValue);
+	}
+
+	return String(actualValue ?? '') === expectedValue;
+};
+
+const isSectionVisible = (section: TemplateSection, values: Record<string, any>, followUp: Record<string, any>): boolean => {
+	if (!section.visibleWhen) {
+		return true;
+	}
+
+	const conditionValue = getConditionalValue(values, followUp, section.visibleWhen.fieldKey);
+	return conditionValueMatches(conditionValue, section.visibleWhen.value, section.visibleWhen.operator);
+};
 
 const renderRepeaterField = (field: any, rows: any[]) => {
 	const childFields = (field.fields || []).filter((child: any) => child.visibleInPdf !== false);
@@ -122,7 +156,10 @@ const PdfDocument = ({ intervention, template }: { intervention: IMedsenseInterv
 				</View>
 
 				{template.sections
-					?.filter((section) => section.visibleInPdf !== false && section.type !== 'signatures')
+					?.filter(
+						(section) =>
+							section.visibleInPdf !== false && section.type !== 'signatures' && isSectionVisible(section, values, followUp),
+					)
 					.map((section) => (
 						<View key={section.key} style={styles.section}>
 							<Text style={styles.sectionTitle}>{section.title}</Text>

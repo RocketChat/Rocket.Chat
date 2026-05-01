@@ -22,6 +22,18 @@ const isRecord = (value: unknown): value is Record<string, any> => Boolean(value
 const normalizeStringArray = (value: unknown): string[] =>
 	Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
 
+const normalizeVisibilityCondition = (value: Partial<ITemplateSection>['visibleWhen']) =>
+	value &&
+	typeof value.fieldKey === 'string' &&
+	(value.operator === 'equals' || value.operator === 'includes') &&
+	value.value !== undefined
+		? {
+				fieldKey: value.fieldKey.trim(),
+				operator: value.operator,
+				value: String(value.value).trim(),
+			}
+		: undefined;
+
 const normalizeField = (field: Partial<ITemplateField>, index: number): ITemplateField => {
 	const childFields = Array.isArray(field.fields)
 		? field.fields.map((childField, childIndex) => normalizeField(childField, childIndex))
@@ -56,6 +68,7 @@ const normalizeSection = (section: Partial<ITemplateSection>, index: number): IT
 	sortOrder: index,
 	pdfTitle: typeof section.pdfTitle === 'string' ? section.pdfTitle.trim() : undefined,
 	visibleInPdf: section.visibleInPdf !== false,
+	visibleWhen: normalizeVisibilityCondition(section.visibleWhen),
 	fields: Array.isArray(section.fields) ? section.fields.map((field, fieldIndex) => normalizeField(field, fieldIndex)) : [],
 });
 

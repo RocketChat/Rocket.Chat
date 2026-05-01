@@ -308,8 +308,10 @@ button.medsenseUIKit-inlineRow:hover {
 	margin-top: 12px;
 	display: flex;
 	justify-content: flex-end;
+	gap: 8px;
 }
 
+.medsenseUIKit-inlineForm__dismiss,
 .medsenseUIKit-inlineForm__submit {
 	width: auto;
 	min-height: 38px;
@@ -323,10 +325,21 @@ button.medsenseUIKit-inlineRow:hover {
 	cursor: pointer;
 }
 
+.medsenseUIKit-inlineForm__dismiss {
+	border-color: var(--medsense-border);
+	background: var(--medsense-row);
+	color: var(--medsense-text);
+}
+
+.medsenseUIKit-inlineForm__dismiss:hover {
+	background: var(--medsense-row-hover);
+}
+
 .medsenseUIKit-inlineForm__submit:hover {
 	background: var(--medsense-primary-hover);
 }
 
+.medsenseUIKit-inlineForm__dismiss:disabled,
 .medsenseUIKit-inlineForm__submit:disabled,
 .medsenseSmartFormsDock__switcherButton:disabled {
 	opacity: 0.5;
