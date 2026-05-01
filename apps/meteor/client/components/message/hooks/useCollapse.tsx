@@ -11,9 +11,13 @@ export const useCollapse = (attachmentCollapsed?: boolean, storageKey?: string):
 
 	const getInitialCollapsed = (): boolean => {
 		if (storageKey) {
-			const stored = sessionStorage.getItem(SESSION_STORAGE_PREFIX + storageKey);
-			if (stored !== null) {
-				return stored === 'true';
+			try {
+				const stored = sessionStorage.getItem(SESSION_STORAGE_PREFIX + storageKey);
+				if (stored !== null) {
+					return stored === 'true';
+				}
+			} catch {
+				// sessionStorage unavailable (private browsing, sandboxed iframe, quota exceeded)
 			}
 		}
 		return !!(collpaseByDefault || attachmentCollapsed);
@@ -25,7 +29,11 @@ export const useCollapse = (attachmentCollapsed?: boolean, storageKey?: string):
 		setCollapsed((prev) => {
 			const next = !prev;
 			if (storageKey) {
-				sessionStorage.setItem(SESSION_STORAGE_PREFIX + storageKey, String(next));
+				try {
+					sessionStorage.setItem(SESSION_STORAGE_PREFIX + storageKey, String(next));
+				} catch {
+					// sessionStorage unavailable
+				}
 			}
 			return next;
 		});
