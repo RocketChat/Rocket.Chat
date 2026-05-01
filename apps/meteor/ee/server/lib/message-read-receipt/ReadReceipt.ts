@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
-import { ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { IMessage, IRoom, IUser, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
+import { LivechatVisitors, ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
@@ -155,12 +155,21 @@ class ReadReceiptClass {
 
 		// get users for the receipts
 		const users = await Users.findByIds(userIds, { projection: { username: 1, name: 1 } }).toArray();
-		const usersMap = new Map(users.map((user) => [user._id, user]));
+		const usersMap: Map<string, Pick<IUser, '_id' | 'username' | 'name'>> = new Map(users.map((user) => [user._id, user]));
+
+		// Resolve livechat visitors for any unresolved user IDs
+		const unresolvedIds = userIds.filter((id) => !usersMap.has(id));
+		if (unresolvedIds.length > 0) {
+			const visitors = await LivechatVisitors.findByIds(unresolvedIds, { projection: { username: 1, name: 1 } }).toArray();
+			for (const visitor of visitors) {
+				usersMap.set(visitor._id, { _id: visitor._id, username: visitor.username, name: visitor.name });
+			}
+		}
 
 		return Promise.all(
 			receipts.map(async (receipt) => ({
 				...receipt,
-				user: usersMap.get(receipt.userId) as IReadReceiptWithUser['user'],
+				user: usersMap.get(receipt.userId),
 			})),
 		);
 	}
