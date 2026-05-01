@@ -375,7 +375,7 @@ export class AppManager {
 
 			this.listenerManager.releaseEssentialEvents(app);
 
-			app.getRuntimeController().stopApp();
+			void app.getRuntimeController().stopApp();
 		}
 
 		// Remove all the apps from the system now that we have unloaded everything
@@ -569,7 +569,7 @@ export class AppManager {
 
 		const aff = new AppFabricationFulfillment();
 		const result = await this.getParser().unpackageApp(appPackage);
-		const undoSteps: Array<() => void> = [];
+		const undoSteps: Array<() => Promise<void>> = [];
 
 		aff.setAppInfo(result.info);
 		aff.setImplementedInterfaces(result.implemented.getValues());
@@ -590,7 +590,7 @@ export class AppManager {
 			descriptor.sourcePath = await this.appSourceStorage.store(descriptor, appPackage);
 
 			undoSteps.push(() => this.appSourceStorage.remove(descriptor));
-		} catch (error) {
+		} catch {
 			aff.setStorageError('Failed to store app package');
 
 			return aff;
@@ -616,8 +616,8 @@ export class AppManager {
 		try {
 			await this.createAppUser(result.info);
 
-			undoSteps.push(() => this.removeAppUser(app));
-		} catch (err) {
+			undoSteps.push(async () => void this.removeAppUser(app));
+		} catch {
 			aff.setAppUserError({
 				username: `${result.info.nameSlug}.bot`,
 				message: 'Failed to create an app user for this app.',
@@ -748,7 +748,7 @@ export class AppManager {
 
 		try {
 			descriptor.sourcePath = await this.appSourceStorage.update(descriptor, appPackage);
-		} catch (error) {
+		} catch {
 			aff.setStorageError('Failed to storage app package');
 
 			return aff;
@@ -769,7 +769,7 @@ export class AppManager {
 		// Ensure there is an user for the app
 		try {
 			await this.createAppUser(result.info);
-		} catch (err) {
+		} catch {
 			aff.setAppUserError({
 				username: `${result.info.nameSlug}.bot`,
 				message: 'Failed to create an app user for this app.',
@@ -872,7 +872,7 @@ export class AppManager {
 			throw new Error('Can not change the status of an App which does not currently exist.');
 		}
 
-		const storageItem = await rl.getStorageItem();
+		const storageItem = rl.getStorageItem();
 
 		if (AppStatusUtils.isEnabled(status)) {
 			// Then enable it
@@ -914,7 +914,7 @@ export class AppManager {
 				const appStorageItem = app.getStorageItem();
 				const { subscriptionInfo } = appStorageItem.marketplaceInfo?.[0] || {};
 
-				if (subscriptionInfo && subscriptionInfo.license.license === appInfo.subscriptionInfo.license.license) {
+				if (subscriptionInfo?.license.license === appInfo.subscriptionInfo.license.license) {
 					return;
 				}
 
@@ -1020,7 +1020,7 @@ export class AppManager {
 			await app.call(AppMethod.ONINSTALL, context);
 
 			result = true;
-		} catch (e) {
+		} catch {
 			const status = AppStatus.ERROR_DISABLED;
 
 			result = false;
@@ -1038,7 +1038,7 @@ export class AppManager {
 			await app.call(AppMethod.ONUPDATE, { oldAppVersion, user });
 
 			result = true;
-		} catch (e) {
+		} catch {
 			const status = AppStatus.ERROR_DISABLED;
 
 			result = false;
@@ -1097,7 +1097,7 @@ export class AppManager {
 		await this.apiManager.unregisterApis(app.getID());
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
-		this.videoConfProviderManager.unregisterProviders(app.getID());
+		await this.videoConfProviderManager.unregisterProviders(app.getID());
 		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {
 			keepReferences: opts.keepOutboundCommunicationProviders,
 		});
@@ -1162,7 +1162,7 @@ export class AppManager {
 			await this.apiManager.registerApis(app.getID());
 			this.listenerManager.registerListeners(app);
 			this.listenerManager.releaseEssentialEvents(app);
-			this.videoConfProviderManager.registerProviders(app.getID());
+			await this.videoConfProviderManager.registerProviders(app.getID());
 			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
 			await this.purgeAppConfig(app, {
@@ -1219,7 +1219,7 @@ export class AppManager {
 			await app.call(AppMethod.ONUNINSTALL, context);
 
 			result = true;
-		} catch (e) {
+		} catch {
 			const status = AppStatus.ERROR_DISABLED;
 
 			result = false;

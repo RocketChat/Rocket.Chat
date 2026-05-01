@@ -1,5 +1,49 @@
 # @rocket.chat/ui-voip
 
+## 20.0.0
+
+### Minor Changes
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#39741](https://github.com/RocketChat/Rocket.Chat/pull/39741)) Fixes empty notifications sent when a voice call ends
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a, 2632182e429d337325fe3b1e28ea52ab12d99591, 21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0
+  - @rocket.chat/media-signaling@1.0.0
+  - @rocket.chat/fuselage-ui-kit@30.0.0
+  - @rocket.chat/ui-avatar@26.0.0
+  - @rocket.chat/ui-contexts@30.0.0
+  </details>
+
+## 20.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.2
+  - @rocket.chat/ui-avatar@26.0.0-rc.2
+  - @rocket.chat/ui-client@30.0.0-rc.2
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  </details>
+
+## 20.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2632182e429d337325fe3b1e28ea52ab12d99591]:</summary>
+
+  - @rocket.chat/media-signaling@1.0.0-rc.1
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.1
+  - @rocket.chat/ui-avatar@26.0.0-rc.1
+  - @rocket.chat/ui-client@30.0.0-rc.1
+  </details>
+
 ## 19.0.2
 
 ### Patch Changes
@@ -22,6 +66,25 @@
   - @rocket.chat/ui-avatar@25.0.1
   - @rocket.chat/ui-client@29.0.1
   - @rocket.chat/ui-contexts@29.0.1
+  </details>
+
+## 20.0.0-rc.0
+
+### Minor Changes
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#39741](https://github.com/RocketChat/Rocket.Chat/pull/39741)) Fixes empty notifications sent when a voice call ends
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a, 21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0-rc.0
+  - @rocket.chat/media-signaling@0.3.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.0
+  - @rocket.chat/ui-avatar@26.0.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
   </details>
 
 ## 19.0.0

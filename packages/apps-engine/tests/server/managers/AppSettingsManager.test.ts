@@ -115,7 +115,10 @@ describe('AppSettingsManager', () => {
 		assert.notStrictEqual(asm.getAppSetting('testing', 'testing'), mockStorageItem.settings.testing);
 		assert.deepStrictEqual(asm.getAppSetting('testing', 'testing'), mockStorageItem.settings.testing);
 		assert.throws(() => asm.getAppSetting('fake', 'testing'), { name: 'Error', message: 'No App found by the provided id.' });
-		assert.throws(() => asm.getAppSetting('testing', 'fake'), { name: 'Error', message: 'No setting found for the App by the provided id.' });
+		assert.throws(() => asm.getAppSetting('testing', 'fake'), {
+			name: 'Error',
+			message: 'No setting found for the App by the provided id.',
+		});
 		assert.throws(() => {
 			asm.getAppSetting('testing', 'testing').value = 'testing';
 		});
@@ -126,10 +129,7 @@ describe('AppSettingsManager', () => {
 
 		const updateSettingSpy = mock.method(mockStorage, 'updateSetting');
 		const callSpy = mock.method(mockApp, 'call');
-		const doOnAppSettingsChangeSpy = mock.method(
-			(mockBridges as TestsAppBridges).getAppDetailChangesBridge(),
-			'doOnAppSettingsChange',
-		);
+		const doOnAppSettingsChangeSpy = mock.method((mockBridges as TestsAppBridges).getAppDetailChangesBridge(), 'doOnAppSettingsChange');
 
 		await assert.rejects(() => asm.updateAppSetting('fake', TestData.getSetting()), {
 			name: 'Error',

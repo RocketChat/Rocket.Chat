@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.13.4",
+	"version": "0.14.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -33,7 +33,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"mongodb": "6.16.0",
 		"prettier": "~3.3.3",

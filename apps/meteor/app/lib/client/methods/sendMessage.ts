@@ -1,7 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { settings } from '../../../../client/lib/settings';
@@ -12,45 +10,46 @@ import { Messages, Rooms } from '../../../../client/stores';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { t } from '../../../utils/lib/i18n';
 
-Meteor.methods<ServerMethods>({
-	async sendMessage(message) {
-		const uid = getUserId();
-		if (!uid || trim(message.msg) === '') {
-			return false;
-		}
-		const messageAlreadyExists = message._id && Messages.state.get(message._id);
-		if (messageAlreadyExists) {
-			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
-		}
-		const user = getUser();
-		if (!user?.username) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
-		}
-		message.ts = new Date();
-		message.u = {
+export const runOptimisticSendMessage = async (
+	message: Partial<IMessage> & { rid: IMessage['rid']; msg: IMessage['msg'] },
+): Promise<void> => {
+	const uid = getUserId();
+	if (!uid || trim(message.msg) === '') {
+		return;
+	}
+	const messageAlreadyExists = message._id && Messages.state.get(message._id);
+	if (messageAlreadyExists) {
+		dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
+		return;
+	}
+	const user = getUser();
+	if (!user?.username) {
+		return;
+	}
+
+	const room = Rooms.state.get(message.rid);
+	if (room?.federated) {
+		return;
+	}
+
+	const optimistic: IMessage = {
+		...(message as IMessage),
+		ts: new Date(),
+		u: {
 			_id: uid,
 			username: user.username,
 			name: user.name || '',
-		};
-		message.temp = true;
-		if (settings.peek('Message_Read_Receipt_Enabled')) {
-			message.unread = true;
-		}
+		},
+		temp: true,
+		...(settings.peek('Message_Read_Receipt_Enabled') ? { unread: true } : {}),
+	};
 
-		// If the room is federated, send the message to matrix only
-		const room = Rooms.state.get(message.rid);
-		if (room?.federated) {
-			return;
-		}
+	const processed = await onClientMessageReceived(optimistic);
+	Messages.state.store(processed);
 
-		await onClientMessageReceived(message as IMessage).then((msg) => {
-			Messages.state.store(msg);
+	if (processed.tmid) {
+		upsertThreadMessageInCache(processed, processed.rid, processed.tmid);
+	}
 
-			if (msg.tmid) {
-				upsertThreadMessageInCache(msg, msg.rid, msg.tmid);
-			}
-
-			return clientCallbacks.run('afterSaveMessage', msg, { room, user });
-		});
-	},
-});
+	await clientCallbacks.run('afterSaveMessage', processed, { room, user });
+};

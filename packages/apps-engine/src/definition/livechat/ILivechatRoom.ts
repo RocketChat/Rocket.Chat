@@ -76,5 +76,5 @@ export const isLivechatRoom = (room: IRoom): room is ILivechatRoom => {
 	return room.type === RoomType.LIVE_CHAT;
 };
 export const isLivechatFromApp = (room: ILivechatRoom): room is ILivechatRoom & { source: IOmnichannelSourceApp } => {
-	return room.source && room.source.type === 'app';
+	return room.source?.type === 'app';
 };

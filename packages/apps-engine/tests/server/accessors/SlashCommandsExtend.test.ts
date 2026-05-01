@@ -38,12 +38,9 @@ describe('SlashCommandsExtend', () => {
 
 		await assert.doesNotReject(() => se.provideSlashCommand(mockCommand));
 		assert.strictEqual(commands.size, 1);
-		await assert.rejects(
-			() => se.provideSlashCommand(mockCommand),
-			{
-				name: 'CommandAlreadyExists',
-				message: 'The command "mock" already exists in the system.',
-			},
-		);
+		await assert.rejects(() => se.provideSlashCommand(mockCommand), {
+			name: 'CommandAlreadyExists',
+			message: 'The command "mock" already exists in the system.',
+		});
 	});
 });
