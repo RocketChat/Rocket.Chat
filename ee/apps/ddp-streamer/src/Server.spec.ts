@@ -106,3 +106,66 @@ describe('Server.call', () => {
 		});
 	});
 });
+
+describe('Server.parse', () => {
+	const server = new Server();
+
+	it('parses a text DDP frame', () => {
+		const packet = server.parse('{"msg":"ping","id":"1"}', false);
+		expect(packet).toEqual({ msg: 'ping', id: '1' });
+	});
+
+	it('decodes UTF-8 from a binary frame instead of throwing', () => {
+		const packet = server.parse(Buffer.from('{"msg":"ping","id":"1"}', 'utf8'), true);
+		expect(packet).toEqual({ msg: 'ping', id: '1' });
+	});
+
+	it('unwraps the SockJS array-frame format used by meteor clients', () => {
+		const inner = JSON.stringify({ msg: 'ping', id: '2' });
+		const wrapped = JSON.stringify([inner]);
+		const packet = server.parse(wrapped, false);
+		expect(packet).toEqual({ msg: 'ping', id: '2' });
+	});
+});
+
+describe('Server.call metrics', () => {
+	const makeMetrics = () => ({
+		register: jest.fn(),
+		hasMetric: jest.fn(),
+		increment: jest.fn(),
+		decrement: jest.fn(),
+		set: jest.fn(),
+		observe: jest.fn(),
+		reset: jest.fn(),
+		resetAll: jest.fn(),
+		timer: jest.fn().mockReturnValue(() => 0),
+	});
+
+	let server: Server;
+	let metrics: ReturnType<typeof makeMetrics>;
+
+	beforeEach(() => {
+		server = new Server();
+		metrics = makeMetrics();
+		server.setMetrics(metrics);
+		jest.clearAllMocks();
+	});
+
+	it('increments ddp_method_total with the namespace and ok status on success', async () => {
+		mockCallMethodWithToken.mockResolvedValue({ result: 'value' } as any);
+		await server.call(makeClient(), makePacket('livechat:doSomething'));
+		expect(metrics.increment).toHaveBeenCalledWith('ddp_method_total', { namespace: 'livechat', status: 'ok' }, 1);
+	});
+
+	it('increments ddp_method_total with status=error when MeteorService rejects', async () => {
+		mockCallMethodWithToken.mockRejectedValue(new Error('boom'));
+		await server.call(makeClient(), makePacket('meteor.loginWithPassword'));
+		expect(metrics.increment).toHaveBeenCalledWith('ddp_method_total', { namespace: 'meteor', status: 'error' }, 1);
+	});
+
+	it('uses the full method name as the namespace when the method has no separator', async () => {
+		mockCallMethodWithToken.mockResolvedValue({ result: undefined } as any);
+		await server.call(makeClient(), makePacket('sendMessage'));
+		expect(metrics.increment).toHaveBeenCalledWith('ddp_method_total', { namespace: 'sendMessage', status: 'ok' }, 1);
+	});
+});

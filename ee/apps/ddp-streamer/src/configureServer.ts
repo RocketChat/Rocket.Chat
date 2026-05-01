@@ -101,13 +101,15 @@ server.methods({
 		this.userToken = undefined;
 		this.userId = undefined;
 
-		// Close connection after return success to the method call.
-		// This ensures all the subscriptions will be closed, meteor makes it manually
-		// here https://github.com/meteor/meteor/blob/2377ebe879d9b965d699f599392d4e8047eb7d78/packages/ddp-server/livedata_server.js#L781
-		// re doing the default subscriptions.
-		setTimeout(() => {
+		// Close after Server.call has enqueued the `result` and `updated` frames in the ws
+		// send queue. setImmediate runs in the next event-loop iteration's check phase — after
+		// the sync sends here, but the ws library still guarantees frame ordering on the wire,
+		// so the Close frame is written after the data frames.
+		// Mirrors Meteor's logout-then-close from
+		// https://github.com/meteor/meteor/blob/2377ebe879d9b965d699f599392d4e8047eb7d78/packages/ddp-server/livedata_server.js#L781.
+		setImmediate(() => {
 			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
-		}, 1);
+		});
 	},
 	'UserPresence:setDefaultStatus'(status) {
 		const { userId } = this;

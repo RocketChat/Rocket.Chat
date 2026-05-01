@@ -113,6 +113,27 @@ export class DDPStreamer extends ServiceClass {
 			description: 'Users logged by streamer',
 		});
 
+		metrics.register({
+			name: 'ddp_method_total',
+			type: 'counter',
+			labelNames: ['namespace', 'status'],
+			description: 'DDP method calls by namespace and outcome',
+		});
+
+		metrics.register({
+			name: 'ddp_close_total',
+			type: 'counter',
+			labelNames: ['code'],
+			description: 'DDP WebSocket close events by code',
+		});
+
+		metrics.register({
+			name: 'ddp_send_buffer_bytes',
+			type: 'gauge',
+			labelNames: ['nodeID'],
+			description: 'Maximum WebSocket send buffer size across connected clients (bytes)',
+		});
+
 		server.setMetrics(metrics);
 
 		server.on(DDP_EVENTS.CONNECTED, () => {
@@ -123,12 +144,28 @@ export class DDPStreamer extends ServiceClass {
 			metrics.increment('users_logged', { nodeID }, 1);
 		});
 
-		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
+		server.on(DDP_EVENTS.DISCONNECTED, ({ userId, closeCode }: Client) => {
 			metrics.decrement('users_connected', { nodeID }, 1);
 			if (userId) {
 				metrics.decrement('users_logged', { nodeID }, 1);
 			}
+			metrics.increment('ddp_close_total', { code: String(closeCode ?? 'unknown') }, 1);
 		});
+
+		// Periodically sample the maximum send-buffer depth across all live connections.
+		// Exposes when a single peer is starting to fall behind before we hit the 1013 kick.
+		const sampleSendBuffer = (): void => {
+			let max = 0;
+			this.wss?.clients.forEach((ws) => {
+				if (ws.bufferedAmount > max) {
+					max = ws.bufferedAmount;
+				}
+			});
+			metrics.set('ddp_send_buffer_bytes', max, { nodeID });
+		};
+		const sampleInterval = setInterval(sampleSendBuffer, 5000);
+		// `unref` avoids holding the event loop open during shutdown.
+		sampleInterval.unref?.();
 
 		async function sendUserData(client: Client, userId: string) {
 			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
