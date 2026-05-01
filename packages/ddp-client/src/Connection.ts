@@ -109,8 +109,17 @@ export class ConnectionImpl
 	}
 
 	reconnect(): Promise<boolean> {
+		// Idempotent — if another caller already started (or finished) a connection
+		// since this reconnect was scheduled, we don't need to do anything. The
+		// retry timer enqueued by `ws.onclose` runs with no awareness of any
+		// concurrent `connect()` (e.g. the consumer's own bootstrap or
+		// resume-on-userId-change path), so without this guard a late timer
+		// rejected with "Connection in progress" — and because the timer fires
+		// from `void this.reconnect()` the rejection became an unhandled
+		// rejection at the page level.
 		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.reject(new Error('Connection in progress'));
+			clearTimeout(this.retryOptions.retryTimer);
+			return Promise.resolve(true);
 		}
 
 		clearTimeout(this.retryOptions.retryTimer);
@@ -123,8 +132,14 @@ export class ConnectionImpl
 	}
 
 	connect() {
+		// Same idempotency guard as `reconnect()` — multiple call sites
+		// (`reconnect()`, ws.onclose retry timer, external `startConnect`) can
+		// race; rejecting forced every caller to wrap in `.catch(() => {})`
+		// just to silence noise, and the internal timer's `void this.reconnect()`
+		// path didn't have a catch at all.
 		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.reject(new Error('Connection in progress'));
+			clearTimeout(this.retryOptions.retryTimer);
+			return Promise.resolve(true);
 		}
 
 		this.status = 'connecting';
@@ -183,6 +198,15 @@ export class ConnectionImpl
 			};
 
 			ws.onclose = () => {
+				// If a newer ws has already taken over (this socket was closed
+				// after `connect()` opened a replacement), ignore the late
+				// onclose. Otherwise its handler would clobber `this.status` and
+				// `retryCount`, and could even schedule a redundant retry timer
+				// that fires while the new socket is healthy — observed as the
+				// "Connection in progress" pageError racing on every reconnect.
+				if (this.ws !== ws) {
+					return;
+				}
 				clearTimeout(this.retryOptions.retryTimer);
 				if (this.status === 'closed') {
 					return;
@@ -198,6 +222,16 @@ export class ConnectionImpl
 				this.retryCount += 1;
 
 				this.retryOptions.retryTimer = setTimeout(() => {
+					// Re-check the status when the timer actually fires. If the
+					// consumer bootstrapped a fresh `connect()` in the meantime
+					// (status flipped from 'disconnected' to 'connecting' or
+					// 'connected'), there's nothing for us to do. Without this
+					// the timer would call `this.reconnect()`, which (pre-this
+					// patch) rejected with "Connection in progress" and surfaced
+					// as an unhandled rejection.
+					if (this.status === 'connecting' || this.status === 'connected' || this.status === 'closed') {
+						return;
+					}
 					void this.reconnect();
 				}, this.retryOptions.retryTime * this.retryCount);
 			};
