@@ -652,18 +652,23 @@ export class AppManager {
 				// If an error occurs during this, oh well.
 			});
 
-		await this.installApp(app, user);
+		const installed = await this.installApp(app, user);
+
+		if (!installed) {
+			aff.setStorageError('App installation failed');
+			await Promise.all(undoSteps.map((undoer) => undoer()));
+			return aff;
+		}
 
 		// Should enable === true, then we go through the entire start up process
 		// Otherwise, we only initialize it.
 		if (enable) {
-			// Start up the app
 			await this.runStartUpProcess(created, app, false);
 		} else {
 			await this.initializeApp(app);
 		}
-
 		return aff;
+
 	}
 
 	/**
