@@ -52,4 +52,24 @@ test.describe.serial('read-receipts-thread', () => {
 
 		await expect(poHomeChannel.content.lastUserThreadMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 	});
+
+	test('should show read receipt as viewed when the last unread user opens the thread', async ({ browser }) => {
+		const { page: auxPage } = await createAuxContext(browser, Users.user1);
+		auxContext = { page: auxPage, poHomeChannel: new HomeChannel(auxPage) };
+		await auxContext.poHomeChannel.navbar.openChat(targetChannel);
+
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('thread for delayed read');
+		await poHomeChannel.content.openReplyInThread();
+		await poHomeChannel.content.sendMessageInThread('reply in thread');
+
+		await expect(poHomeChannel.content.lastUserThreadMessage.getByRole('status', { name: 'Message sent' })).toBeVisible();
+
+		await expect(auxContext.poHomeChannel.content.lastThreadMessagePreview).toContainText('reply in thread');
+
+		await auxContext.poHomeChannel.content.openReplyInThread();
+
+		await expect(poHomeChannel.content.lastUserThreadMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
+		await expect(auxContext.poHomeChannel.content.lastUserThreadMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
+	});
 });

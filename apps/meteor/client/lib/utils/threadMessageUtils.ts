@@ -1,4 +1,4 @@
-import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { QueryClient } from '@tanstack/react-query';
 import type { Condition, Filter } from 'mongodb';
@@ -66,4 +66,40 @@ export const upsertThreadMessageInCache = (
 		}
 		return [...old, message].sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 	});
+};
+
+export const markThreadMessagesAsRead = (messages: IThreadMessage[], until?: Date): IThreadMessage[] => {
+	return messages.map((msg) => {
+		if (!msg.unread) {
+			return msg;
+		}
+		if (until && new Date(msg.ts) > until) {
+			return msg;
+		}
+		const { unread: _, ...rest } = msg;
+		return rest as IThreadMessage;
+	});
+};
+
+export const mergeThreadMessages = (cachedMessages: IThreadMessage[], fetchedMessages: IThreadMessage[]): IThreadMessage[] => {
+	const messageMap = new Map<string, IThreadMessage>();
+
+	for (const msg of cachedMessages) {
+		messageMap.set(msg._id, msg);
+	}
+
+	for (const msg of fetchedMessages) {
+		const existing = messageMap.get(msg._id);
+		if (!existing) {
+			messageMap.set(msg._id, msg);
+		} else {
+			const msgTime = new Date(msg._updatedAt ?? msg.ts).getTime();
+			const existingTime = new Date(existing._updatedAt ?? existing.ts).getTime();
+			if (msgTime > existingTime) {
+				messageMap.set(msg._id, msg);
+			}
+		}
+	}
+
+	return Array.from(messageMap.values()).sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 };
