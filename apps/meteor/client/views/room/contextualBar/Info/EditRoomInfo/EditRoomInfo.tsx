@@ -483,6 +483,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																options={sysMesOptions}
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
+																aria-label={t('Select_messages_to_hide')}
 															/>
 														)}
 													/>
