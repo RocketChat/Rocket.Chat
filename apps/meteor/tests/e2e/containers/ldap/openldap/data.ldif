@@ -1,0 +1,360 @@
+version: 1
+
+dn: dc=space,dc=air
+objectClass: dcObject
+objectClass: organization
+objectClass: top
+dc: space
+o: spaceair
+
+dn: ou=users,dc=space,dc=air
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: ou=others,dc=space,dc=air
+objectClass: organizationalUnit
+objectClass: top
+ou: others
+
+dn: cn=astronauts,dc=space,dc=air
+objectClass: groupOfNames
+objectClass: top
+cn: astronauts
+member: uid=alan.bean,ou=users,dc=space,dc=air
+member: uid=alan.shepard,ou=users,dc=space,dc=air
+member: uid=buzz.aldrin,ou=users,dc=space,dc=air
+member: uid=charles.duke,ou=users,dc=space,dc=air
+member: uid=david.scott,ou=users,dc=space,dc=air
+member: uid=edgar.mitchell,ou=users,dc=space,dc=air
+member: uid=gene.cernan,ou=users,dc=space,dc=air
+member: uid=harrison.schmitt,ou=users,dc=space,dc=air
+member: uid=james.irwin,ou=users,dc=space,dc=air
+member: uid=john.young,ou=users,dc=space,dc=air
+member: uid=neil.armstrong,ou=users,dc=space,dc=air
+member: uid=pete.conrad,ou=users,dc=space,dc=air
+
+dn: cn=cosmonauts,dc=space,dc=air
+objectClass: groupOfNames
+objectClass: top
+cn: cosmonauts
+member: uid=alexei.leonov,ou=users,dc=space,dc=air
+member: uid=sergei.krikalev,ou=users,dc=space,dc=air
+member: uid=svetlana.savitskaya,ou=users,dc=space,dc=air
+member: uid=valentina.tereshkova,ou=users,dc=space,dc=air
+member: uid=valeri.polyakov,ou=users,dc=space,dc=air
+member: uid=vladimir.komarov,ou=users,dc=space,dc=air
+member: uid=yuri.gagarin,ou=users,dc=space,dc=air
+member: uid=yuri.romanenko,ou=users,dc=space,dc=air
+
+dn: uid=alan.bean,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Alan Bean
+sn: Alan
+mail: alan.bean@space.air
+uid: alan.bean
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=john.young,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: John Young
+sn: John
+mail: john.young@space.air
+uid: john.young
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=buzz.aldrin,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Buzz Aldrin
+sn: Buzz
+mail: buzz.aldrin@space.air
+uid: buzz.aldrin
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=david.scott,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: David Scott
+sn: David
+mail: david.scott@space.air
+uid: david.scott
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=gene.cernan,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Gene Cernan
+sn: Gene
+mail: gene.cernan@space.air
+uid: gene.cernan
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=james.irwin,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: James Irwin
+sn: James
+mail: james.irwin@space.air
+uid: james.irwin
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=pete.conrad,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Pete Conrad
+sn: Pete
+mail: pete.conrad@space.air
+uid: pete.conrad
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=alan.shepard,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Alan Shepard
+sn: Alan
+mail: alan.shepard@space.air
+uid: alan.shepard
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=charles.duke,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Charles Duke
+sn: Charles
+mail: charles.duke@space.air
+uid: charles.duke
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=yuri.gagarin,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Yuri Gagarin
+sn: Yuri
+mail: yuri.gagarin@space.air
+uid: yuri.gagarin
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=alexei.leonov,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Alexei Leonov
+sn: Alexei
+mail: alexei.leonov@space.air
+uid: alexei.leonov
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=gherman.titov,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Gherman Titov
+sn: Gherman
+mail: gherman.titov@space.air
+uid: gherman.titov
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=edgar.mitchell,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Edgar Mitchell
+sn: Edgar
+mail: edgar.mitchell@space.air
+uid: edgar.mitchell
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=neil.armstrong,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Neil Armstrong
+sn: Neil
+mail: neil.armstrong@space.air
+uid: neil.armstrong
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=yuri.romanenko,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Yuri Romanenko
+sn: Yuri
+mail: yuri.romanenko@space.air
+uid: yuri.romanenko
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=sergei.krikalev,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Sergei Krikalev
+sn: Sergei
+mail: sergei.krikalev@space.air
+uid: sergei.krikalev
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=userwithnoemail,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: User With No Email
+sn: NoEmail
+uid: userwithnoemail
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=valeri.polyakov,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Valeri Polyakov
+sn: Valeri
+mail: valeri.polyakov@space.air
+uid: valeri.polyakov
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=harrison.schmitt,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Harrison Schmitt
+sn: Harrison
+mail: harrison.schmitt@space.air
+uid: harrison.schmitt
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=vladimir.komarov,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Vladimir Komarov
+sn: Vladimir
+mail: vladimir.komarov@space.air
+uid: vladimir.komarov
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=svetlana.savitskaya,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Svetlana Savitskaya
+sn: Svetlana
+mail: svetlana.savitskaya@space.air
+uid: svetlana.savitskaya
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=valentina.tereshkova,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Valentina Tereshkova
+sn: Valentina
+mail: valentina.tereshkova@space.air
+uid: valentina.tereshkova
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=user1,ou=others,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: User 1
+sn: 1
+mail: user1@domain.mail
+uid: user1
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=user2,ou=others,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: User 2
+sn: 2
+mail: user2@domain.mail
+uid: user2
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
