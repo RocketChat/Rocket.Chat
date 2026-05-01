@@ -64,7 +64,7 @@ const removeSystemMessageChip = async (translationKey: string) => {
 };
 
 const selectSystemMessageOption = async (translationKey: string) => {
-	const trigger = screen.getByRole('button', { name: /Select messages to hide/i });
+	const trigger = screen.getByRole('combobox', { name: /Select messages to hide/i });
 	await userEvent.click(trigger);
 
 	const listboxes = await screen.findAllByRole('listbox', { hidden: true });
