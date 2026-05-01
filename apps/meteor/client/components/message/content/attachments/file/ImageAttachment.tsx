@@ -25,7 +25,7 @@ const ImageAttachment = ({
 
 	return (
 		<>
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed} attachmentId={id}>
 				<AttachmentImage
 					{...imageDimensions}
 					loadImage={loadImage}
