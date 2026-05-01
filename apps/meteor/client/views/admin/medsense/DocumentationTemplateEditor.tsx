@@ -22,6 +22,11 @@ const SECTION_TYPE_OPTIONS: [string, string][] = [
 	['signatures', 'Signatures'],
 ];
 
+const SECTION_VISIBILITY_OPERATOR_OPTIONS: [string, string][] = [
+	['includes', 'Includes'],
+	['equals', 'Equals'],
+];
+
 const FIELD_TYPE_OPTIONS: [string, string][] = [
 	['text', 'Text'],
 	['textarea', 'Textarea'],
@@ -302,6 +307,17 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 	const addSection = () => updateSections((sections) => [...sections, buildDefaultSection(sections.length)]);
 	const updateSection = (sectionIndex: number, update: Partial<ITemplateSection>) => {
 		updateSections((sections) => sections.map((section, index) => (index === sectionIndex ? { ...section, ...update } : section)));
+	};
+	const updateSectionVisibility = (sectionIndex: number, update: Partial<NonNullable<ITemplateSection['visibleWhen']>>) => {
+		const section = sections[sectionIndex];
+		updateSection(sectionIndex, {
+			visibleWhen: {
+				fieldKey: section?.visibleWhen?.fieldKey || '',
+				operator: section?.visibleWhen?.operator || 'includes',
+				value: section?.visibleWhen?.value || '',
+				...update,
+			},
+		});
 	};
 	const removeSection = (sectionIndex: number) => updateSections((sections) => sections.filter((_, index) => index !== sectionIndex));
 	const addField = (sectionIndex: number) => {
@@ -669,6 +685,56 @@ const DocumentationTemplateEditor = ({ templateId, onBack }: { templateId: strin
 							checked={section.visibleInPdf !== false}
 							onChange={(checked) => updateSection(sectionIndex, { visibleInPdf: checked })}
 						/>
+
+						<Box mb='x16' p='x12' borderWidth='default' borderColor='extra-light' borderRadius='x4'>
+							<CheckboxRow
+								label='Show section only when another field matches'
+								checked={Boolean(section.visibleWhen)}
+								onChange={(checked) =>
+									updateSection(sectionIndex, {
+										visibleWhen: checked ? { fieldKey: '', operator: 'includes', value: '' } : undefined,
+									})
+								}
+							/>
+							{section.visibleWhen && (
+								<FieldGroup>
+									<Field>
+										<FieldLabel>Condition Field Key</FieldLabel>
+										<FieldRow>
+											<TextInput
+												value={section.visibleWhen.fieldKey || ''}
+												onChange={(event: any) => updateSectionVisibility(sectionIndex, { fieldKey: event.currentTarget.value })}
+												placeholder='action_taken'
+											/>
+										</FieldRow>
+									</Field>
+									<Field>
+										<FieldLabel>Condition Operator</FieldLabel>
+										<FieldRow>
+											<Select
+												options={SECTION_VISIBILITY_OPERATOR_OPTIONS}
+												value={section.visibleWhen.operator || 'includes'}
+												onChange={(value) =>
+													updateSectionVisibility(sectionIndex, {
+														operator: String(value) as NonNullable<ITemplateSection['visibleWhen']>['operator'],
+													})
+												}
+											/>
+										</FieldRow>
+									</Field>
+									<Field>
+										<FieldLabel>Condition Value</FieldLabel>
+										<FieldRow>
+											<TextInput
+												value={section.visibleWhen.value || ''}
+												onChange={(event: any) => updateSectionVisibility(sectionIndex, { value: event.currentTarget.value })}
+												placeholder='Prescribed'
+											/>
+										</FieldRow>
+									</Field>
+								</FieldGroup>
+							)}
+						</Box>
 
 						{section.type !== 'signatures' && (
 							<>
