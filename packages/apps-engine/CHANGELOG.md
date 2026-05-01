@@ -1,10 +1,38 @@
 # @rocket.chat/apps-engine
 
+## 1.62.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#40125](https://github.com/RocketChat/Rocket.Chat/pull/40125)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#39883](https://github.com/RocketChat/Rocket.Chat/pull/39883)) Fixes the issue of the lacking MessageUpdater not being available to apps during runtime
+
 ## 1.61.1
 
 ### Patch Changes
 
 - ([#40130](https://github.com/RocketChat/Rocket.Chat/pull/40130) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+## 1.62.0-rc.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#40125](https://github.com/RocketChat/Rocket.Chat/pull/40125)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#39883](https://github.com/RocketChat/Rocket.Chat/pull/39883)) Fixes the issue of the lacking MessageUpdater not being available to apps during runtime
 
 ## 1.61.0
 

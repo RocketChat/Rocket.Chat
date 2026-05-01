@@ -1,5 +1,38 @@
 # @rocket.chat/omni-core
 
+## 0.1.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+### Patch Changes
+
+- ([#40175](https://github.com/RocketChat/Rocket.Chat/pull/40175)) Fixes an issue where the Omnichannel routing system ignored the `Livechat_accept_chats_with_no_agents` setting. Now, offline agents are correctly considered for assignment when the setting allows it.
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/models@2.2.0
+  </details>
+
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@2.2.0-rc.2
+  </details>
+
+## 0.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@2.2.0-rc.1
+  </details>
+
 ## 0.0.20
 
 ### Patch Changes
@@ -16,6 +49,21 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/models@2.1.3
+  </details>
+
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+### Patch Changes
+
+- ([#40175](https://github.com/RocketChat/Rocket.Chat/pull/40175)) Fixes an issue where the Omnichannel routing system ignored the `Livechat_accept_chats_with_no_agents` setting. Now, offline agents are correctly considered for assignment when the setting allows it.
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/models@2.2.0-rc.0
   </details>
 
 ## 0.0.18
