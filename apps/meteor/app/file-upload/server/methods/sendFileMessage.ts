@@ -19,6 +19,7 @@ import { omit } from '../../../../lib/utils/omit';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
 
@@ -235,6 +236,7 @@ export const sendFileMessage = async (
 
 Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
+		methodDeprecationLogger.method('sendFileMessage', '9.0.0', '/v1/rooms.mediaConfirm/:rid/:fileId');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

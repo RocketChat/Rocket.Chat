@@ -1,6 +1,5 @@
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { afterLogoutCleanUpCallback } from '@rocket.chat/ui-client';
 import { type LocationPathname, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
@@ -83,7 +82,6 @@ const commands = {
 		Meteor.logout(() => {
 			if (!user) return;
 
-			void afterLogoutCleanUpCallback.run(user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
 			return router.navigate('/home');
 		});

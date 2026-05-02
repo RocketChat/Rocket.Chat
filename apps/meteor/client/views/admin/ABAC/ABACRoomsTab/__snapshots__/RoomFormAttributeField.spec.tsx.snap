@@ -48,10 +48,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            aria-invalid="false"
-            aria-required="false"
             class="rcx-box rcx-box--full rcx-select rcx-css-1te28na"
-            name="attributes.0.values"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1sr8su7"
@@ -62,7 +59,11 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
                 <button
                   aria-expanded="false"
                   aria-haspopup="listbox"
+                  aria-invalid="false"
+                  aria-required="false"
                   class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-3fq6z9"
+                  name="attributes.0.values"
+                  role="combobox"
                   type="button"
                 >
                   ABAC_Select_Attribute_Values

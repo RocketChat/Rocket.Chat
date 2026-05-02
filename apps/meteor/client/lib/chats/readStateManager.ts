@@ -138,7 +138,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 		// if there are unloaded unread messages, don't mark as read
-		if (RoomHistoryManager.getRoom(this.rid).unreadNotLoaded.get() > 0) {
+		if (RoomHistoryManager.getRoom(this.rid).unreadNotLoaded > 0) {
 			return;
 		}
 
@@ -160,7 +160,7 @@ export class ReadStateManager extends Emitter {
 		}
 
 		return sdk.rest.post('/v1/subscriptions.read', { rid: this.rid }).then(() => {
-			RoomHistoryManager.getRoom(this.rid).unreadNotLoaded.set(0);
+			RoomHistoryManager.updateRoom(this.rid, { unreadNotLoaded: 0 });
 		});
 	}
 }

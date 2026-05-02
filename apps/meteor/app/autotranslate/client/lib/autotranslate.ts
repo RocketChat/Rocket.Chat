@@ -1,13 +1,11 @@
 import type { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 import mem from 'mem';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
+import { PermissionsCachedStore } from '../../../../client/cachedStores';
 import { settings } from '../../../../client/lib/settings';
-import { getUserId } from '../../../../client/lib/user';
-import { watchUser, watchUserId } from '../../../../client/meteor/user';
-import { Messages, Subscriptions } from '../../../../client/stores';
+import { getUserId, userIdStore } from '../../../../client/lib/user';
+import { Messages, Subscriptions, Users } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
@@ -18,15 +16,16 @@ import { sdk } from '../../../utils/client/lib/SDKClient';
 let userLanguage = 'en';
 let username = '';
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const user = watchUser();
-		if (!user) return;
-
-		userLanguage = user.language || 'en';
-		username = user.username || '';
-	});
-});
+const refreshUserCache = () => {
+	const uid = userIdStore.getState();
+	const user = uid ? Users.use.getState().get(uid) : undefined;
+	if (!user) return;
+	userLanguage = user.language || 'en';
+	username = user.username || '';
+};
+refreshUserCache();
+userIdStore.subscribe(refreshUserCache);
+Users.use.subscribe(refreshUserCache);
 
 export const AutoTranslate = {
 	initialized: false,
@@ -84,14 +83,7 @@ export const AutoTranslate = {
 			return;
 		}
 
-		Tracker.autorun(async (c) => {
-			const uid = watchUserId();
-			if (!settings.watch('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
-				return;
-			}
-
-			c.stop();
-
+		const loadProviders = async () => {
 			try {
 				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
 					sdk.call('autoTranslate.getProviderUiMetadata'),
@@ -101,7 +93,25 @@ export const AutoTranslate = {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
 				console.error((e as Error).message);
 			}
-		});
+		};
+
+		let loaded = false;
+		const unsubs: Array<() => void> = [];
+		const tryLoad = async () => {
+			if (loaded) return;
+			if (!settings.peek('AutoTranslate_Enabled') || !userIdStore.getState() || !hasPermission('auto-translate')) {
+				return;
+			}
+			loaded = true;
+			unsubs.splice(0).forEach((unsubscribe) => unsubscribe());
+			await loadProviders();
+		};
+
+		unsubs.push(userIdStore.subscribe(() => void tryLoad()));
+		unsubs.push(settings.observe('AutoTranslate_Enabled', () => void tryLoad()));
+		unsubs.push(PermissionsCachedStore.useReady.subscribe(() => void tryLoad()));
+
+		void tryLoad();
 
 		Subscriptions.use.subscribe(() => {
 			mem.clear(this.findSubscriptionByRid);
