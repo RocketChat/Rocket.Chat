@@ -1,8 +1,7 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { differenceInMilliseconds } from 'date-fns';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
+import { useCallback, useSyncExternalStore } from 'react';
 import type { MutableRefObject } from 'react';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
@@ -12,8 +11,6 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
-
-const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
 
 const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
@@ -46,41 +43,52 @@ export async function upsertMessageBulk({
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
 
+export type RoomHistoryState = {
+	hasMore: boolean;
+	hasMoreNext: boolean;
+	isLoading: boolean;
+	unreadNotLoaded: number;
+	firstUnread: IMessage | undefined;
+	loaded: number | undefined;
+	oldestTs?: Date;
+	scroll?: {
+		scrollHeight: number;
+		scrollTop: number;
+	};
+};
+
+const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
+
 class RoomHistoryManagerClass extends Emitter {
 	private lastRequest?: Date;
 
-	private histories: Record<
-		IRoom['_id'],
-		{
-			hasMore: ReactiveVar<boolean>;
-			hasMoreNext: ReactiveVar<boolean>;
-			isLoading: ReactiveVar<boolean>;
-			unreadNotLoaded: ReactiveVar<number>;
-			firstUnread: ReactiveVar<IMessage | undefined>;
-			loaded: number | undefined;
-			oldestTs?: Date;
-			scroll?: {
-				scrollHeight: number;
-				scrollTop: number;
-			};
-		}
-	> = {};
+	private histories: Record<IRoom['_id'], RoomHistoryState> = {};
 
 	private requestsList: string[] = [];
 
-	public getRoom(rid: IRoom['_id']) {
+	public getRoom(rid: IRoom['_id']): RoomHistoryState {
 		if (!this.histories[rid]) {
 			this.histories[rid] = {
-				hasMore: new ReactiveVar(true),
-				hasMoreNext: new ReactiveVar(false),
-				isLoading: new ReactiveVar(false),
-				unreadNotLoaded: new ReactiveVar(0),
-				firstUnread: new ReactiveVar(undefined),
+				hasMore: true,
+				hasMoreNext: false,
+				isLoading: false,
+				unreadNotLoaded: 0,
+				firstUnread: undefined,
 				loaded: undefined,
 			};
 		}
 
 		return this.histories[rid];
+	}
+
+	public updateRoom(rid: IRoom['_id'], patch: Partial<RoomHistoryState>): void {
+		const room = this.getRoom(rid);
+		Object.assign(room, patch);
+		this.emit(roomStateEvent(rid), room);
+	}
+
+	public subscribeToRoom(rid: IRoom['_id'], cb: (state: RoomHistoryState) => void): () => void {
+		return this.on(roomStateEvent(rid), cb);
 	}
 
 	private async queue(): Promise<void> {
@@ -122,12 +130,12 @@ class RoomHistoryManagerClass extends Emitter {
 	public async getMore(rid: IRoom['_id'], { limit = defaultLimit }: { limit?: number } = {}): Promise<void> {
 		const room = this.getRoom(rid);
 
-		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
+		if (room.hasMore !== true) {
 			return;
 		}
 
 		try {
-			room.isLoading.set(true);
+			this.updateRoom(rid, { isLoading: true });
 
 			await this.queue();
 
@@ -155,8 +163,10 @@ class RoomHistoryManagerClass extends Emitter {
 			this.unqueue();
 
 			const { messages = [] } = result;
-			room.unreadNotLoaded.set(result.unreadNotLoaded);
-			room.firstUnread.set(result.firstUnread);
+			this.updateRoom(rid, {
+				unreadNotLoaded: result.unreadNotLoaded,
+				firstUnread: result.firstUnread,
+			});
 
 			if (messages.length > 0) {
 				room.oldestTs = messages[messages.length - 1].ts;
@@ -185,17 +195,16 @@ class RoomHistoryManagerClass extends Emitter {
 			room.loaded += visibleMessages.length;
 
 			if (messages.length < limit) {
-				room.hasMore.set(false);
+				this.updateRoom(rid, { hasMore: false });
 			}
 
-			if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
+			if (room.hasMore && (visibleMessages.length === 0 || room.loaded < limit)) {
 				return this.getMore(rid);
 			}
 
 			this.emit('loaded-messages');
 		} finally {
-			room.isLoading.set(false);
-			await waitAfterFlush();
+			this.updateRoom(rid, { isLoading: false });
 		}
 	}
 
@@ -218,14 +227,14 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
 		const room = this.getRoom(rid);
-		if (Tracker.nonreactive(() => room.hasMoreNext.get()) !== true) {
+		if (room.hasMoreNext !== true) {
 			return;
 		}
 
 		await this.queue();
 		atBottomRef.current = false;
 
-		room.isLoading.set(true);
+		this.updateRoom(rid, { isLoading: true });
 
 		const lastMessage = Messages.state.findFirst(
 			(record) => record.rid === rid && record._hidden !== true,
@@ -244,27 +253,25 @@ class RoomHistoryManagerClass extends Emitter {
 
 			this.emit('loaded-messages');
 
-			room.isLoading.set(false);
+			this.updateRoom(rid, { isLoading: false });
 			if (!room.loaded) {
 				room.loaded = 0;
 			}
 
 			room.loaded += result.messages.length;
 			if (result.messages.length < defaultLimit) {
-				room.hasMoreNext.set(false);
+				this.updateRoom(rid, { hasMoreNext: false });
 			}
 		}
 		this.unqueue();
 	}
 
 	public hasMore(rid: IRoom['_id']) {
-		const room = this.getRoom(rid);
-		return room.hasMore.get();
+		return this.getRoom(rid).hasMore;
 	}
 
 	public hasMoreNext(rid: IRoom['_id']) {
-		const room = this.getRoom(rid);
-		return room.hasMoreNext.get();
+		return this.getRoom(rid).hasMoreNext;
 	}
 
 	public getMoreIfIsEmpty(rid: IRoom['_id']) {
@@ -276,8 +283,7 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public isLoading(rid: IRoom['_id']) {
-		const room = this.getRoom(rid);
-		return room.isLoading.get();
+		return this.getRoom(rid).isLoading;
 	}
 
 	public close(rid: IRoom['_id']) {
@@ -288,11 +294,13 @@ class RoomHistoryManagerClass extends Emitter {
 	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		Messages.state.remove((record) => record.rid === rid);
-		room.isLoading.set(false);
-		room.hasMore.set(true);
-		room.hasMoreNext.set(false);
 		room.oldestTs = undefined;
 		room.loaded = undefined;
+		this.updateRoom(rid, {
+			isLoading: false,
+			hasMore: true,
+			hasMoreNext: false,
+		});
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
@@ -332,18 +340,24 @@ class RoomHistoryManagerClass extends Emitter {
 
 		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
-		Tracker.afterFlush(async () => {
-			this.emit('loaded-messages');
-			room.isLoading.set(false);
-		});
+		this.emit('loaded-messages');
+		this.updateRoom(message.rid, { isLoading: false });
 
 		if (!room.loaded) {
 			room.loaded = 0;
 		}
 		room.loaded += result.messages.length;
-		room.hasMore.set(result.moreBefore);
-		room.hasMoreNext.set(result.moreAfter);
+		this.updateRoom(message.rid, {
+			hasMore: result.moreBefore,
+			hasMoreNext: result.moreAfter,
+		});
 	}
 }
 
 export const RoomHistoryManager = new RoomHistoryManagerClass();
+
+export const useRoomHistoryState = <T>(rid: IRoom['_id'], selector: (state: RoomHistoryState) => T): T =>
+	useSyncExternalStore(
+		useCallback((onStoreChange) => RoomHistoryManager.subscribeToRoom(rid, onStoreChange), [rid]),
+		() => selector(RoomHistoryManager.getRoom(rid)),
+	);

@@ -66,9 +66,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 				<Box
 					is='form'
 					id={fileUploadFormId}
-					onSubmit={handleSubmit(({ name, description }) =>
-						!isDirty ? onClose() : onSubmit(name.trim(), description?.trim() || undefined),
-					)}
+					onSubmit={handleSubmit(({ name, description }) => onSubmit(name, description?.trim() || undefined))}
 					{...props}
 				/>
 			)}
