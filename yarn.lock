@@ -6617,7 +6617,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.59.1":
+"@playwright/test@npm:^1.52.0":
   version: 1.59.1
   resolution: "@playwright/test@npm:1.59.1"
   dependencies:
@@ -9877,7 +9877,7 @@ __metadata:
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
     "@opentelemetry/sdk-node": "npm:^0.54.2"
     "@parse/node-apn": "npm:^8.1.0"
-    "@playwright/test": "npm:^1.59.1"
+    "@playwright/test": "npm:^1.52.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:^4.3.2"
     "@rocket.chat/abac": "workspace:^"
@@ -11121,7 +11121,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
-    "@playwright/test": "npm:^1.59.1"
+    "@playwright/test": "npm:^1.52.0"
     "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
