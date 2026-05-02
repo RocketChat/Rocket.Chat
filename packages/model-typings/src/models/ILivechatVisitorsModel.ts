@@ -15,6 +15,7 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
+	findByIds(ids: string[], options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 	getVisitorByToken(token: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
 	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,

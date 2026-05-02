@@ -766,6 +766,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async getPDPHealth(): Promise<void> {
 		if (!this.pdp) {
+			logger.warn({ msg: 'ABAC PDP health check: no PDP configured' });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_No_PDP');
 		}
 
@@ -818,6 +819,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 export { LocalPDP, VirtruPDP } from './pdp';
 export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
-export { PdpHealthCheckError } from './errors';
+export { PdpHealthCheckError, getPdpHealthErrorCode } from './errors';
 
 export default AbacService;
