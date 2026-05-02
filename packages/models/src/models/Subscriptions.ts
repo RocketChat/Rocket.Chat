@@ -1585,22 +1585,26 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incReactionsForRoomIdAndUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc = 1): Promise<UpdateResult | Document> {
-		const query = {
+		const query: Filter<ISubscription> = {
 			'rid': roomId,
 			'u._id': {
 				$in: userIds,
 			},
+			...(inc < 0 && { reactions: { $gt: 0 } }),
 		};
 
 		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				alert: true,
-				open: true,
-			},
 			$inc: {
 				reactions: inc,
 			},
 		};
+
+		if (inc > 0) {
+			update.$set = {
+				alert: true,
+				open: true,
+			};
+		}
 
 		return this.updateMany(query, update);
 	}
