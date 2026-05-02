@@ -49,7 +49,9 @@ export const useCollapse = (attachmentId?: string, attachmentCollapsed?: boolean
 	const initialCollapsed = collpaseByDefault || attachmentCollapsed;
 
 	// Use persisted collapse if attachmentId is provided, otherwise use regular toggle
-	const [collapsed, toggleCollapsed] = usePersistedCollapse(attachmentId, initialCollapsed);
+	const [collapsed, toggleCollapsed] = attachmentId
+		? usePersistedCollapse(attachmentId, initialCollapsed)
+		: useToggle(initialCollapsed);
 
 	return [collapsed, <CollapsibleContent collapsed={collapsed} onClick={toggleCollapsed as any} key='collapsible-content-action' />];
 };
