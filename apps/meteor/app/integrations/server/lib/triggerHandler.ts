@@ -794,7 +794,7 @@ class RocketChatIntegrationHandler {
 		const triggers = Object.values(this.triggers.__any || {}).filter(
 			(trigger): trigger is IOutgoingIntegration =>
 				trigger.enabled === true &&
-				(trigger.event === 'medsenseDocumentation' || trigger.event === 'medsenseDocumentationPrefill') &&
+				trigger.event === 'medsenseDocumentation' &&
 				this.isTriggerEnabled(trigger) &&
 				Array.isArray(trigger.urls) &&
 				trigger.urls.length > 0,
@@ -881,10 +881,6 @@ class RocketChatIntegrationHandler {
 		}
 
 		return null;
-	}
-
-	async executeDocumentationPrefillTrigger(payload: DocumentationPrefillPayload, timeoutMs: number): Promise<Record<string, any> | null> {
-		return this.executeDocumentationTrigger(payload, timeoutMs);
 	}
 
 	async executeTriggerUrl(
