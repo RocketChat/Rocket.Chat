@@ -1,9 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
-import { useMethod, useUserId, usePermission, useUserSubscription, useStream } from '@rocket.chat/ui-contexts';
+import { Box, Icon } from '@rocket.chat/fuselage';
+import { useMethod, useUserId, usePermission, useUserSubscription, useStream, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ChangeEvent } from 'react';
-import { memo, useState, useMemo, useEffect } from 'react';
+import type { ReactElement } from 'react';
+import { memo, useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 type ImportantMessageReadInfoProps = {
 	message: IMessage;
@@ -17,25 +18,70 @@ type User = {
 
 const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): ReactElement | null => {
 	const [showList, setShowList] = useState(false);
-	const [searchText, setSearchText] = useState('');
+	const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const listRef = useRef<HTMLDivElement>(null);
 	const getUsersWhoRead = useMethod('getUsersWhoReadImportantMessage');
 	const getUserRoomRole = useMethod('getUserRoomRole');
 	const userId = useUserId();
 	const subscription = useUserSubscription(message.rid);
 	const queryClient = useQueryClient();
 	const subscribeToRoomMessages = useStream('room-messages');
+	const subscribeToNotifyRoom = useStream('notify-room');
+	const { openTab } = useRoomToolbox();
 
 	useEffect(() => {
-		const unsubscribe = subscribeToRoomMessages(message.rid, (msg) => {
+		const unsubscribeMessages = subscribeToRoomMessages(message.rid, (msg) => {
 			if (msg._id === message._id && msg.importantReadBy) {
-				queryClient.invalidateQueries({ 
-					queryKey: ['important-message-readers', message._id] 
+				queryClient.setQueryData(['important-message-readers', message._id], (old: User[] | undefined) => {
+					return old;
+				});
+				void queryClient.refetchQueries({ 
+					queryKey: ['important-message-readers', message._id],
+					type: 'active'
 				});
 			}
 		});
+
+		const unsubscribeRoom = subscribeToNotifyRoom(`${message.rid}/subscriptions-changed`, () => {
+			void queryClient.refetchQueries({ 
+				queryKey: ['important-message-readers', message._id],
+				type: 'active'
+			});
+		});
 		
-		return unsubscribe;
-	}, [subscribeToRoomMessages, message.rid, message._id, queryClient]);
+		return () => {
+			unsubscribeMessages();
+			unsubscribeRoom();
+		};
+	}, [subscribeToRoomMessages, subscribeToNotifyRoom, message.rid, message._id, queryClient]);
+
+	useEffect(() => {
+		if (!showList) return;
+
+		const handleClickOutside = (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			
+			if (target.closest('[data-important-message-controls]')) {
+				return;
+			}
+			
+			if (buttonRef.current && buttonRef.current.contains(target)) {
+				return;
+			}
+			
+			if (listRef.current && listRef.current.contains(target)) {
+				return;
+			}
+			
+			setShowList(false);
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [showList]);
 
 	const { data: hasRoleFromQuery = false } = useQuery({
 		queryKey: ['user-room-role-info', userId, message.rid, 'important-message-marker'],
@@ -56,7 +102,7 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	const hasRole = subscription?.roles?.includes('important-message-marker') ?? hasRoleFromQuery;
 	const canMarkMessagesAsImportant = hasPermission || hasRole;
 
-	const { data: users = [], isLoading } = useQuery<User[]>({
+	const { data: readUsers = [], isLoading: isLoadingRead } = useQuery<User[]>({
 		queryKey: ['important-message-readers', message._id],
 		queryFn: async () => {
 			try {
@@ -69,105 +115,112 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 		},
 		enabled: showList,
 		refetchInterval: showList ? 5000 : false,
+		staleTime: 0,
 	});
 
-	const filteredUsers = useMemo(() => {
-		if (!searchText.trim()) {
-			return users;
-		}
-		const search = searchText.toLowerCase();
-		return users.filter(
-			(user) =>
-				user.username.toLowerCase().includes(search) ||
-				(user.name && user.name.toLowerCase().includes(search))
-		);
-	}, [users, searchText]);
-
-	const readCount = message.importantReadBy?.length || 0;
+	const readCount = readUsers.length;
 
 	if (!message.isImportant || !canMarkMessagesAsImportant) {
 		return null;
 	}
 
 	const handleClick = () => {
-		console.log('[ImportantMessageReadInfo] Toggling list visibility:', { messageId: message._id, currentState: showList });
-		setShowList(!showList);
-		if (!showList) {
-			setSearchText('');
+		if (!showList && buttonRef.current) {
+			const rect = buttonRef.current.getBoundingClientRect();
+			setPosition({
+				top: rect.bottom + 4,
+				left: rect.left
+			});
 		}
+		setShowList(!showList);
 	};
 
-	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		console.log('[ImportantMessageReadInfo] Search text changed:', { messageId: message._id, searchText: value });
-		setSearchText(value);
-	};
+	const handleUserClick = useCallback((username: string) => () => {
+		openTab('members-list', username);
+		setShowList(false);
+	}, [openTab]);
 
 	return (
-		<Box mis='x4'>
-			<Box
-				is='button'
-				onClick={handleClick}
-				title='Read by information'
-				style={{ 
-					background: 'none', 
-					border: 'none', 
-					cursor: 'pointer',
-					padding: '2px 4px',
-					display: 'inline-flex',
-					alignItems: 'center',
-					verticalAlign: 'middle'
-				}}
-			>
-				<Icon name='info-circled' size='x16' />
-			</Box>
-
-			{showList && (
+		<>
+			<Box mis='x4'>
 				<Box
-					mbs='x4'
-					padding='x8'
-					style={{
-						backgroundColor: 'var(--rcx-color-surface-tint, #f7f8fa)',
-						borderRadius: '4px',
-						fontSize: '14px',
-						maxWidth: '300px',
-						border: '1px solid var(--rcx-color-stroke-light, #e4e7ea)',
-						color: 'var(--rcx-color-font-default, #2f343d)'
+					is='button'
+					ref={buttonRef}
+					onClick={handleClick}
+					title='Read by information'
+					data-important-message-info-button
+					style={{ 
+						background: 'none', 
+						border: 'none', 
+						cursor: 'pointer',
+						padding: '2px 4px',
+						display: 'inline-flex',
+						alignItems: 'center',
+						verticalAlign: 'middle'
 					}}
 				>
-					<Box fontWeight='bold' mbe='x4'>
-						Read by ({readCount}):
-					</Box>
-					
-					{users.length > 3 && (
-						<Box mbe='x8'>
-							<TextInput
-								placeholder='Search by username or name...'
-								value={searchText}
-								onChange={handleSearchChange}
-								small
-							/>
-						</Box>
-					)}
+					<Icon name='info-circled' size='x16' />
+				</Box>
+			</Box>
 
-					{isLoading ? (
+			{showList && position && createPortal(
+				<Box
+					ref={listRef}
+					position='fixed'
+					zIndex={9999}
+					style={{
+						top: `${position.top}px`,
+						left: `${position.left}px`,
+						width: '250px',
+						backgroundColor: 'var(--rcx-color-surface-tint, #f7f8fa)',
+						borderRadius: '4px',
+						boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.12), 0 0 1px 0 rgba(0, 0, 0, 0.08)',
+						border: '1px solid var(--rcx-color-stroke-extra-light, #ebecef)',
+						padding: '12px',
+						maxHeight: '300px',
+						overflowY: 'auto',
+						color: 'var(--rcx-color-font-default, #2f343d)'
+					}}
+					data-important-message-list
+				>
+					<Box fontWeight='700' mbe='x8' fontSize='p2'>
+						Read by ({readCount})
+					</Box>
+
+					{isLoadingRead ? (
 						<Box>Loading...</Box>
-					) : filteredUsers.length > 0 ? (
-						<Box style={{ maxHeight: '200px', overflowY: 'auto' }}>
-							{filteredUsers.map((user) => (
-								<Box key={user._id} mbe='x4'>
+					) : readUsers.length > 0 ? (
+						<Box>
+							{readUsers.map((user) => (
+								<Box 
+									key={user._id} 
+									mbe='x4' 
+									fontSize='p2'
+									onClick={handleUserClick(user.username)}
+									style={{ 
+										cursor: 'pointer',
+										padding: '4px',
+										borderRadius: '2px',
+										transition: 'background-color 0.2s'
+									}}
+									onMouseEnter={(e) => {
+										e.currentTarget.style.backgroundColor = 'var(--rcx-color-surface-hover, #e8eaed)';
+									}}
+									onMouseLeave={(e) => {
+										e.currentTarget.style.backgroundColor = 'transparent';
+									}}
+								>
 									@{user.username} {user.name && `(${user.name})`}
 								</Box>
 							))}
 						</Box>
-					) : searchText ? (
-						<Box>No users found matching "{searchText}"</Box>
 					) : (
-						<Box>No one has read this message yet</Box>
+						<Box fontSize='p2'>No one has read this message yet</Box>
 					)}
-				</Box>
+				</Box>,
+				document.body
 			)}
-		</Box>
+		</>
 	);
 };
 

@@ -17,6 +17,7 @@ import './getRoomIdByNameOrId';
 import './getRoomNameById';
 import './getUserRoomRole';
 import './getUsersWhoReadImportantMessage';
+import './getUsersWhoDidNotReadImportantMessage';
 import './getSetupWizardParameters';
 import './getTotalChannels';
 import './getUsersOfRoom';

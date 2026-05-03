@@ -1,4 +1,4 @@
-import { Messages, Users } from '@rocket.chat/models';
+import { Messages, Users, Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -42,17 +42,23 @@ Meteor.methods({
 			return [];
 		}
 
-		const users = await Users.find(
-			{ _id: { $in: userIds } },
-			{ projection: { _id: 1, username: 1, name: 1 } }
+		const subscriptions = await Subscriptions.find(
+			{ rid: message.rid, 'u._id': { $in: userIds } },
+			{ projection: { 'u._id': 1, 'u.username': 1, 'u.name': 1 } }
 		).toArray();
 
-		console.log('[getUsersWhoReadImportantMessage] Found readers:', { messageId, count: users.length });
-
-		return users.map(user => ({
-			_id: user._id,
-			username: user.username || '',
-			name: user.name,
+		const usersInRoom = subscriptions.map(sub => ({
+			_id: sub.u._id,
+			username: sub.u.username || '',
+			name: sub.u.name,
 		}));
+
+		console.log('[getUsersWhoReadImportantMessage] Found readers in room:', { 
+			messageId, 
+			totalRead: userIds.length,
+			inRoom: usersInRoom.length 
+		});
+
+		return usersInRoom;
 	},
 });

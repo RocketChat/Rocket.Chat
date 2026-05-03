@@ -36,9 +36,18 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 		
 		try {
 			await toggleImportantMessageRead(message._id);
-			queryClient.invalidateQueries({ 
-				queryKey: ['important-message-readers', message._id] 
-			});
+			
+			await Promise.all([
+				queryClient.refetchQueries({ 
+					queryKey: ['important-message-readers', message._id],
+					type: 'active'
+				}),
+				queryClient.refetchQueries({ 
+					queryKey: ['important-message-non-readers', message._id],
+					type: 'active'
+				})
+			]);
+			
 			console.log('[ImportantMessageReadButton] Read status toggled successfully');
 		} catch (error) {
 			setIsRead(!newState);
@@ -56,10 +65,11 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 				small
 				onClick={handleToggle}
 				primary={!isRead}
-				success={isRead}
 				mis='x8'
 				mbs='x4'
 				style={{ width: 'fit-content', minWidth: 'auto' }}
+				data-important-message-button
+				data-important-message-controls
 			>
 				{isRead ? 'Message read' : 'Mark as read'}
 			</Button>

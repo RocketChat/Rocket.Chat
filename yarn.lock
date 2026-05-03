@@ -9745,6 +9745,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.16.5"
     eslint: "npm:~9.39.3"
+    fast-check: "npm:^4.6.0"
     jest: "npm:~30.2.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
@@ -22259,6 +22260,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-check@npm:^4.6.0":
+  version: 4.7.0
+  resolution: "fast-check@npm:4.7.0"
+  dependencies:
+    pure-rand: "npm:^8.0.0"
+  checksum: 10/fabe4cb8296dc893c3ac49dc2c1564e60aec7ab5774d8f71b6e0952d32ad2f93e320234e5fd8a671490060f35a6bba96df339ee8c8e3597eff946c74df9a3920
+  languageName: node
+  linkType: hard
+
 "fast-copy@npm:^4.0.0":
   version: 4.0.2
   resolution: "fast-copy@npm:4.0.2"
@@ -31839,6 +31849,13 @@ __metadata:
   version: 7.0.1
   resolution: "pure-rand@npm:7.0.1"
   checksum: 10/c61a576fda5032ec9763ecb000da4a8f19263b9e2f9ae9aa2759c8fbd9dc6b192b2ce78391ebd41abb394a5fedb7bcc4b03c9e6141ac8ab20882dd5717698b80
+  languageName: node
+  linkType: hard
+
+"pure-rand@npm:^8.0.0":
+  version: 8.4.0
+  resolution: "pure-rand@npm:8.4.0"
+  checksum: 10/baaee81b6647c89e426458fa0a6fcf51a42315db3db6a2c1c48d676813dd7cebf46dc56d352ce352c3bdfacd5a965b9c7783ba2a92f38cf2e64a9a8186469c3e
   languageName: node
   linkType: hard
 
