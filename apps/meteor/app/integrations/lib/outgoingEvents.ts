@@ -32,6 +32,15 @@ export const outgoingEvents: Record<
 			targetRoom: false,
 		},
 	},
+	medsenseDocumentation: {
+		label: 'Integrations_Outgoing_Type_MedsenseDocumentation' as TranslationKey,
+		value: 'medsenseDocumentation',
+		use: {
+			channel: false,
+			triggerWords: false,
+			targetRoom: false,
+		},
+	},
 	medsenseDocumentationPrefill: {
 		label: 'Integrations_Outgoing_Type_MedsenseDocumentationPrefill' as TranslationKey,
 		value: 'medsenseDocumentationPrefill',

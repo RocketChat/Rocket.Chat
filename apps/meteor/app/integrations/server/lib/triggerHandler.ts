@@ -790,18 +790,18 @@ class RocketChatIntegrationHandler {
 		});
 	}
 
-	async executeDocumentationPrefillTrigger(payload: DocumentationPrefillPayload, timeoutMs: number): Promise<Record<string, any> | null> {
+	async executeDocumentationTrigger(payload: DocumentationPrefillPayload, timeoutMs: number): Promise<Record<string, any> | null> {
 		const triggers = Object.values(this.triggers.__any || {}).filter(
 			(trigger): trigger is IOutgoingIntegration =>
 				trigger.enabled === true &&
-				trigger.event === 'medsenseDocumentationPrefill' &&
+				(trigger.event === 'medsenseDocumentation' || trigger.event === 'medsenseDocumentationPrefill') &&
 				this.isTriggerEnabled(trigger) &&
 				Array.isArray(trigger.urls) &&
 				trigger.urls.length > 0,
 		);
 
 		if (!triggers.length) {
-			outgoingLogger.warn('Medsense documentation prefill webhook is not configured');
+			outgoingLogger.warn('Medsense documentation webhook is not configured');
 			return null;
 		}
 
@@ -813,9 +813,9 @@ class RocketChatIntegrationHandler {
 				}
 
 				const historyId = await updateHistory({
-					step: 'start-execute-documentation-prefill',
+					step: 'start-execute-documentation',
 					integration: trigger,
-					event: 'medsenseDocumentationPrefill',
+					event: trigger.event,
 					historyId: '',
 				});
 
@@ -881,6 +881,10 @@ class RocketChatIntegrationHandler {
 		}
 
 		return null;
+	}
+
+	async executeDocumentationPrefillTrigger(payload: DocumentationPrefillPayload, timeoutMs: number): Promise<Record<string, any> | null> {
+		return this.executeDocumentationTrigger(payload, timeoutMs);
 	}
 
 	async executeTriggerUrl(

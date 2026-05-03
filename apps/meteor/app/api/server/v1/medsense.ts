@@ -1410,6 +1410,7 @@ const callDocumentationPrefillWebhook = async ({
 	});
 
 	const payload = {
+		task: 'prefill',
 		roomId: roomId || context.roomId,
 		requestId,
 		interventionId: intervention._id,
@@ -1465,7 +1466,7 @@ const callDocumentationPrefillWebhook = async ({
 	};
 
 	try {
-		const response = await triggerHandler.executeDocumentationPrefillTrigger(payload, timeoutMs);
+		const response = await triggerHandler.executeDocumentationTrigger(payload, timeoutMs);
 		if (!response || typeof response !== 'object') {
 			return null;
 		}
@@ -1479,6 +1480,85 @@ const callDocumentationPrefillWebhook = async ({
 		return response;
 	} catch (error) {
 		console.error('Documentation prefill webhook failed', error);
+		return null;
+	}
+};
+
+const normalizeDocumentationAssistantStringArray = (value: any): string[] => {
+	if (!Array.isArray(value)) {
+		return [];
+	}
+
+	return value
+		.map((item) => {
+			if (typeof item === 'string') {
+				return item.trim();
+			}
+			if (item && typeof item === 'object') {
+				const text = item.question || item.label || item.text || item.name;
+				return typeof text === 'string' ? text.trim() : '';
+			}
+			return '';
+		})
+		.filter((item) => item.length > 0);
+};
+
+const callDocumentationAssistantWebhook = async ({
+	roomId,
+	requestId,
+	patientUserId,
+	specialtyContext,
+	requiredInformation,
+	context,
+}: {
+	roomId: string;
+	requestId?: string;
+	patientUserId?: string;
+	specialtyContext: string;
+	requiredInformation: string[];
+	context: Record<string, any>;
+}): Promise<Record<string, any> | null> => {
+	const timeoutMsRaw =
+		settings.get<string>('Medsense_Documentation_Prefill_Timeout_MS') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_TIMEOUT_MS || '15000';
+	const timeoutMs = Number.parseInt(String(timeoutMsRaw), 10) || 15000;
+	const aiRefs = deriveDocumentationAiRefs({
+		requestId,
+		roomId,
+		patientUserId,
+	});
+	context.aiRefs = aiRefs;
+
+	const payload = {
+		task: 'assistant',
+		roomId,
+		requestId,
+		specialtyContext,
+		requiredInformation,
+		aiRefs,
+		context: {
+			aiRefs,
+			patient: context.patient,
+			pharmacy: context.pharmacy,
+			request: context.request
+				? {
+						_id: context.request._id,
+						reason: context.request.reason,
+						contextSummary: context.request.contextSummary,
+						aiSummary: context.request.aiSummary,
+						answers: context.request.answers || {},
+						currentStepId: context.request.currentStepId,
+					}
+				: null,
+			session: context.session || context.sessionContext?.session || null,
+			sessionContext: context.sessionContext || null,
+		},
+	};
+
+	try {
+		const response = await triggerHandler.executeDocumentationTrigger(payload, timeoutMs);
+		return response && typeof response === 'object' ? response : null;
+	} catch (error) {
+		console.error('Documentation assistant webhook failed', error);
 		return null;
 	}
 };
@@ -9419,6 +9499,96 @@ API.v1.addRoute(
 					fields: appliedDraft.prefill.fields,
 					requestedAt: new Date(),
 				},
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/documentation.assistant',
+	{ authRequired: true },
+	{
+		async post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					roomId: String,
+					specialtyContext: String,
+					requiredInformation: [String],
+				}),
+			);
+
+			const roomId = String(this.bodyParams.roomId);
+			const specialtyContext = String(this.bodyParams.specialtyContext).trim();
+			const requiredInformation = Array.isArray((this.bodyParams as any).requiredInformation)
+				? ((this.bodyParams as any).requiredInformation as unknown[])
+						.map((item) => (typeof item === 'string' ? item.trim() : ''))
+						.filter((item) => item.length > 0)
+				: [];
+
+			if (!specialtyContext || !requiredInformation.length) {
+				return API.v1.failure('Missing assistant specialty context or required information');
+			}
+
+			const request = await MedsenseRequests.findOne({ roomId }, { sort: { createdAt: -1 } as any });
+			if (!request) {
+				return API.v1.failure('Request not found for room');
+			}
+
+			const canCreateInterventions = await hasPermissionAsync(this.userId, 'medsense-create-interventions');
+			if (!canCreateInterventions) {
+				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+				const roles = user?.roles || [];
+				if (!roles.includes('admin') && !roles.includes('bot')) {
+					return API.v1.forbidden();
+				}
+			}
+
+			const canManageAll = await hasPermissionAsync(this.userId, 'medsense-manage-all-pharmacies');
+			if (!canManageAll) {
+				const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId: request.pharmacyId, userId: this.userId });
+				if (!membership) {
+					return API.v1.forbidden();
+				}
+			}
+
+			const context = await buildDocumentationContext(
+				{
+					_id: undefined,
+					patientUserId: request.requestedByUserId,
+					pharmacyId: request.pharmacyId,
+					type: 'documentation_assistant',
+					notes: '',
+					documentationValues: {},
+					prescriptions: [],
+					followUp: {},
+				},
+				roomId,
+			);
+			const requestId = typeof context.request?._id === 'string' ? context.request._id : String(request._id || '');
+			const response = await callDocumentationAssistantWebhook({
+				roomId,
+				requestId,
+				patientUserId: request.requestedByUserId,
+				specialtyContext,
+				requiredInformation,
+				context,
+			});
+
+			if (!response) {
+				return API.v1.failure('Documentation assistant webhook failed');
+			}
+
+			const payload = (response.suggestions || response.assistant || response) as Record<string, any>;
+			return API.v1.success({
+				questions: normalizeDocumentationAssistantStringArray(
+					payload.questions || payload.followUpQuestions || payload.keyFollowUpQuestions,
+				),
+				missingInformation: normalizeDocumentationAssistantStringArray(
+					payload.missingInformation || payload.missingFields || payload.missing,
+				),
+				summary: typeof payload.summary === 'string' ? payload.summary : undefined,
+				model: typeof payload.model === 'string' ? payload.model : undefined,
 			});
 		},
 	},

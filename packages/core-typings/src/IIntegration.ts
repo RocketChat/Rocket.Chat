@@ -32,6 +32,7 @@ export type OutgoingIntegrationEvent =
 	| 'sendMessage'
 	| 'medsenseSessionSummary'
 	| 'medsenseSmartFormsSubmit'
+	| 'medsenseDocumentation'
 	| 'medsenseDocumentationPrefill'
 	| 'fileUploaded'
 	| 'roomArchived'
