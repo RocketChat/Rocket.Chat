@@ -21,8 +21,7 @@
 	white-space: normal;
 	overflow: visible;
 	text-overflow: unset;
-	overflow-wrap: anywhere;
-	word-break: normal;
+	overflow-wrap: break-word;
 }
 
 [data-system-message-type="livechat_transfer_history"] .rcx-message-system__block,
