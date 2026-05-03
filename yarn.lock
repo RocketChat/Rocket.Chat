@@ -4333,16 +4333,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@internationalized/message@npm:^3.1.6":
-  version: 3.1.6
-  resolution: "@internationalized/message@npm:3.1.6"
-  dependencies:
-    "@swc/helpers": "npm:^0.5.0"
-    intl-messageformat: "npm:^10.1.0"
-  checksum: 10/31611a81bba7c0b18fad02ccb363632cbef3a0cc6e6e564578dfc7ae42cfde48b0ec18b89bff24390bb748df63d40cd2028483068e7d1492aee0533648a71e04
-  languageName: node
-  linkType: hard
-
 "@internationalized/message@npm:^3.1.9":
   version: 3.1.9
   resolution: "@internationalized/message@npm:3.1.9"
@@ -7046,26 +7036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024":
-  version: 3.12.5
-  resolution: "@react-aria/i18n@npm:3.12.5"
-  dependencies:
-    "@internationalized/date": "npm:^3.7.0"
-    "@internationalized/message": "npm:^3.1.6"
-    "@internationalized/number": "npm:^3.6.0"
-    "@internationalized/string": "npm:^3.2.5"
-    "@react-aria/ssr": "npm:^3.9.7"
-    "@react-aria/utils": "npm:^3.27.0"
-    "@react-types/shared": "npm:^3.27.0"
-    "@swc/helpers": "npm:^0.5.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/bfbc3a63fd8a6aeda219b60fa447db17e27d05c7a6b24ee030171721cfe3da812880f5fd257552e174b6aea0a209f71807491704bb71ad45db8949718e3aeac0
-  languageName: node
-  linkType: hard
-
-"@react-aria/i18n@npm:^3.12.5":
+"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024, @react-aria/i18n@npm:^3.12.5":
   version: 3.13.0
   resolution: "@react-aria/i18n@npm:3.13.0"
   dependencies:
@@ -7550,7 +7521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/toolbar@npm:^3.0.0-nightly.5042":
+"@react-aria/toolbar@npm:3.0.0-nightly-fb28ab3b4-241024, @react-aria/toolbar@npm:^3.0.0-nightly.5042":
   version: 3.0.0-nightly-fb28ab3b4-241024
   resolution: "@react-aria/toolbar@npm:3.0.0-nightly-fb28ab3b4-241024"
   dependencies:
@@ -10901,7 +10872,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
-    "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
+    "@react-aria/toolbar": "npm:3.0.0-nightly-fb28ab3b4-241024"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:^0.32.0"
