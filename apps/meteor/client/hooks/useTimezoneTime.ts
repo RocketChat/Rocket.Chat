@@ -1,8 +1,10 @@
-import { guessTimezoneFromOffset } from '@rocket.chat/tools';
 import { useState, useEffect } from 'react';
+
+import { useFormatTime } from './useFormatTime';
 
 export const useTimezoneTime = (offset: number, interval = 1000): string => {
 	const [now, setNow] = useState(() => new Date());
+	const format = useFormatTime();
 
 	useEffect(() => {
 		if (offset === undefined) {
@@ -13,9 +15,6 @@ export const useTimezoneTime = (offset: number, interval = 1000): string => {
 		return () => clearInterval(timer);
 	}, [offset, interval]);
 
-	const zone = guessTimezoneFromOffset(offset);
-	return new Intl.DateTimeFormat(undefined, {
-		timeZone: zone,
-		timeStyle: 'short',
-	}).format(now);
+	const shifted = new Date(now.getTime() + offset * 3600000 + now.getTimezoneOffset() * 60000);
+	return format(shifted);
 };

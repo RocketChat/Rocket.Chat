@@ -64,6 +64,7 @@ import { createDiscussion } from '../../../discussion/server/methods/createDiscu
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
+import { notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
 import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
@@ -411,6 +412,54 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 		);
 
 		return API.v1.success({ success: true });
+	},
+);
+
+const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string }>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string', minLength: 1 },
+		draft: { type: 'string' },
+	},
+	required: ['rid', 'draft'],
+	additionalProperties: false,
+});
+
+const saveDraftResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const roomsSaveDraftEndpoint = API.v1.post(
+	'rooms.saveDraft',
+	{
+		authRequired: true,
+		body: saveDraftBodySchema,
+		response: {
+			200: saveDraftResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { rid, draft } = this.bodyParams;
+
+		if (draft.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
+			return API.v1.failure('error-message-size-exceeded');
+		}
+
+		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined);
+		if (!subscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
+		}
+
+		void notifyOnSubscriptionChanged(subscription);
+
+		return API.v1.success();
 	},
 );
 
@@ -1630,7 +1679,8 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

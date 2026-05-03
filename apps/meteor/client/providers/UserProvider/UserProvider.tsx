@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import { afterLogoutCleanUpCallback } from '@rocket.chat/ui-client';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -41,7 +40,6 @@ ee.on('logout', async () => {
 	const user = Users.state.get(userId);
 	if (!user) return;
 
-	await afterLogoutCleanUpCallback.run(user);
 	await sdk.call('logoutCleanUp', user);
 });
 

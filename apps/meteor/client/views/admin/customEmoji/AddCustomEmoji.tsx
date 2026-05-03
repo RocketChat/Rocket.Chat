@@ -104,7 +104,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 							<Margins inline={4}>
-								<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
+								<Box is='img' objectFit='contain' w='x120' h='x120' src={newEmojiPreview} />
 							</Margins>
 						</Box>
 					)}
