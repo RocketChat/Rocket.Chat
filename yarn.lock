@@ -3384,13 +3384,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-fns/tz@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "@date-fns/tz@npm:1.4.1"
-  checksum: 10/062097590005cce3da4c7d9880f9c77d386cff5b4dd58fa3dde3c346a8b2e4f4a8025a613306351a7cad8eb71178a0f67b4840d5884f73aa4c759085fac92063
-  languageName: node
-  linkType: hard
-
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -7521,7 +7514,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/toolbar@npm:3.0.0-nightly-fb28ab3b4-241024, @react-aria/toolbar@npm:^3.0.0-nightly.5042":
+"@react-aria/toolbar@npm:^3.0.0-nightly.5042":
   version: 3.0.0-nightly-fb28ab3b4-241024
   resolution: "@react-aria/toolbar@npm:3.0.0-nightly-fb28ab3b4-241024"
   dependencies:
@@ -9292,6 +9285,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/fuselage-hooks@npm:^0.40.0":
+  version: 0.40.0
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.40.0"
+  peerDependencies:
+    "@rocket.chat/emitter": "*"
+    "@rocket.chat/fuselage-tokens": "*"
+    react: "*"
+  checksum: 10/82c12f36c7f7f50ac69aed857ee226fa4f301610c345089a142099ff0159d4d6b013ead943f9e5f3caa4e81af9f394af80396dc51c4dc028d69d63d0209dd553
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage-hooks@npm:^0.41.0":
   version: 0.41.0
   resolution: "@rocket.chat/fuselage-hooks@npm:0.41.0"
@@ -9448,7 +9452,7 @@ __metadata:
     "@types/react": "npm:~18.3.28"
     "@types/react-dom": "npm:~18.3.7"
     date-fns: "npm:~4.1.0"
-    dompurify: "npm:~3.4.0"
+    dompurify: "npm:~3.3.2"
     eslint: "npm:~9.39.4"
     highlight.js: "npm:11.8.0"
     i18next: "npm:~23.4.9"
@@ -9621,7 +9625,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.40.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": "npm:^0.32.4"
@@ -9650,7 +9654,7 @@ __metadata:
     cssnano: "npm:^7.0.7"
     date-fns: "npm:~4.1.0"
     desvg-loader: "npm:^0.1.0"
-    dompurify: "npm:~3.4.0"
+    dompurify: "npm:~3.3.2"
     emoji-mart: "npm:^3.0.1"
     eslint: "npm:~9.39.4"
     file-loader: "npm:^6.2.0"
@@ -9836,7 +9840,6 @@ __metadata:
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
-    "@date-fns/tz": "npm:^1.4.1"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.19.0"
     "@kaciras/deasync": "npm:^1.1.0"
@@ -9943,7 +9946,6 @@ __metadata:
     "@testing-library/user-event": "npm:~14.6.1"
     "@types/adm-zip": "npm:^0.5.8"
     "@types/archiver": "npm:~6.0.4"
-    "@types/babel__preset-env": "npm:^7.10.0"
     "@types/bad-words": "npm:^3.0.3"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/body-parser": "npm:^1.19.6"
@@ -9961,7 +9963,6 @@ __metadata:
     "@types/ejson": "npm:^2.2.2"
     "@types/express": "npm:^4.17.25"
     "@types/express-rate-limit": "npm:^5.1.3"
-    "@types/fast-redact": "npm:^3"
     "@types/google-libphonenumber": "npm:^7.4.30"
     "@types/gravatar": "npm:^1.8.6"
     "@types/he": "npm:^1.2.3"
@@ -9988,7 +9989,7 @@ __metadata:
     "@types/mocha": "github:whitecolor/mocha-types"
     "@types/node": "npm:~22.16.5"
     "@types/node-rsa": "npm:^1.1.4"
-    "@types/nodemailer": "npm:^8.0.0"
+    "@types/nodemailer": "npm:~6.4.22"
     "@types/oauth2-server": "npm:^3.0.18"
     "@types/object-path": "npm:^0.11.4"
     "@types/parseurl": "npm:^1.3.3"
@@ -10053,7 +10054,7 @@ __metadata:
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
     docker-compose: "npm:^0.24.8"
-    dompurify: "npm:~3.4.0"
+    dompurify: "npm:~3.3.2"
     drachtio-srf: "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
@@ -10068,7 +10069,6 @@ __metadata:
     express: "npm:^4.21.2"
     express-rate-limit: "npm:^5.5.1"
     fast-glob: "npm:^3.3.3"
-    fast-redact: "npm:^3.5.0"
     fastq: "npm:^1.17.1"
     fflate: "npm:^0.8.2"
     file-type: "npm:^16.5.4"
@@ -10124,7 +10124,7 @@ __metadata:
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
-    nodemailer: "npm:^8.0.5"
+    nodemailer: "npm:^7.0.13"
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
@@ -10186,7 +10186,6 @@ __metadata:
     supertest: "npm:~7.1.4"
     supports-color: "npm:~7.2.0"
     swagger-ui-express: "npm:^5.0.1"
-    swc-plugin-coverage-instrument: "npm:0.0.32"
     swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
@@ -10755,7 +10754,7 @@ __metadata:
   dependencies:
     "@rocket.chat/emitter": "npm:^0.32.0"
     "@rocket.chat/fuselage": "npm:^0.76.0"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.40.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10871,11 +10870,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-client@workspace:^, @rocket.chat/ui-client@workspace:packages/ui-client, @rocket.chat/ui-client@workspace:~":
+"@rocket.chat/ui-client@workspace:^, @rocket.chat/ui-client@workspace:packages/ui-client":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
-    "@react-aria/toolbar": "npm:3.0.0-nightly-fb28ab3b4-241024"
+    "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:^0.32.0"
@@ -10901,7 +10900,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~18.3.28"
     "@types/react-dom": "npm:~18.3.7"
-    dompurify: "npm:~3.4.0"
+    dompurify: "npm:~3.3.2"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
@@ -10943,7 +10942,6 @@ __metadata:
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@rocket.chat/ui-client": "workspace:~"
     "@storybook/addon-a11y": "npm:^8.6.18"
     "@storybook/addon-actions": "npm:^8.6.18"
     "@storybook/addon-docs": "npm:^8.6.18"
@@ -10967,7 +10965,6 @@ __metadata:
     "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-client": "*"
     react: "*"
     react-dom: "*"
   languageName: unknown
@@ -11227,7 +11224,7 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@types/react": "npm:~18.3.28"
     "@types/react-dom": "npm:~18.3.7"
-    dompurify: "npm:~3.4.0"
+    dompurify: "npm:~3.3.2"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     react: "npm:~18.3.1"
@@ -13654,13 +13651,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__preset-env@npm:^7.10.0":
-  version: 7.10.0
-  resolution: "@types/babel__preset-env@npm:7.10.0"
-  checksum: 10/7d4d12758d89708afe327079d7d7580e8af3292295f087b8a9a48e12ac1d90aadc18ac3bc00f9b0cbc8778f3ce9fe778801d4d49b7691a75e3f13a901b69fd07
-  languageName: node
-  linkType: hard
-
 "@types/babel__template@npm:*":
   version: 7.4.1
   resolution: "@types/babel__template@npm:7.4.1"
@@ -14294,13 +14284,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fast-redact@npm:^3":
-  version: 3.0.4
-  resolution: "@types/fast-redact@npm:3.0.4"
-  checksum: 10/d130c7c2d322e761c65ec8ecd821bf56e132672cd9de1703a53a65e051d2f43af6062040d3f0afdd48b364e1e4b29b858a748517ba9a6a7f1dab12ce7000103a
-  languageName: node
-  linkType: hard
-
 "@types/fibers@npm:^3.1.4":
   version: 3.1.4
   resolution: "@types/fibers@npm:3.1.4"
@@ -14808,12 +14791,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nodemailer@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@types/nodemailer@npm:8.0.0"
+"@types/nodemailer@npm:~6.4.22":
+  version: 6.4.23
+  resolution: "@types/nodemailer@npm:6.4.23"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/d1178b557e8c547018e708459af06fdf2e9cfd6d65fed109517cddfe6b5add6201d941882a2e4eeede529de08ae71a68fb2a1d8f1c41cb3761d3a6c2458025fe
+  checksum: 10/2cd9713e8795d43ba95e489afc1146e3b1b84c3dd3364ba8f19e8414662c35d3dfbde6235fdfbc05108304c46b71dd8dc5e553fed91433be6ab5b0168c4e1f38
   languageName: node
   linkType: hard
 
@@ -20939,15 +20922,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:~3.4.0":
-  version: 3.4.0
-  resolution: "dompurify@npm:3.4.0"
+"dompurify@npm:~3.3.2":
+  version: 3.3.3
+  resolution: "dompurify@npm:3.3.3"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10/ead40b78ec51cd451f2c74fada4233ee0afeafdbab54af2f4a4bd5d4d138ac04d0d85140e79f533803ecfd1c3758edc1176087039c1e7217824f9794a9d34d2c
+  checksum: 10/4cc9c539ed7136d46c6577613b8e20871c2b6165db01dfbd2a3c11c75f9e339c496ac6519a1c3190115def8cadae3720bef0417fc43fa28802c7407bab174da9
   languageName: node
   linkType: hard
 
@@ -22791,13 +22774,6 @@ __metadata:
   version: 2.0.6
   resolution: "fast-levenshtein@npm:2.0.6"
   checksum: 10/eb7e220ecf2bab5159d157350b81d01f75726a4382f5a9266f42b9150c4523b9795f7f5d9fbbbeaeac09a441b2369f05ee02db48ea938584205530fe5693cfe1
-  languageName: node
-  linkType: hard
-
-"fast-redact@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "fast-redact@npm:3.5.0"
-  checksum: 10/24b27e2023bd5a62f908d97a753b1adb8d89206b260f97727728e00b693197dea2fc2aa3711147a385d0ec6e713569fd533df37a4ef947e08cb65af3019c7ad5
   languageName: node
   linkType: hard
 
@@ -29961,10 +29937,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^8.0.5":
-  version: 8.0.5
-  resolution: "nodemailer@npm:8.0.5"
-  checksum: 10/84d44afb0cd20ce02d5e4f0f8465b02aa0af0e11c1b0d40a4e9658d07321655a8ea528533840a38f213a45ca7865ec85f0aed6dc3ac3038d7b2c9405db6cd353
+"nodemailer@npm:^7.0.13":
+  version: 7.0.13
+  resolution: "nodemailer@npm:7.0.13"
+  checksum: 10/4ae37bfb6896f1555de150c1098a7c1b28eb1da240a4c7adede81a8af0dcc184298cfbf804930599c076ea574428e0c18c6b28f0dc2072cebb30c1da5fd0b688
   languageName: node
   linkType: hard
 
@@ -36332,13 +36308,6 @@ __metadata:
     "@swc/core": ^1.2.147
     webpack: ">=2"
   checksum: 10/fe90948c02a51bb8ffcff1ce3590e01dc12860b0bb7c9e22052b14fa846ed437781ae265614a5e14344bea22001108780f00a6e350e28c0b3499bc4cd11335fb
-  languageName: node
-  linkType: hard
-
-"swc-plugin-coverage-instrument@npm:0.0.32":
-  version: 0.0.32
-  resolution: "swc-plugin-coverage-instrument@npm:0.0.32"
-  checksum: 10/5e5929ca4dc5906d081ddc96be88059f5cbd5c65d40031847902631b2a0911e67435120fc9ba3bd8a2e657e44bd29ad31aa85282a0de4aa1cf106a4bfc579f9b
   languageName: node
   linkType: hard
 
