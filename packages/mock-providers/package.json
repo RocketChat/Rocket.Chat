@@ -17,7 +17,7 @@
 		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/react": "^8.6.17",
+		"@storybook/react": "^8.6.18",
 		"i18next": "~23.4.9",
 		"react-i18next": "~13.2.2"
 	},
@@ -37,7 +37,7 @@
 		"jest": "~30.2.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
-		"storybook": "^8.6.17",
+		"storybook": "^8.6.18",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
