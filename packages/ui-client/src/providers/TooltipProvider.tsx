@@ -1,10 +1,10 @@
 import { useDebouncedState, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { TooltipComponent } from '@rocket.chat/ui-client';
 import { TooltipContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
-import TooltipPortal from '../portals/TooltipPortal';
+import { TooltipComponent } from '../components/TooltipComponent';
+import TooltipPortal from '../components/TooltipPortal';
 
 type TooltipProviderProps = {
 	children?: ReactNode;
