@@ -20,7 +20,6 @@ test.describe.serial('message-actions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test('expect reply the message', async ({ page }) => {
@@ -128,7 +127,6 @@ test.describe.serial('message-actions', () => {
 		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(discussionName);
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 		// Should fail if more than one discussion has been created
 		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
@@ -205,7 +203,6 @@ test.describe.serial('message-actions', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.waitForChannel();
 		});
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
@@ -222,7 +219,6 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
-		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -256,7 +252,6 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
-		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -269,7 +264,6 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
-		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -282,7 +276,6 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
-		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -295,7 +288,6 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
-		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -308,7 +300,6 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
-		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 });

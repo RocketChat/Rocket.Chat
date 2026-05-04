@@ -21,7 +21,6 @@ test.describe('export-messages', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test.afterAll(async ({ api }) => {

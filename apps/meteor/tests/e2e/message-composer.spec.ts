@@ -19,7 +19,6 @@ test.describe.serial('message-composer', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test('should have all formatters and the main actions visible on toolbar', async () => {

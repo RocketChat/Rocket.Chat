@@ -23,7 +23,6 @@ test.describe.serial('read-receipts', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test.describe('read receipt settings disabled', async () => {
@@ -58,7 +57,6 @@ test.describe.serial('read-receipts', () => {
 			const { page } = await createAuxContext(browser, Users.user1);
 			auxContext = { page, poHomeChannel: new HomeChannel(page) };
 			await auxContext.poHomeChannel.gotoChannel(targetChannel);
-			await auxContext.poHomeChannel.content.waitForChannel();
 			await auxContext.poHomeChannel.content.sendMessage('hello admin');
 
 			await expect(auxContext.poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message sent' })).toBeVisible();

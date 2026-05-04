@@ -7,13 +7,13 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('Threads', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel));
@@ -93,7 +93,6 @@ test.describe.serial('Threads', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.waitForChannel();
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.content.openReplyInThread();
 		});

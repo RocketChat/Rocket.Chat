@@ -18,7 +18,6 @@ test.describe.serial('emoji', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test('should display emoji picker properly', async ({ page }) => {
@@ -76,7 +75,6 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.sidebar.close();
 
 			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.waitForChannel();
 
 			await poHomeChannel.content.sendMessage(`:${emojiName}:`);
 			await page.keyboard.press('Enter');
@@ -92,7 +90,6 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.sidebar.close();
 
 			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.waitForChannel();
 
 			await poHomeChannel.content.sendMessage(`:${newEmojiName}:`);
 			await page.keyboard.press('Enter');

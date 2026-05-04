@@ -19,7 +19,6 @@ test.describe.serial('files-management', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 	});
 
 	test.afterAll(async ({ api }) => {

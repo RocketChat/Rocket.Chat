@@ -37,9 +37,7 @@ test.describe.serial('report message', () => {
 		adminHomeChannel = new HomeChannel(adminPage);
 
 		await poHomeChannel.gotoChannel(targetChannel);
-		await poHomeChannel.content.waitForChannel();
 		await adminHomeChannel.gotoChannel(targetChannel);
-		await adminHomeChannel.content.waitForChannel();
 	});
 
 	test('should show report message option in message menu for other users messages', async () => {
