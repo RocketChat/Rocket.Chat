@@ -1,3 +1,4 @@
+import type { SerializableValue } from '../JsonValue';
 import type { RocketChatAssociationModel } from '../metadata';
 import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
@@ -13,7 +14,7 @@ export interface IRoomExtender {
 	 * @param key the name of the custom field
 	 * @param value the value of this custom field
 	 */
-	addCustomField(key: string, value: any): IRoomExtender;
+	addCustomField(key: string, value: SerializableValue): IRoomExtender;
 
 	/**
 	 * Adds a user to the room.

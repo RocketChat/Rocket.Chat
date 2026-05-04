@@ -1,5 +1,6 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
+import type { SerializableValue } from '../JsonValue';
 import type { IMessage, IMessageAttachment } from '../messages';
 import type { RocketChatAssociationModel } from '../metadata';
 import type { IRoom } from '../rooms';
@@ -232,5 +233,5 @@ export interface IMessageBuilder {
 	 * @param key the name of the custom field
 	 * @param value the value of this custom field
 	 */
-	addCustomField(key: string, value: any): IMessageBuilder;
+	addCustomField(key: string, value: SerializableValue): IMessageBuilder;
 }

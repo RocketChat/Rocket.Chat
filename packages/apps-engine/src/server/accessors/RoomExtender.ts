@@ -1,4 +1,5 @@
 import type { IRoomExtender } from '../../definition/accessors';
+import type { SerializableValue } from '../../definition/JsonValue';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
@@ -14,12 +15,12 @@ export class RoomExtender implements IRoomExtender {
 		this.members = [];
 	}
 
-	public addCustomField(key: string, value: any): IRoomExtender {
+	public addCustomField(key: string, value: SerializableValue): IRoomExtender {
 		if (!this.room.customFields) {
 			this.room.customFields = {};
 		}
 
-		if (this.room.customFields[key]) {
+		if (key in this.room.customFields) {
 			throw new Error(`The room already contains a custom field by the key: ${key}`);
 		}
 

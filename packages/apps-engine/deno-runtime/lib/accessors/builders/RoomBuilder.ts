@@ -1,6 +1,7 @@
 import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
+import type { SerializableValue } from '../../../../src/definition/JsonValue.ts';
 
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
 import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
@@ -154,8 +155,8 @@ export class RoomBuilder implements IRoomBuilder {
 		return this.room.displaySystemMessages!;
 	}
 
-	public addCustomField(key: string, value: object): IRoomBuilder {
-		if (typeof this.room.customFields !== 'object') {
+	public addCustomField(key: string, value: SerializableValue): IRoomBuilder {
+		if (!this.room.customFields || typeof this.room.customFields !== 'object' || Array.isArray(this.room.customFields)) {
 			this.room.customFields = {};
 		}
 
@@ -166,14 +167,14 @@ export class RoomBuilder implements IRoomBuilder {
 		return this;
 	}
 
-	public setCustomFields(fields: { [key: string]: object }): IRoomBuilder {
+	public setCustomFields(fields: { [key: string]: SerializableValue }): IRoomBuilder {
 		this.room.customFields = fields;
 		this.customFieldsChanged = true;
 
 		return this;
 	}
 
-	public getCustomFields(): { [key: string]: object } {
+	public getCustomFields(): { [key: string]: SerializableValue } {
 		return this.room.customFields!;
 	}
 
