@@ -109,7 +109,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								)}
 							/>
 						</FieldRow>
-						<FieldError>{errors.subject?.message}</FieldError>
+						{errors.subject && <FieldError>{errors.subject?.message}</FieldError>}
 					</Field>
 				</FieldGroup>
 			</ModalContent>
