@@ -87,11 +87,10 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 		sdk.rest
 			.post(`/v1/${endpoint}/${method}`, restParams)
 			.then(({ message: _message }) => {
-				// Skip Meteor.loginWithToken on resume responses: Meteor itself called
-				// us with `login({resume})` and is already wiring up the new token via
-				// its invoker. Calling loginWithToken again would re-enter this _send
-				// override, dispatch another login method, and loop — locking the
-				// boot in a chain of resume calls and rate-limiting the server.
+				// Calling Meteor.loginWithToken before processing the result of the first login adds the new login request
+				// to the top of the methodInvokers queue. The request itself only sends after the first login result is
+				// processed, but the Accounts.onLogin callbacks fire before that follow-up request — so any requests
+				// initiated inside onLogin callbacks queue behind the loginWithToken and only run after it completes.
 				if (!wasResumeLogin && message.method === 'login') {
 					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
@@ -128,4 +127,10 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 	};
 };
 
+// Wrap `_send` unconditionally — develop already routed all non-bypassed
+// methods (including user/password login) through REST. In MS the WS
+// connects to `ddp-streamer-service`, whose native `login` handler only
+// accepts `{ resume }` tokens and 403s everything else; routing login via
+// REST hits `rocketchat-main` directly so the full
+// `Accounts.registerLoginHandler` chain runs.
 Meteor.connection._send = withDDPOverREST(Meteor.connection._send);

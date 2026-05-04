@@ -3,6 +3,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
+import { isSdkTransportEnabled } from '../../../../lib/sdk/sdkTransportEnabled';
+
+const sdkTransportEnabled = isSdkTransportEnabled();
+
 export const useForceLogout = (userId: string) => {
 	const getNotifyUserStream = useStream('notify-user');
 	const setForceLogout = useSessionDispatch('forceLogout');
@@ -13,14 +17,18 @@ export const useForceLogout = (userId: string) => {
 		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, () => {
 			setForceLogout(true);
 
-			// Trigger an actual local logout. With the SDK socket as the
-			// transport, the legacy "server closes the WS, client reconnects,
-			// loginWithToken fails, accounts-base bounces to Login" chain no
-			// longer fires reliably: DDPSDK auto-retries loginWithToken on
-			// every `connected` and swallows the rejection with `void`, so
-			// the navbar stays on Home with stale credentials. Wipe Meteor's
-			// stored login token + userId here so the router falls back to
-			// /login.
+			if (!sdkTransportEnabled) {
+				// Flag off: develop's exact behaviour — only set the session flag.
+				// The legacy WS-reconnect → loginWithToken-fails → accounts-base
+				// chain handles the actual local cleanup.
+				return;
+			}
+
+			// With the SDK socket as the transport, that chain no longer fires
+			// reliably: DDPSDK auto-retries loginWithToken on every `connected`
+			// and swallows the rejection with `void`, so the navbar stays on
+			// Home with stale credentials. Wipe Meteor's stored login token +
+			// userId here so the router falls back to /login.
 			try {
 				Accounts._unstoreLoginToken();
 			} catch {

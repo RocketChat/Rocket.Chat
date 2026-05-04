@@ -1,6 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
 
+import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
 import { getUserId, userIdStore } from './user';
+
+const sdkTransportEnabled = isSdkTransportEnabled();
 
 const isLoggedIn = () => {
 	const uid = getUserId();
@@ -39,6 +42,17 @@ export const whenLoggedIn = () => {
 		return Promise.resolve();
 	}
 
+	if (!sdkTransportEnabled) {
+		// Flag off: develop's exact implementation — wait on Accounts.onLogin only,
+		// no userIdStore bridge.
+		return new Promise<void>((resolve) => {
+			const subscription = Accounts.onLogin(() => {
+				subscription.stop();
+				resolve();
+			});
+		});
+	}
+
 	return new Promise<void>((resolve) => {
 		const stop = subscribeToLogin(() => {
 			stop();
@@ -57,17 +71,18 @@ export const onLoggedIn = (cb: (() => () => void) | (() => Promise<() => void>) 
 		}
 	};
 
-	// Belt-and-braces: still register with Accounts.onLogin so consumers
-	// pick up loginDetails when Meteor's own autorun does fire (resume on
-	// page load, where the user doc lands via DDP and unblocks the
-	// autorun). The userIdStore subscription covers everything else.
+	// With the SDK transport on, login can land via REST (ddpOverREST) without
+	// filling Meteor.users — Accounts.onLogin's autorun would never fire.
+	// Bridge off userIdStore as belt-and-braces. With the flag off, the legacy
+	// DDP path populates Meteor.users and Accounts.onLogin fires reliably; the
+	// extra userIdStore subscription would just double-fire callbacks.
 	const accountsSubscription = Accounts.onLogin(handler);
-	const stopUserIdSubscription = subscribeToLogin(handler);
+	const stopUserIdSubscription = sdkTransportEnabled ? subscribeToLogin(handler) : undefined;
 	if (isLoggedIn()) handler();
 
 	return () => {
 		accountsSubscription.stop();
-		stopUserIdSubscription();
+		stopUserIdSubscription?.();
 		cleanup?.();
 	};
 };

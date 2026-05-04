@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 
 /**
  * Route Meteor.connection.subscribe through DDPSDK so the few direct
@@ -31,7 +32,6 @@ const extractCallbacks = (args: unknown[]): { params: unknown[]; callbacks: Subs
 	if (
 		last !== null &&
 		typeof last === 'object' &&
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(typeof (last as any).onReady === 'function' ||
 			typeof (last as any).onError === 'function' ||
 			typeof (last as any).onStop === 'function')
@@ -44,21 +44,22 @@ const extractCallbacks = (args: unknown[]): { params: unknown[]; callbacks: Subs
 
 type MeteorSubscriptionHandle = Meteor.SubscriptionHandle;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(Meteor.connection as any).subscribe = ((name: string, ...rest: unknown[]): MeteorSubscriptionHandle => {
-	const { params, callbacks } = extractCallbacks(rest);
-	const subscription = getDdpSdk().client.subscribe(name, ...params);
+if (isSdkTransportEnabled()) {
+	(Meteor.connection as any).subscribe = ((name: string, ...rest: unknown[]): MeteorSubscriptionHandle => {
+		const { params, callbacks } = extractCallbacks(rest);
+		const subscription = getDdpSdk().client.subscribe(name, ...params);
 
-	subscription
-		.ready()
-		.then(() => callbacks.onReady?.())
-		.catch((err: Error) => callbacks.onError?.(err));
+		subscription
+			.ready()
+			.then(() => callbacks.onReady?.())
+			.catch((err: Error) => callbacks.onError?.(err));
 
-	return {
-		stop: () => {
-			subscription.stop();
-			callbacks.onStop?.();
-		},
-		ready: () => subscription.isReady,
-	} as MeteorSubscriptionHandle;
-}) as Meteor.IMeteorConnection['subscribe'];
+		return {
+			stop: () => {
+				subscription.stop();
+				callbacks.onStop?.();
+			},
+			ready: () => subscription.isReady,
+		} as MeteorSubscriptionHandle;
+	}) as Meteor.IMeteorConnection['subscribe'];
+}

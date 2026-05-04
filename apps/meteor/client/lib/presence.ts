@@ -5,9 +5,18 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
 import { getDdpSdk } from './sdk/ddpSdk';
+import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 
+const sdkTransportEnabled = isSdkTransportEnabled();
+
 const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }): void => {
+	if (!sdkTransportEnabled) {
+		// Flag off: route directly through Meteor.subscribe — bit-for-bit develop
+		// behaviour, no DDPSDK socket created, no proxy in the call path.
+		Meteor.subscribe('stream-user-presence', '', payload);
+		return;
+	}
 	const ddp = getDdpSdk();
 	if (ddp.connection.status === 'connected' && ddp.account.uid) {
 		// Fire the command-style subscription over our SDK; it has no lifecycle

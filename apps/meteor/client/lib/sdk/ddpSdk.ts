@@ -3,7 +3,11 @@ import EJSON from 'ejson';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { createMeteorBackedSdk } from './meteorBackedSdk';
+import { isSdkTransportEnabled } from './sdkTransportEnabled';
 import { userIdStore } from '../user';
+
+const sdkTransportEnabled = isSdkTransportEnabled();
 
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value);
 
@@ -45,9 +49,19 @@ const waitForConnected = (sdk: DDPSDK): Promise<void> => {
 
 export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
-		instance = DDPSDK.create(computeDdpUrl());
-		applyEjsonEncoding(instance);
-		void startConnect(instance);
+		if (sdkTransportEnabled) {
+			instance = DDPSDK.create(computeDdpUrl());
+			applyEjsonEncoding(instance);
+			void startConnect(instance);
+		} else {
+			// Meteor-backed pass-through. Same DDPSDK shape, but every call
+			// delegates to Meteor.connection / Meteor.callAsync / Meteor.userId
+			// — no second WebSocket opened, no auth lifecycle, no Presence
+			// session duplicated server-side. Lets ServerProvider, presence.ts,
+			// SDKClient, etc. continue calling getDdpSdk() unconditionally
+			// without per-call-site flag gates.
+			instance = createMeteorBackedSdk();
+		}
 	}
 	return instance;
 };
@@ -200,7 +214,11 @@ declare global {
 	}
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && isSdkTransportEnabled()) {
+	console.info(
+		'%c[Rocket.Chat] SDK-over-DDP transport enabled (experimental)',
+		'color:#fff;background:#f5455c;padding:2px 6px;border-radius:3px;font-weight:bold',
+	);
 	const sdk = getDdpSdk();
 	window.__rocketChatSdk = sdk;
 

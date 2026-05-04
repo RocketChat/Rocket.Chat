@@ -2,6 +2,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 
 /**
  * Bridge incoming DDPSDK frames into Meteor.connection's collection dispatch.
@@ -93,4 +94,6 @@ export const installDdpSdkCollectionBridge = (): void => {
 	});
 };
 
-installDdpSdkCollectionBridge();
+if (isSdkTransportEnabled()) {
+	installDdpSdkCollectionBridge();
+}
