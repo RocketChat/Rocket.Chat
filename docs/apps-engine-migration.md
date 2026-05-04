@@ -27,3 +27,4 @@ To make this migration easier to understand and review, we're using a stacked PR
 - [40184](https://github.com/RocketChat/Rocket.Chat/pull/40184) Copies all relevant source files from `packages/apps-engine/src/server`, `packages/apps-engine/src/client`, `packages/apps-engine/deno-runtime`, `packages/apps-engine/tests` and `packages/apps-engine/scripts` into  their corresponding path at `packages/apps`.
 - [40185](https://github.com/RocketChat/Rocket.Chat/pull/40185) Adapts the path resolution of the apps-engine package for the deno runtime
 - [40186](https://github.com/RocketChat/Rocket.Chat/pull/40186) Flips the switch; changes code in `apps/meteor` and `packages/core-services` that pointed to `@rocket.chat/apps-engine` and makes it point to `@rocket.chat/apps`. This is the turning point in what is actually executed.
+- [40343](https://github.com/RocketChat/Rocket.Chat/pull/40343) Removes old files from the `@rocket.chat/apps-engine` package
