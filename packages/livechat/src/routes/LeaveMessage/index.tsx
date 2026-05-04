@@ -58,7 +58,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 			message,
 		};
 
-		await dispatch({ loading: true });
+		dispatch({ loading: true });
 
 		try {
 			// TODO: Remove intersection after ts refactor of parseOfflineMessage
@@ -73,10 +73,10 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 			const errorMessage = (error as { error: string })?.error;
 			console.error(errorMessage);
 			const alert = { id: createToken(), children: errorMessage, error: true, timeout: 5000 };
-			await dispatch({ alerts: (alerts.push(alert), alerts) });
+			dispatch({ alerts: (alerts.push(alert), alerts) });
 			return false;
 		} finally {
-			await dispatch({ loading: false });
+			dispatch({ loading: false });
 		}
 	};
 

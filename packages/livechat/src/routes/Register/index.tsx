@@ -93,7 +93,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({
+			dispatch({
 				user,
 				...(user.contactManager && { agent: user.contactManager }),
 			} as Omit<StoreState['user'], 'ts'>);

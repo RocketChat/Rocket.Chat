@@ -11,7 +11,7 @@ const GDPRContainer: FunctionalComponent<{ t: TFunction }> = ({ ref, t }) => {
 	const { config: { messages: { dataProcessingConsentText: consentText = '' } = {} } = {}, dispatch } = useContext(StoreContext);
 
 	const handleAgree = async () => {
-		await dispatch({ gdpr: { accepted: true } });
+		dispatch({ gdpr: { accepted: true } });
 		route('/');
 	};
 

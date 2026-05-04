@@ -63,7 +63,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
-			await dispatch({
+			dispatch({
 				user: user as StoreState['user'],
 				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
 			});
@@ -71,7 +71,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 			return;
 		}
 
-		await dispatch({ loading: true });
+		dispatch({ loading: true });
 		try {
 			const { _id: rid } = room;
 			const result = await Livechat.transferChat({ rid, department });
@@ -81,7 +81,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
+			dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
 			await loadConfig();
 
 			await ModalManager.alert({
@@ -91,11 +91,11 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 			route('/');
 		} catch (error) {
 			console.error(error);
-			await dispatch({
+			dispatch({
 				alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts),
 			});
 		} finally {
-			await dispatch({ loading: false });
+			dispatch({ loading: false });
 		}
 	};
 
