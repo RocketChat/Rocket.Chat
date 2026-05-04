@@ -25,7 +25,7 @@ const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
 		'Content-Type': 'text/html',
 	});
-	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${escapeHTML(err)}</div></body></html>`;
+	const content = `<html><body><h2>Sorry, an annoying error occurred</h2><div>${escapeHTML(err)}</div></body></html>`;
 	res.end(content, 'utf-8');
 };
 
