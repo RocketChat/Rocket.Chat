@@ -43,7 +43,7 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@types/emojione": "^2.2.9",
 		"@types/lodash.debounce": "^4.0.9",
-		"@types/node": "~22.16.5",
+		"@types/node": "~22.19.17",
 		"@types/sanitize-html": "~2.16.1",
 		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
