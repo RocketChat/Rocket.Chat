@@ -40,7 +40,7 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	get userRole(): Locator {
-		return this.root.locator('button[role="option"]:has-text("user")');
+		return this.root.getByRole('button', { name: 'user', exact: true });
 	}
 
 	get setupSmtpLink(): Locator {

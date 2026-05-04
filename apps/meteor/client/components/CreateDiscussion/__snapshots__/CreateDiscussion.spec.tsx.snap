@@ -206,9 +206,9 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-w398ts"
-                        role="listbox"
                       >
                         <input
+                          aria-expanded="false"
                           aria-haspopup="listbox"
                           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
                           placeholder="Add_people"

@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
