@@ -716,6 +716,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	updateDraftByRoomIdAndUserId(rid: string, uid: string, draft: string | undefined): Promise<null | WithId<ISubscription>> {
+		const query = { rid, 'u._id': uid };
+		const update = draft ? { $set: { draft } } : { $unset: { draft: 1 as const } };
+
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
 	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
 		const query = {
 			'u._id': userId,

@@ -10,12 +10,11 @@ export enum Method {
 	PASSWORD = 'password',
 }
 
-export type OnConfirm = (code: string, method: Method) => void;
+export type OnConfirm = (code: string, method: Method) => void | Promise<void>;
 
 type TwoFactorModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
-	invalidAttempt?: boolean;
 } & (
 	| {
 			method: 'totp' | 'password';
@@ -26,19 +25,19 @@ type TwoFactorModalProps = {
 	  }
 );
 
-const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps): ReactElement => {
+const TwoFactorModal = ({ onConfirm, onClose, ...props }: TwoFactorModalProps): ReactElement => {
 	if (props.method === Method.TOTP) {
-		return <TwoFactorTotp onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
+		return <TwoFactorTotp onConfirm={onConfirm} onClose={onClose} />;
 	}
 
 	if (props.method === Method.EMAIL) {
 		const { emailOrUsername } = props;
 
-		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} emailOrUsername={emailOrUsername} invalidAttempt={invalidAttempt} />;
+		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} emailOrUsername={emailOrUsername} />;
 	}
 
 	if (props.method === Method.PASSWORD) {
-		return <TwoFactorPassword onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
+		return <TwoFactorPassword onConfirm={onConfirm} onClose={onClose} />;
 	}
 
 	throw new Error('Invalid Two Factor method');

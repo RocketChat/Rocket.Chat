@@ -1,5 +1,39 @@
 # @rocket.chat/rest-typings
 
+## 8.4.0
+
+### Minor Changes
+
+- ([#40160](https://github.com/RocketChat/Rocket.Chat/pull/40160)) Adds a `skipTranspile` flag (default `false`) to webhook integrations. When set to `true`, the integration script is stored as-is without Babel transpilation — matching the 9.0.0 default where Babel is removed entirely. Admins can flip the flag per-integration to validate strict-mode compatibility before upgrading. The field is deprecated and will be removed in 9.0.0.
+
+- ([#39989](https://github.com/RocketChat/Rocket.Chat/pull/39989)) Adds email search filter to `users.list` and `users.info` endpoints.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36
+  - @rocket.chat/core-typings@8.4.0
+  </details>
+
+## 8.4.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  </details>
+
+## 8.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  </details>
+
 ## 8.3.2
 
 ### Patch Changes
@@ -16,6 +50,22 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/core-typings@8.3.1
+  </details>
+
+## 8.4.0-rc.0
+
+### Minor Changes
+
+- ([#40160](https://github.com/RocketChat/Rocket.Chat/pull/40160)) Adds a `skipTranspile` flag (default `false`) to webhook integrations. When set to `true`, the integration script is stored as-is without Babel transpilation — matching the 9.0.0 default where Babel is removed entirely. Admins can flip the flag per-integration to validate strict-mode compatibility before upgrading. The field is deprecated and will be removed in 9.0.0.
+
+- ([#39989](https://github.com/RocketChat/Rocket.Chat/pull/39989)) Adds email search filter to `users.list` and `users.info` endpoints.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36-rc.0
+  - @rocket.chat/core-typings@8.4.0-rc.0
   </details>
 
 ## 8.3.0
