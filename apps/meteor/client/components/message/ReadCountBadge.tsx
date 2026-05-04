@@ -3,7 +3,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useEndpoint, useTooltipClose, useTooltipOpen, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
@@ -22,8 +22,24 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const ref = useRef<HTMLDivElement>(null);
+	const hideTooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
+
+	const cancelScheduledTooltipClose = useCallback((): void => {
+		if (hideTooltipTimerRef.current !== undefined) {
+			clearTimeout(hideTooltipTimerRef.current);
+			hideTooltipTimerRef.current = undefined;
+		}
+	}, []);
+
+	const scheduleTooltipClose = useCallback((): void => {
+		cancelScheduledTooltipClose();
+		hideTooltipTimerRef.current = setTimeout(() => {
+			closeTooltip();
+			hideTooltipTimerRef.current = undefined;
+		}, 400);
+	}, [cancelScheduledTooltipClose, closeTooltip]);
 
 	const getMessageReadCount = useEndpoint('GET', '/v1/chat.getMessageReadCount');
 
@@ -53,6 +69,13 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 		return () => window.removeEventListener('read-counts-changed', handler as EventListener);
 	}, [queryClient, queryKey, roomId, messageId]);
 
+	useEffect(
+		() => () => {
+			cancelScheduledTooltipClose();
+		},
+		[cancelScheduledTooltipClose],
+	);
+
 	const readCount = data?.readCount ?? 0;
 
 	// Keep this minimal: show only on the current user's own messages.
@@ -69,6 +92,8 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 		return null;
 	}
 
+	// No onMouseLeave close timer: TooltipProvider handles gap-to-portal; a badge timer raced with hover.
+
 	return (
 		<Box
 			ref={ref}
@@ -80,17 +105,23 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 			flexShrink={0}
 			fontSize='x12'
 			color='hint'
-			data-tooltip=''
 			aria-label={`${t('Read_by')} ${readCount}`}
 			onMouseEnter={(e): void => {
 				e.stopPropagation();
 				e.preventDefault();
 
+				cancelScheduledTooltipClose();
+
 				ref.current &&
-					openTooltip(<ReadCountTooltip messageId={messageId} roomId={roomId} />, ref.current);
-			}}
-			onMouseLeave={(): void => {
-				closeTooltip();
+					openTooltip(
+						<ReadCountTooltip
+							messageId={messageId}
+							roomId={roomId}
+							onTooltipMouseEnter={cancelScheduledTooltipClose}
+							onTooltipMouseLeave={scheduleTooltipClose}
+						/>,
+						ref.current,
+					);
 			}}
 		>
 			<Icon name='eye' size='x12' mie={4} />

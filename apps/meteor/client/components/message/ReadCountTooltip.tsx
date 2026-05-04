@@ -11,9 +11,16 @@ import { MessageListContext } from './list/MessageListContext';
 type ReadCountTooltipProps = {
 	messageId: string;
 	roomId: string;
+	onTooltipMouseEnter: () => void;
+	onTooltipMouseLeave: () => void;
 };
 
-export const ReadCountTooltip = ({ messageId, roomId }: ReadCountTooltipProps): ReactElement => {
+export const ReadCountTooltip = ({
+	messageId,
+	roomId,
+	onTooltipMouseEnter,
+	onTooltipMouseLeave,
+}: ReadCountTooltipProps): ReactElement => {
 	const { t } = useTranslation();
 	const { showRealName } = useContext(MessageListContext);
 
@@ -42,7 +49,18 @@ export const ReadCountTooltip = ({ messageId, roomId }: ReadCountTooltipProps): 
 	};
 
 	return (
-		<Box maxWidth='x300' display='flex' flexDirection='column' gap={4}>
+		<Box
+			maxWidth='x300'
+			display='flex'
+			flexDirection='column'
+			gap={4}
+			onMouseEnter={onTooltipMouseEnter}
+			onMouseLeave={onTooltipMouseLeave}
+			onWheel={(e): void => {
+				e.stopPropagation();
+			}}
+			style={{ pointerEvents: 'auto', userSelect: 'text' }}
+		>
 			<Box fontScale='p2m' color='default'>
 				{t('Read_by')}
 			</Box>
@@ -54,7 +72,19 @@ export const ReadCountTooltip = ({ messageId, roomId }: ReadCountTooltipProps): 
 				</>
 			)}
 			{!isLoading && readers.length > 0 && (
-				<Box display='flex' flexDirection='column' gap={2} maxHeight='x120' overflowY='auto' pis={4}>
+				<Box
+					display='flex'
+					flexDirection='column'
+					gap={2}
+					maxHeight='x120'
+					minHeight={0}
+					overflowY='auto'
+					pis={4}
+					onWheel={(e): void => {
+						e.stopPropagation();
+					}}
+					style={{ overscrollBehavior: 'contain' }}
+				>
 					{readers.map((reader) => (
 						<Box key={reader._id} fontScale='p2' title={reader.username ? `@${reader.username}` : undefined}>
 							{labelFor(reader)}
