@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions, ReadReceipts, Team } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive, Team } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
@@ -36,7 +36,7 @@ const bulkRoomCleanUp = async (rids: string[]) => {
 	// no bulk deletion for files
 	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
-	const [, , , deletedRoomIds] = await Promise.all([
+	const [, , , , deletedRoomIds] = await Promise.all([
 		Subscriptions.removeByRoomIds(rids, {
 			async onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
@@ -44,6 +44,7 @@ const bulkRoomCleanUp = async (rids: string[]) => {
 		}),
 		Messages.removeByRoomIds(rids),
 		ReadReceipts.removeByRoomIds(rids),
+		ReadReceiptsArchive.removeByRoomIds(rids),
 		bulkTeamCleanup(rids),
 	]);
 

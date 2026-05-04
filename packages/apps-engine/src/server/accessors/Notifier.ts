@@ -16,7 +16,7 @@ export class Notifier implements INotifier {
 
 	public async notifyUser(user: IUser, message: IMessage): Promise<void> {
 		if (!message.sender?.id) {
-			const appUser = await this.userBridge.doGetAppUser(this.appId);
+			const appUser = (await this.userBridge.doGetAppUser(this.appId)) as IUser;
 
 			message.sender = appUser;
 		}
@@ -26,7 +26,7 @@ export class Notifier implements INotifier {
 
 	public async notifyRoom(room: IRoom, message: IMessage): Promise<void> {
 		if (!message.sender?.id) {
-			const appUser = await this.userBridge.doGetAppUser(this.appId);
+			const appUser = (await this.userBridge.doGetAppUser(this.appId)) as IUser;
 
 			message.sender = appUser;
 		}
@@ -42,7 +42,7 @@ export class Notifier implements INotifier {
 			options.username = appUser?.name || '';
 		}
 
-		this.msgBridge.doTyping({ ...options, isTyping: true }, this.appId);
+		void this.msgBridge.doTyping({ ...options, isTyping: true }, this.appId);
 
 		return () => this.msgBridge.doTyping({ ...options, isTyping: false }, this.appId);
 	}

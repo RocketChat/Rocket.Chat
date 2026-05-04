@@ -389,6 +389,8 @@ export type RoomAdminFieldsType =
 	| 'avatarETag'
 	| 'abacAttributes';
 
+export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
+
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
 		enabled?: boolean;

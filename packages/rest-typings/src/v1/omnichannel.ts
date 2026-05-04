@@ -3484,7 +3484,7 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		departmentId: {
-			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
 		},
 		open: {
 			anyOf: [

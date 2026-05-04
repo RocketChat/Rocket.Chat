@@ -1,5 +1,6 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
@@ -20,6 +21,7 @@ const order = [
 	'Open_Livechats',
 	'On_Hold_Chats',
 	'Unread',
+	'Drafts',
 	'Favorites',
 	'Teams',
 	'Discussions',
@@ -41,6 +43,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	const sidebarDrafts = useFeaturePreview('sidebarDrafts');
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const sidebarCustomCategoryOrder = useUserPreference<string[]>('sidebarCustomCategoryOrder') ?? [];
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
@@ -60,6 +63,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 		useMemo(() => {
 			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
 
+			const drafts = new Set();
 			const incomingCall = new Set();
 			const favorite = new Set();
 			const omnichannel = new Set();
@@ -78,6 +82,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
 					return unread.add(room);
+				}
+
+				if (sidebarDrafts && room.draft) {
+					return drafts.add(room);
 				}
 
 				if (favoritesEnabled && room.f) {
@@ -124,6 +132,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
+
+			sidebarDrafts && drafts.size && groups.set('Drafts', drafts);
 
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 
@@ -201,6 +211,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			rooms,
 			showOmnichannel,
 			inquiries.enabled,
+			sidebarDrafts,
 			queue,
 			sidebarShowUnread,
 			favoritesEnabled,

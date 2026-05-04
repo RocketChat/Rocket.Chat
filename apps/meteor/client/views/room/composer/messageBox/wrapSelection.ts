@@ -30,6 +30,14 @@ export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boole
 	const input = event.target as HTMLTextAreaElement;
 	const { selectionStart, selectionEnd } = input;
 
+	const testSelection = input.value.slice(selectionStart, selectionEnd);
+	// if the selection is the same of the data, return false
+	if (testSelection === event.data) {
+		return false;
+	}
+	if (event.data === chat.composer?.text) {
+		return false;
+	}
 	if (selectionStart === selectionEnd) {
 		return false;
 	}

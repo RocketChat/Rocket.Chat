@@ -21,9 +21,9 @@ export interface ISubscription extends IRocketChatRecord {
 	alert?: boolean;
 	unread: number;
 	t: RoomType;
-	ls: Date;
+	ls?: Date;
 	f?: boolean;
-	lr: Date;
+	lr?: Date;
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
 	teamMain?: boolean;
@@ -65,6 +65,8 @@ export interface ISubscription extends IRocketChatRecord {
 	ignored?: IUser['_id'][];
 
 	department?: unknown;
+
+	draft?: string;
 
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';

@@ -114,8 +114,9 @@ export const WithFiles: StoryFn<typeof MessageComposer> = () => (
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerFileGroup>
 			<MessageComposerFile
-				fileTitle='file.png'
-				fileSubtitle='2 MB'
+				fileTitle='antique-pocket-clock-500x500.zip'
+				fileSubtitle='58.33 KB - application/zip'
+				fileFormat='zip'
 				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
 				onClick={action('click')}
 			/>
@@ -123,11 +124,13 @@ export const WithFiles: StoryFn<typeof MessageComposer> = () => (
 				disabled
 				fileTitle='file.png'
 				fileSubtitle='2 MB'
+				fileFormat='png'
 				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
 				onClick={action('click')}
 			/>
 			<MessageComposerFileError
 				fileTitle='file.png'
+				fileFormat='png'
 				error={new Error('Something went wrong')}
 				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
 				onClick={action('click')}

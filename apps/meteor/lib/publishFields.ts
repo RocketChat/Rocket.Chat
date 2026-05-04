@@ -39,6 +39,7 @@ export const subscriptionFields = {
 	E2EKey: 1,
 	E2ESuggestedKey: 1,
 	oldRoomKeys: 1,
+	draft: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
