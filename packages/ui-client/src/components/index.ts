@@ -1,5 +1,4 @@
 export { default as AnchorPortal, type AnchorPortalProps } from './AnchorPortal';
-export { default as TooltipPortal } from './TooltipPortal';
 export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';

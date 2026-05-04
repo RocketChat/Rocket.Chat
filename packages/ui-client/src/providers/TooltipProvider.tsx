@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
 import { TooltipComponent } from '../components/TooltipComponent';
-import TooltipPortal from '../components/TooltipPortal';
 
 type TooltipProviderProps = {
 	children?: ReactNode;
@@ -32,14 +31,18 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				const previousAnchor = lastAnchor.current;
 				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
 				lastAnchor.current = anchor;
-				previousAnchor && restoreTitle(previousAnchor);
+				if (previousAnchor) {
+					restoreTitle(previousAnchor);
+				}
 			},
 			close: (): void => {
 				const previousAnchor = lastAnchor.current;
 				setTooltip(null);
 				setTooltip.flush();
 				lastAnchor.current = undefined;
-				previousAnchor && restoreTitle(previousAnchor);
+				if (previousAnchor) {
+					restoreTitle(previousAnchor);
+				}
 			},
 			dismiss: (): void => {
 				setTooltip(null);
@@ -138,7 +141,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 	return (
 		<TooltipContext.Provider value={contextValue}>
 			{children}
-			{tooltip && <TooltipPortal>{tooltip}</TooltipPortal>}
+			{tooltip}
 		</TooltipContext.Provider>
 	);
 };
