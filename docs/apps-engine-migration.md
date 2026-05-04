@@ -23,3 +23,4 @@ Besides that, migrating app management code away from a public package enables u
 To make this migration easier to understand and review, we're using a stacked PR approach on Github - similar to a feature branch but disallowing sibling PRs. They are:
 
 - [40395](https://github.com/RocketChat/Rocket.Chat/pull/40395) The feature branch itself. It will accumulate the changes of the whole stack.
+- [40183](https://github.com/RocketChat/Rocket.Chat/pull/40183) Replaces `AppPackageParser.getEngineVersion()` - which resolved the version by traversing the filesystem relative to `__dirname` - with a direct import of `ENGINE_VERSION`. This will support the migration of the `AppPackageParser` class itself.
