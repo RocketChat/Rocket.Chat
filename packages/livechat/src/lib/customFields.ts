@@ -1,12 +1,16 @@
 import { Livechat } from '../api';
+import type { StoreState } from '../store';
 import store from '../store';
 
 class CustomFields {
+	static instance: CustomFields;
+
+	private _initiated = false;
+
+	private _started = false;
+
 	constructor() {
 		if (!CustomFields.instance) {
-			this._initiated = false;
-			this._started = false;
-			this._queue = {};
 			CustomFields.instance = this;
 		}
 
@@ -31,7 +35,7 @@ class CustomFields {
 		store.off('change', this.handleStoreChange);
 	}
 
-	handleStoreChange([state]) {
+	handleStoreChange([state]: [StoreState]) {
 		const { user } = state;
 		const { _started } = CustomFields.instance;
 
@@ -47,7 +51,7 @@ class CustomFields {
 		CustomFields.instance.processCustomFields();
 	}
 
-	addToQueue(key, value, overwrite) {
+	addToQueue(key: string, value: string, overwrite: boolean) {
 		const { customFieldsQueue } = store.state;
 		store.setState({
 			customFieldsQueue: {
@@ -74,14 +78,16 @@ class CustomFields {
 		this.clearQueue();
 	}
 
-	setCustomField(key, value, overwrite = true) {
+	setCustomField(key: string, value: string, overwrite = true) {
 		if (!this._started) {
 			this.addToQueue(key, value, overwrite);
 			return;
 		}
 
 		const { token } = Livechat;
-		Livechat.sendCustomField({ token, key, value, overwrite });
+		if (token) {
+			void Livechat.sendCustomField({ token, key, value, overwrite });
+		}
 	}
 }
 

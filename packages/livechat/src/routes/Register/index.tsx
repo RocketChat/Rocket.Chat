@@ -64,9 +64,9 @@ export const Register = (_: RegisterProps) => {
 	const defaultTitle = t('need_help');
 	const defaultMessage = t('please_tell_us_some_information_to_start_the_chat');
 
-	const registerCustomFields = (customFields = {}) => {
+	const registerCustomFields = (customFields: Record<string, unknown> = {}) => {
 		Object.entries(customFields).forEach(([key, value]) => {
-			if (!value || value === '') {
+			if (!value || typeof value !== 'string' || value === '') {
 				return;
 			}
 
