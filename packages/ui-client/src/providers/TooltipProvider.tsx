@@ -8,9 +8,10 @@ import TooltipPortal from '../components/TooltipPortal';
 
 type TooltipProviderProps = {
 	children?: ReactNode;
+	ownerDocument?: Document;
 };
 
-const TooltipProvider = ({ children }: TooltipProviderProps) => {
+const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>();
 	const hasHover = !useMediaQuery('(hover: none)');
 
@@ -122,17 +123,17 @@ const TooltipProvider = ({ children }: TooltipProviderProps) => {
 			contextValue.dismiss();
 		};
 
-		document.body.addEventListener('mouseover', handleMouseOver, {
+		ownerDocument.body.addEventListener('mouseover', handleMouseOver, {
 			passive: true,
 		});
-		document.body.addEventListener('click', dismissOnClick, { capture: true });
+		ownerDocument.body.addEventListener('click', dismissOnClick, { capture: true });
 
 		return (): void => {
 			contextValue.close();
-			document.body.removeEventListener('mouseover', handleMouseOver);
-			document.body.removeEventListener('click', dismissOnClick);
+			ownerDocument.body.removeEventListener('mouseover', handleMouseOver);
+			ownerDocument.body.removeEventListener('click', dismissOnClick);
 		};
-	}, [contextValue, setTooltip, hasHover]);
+	}, [contextValue, setTooltip, hasHover, ownerDocument]);
 
 	return (
 		<TooltipContext.Provider value={contextValue}>
