@@ -5,9 +5,8 @@ import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useMediaCallInstance } from '../context';
+import { useMediaCallInstance, useMediaCallView } from '../context';
 import MediaCallPopoutView from './MediaCallPopoutView';
-import type { AvailableViews } from '../context/MediaCallInstanceContext';
 
 const createRootElement = (externalWindow: Window) => {
 	const newRoot = externalWindow.document.createElement('div');
@@ -52,22 +51,16 @@ const MediaCallPopoutWindow = () => {
 	const [container, setContainer] = useState<{ root: HTMLDivElement; externalWindow: Window } | null>(null);
 	const [fullscreen, setFullscreen] = useState(false);
 	const { setCurrentViews } = useMediaCallInstance();
+	const { onClosePopout } = useMediaCallView();
 
 	const closePopout = useCallback(
 		(windowClosed = false) => {
-			setCurrentViews((prev) => {
-				if (!prev.has('popout')) {
-					return prev;
-				}
-
-				prev.delete('popout');
-				return new Set<AvailableViews>(prev);
-			});
+			onClosePopout();
 			if (!windowClosed) {
 				container?.externalWindow.close();
 			}
 		},
-		[container?.externalWindow, setCurrentViews],
+		[container?.externalWindow, onClosePopout],
 	);
 
 	const user = useUser();
