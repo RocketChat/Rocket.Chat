@@ -96,6 +96,10 @@ export class HomeChannel {
 		return this.page.goto('/home');
 	}
 
+	gotoChannel(name: string) {
+		return this.page.goto(`/channel/${name}`);
+	}
+
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}

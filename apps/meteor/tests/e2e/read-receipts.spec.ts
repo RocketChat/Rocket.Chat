@@ -22,12 +22,12 @@ test.describe.serial('read-receipts', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.gotoChannel(targetChannel);
+		await poHomeChannel.content.waitForChannel();
 	});
 
 	test.describe('read receipt settings disabled', async () => {
 		test('should not show read receipts item menu', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 			await poHomeChannel.content.openLastMessageMenu();
 			await expect(page.locator('role=menuitem[name="Read receipts"]')).not.toBeVisible();
@@ -57,19 +57,18 @@ test.describe.serial('read-receipts', () => {
 		test('should show read receipts message sent status in the sent message', async ({ browser }) => {
 			const { page } = await createAuxContext(browser, Users.user1);
 			auxContext = { page, poHomeChannel: new HomeChannel(page) };
-			await auxContext.poHomeChannel.navbar.openChat(targetChannel);
+			await auxContext.poHomeChannel.gotoChannel(targetChannel);
+			await auxContext.poHomeChannel.content.waitForChannel();
 			await auxContext.poHomeChannel.content.sendMessage('hello admin');
 
 			await expect(auxContext.poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message sent' })).toBeVisible();
 		});
 
 		test('should show read receipts message viewed status in the sent message', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			await expect(poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 		});
 
 		test('should show the reads receipt modal with the users who read the message', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.openLastMessageMenu();
 			await page.locator('role=menuitem[name="Read receipts"]').click();
 

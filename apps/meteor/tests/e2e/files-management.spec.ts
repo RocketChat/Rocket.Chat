@@ -18,8 +18,8 @@ test.describe.serial('files-management', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.gotoChannel(targetChannel);
+		await poHomeChannel.content.waitForChannel();
 	});
 
 	test.afterAll(async ({ api }) => {

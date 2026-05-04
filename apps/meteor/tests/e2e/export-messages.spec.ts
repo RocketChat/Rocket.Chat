@@ -20,7 +20,7 @@ test.describe('export-messages', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto(`/channel/${targetChannel}`);
+		await poHomeChannel.gotoChannel(targetChannel);
 		await poHomeChannel.content.waitForChannel();
 	});
 

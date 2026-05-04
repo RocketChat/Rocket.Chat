@@ -34,20 +34,21 @@ test.describe.serial('report message', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await adminPage.goto('/home');
+		await poHomeChannel.gotoChannel(targetChannel);
+		await poHomeChannel.content.waitForChannel();
+		const adminHomeChannel = new HomeChannel(adminPage);
+		await adminHomeChannel.gotoChannel(targetChannel);
+		await adminHomeChannel.content.waitForChannel();
 	});
 
 	test('should show report message option in message menu for other users messages', async () => {
 		await test.step('send message as user1', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			const testMessage = faker.lorem.sentence();
 			await poHomeChannel.content.sendMessage(testMessage);
 		});
 
 		await test.step('verify report option is visible for the other user', async () => {
 			const adminHomeChannel = new HomeChannel(adminPage);
-			await adminHomeChannel.navbar.openChat(targetChannel);
 			await adminHomeChannel.content.openLastMessageMenu();
 			await expect(adminPage.getByRole('menuitem', { name: 'Report' })).toBeVisible();
 		});
@@ -55,7 +56,6 @@ test.describe.serial('report message', () => {
 
 	test('should not show report message option in message menu for own messages', async ({ page }) => {
 		await test.step('send message as user1', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			const testMessage = faker.lorem.sentence();
 			await poHomeChannel.content.sendMessage(testMessage);
 		});
@@ -68,15 +68,12 @@ test.describe.serial('report message', () => {
 
 	test('should validate empty report description', async () => {
 		await test.step('send message as user1', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			const testMessage = faker.lorem.sentence();
 			await poHomeChannel.content.sendMessage(testMessage);
 		});
 
 		await test.step('try to submit empty report', async () => {
 			const adminHomeChannel = new HomeChannel(adminPage);
-			await adminHomeChannel.navbar.openChat(targetChannel);
-
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 			await reportModal.submitReport();
@@ -85,15 +82,12 @@ test.describe.serial('report message', () => {
 
 	test('should be able to cancel reporting a message', async () => {
 		await test.step('send message as user1', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			const testMessage = faker.lorem.sentence();
 			await poHomeChannel.content.sendMessage(testMessage);
 		});
 
 		await test.step('open and cancel report modal', async () => {
 			const adminHomeChannel = new HomeChannel(adminPage);
-			await adminHomeChannel.navbar.openChat(targetChannel);
-
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 			await reportModal.cancelReport();
@@ -105,7 +99,6 @@ test.describe.serial('report message', () => {
 		let reportDescription: string;
 
 		await test.step('send message as user1', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			testMessage = faker.lorem.sentence();
 			await poHomeChannel.content.sendMessage(testMessage);
 		});
@@ -114,8 +107,6 @@ test.describe.serial('report message', () => {
 			reportDescription = faker.lorem.sentence();
 
 			const adminHomeChannel = new HomeChannel(adminPage);
-			await adminHomeChannel.navbar.openChat(targetChannel);
-
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 			await reportModal.submitReport(reportDescription);
