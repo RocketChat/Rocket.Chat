@@ -1,12 +1,12 @@
 import { Livechat } from '../api';
+import type { StoreState } from '../store';
 import store from '../store';
 
-const docActivityEvents = ['mousemove', 'mousedown', 'touchend', 'keydown'];
-let timer;
+const docActivityEvents = ['mousemove' as const, 'mousedown' as const, 'touchend' as const, 'keydown' as const];
+let timer: ReturnType<typeof setTimeout> | undefined;
 let initiated = false;
 const awayTime = 300000;
-let self;
-let oldStatus;
+let oldStatus: string | undefined;
 
 const userPrensence = {
 	init() {
@@ -15,7 +15,6 @@ const userPrensence = {
 		}
 
 		initiated = true;
-		self = this;
 		store.on('change', this.handleStoreChange);
 	},
 
@@ -26,7 +25,9 @@ const userPrensence = {
 	},
 
 	stopTimer() {
-		timer && clearTimeout(timer);
+		if (timer) {
+			clearTimeout(timer);
+		}
 	},
 
 	startTimer() {
@@ -34,13 +35,17 @@ const userPrensence = {
 		timer = setTimeout(this.setAway, awayTime);
 	},
 
-	handleStoreChange([state]) {
+	handleStoreChange([state]: [StoreState]) {
 		if (!initiated) {
 			return;
 		}
 
 		const { room, user } = state;
-		room && user ? self.startEvents() : self.stopEvents();
+		if (room && user) {
+			userPrensence.startEvents();
+		} else {
+			userPrensence.stopEvents();
+		}
 	},
 
 	startEvents() {
@@ -61,7 +66,7 @@ const userPrensence = {
 	},
 
 	async setOnline() {
-		self.startTimer();
+		userPrensence.startTimer();
 		if (oldStatus === 'online') {
 			return;
 		}
@@ -70,7 +75,7 @@ const userPrensence = {
 	},
 
 	async setAway() {
-		self.stopTimer();
+		userPrensence.stopTimer();
 		if (oldStatus === 'away') {
 			return;
 		}
