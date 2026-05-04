@@ -1,4 +1,3 @@
-import type { FunctionalComponent } from 'preact';
 import { useContext, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
@@ -22,7 +21,11 @@ import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 
-const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
+type LeaveMessageProps = {
+	path: string;
+};
+
+const LeaveMessage = (_: LeaveMessageProps) => {
 	const {
 		config: {
 			departments = [],

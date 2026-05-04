@@ -4,7 +4,6 @@ import type { ComponentProps } from 'preact';
 import Tooltip from './Tooltip';
 import TooltipContainer from './TooltipContainer';
 import TooltipTrigger from './TooltipTrigger';
-import { withTooltip } from './withTooltip';
 import { Button } from '../Button';
 
 const placements = [null, 'left', 'top', 'right', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
@@ -51,12 +50,3 @@ ConnectedToAnotherComponent.args = {
 	content: 'A simple tool tip',
 };
 ConnectedToAnotherComponent.decorators = [(storyFn) => <TooltipContainer>{storyFn()}</TooltipContainer>];
-
-const MyButton = withTooltip(Button);
-
-export const WithTooltip: StoryFn<{ tooltip?: string }> = ({ tooltip }) => <MyButton tooltip={tooltip}>A simple button</MyButton>;
-WithTooltip.storyName = 'withTooltip()';
-WithTooltip.args = {
-	tooltip: 'A simple tool tip',
-};
-WithTooltip.decorators = [(storyFn) => <TooltipContainer>{storyFn()}</TooltipContainer>];

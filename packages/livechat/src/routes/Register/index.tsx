@@ -1,4 +1,3 @@
-import type { FunctionalComponent } from 'preact';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import { route } from 'preact-router';
@@ -26,7 +25,11 @@ type FormPayloadCustomField = { [key: string]: string };
 
 export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
 
-export const Register: FunctionalComponent<{ path: string }> = () => {
+type RegisterProps = {
+	path: string;
+};
+
+export const Register = (_: RegisterProps) => {
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);

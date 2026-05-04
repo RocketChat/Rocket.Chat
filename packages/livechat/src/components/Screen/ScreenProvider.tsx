@@ -1,4 +1,4 @@
-import type { FunctionalComponent } from 'preact';
+import type { ComponentChildren } from 'preact';
 import { createContext } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
@@ -68,7 +68,11 @@ export const ScreenContext = createContext<ScreenContextValue>({
 	onOpenWindow: () => undefined,
 } as ScreenContextValue);
 
-export const ScreenProvider: FunctionalComponent = ({ children }) => {
+type ScreenProviderProps = {
+	children: ComponentChildren;
+};
+
+export const ScreenProvider = ({ children }: ScreenProviderProps) => {
 	const store = useContext(StoreContext);
 	const { token, dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe, customFieldsQueue } = store;
 	const { department, name, email } = iframe.guest || {};
