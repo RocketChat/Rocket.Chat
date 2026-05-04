@@ -9587,7 +9587,7 @@ API.v1.addRoute(
 				missingInformation: normalizeDocumentationAssistantStringArray(
 					payload.missingInformation || payload.missingFields || payload.missing,
 				),
-				summary: typeof payload.summary === 'string' ? payload.summary : undefined,
+				rationale: typeof payload.rationale === 'string' ? payload.rationale : typeof payload.summary === 'string' ? payload.summary : undefined,
 				model: typeof payload.model === 'string' ? payload.model : undefined,
 			});
 		},

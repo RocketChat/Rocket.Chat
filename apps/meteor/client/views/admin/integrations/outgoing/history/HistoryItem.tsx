@@ -50,6 +50,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 	const httpErrorCode = useHighlightedCode('json', JSON.stringify(httpError || '', null, 2));
 	const httpResultCode = useHighlightedCode('json', JSON.stringify(httpResult || '', null, 2));
 	const errorStackCode = useHighlightedCode('json', JSON.stringify(errorStack || '', null, 2));
+	const eventConfig = (outgoingEvents as Record<string, (typeof outgoingEvents)[keyof typeof outgoingEvents] | undefined>)[event];
 
 	return (
 		<AccordionItem
@@ -94,7 +95,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<FieldLabel>{t('Event_Trigger')}</FieldLabel>
 					<FieldRow>
 						<Box withRichContent w='full'>
-							<code>{t(outgoingEvents[event].label)}</code>
+							<code>{eventConfig ? t(eventConfig.label) : event}</code>
 						</Box>
 					</FieldRow>
 				</Field>

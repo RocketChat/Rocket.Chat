@@ -60,6 +60,9 @@ const OutgoingWebhookForm = () => {
 		formState: { errors },
 	} = useFormContext<EditOutgoingWebhookPayload>();
 	const { event, alias, emoji, avatar } = watch();
+	const eventConfig =
+		(outgoingEvents as Record<string, (typeof outgoingEvents)[keyof typeof outgoingEvents] | undefined>)[event] ||
+		outgoingEvents.medsenseDocumentation;
 
 	const retryDelayOptions: SelectOption[] = useMemo(
 		() => [
@@ -77,9 +80,9 @@ const OutgoingWebhookForm = () => {
 
 	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
-	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
-	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
-	const showTargetRoom = useMemo(() => outgoingEvents[event].use.targetRoom, [event]);
+	const showChannel = useMemo(() => eventConfig.use.channel, [eventConfig]);
+	const showTriggerWords = useMemo(() => eventConfig.use.triggerWords, [eventConfig]);
+	const showTargetRoom = useMemo(() => eventConfig.use.targetRoom, [eventConfig]);
 
 	const additionalFields = useMemo(
 		() => ({
