@@ -24,3 +24,4 @@ To make this migration easier to understand and review, we're using a stacked PR
 
 - [40395](https://github.com/RocketChat/Rocket.Chat/pull/40395) The feature branch itself. It will accumulate the changes of the whole stack.
 - [40183](https://github.com/RocketChat/Rocket.Chat/pull/40183) Replaces `AppPackageParser.getEngineVersion()` - which resolved the version by traversing the filesystem relative to `__dirname` - with a direct import of `ENGINE_VERSION`. This will support the migration of the `AppPackageParser` class itself.
+- [40184](https://github.com/RocketChat/Rocket.Chat/pull/40184) Copies all relevant source files from `packages/apps-engine/src/server`, `packages/apps-engine/src/client`, `packages/apps-engine/deno-runtime`, `packages/apps-engine/tests` and `packages/apps-engine/scripts` into  their corresponding path at `packages/apps`.
