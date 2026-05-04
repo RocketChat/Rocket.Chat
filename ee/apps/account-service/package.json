@@ -30,7 +30,7 @@
 		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.16.5",
+		"@types/node": "~22.19.17",
 		"bcrypt": "^6.0.0",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
