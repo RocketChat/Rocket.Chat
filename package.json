@@ -85,7 +85,13 @@
 		"form-data@npm:^2.5.0": "2.5.5",
 		"form-data@npm:^4.0.0": "4.0.5",
 		"form-data@npm:^4.0.4": "4.0.5",
-		"form-data@npm:^4.0.5": "4.0.5"
+		"form-data@npm:^4.0.5": "4.0.5",
+		"browserify-aes/cipher-base": "1.0.7",
+		"browserify-des/cipher-base": "1.0.7",
+		"create-hash/cipher-base": "1.0.7",
+		"create-hmac/cipher-base": "1.0.7",
+		"create-hash/sha.js": "2.4.12",
+		"create-hmac/sha.js": "2.4.12"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
