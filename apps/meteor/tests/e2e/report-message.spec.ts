@@ -11,6 +11,7 @@ test.use({ storageState: Users.user1.state });
 
 test.describe.serial('report message', () => {
 	let poHomeChannel: HomeChannel;
+	let adminHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let adminPage: Page;
 	let reportModal: ReportMessageModal;
@@ -33,10 +34,10 @@ test.describe.serial('report message', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		adminHomeChannel = new HomeChannel(adminPage);
 
 		await poHomeChannel.gotoChannel(targetChannel);
 		await poHomeChannel.content.waitForChannel();
-		const adminHomeChannel = new HomeChannel(adminPage);
 		await adminHomeChannel.gotoChannel(targetChannel);
 		await adminHomeChannel.content.waitForChannel();
 	});
@@ -48,7 +49,6 @@ test.describe.serial('report message', () => {
 		});
 
 		await test.step('verify report option is visible for the other user', async () => {
-			const adminHomeChannel = new HomeChannel(adminPage);
 			await adminHomeChannel.content.openLastMessageMenu();
 			await expect(adminPage.getByRole('menuitem', { name: 'Report' })).toBeVisible();
 		});
@@ -73,7 +73,6 @@ test.describe.serial('report message', () => {
 		});
 
 		await test.step('try to submit empty report', async () => {
-			const adminHomeChannel = new HomeChannel(adminPage);
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 			await reportModal.submitReport();
@@ -87,7 +86,6 @@ test.describe.serial('report message', () => {
 		});
 
 		await test.step('open and cancel report modal', async () => {
-			const adminHomeChannel = new HomeChannel(adminPage);
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 			await reportModal.cancelReport();
@@ -106,7 +104,6 @@ test.describe.serial('report message', () => {
 		await test.step('report message as the other user', async () => {
 			reportDescription = faker.lorem.sentence();
 
-			const adminHomeChannel = new HomeChannel(adminPage);
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 			await reportModal.submitReport(reportDescription);
