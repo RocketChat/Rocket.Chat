@@ -181,6 +181,15 @@ export class ConnectionImpl
 				this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
+						// Reset the retry budget on successful connection so a future
+						// disconnect can schedule reconnects again. Without this,
+						// long-lived connections that recover once would burn through
+						// `retryCount` permanently and stop reconnecting on subsequent
+						// drops — observed when a server-side ws.close (logout, force-
+						// logout) chained with a reconnect cycle saturated the
+						// budget; the next disconnect left frames stuck in the
+						// dispatcher queue forever because the socket never came back.
+						this.retryCount = 0;
 						this.emitStatus();
 						this.emit('connected', payload.session);
 						this.session = payload.session;

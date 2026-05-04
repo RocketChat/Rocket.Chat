@@ -205,6 +205,58 @@ it('should not surface the retry timer rejection when an external connect won th
 	jest.useRealTimers();
 });
 
+it('should reset retryCount on a successful connection so subsequent drops can retry', async () => {
+	// Regression: retryCount was only ever incremented on disconnect, never
+	// zeroed on successful (re)connect. With default retryCount=1 budget, a
+	// single force-logout cycle (server close → SDK reconnects → app calls
+	// `Meteor.logout()` → server's logout handler closes WS again) drained the
+	// budget, and the second close left the SDK permanently disconnected.
+	// Method frames queued on the SDK during that window stayed queued
+	// forever — observed in e2e-encryption/e2ee-passphrase-management as the
+	// next loginByUserState login frame never being delivered.
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+	expect((connection as unknown as { retryCount: number }).retryCount).toBe(0);
+
+	// First disconnect → schedules retry (retryCount: 0 → 1).
+	jest.useFakeTimers();
+	server.close();
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+
+	expect(connection.status).toBe('disconnected');
+
+	await handleConnection(
+		server,
+		jest.advanceTimersByTimeAsync(200),
+		new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined))),
+		new Promise((resolve) => connection.once('connection', (data) => resolve(data))),
+	);
+	jest.useRealTimers();
+	expect(connection.status).toBe('connected');
+
+	// Successful reconnect must zero the retry budget.
+	expect((connection as unknown as { retryCount: number }).retryCount).toBe(0);
+
+	// Second disconnect should still schedule a retry now that the budget reset.
+	jest.useFakeTimers();
+	server.close();
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+
+	await handleConnection(
+		server,
+		jest.advanceTimersByTimeAsync(200),
+		new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined))),
+		new Promise((resolve) => connection.once('connection', (data) => resolve(data))),
+	);
+	jest.useRealTimers();
+	expect(connection.status).toBe('connected');
+});
+
 it('should ignore a stale ws.onclose that fires after the socket has been replaced', async () => {
 	// Regression: ws.onclose handlers were closed over the original ws but
 	// mutated `this.status`/`this.retryCount` unconditionally. If a late close
