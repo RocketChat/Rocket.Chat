@@ -133,6 +133,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
 		canViewName,
+		canViewCategory,
+		canViewCategoryPosition,
 		canViewTopic,
 		canViewAnnouncement,
 		canViewArchived,
@@ -213,6 +215,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const formId = useId();
 	const roomNameField = useId();
+	const roomCategoryField = useId();
+	const roomCategoryPositionField = useId();
 	const roomDescriptionField = useId();
 	const roomAnnouncementField = useId();
 	const roomTopicField = useId();
@@ -277,6 +281,55 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							</FieldRow>
 							{errors.roomName && <FieldError id={`${roomNameField}-error`}>{errors.roomName.message}</FieldError>}
 						</Field>
+						{canViewCategory && (
+							<Field>
+								<FieldLabel htmlFor={roomCategoryField}>{t('Categories')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='roomCategory'
+										control={control}
+										render={({ field }) => (
+											<TextInput
+												id={roomCategoryField}
+												{...field}
+												aria-describedby={`${roomCategoryField}-hint`}
+												placeholder={t('Categories')}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldRow>
+									<FieldHint id={`${roomCategoryField}-hint`}>{t('Filter_by_category')}</FieldHint>
+								</FieldRow>
+							</Field>
+						)}
+						{canViewCategoryPosition && (
+							<Field>
+								<FieldLabel htmlFor={roomCategoryPositionField}>{t('Category_position')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='roomCategoryPosition'
+										control={control}
+										render={({ field: { onChange, value, ...rest } }) => (
+											<NumberInput
+												id={roomCategoryPositionField}
+												{...rest}
+												value={value ?? ''}
+												onChange={(e) => {
+													const n = Number((e as ChangeEvent<HTMLInputElement>).target.value);
+													onChange(Number.isNaN(n) || (e as ChangeEvent<HTMLInputElement>).target.value === '' ? undefined : n);
+												}}
+												aria-describedby={`${roomCategoryPositionField}-hint`}
+												placeholder='1'
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldRow>
+									<FieldHint id={`${roomCategoryPositionField}-hint`}>{t('Category_position_hint')}</FieldHint>
+								</FieldRow>
+							</Field>
+						)}
 						{canViewTopic && (
 							<Field>
 								<FieldLabel htmlFor={roomTopicField}>{t('Topic')}</FieldLabel>

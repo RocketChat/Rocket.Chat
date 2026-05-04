@@ -3,11 +3,10 @@ import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListCollapserProps = {
-	group: AllGroupsKeys;
+	group: string;
 	groupTitle: string;
 	collapsedGroups: string[];
 	onClick: MouseEventHandler<HTMLElement>;

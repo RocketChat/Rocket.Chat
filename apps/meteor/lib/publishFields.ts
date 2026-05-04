@@ -56,6 +56,8 @@ export const roomFields = {
 	name: 1,
 	fname: 1,
 	t: 1,
+	category: 1,
+	categoryPosition: 1,
 	cl: 1,
 	u: 1,
 	lm: 1,

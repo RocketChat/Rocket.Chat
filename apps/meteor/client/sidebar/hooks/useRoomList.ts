@@ -6,6 +6,7 @@ import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
+import { getSidebarRoomGroup, sortSidebarGroupKeys } from '../../lib/sidebar/getSidebarRoomGroup';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 
@@ -30,7 +31,7 @@ const order = [
 type useRoomListReturnType = {
 	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
-	groupsList: TranslationKey[];
+	groupsList: string[];
 	groupedUnreadInfo: Pick<
 		SubscriptionWithRoom,
 		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
@@ -41,6 +42,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
+	const sidebarCustomCategoryOrder = useUserPreference<string[]>('sidebarCustomCategoryOrder') ?? [];
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
@@ -60,14 +62,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			const incomingCall = new Set();
 			const favorite = new Set();
-			const team = new Set();
 			const omnichannel = new Set();
 			const unread = new Set();
-			const channels = new Set();
-			const direct = new Set();
-			const discussion = new Set();
-			const conversation = new Set();
 			const onHold = new Set();
+			const categories = new Map<string, Set<SubscriptionWithRoom>>();
 
 			rooms.forEach((room) => {
 				if (room.archived) {
@@ -86,31 +84,36 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return favorite.add(room);
 				}
 
-				if (sidebarGroupByType && room.teamMain) {
-					return team.add(room);
-				}
-
-				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
-					return discussion.add(room);
-				}
-
-				if (room.t === 'c' || room.t === 'p') {
-					channels.add(room);
-				}
-
 				if (room.t === 'l' && room.onHold) {
+					const group = getSidebarRoomGroup(room, { sidebarGroupByType, isDiscussionEnabled, showOmnichannel });
+					if (!showOmnichannel && group === 'On_Hold_Chats') {
+						return;
+					}
+
+					const groupSet = categories.get(group) || new Set<SubscriptionWithRoom>();
+					groupSet.add(room);
+					categories.set(group, groupSet);
+
 					return showOmnichannel && onHold.add(room);
 				}
 
 				if (room.t === 'l') {
+					const group = getSidebarRoomGroup(room, { sidebarGroupByType, isDiscussionEnabled, showOmnichannel });
+					if (!showOmnichannel && group === 'Open_Livechats') {
+						return;
+					}
+
+					const groupSet = categories.get(group) || new Set<SubscriptionWithRoom>();
+					groupSet.add(room);
+					categories.set(group, groupSet);
+
 					return showOmnichannel && omnichannel.add(room);
 				}
 
-				if (room.t === 'd') {
-					direct.add(room);
-				}
-
-				conversation.add(room);
+				const group = getSidebarRoomGroup(room, { sidebarGroupByType, isDiscussionEnabled, showOmnichannel });
+				const groupSet = categories.get(group) || new Set<SubscriptionWithRoom>();
+				groupSet.add(room);
+				categories.set(group, groupSet);
 			});
 
 			const groups = new Map<string, Set<any>>();
@@ -124,17 +127,17 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 
-			sidebarGroupByType && team.size && groups.set('Teams', team);
+			for (const group of sortSidebarGroupKeys(categories.keys(), sidebarOrder, sidebarCustomCategoryOrder)) {
+				const rooms = categories.get(group);
 
-			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
+				if (rooms?.size) {
+					groups.set(group, rooms);
+				}
+			}
 
-			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			const groupOrder = sortSidebarGroupKeys(groups.keys(), sidebarOrder, sidebarCustomCategoryOrder);
 
-			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
-
-			!sidebarGroupByType && groups.set('Conversations', conversation);
-
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
+			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = groupOrder.reduce(
 				(acc, key) => {
 					const value = groups.get(key);
 
@@ -142,7 +145,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return acc;
 					}
 
-					acc.groupsList.push(key as TranslationKey);
+					acc.groupsList.push(key);
 
 					const groupedUnreadInfoAcc = {
 						userMentions: 0,
@@ -177,7 +180,12 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 					acc.groupedUnreadInfo.push(groupedUnreadInfoAcc);
 					acc.groupsCount.push(value.size);
-					acc.roomList.push(...value);
+					const sortedRooms = [...value].sort((a, b) => {
+						const aPos = a.categoryPosition ?? Infinity;
+						const bPos = b.categoryPosition ?? Infinity;
+						return aPos - bPos;
+					});
+					acc.roomList.push(...sortedRooms);
 					return acc;
 				},
 				{
@@ -199,6 +207,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			sidebarGroupByType,
 			isDiscussionEnabled,
 			sidebarOrder,
+			sidebarCustomCategoryOrder,
 			collapsedGroups,
 			incomingCalls,
 		]),

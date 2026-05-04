@@ -1105,6 +1105,45 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	setCategoryById(_id: IRoom['_id'], category: IRoom['category']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> = category
+			? {
+					$set: {
+						category,
+					},
+				}
+			: {
+					$unset: {
+						category: 1,
+					},
+				};
+
+		return this.updateOne(query, update);
+	}
+
+	setCategoryPositionById(_id: IRoom['_id'], categoryPosition: IRoom['categoryPosition']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> =
+			categoryPosition !== undefined && categoryPosition !== null
+				? {
+						$set: {
+							categoryPosition,
+						},
+					}
+				: {
+						$unset: {
+							categoryPosition: 1,
+						},
+					};
+
+		return this.updateOne(query, update);
+	}
+
 	setReadOnlyById(_id: IRoom['_id'], readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id,

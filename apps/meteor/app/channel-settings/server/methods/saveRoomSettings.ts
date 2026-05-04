@@ -14,6 +14,8 @@ import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener'
 import { settings } from '../../../settings/server';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
+import { saveRoomCategory } from '../functions/saveRoomCategory';
+import { saveRoomCategoryPosition } from '../functions/saveRoomCategoryPosition';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
 import { saveRoomDescription } from '../functions/saveRoomDescription';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
@@ -27,6 +29,8 @@ type RoomSettings = {
 	roomAvatar: string;
 	featured: boolean;
 	roomName: string | undefined;
+	roomCategory: string | undefined;
+	roomCategoryPosition: number | undefined;
 	roomTopic: string;
 	roomAnnouncement: string;
 	roomCustomFields: Record<string, any>;
@@ -257,6 +261,20 @@ const settingSavers: RoomSettingsSavers = {
 			});
 		}
 	},
+	async roomCategory({ value, room, rid, user }) {
+		if ((value || undefined) === (room.category || undefined)) {
+			return;
+		}
+
+		await saveRoomCategory(rid, value, user);
+	},
+	async roomCategoryPosition({ value, room, rid, user }) {
+		if (value === room.categoryPosition) {
+			return;
+		}
+
+		await saveRoomCategoryPosition(rid, value, user);
+	},
 	async roomTopic({ value, room, rid, user }) {
 		if (!value && !room.topic) {
 			return;
@@ -369,6 +387,8 @@ const fields: (keyof RoomSettings)[] = [
 	'roomAvatar',
 	'featured',
 	'roomName',
+	'roomCategory',
+	'roomCategoryPosition',
 	'roomTopic',
 	'roomAnnouncement',
 	'roomCustomFields',

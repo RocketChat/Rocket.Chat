@@ -24,6 +24,8 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			announcement: room.announcement,
 			broadcast: room.broadcast,
 			archived: room.archived,
+			category: room.category,
+			categoryPosition: room.categoryPosition,
 			avatarETag: room.avatarETag,
 			retention: (room as IRoomWithRetentionPolicy | undefined)?.retention,
 			uids: room.uids,

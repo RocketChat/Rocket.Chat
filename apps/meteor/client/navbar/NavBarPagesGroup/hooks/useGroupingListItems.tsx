@@ -1,12 +1,15 @@
 import { CheckBox } from '@rocket.chat/fuselage';
 import { useFeaturePreview, type GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import ManageCategoriesModal from '../actions/ManageCategoriesModal';
 
 export const useGroupingListItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
+	const setModal = useSetModal();
 
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType');
 	const sidebarShowFavorites = useUserPreference<boolean>('sidebarShowFavorites');
@@ -20,6 +23,11 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
 	const handleChangeGroupByType = useHandleChange('sidebarGroupByType', !sidebarGroupByType);
 	const handleChangeShoFavorite = useHandleChange('sidebarShowFavorites', !sidebarShowFavorites);
 	const handleChangeShowUnread = useHandleChange('sidebarShowUnread', !sidebarShowUnread);
+
+	const handleManageCategories = useCallback(
+		() => setModal(<ManageCategoriesModal onClose={() => setModal(null)} />),
+		[setModal],
+	);
 
 	return [
 		{
@@ -39,6 +47,12 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
 			content: t('Types'),
 			icon: 'group-by-type',
 			addon: <CheckBox onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
+		},
+		{
+			id: 'manage-categories',
+			content: t('Manage_category_order'),
+			icon: 'sort',
+			onClick: handleManageCategories,
 		},
 	].filter(Boolean) as GenericMenuItemProps[];
 };

@@ -3,8 +3,10 @@ import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 
+import { getSidebarRoomGroup, sortSidebarGroupKeys } from '../../../lib/sidebar/getSidebarRoomGroup';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
 export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: TranslationKey; icon: IconName } } = {
@@ -127,32 +129,66 @@ export const getEmptyUnreadInfo = (): GroupedUnreadInfoData => ({
 
 // Hooks
 type RoomListGroup<T extends AllGroupsKeys> = {
-	group: T;
+	group: string;
+	title: string;
 	rooms: Array<T extends SideBarFiltersKeys ? SubscriptionWithRoom : ILivechatInquiryRecord>;
 	unreadInfo: GroupedUnreadInfoData;
 };
 
 export const useSideBarRoomsList = (): {
-	roomListGroups: RoomListGroup<SideBarFiltersKeys>[];
+	roomListGroups: Array<RoomListGroup<SideBarFiltersKeys>>;
 	groupCounts: number[];
 	totalCount: number;
 } & ReturnType<typeof useCollapsedGroups> => {
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups, unreadGroupData } = useRoomsListContext();
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 
-	const roomListGroups = collapsibleFilters
-		.map((group) => {
-			const roomSet = (groups as Map<SideBarFiltersKeys, Set<SubscriptionWithRoom>>).get(group);
-			const rooms = roomSet ? Array.from(roomSet) : [];
-			const unreadInfo = unreadGroupData.get(group) || getEmptyUnreadInfo();
+	const roomListGroups = useMemo(() => {
+		const sideBarGroups = new Map<string, SubscriptionWithRoom[]>();
+		const sideBarUnreadInfo = new Map<string, GroupedUnreadInfoData>();
+		const unreadRooms = Array.from((groups as Map<AllGroupsKeys, Set<SubscriptionWithRoom>>).get('unread') || []);
+		const allRooms = Array.from((groups as Map<AllGroupsKeys, Set<SubscriptionWithRoom>>).get('all') || []);
 
-			if (!rooms.length) {
-				return undefined;
+		if (unreadRooms.length) {
+			sideBarGroups.set('unread', unreadRooms);
+			sideBarUnreadInfo.set('unread', unreadGroupData.get('unread') || getEmptyUnreadInfo());
+		}
+
+		for (const room of allRooms) {
+			const group = getSidebarRoomGroup(room, {
+				sidebarGroupByType: Boolean(sidebarGroupByType),
+				isDiscussionEnabled,
+			});
+
+			const groupedRooms = sideBarGroups.get(group) || [];
+			groupedRooms.push(room);
+			sideBarGroups.set(group, groupedRooms);
+
+			if (isUnreadSubscription(room)) {
+				const currentUnreadInfo = sideBarUnreadInfo.get(group) || getEmptyUnreadInfo();
+				sideBarUnreadInfo.set(group, {
+					userMentions: currentUnreadInfo.userMentions + (room.userMentions || 0),
+					groupMentions: currentUnreadInfo.groupMentions + (room.groupMentions || 0),
+					tunread: [...currentUnreadInfo.tunread, ...(room.tunread || [])],
+					tunreadUser: [...currentUnreadInfo.tunreadUser, ...(room.tunreadUser || [])],
+					unread: currentUnreadInfo.unread + (room.unread || (!room.unread && !room.tunread?.length && room.alert ? 1 : 0)),
+				});
 			}
+		}
 
-			return { group, rooms, unreadInfo };
-		})
-		.filter(isTruthy);
+		return sortSidebarGroupKeys(sideBarGroups.keys(), ['unread']).map((group) => {
+			const rooms = sideBarGroups.get(group) || [];
+
+			return {
+				group,
+				title: group === 'unread' ? sidePanelFiltersConfig.unread.title : group,
+				rooms,
+				unreadInfo: sideBarUnreadInfo.get(group) || getEmptyUnreadInfo(),
+			};
+		});
+	}, [groups, isDiscussionEnabled, sidebarGroupByType, unreadGroupData]);
 
 	const groupCounts = roomListGroups.map((group) => {
 		if (collapsedGroups.includes(group.group)) {

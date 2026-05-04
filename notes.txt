@@ -1,0 +1,25 @@
+Project requirements:
+    Prerequuisites:
+        -Git
+        -Python3 
+            (python 3.13.11, system version, no venv/conda)
+
+    Dependencies:
+        - NodeJS:v22.16.0 
+            (pacman) 
+        - Yarn:v4.12.0 
+            (pacman) 
+        - Meteor:v3.4  
+            (curl https://install.meteor.com/\?release\=3.4 | sh)
+        - Deno:v2.3.1 
+            (curl -fsSL https://deno.land/install.sh | sh -s v2.3.1)
+
+    Reference Documentation: https://developer.rocket.chat/docs/linux-and-windows-rocketchat-development-environment
+
+Build / Run (local):
+    to build: 
+        `cd RocketChat`
+        `yarn`
+    to run:
+        'yarn dsv'
+

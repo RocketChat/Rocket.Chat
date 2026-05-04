@@ -27,6 +27,7 @@ roomCoordinator.add(
 			switch (setting) {
 				case RoomSettingsEnum.TYPE:
 				case RoomSettingsEnum.NAME:
+				case RoomSettingsEnum.CATEGORY:
 				case RoomSettingsEnum.SYSTEM_MESSAGES:
 				case RoomSettingsEnum.DESCRIPTION:
 				case RoomSettingsEnum.READ_ONLY:

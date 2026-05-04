@@ -23,6 +23,8 @@ export interface IRoomTypeRouteConfig<TRouteName extends RouteName> {
 export const RoomSettingsEnum = {
 	TYPE: 'type',
 	NAME: 'roomName',
+	CATEGORY: 'roomCategory',
+	CATEGORY_POSITION: 'roomCategoryPosition',
 	TOPIC: 'roomTopic',
 	ANNOUNCEMENT: 'roomAnnouncement',
 	DESCRIPTION: 'roomDescription',

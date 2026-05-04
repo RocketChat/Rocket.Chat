@@ -16,6 +16,7 @@ export interface ISubscription extends IRocketChatRecord {
 	ts: Date;
 
 	name: string;
+	category?: string;
 
 	alert?: boolean;
 	unread: number;

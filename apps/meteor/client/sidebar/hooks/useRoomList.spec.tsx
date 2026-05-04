@@ -196,6 +196,22 @@ it('should return groupsList without "Discussions" if isDiscussionEnabled is dis
 	expect(result.current.groupsList).not.toContain('Discussions');
 });
 
+it('should group rooms by explicit category instead of derived room type', async () => {
+	const fakeRoom = {
+		...createFakeSubscription({ t: 'd', ...emptyUnread }),
+		...createFakeRoom({ t: 'd', category: 'Support' }),
+	} as unknown as SubscriptionWithRoom;
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, fakeRoom }).build(),
+	});
+
+	const supportIndex = result.current.groupsList.indexOf('Support');
+
+	expect(result.current.groupsList).toContain('Support');
+	expect(result.current.groupsCount[supportIndex]).toBe(1);
+});
+
 it('should remove corresponding items from roomList and return groupCount 0 when group is collapsed', async () => {
 	const {
 		result: {

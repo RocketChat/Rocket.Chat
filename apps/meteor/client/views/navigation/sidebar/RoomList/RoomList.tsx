@@ -12,7 +12,7 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useOpenedRoom } from '../../../../lib/RoomManager';
-import { useSideBarRoomsList, sidePanelFiltersConfig } from '../../contexts/RoomsNavigationContext';
+import { useSideBarRoomsList } from '../../contexts/RoomsNavigationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
@@ -42,14 +42,14 @@ const RoomList = () => {
 				<GroupedVirtuoso
 					groupCounts={groupCounts}
 					groupContent={(index) => {
-						const { group, unreadInfo } = roomListGroups[index];
+						const { group, title, unreadInfo } = roomListGroups[index];
 
 						return (
 							<RoomListCollapser
 								collapsedGroups={collapsedGroups}
 								onClick={() => handleClick(group)}
 								onKeyDown={(e) => handleKeyDown(e, group)}
-								groupTitle={sidePanelFiltersConfig[group].title}
+								groupTitle={title}
 								group={group}
 								unreadCount={unreadInfo}
 							/>

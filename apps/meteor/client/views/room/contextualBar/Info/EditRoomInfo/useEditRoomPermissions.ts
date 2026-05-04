@@ -37,6 +37,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 
 	const [
 		canViewName,
+		canViewCategory,
+		canViewCategoryPosition,
 		canViewTopic,
 		canViewAnnouncement,
 		canViewArchived,
@@ -54,6 +56,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 			});
 		return [
 			isAllowed(room, RoomSettingsEnum.NAME),
+			isAllowed(room, RoomSettingsEnum.CATEGORY),
+			isAllowed(room, RoomSettingsEnum.CATEGORY_POSITION),
 			isAllowed(room, RoomSettingsEnum.TOPIC),
 			isAllowed(room, RoomSettingsEnum.ANNOUNCEMENT),
 			isAllowed(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
@@ -73,6 +77,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
 		canViewName,
+		canViewCategory,
+		canViewCategoryPosition,
 		canViewTopic,
 		canViewAnnouncement,
 		canViewArchived,

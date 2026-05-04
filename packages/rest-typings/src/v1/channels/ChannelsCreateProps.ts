@@ -9,6 +9,7 @@ export type ChannelsCreateProps = {
 		broadcast?: boolean;
 		encrypted?: boolean;
 		teamId?: string;
+		category?: string;
 	};
 	excludeSelf?: boolean;
 };
@@ -39,6 +40,10 @@ const channelsCreatePropsSchema = {
 				},
 				teamId: {
 					type: 'string',
+				},
+				category: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			additionalProperties: false,

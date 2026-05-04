@@ -15,6 +15,8 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'muted'
 		| 'federated'
 		| 'lm'
+		| 'category'
+		| 'categoryPosition'
 		| 'abacAttributes'
 	> &
 	Pick<

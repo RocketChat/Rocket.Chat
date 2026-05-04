@@ -52,6 +52,7 @@ type CreateChannelModalPayload = {
 	name: string;
 	isPrivate: boolean;
 	topic?: string;
+	category?: string;
 	members: string[];
 	readOnly: boolean;
 	encrypted: boolean;
@@ -115,6 +116,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			members: [],
 			name: '',
 			topic: '',
+			category: '',
 			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
@@ -161,7 +163,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 
 	const goToRoom = useGoToRoom();
 
-	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
+	const handleCreateChannel = async ({ name, members, readOnly, topic, category, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
 		let roomData;
 		const params = {
 			name,
@@ -171,6 +173,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 				topic,
 				broadcast,
 				encrypted,
+				...(category?.trim() && { category: category.trim() }),
 				...(federated && { federated }),
 				...(teamId && { teamId }),
 			},
@@ -198,6 +201,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const createChannelFormId = useId();
 	const nameId = useId();
 	const topicId = useId();
+	const categoryId = useId();
 	const privateId = useId();
 	const federatedId = useId();
 	const readOnlyId = useId();
@@ -249,6 +253,13 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
 						</FieldRow>
 						<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={categoryId}>{t('Categories')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={categoryId} aria-describedby={`${categoryId}-hint`} {...register('category')} placeholder={t('Categories')} />
+						</FieldRow>
+						<FieldHint id={`${categoryId}-hint`}>{t('Filter_by_category')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={addMembersId}>{t('Members')}</FieldLabel>

@@ -8,6 +8,8 @@ import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
 export type EditRoomInfoFormData = {
 	roomName: string;
+	roomCategory: string;
+	roomCategoryPosition: number | undefined;
 	roomTopic: string;
 	roomAnnouncement: string;
 	roomDescription: string;
@@ -35,11 +37,13 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 	const retentionPolicy = useRetentionPolicy(room);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 
-	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
+	const { t, ro, archived, topic, description, announcement, category, categoryPosition, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
 
 	return useMemo(
 		(): Partial<EditRoomInfoFormData> => ({
 			roomName: t === 'd' && room.usernames ? room.usernames.join(' x ') : roomCoordinator.getRoomName(t, room),
+			roomCategory: category ?? '',
+			roomCategoryPosition: categoryPosition ?? undefined,
 			roomType: t,
 			readOnly: !!ro,
 			reactWhenReadOnly,
@@ -66,6 +70,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 		[
 			announcement,
 			archived,
+			category,
 			description,
 			joinCodeRequired,
 			retention,

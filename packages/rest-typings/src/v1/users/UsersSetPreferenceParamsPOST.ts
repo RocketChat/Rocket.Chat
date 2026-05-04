@@ -53,6 +53,7 @@ export type UsersSetPreferencesParamsPOST = {
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
 		desktopNotificationVoiceCalls?: boolean;
+		sidebarCustomCategoryOrder?: string[];
 	};
 };
 
@@ -266,6 +267,11 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				desktopNotificationVoiceCalls: {
 					type: 'boolean',
+					nullable: true,
+				},
+				sidebarCustomCategoryOrder: {
+					type: 'array',
+					items: { type: 'string' },
 					nullable: true,
 				},
 			},

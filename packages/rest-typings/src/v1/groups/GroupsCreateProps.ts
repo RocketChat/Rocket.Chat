@@ -9,6 +9,7 @@ export type GroupsCreateProps = {
 		broadcast: boolean;
 		encrypted: boolean;
 		teamId?: string;
+		category?: string;
 	};
 	excludeSelf?: boolean;
 };
@@ -50,6 +51,10 @@ const GroupsCreatePropsSchema = {
 					nullable: true,
 				},
 				topic: {
+					type: 'string',
+					nullable: true,
+				},
+				category: {
 					type: 'string',
 					nullable: true,
 				},

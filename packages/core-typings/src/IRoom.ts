@@ -11,6 +11,8 @@ import type { Branded } from './utils';
 
 export interface IRoom extends IRocketChatRecord {
 	t: RoomType;
+	category?: string;
+	categoryPosition?: number;
 	name?: string;
 	fname?: string;
 	msgs: number;
@@ -361,6 +363,7 @@ export type RoomAdminFieldsType =
 	| 'prid'
 	| 'fname'
 	| 'name'
+	| 'category'
 	| 't'
 	| 'cl'
 	| 'u'
