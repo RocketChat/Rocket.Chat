@@ -1,4 +1,4 @@
-FROM node:22.16.0-alpine3.22 AS builder
+FROM node:22.22.2-alpine3.22 AS builder
 
 ARG SERVICE
 
@@ -88,7 +88,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.16.0-alpine3.22
+FROM node:22.22.2-alpine3.22
 
 ARG SERVICE
 

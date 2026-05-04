@@ -1,5 +1,35 @@
 # @rocket.chat/mock-providers
 
+## 0.4.16
+
+### Patch Changes
+
+- ([#40058](https://github.com/RocketChat/Rocket.Chat/pull/40058)) Fixed UI becoming unresponsive after clicking "See on Engagement Dashboard" from the workspace info card, which required a manual page refresh to recover.
+
+- <details><summary>Updated dependencies [32f67f20fbcfdab051c7d2f99d8a7a3d18ebf474, 8c0e16ca29b393cfa50b425520db48ba5a74f678, 9f38b54c671ba3f0583c0d248a2afe09652fcdf4, 2356c889ed82507e1dd1208fab6d4ab186701fef]:</summary>
+
+  - @rocket.chat/i18n@3.0.0
+  - @rocket.chat/ui-contexts@30.0.0
+  </details>
+
+## 0.4.16-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  </details>
+
+## 0.4.16-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  </details>
+
 ## 0.4.15
 
 ### Patch Changes
@@ -16,6 +46,18 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/ui-contexts@29.0.1
+  </details>
+
+## 0.4.16-rc.0
+
+### Patch Changes
+
+- ([#40058](https://github.com/RocketChat/Rocket.Chat/pull/40058)) Fixed UI becoming unresponsive after clicking "See on Engagement Dashboard" from the workspace info card, which required a manual page refresh to recover.
+
+- <details><summary>Updated dependencies [32f67f20fbcfdab051c7d2f99d8a7a3d18ebf474, 8c0e16ca29b393cfa50b425520db48ba5a74f678, 9f38b54c671ba3f0583c0d248a2afe09652fcdf4, 2356c889ed82507e1dd1208fab6d4ab186701fef]:</summary>
+
+  - @rocket.chat/i18n@3.0.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
   </details>
 
 ## 0.4.13

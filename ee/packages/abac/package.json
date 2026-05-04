@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/abac",
-	"version": "0.1.8",
+	"version": "0.2.0",
 	"private": true,
 	"description": "Rocket.Chat - Attribute Based Access Control (ABAC) support utilities",
 	"main": "./dist/index.js",
@@ -40,7 +40,7 @@
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"@types/node": "~22.16.5",
+		"@types/node": "~22.19.17",
 		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"mongodb-memory-server": "^10.1.4",
