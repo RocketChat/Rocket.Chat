@@ -1,6 +1,8 @@
+import type { BrowserContext, Page } from 'playwright-core';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AdminEmoji } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteRoom } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -9,18 +11,30 @@ test.describe.serial('emoji', () => {
 	let poHomeChannel: HomeChannel;
 	let poAdminEmoji: AdminEmoji;
 	let targetChannel: string;
+	let targetChannelId: string;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+	test.beforeAll(async ({ api, browser }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api);
+		targetChannel = channel.name!;
+		targetChannelId = channel._id;
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
+		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
+	test.afterAll(async ({ api }) => {
+		await deleteRoom(api, targetChannelId);
+		await page.close();
+		await context.close();
+	});
 
+	test.beforeEach(async () => {
 		await page.goto('/home');
 	});
 
-	test('should display emoji picker properly', async ({ page }) => {
+	test('should display emoji picker properly', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.composer.btnEmoji.click();
 
@@ -45,7 +59,7 @@ test.describe.serial('emoji', () => {
 		});
 	});
 
-	test('expect send emoji via text', async ({ page }) => {
+	test('expect send emoji via text', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(':innocent:');
 		await page.keyboard.press('Enter');
@@ -60,7 +74,7 @@ test.describe.serial('emoji', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');
 	});
 
-	test('should add a custom emoji, send it, rename it, and check render', async ({ page }) => {
+	test('should add a custom emoji, send it, rename it, and check render', async () => {
 		const emojiName = 'customemoji';
 		const newEmojiName = 'renamedemoji';
 		const emojiUrl = './tests/e2e/fixtures/files/test-image.jpeg';

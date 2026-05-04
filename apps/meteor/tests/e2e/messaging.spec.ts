@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteRoom, joinChannelAsUser, sendMessage } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -12,9 +12,19 @@ test.use({ storageState: Users.user1.state });
 test.describe('Messaging', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		const { channel } = await createTargetChannelAndReturnFullRoom(api);
+		targetChannel = channel.name!;
+		targetChannelId = channel._id;
+
+		// Match the original suite, which joined through the UI before sending —
+		// one "user joined" system message is a precondition for the first test.
+		await joinChannelAsUser(targetChannelId, Users.user1);
+
+		await sendMessage(api, targetChannelId, 'msg1', { asUser: Users.user1 });
+		await sendMessage(api, targetChannelId, 'msg2', { asUser: Users.user1 });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -23,16 +33,13 @@ test.describe('Messaging', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await deleteChannel(api, targetChannel);
+		await deleteRoom(api, targetChannelId);
 	});
 
 	test.describe.serial('Navigation', () => {
 		test('should navigate on messages using keyboard', async ({ page }) => {
-			await test.step('open chat and send message', async () => {
-				await poHomeChannel.navbar.openChat(targetChannel);
-				await poHomeChannel.content.sendMessage('msg1');
-				await poHomeChannel.content.sendMessage('msg2');
-			});
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.composer.inputMessage.click();
 
 			await test.step('move focus to the second message', async () => {
 				await page.keyboard.press('Shift+Tab');
@@ -163,6 +170,7 @@ test.describe('Messaging', () => {
 	test.describe.serial('Message edition', () => {
 		test('should edit messages', async ({ page }) => {
 			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.composer.inputMessage.click();
 
 			await test.step('focus on the second message', async () => {
 				await page.keyboard.press('ArrowUp');

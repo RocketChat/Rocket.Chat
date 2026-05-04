@@ -187,7 +187,7 @@ test.describe.serial('Quote Messages', () => {
 		await test.step('Setup DM thread and messages via API', async () => {
 			const dmRoomId = await createDirectMessageRoom(api, Users.user2.data.username);
 			const parentMsgId = await sendMessage(api, dmRoomId, messageText);
-			await sendMessage(api, dmRoomId, threadMessage, parentMsgId);
+			await sendMessage(api, dmRoomId, threadMessage, { threadId: parentMsgId });
 		});
 
 		await test.step('Open DM thread and quote message', async () => {

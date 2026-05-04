@@ -1,3 +1,5 @@
+import type { BrowserContext, Page } from 'playwright-core';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { FileUploadWarningModal } from './page-objects/fragments/modals';
@@ -15,15 +17,18 @@ const TEST_EMPTY_FILE = 'empty_file.txt';
 test.describe.serial('file-upload', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		context = await browser.newContext({ storageState: Users.user1.state });
+		page = await context.newPage();
+		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
-
+	test.beforeEach(async () => {
 		await page.goto('/home');
 		await poHomeChannel.navbar.openChat(targetChannel);
 	});
@@ -31,6 +36,8 @@ test.describe.serial('file-upload', () => {
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
+		await page.close();
+		await context.close();
 	});
 
 	test('should cancel uploaded file attached to message composer', async () => {
@@ -86,7 +93,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.getLastMessageByFileName(TEST_FILE_LST)).toBeVisible();
 	});
 
-	test('should send drawio (unknown media type) file successfully', async ({ page }) => {
+	test('should send drawio (unknown media type) file successfully', async () => {
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage(TEST_FILE_DRAWIO);
 		await poHomeChannel.composer.inputMessage.fill('drawio_description');
@@ -130,7 +137,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
 	});
 
-	test('should upload file in composer after recording video message', async ({ context }) => {
+	test('should upload file in composer after recording video message', async () => {
 		await context.grantPermissions(['camera', 'microphone']);
 		await poHomeChannel.navbar.openChat(targetChannel);
 
@@ -170,7 +177,7 @@ test.describe.serial('file-upload', () => {
 			await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
 		});
 
-		test('should open warning modal when all file uploads fail', async ({ page }) => {
+		test('should open warning modal when all file uploads fail', async () => {
 			fileUploadWarningModal = new FileUploadWarningModal(page.getByRole('dialog', { name: 'Warning' }));
 
 			await poHomeChannel.content.sendFileMessage(TEST_EMPTY_FILE, { waitForResponse: false });
@@ -187,7 +194,7 @@ test.describe.serial('file-upload', () => {
 			await expect(fileUploadWarningModal.btnSendAnyway).not.toBeVisible();
 		});
 
-		test('should handle multiple files with one failing upload', async ({ page }) => {
+		test('should handle multiple files with one failing upload', async () => {
 			fileUploadWarningModal = new FileUploadWarningModal(page.getByRole('dialog', { name: 'Are you sure' }));
 
 			await test.step('should only mark as "Upload failed" the specific file that failed to upload', async () => {

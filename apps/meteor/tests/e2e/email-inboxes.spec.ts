@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { BrowserContext, Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { AdminEmailInboxes } from './page-objects';
@@ -8,12 +9,23 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.serial('email-inboxes', () => {
 	let poAdminEmailInboxes: AdminEmailInboxes;
+	let page: Page;
+	let context: BrowserContext;
 
 	const email = faker.internet.email();
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeAll(async ({ browser }) => {
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
 		poAdminEmailInboxes = new AdminEmailInboxes(page);
+	});
 
+	test.afterAll(async () => {
+		await page.close();
+		await context.close();
+	});
+
+	test.beforeEach(async () => {
 		await page.goto('/admin/email-inboxes');
 	});
 
@@ -40,12 +52,8 @@ test.describe.serial('email-inboxes', () => {
 		await expect(poAdminEmailInboxes.itemRow(name)).toBeVisible();
 	});
 
-	test('expect delete an email inbox', async ({ page }) => {
+	test('expect delete an email inbox', async () => {
 		await poAdminEmailInboxes.deleteEmailInboxByName(email);
-		// await poAdminEmailInboxes.itemRow(email).click();
-		// await poAdminEmailInboxes.btnDelete.click();
-		// await poUtils.btnModalConfirmDelete.click();
-		// await expect(poUtils.toastBarSuccess).toBeVisible();
 
 		await expect(page.locator('text=No results found')).toBeVisible();
 	});

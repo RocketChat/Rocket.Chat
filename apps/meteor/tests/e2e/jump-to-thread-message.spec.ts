@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import type { BrowserContext, Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import type { BaseTest } from './utils/test';
@@ -10,6 +11,8 @@ test.describe.serial('Threads', () => {
 	let targetChannel: { name: string; _id: string };
 	let threadMessage: IMessage;
 	let mainMessage: IMessage;
+	let page: Page;
+	let context: BrowserContext;
 
 	const fillMessages = async (api: BaseTest['api']) => {
 		const { message: parentMessage } = await (
@@ -36,14 +39,20 @@ test.describe.serial('Threads', () => {
 		);
 	};
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		targetChannel = (await (await api.post('/channels.create', { name: Random.id() })).json()).channel;
 		await fillMessages(api);
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
 	});
 
-	test.afterAll(({ api }) => api.post('/channels.delete', { roomId: targetChannel._id }));
+	test.afterAll(async ({ api }) => {
+		await api.post('/channels.delete', { roomId: targetChannel._id });
+		await page.close();
+		await context.close();
+	});
 
-	test('expect to jump scroll to a non-thread message on opening its message link', async ({ page }) => {
+	test('expect to jump scroll to a non-thread message on opening its message link', async () => {
 		const messageLink = `/channel/${targetChannel.name}?msg=${mainMessage._id}`;
 		await page.goto(messageLink);
 
@@ -58,7 +67,7 @@ test.describe.serial('Threads', () => {
 		await expect(message).toBeInViewport();
 	});
 
-	test('expect to jump scroll to thread message on opening its message link', async ({ page }) => {
+	test('expect to jump scroll to thread message on opening its message link', async () => {
 		const threadMessageLink = `/channel/${targetChannel.name}?msg=${threadMessage._id}`;
 		await page.goto(threadMessageLink);
 
@@ -73,7 +82,7 @@ test.describe.serial('Threads', () => {
 		await expect(message).toBeInViewport();
 	});
 
-	test('expect to jump scroll to thread message on opening its message link from a different channel', async ({ page }) => {
+	test('expect to jump scroll to thread message on opening its message link from a different channel', async () => {
 		const threadMessageLink = `/channel/general?msg=${threadMessage._id}`;
 		await page.goto(threadMessageLink);
 

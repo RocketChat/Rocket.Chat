@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Locator, Page } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { BrowserContext } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -26,8 +27,10 @@ test.describe.serial('System Messages', () => {
 	let poHomeChannel: HomeChannel;
 	let user: IUser;
 	let group: IRoom;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		await expect((await setSettingValueById(api, 'Hide_System_Messages', [])).status()).toBe(200);
 
 		const groupResult = await api.post('/groups.create', { name: faker.string.uuid() });
@@ -39,10 +42,13 @@ test.describe.serial('System Messages', () => {
 		expect(result.status()).toBe(200);
 
 		user = (await result.json()).user;
+
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
+		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
+	test.beforeEach(async () => {
 		await page.goto('/home');
 
 		if (!group?.name) {
@@ -54,27 +60,29 @@ test.describe.serial('System Messages', () => {
 
 	test.afterAll(async ({ api }) => {
 		await expect((await api.post('/groups.delete', { roomId: group._id })).status()).toBe(200);
+		await page.close();
+		await context.close();
 	});
 
-	test('expect "User added" system message to be visible', async ({ page, api }) => {
+	test('expect "User added" system message to be visible', async ({ api }) => {
 		await expect((await api.post('/groups.invite', { roomId: group._id, userId: user._id })).status()).toBe(200);
 
 		await expect(findSysMes(page, 'au')).toBeVisible();
 	});
 
-	test('expect "User added" system message to be hidden', async ({ page, api }) => {
+	test('expect "User added" system message to be hidden', async ({ api }) => {
 		await expect((await setSettingValueById(api, 'Hide_System_Messages', ['au'])).status()).toBe(200);
 
 		await expect(findSysMes(page, 'au')).not.toBeVisible();
 	});
 
-	test('expect "User removed" system message to be visible', async ({ page, api }) => {
+	test('expect "User removed" system message to be visible', async ({ api }) => {
 		await expect((await api.post('/groups.kick', { roomId: group._id, userId: user._id })).status()).toBe(200);
 
 		await expect(findSysMes(page, 'ru')).toBeVisible();
 	});
 
-	test('expect "User removed" system message to be hidden', async ({ page, api }) => {
+	test('expect "User removed" system message to be hidden', async ({ api }) => {
 		await expect((await setSettingValueById(api, 'Hide_System_Messages', ['ru'])).status()).toBe(200);
 
 		await expect(findSysMes(page, 'ru')).not.toBeVisible();

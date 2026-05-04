@@ -1,3 +1,5 @@
+import type { BrowserContext, Page } from 'playwright-core';
+
 import { Users } from './fixtures/userStates';
 import { AdminSettings } from './page-objects';
 import { test, expect } from './utils/test';
@@ -6,9 +8,21 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.serial('settings-assets', () => {
 	let poAdminSettings: AdminSettings;
+	let page: Page;
+	let context: BrowserContext;
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeAll(async ({ browser }) => {
+		context = await browser.newContext({ storageState: Users.admin.state });
+		page = await context.newPage();
 		poAdminSettings = new AdminSettings(page);
+	});
+
+	test.afterAll(async () => {
+		await page.close();
+		await context.close();
+	});
+
+	test.beforeEach(async () => {
 		await page.goto('/admin/settings');
 
 		await poAdminSettings.btnAssetsSettings.click();
@@ -16,7 +30,7 @@ test.describe.serial('settings-assets', () => {
 		await expect(page.getByRole('main').getByRole('heading', { level: 1, name: 'Assets', exact: true })).toBeVisible();
 	});
 
-	test('expect upload and delete logo asset and label should be visible', async ({ page }) => {
+	test('expect upload and delete logo asset and label should be visible', async () => {
 		await expect(page.locator('[title="Assets_logo"]')).toHaveText('logo (svg, png, jpg)');
 
 		await poAdminSettings.inputAssetsLogo.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
@@ -28,7 +42,7 @@ test.describe.serial('settings-assets', () => {
 		await expect(page.locator('role=img[name="Asset preview"]')).not.toBeVisible();
 	});
 
-	test('expect upload and delete logo asset for dark theme and label should be visible', async ({ page }) => {
+	test('expect upload and delete logo asset for dark theme and label should be visible', async () => {
 		await expect(page.locator('[title="Assets_logo_dark"]')).toHaveText('logo - dark theme (svg, png, jpg)');
 
 		await poAdminSettings.inputAssetsLogo.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
@@ -39,7 +53,7 @@ test.describe.serial('settings-assets', () => {
 
 		await expect(page.locator('role=img[name="Asset preview"]')).not.toBeVisible();
 	});
-	test('expect upload and delete background asset and label should be visible', async ({ page }) => {
+	test('expect upload and delete background asset and label should be visible', async () => {
 		await expect(page.locator('[title="Assets_background"]')).toHaveText('login background (svg, png, jpg)');
 
 		await poAdminSettings.inputAssetsLogo.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
@@ -50,7 +64,7 @@ test.describe.serial('settings-assets', () => {
 
 		await expect(page.locator('role=img[name="Asset preview"]')).not.toBeVisible();
 	});
-	test('expect upload and delete background asset for dark theme and label should be visible', async ({ page }) => {
+	test('expect upload and delete background asset for dark theme and label should be visible', async () => {
 		await expect(page.locator('[title="Assets_background_dark"]')).toHaveText('login background - dark theme (svg, png, jpg)');
 
 		await poAdminSettings.inputAssetsLogo.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
