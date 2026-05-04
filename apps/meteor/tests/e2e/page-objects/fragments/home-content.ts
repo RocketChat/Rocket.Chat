@@ -546,6 +546,18 @@ export class HomeContent {
 		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
 	}
 
+	async scrollToMessage(messageLocator: Locator, direction: 'up' | 'down' = 'up'): Promise<Locator> {
+		const scroller = this.mainMessageListScroller;
+		const delta = direction === 'up' ? -400 : 400;
+
+		await expect(async () => {
+			await scroller.evaluate((el, d) => el.scrollBy(0, d), delta);
+			await expect(messageLocator).toBeVisible({ timeout: 500 });
+		}).toPass({ timeout: 30000, intervals: [100] });
+
+		return messageLocator;
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();

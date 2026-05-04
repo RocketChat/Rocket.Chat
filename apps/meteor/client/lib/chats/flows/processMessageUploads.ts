@@ -1,5 +1,5 @@
 import type { AtLeast, FileAttachmentProps, IE2EEMessage, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
-import { imperativeModal, GenericModal } from '@rocket.chat/ui-client';
+import { imperativeModal, GenericModal, clientCallbacks } from '@rocket.chat/ui-client';
 
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
@@ -205,6 +205,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 						imperativeModal.close();
 						failedUploads.forEach((upload) => store.removeUpload(upload.id));
 						resolve(continueSendingMessage(store, message));
+						clientCallbacks.run('afterSaveMessage', message, { room: message.rid, user: message.u });
 					},
 					onCancel: () => {
 						imperativeModal.close();

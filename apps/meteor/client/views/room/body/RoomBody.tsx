@@ -48,7 +48,7 @@ const RoomBody = (): ReactElement => {
 
 	//MessageList refs
 	const shouldJumpToBottom = useRef<boolean>(true);
-	const isAtBottom = useRef<boolean>(false);
+	const isAtBottom = useRef<boolean>(true);
 	const isJumpingToMessage = useRef<boolean>(false);
 
 	const retentionPolicy = useRetentionPolicy(room);
