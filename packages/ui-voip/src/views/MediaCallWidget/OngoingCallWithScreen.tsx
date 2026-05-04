@@ -1,5 +1,4 @@
 import { Box, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -19,7 +18,6 @@ import {
 	StreamCard,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
-import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
@@ -36,20 +34,11 @@ const OngoingCall = () => {
 		streams,
 		onToggleScreenSharing,
 		widgetPositionTracker,
+		onClosePopout,
 	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
-	const { currentViews, setCurrentViews } = useMediaCallInstance();
+	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
-
-	const closePopout = useCallback(() => {
-		setCurrentViews((prev) => {
-			if (!prev.has('popout')) {
-				return prev;
-			}
-			prev.delete('popout');
-			return new Set<AvailableViews>(prev);
-		});
-	}, [setCurrentViews]);
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -75,7 +64,7 @@ const OngoingCall = () => {
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 				{/* TODO: translation and icon */}
-				{isPopout && <ActionButton tiny secondary={false} label={t('Close_popout')} icon='arrow-collapse' onClick={closePopout} />}
+				{isPopout && <ActionButton tiny secondary={false} label={t('Close_popout')} icon='arrow-collapse' onClick={onClosePopout} />}
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>

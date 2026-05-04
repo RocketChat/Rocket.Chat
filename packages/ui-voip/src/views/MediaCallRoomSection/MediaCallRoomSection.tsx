@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo, useState, useCallback } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -16,7 +16,6 @@ import {
 	ActionStrip,
 	ActionToggleChat,
 } from '../../components';
-import type { AvailableViews } from '../../context/MediaCallInstanceContext';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
@@ -57,23 +56,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
+		onOpenPopout,
+		onClosePopout,
 		streams: { remoteScreen, localScreen },
 	} = useMediaCallView();
-	const { setCurrentViews, currentViews } = useMediaCallInstance();
+	const { currentViews } = useMediaCallInstance();
 
 	const isPopout = currentViews.has('popout');
-
-	const togglePopout = useCallback(() => {
-		setCurrentViews((prev) => {
-			if (prev.has('popout')) {
-				prev.delete('popout');
-			} else {
-				prev.add('popout');
-			}
-
-			return new Set<AvailableViews>(prev);
-		});
-	}, [setCurrentViews]);
 
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
@@ -154,7 +143,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 							{t('Call_open_separate_window')}
 						</Box>
 						{/* TODO: new icon missing */}
-						<Button onClick={togglePopout} icon='arrow-collapse' large>
+						<Button onClick={onClosePopout} icon='arrow-collapse' large>
 							{t('Show_call_here')}
 						</Button>
 					</Box>
@@ -182,7 +171,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 							titles={[t('Popout'), t('Close_popout')]}
 							icons={['arrow-expand', 'arrow-collapse']}
 							pressed={isPopout}
-							onToggle={togglePopout}
+							onToggle={isPopout ? onClosePopout : onOpenPopout}
 							danger={false}
 						/>
 						<DevicePicker secondary />
