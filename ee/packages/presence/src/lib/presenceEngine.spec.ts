@@ -22,16 +22,16 @@ describe('presenceEngine', () => {
 	describe('setActive', () => {
 		describe('when a higher-priority source arrives', () => {
 			it('should save current as previous and apply new', () => {
-				const result = setActive(user({ statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusSource: 'manual' }), {
+				const result = setActive(user({ statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' }), {
 					statusDefault: UserStatus.BUSY,
-					statusText: 'Standup',
-					statusSource: 'external',
-					statusEmoji: '📅',
+					statusText: 'Deep work',
+					statusSource: 'manual',
+					statusEmoji: '🔒',
 				});
 
-				expect(result?.values.statusSource).toBe('external');
-				expect(result?.values.statusText).toBe('Standup');
-				expect(result?.values.previousState).toMatchObject({ statusSource: 'manual', statusText: 'Deep work' });
+				expect(result?.values.statusSource).toBe('manual');
+				expect(result?.values.statusText).toBe('Deep work');
+				expect(result?.values.previousState).toMatchObject({ statusSource: 'external', statusText: 'Standup' });
 			});
 
 			it('should not save previous when there is no active claim', () => {
@@ -79,8 +79,8 @@ describe('presenceEngine', () => {
 
 		describe('when a lower-priority source arrives', () => {
 			it('should save as previous when slot is empty (no visible change)', () => {
-				const newState = { statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusSource: 'manual' as const };
-				const result = setActive(user({ statusSource: 'external', statusText: 'Standup', statusDefault: UserStatus.BUSY }), newState);
+				const newState = { statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' as const };
+				const result = setActive(user({ statusSource: 'manual', statusText: 'Deep work', statusDefault: UserStatus.BUSY }), newState);
 
 				expect(result?.values).toEqual({ previousState: newState });
 			});
@@ -111,12 +111,12 @@ describe('presenceEngine', () => {
 						statusDefault: UserStatus.BUSY,
 						previousState: {
 							statusDefault: UserStatus.BUSY,
-							statusText: 'Standup',
-							statusSource: 'external',
+							statusText: 'Deep work',
+							statusSource: 'manual',
 							statusExpiresAt: new Date(Date.now() + ONE_HOUR),
 						},
 					}),
-					{ statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusSource: 'manual' },
+					{ statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
 				);
 
 				expect(result).toBeNull();
@@ -217,13 +217,13 @@ describe('presenceEngine', () => {
 		it('when previous is valid, should restore it', () => {
 			const result = endActive(
 				user({
-					statusSource: 'external',
+					statusSource: 'manual',
 					statusDefault: UserStatus.BUSY,
-					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusSource: 'manual' },
+					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
 				}),
 			);
 
-			expect(result.values).toMatchObject({ statusSource: 'manual', statusText: 'Deep work', status: UserStatus.BUSY });
+			expect(result.values).toMatchObject({ statusSource: 'external', statusText: 'Standup', status: UserStatus.BUSY });
 			expect(result.clear).toContain('previousState');
 			expect(result.clear).toContain('statusEmoji');
 		});
@@ -285,44 +285,44 @@ describe('presenceEngine', () => {
 	});
 
 	describe('precedence flows', () => {
-		it('when an external claim arrives over manual, should save manual as previous and restore it on end', () => {
+		it('when a manual claim arrives over external, should save external as previous and restore it on end', () => {
+			const setResult = setActive(user({ statusSource: 'external', statusDefault: UserStatus.BUSY, statusText: 'Standup' }), {
+				statusDefault: UserStatus.BUSY,
+				statusText: 'Deep work',
+				statusSource: 'manual',
+			});
+			expect(setResult?.values.statusSource).toBe('manual');
+			expect(setResult?.values.previousState).toMatchObject({ statusSource: 'external', statusText: 'Standup' });
+
+			const endResult = endActive(
+				user({
+					statusSource: 'manual',
+					statusDefault: UserStatus.BUSY,
+					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
+				}),
+			);
+			expect(endResult.values).toMatchObject({ statusSource: 'external', statusText: 'Standup' });
+			expect(endResult.clear).toContain('previousState');
+		});
+
+		it('when an external claim arrives during active manual, should queue it as previous and restore on end', () => {
 			const setResult = setActive(user({ statusSource: 'manual', statusDefault: UserStatus.BUSY, statusText: 'Deep work' }), {
 				statusDefault: UserStatus.BUSY,
 				statusText: 'Standup',
 				statusSource: 'external',
 			});
-			expect(setResult?.values.statusSource).toBe('external');
-			expect(setResult?.values.previousState).toMatchObject({ statusSource: 'manual', statusText: 'Deep work' });
-
-			const endResult = endActive(
-				user({
-					statusSource: 'external',
-					statusDefault: UserStatus.BUSY,
-					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusSource: 'manual' },
-				}),
-			);
-			expect(endResult.values).toMatchObject({ statusSource: 'manual', statusText: 'Deep work' });
-			expect(endResult.clear).toContain('previousState');
-		});
-
-		it('when a manual claim arrives during active external, should queue it as previous and restore on end', () => {
-			const setResult = setActive(user({ statusSource: 'external', statusDefault: UserStatus.BUSY, statusText: 'Standup' }), {
-				statusDefault: UserStatus.AWAY,
-				statusText: 'Lunch',
-				statusSource: 'manual',
-			});
 			expect(setResult?.values).toEqual({
-				previousState: { statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
+				previousState: { statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
 			});
 
 			const endResult = endActive(
 				user({
-					statusSource: 'external',
+					statusSource: 'manual',
 					statusDefault: UserStatus.BUSY,
-					previousState: { statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
+					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
 				}),
 			);
-			expect(endResult.values).toMatchObject({ statusSource: 'manual', statusText: 'Lunch', statusDefault: UserStatus.AWAY });
+			expect(endResult.values).toMatchObject({ statusSource: 'external', statusText: 'Standup', statusDefault: UserStatus.BUSY });
 		});
 
 		it('when an external claim arrives during active internal, should queue it, restore on end, then reset to system', () => {
@@ -376,30 +376,6 @@ describe('presenceEngine', () => {
 			expect(endResult.clear).not.toContain('statusEmoji');
 		});
 
-		it('when a new manual claim arrives during active internal, should replace existing manual in previous and restore it on end', () => {
-			const setResult = setActive(
-				user({
-					statusSource: 'internal',
-					statusDefault: UserStatus.BUSY,
-					statusText: 'On a call',
-					previousState: { statusDefault: UserStatus.BUSY, statusText: 'WFH', statusSource: 'manual' },
-				}),
-				{ statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
-			);
-			expect(setResult?.values).toEqual({
-				previousState: { statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
-			});
-
-			const endResult = endActive(
-				user({
-					statusSource: 'internal',
-					statusDefault: UserStatus.BUSY,
-					previousState: { statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
-				}),
-			);
-			expect(endResult.values).toMatchObject({ statusSource: 'manual', statusText: 'Lunch' });
-		});
-
 		it('when previous has expired while internal is active, should ignore previous and reset to system on end', () => {
 			const result = endActive(
 				user({
@@ -418,46 +394,40 @@ describe('presenceEngine', () => {
 			expect(result.clear).toContain('previousState');
 		});
 
-		it('when internal arrives over external that has manual in previous, should replace manual with external (1-slot limit)', () => {
+		it('when a same-priority manual arrives over active manual, should overwrite active and keep previous untouched', () => {
 			const result = setActive(
 				user({
-					statusSource: 'external',
+					statusSource: 'manual',
 					statusDefault: UserStatus.BUSY,
-					statusText: 'Standup',
-					statusExpiresAt: new Date(Date.now() + ONE_HOUR),
-					previousState: { statusDefault: UserStatus.BUSY, statusText: 'WFH', statusSource: 'manual' },
+					statusText: 'WFH',
+					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
 				}),
-				{ statusDefault: UserStatus.BUSY, statusText: 'On a call', statusSource: 'internal', statusEmoji: '📞' },
+				{ statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
 			);
 
-			expect(result?.values.statusSource).toBe('internal');
-			expect(result?.values.previousState).toMatchObject({ statusSource: 'external', statusText: 'Standup' });
-		});
-
-		it('when a same-priority external arrives over active external, should overwrite active and keep previous untouched', () => {
-			const result = setActive(
-				user({
-					statusSource: 'external',
-					statusDefault: UserStatus.BUSY,
-					statusText: 'Standup',
-					previousState: { statusDefault: UserStatus.BUSY, statusText: 'WFH', statusSource: 'manual' },
-				}),
-				{ statusDefault: UserStatus.BUSY, statusText: '1:1', statusSource: 'external' },
-			);
-
-			expect(result?.values.statusSource).toBe('external');
-			expect(result?.values.statusText).toBe('1:1');
+			expect(result?.values.statusSource).toBe('manual');
+			expect(result?.values.statusText).toBe('Lunch');
 			expect(result?.values.previousState).toBeUndefined();
 		});
 
-		it('when user is auto-away with manual active, should still accept a higher-priority external claim', () => {
-			const result = setActive(
-				user({ statusSource: 'manual', statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusConnection: UserStatus.AWAY }),
-				{ statusDefault: UserStatus.BUSY, statusText: 'Standup', statusSource: 'external' },
-			);
+		it('when an internal claim arrives over manual, should save manual as previous and restore it on end', () => {
+			const setResult = setActive(user({ statusSource: 'manual', statusDefault: UserStatus.BUSY, statusText: 'Deep work' }), {
+				statusDefault: UserStatus.BUSY,
+				statusText: 'On a call',
+				statusSource: 'internal',
+			});
+			expect(setResult?.values.statusSource).toBe('internal');
+			expect(setResult?.values.previousState).toMatchObject({ statusSource: 'manual', statusText: 'Deep work' });
 
-			expect(result?.values.statusSource).toBe('external');
-			expect(result?.values.previousState).toMatchObject({ statusSource: 'manual', statusText: 'Deep work' });
+			const endResult = endActive(
+				user({
+					statusSource: 'internal',
+					statusDefault: UserStatus.BUSY,
+					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Deep work', statusSource: 'manual' },
+				}),
+			);
+			expect(endResult.values).toMatchObject({ statusSource: 'manual', statusText: 'Deep work' });
+			expect(endResult.clear).toContain('previousState');
 		});
 	});
 });

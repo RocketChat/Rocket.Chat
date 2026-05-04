@@ -1,6 +1,6 @@
 import { type IUser, UserStatus } from '@rocket.chat/core-typings';
 
-const PRIORITY = { internal: 1, external: 2, manual: 3 };
+const PRIORITY = { internal: 1, manual: 2, external: 3 };
 
 const NO_PRIORITY = 4;
 
