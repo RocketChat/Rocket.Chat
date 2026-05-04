@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import type { MutableRefObject } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
@@ -11,7 +11,7 @@ import { useChat } from '../../contexts/ChatContext';
 export const useHasNewMessages = (
 	rid: string,
 	uid: string | undefined,
-	shouldJumpToBottom: MutableRefObject<boolean>,
+	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>,
 	isAtBottom: MutableRefObject<boolean>,
 ) => {
 	const chat = useChat();
@@ -23,21 +23,21 @@ export const useHasNewMessages = (
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const handleNewMessageButtonClick = useCallback(() => {
-		shouldJumpToBottom.current = true;
+		setShouldJumpToBottom(true);
 		setHasNewMessages(false);
 		chat.composer?.focus();
-	}, [shouldJumpToBottom, chat.composer]);
+	}, [setShouldJumpToBottom, chat.composer]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
-		shouldJumpToBottom.current = true;
+		setShouldJumpToBottom(true);
 		RoomHistoryManager.clear(rid);
 		RoomHistoryManager.getMoreIfIsEmpty(rid);
-	}, [shouldJumpToBottom, rid]);
+	}, [setShouldJumpToBottom, rid]);
 
 	const handleComposerResize = useCallback((): void => {
-		shouldJumpToBottom.current = true;
+		setShouldJumpToBottom(true);
 		setHasNewMessages(false);
-	}, [shouldJumpToBottom]);
+	}, [setShouldJumpToBottom]);
 
 	useEffect(() => {
 		clientCallbacks.add(
@@ -62,11 +62,12 @@ export const useHasNewMessages = (
 		clientCallbacks.add(
 			'afterSaveMessage',
 			(msg: IMessage) => {
+				console.log('bingus', msg, msg.u._id, uid);
 				if (msg.tmid) {
 					return;
 				}
 				if (msg.u._id === uid) {
-					shouldJumpToBottom.current = true;
+					setShouldJumpToBottom(true);
 					setHasNewMessages(false);
 				}
 			},
@@ -78,7 +79,7 @@ export const useHasNewMessages = (
 			clientCallbacks.remove('streamNewMessage', rid);
 			clientCallbacks.remove('afterSaveMessage', rid);
 		};
-	}, [isAtBottom, rid, shouldJumpToBottom, uid]);
+	}, [isAtBottom, rid, setShouldJumpToBottom, uid]);
 
 	const debouncedClearNewMessagesOnScroll = useDebouncedCallback(
 		() => {

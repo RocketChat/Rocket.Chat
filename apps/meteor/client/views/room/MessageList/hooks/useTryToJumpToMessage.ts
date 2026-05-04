@@ -1,7 +1,7 @@
 import { isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import type { WindowVirtualizerHandle } from 'virtua';
 
@@ -14,11 +14,11 @@ import { clearHighlightMessage, setHighlightMessage } from '../providers/message
 type UseTryToJumpToMessageProps = {
 	rid: string;
 	virtualizerRef: MutableRefObject<WindowVirtualizerHandle | null>;
-	isJumpingToMessage: MutableRefObject<boolean>;
+	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	messages: { _id: string }[];
 };
 
-const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
+const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
 	const router = useRouter();
 
@@ -44,7 +44,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 		}
 		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
 		if (message && (isThreadMessage(message) || isThreadMainMessage(message))) {
-			isJumpingToMessage.current = false;
+			setIsJumpingToMessage(false);
 			return;
 		}
 
@@ -52,7 +52,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 			return;
 		}
 
-		isJumpingToMessage.current = true;
+		setIsJumpingToMessage(true);
 
 		if (RoomHistoryManager.isLoading(rid) || messages.length === 0) {
 			return;
@@ -82,11 +82,11 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, isJumpingToMessage, messag
 
 		// REVIEW TODO: Find how to avoid a race condition with the jump to message and jump to bottom
 		setTimeout(() => {
-			isJumpingToMessage.current = false;
+			setIsJumpingToMessage(false);
 		}, 500);
 
 		setMessageJumpQueryStringParameter(null);
-	}, [messageJumpParam, virtualizerRef, isJumpingToMessage, rid, messages, router, message]);
+	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, router, message]);
 };
 
 export default useTryToJumpToMessage;

@@ -34,13 +34,15 @@ type MessageListProps = {
 	room: IRoom;
 	retentionPolicy: RetentionPolicy | undefined;
 	hasMoreNextMessages: boolean;
-	shouldJumpToBottom: MutableRefObject<boolean>;
+	shouldJumpToBottom: boolean;
 	isAtBottom: MutableRefObject<boolean>;
-	isJumpingToMessage: MutableRefObject<boolean>;
+	isJumpingToMessage: boolean;
+	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
 	debouncedClearNewMessagesOnScroll: () => void;
 	handleDateScroll: (topMessage: IMessage | undefined) => void;
+	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>;
 };
 
 let lastScrollSize = 0;
@@ -55,8 +57,10 @@ export const MessageList = function MessageList({
 	retentionPolicy,
 	hasMoreNextMessages,
 	shouldJumpToBottom,
+	setShouldJumpToBottom,
 	isAtBottom,
 	isJumpingToMessage,
+	setIsJumpingToMessage,
 	setUnreadCount,
 	setLastMessageDate,
 	debouncedClearNewMessagesOnScroll,
@@ -73,7 +77,7 @@ export const MessageList = function MessageList({
 
 	const messages = useMessages({ rid });
 
-	useTryToJumpToMessage({ rid, virtualizerRef, isJumpingToMessage, messages });
+	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages });
 
 	const handlePrepend = useCallback(
 		(offset: number) => {
@@ -92,21 +96,20 @@ export const MessageList = function MessageList({
 			}
 
 			isAtBottom.current = offset - scrollSize + viewportSize >= -60;
-			if (shouldJumpToBottom.current && isAtBottom.current) {
-				shouldJumpToBottom.current = false;
+			if (shouldJumpToBottom && isAtBottom.current) {
+				setShouldJumpToBottom(false);
 			}
 		},
-		[isAtBottom, shouldJumpToBottom],
+		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom],
 	);
 
 	const isRoomInitialized = useRef<boolean>(false);
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
-	// REVIEW TODO: This is an anti pattern (using refs to trigger effects) It works, but we need to find a correct way to handle this
 	// Scroll to bottom
 	useEffect(() => {
-		if (isJumpingToMessage.current) {
+		if (isJumpingToMessage) {
 			return;
 		}
 
@@ -115,12 +118,12 @@ export const MessageList = function MessageList({
 
 			if (!firstUnreadMessageId) {
 				isRoomInitialized.current = true;
-				shouldJumpToBottom.current = true;
+				setShouldJumpToBottom(true);
 				return;
 			}
 
 			if (!store?.atBottom && store?.scroll !== undefined) {
-				shouldJumpToBottom.current = false;
+				setShouldJumpToBottom(false);
 				const index = virtualizerRef.current?.findItemIndex(store?.scroll);
 				if (index !== undefined) {
 					virtualizerRef.current?.scrollToIndex(index, {
@@ -137,7 +140,7 @@ export const MessageList = function MessageList({
 
 		const handle = virtualizerRef.current;
 		const lastItemIndex = messages.length - 1;
-		if (shouldJumpToBottom.current === true) {
+		if (shouldJumpToBottom === true) {
 			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
 			// TODO: Find if there is a better way to scroll to the latest message
 			handle?.scrollToIndex(lastItemIndex + 1, {
@@ -151,7 +154,7 @@ export const MessageList = function MessageList({
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom.current, isJumpingToMessage.current, rid, firstUnreadMessageId]);
+	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, rid, firstUnreadMessageId, setShouldJumpToBottom]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 

@@ -115,9 +115,11 @@ const defaultProps = {
 	room: { _id: 'room-id', t: 'c' } as IRoom,
 	retentionPolicy: undefined,
 	hasMoreNextMessages: false,
-	shouldJumpToBottom: { current: false },
+	shouldJumpToBottom: false,
+	setShouldJumpToBottom: jest.fn(),
 	isAtBottom: { current: false },
-	isJumpingToMessage: { current: false },
+	isJumpingToMessage: false,
+	setIsJumpingToMessage: jest.fn(),
 	setUnreadCount: jest.fn(),
 	setLastMessageDate: jest.fn(),
 	debouncedClearNewMessagesOnScroll: jest.fn(),
@@ -162,7 +164,7 @@ describe('MessageList scroll position', () => {
 		};
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
 
-		render(<MessageList {...defaultProps} shouldJumpToBottom={{ current: true }} />);
+		render(<MessageList {...defaultProps} shouldJumpToBottom={true} />);
 
 		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(2, { align: 'center' });
 	});

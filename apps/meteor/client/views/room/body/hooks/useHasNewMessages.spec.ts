@@ -20,7 +20,7 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 
 describe('useHasNewMessages', () => {
 	const isAtBottom = { current: true };
-	const shouldJumpToBottom = { current: false };
+	const setShouldJumpToBottom = jest.fn();
 	const rid = 'room-id';
 	const uid = 'current-user-id';
 
@@ -36,7 +36,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when user sends their own message', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const ownMsg: IMessage = {
 			_id: 'msg-1',
@@ -55,7 +55,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when user sends own message during race condition (not at bottom)', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const ownMsg: IMessage = {
 			_id: 'msg-race',
@@ -74,7 +74,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should show new messages button when another user sends a message and user is NOT at bottom', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, { current: false }), {
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
 			wrapper: mockAppRoot().build(),
 		});
 
@@ -95,7 +95,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when another user sends a message but user IS at bottom', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-3',
@@ -114,7 +114,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should ignore edited messages in streamNewMessage', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const editedMsg: IEditedMessage = {
 			_id: 'msg-4',
@@ -135,7 +135,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should ignore thread messages in streamNewMessage', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const threadMsg: IMessage = {
 			_id: 'msg-5',
@@ -155,7 +155,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should clear hasNewMessages when afterSaveMessage fires for current user', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, shouldJumpToBottom, { current: false }), {
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
 			wrapper: mockAppRoot().build(),
 		});
 
@@ -188,6 +188,6 @@ describe('useHasNewMessages', () => {
 			afterSaveCallbacks.forEach((callback) => callback(ownMsg));
 		});
 		expect(result.current.hasNewMessages).toBe(false);
-		expect(shouldJumpToBottom.current).toBe(true);
+		expect(setShouldJumpToBottom).toHaveBeenCalledWith(true);
 	});
 });

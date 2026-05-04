@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -47,13 +47,14 @@ const RoomBody = (): ReactElement => {
 	const subscription = useRoomSubscription();
 
 	//MessageList refs
-	const shouldJumpToBottom = useRef<boolean>(true);
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(true);
 	const isAtBottom = useRef<boolean>(true);
-	const isJumpingToMessage = useRef<boolean>(false);
+	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
 
 	const retentionPolicy = useRetentionPolicy(room);
 
 	useTryToJumpToThreadMessage();
+
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
@@ -106,7 +107,7 @@ const RoomBody = (): ReactElement => {
 		handleComposerResize,
 		hasNewMessages,
 		debouncedClearNewMessagesOnScroll,
-	} = useHasNewMessages(room._id, user?._id, shouldJumpToBottom, isAtBottom);
+	} = useHasNewMessages(room._id, user?._id, setShouldJumpToBottom, isAtBottom);
 
 	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef);
 
@@ -205,8 +206,10 @@ const RoomBody = (): ReactElement => {
 											<MessageList
 												rid={room._id}
 												shouldJumpToBottom={shouldJumpToBottom}
+												setShouldJumpToBottom={setShouldJumpToBottom}
 												isAtBottom={isAtBottom}
 												isJumpingToMessage={isJumpingToMessage}
+												setIsJumpingToMessage={setIsJumpingToMessage}
 												canPreview={canPreview}
 												hasMorePreviousMessages={hasMorePreviousMessages}
 												isLoadingMoreMessages={isLoadingMoreMessages}
