@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -513,6 +513,28 @@ const ChatGetMessageReadCountSchema = {
 
 export const isChatGetMessageReadCountProps = ajv.compile<ChatGetMessageReadCount>(ChatGetMessageReadCountSchema);
 
+type ChatGetMessageReaders = {
+	messageId: IMessage['_id'];
+	limit?: number;
+};
+
+const ChatGetMessageReadersSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+		},
+		limit: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+export const isChatGetMessageReadersProps = ajvQuery.compile<ChatGetMessageReaders>(ChatGetMessageReadersSchema);
+
 type GetStarredMessages = {
 	roomId: IRoom['_id'];
 	count?: number;
@@ -965,6 +987,9 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getMessageReadCount': {
 		GET: (params: ChatGetMessageReadCount) => { readCount: number };
+	};
+	'/v1/chat.getMessageReaders': {
+		GET: (params: ChatGetMessageReaders) => { readers: Array<Pick<IUser, '_id' | 'name' | 'username'>> };
 	};
 	'/v1/chat.getStarredMessages': {
 		GET: (params: GetStarredMessages) => {

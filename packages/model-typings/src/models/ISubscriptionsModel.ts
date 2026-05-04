@@ -24,6 +24,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number>;
 
+	findReaderUsersByRoomIdAndMessageTs(
+		rid: string,
+		messageTs: Date,
+		excludeUserId: string | undefined,
+		limit: number,
+	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>>;
+
 	findOneByRoomIdAndUserId(rid: string, uid: string, options?: FindOptions<ISubscription>): Promise<ISubscription | null>;
 
 	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;

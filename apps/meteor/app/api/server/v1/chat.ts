@@ -25,6 +25,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	isChatGetMessageReadCountProps,
+	isChatGetMessageReadersProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
@@ -44,6 +45,7 @@ import { getSingleMessage } from '../../../lib/server/methods/getSingleMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
 import { getMessageReadCount as getMessageReadCountHelper } from '../../../read-counter/server/getMessageReadCount';
+import { getMessageReaders as getMessageReadersHelper } from '../../../read-counter/server/getMessageReaders';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
@@ -150,6 +152,37 @@ API.v1.addRoute(
 			}
 
 			const result = await getMessageReadCountHelper(messageId, this.userId);
+
+			if (!result) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getMessageReaders',
+	{
+		authRequired: true,
+		validateParams: isChatGetMessageReadersProps,
+	},
+	{
+		async get() {
+			const { messageId, limit } = this.queryParams;
+
+			const message = await Messages.findOneById(messageId, { projection: { rid: 1 } });
+
+			if (!message) {
+				return API.v1.failure('The required "messageId" param is missing or invalid.');
+			}
+
+			if (!(await canAccessRoomIdAsync(message.rid, this.userId))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+
+			const result = await getMessageReadersHelper(messageId, this.userId, limit);
 
 			if (!result) {
 				return API.v1.failure();
