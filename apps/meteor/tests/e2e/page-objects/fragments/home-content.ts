@@ -552,7 +552,7 @@ export class HomeContent {
 
 		await expect(async () => {
 			await scroller.evaluate((el, d) => el.scrollBy(0, d), delta);
-			await expect(messageLocator).toBeVisible({ timeout: 500 });
+			await expect(messageLocator.first()).toBeVisible({ timeout: 500 });
 		}).toPass({ timeout: 30000, intervals: [100] });
 
 		return messageLocator;
