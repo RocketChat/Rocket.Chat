@@ -314,7 +314,7 @@ export abstract class AutoTranslate {
 				const uncachedLanguages: string[] = [];
 
 				for (const lang of targetLanguages) {
-					const cached = TranslationMemoryCache.get(this.name, message.msg, lang);
+					const cached = TranslationMemoryCache.get(this.name, message, lang);
 					if (cached) {
 						translations[lang] = cached;
 					} else {
@@ -326,7 +326,7 @@ export abstract class AutoTranslate {
 					const fetchedTranslations = await this._translateMessage(targetMessage, uncachedLanguages);
 					for (const [lang, translation] of Object.entries(fetchedTranslations)) {
 						translations[lang] = translation;
-						TranslationMemoryCache.set(this.name, message.msg, lang, translation);
+						TranslationMemoryCache.set(this.name, message, lang, translation);
 					}
 				}
 

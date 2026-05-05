@@ -1,3 +1,5 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+
 /**
  * Lightweight in-memory LRU cache for translations.
  * Helps prevent redundant translation provider API calls.
@@ -7,12 +9,18 @@ export class TranslationMemoryCache {
 
 	private static MAX_CACHE_SIZE = 10000;
 
-	private static generateKey(provider: string, originalText: string, targetLanguage: string): string {
-		return `${provider}:${targetLanguage}:${originalText}`;
+	private static generateKey(provider: string, messageOrText: string | Pick<IMessage, 'msg' | 'tokens' | 'mentions' | 'channels'>, targetLanguage: string): string {
+		let textPart = '';
+		if (typeof messageOrText === 'string') {
+			textPart = messageOrText;
+		} else {
+			textPart = `${messageOrText.msg}:${JSON.stringify(messageOrText.tokens)}:${JSON.stringify(messageOrText.mentions)}:${JSON.stringify(messageOrText.channels)}`;
+		}
+		return `${provider}:${targetLanguage}:${textPart}`;
 	}
 
-	static get(provider: string, originalText: string, targetLanguage: string): string | undefined {
-		const key = this.generateKey(provider, originalText, targetLanguage);
+	static get(provider: string, messageOrText: string | Pick<IMessage, 'msg' | 'tokens' | 'mentions' | 'channels'>, targetLanguage: string): string | undefined {
+		const key = this.generateKey(provider, messageOrText, targetLanguage);
 		const cached = this.map.get(key);
 		if (cached) {
 			// Refresh LRU by re-inserting
@@ -22,8 +30,8 @@ export class TranslationMemoryCache {
 		return cached;
 	}
 
-	static set(provider: string, originalText: string, targetLanguage: string, translation: string): void {
-		const key = this.generateKey(provider, originalText, targetLanguage);
+	static set(provider: string, messageOrText: string | Pick<IMessage, 'msg' | 'tokens' | 'mentions' | 'channels'>, targetLanguage: string, translation: string): void {
+		const key = this.generateKey(provider, messageOrText, targetLanguage);
 		if (this.map.has(key)) {
 			this.map.delete(key);
 		} else if (this.map.size >= this.MAX_CACHE_SIZE) {
