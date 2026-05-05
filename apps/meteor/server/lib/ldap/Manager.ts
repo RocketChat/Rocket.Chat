@@ -115,7 +115,7 @@ export class LDAPManager {
 	}
 
 	public static async testSearch(username: string): Promise<void> {
-		const escapedUsername = ldapEscape.filter`${username}`;
+		const escapedUsername = ldapEscape.filter`${username}`.replace(/[/+<>;=]/g, (c) => `\\${c.charCodeAt(0).toString(16).padStart(2, '0')}`);
 		const ldap = new LDAPConnection();
 
 		try {
