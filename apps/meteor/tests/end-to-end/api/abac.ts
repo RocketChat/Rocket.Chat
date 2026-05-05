@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, afterEach, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials, methodCall } from '../../data/api-data';
@@ -97,8 +97,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		describe('Granular admin permissions', () => {
-			afterEach(async () => {
+		describe('Granular admin permissions (with abac-management, missing the granular)', () => {
+			const dummyKey = 'granular_perm_dummy_key';
+			const dummyId = 'granular_perm_dummy_id';
+
+			after(async () => {
 				await Promise.all([
 					updatePermission('manage-abac-admin-settings', ['admin']),
 					updatePermission('manage-abac-admin-attributes', ['admin']),
@@ -107,24 +110,120 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				]);
 			});
 
-			it('GET /abac/attributes should return 403 when admin lacks manage-abac-admin-attributes', async () => {
-				await updatePermission('manage-abac-admin-attributes', []);
-				await request.get(`${v1}/abac/attributes`).set(credentials).expect(403);
+			describe('without manage-abac-admin-room-attributes', () => {
+				before(async () => {
+					await updatePermission('manage-abac-admin-room-attributes', []);
+				});
+
+				after(async () => {
+					await updatePermission('manage-abac-admin-room-attributes', ['admin']);
+				});
+
+				it('POST /abac/rooms/:rid/attributes should return 403', async () => {
+					await request.post(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).send({ attributes: {} }).expect(403);
+				});
+
+				it('DELETE /abac/rooms/:rid/attributes should return 403', async () => {
+					await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).expect(403);
+				});
+
+				it('POST /abac/rooms/:rid/attributes/:key should return 403', async () => {
+					await request
+						.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${dummyKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(403);
+				});
+
+				it('PUT /abac/rooms/:rid/attributes/:key should return 403', async () => {
+					await request
+						.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${dummyKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(403);
+				});
+
+				it('DELETE /abac/rooms/:rid/attributes/:key should return 403', async () => {
+					await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${dummyKey}`).set(credentials).expect(403);
+				});
+
+				it('GET /abac/rooms should return 403', async () => {
+					await request.get(`${v1}/abac/rooms`).set(credentials).expect(403);
+				});
 			});
 
-			it('GET /abac/rooms should return 403 when admin lacks manage-abac-admin-room-attributes', async () => {
-				await updatePermission('manage-abac-admin-room-attributes', []);
-				await request.get(`${v1}/abac/rooms`).set(credentials).expect(403);
+			describe('without manage-abac-admin-attributes', () => {
+				before(async () => {
+					await updatePermission('manage-abac-admin-attributes', []);
+				});
+
+				after(async () => {
+					await updatePermission('manage-abac-admin-attributes', ['admin']);
+				});
+
+				it('GET /abac/attributes should return 403', async () => {
+					await request.get(`${v1}/abac/attributes`).set(credentials).expect(403);
+				});
+
+				it('POST /abac/attributes should return 403', async () => {
+					await request
+						.post(`${v1}/abac/attributes`)
+						.set(credentials)
+						.send({ key: dummyKey, values: ['v1'] })
+						.expect(403);
+				});
+
+				it('PUT /abac/attributes/:_id should return 403', async () => {
+					await request.put(`${v1}/abac/attributes/${dummyId}`).set(credentials).send({ key: dummyKey }).expect(403);
+				});
+
+				it('GET /abac/attributes/:_id should return 403', async () => {
+					await request.get(`${v1}/abac/attributes/${dummyId}`).set(credentials).expect(403);
+				});
+
+				it('DELETE /abac/attributes/:_id should return 403', async () => {
+					await request.delete(`${v1}/abac/attributes/${dummyId}`).set(credentials).expect(403);
+				});
+
+				it('GET /abac/attributes/:key/is-in-use should return 403', async () => {
+					await request.get(`${v1}/abac/attributes/${dummyKey}/is-in-use`).set(credentials).expect(403);
+				});
+
+				it('POST /abac/users/sync should return 403', async () => {
+					await request
+						.post(`${v1}/abac/users/sync`)
+						.set(credentials)
+						.send({ usernames: ['x'] })
+						.expect(403);
+				});
 			});
 
-			it('GET /abac/audit should return 403 when admin lacks view-abac-admin-audit', async () => {
-				await updatePermission('view-abac-admin-audit', []);
-				await request.get(`${v1}/abac/audit`).set(credentials).expect(403);
+			describe('without manage-abac-admin-settings', () => {
+				before(async () => {
+					await updatePermission('manage-abac-admin-settings', []);
+				});
+
+				after(async () => {
+					await updatePermission('manage-abac-admin-settings', ['admin']);
+				});
+
+				it('GET /abac/pdp/health should return 403', async () => {
+					await request.get(`${v1}/abac/pdp/health`).set(credentials).expect(403);
+				});
 			});
 
-			it('GET /abac/pdp/health should return 403 when admin lacks manage-abac-admin-settings', async () => {
-				await updatePermission('manage-abac-admin-settings', []);
-				await request.get(`${v1}/abac/pdp/health`).set(credentials).expect(403);
+			describe('without view-abac-admin-audit', () => {
+				before(async () => {
+					await updatePermission('view-abac-admin-audit', []);
+				});
+
+				after(async () => {
+					await updatePermission('view-abac-admin-audit', ['admin']);
+				});
+
+				it('GET /abac/audit should return 403', async () => {
+					await request.get(`${v1}/abac/audit`).set(credentials).expect(403);
+				});
 			});
 		});
 	});
