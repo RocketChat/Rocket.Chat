@@ -1,5 +1,6 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -220,6 +221,23 @@ const createMeteorBackedAccount = () => {
 			new Promise<void>((resolve, reject) =>
 				(Meteor as unknown as { logout: (cb: (err?: unknown) => void) => void }).logout((err) => (err ? reject(err) : resolve())),
 			),
+		// `onLogin`/`onLogout` route through Meteor's accounts-base subscriptions
+		// when the SDK transport is OFF — auth lifecycle is owned by Meteor in
+		// that mode, so the SDK's own emitter never fires `login`/`logout`.
+		onLogin: (fn: () => void): (() => void) => {
+			if (typeof Accounts.onLogin !== 'function') {
+				return noopUnsubscribe;
+			}
+			const handle = Accounts.onLogin(() => fn()) as unknown as { stop?: () => void };
+			return () => handle?.stop?.();
+		},
+		onLogout: (fn: () => void): (() => void) => {
+			if (typeof Accounts.onLogout !== 'function') {
+				return noopUnsubscribe;
+			}
+			const handle = Accounts.onLogout(() => fn()) as unknown as { stop?: () => void };
+			return () => handle?.stop?.();
+		},
 		// Emitter shape Account inherits from
 		on: () => () => undefined,
 		off: () => undefined,

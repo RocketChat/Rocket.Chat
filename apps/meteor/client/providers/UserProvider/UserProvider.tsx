@@ -5,7 +5,6 @@ import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 import type { ContextType, ReactElement, ReactNode } from 'react';
@@ -23,6 +22,7 @@ import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
@@ -32,7 +32,7 @@ type UserProviderProps = {
 };
 
 const ee = new Emitter();
-Accounts.onLogout(() => ee.emit('logout'));
+getDdpSdk().account.onLogout(() => ee.emit('logout'));
 
 ee.on('logout', async () => {
 	const userId = userIdStore.getState();

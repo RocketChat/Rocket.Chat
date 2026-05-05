@@ -191,8 +191,15 @@ export const adoptAccountFromMeteorLoginResult = (result: unknown): void => {
 		tokenExpires = new Date(typeof d === 'string' ? parseInt(d, 10) : d);
 	}
 	const sdk = getDdpSdk();
+	const previousUid = sdk.account.uid;
 	sdk.account.user = { ...sdk.account.user, token: r.token, tokenExpires, id: r.id } as typeof sdk.account.user;
 	sdk.account.uid = r.id;
+	// Emit `uid` so subscribers of `account.onLogin` see the sync — the assignment
+	// itself doesn't fire the Emitter. Skip when uid didn't change to avoid
+	// firing onLogin on a token-refresh that landed on the same account.
+	if (previousUid !== r.id) {
+		(sdk.account as unknown as { emit: (event: 'uid', value: string) => void }).emit('uid', r.id);
+	}
 };
 
 const teardownAuthenticatedConnection = (): void => {

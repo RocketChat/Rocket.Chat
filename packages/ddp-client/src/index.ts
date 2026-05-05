@@ -15,3 +15,4 @@ export type * from './types/ClientStream';
 export type * from './types/methods';
 export type * from './types/streams';
 export type { SDK } from './types/SDK';
+export { LoginCancelledError } from './types/LoginCancelledError';

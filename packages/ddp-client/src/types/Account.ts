@@ -1,6 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { ClientStream } from './ClientStream';
+import { LoginCancelledError } from './LoginCancelledError';
 
 type User = {
 	id: string;
@@ -9,11 +10,12 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
-export interface Account
-	extends Emitter<{
-		uid: string | undefined;
-		user?: User;
-	}> {
+type AccountEvents = {
+	uid: string | undefined;
+	user?: User;
+};
+
+export interface Account extends Emitter<AccountEvents> {
 	uid?: string;
 	user?: User;
 	loginWithPassword(username: string, password: string): Promise<void>;
@@ -23,15 +25,13 @@ export interface Account
 		tokenExpires: Date;
 	}>;
 	logout(): Promise<void>;
+	onLogin(fn: () => void): () => void;
+	onLogout(fn: () => void): () => void;
 }
 
-export class AccountImpl
-	extends Emitter<{
-		uid: string | undefined;
-		user: User;
-	}>
-	implements Account
-{
+export { LoginCancelledError };
+
+export class AccountImpl extends Emitter<AccountEvents> implements Account {
 	uid?: string;
 
 	user?: { id: string; username?: string; token?: string; tokenExpires?: Date };
@@ -67,6 +67,34 @@ export class AccountImpl
 		this.uid = id;
 		this.emit('uid', this.uid);
 		this.emit('user', this.user);
+	}
+
+	// `onLogin`/`onLogout` track transitions of `uid` (undefined↔string) so any
+	// path that ends with the SDK's `uid` populated — `saveCredentials` from
+	// loginWithPassword/loginWithToken, or external sync via `account.uid = ...`
+	// followed by `emit('uid', ...)` — fires the right callback. Avoids needing
+	// dedicated `login`/`logout` events that every caller would have to remember
+	// to emit.
+	onLogin(fn: () => void): () => void {
+		let lastUid = this.uid;
+		return this.on('uid', (uid) => {
+			const wasLoggedOut = !lastUid;
+			lastUid = uid;
+			if (uid && wasLoggedOut) {
+				fn();
+			}
+		});
+	}
+
+	onLogout(fn: () => void): () => void {
+		let lastUid = this.uid;
+		return this.on('uid', (uid) => {
+			const wasLoggedIn = !!lastUid;
+			lastUid = uid;
+			if (!uid && wasLoggedIn) {
+				fn();
+			}
+		});
 	}
 
 	async loginWithPassword(username: string, password: string): Promise<void> {

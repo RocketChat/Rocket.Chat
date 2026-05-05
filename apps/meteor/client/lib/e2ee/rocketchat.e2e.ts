@@ -27,6 +27,7 @@ import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { getDdpSdk } from '../sdk/ddpSdk';
 import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
@@ -875,6 +876,6 @@ class E2E extends Emitter {
 
 export const e2e = new E2E();
 
-Accounts.onLogout(() => {
+getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
 });

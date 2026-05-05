@@ -2,7 +2,6 @@ import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
@@ -13,8 +12,11 @@ import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { getDdpSdk } from '../sdk/ddpSdk';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
+
+const readStoredLoginToken = (): string | null => (typeof window !== 'undefined' ? window.localStorage.getItem('Meteor.loginToken') : null);
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
@@ -380,7 +382,7 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return Accounts._storedLoginToken();
+		return readStoredLoginToken();
 	}
 
 	override clearCacheOnLogout() {
@@ -396,7 +398,7 @@ export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends Cach
 			void this.init();
 		});
 
-		Accounts.onLogout(() => {
+		getDdpSdk().account.onLogout(() => {
 			this.release();
 		});
 	}
