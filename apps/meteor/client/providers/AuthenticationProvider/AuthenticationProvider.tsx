@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -20,7 +21,7 @@ const callLoginMethod = (
 	options: { loginToken?: string; token?: string; iframe?: boolean },
 	userCallback: ((err?: any) => void) | undefined,
 ) => {
-	Accounts.callLoginMethod({
+	getDdpSdk().account.callLoginMethod({
 		methodArguments: [options],
 		userCallback,
 	});
@@ -73,7 +74,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
 
-				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
+				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService];
 
 				if (!method) {
 					return () => Promise.reject(new Error('Login method not found'));

@@ -1,7 +1,10 @@
-import { Accounts } from 'meteor/accounts-base';
+import { SHA256 } from '@rocket.chat/sha256';
 import { Meteor } from 'meteor/meteor';
 
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+
+const hashPassword = (password: string) => ({ digest: SHA256(password), algorithm: 'sha-256' as const });
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -29,13 +32,13 @@ export const loginWithPasswordAndTOTP = (
 	}
 
 	return new Promise<void>((resolve, reject) => {
-		Accounts.callLoginMethod({
+		getDdpSdk().account.callLoginMethod({
 			methodArguments: [
 				{
 					totp: {
 						login: {
 							user: userDescriptor,
-							password: Accounts._hashPassword(password),
+							password: hashPassword(password),
 						},
 						code,
 					},
@@ -49,7 +52,7 @@ export const loginWithPasswordAndTOTP = (
 				}
 
 				callback?.(error);
-				reject(error as Error);
+				reject(error);
 			},
 		});
 	});

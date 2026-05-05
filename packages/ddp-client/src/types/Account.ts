@@ -15,6 +15,14 @@ type AccountEvents = {
 	user?: User;
 };
 
+export type LoginCallback = (error: Error | undefined, result?: unknown) => void;
+
+export type CallLoginMethodOptions = {
+	methodName?: string;
+	methodArguments?: unknown[];
+	userCallback?: LoginCallback;
+};
+
 export interface Account extends Emitter<AccountEvents> {
 	uid?: string;
 	user?: User;
@@ -27,6 +35,7 @@ export interface Account extends Emitter<AccountEvents> {
 	logout(): Promise<void>;
 	onLogin(fn: () => void): () => void;
 	onLogout(fn: () => void): () => void;
+	callLoginMethod(options: CallLoginMethodOptions): void;
 }
 
 export { LoginCancelledError };
@@ -144,5 +153,45 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 		this.uid = undefined;
 		this.user = undefined;
 		this.emit('uid', this.uid);
+	}
+
+	// Mirrors `Accounts.callLoginMethod` from meteor/accounts-base. Dispatches
+	// the `login` method with whatever shape callers pass in `methodArguments`
+	// (resume token, password+totp, oauth credentialToken, saml, etc.) and
+	// adopts the resulting credentials into `account.uid`/`user`/`token`.
+	//
+	// `userCallback` mirrors Meteor's signature — `(err)` on failure,
+	// `(undefined, result)` on success — so existing call sites (oauth.ts,
+	// password.ts, saml.ts, AuthenticationProvider) work without rewriting
+	// the consumer side.
+	callLoginMethod(options: CallLoginMethodOptions): void {
+		const methodName = options.methodName ?? 'login';
+		const methodArguments = options.methodArguments ?? [{}];
+		const callback = options.userCallback;
+
+		void (async () => {
+			try {
+				const result = (await this.client.callAsyncWithOptions(
+					methodName,
+					{ wait: true },
+					...methodArguments,
+				)) as { id?: string; token?: string; tokenExpires?: { $date?: number } | Date } | undefined;
+
+				if (result && typeof result === 'object' && typeof result.id === 'string' && typeof result.token === 'string') {
+					const expires = result.tokenExpires;
+					const $date =
+						expires instanceof Date
+							? String(expires.getTime())
+							: typeof expires === 'object' && expires && typeof expires.$date === 'number'
+								? String(expires.$date)
+								: String(Date.now());
+					this.saveCredentials(result.id, result.token, $date);
+				}
+
+				callback?.(undefined, result);
+			} catch (error) {
+				callback?.(error as Error);
+			}
+		})();
 	}
 }

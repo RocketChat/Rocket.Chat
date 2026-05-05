@@ -238,6 +238,26 @@ const createMeteorBackedAccount = () => {
 			const handle = Accounts.onLogout(() => fn()) as unknown as { stop?: () => void };
 			return () => handle?.stop?.();
 		},
+		// Delegates to Meteor's `Accounts.callLoginMethod` so the resume / token
+		// rotation / onLogin firing semantics stay identical to develop. Without
+		// this branch, sdk.account.callLoginMethod would dispatch on the SDK
+		// socket (which is the Meteor-backed proxy here) and bypass Meteor's
+		// internal login bookkeeping entirely.
+		callLoginMethod: (options: {
+			methodName?: string;
+			methodArguments?: unknown[];
+			userCallback?: (err?: unknown, res?: unknown) => void;
+		}): void => {
+			if (typeof Accounts.callLoginMethod !== 'function') {
+				options.userCallback?.(new Error('Accounts.callLoginMethod not available'));
+				return;
+			}
+			Accounts.callLoginMethod({
+				...(options.methodName !== undefined && { methodName: options.methodName }),
+				...(options.methodArguments !== undefined && { methodArguments: options.methodArguments }),
+				userCallback: options.userCallback as Parameters<typeof Accounts.callLoginMethod>[0]['userCallback'],
+			} as Parameters<typeof Accounts.callLoginMethod>[0]);
+		},
 		// Emitter shape Account inherits from
 		on: () => () => undefined,
 		off: () => undefined,
