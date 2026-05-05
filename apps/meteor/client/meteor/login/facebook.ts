@@ -1,22 +1,14 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-// eslint-disable-next-line import/no-duplicates
-import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
-const { loginWithFacebook } = Meteor;
-const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
-Meteor.loginWithFacebook = (options, callback) => {
-	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
-};
-
-Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
+const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
 	'facebook',
 	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
 		const options = requestOptions as Meteor.LoginWithExternalServiceOptions & {
@@ -56,3 +48,14 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>
 		});
 	},
 );
+
+const Facebook: IOAuthProvider = {
+	name: 'facebook',
+	requestCredential,
+};
+
+const { loginWithFacebook } = Meteor;
+const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
+Meteor.loginWithFacebook = (options, callback) => {
+	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
+};

@@ -1,12 +1,10 @@
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-// eslint-disable-next-line import/no-duplicates
-import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
@@ -25,48 +23,14 @@ declare module 'meteor/meteor' {
 	}
 }
 
-const { loginWithGoogle } = Meteor;
-
-const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod(Google);
-
-const loginWithGoogleAndTOTP = (
-	options:
-		| (Meteor.LoginWithExternalServiceOptions & {
-				loginUrlParameters?: {
-					include_granted_scopes?: boolean;
-					hd?: string;
-				};
-		  })
-		| undefined,
-	code: string,
-	callback?: LoginCallback,
-) => {
-	if (Meteor.isCordova && Google.signIn) {
-		// After 20 April 2017, Google OAuth login will no longer work from
-		// a WebView, so Cordova apps must use Google Sign-In instead.
-		// https://github.com/meteor/meteor/issues/8253
-		Google.signIn(options, callback);
-		return;
-	} // Use Google's domain-specific login page if we want to restrict creation to
-
-	// a particular email domain. (Don't use it if restrictCreationByEmailDomain
-	// is a function.) Note that all this does is change Google's UI ---
-	// accounts-base/accounts_server.js still checks server-side that the server
-	// has the proper email address after the OAuth conversation.
-	if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
-		options = Object.assign({}, options || {});
-		options.loginUrlParameters = Object.assign({}, options.loginUrlParameters || {});
-		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
-	}
-
-	innerLoginWithGoogleAndTOTP(options, code, callback);
+type GoogleProvider = IOAuthProvider & {
+	signIn?: (
+		options: Meteor.LoginWithExternalServiceOptions | undefined,
+		callback?: LoginCallback,
+	) => void;
 };
 
-Meteor.loginWithGoogle = (options, callback) => {
-	overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
-};
-
-Google.requestCredential = wrapRequestCredentialFn(
+const requestCredential = wrapRequestCredentialFn(
 	'google',
 	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
@@ -101,6 +65,7 @@ Google.requestCredential = wrapRequestCredentialFn(
 			redirect_uri: OAuth._redirectUri('google', config),
 			state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
 		});
+
 		const loginUrl = `https://accounts.google.com/o/oauth2/auth?${Object.keys(loginUrlParameters)
 			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
 			.join('&')}`;
@@ -115,3 +80,45 @@ Google.requestCredential = wrapRequestCredentialFn(
 		});
 	},
 );
+
+// Cordova-only Google Sign-In flow (`plugins.googleplus`) is intentionally
+// not implemented in the web client — Rocket.Chat web doesn't bundle the
+// cordova plugin, so the Cordova branch below is a no-op.
+const Google: GoogleProvider = {
+	name: 'google',
+	requestCredential,
+};
+
+const { loginWithGoogle } = Meteor;
+
+const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod(Google);
+
+const loginWithGoogleAndTOTP = (
+	options:
+		| (Meteor.LoginWithExternalServiceOptions & {
+				loginUrlParameters?: {
+					include_granted_scopes?: boolean;
+					hd?: string;
+				};
+		  })
+		| undefined,
+	code: string,
+	callback?: LoginCallback,
+) => {
+	if (Meteor.isCordova && Google.signIn) {
+		Google.signIn(options, callback);
+		return;
+	}
+
+	if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
+		options = Object.assign({}, options || {});
+		options.loginUrlParameters = Object.assign({}, options.loginUrlParameters || {});
+		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
+	}
+
+	innerLoginWithGoogleAndTOTP(options, code, callback);
+};
+
+Meteor.loginWithGoogle = (options, callback) => {
+	overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
+};
