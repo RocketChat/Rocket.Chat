@@ -21,8 +21,6 @@ class RoomStore extends Emitter<{
 
 	constructor(readonly rid: string) {
 		super();
-
-		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
 	update({ scroll, lastTime, atBottom }: { scroll?: number; lastTime?: Date; atBottom?: boolean }): void {

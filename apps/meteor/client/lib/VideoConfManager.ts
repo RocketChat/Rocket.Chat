@@ -379,17 +379,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.giveUp(this.currentCallData);
 	}
 
-	private infoLog(...args: any[]): void {
-		(debug || this._logLevel >= 1) && console.log(...args);
-	}
+	private infoLog(...args: any[]): void {}
 
-	private warnLog(...args: any[]): void {
-		(debug || this._logLevel >= 1) && console.warn(...args);
-	}
+	private warnLog(...args: any[]): void {}
 
-	private debugLog(...args: any[]): void {
-		(debug || this._logLevel >= 2) && console.log(...args);
-	}
+	private debugLog(...args: any[]): void {}
 
 	private rejectIncomingCallsFromUser(userId: string): void {
 		for (const [, { callId, uid }] of this.incomingDirectCalls) {

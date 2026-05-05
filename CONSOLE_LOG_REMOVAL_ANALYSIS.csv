@@ -1,0 +1,385 @@
+file_path,line_number,type,code_snippet,priority
+apps\meteor\.scripts\make-migration.ts,7,console.error,console.error(`1st param must be a valid number. ${number} provided`);,KEEP
+apps\meteor\.scripts\make-migration.ts,19,console.error,console.error('Migration with specified number already exists');,KEEP
+apps\meteor\.scripts\make-migration.ts,38,console.log,console.log(`Migration ${migrationName} created`);,KEEP
+apps\meteor\.scripts\make-migration.ts,46,console.error,console.error('Usage:\n\tmeteor npm run migration:add <migration number> [migration comment: optional]\n');,KEEP
+apps\meteor\app\api\server\api.ts,88,console.warn,"console.warn('Invalid Custom Fields', error);",REVIEW
+apps\meteor\app\api\server\ApiClass.ts,454,console.error,console.error(error.message);,KEEP
+apps\meteor\app\api\server\ApiClass.ts,1158,console.warn,console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');,REVIEW
+apps\meteor\app\api\server\ApiClass.ts,1159,console.warn,console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');,REVIEW
+apps\meteor\app\api\server\helpers\getUserInfo.ts,76,console.error,"console.error('Invalid Outlook Calendar URL Mapping JSON:', error);",KEEP
+apps\meteor\app\api\server\lib\MultipartUploadHandler.ts,42,console.warn,"console.warn(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, error);",REVIEW
+apps\meteor\app\api\server\v1\commands.ts,176,console.warn,"console.warn(""Can't mix remove and get fields"");",REVIEW
+apps\meteor\app\api\server\v1\e2e.ts,436,console.error,console.error(e);,KEEP
+apps\meteor\app\api\server\v1\rooms.ts,239,console.error,console.error(e);,KEEP
+apps\meteor\app\apps\server\bridges\details.ts,11,console.warn,"const logFailure = () => console.warn('failed to notify about the setting change.', appId);",REVIEW
+apps\meteor\app\apps\server\bridges\livechat.ts,295,console.warn,console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');,KEEP
+apps\meteor\app\autotranslate\client\lib\autotranslate.ts,113,console.error,console.error((e as Error).message);,KEEP
+apps\meteor\app\cloud\server\index.ts,25,console.log,console.log('Successfully registered with token provided by REG_TOKEN!');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,103,console.error,console.error('=== UnHandledPromiseRejection ===');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,104,console.error,console.error(error);,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,105,console.error,console.error('---------------------------------');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,106,console.error,console.error('Errors like this can cause oplog processing errors.');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,107,console.error,console.error(,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,110,console.error,console.error('Future node.js versions will automatically exit the process');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,111,console.error,console.error('=================================');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,121,console.error,console.error('=== UnCaughtException ===');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,122,console.error,console.error(error);,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,123,console.error,console.error('-------------------------');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,124,console.error,console.error('Errors like this can cause oplog processing errors.');,KEEP
+apps\meteor\app\error-handler\server\lib\RocketChat.ErrorHandler.ts,125,console.error,console.error('===========================');,KEEP
+apps\meteor\app\file\server\file.server.ts,177,console.error,console.error(error1);,KEEP
+apps\meteor\app\file\server\file.server.ts,207,console.error,console.error(error1);,KEEP
+apps\meteor\app\file-upload\ufs\Webdav\server.ts,44,console.warn,"console.warn('File upload is unauthorized to connect on Webdav, please verify your credentials');",REVIEW
+apps\meteor\app\lib\server\methods\restartServer.ts,30,console.warn,"console.warn('Call to process.exit() timed out, aborting.');",REVIEW
+apps\meteor\app\license\client\index.ts,12,console.error,"console.error('Error getting modules', e);",KEEP
+apps\meteor\app\mailer\server\api.ts,179,console.error,setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));,KEEP
+apps\meteor\app\settings\server\applyMiddlewares.ts,21,console.log,console.log(`settings.watch: ${_id} ${getProcessingTimeInMS(elapsed)}ms`);,REVIEW
+apps\meteor\app\settings\server\functions\overrideGenerator.ts,54,console.error,"console.error(`Error converting value for setting ${setting._id} expected ""${setting.type}"" type`);",KEEP
+apps\meteor\app\settings\server\functions\settings.mocks.ts,76,console.log,"// console.log(query, data);",REVIEW
+apps\meteor\app\smarsh-connector\server\functions\generateEml.ts,107,console.log,// 	console.log(a);,REVIEW
+apps\meteor\app\ui\client\lib\recorderjs\AudioRecorder.ts,74,console.error,console.error(error);,KEEP
+apps\meteor\app\ui\client\lib\recorderjs\videoRecorder.ts,46,console.error,console.error(error);,KEEP
+apps\meteor\app\ui-utils\client\lib\LegacyRoomManager.ts,187,console.warn,console.warn(`[Message Delivery] High delay detected: ${receiveDelay}ms. Possible network or backend issue.`);,REVIEW
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,24,console.error,console.error('=== Error getting MongoDB info ===');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,25,console.error,console.error(e?.toString());,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,26,console.error,console.error('----------------------------------');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,27,console.error,"console.error(""Without mongodb version we can't ensure you are running a compatible version."");",KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,28,console.error,console.error('If you are running your mongodb with auth enabled and an user different from admin');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,29,console.error,console.error('you may need to grant permissions for this user to check cluster data.');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,30,console.error,console.error('You can do it via mongo shell running the following command replacing');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,31,console.error,"console.error(""the string YOUR_USER by the correct user's name:"");",KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,32,console.error,console.error('');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,33,console.error,"console.error('   db.runCommand({ grantRolesToUser: ""YOUR_USER"" , roles: [{role: ""clusterMonitor"", db: ""admin""}]})');",KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,34,console.error,console.error('');,KEEP
+apps\meteor\app\utils\server\functions\getMongoInfo.ts,35,console.error,console.error('==================================');,KEEP
+apps\meteor\client\serviceWorker.ts,20,console.log,console.log('service worker: reloading to activate');,REVIEW
+apps\meteor\client\serviceWorker.ts,31,console.log,console.log('service worker: installed');,REVIEW
+apps\meteor\client\serviceWorker.ts,38,console.log,console.log(`registration failed: ${err}`);,REVIEW
+apps\meteor\client\apps\RealAppsEngineUIHost.ts,51,console.warn,console.warn(error);,REVIEW
+apps\meteor\client\components\RoomIcon\OmnichannelRoomIcon\lib\OmnichannelRoomIconManager.ts,42,console.error,"console.error('error from get-sidebar-icon', error);",KEEP
+apps\meteor\client\hooks\useHighlightedCode.ts,17,console.error,console.error('Not possible to register the provided language');,KEEP
+apps\meteor\client\hooks\useUserCustomFields.ts,31,console.warn,console.warn('Invalid customFieldsToShowInUserInfo value');,REVIEW
+apps\meteor\client\lib\loginServices.ts,54,console.error,"console.error('Failed to apply loaded listed of login services.', e);",KEEP
+apps\meteor\client\lib\RoomManager.ts,25,console.log,"debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));",REMOVE
+apps\meteor\client\lib\RoomManager.ts,63,console.log,"console.log('room opened ->', rid);",REVIEW
+apps\meteor\client\lib\RoomManager.ts,68,console.log,"console.log('room moved to back ->', rid);",REVIEW
+apps\meteor\client\lib\RoomManager.ts,73,console.log,"console.log('room close ->', rid);",REVIEW
+apps\meteor\client\lib\VideoConfManager.ts,151,console.error,"console.error(`[VideoConf] Failed to start new call on room ${roomId}`, e);",KEEP
+apps\meteor\client\lib\VideoConfManager.ts,241,console.error,"console.error(`[VideoConf] Failed to load video conference capabilities`, e);",KEEP
+apps\meteor\client\lib\VideoConfManager.ts,258,console.error,"console.error(`[VideoConf] Cannot change attribute ""${attributeName}"" of unknown call ""${callId}"".`);",KEEP
+apps\meteor\client\lib\VideoConfManager.ts,359,console.error,"console.error(`[VideoConf] Failed to join call ${callId}`, e);",KEEP
+apps\meteor\client\lib\VideoConfManager.ts,383,console.log,(debug || this._logLevel >= 1) && console.log(...args);,REMOVE
+apps\meteor\client\lib\VideoConfManager.ts,387,console.warn,(debug || this._logLevel >= 1) && console.warn(...args);,REMOVE
+apps\meteor\client\lib\VideoConfManager.ts,391,console.log,(debug || this._logLevel >= 2) && console.log(...args);,REMOVE
+apps\meteor\client\lib\VideoConfManager.ts,458,console.log,console.log(`[VideoConf] disconnecting user ${this.userId}`);,REVIEW
+apps\meteor\client\lib\VideoConfManager.ts,524,console.log,console.log(`[VideoConf] connecting user ${userId}`);,REVIEW
+apps\meteor\client\lib\chats\readStateManager.ts,150,console.error,console.error(e);,KEEP
+apps\meteor\client\lib\chats\flows\processSlashCommand.ts,30,console.error,console.error(message);,KEEP
+apps\meteor\client\lib\customOAuth\CustomOAuth.ts,139,console.error,console.error(e);,KEEP
+apps\meteor\client\lib\e2ee\rocketchat.e2e.ts,741,console.error,console.error(`Error getting quoted message: ${error}`);,KEEP
+apps\meteor\client\meteor\login\saml.ts,55,console.info,"console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');",REVIEW
+apps\meteor\client\meteor\login\saml.ts,62,console.info,console.info('SAML session terminated via SLO');,REVIEW
+apps\meteor\client\meteor\minimongo\SynchronousQueue.ts,33,console.log,"console.log('Exception in queued task', e);",REVIEW
+apps\meteor\client\meteor\overrides\ddpOverREST.ts,95,console.error,console.error(error);,KEEP
+apps\meteor\client\meteor\overrides\oauthRedirectUri.ts,19,console.warn,console.warn(,REVIEW
+apps\meteor\client\startup\callbacks.ts,13,console.log,"console.log(String(end - start), hook, id, stack?.split('\n')?.[2]?.match(/\(.+\)/)?.[0]);",REVIEW
+apps\meteor\client\startup\callbacks.ts,21,console.log,"console.log(`${hook}:`, end - start);",REVIEW
+apps\meteor\client\views\admin\import\useErrorHandler.ts,8,console.error,console.error(error);,KEEP
+apps\meteor\client\views\audit\hooks\useSendTelemetryMutation.ts,10,console.warn,console.warn(error);,REVIEW
+apps\meteor\client\views\marketplace\lib\getManifestFromZippedApp.ts,40,console.error,console.error(e);,KEEP
+apps\meteor\client\views\room\composer\messageBox\hooks\useMediaPermissions.ts,35,console.warn,console.warn(error);,REVIEW
+apps\meteor\client\views\room\composer\messageBox\hooks\useMediaPermissions.ts,48,console.warn,console.warn(error);,REVIEW
+apps\meteor\client\views\room\MessageList\hooks\useLoadSurroundingMessages.ts,41,console.warn,console.warn(error);,REVIEW
+apps\meteor\client\views\root\hooks\useAnalytics.ts,126,console.log,"console.log('Error while parsing JSON value of ""piwikAdditionalTracker"": ', e);",REVIEW
+apps\meteor\client\views\root\hooks\useIframeCommands.ts,20,console.error,return console.error('`path` not defined');,KEEP
+apps\meteor\client\views\root\hooks\useIframeCommands.ts,76,console.log,"console.log('Iframe command [login-with-token]: result', data);",REVIEW
+apps\meteor\client\views\root\hooks\useIframeCommands.ts,111,console.error,"console.error('Origin not allowed', event.origin);",KEEP
+apps\meteor\client\views\root\hooks\useIframeCommands.ts,116,console.error,"console.error('Command not allowed', event.data.externalCommand);",KEEP
+apps\meteor\client\views\root\hooks\useLoadMissedMessages.ts,30,console.error,"console.error('Error loading missed messages:', error);",KEEP
+apps\meteor\client\views\root\hooks\useLoginViaQuery.ts,35,console.error,"console.error('Failed to login with token', error);",KEEP
+apps\meteor\client\views\root\hooks\loggedIn\useCustomEmoji.ts,29,console.error,"console.error('Error getting custom emoji ', result.error);",KEEP
+apps\meteor\client\views\root\hooks\loggedIn\useNotificationUserCalendar.ts,29,console.error,"console.error('Failed to format calendar notification time:', error);",KEEP
+apps\meteor\ee\app\license\server\startup.ts,104,console.error,console.error(error);,KEEP
+apps\meteor\ee\server\api\licenses.ts,35,console.error,console.error('Unable to parse Cloud_Sync_Announcement_Payload');,KEEP
+apps\meteor\ee\server\apps\storage\AppGridFSSourceStorage.ts,65,console.warn,console.warn(,REVIEW
+apps\meteor\ee\server\hooks\federation\index.ts,69,console.error,"console.error('[sendMessage] Failed to send message to Native Federation:', error);",KEEP
+apps\meteor\ee\server\lib\audit\methods.ts,49,console.warn,console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');,REVIEW
+apps\meteor\ee\server\local-services\instance\service.ts,191,console.error,"console.error('Instance service did not start correctly', error);",KEEP
+apps\meteor\ee\server\startup\presence.ts,47,console.error,"console.error('Error updating connection presence on heartbeat:', err);",KEEP
+apps\meteor\lib\ClientLogger.ts,31,console.warn,console.warn(logLine);,REVIEW
+apps\meteor\lib\ClientLogger.ts,35,console.error,console.error(logLine);,KEEP
+apps\meteor\lib\ClientLogger.ts,38,console.log,console.log(logLine);,REVIEW
+apps\meteor\lib\rooms\coordinator.ts,56,console.warn,console.warn(`The route for the room type ${roomType} does not have a path`);,REVIEW
+apps\meteor\lib\rooms\coordinator.ts,85,console.warn,console.warn('Deprecated: RoomCoordinator.getRouteData received a room object');,REVIEW
+apps\meteor\reporters\jira.ts,49,console.error,"console.error('Error sending test result to JIRA', error);",KEEP
+apps\meteor\reporters\jira.ts,80,console.log,console.log(`Sending test result to JIRA: ${JSON.stringify(payload)}`);,REVIEW
+apps\meteor\reporters\rocketchat.ts,25,console.log,"console.log('REPORTER_ROCKETCHAT_REPORT is not true, skipping', {",REVIEW
+apps\meteor\reporters\rocketchat.ts,51,console.error,"console.error('Error sending test result to Rocket.Chat', JSON.stringify(payload), res);",KEEP
+apps\meteor\reporters\rocketchat.ts,54,console.error,"console.error('Unknown error while sending test result to Rocket.Chat', JSON.stringify(payload), error);",KEEP
+apps\meteor\server\lib\dataExport\processDataDownloads.ts,244,console.error,console.error(e);,KEEP
+apps\meteor\server\lib\logger\showBox.ts,33,console.log,"console.log(color ? colors[color](line) : line),",REVIEW
+apps\meteor\server\lib\roles\addUserRoles.ts,24,console.warn,process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');,REMOVE
+apps\meteor\server\lib\roles\addUserRoles.ts,31,console.warn,process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);,REMOVE
+apps\meteor\server\modules\notifications\notifications.module.ts,337,console.warn,"console.warn(`Invalid eventName: ""${roomId}""`);",REVIEW
+apps\meteor\server\modules\streamer\streamer.module.ts,42,console.warn,"console.warn('Streamer instance already exists:', name);",REVIEW
+apps\meteor\server\oauth2-server\model.ts,28,console.log,"console.log('[OAuth2Server]', 'in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);",REVIEW
+apps\meteor\server\oauth2-server\model.ts,41,console.log,"console.log('[OAuth2Server]', 'in getAccessToken (bearerToken:', accessToken, ')');",REVIEW
+apps\meteor\server\oauth2-server\model.ts,69,console.log,"console.log('[OAuth2Server]', 'in getClient (clientId:', clientId, ', clientSecret:', clientSecret, ')');",REVIEW
+apps\meteor\server\oauth2-server\model.ts,94,console.log,"console.log('[OAuth2Server]', `in getAuthorizationCode (authCode: ${authorizationCode})`);",REVIEW
+apps\meteor\server\oauth2-server\model.ts,130,console.log,console.log(,REVIEW
+apps\meteor\server\oauth2-server\model.ts,169,console.log,console.log(,REVIEW
+apps\meteor\server\oauth2-server\model.ts,213,console.log,"console.log('[OAuth2Server]', `in getRefreshToken (refreshToken: ${refreshToken})`);",REVIEW
+apps\meteor\server\oauth2-server\model.ts,251,console.log,"console.log('[OAuth2Server]', `in revokeToken (token: ${token.accessToken})`);",REVIEW
+apps\meteor\server\oauth2-server\model.ts,270,console.log,"console.log('[OAuth2Server]', `in revokeAuthorizationCode (code: ${code.authorizationCode})`);",REVIEW
+apps\meteor\server\oauth2-server\oauth.ts,50,console.log,"console.log('[OAuth2Server]', req.method, req.url);",REVIEW
+apps\meteor\server\oauth2-server\oauth.ts,74,console.log,"console.log('[OAuth2Server]', 'Transforming a request to form-urlencoded with the query going to the body.');",REVIEW
+apps\meteor\server\routes\avatar\utils.ts,110,console.warn,console.warn('The server detected an unauthenticated access to an user avatar. This type of request will soon be blocked by default.');,REVIEW
+apps\meteor\server\services\authorization\canAccessRoom.ts,118,console.log,console.log('User converted to full IUser object');,REVIEW
+apps\meteor\server\services\authorization\service.ts,55,console.error,"console.error('Authorization Service did not start correctly', error);",KEEP
+apps\meteor\server\services\messages\hooks\BeforeSaveMarkdownParser.ts,38,console.error,console.error(e); // errors logged while the parser is at experimental stage,KEEP
+apps\meteor\server\startup\initialData.ts,29,console.log,console.log(colors.green(`Name: ${adminUser.name}`));,REVIEW
+apps\meteor\server\startup\initialData.ts,41,console.log,console.log(colors.green(`Email: ${process.env.ADMIN_EMAIL}`));,REVIEW
+apps\meteor\server\startup\initialData.ts,43,console.log,console.log(colors.red('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'));,REVIEW
+apps\meteor\server\startup\initialData.ts,46,console.log,console.log(colors.red('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'));,REVIEW
+apps\meteor\server\startup\initialData.ts,64,console.log,console.log(,REVIEW
+apps\meteor\server\startup\initialData.ts,69,console.log,console.log(colors.red('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'));,REVIEW
+apps\meteor\server\startup\initialData.ts,73,console.log,console.log(colors.green(`Username: ${adminUser.username}`));,REVIEW
+apps\meteor\server\startup\initialData.ts,81,console.log,console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));,REVIEW
+apps\meteor\server\startup\initialData.ts,162,console.log,console.log(,REVIEW
+apps\meteor\server\startup\initialData.ts,175,console.log,console.log(colors.red('No _id provided; Ignoring environment variable INITIAL_USER'));,REVIEW
+apps\meteor\server\startup\initialData.ts,177,console.log,console.log(colors.green('Inserting initial user:'));,REVIEW
+apps\meteor\server\startup\initialData.ts,178,console.log,"console.log(colors.green(JSON.stringify(initialUser, null, 2)));",REVIEW
+apps\meteor\server\startup\initialData.ts,184,console.log,"console.log(colors.red('Error processing environment variable INITIAL_USER'), e);",REVIEW
+apps\meteor\server\startup\initialData.ts,193,console.log,console.log(`No admins are found. Set ${oldestUser.username || oldestUser.name} as admin for being the oldest user`);,REVIEW
+apps\meteor\server\startup\initialData.ts,199,console.log,"console.log('Setting Setup Wizard to ""in_progress"" because, at least, one admin was found');",REVIEW
+apps\meteor\server\startup\initialData.ts,209,console.log,console.log(colors.green('Inserting admin test user:'));,REVIEW
+apps\meteor\server\startup\initialData.ts,228,console.log,console.log(colors.green(`Name: ${adminUser.name}`));,REVIEW
+apps\meteor\server\startup\initialData.ts,229,console.log,console.log(colors.green(`Email: ${adminUser.emails![0].address}`));,REVIEW
+apps\meteor\server\startup\initialData.ts,230,console.log,console.log(colors.green(`Username: ${adminUser.username}`));,REVIEW
+apps\meteor\server\startup\initialData.ts,231,console.log,console.log(colors.green(`Password: ${adminUser._id}`));,REVIEW
+apps\meteor\server\startup\serverRunning.ts,36,console.error,console.error('Failed to parse desired Node.js version from .node_version.txt');,KEEP
+apps\meteor\server\startup\migrations\v312.ts,16,console.warn,"console.warn('Error dropping redundant indexes, continuing...');",KEEP
+apps\meteor\server\startup\migrations\v312.ts,17,console.warn,console.warn(error);,REVIEW
+apps\meteor\server\startup\migrations\v319.ts,12,console.error,console.error('Error dropping index');,KEEP
+apps\meteor\server\ufs\ufs-local.ts,53,console.info,console.info(`LocalStore: store created at ${path}`);,KEEP
+apps\meteor\server\ufs\ufs-local.ts,56,console.error,console.error(`LocalStore: cannot create store at ${path} (${err.message})`);,KEEP
+apps\meteor\server\ufs\ufs-local.ts,61,console.error,err && console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);,KEEP
+apps\meteor\server\ufs\ufs-methods.ts,24,console.warn,console.warn(`[ufsComplete] Failed to remove temp file: ${tmpFile}`);,REVIEW
+apps\meteor\server\ufs\ufs-methods.ts,50,console.error,console.error(err);,KEEP
+apps\meteor\server\ufs\ufs-server.ts,22,console.log,"console.log(`ufs: temp directory created at ""${path}""`);",KEEP
+apps\meteor\server\ufs\ufs-server.ts,25,console.error,"console.error(`ufs: cannot create temp directory at ""${path}"" (${err.message})`);",KEEP
+apps\meteor\server\ufs\ufs-server.ts,30,console.error,err && console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);,KEEP
+apps\meteor\server\ufs\ufs-server.ts,41,console.error,console.error(`ufs: ${err.message}`);,KEEP
+apps\meteor\server\ufs\ufs-server.ts,117,console.error,"console.error(`ufs: Store.onRead is not a function in store ""${storeName}""`);",KEEP
+apps\meteor\server\ufs\ufs-store.ts,231,console.error,err?.code !== 'ENOENT' && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);,KEEP
+apps\meteor\server\ufs\ufs-store.ts,306,console.error,"console.error(`ufs: cannot copy file ""${fileId}"" (${err.message})`, err);",KEEP
+apps\meteor\server\ufs\ufs-store.ts,318,console.error,"console.error(`ufs: cannot read file ""${fileId}"" (${err.message})`, err);",KEEP
+apps\meteor\server\ufs\ufs-store.ts,326,console.error,"console.error(`ufs: cannot write file ""${fileId}"" (${err.message})`, err);",KEEP
+apps\meteor\tests\data\api-data.ts,59,console.log,console.log((res as { req?: any }).req.path); // FIXME,REVIEW
+apps\meteor\tests\data\api-data.ts,60,console.log,console.log({,REVIEW
+apps\meteor\tests\data\integration.helper.ts,39,console.warn,console.warn(err);,REVIEW
+apps\meteor\tests\data\integration.helper.ts,43,console.warn,console.warn(res.body);,REVIEW
+apps\meteor\tests\data\rooms.helper.ts,310,console.warn,"console.warn(`Attempt ${attempt} to find room member failed:`, error);",REVIEW
+apps\meteor\tests\end-to-end\teardown.ts,25,console.log,console.log({,REVIEW
+apps\meteor\tests\end-to-end\api\oauthapps.ts,168,console.error,console.error(res);,KEEP
+apps\uikit-playground\src\Context\reducer.ts,288,console.log,window.console.log(state.projects[action.payload]?.screens);,REVIEW
+ee\apps\account-service\src\service.ts,31,console.error,"console.error('Service not healthy', err);",KEEP
+ee\apps\authorization-service\src\service.ts,37,console.error,"console.error('Service not healthy', err);",KEEP
+ee\apps\ddp-streamer\src\Client.ts,82,console.error,"console.error('Error updating connection presence:', err);",KEEP
+ee\apps\ddp-streamer\src\Client.ts,117,console.error,"console.error('Unexpected error:', err);",KEEP
+ee\apps\ddp-streamer\src\Client.ts,224,console.error,console.error(err);,KEEP
+ee\apps\ddp-streamer\src\configureServer.ts,20,console.error,".catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));",KEEP
+ee\apps\ddp-streamer\src\DDPStreamer.ts,245,console.error,"console.error('Service not healthy', err);",KEEP
+ee\apps\ddp-streamer\src\DDPStreamer.ts,269,console.error,"console.error('DDPStreamer did not start correctly', err);",KEEP
+ee\apps\ddp-streamer\src\service.ts,46,console.error,console.error('=== UnHandledPromiseRejection ===');,KEEP
+ee\apps\ddp-streamer\src\service.ts,47,console.error,console.error(error);,KEEP
+ee\apps\ddp-streamer\src\service.ts,48,console.error,console.error('---------------------------------');,KEEP
+ee\apps\ddp-streamer\src\service.ts,49,console.error,console.error(,KEEP
+ee\apps\ddp-streamer\src\service.ts,52,console.error,console.error('Future node.js versions will automatically exit the process');,KEEP
+ee\apps\ddp-streamer\src\service.ts,53,console.error,console.error('=================================');,KEEP
+ee\apps\ddp-streamer\src\service.ts,61,console.error,console.error('=== UnCaughtException ===');,KEEP
+ee\apps\ddp-streamer\src\service.ts,62,console.error,console.error(error);,KEEP
+ee\apps\ddp-streamer\src\service.ts,63,console.error,console.error('-------------------------');,KEEP
+ee\apps\ddp-streamer\src\service.ts,64,console.error,console.error('Errors like this can cause oplog processing errors.');,KEEP
+ee\apps\ddp-streamer\src\service.ts,65,console.error,console.error('===========================');,KEEP
+ee\apps\ddp-streamer\src\Streamer.ts,90,console.warn,"console.warn('Trying to send data to destroyed stream, closing connection.');",REVIEW
+ee\apps\ddp-streamer\src\Streamer.ts,98,console.error,"console.error('Error trying to send data to stream.', error);",KEEP
+ee\apps\omnichannel-transcript\src\service.ts,34,console.error,"console.error('Service not healthy', err);",KEEP
+ee\apps\presence-service\src\service.ts,31,console.error,"console.error('Service not healthy', err);",KEEP
+ee\apps\queue-worker\src\service.ts,32,console.error,"console.error('Service not healthy', err);",KEEP
+ee\packages\federation-matrix\src\events\ping.ts,5,console.log,"console.log('Message received from homeserver', data);",REVIEW
+ee\packages\federation-matrix\tests\helper\config.ts,109,console.error,"console.error('Federation environment configuration error:', error);",KEEP
+ee\packages\federation-matrix\tests\helper\synapse-client.ts,303,console.warn,"console.warn(`Attempt ${attempt} to find room member failed:`, error);",REVIEW
+ee\packages\federation-matrix\tests\helper\synapse-client.ts,439,console.warn,"console.warn(`Attempt ${attempt} to find message in room failed:`, error);",REVIEW
+ee\packages\federation-matrix\tests\helper\synapse-client.ts,621,console.warn,"console.warn(`Attempt ${attempt} to find file message in room failed:`, error);",REVIEW
+ee\packages\license\src\showLicense.ts,22,console.log,console.log('---- License enabled ----');,REVIEW
+ee\packages\license\src\showLicense.ts,23,console.log,"console.log('              url ->', JSON.stringify(serverUrls));",REVIEW
+ee\packages\license\src\showLicense.ts,24,console.log,"console.log('          periods ->', JSON.stringify(validPeriods));",REVIEW
+ee\packages\license\src\showLicense.ts,25,console.log,"console.log('           limits ->', JSON.stringify(limits));",REVIEW
+ee\packages\license\src\showLicense.ts,26,console.log,"console.log('          modules ->', modules.join(', '));",REVIEW
+ee\packages\license\src\showLicense.ts,27,console.log,console.log('-------------------------');,REVIEW
+ee\packages\network-broker\src\index.ts,149,console.log,console.log('NetworkBroker started successfully.');,KEEP
+ee\packages\presence\src\Presence.ts,108,console.debug,console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);,REMOVE
+ee\packages\presence\src\Presence.ts,112,console.error,console.error(,KEEP
+ee\packages\presence\src\lib\PresenceReaper.ts,51,console.error,"this.run().catch((err) => console.error('[PresenceReaper] Error:', err));",KEEP
+packages\api-client\src\index.ts,99,console.warn,"console.warn('Endpoint cannot contain query string', endpoint);",REVIEW
+packages\apps-engine\src\client\AppClientManager.ts,25,console.log,"console.log('Enabled apps:', this.apps);",REVIEW
+packages\apps-engine\src\client\AppsEngineUIClient.ts,15,console.log,this.listener = () => console.log('init');,REVIEW
+packages\apps-engine\src\server\AppManager.ts,297,console.warn,"console.warn(`Error while compiling the App ""${item.info.name} (${item.id})"":`);",KEEP
+packages\apps-engine\src\server\AppManager.ts,298,console.error,console.error(e);,KEEP
+packages\apps-engine\src\server\AppManager.ts,496,console.warn,"await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));",KEEP
+packages\apps-engine\src\server\AppManager.ts,522,console.warn,"await app.call(AppMethod.ONUPDATE).catch((e) => console.warn('Error while migrating:', e));",KEEP
+packages\apps-engine\src\server\AppManager.ts,947,console.error,console.error(error);,KEEP
+packages\apps-engine\src\server\AppManager.ts,1144,console.warn,"console.warn(`The App (${app.getID()}) disabled itself when being enabled. \nCheck the ""onEnable"" implementation for details.`);",REVIEW
+packages\apps-engine\src\server\AppManager.ts,1157,console.error,console.error(e);,KEEP
+packages\apps-engine\src\server\AppManager.ts,1236,console.error,console.error('AppManager should be instantiated first');,KEEP
+packages\apps-engine\src\server\ProxiedApp.ts,83,console.error,"console.error('JSON-RPC error received: ', inspect(e, { depth: 10 }));",KEEP
+packages\apps-engine\src\server\accessors\LivechatRead.ts,19,console.warn,console.warn(,REVIEW
+packages\apps-engine\src\server\compiler\AppPackageParser.ts,35,console.warn,console.warn(,REVIEW
+packages\apps-engine\src\server\logging\AppConsole.ts,97,console.log,"// console.log(`${ severity.toUpperCase() }:`, i);",REVIEW
+packages\apps-engine\src\server\managers\AppApi.ts,75,console.error,console.error(e);,KEEP
+packages\apps-engine\src\server\managers\AppListenerManager.ts,469,console.warn,console.warn('An invalid listener was called');,REVIEW
+packages\apps-engine\src\server\managers\AppListenerManager.ts,944,console.warn,console.warn(,REVIEW
+packages\apps-engine\src\server\managers\AppListenerManager.ts,950,console.warn,console.warn(,REVIEW
+packages\apps-engine\src\server\managers\AppPermissionManager.ts,28,console.error,console.error(`${name}: ${message}\n${this.getCallStack()}`);,KEEP
+packages\apps-engine\src\server\managers\AppPermissionManager.ts,30,console.error,console.error(err);,KEEP
+packages\apps-engine\src\server\managers\AppSchedulerManager.ts,66,console.error,console.error(e);,KEEP
+packages\apps-engine\src\server\managers\AppSlashCommand.ts,76,console.error,console.error(e);,KEEP
+packages\apps-engine\src\server\managers\AppVideoConfProvider.ts,110,console.log,console.log(e);,REVIEW
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,67,console.log,"console.log('Environment variable APPS_ENGINE_RUNTIME_TIMEOUT has a negative value, ignoring...');",REVIEW
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,200,console.error,"console.error(`Failed to start Deno subprocess for app ${this.getAppId()}`, e);",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,430,console.error,"console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,611,console.log,"console.log('SUBPROCESS LOG', message);",REVIEW
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,618,console.warn,console.warn('Unrecognized method from sub process');,REVIEW
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,680,console.error,"console.error(`[${this.getAppId()}] Error executing handler`, reason, message),",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,687,console.error,"console.error(`[${this.getAppId()}] Error executing handler`, reason, message),",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,692,console.error,"console.error('Unrecognized message type', JSONRPCMessage);",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,696,console.error,console.error(`[${this.getAppId()}] Failed to parse message`);,KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,700,console.error,"console.error(`[${this.getAppId()}] Error executing handler`, e, message);",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,704,console.error,"console.error(`[${this.getAppId()}]`, e);",KEEP
+packages\apps-engine\src\server\runtime\deno\AppsEngineDenoRuntime.ts,715,console.error,"console.error('Subprocess stderr', chunk.toString());",KEEP
+packages\apps-engine\tests\runner.ts,18,console.error,console.error(e);,KEEP
+packages\apps-engine\tests\test-data\utilities.ts,508,console.log,"console.log('Sending message', message);",REVIEW
+packages\apps-engine\tests\test-data\utilities.ts,524,console.log,"console.log('Sending message', message);",REVIEW
+packages\apps-engine\tests\test-data\bridges\activationBridge.ts,7,console.log,console.log(`The App ${app.getName()} (${app.getID()}) has been added.`);,REVIEW
+packages\apps-engine\tests\test-data\bridges\activationBridge.ts,11,console.log,console.log(`The App ${app.getName()} (${app.getID()}) has been updated.`);,REVIEW
+packages\apps-engine\tests\test-data\bridges\activationBridge.ts,15,console.log,console.log(`The App ${app.getName()} (${app.getID()}) has been removed.`);,REVIEW
+packages\apps-engine\tests\test-data\bridges\activationBridge.ts,19,console.log,console.log(`The App ${app.getName()} (${app.getID()}) status has changed to: ${status}`);,REVIEW
+packages\apps-engine\tests\test-data\bridges\activationBridge.ts,23,console.log,console.log('The actions have changed.');,REVIEW
+packages\apps-engine\tests\test-data\bridges\livechatBridge.ts,45,console.warn,console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');,KEEP
+packages\cas-validate\src\validate.ts,290,console.error,console.error(response);,KEEP
+packages\core-services\src\lib\mongo.ts,17,console.error,console.error(error);,KEEP
+packages\ddp-client\src\MinimalDDPClient.ts,60,console.log,"*  console.log('Received message', data);",REVIEW
+packages\ddp-client\src\types\ClientStream.ts,103,console.log,* 	console.log(data);,REVIEW
+packages\ddp-client\src\types\ClientStream.ts,115,console.log,* console.log(ddp.subscriptions.get(subscription.id));,REVIEW
+packages\ddp-client\__examples__\simple.ts,18,console.log,"console.log('notify-user -> GENERAL/user-activity', JSON.stringify(args, undefined, 2)),",REVIEW
+packages\ddp-client\__examples__\simple.ts,21,console.log,"console.log('notify-user -> GENERAL/rooms-changed', JSON.stringify(args, undefined, 2)),",REVIEW
+packages\ddp-client\__examples__\simple.ts,25,console.log,"console.log('room-messages -> GENERAL', JSON.stringify(message, undefined, 2)),",REVIEW
+packages\ddp-client\__examples__\simple.ts,27,console.log,"await sdk.stream('roles', 'roles', (args) => console.log('roles -> roles', JSON.stringify(args, undefined, 2)));",REVIEW
+packages\ddp-client\__examples__\simple.ts,29,console.log,"console.log('ROOMS', await sdk.client.callAsync('subscriptions/get'));",REVIEW
+packages\ddp-client\__examples__\simple.ts,31,console.log,"console.log('error', error);",REVIEW
+packages\favicon\src\index.ts,101,console.error,"console.error('Error rendering favicon:', error);",KEEP
+packages\favicon\src\index.ts,112,console.error,"console.error('Error initializing favicon manager:', error);",KEEP
+packages\i18n\src\index.ts,54,console.log,* console.log(result);,REVIEW
+packages\livechat\src\widget.ts,292,console.log,console.log('Error: Invalid parameters. Value must be an array of objects');,REVIEW
+packages\livechat\src\widget.ts,304,console.warn,"console.warn(`Error: Position ""${theme?.position}"" is invalid. It must be ""left"" or ""right""`);",KEEP
+packages\livechat\src\widget.ts,399,console.warn,"console.warn(`Error: Invalid system message ""${h}""`);",KEEP
+packages\livechat\src\widget.ts,715,console.warn,console.warn('initRocket is now deprecated. Please update the livechat code.');,KEEP
+packages\livechat\src\lib\connection.ts,33,console.error,"console.error('Connecting error: ', e);",KEEP
+packages\livechat\src\lib\connection.ts,48,console.error,"// 			console.error('Reconecting error: ', e);",KEEP
+packages\livechat\src\lib\hooks.ts,171,console.warn,console.warn(,REVIEW
+packages\livechat\src\lib\hooks.ts,216,console.warn,return console.warn('The fields _id and username are mandatory.');,REVIEW
+packages\livechat\src\lib\transcript.ts,17,console.warn,console.warn('Only call promptTranscript when there is a room and a user');,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,100,console.log,"{ name: 'inline', input: 'Use `console.log()` for debugging' },",REMOVE
+packages\message-parser\benchmarks\parser.bench.ts,101,console.log,"{ name: 'block', input: '```javascript\nconst x = 1;\nconsole.log(x);\n```' },",REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,186,console.log,console.log('='.repeat(72));,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,187,console.log,console.log('  @rocket.chat/message-parser — Performance Benchmark Suite');,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,188,console.log,console.log('='.repeat(72));,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,189,console.log,console.log();,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,205,console.log,"console.log(`── ${category.name} ${'─'.repeat(Math.max(0, 56 - category.name.length))}`);",REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,207,console.log,console.log();,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,210,console.log,console.log('='.repeat(72));,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,211,console.log,console.log('  Done.');,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,212,console.log,console.log('='.repeat(72));,REVIEW
+packages\message-parser\benchmarks\parser.bench.ts,216,console.error,console.error(err);,KEEP
+packages\models\src\models\BaseRaw.ts,39,console.warn,"console.warn(...rest, new Error().stack);",KEEP
+packages\models\src\models\BaseRaw.ts,100,console.warn,console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);,REVIEW
+packages\models\src\models\BaseRaw.ts,126,console.warn,"console.warn(e, updateFilter);",REVIEW
+packages\models\src\models\Roles.ts,176,console.log,"console.log('Role not found', _id, name);",REVIEW
+packages\models\src\models\Subscriptions.ts,283,console.warn,process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');,REMOVE
+packages\models\src\models\Users.ts,188,console.warn,process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');,REMOVE
+packages\release-action\src\getMetadata.ts,18,console.error,console.error(e);,KEEP
+packages\release-action\src\getMetadata.ts,35,console.error,console.error(e);,KEEP
+packages\release-action\src\getMetadata.ts,52,console.error,console.error(e);,KEEP
+packages\tracing\src\index.ts,100,console.log,"console.log(`No active span for ${name}`, new Error().stack);",REVIEW
+packages\ui-contexts\src\TranslationContext.ts,45,console.warn,"loadLanguage: async () => console.warn('TranslationContext: loadLanguage not implemented'),",REVIEW
+packages\ui-contexts\src\hooks\useAccountsCustomFields.ts,18,console.error,console.error('Invalid JSON for Accounts_CustomFields');,KEEP
+packages\ui-contexts\src\hooks\useAvailableDevices.ts,15,console.warn,console.warn(,REVIEW
+packages\ui-contexts\src\hooks\useDeviceConstraints.ts,9,console.warn,console.warn(,REVIEW
+packages\ui-contexts\src\hooks\useSelectedDevices.ts,15,console.warn,console.warn(,REVIEW
+packages\ui-contexts\src\hooks\useSetInputMediaDevice.ts,12,console.warn,console.warn(,REVIEW
+packages\ui-contexts\src\hooks\useSetOutputMediaDevice.ts,14,console.warn,console.warn(,REVIEW
+packages\ui-voip\src\hooks\useTonePlayer.ts,40,console.warn,console.warn('setSinkId not supported on this browser');,REVIEW
+packages\ui-voip\src\hooks\useTonePlayer.ts,65,console.warn,"console.warn('Failed to play audio element:', error);",REVIEW
+packages\ui-voip\src\providers\MediaCallLogger.ts,12,console.log,this.isDebug && console.log(...what);,REVIEW
+packages\ui-voip\src\providers\MediaCallLogger.ts,16,console.debug,this.isDebug && console.debug(...what);,REMOVE
+packages\ui-voip\src\providers\MediaCallLogger.ts,20,console.error,console.error(...what);,KEEP
+packages\ui-voip\src\providers\MediaCallLogger.ts,24,console.warn,console.warn(...what);,REVIEW
+packages\ui-voip\src\providers\useMediaSessionControls.ts,55,console.error,"console.error('Error starting call', error);",KEEP
+packages\ui-voip\src\providers\useMediaSessionControls.ts,88,console.error,"console.error('Error sending tone', error);",KEEP
+packages\ui-voip\src\providers\useMediaSessionInstance.ts,55,console.warn,"console.warn('Media Call - Tried to send signal, but no sendSignalFn was set');",REVIEW
+packages\ui-voip\src\providers\useMediaStream.ts,18,console.error,"console.error('MediaCall: useMediaStream - Error getting remote media stream', error);",KEEP
+packages\ui-voip\src\providers\useMediaStream.ts,64,console.error,"console.error('MediaCall: useMediaStream - Error playing media stream', error);",KEEP
+scripts\auto-close-duplicates.ts,80,console.log,console.log('[DEBUG] Starting auto-close duplicates script');,REMOVE
+scripts\auto-close-duplicates.ts,86,console.log,console.log('[DEBUG] GitHub token found');,REMOVE
+scripts\auto-close-duplicates.ts,90,console.log,console.log(`[DEBUG] Repository: ${owner}/${repo}`);,REMOVE
+scripts\auto-close-duplicates.ts,94,console.log,console.log(`[DEBUG] Checking for duplicate comments older than: ${threeDaysAgo.toISOString()}`);,REMOVE
+scripts\auto-close-duplicates.ts,96,console.log,console.log('[DEBUG] Fetching open issues created more than 3 days ago...');,REMOVE
+scripts\auto-close-duplicates.ts,120,console.log,console.log(`[DEBUG] Found ${issues.length} open issues`);,REMOVE
+scripts\auto-close-duplicates.ts,127,console.log,console.log(`[DEBUG] Processing issue #${issue.number} (${processedCount}/${issues.length}): ${issue.title}`);,REMOVE
+scripts\auto-close-duplicates.ts,129,console.log,console.log(`[DEBUG] Fetching comments for issue #${issue.number}...`);,REMOVE
+scripts\auto-close-duplicates.ts,131,console.log,console.log(`[DEBUG] Issue #${issue.number} has ${comments.length} comments`);,REMOVE
+scripts\auto-close-duplicates.ts,136,console.log,console.log(`[DEBUG] Issue #${issue.number} has ${dupeComments.length} duplicate detection comments`);,REMOVE
+scripts\auto-close-duplicates.ts,139,console.log,"console.log(`[DEBUG] Issue #${issue.number} - no duplicate comments found, skipping`);",REMOVE
+scripts\auto-close-duplicates.ts,145,console.log,console.log(`[DEBUG] Issue #${issue.number} - most recent duplicate comment from: ${dupeCommentDate.toISOString()}`);,REMOVE
+scripts\auto-close-duplicates.ts,148,console.log,"console.log(`[DEBUG] Issue #${issue.number} - duplicate comment is too recent, skipping`);",REMOVE
+scripts\auto-close-duplicates.ts,151,console.log,console.log(,REVIEW
+scripts\auto-close-duplicates.ts,158,console.log,console.log(`[DEBUG] Issue #${issue.number} - ${commentsAfterDupe.length} comments after duplicate detection`);,REMOVE
+scripts\auto-close-duplicates.ts,161,console.log,"console.log(`[DEBUG] Issue #${issue.number} - has activity after duplicate comment, skipping`);",REMOVE
+scripts\auto-close-duplicates.ts,165,console.log,console.log(`[DEBUG] Issue #${issue.number} - checking reactions on duplicate comment...`);,REMOVE
+scripts\auto-close-duplicates.ts,170,console.log,console.log(`[DEBUG] Issue #${issue.number} - duplicate comment has ${reactions.length} reactions`);,REMOVE
+scripts\auto-close-duplicates.ts,173,console.log,console.log(`[DEBUG] Issue #${issue.number} - author thumbs down reaction: ${authorThumbsDown}`);,REMOVE
+scripts\auto-close-duplicates.ts,176,console.log,"console.log(`[DEBUG] Issue #${issue.number} - author disagreed with duplicate detection, skipping`);",REMOVE
+scripts\auto-close-duplicates.ts,182,console.log,"console.log(`[DEBUG] Issue #${issue.number} - could not extract duplicate issue number from comment, skipping`);",REMOVE
+scripts\auto-close-duplicates.ts,190,console.log,console.log(`[INFO] Auto-closing issue #${issue.number} as duplicate of #${duplicateIssueNumber}: ${issueUrl}`);,REVIEW
+scripts\auto-close-duplicates.ts,192,console.log,console.log(`[SUCCESS] Successfully closed issue #${issue.number} as duplicate of #${duplicateIssueNumber}`);,KEEP
+scripts\auto-close-duplicates.ts,194,console.error,console.error(`[ERROR] Failed to close issue #${issue.number} as duplicate: ${error}`);,KEEP
+scripts\auto-close-duplicates.ts,198,console.log,"console.log(`[DEBUG] Script completed. Processed ${processedCount} issues, found ${candidateCount} candidates for auto-close`);",REMOVE
+scripts\fossify.ts,12,console.log,console.log('Removing Premium Apps and Packages...');,REVIEW
+scripts\fossify.ts,15,console.log,console.log('Removing Premium code in the main app...');,REVIEW
+scripts\fossify.ts,18,console.log,console.log('Replacing main files...');,REVIEW
+scripts\fossify.ts,23,console.log,console.log('Done.');,REVIEW
+scripts\fossify.ts,35,console.error,console.error('Unknown error');,KEEP
+scripts\fossify.ts,39,console.error,console.error(e);,KEEP
+scripts\todo-issue\src\github.ts,16,console.log,"console.log(`[RATE] ${rateLimitRemaining} requests left, waiting ${Math.ceil(waitMs / 1000)}s`);",REVIEW
+scripts\todo-issue\src\github.ts,105,console.log,console.log('[INFO] Fetching existing issues via GraphQL...');,REVIEW
+scripts\todo-issue\src\github.ts,157,console.log,"console.log('[WARN] Reached issue limit (10k), stopping pagination');",REVIEW
+scripts\todo-issue\src\github.ts,162,console.log,console.log(`[INFO] Fetched ${allIssues.length} existing issues`);,REVIEW
+scripts\todo-issue\src\github.ts,227,console.log,"console.log(`[CREATE] ""${todo.title}"" (${locations})`);",REVIEW
+scripts\todo-issue\src\github.ts,240,console.log,"console.log(`[WARN] Assignees ${todo.assignees.join(', ')} may be invalid, retrying without them`);",REVIEW
+scripts\todo-issue\src\github.ts,252,console.log,"console.log(`[CLOSE] #${todo.issueId}: ""${todo.title}""`);",REVIEW
+scripts\todo-issue\src\github.ts,267,console.log,"console.log(`[UPDATE] #${todo.issueId} → ""${todo.title}""`);",REVIEW
+scripts\todo-issue\src\github.ts,279,console.log,console.log(`[REFERENCE] #${todo.similarIssueId} ← ${todo.filename}#L${todo.line}`);,REVIEW
+scripts\todo-issue\src\index.ts,36,console.log,console.log('[INFO] Import-all mode: scanning entire codebase');,REVIEW
+scripts\todo-issue\src\index.ts,44,console.log,"console.log(`[INFO] Path mode: scanning ""${config.pathFilter}""`);",REVIEW
+scripts\todo-issue\src\index.ts,62,console.log,console.log(`[INFO] SHA mode: comparing ${fromSha}...${toSha}`);,REVIEW
+scripts\todo-issue\src\index.ts,73,console.log,"console.log(`[INFO] Push mode: comparing ${config.baseSha.slice(0, 7)}...${config.headSha.slice(0, 7)}`);",REVIEW
+scripts\todo-issue\src\index.ts,81,console.log,console.log('[INFO] Starting todo-issue');,REVIEW
+scripts\todo-issue\src\index.ts,84,console.log,console.log(`[INFO] Repository: ${config.owner}/${config.repo}`);,REVIEW
+scripts\todo-issue\src\index.ts,91,console.log,"console.log(`[INFO] Found ${todos.length} TODOs (${added} added, ${deleted} deleted)`);",REVIEW
+scripts\todo-issue\src\index.ts,94,console.log,"console.log('[INFO] No TODOs found, exiting');",REVIEW
+scripts\todo-issue\src\index.ts,114,console.log,console.log(`[INFO] Import: ${byTitle.size} new issues to create (${added.length} TODOs grouped by title)`);,REVIEW
+scripts\todo-issue\src\index.ts,129,console.log,console.log(,REVIEW
+scripts\todo-issue\src\index.ts,150,console.log,console.log('[INFO] Done');,REVIEW
+scripts\todo-issue\src\index.ts,154,console.error,"console.error('[FATAL]', err);",KEEP

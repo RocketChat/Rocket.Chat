@@ -507,7 +507,9 @@ export class AppManager {
 		const storageItem = await this.appMetadataStorage.retrieveOne(id);
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
-		await app.validateLicense().catch(() => {});
+		await app.validateLicense().catch((err) => {
+			console.warn(`Failed to validate license for app "${id}" during installation:`, err);
+		});
 
 		return true;
 	}
@@ -526,7 +528,9 @@ export class AppManager {
 		const storageItem = await this.appMetadataStorage.retrieveOne(id);
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
-		await app.validateLicense().catch(() => {});
+		await app.validateLicense().catch((err) => {
+			console.warn(`Failed to validate license for app "${id}" during migration:`, err);
+		});
 
 		storageItem.migrated = true;
 		storageItem.signature = await this.getSignatureManager().signApp(storageItem);
