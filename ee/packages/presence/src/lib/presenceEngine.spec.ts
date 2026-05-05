@@ -202,14 +202,24 @@ describe('presenceEngine', () => {
 			});
 		});
 
-		it('when the user is truly offline (disconnected), should accept claims', () => {
-			const result = setActive(user({ statusDefault: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE }), {
-				statusDefault: UserStatus.BUSY,
-				statusSource: 'external',
+		describe('when the user is truly offline (disconnected)', () => {
+			it('should reject non-manual claims', () => {
+				expect(
+					setActive(user({ statusDefault: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE }), {
+						statusDefault: UserStatus.BUSY,
+						statusSource: 'external',
+					}),
+				).toBeNull();
 			});
 
-			expect(result?.values.statusSource).toBe('external');
-			expect(result?.values.previousState).toBeUndefined();
+			it('should accept manual claims', () => {
+				const result = setActive(user({ statusDefault: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE }), {
+					statusDefault: UserStatus.BUSY,
+					statusSource: 'manual',
+				});
+
+				expect(result?.values.statusSource).toBe('manual');
+			});
 		});
 	});
 

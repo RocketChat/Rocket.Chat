@@ -26,7 +26,10 @@ export function setActive(
 	user: IUser,
 	newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusEmoji' | 'statusExpiresAt'>,
 ): { values: Record<string, unknown>; clear?: string[] } | null {
-	if (user.statusDefault === UserStatus.OFFLINE && user.statusConnection !== UserStatus.OFFLINE && newState.statusSource !== 'manual') {
+	// Offline users can only have their status changed by manual sources (e.g. Apps Engine
+	// bridge for bots, admin via REST). Automatic sources (calendar, voice) are rejected —
+	// no one sees the status of an offline user anyway.
+	if (user.statusDefault === UserStatus.OFFLINE && newState.statusSource !== 'manual') {
 		return null;
 	}
 

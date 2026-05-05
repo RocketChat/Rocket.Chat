@@ -349,13 +349,19 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 
 		if (engineResult) {
-			// only recalculate connection status when the engine changed the visible status (has statusDefault)
+			// Users without DDP sessions (e.g. bots) that receive a manual status change would
+			// have it overwritten to offline by processPresenceAndStatus. Skip recalculation
+			// for them — only manual sources reach here for offline users (enforced by presenceEngine).
 			if (engineResult.values.statusDefault) {
 				const userSessions = await UsersSessions.findOneById(uid);
-				const connections = userSessions?.connections ?? [];
-				const { status, statusConnection } = processPresenceAndStatus(connections, engineResult.values.statusDefault as UserStatus);
-				engineResult.values.status = status;
-				engineResult.values.statusConnection = statusConnection;
+				if (userSessions?.connections?.length) {
+					const { status, statusConnection } = processPresenceAndStatus(
+						userSessions.connections,
+						engineResult.values.statusDefault as UserStatus,
+					);
+					engineResult.values.status = status;
+					engineResult.values.statusConnection = statusConnection;
+				}
 			}
 
 			const updatedUser = await Users.updatePresenceAndStatus(uid, engineResult.values, engineResult.clear);

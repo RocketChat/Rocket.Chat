@@ -73,6 +73,20 @@ describe('Presence.recalculateStatusFromConnections', () => {
 		expect(updatePresenceMock.mock.calls[0][1].statusConnection).toBeUndefined();
 	});
 
+	it('when engine changes status but user has no sessions (REST-only), should keep engine status as-is', async () => {
+		findUserMock.mockResolvedValue(user());
+		findSessionMock.mockResolvedValue(null);
+		updatePresenceMock.mockResolvedValue(user());
+
+		await presence.recalculateStatusFromConnections('u1', {
+			values: { statusDefault: UserStatus.BUSY, statusSource: 'manual' },
+		});
+
+		// Should NOT override with offline — REST-only user keeps the engine's status
+		expect(updatePresenceMock.mock.calls[0][1].status).toBeUndefined();
+		expect(updatePresenceMock.mock.calls[0][1].statusConnection).toBeUndefined();
+	});
+
 	it('when no engine result, should recalculate status from sessions only', async () => {
 		findUserMock.mockResolvedValue(user({ statusDefault: UserStatus.BUSY }));
 		withOnlineSession();
