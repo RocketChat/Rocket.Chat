@@ -24,10 +24,7 @@ declare module 'meteor/meteor' {
 }
 
 type GoogleProvider = IOAuthProvider & {
-	signIn?: (
-		options: Meteor.LoginWithExternalServiceOptions | undefined,
-		callback?: LoginCallback,
-	) => void;
+	signIn?: (options: Meteor.LoginWithExternalServiceOptions | undefined, callback?: LoginCallback) => void;
 };
 
 const requestCredential = wrapRequestCredentialFn(
