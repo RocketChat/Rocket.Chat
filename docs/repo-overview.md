@@ -9,7 +9,7 @@ Yarn 4 + Turborepo monorepo. Workspaces:
 - `ee/packages/*` — enterprise libs (`license`, `abac`, `presence`, `omnichannel-services`, `federation-matrix`, `pdf-worker`, `ui-theming`, `network-broker`, `omni-core-ee`, `media-calls`).
 - `apps/meteor/ee/server/services` — declared as workspace; EE-only server code lives under `apps/meteor/ee/`.
 
-Node `22.22.2`, Yarn `4.12.0`, TypeScript `~5.9.3`. Pinned in `package.json` `engines` + `volta`. Use `mise`/`volta`/`asdf` (`.tool-versions`).
+For the current Node / Yarn / TypeScript versions check `package.json` (`engines`, `volta`, `devDependencies`) or `.tool-versions`. If available, use `volta`/`nvm` as the node version manager.
 
 ### EE vs CE licensing
 
