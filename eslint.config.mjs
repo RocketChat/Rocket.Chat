@@ -1,12 +1,6 @@
-import { fileURLToPath } from 'node:url';
-
 import rocketChatConfig from '@rocket.chat/eslint-config';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
-
-function getAbsolutePath(path) {
-	return fileURLToPath(new URL(path, import.meta.url));
-}
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
@@ -396,17 +390,6 @@ export default [
 			},
 		},
 		rules: {
-			'import/order': [
-				'error',
-				{
-					'newlines-between': 'always',
-					'groups': ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-					'alphabetize': {
-						order: 'asc',
-					},
-				},
-			],
-			'jsx-a11y/alt-text': 'off',
 			'jsx-a11y/click-events-have-key-events': 'off',
 			'jsx-a11y/media-has-caption': 'off',
 			'jsx-a11y/no-static-element-interactions': 'off',
