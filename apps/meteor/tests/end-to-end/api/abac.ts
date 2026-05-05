@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
+import { before, after, afterEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials, methodCall } from '../../data/api-data';
@@ -55,7 +55,13 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	before(async () => {
 		connection = await MongoClient.connect(URL_MONGODB);
 
-		await updatePermission('abac-management', ['admin']);
+		await Promise.all([
+			updatePermission('abac-management', ['admin']),
+			updatePermission('manage-abac-admin-settings', ['admin']),
+			updatePermission('manage-abac-admin-attributes', ['admin']),
+			updatePermission('manage-abac-admin-room-attributes', ['admin']),
+			updatePermission('view-abac-admin-audit', ['admin']),
+		]);
 		await updateSetting('ABAC_Enabled', true);
 
 		testRoom = (await createRoom({ type: 'p', name: `abac-test-${Date.now()}` })).body.group;
@@ -89,6 +95,37 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
+		});
+
+		describe('Granular admin permissions', () => {
+			afterEach(async () => {
+				await Promise.all([
+					updatePermission('manage-abac-admin-settings', ['admin']),
+					updatePermission('manage-abac-admin-attributes', ['admin']),
+					updatePermission('manage-abac-admin-room-attributes', ['admin']),
+					updatePermission('view-abac-admin-audit', ['admin']),
+				]);
+			});
+
+			it('GET /abac/attributes should return 403 when admin lacks manage-abac-admin-attributes', async () => {
+				await updatePermission('manage-abac-admin-attributes', []);
+				await request.get(`${v1}/abac/attributes`).set(credentials).expect(403);
+			});
+
+			it('GET /abac/rooms should return 403 when admin lacks manage-abac-admin-room-attributes', async () => {
+				await updatePermission('manage-abac-admin-room-attributes', []);
+				await request.get(`${v1}/abac/rooms`).set(credentials).expect(403);
+			});
+
+			it('GET /abac/audit should return 403 when admin lacks view-abac-admin-audit', async () => {
+				await updatePermission('view-abac-admin-audit', []);
+				await request.get(`${v1}/abac/audit`).set(credentials).expect(403);
+			});
+
+			it('GET /abac/pdp/health should return 403 when admin lacks manage-abac-admin-settings', async () => {
+				await updatePermission('manage-abac-admin-settings', []);
+				await request.get(`${v1}/abac/pdp/health`).set(credentials).expect(403);
+			});
 		});
 	});
 
@@ -2586,7 +2623,13 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		const healthy = await mockServerHealthy();
 		expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
-		await updatePermission('abac-management', ['admin']);
+		await Promise.all([
+			updatePermission('abac-management', ['admin']),
+			updatePermission('manage-abac-admin-settings', ['admin']),
+			updatePermission('manage-abac-admin-attributes', ['admin']),
+			updatePermission('manage-abac-admin-room-attributes', ['admin']),
+			updatePermission('view-abac-admin-audit', ['admin']),
+		]);
 		await updateSetting('ABAC_Enabled', true);
 		await updateSetting('ABAC_PDP_Type', 'virtru');
 		await Promise.all([
