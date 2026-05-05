@@ -1,5 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
+
+import { absoluteUrl } from '../../../../../client/lib/absoluteUrl';
 
 export class AudioEncoder extends Emitter {
 	private worker: Worker;
@@ -9,7 +10,7 @@ export class AudioEncoder extends Emitter {
 	constructor(source: MediaStreamAudioSourceNode, { bufferLen = 4096, numChannels = 1, bitRate = 32 } = {}) {
 		super();
 
-		const workerPath = Meteor.absoluteUrl('workers/mp3-encoder/index.js');
+		const workerPath = absoluteUrl('workers/mp3-encoder/index.js');
 
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;

@@ -283,6 +283,47 @@ exports[`renders InviteEdit without crashing 1`] = `
                     <span
                       class="rcx-box rcx-box--full rcx-field__row"
                     >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="days"
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="1"
+                            >
+                              1
+                            </option>
+                            <option
+                              value="7"
+                            >
+                              7
+                            </option>
+                            <option
+                              value="15"
+                            >
+                              15
+                            </option>
+                            <option
+                              value="30"
+                            >
+                              30
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                          </select>
+                        </label>
+                      </div>
                       <button
                         aria-expanded="false"
                         aria-haspopup="listbox"
@@ -291,47 +332,6 @@ exports[`renders InviteEdit without crashing 1`] = `
                         id=":r3:"
                         type="button"
                       >
-                        <div
-                          aria-hidden="true"
-                          data-a11y-ignore="aria-hidden-focus"
-                          data-react-aria-prevent-focus="true"
-                          data-testid="hidden-select-container"
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                        >
-                          <label>
-                            <select
-                              name="days"
-                              tabindex="-1"
-                            >
-                              <option />
-                              <option
-                                value="1"
-                              >
-                                1
-                              </option>
-                              <option
-                                value="7"
-                              >
-                                7
-                              </option>
-                              <option
-                                value="15"
-                              >
-                                15
-                              </option>
-                              <option
-                                value="30"
-                              >
-                                30
-                              </option>
-                              <option
-                                value="0"
-                              >
-                                0
-                              </option>
-                            </select>
-                          </label>
-                        </div>
                         <span
                           class="rcx-box rcx-box--full rcx-css-e3nij6"
                           id="react-aria-:rc:"
@@ -359,6 +359,52 @@ exports[`renders InviteEdit without crashing 1`] = `
                     <span
                       class="rcx-box rcx-box--full rcx-field__row"
                     >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="maxUses"
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="5"
+                            >
+                              5
+                            </option>
+                            <option
+                              value="10"
+                            >
+                              10
+                            </option>
+                            <option
+                              value="25"
+                            >
+                              25
+                            </option>
+                            <option
+                              value="50"
+                            >
+                              50
+                            </option>
+                            <option
+                              value="100"
+                            >
+                              100
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                          </select>
+                        </label>
+                      </div>
                       <button
                         aria-expanded="false"
                         aria-haspopup="listbox"
@@ -367,52 +413,6 @@ exports[`renders InviteEdit without crashing 1`] = `
                         id=":r4:"
                         type="button"
                       >
-                        <div
-                          aria-hidden="true"
-                          data-a11y-ignore="aria-hidden-focus"
-                          data-react-aria-prevent-focus="true"
-                          data-testid="hidden-select-container"
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                        >
-                          <label>
-                            <select
-                              name="maxUses"
-                              tabindex="-1"
-                            >
-                              <option />
-                              <option
-                                value="5"
-                              >
-                                5
-                              </option>
-                              <option
-                                value="10"
-                              >
-                                10
-                              </option>
-                              <option
-                                value="25"
-                              >
-                                25
-                              </option>
-                              <option
-                                value="50"
-                              >
-                                50
-                              </option>
-                              <option
-                                value="100"
-                              >
-                                100
-                              </option>
-                              <option
-                                value="0"
-                              >
-                                0
-                              </option>
-                            </select>
-                          </label>
-                        </div>
                         <span
                           class="rcx-box rcx-box--full rcx-css-e3nij6"
                           id="react-aria-:rk:"

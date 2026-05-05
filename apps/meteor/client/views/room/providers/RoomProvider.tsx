@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import { useMemo, memo, useEffect, useCallback } from 'react';
+import { useMemo, memo, useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
@@ -8,10 +8,9 @@ import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
-import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { useRoomHistoryState } from '../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
@@ -48,17 +47,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [room, subscritionFromLocal]);
 
-	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
-		useCallback(() => {
-			const { hasMore, hasMoreNext, isLoading } = RoomHistoryManager.getRoom(rid);
-
-			return {
-				hasMorePreviousMessages: hasMore.get(),
-				hasMoreNextMessages: hasMoreNext.get(),
-				isLoadingMoreMessages: isLoading.get(),
-			};
-		}, [rid]),
-	);
+	const hasMorePreviousMessages = useRoomHistoryState(rid, (state) => state.hasMore);
+	const hasMoreNextMessages = useRoomHistoryState(rid, (state) => state.hasMoreNext);
+	const isLoadingMoreMessages = useRoomHistoryState(rid, (state) => state.isLoading);
 
 	const context = useMemo((): ContextType<typeof RoomContext> => {
 		if (!pseudoRoom) {

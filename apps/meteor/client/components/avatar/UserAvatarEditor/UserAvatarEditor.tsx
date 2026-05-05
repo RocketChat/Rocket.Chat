@@ -50,7 +50,13 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
+	const canAddUrl = !disabled && Boolean(avatarFromUrl) && !avatarUrlError;
+
 	const handleAddUrl = async (): Promise<void> => {
+		if (!canAddUrl) {
+			return;
+		}
+
 		if (!isSafeAvatarUrl(avatarFromUrl)) {
 			setAvatarUrlError(t('error-invalid-image-url'));
 			return;
@@ -101,9 +107,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					alt={t('__username__profile_picture', { username: currentUsername || 'user' })}
 					username={currentUsername || ''}
 					etag={etag}
+					objectFit='contain'
 					style={{
 						imageOrientation: rotateImages ? 'from-image' : 'none',
-						objectFit: 'contain',
 					}}
 					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
@@ -125,13 +131,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 										icon='permalink'
 										secondary
 										small
-										disabled={disabled || !avatarFromUrl || !!avatarUrlError}
+										disabled={!canAddUrl}
 										title={t('Add_URL')}
 										onClick={handleAddUrl}
 										mb={-4}
 										mie={-4}
 									/>
 								}
+								disabled={disabled}
 								value={avatarFromUrl}
 								onChange={handleAvatarFromUrlChange}
 								error={avatarUrlError}
