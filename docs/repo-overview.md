@@ -35,8 +35,6 @@ yarn testunit         # turbo testunit all workspaces
 
 `yarn` (no args) bootstraps deps. `turbo run <task> --filter=<workspace>` to scope.
 
-Per-workspace invocation: `yarn workspace <pkg-name> <script>` runs a script defined in that workspace's own `package.json` (e.g. `yarn workspace @rocket.chat/meteor lint`, `yarn workspace @rocket.chat/core-services build`). Use this when you want one workspace's script directly without going through turbo.
-
 ## Inside `apps/meteor`
 
 Most relevant scripts:
