@@ -15,7 +15,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from '../../navbar/NavBarPagesGroup/actions/useEncryptedRoomDescription';
@@ -49,7 +49,6 @@ const CreateDiscussion = ({
 	encryptedParentRoom = false,
 }: CreateDiscussionProps) => {
 	const t = useTranslation();
-	const parentRoomId = useId();
 
 	const [encryptedDisabled, setEncryptedDisabled] = useState(encryptedParentRoom);
 
@@ -133,19 +132,13 @@ const CreateDiscussion = ({
 								control={control}
 								name='parentRoom'
 								rules={{ required: t('Required_field', { field: t('Discussion_target_channel') }) }}
-								render={({ field: { name, onBlur, onChange, value } }) => (
+								render={({ field }) => (
 									<RoomAutoComplete
-										aria-label={t('Discussion_target_channel')}
-										name={name}
-										onBlur={onBlur}
-										onChange={onChange}
-										value={value}
+										{...field}
 										error={Boolean(errors.parentRoom?.message)}
 										placeholder={t('Search_options')}
 										disabled={Boolean(defaultParentRoom)}
 										aria-required='true'
-										aria-invalid={Boolean(errors.parentRoom?.message)}
-										aria-describedby={errors.parentRoom ? `${parentRoomId}-error` : undefined}
 										setSelectedRoom={onParentRoomChange}
 										renderRoomIcon={({ encrypted }) => (encrypted ? <Icon name='key' /> : null)}
 									/>
@@ -153,7 +146,7 @@ const CreateDiscussion = ({
 							/>
 						)}
 					</FieldRow>
-					{errors.parentRoom && <FieldError id={`${parentRoomId}-error`}>{errors.parentRoom.message}</FieldError>}
+					{errors.parentRoom && <FieldError>{errors.parentRoom.message}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel required>{t('Name')}</FieldLabel>
@@ -184,9 +177,7 @@ const CreateDiscussion = ({
 						<Controller
 							control={control}
 							name='usernames'
-							render={({ field: { name, onChange, value, onBlur } }) => (
-								<UserAutoCompleteMultiple name={name} onChange={onChange} value={value} onBlur={onBlur} placeholder={t('Add_people')} />
-							)}
+							render={({ field }) => <UserAutoCompleteMultiple {...field} placeholder={t('Add_people')} />}
 						/>
 					</FieldRow>
 				</Field>
