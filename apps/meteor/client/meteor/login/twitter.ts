@@ -1,7 +1,7 @@
 import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
+import { oauth } from '@rocket.chat/ddp-client';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
@@ -19,10 +19,11 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 		const options = requestOptions as Record<string, string>;
 		const credentialToken = Random.secret();
 
-		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${OAuth._stateParam(
+		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${oauth.stateParam(
 			loginStyle,
 			credentialToken,
 			options?.redirectUrl,
+			{ isCordova: !!Meteor.isCordova },
 		)}`;
 
 		if (Meteor.isCordova) {
@@ -44,7 +45,7 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 
 		const loginUrl = absoluteUrl(loginPath);
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'twitter',
 			loginStyle,
 			loginUrl,

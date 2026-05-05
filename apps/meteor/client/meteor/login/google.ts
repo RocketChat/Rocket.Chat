@@ -1,11 +1,12 @@
+import { oauth } from '@rocket.chat/ddp-client';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { redirectUri } from '../../lib/oauth/redirectUri';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 declare module 'meteor/meteor' {
@@ -51,23 +52,17 @@ const requestCredential = wrapRequestCredentialFn(
 			response_type: 'code',
 			client_id: config.clientId,
 			scope,
-			redirect_uri: OAuth._redirectUri('google', config),
-			state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
+			redirect_uri: redirectUri('google', config),
+			state: oauth.stateParam(loginStyle, credentialToken, options.redirectUrl, {
+				isCordova: !!Meteor.isCordova,
+			}),
 		};
-
-		Object.assign(loginUrlParameters, {
-			response_type: 'code',
-			client_id: config.clientId,
-			scope,
-			redirect_uri: OAuth._redirectUri('google', config),
-			state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
-		});
 
 		const loginUrl = `https://accounts.google.com/o/oauth2/auth?${Object.keys(loginUrlParameters)
 			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
 			.join('&')}`;
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'google',
 			loginStyle,
 			loginUrl,

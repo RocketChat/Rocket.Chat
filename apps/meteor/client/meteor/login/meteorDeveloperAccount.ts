@@ -1,10 +1,11 @@
+import { oauth } from '@rocket.chat/ddp-client';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { redirectUri } from '../../lib/oauth/redirectUri';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 // Mirrors `MeteorDeveloperAccounts._server` from meteor/meteor-developer-oauth.
@@ -19,7 +20,7 @@ const requestCredential = wrapRequestCredentialFn(
 
 		let loginUrl =
 			`${MDG_SERVER}/oauth2/authorize?` +
-			`state=${OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)}` +
+			`state=${oauth.stateParam(loginStyle, credentialToken, options.redirectUrl, { isCordova: !!Meteor.isCordova })}` +
 			`&response_type=code&` +
 			`client_id=${config.clientId}${options.details ? `&details=${options.details}` : ''}`;
 
@@ -27,9 +28,9 @@ const requestCredential = wrapRequestCredentialFn(
 			loginUrl += `&user_email=${encodeURIComponent(options.loginHint)}`;
 		}
 
-		loginUrl += `&redirect_uri=${OAuth._redirectUri('meteor-developer', config)}`;
+		loginUrl += `&redirect_uri=${redirectUri('meteor-developer', config)}`;
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'meteor-developer',
 			loginStyle,
 			loginUrl,

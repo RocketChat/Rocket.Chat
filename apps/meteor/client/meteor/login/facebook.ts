@@ -1,11 +1,12 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
+import { oauth } from '@rocket.chat/ddp-client';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { redirectUri } from '../../lib/oauth/redirectUri';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
@@ -27,10 +28,12 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
 
 		const loginUrlParameters: Record<string, any> = {
 			client_id: config.appId,
-			redirect_uri: OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
+			redirect_uri: redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
 			display,
 			scope,
-			state: OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl),
+			state: oauth.stateParam(loginStyle, credentialToken, options?.redirectUrl, {
+				isCordova: !!Meteor.isCordova,
+			}),
 			// Handle authentication type (e.g. for force login you need auth_type: "reauthenticate")
 			...(options.auth_type && { auth_type: options.auth_type }),
 		};
@@ -39,7 +42,7 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
 			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
 			.join('&')}`;
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'facebook',
 			loginStyle,
 			loginUrl,
