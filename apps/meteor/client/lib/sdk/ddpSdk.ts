@@ -1,10 +1,10 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { createMeteorBackedSdk } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
+import { clearStoredCredentials } from './storedCredentials';
 import { userIdStore } from '../user';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
@@ -141,7 +141,7 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 			// latter dispatches a `logout` method which itself races against
 			// parallel re-auth flows in CI's parallel-shard environment and
 			// kicked otherwise-healthy tests out.
-			Accounts._unstoreLoginToken();
+			clearStoredCredentials();
 			(Meteor.connection as unknown as { setUserId: (uid: string | null) => void }).setUserId(null);
 			return;
 		}

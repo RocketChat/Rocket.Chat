@@ -1,9 +1,9 @@
 import { useStream, useSessionDispatch } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
 import { isSdkTransportEnabled } from '../../../../lib/sdk/sdkTransportEnabled';
+import { clearStoredCredentials } from '../../../../lib/sdk/storedCredentials';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 
@@ -30,7 +30,7 @@ export const useForceLogout = (userId: string) => {
 			// Home with stale credentials. Wipe Meteor's stored login token +
 			// userId here so the router falls back to /login.
 			try {
-				Accounts._unstoreLoginToken();
+				clearStoredCredentials();
 			} catch {
 				// ignore
 			}
