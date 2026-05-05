@@ -23,7 +23,7 @@ export class AppLicenseManager {
 
 	public async validate(validationResult: AppLicenseValidationResult, appMarketplaceInfo?: IMarketplaceInfo[]): Promise<void> {
 		const marketplaceInfo = appMarketplaceInfo?.[0];
-		if (!marketplaceInfo || marketplaceInfo.purchaseType !== MarketplacePurchaseType.PurchaseTypeSubscription) {
+		if (marketplaceInfo?.purchaseType !== MarketplacePurchaseType.PurchaseTypeSubscription) {
 			return;
 		}
 

@@ -24,10 +24,7 @@ export class LivechatUpdater implements ILivechatUpdater {
 			.then((result) => result > 0);
 	}
 
-	public updateVisitorExternalId(
-		visitorId: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
-	): Promise<IVisitor | undefined> {
+	public updateVisitorExternalId(visitorId: string, externalId: Omit<IVisitorExternalIdentifier, 'appId'>): Promise<IVisitor | undefined> {
 		return this.bridges.getLivechatBridge().doUpdateVisitorExternalId(visitorId, externalId, this.appId);
 	}
 }

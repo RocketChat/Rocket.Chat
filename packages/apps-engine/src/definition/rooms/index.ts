@@ -1,17 +1,16 @@
-import { IPostRoomCreate } from './IPostRoomCreate';
-import { IPostRoomDeleted } from './IPostRoomDeleted';
-import { IPreRoomCreateExtend } from './IPreRoomCreateExtend';
-import { IPreRoomCreateModify } from './IPreRoomCreateModify';
-import { IPreRoomCreatePrevent } from './IPreRoomCreatePrevent';
-import { IPreRoomDeletePrevent } from './IPreRoomDeletePrevent';
-import { IRoom } from './IRoom';
-import { IRoomRaw } from './IRoomRaw';
+import type { IPostRoomCreate } from './IPostRoomCreate';
+import type { IPostRoomDeleted } from './IPostRoomDeleted';
+import type { IPreRoomCreateExtend } from './IPreRoomCreateExtend';
+import type { IPreRoomCreateModify } from './IPreRoomCreateModify';
+import type { IPreRoomCreatePrevent } from './IPreRoomCreatePrevent';
+import type { IPreRoomDeletePrevent } from './IPreRoomDeletePrevent';
+import type { IRoom } from './IRoom';
+import type { IRoomRaw } from './IRoomRaw';
 import { RoomType } from './RoomType';
 
-export {
+export type {
 	IRoom,
 	IRoomRaw,
-	RoomType,
 	IPostRoomCreate,
 	IPostRoomDeleted,
 	IPreRoomCreateExtend,
@@ -19,10 +18,11 @@ export {
 	IPreRoomCreatePrevent,
 	IPreRoomDeletePrevent,
 };
+export { RoomType };
 
-export * from './IPreRoomUserJoined';
-export * from './IPostRoomUserJoined';
-export * from './IRoomUserJoinedContext';
-export * from './IPreRoomUserLeave';
-export * from './IPostRoomUserLeave';
-export * from './IRoomUserLeaveContext';
+export type * from './IPreRoomUserJoined';
+export type * from './IPostRoomUserJoined';
+export type * from './IRoomUserJoinedContext';
+export type * from './IPreRoomUserLeave';
+export type * from './IPostRoomUserLeave';
+export type * from './IRoomUserLeaveContext';

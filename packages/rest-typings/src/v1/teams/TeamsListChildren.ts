@@ -30,7 +30,11 @@ const TeamsListChildrenPropsSchema = {
 		sort: { type: 'string' },
 	},
 	additionalProperties: false,
-	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }, { required: ['roomId'] }],
+	oneOf: [
+		{ type: 'object', required: ['teamId'] },
+		{ type: 'object', required: ['teamName'] },
+		{ type: 'object', required: ['roomId'] },
+	],
 };
 
 export const isTeamsListChildrenProps = ajvQuery.compile<TeamsListChildrenProps>(TeamsListChildrenPropsSchema);

@@ -5,8 +5,8 @@ import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManager';
-import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController';
+import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
@@ -119,9 +119,7 @@ describe('AppRuntimeManager', () => {
 	it('Starts multiple runtimes for app successfully with force option', async () => {
 		await assert.doesNotReject(() => runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem));
 
-		await assert.doesNotReject(() =>
-			runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem, { force: true }),
-		);
+		await assert.doesNotReject(() => runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem, { force: true }));
 
 		/* eslint-disable-next-line dot-notation -- We need to access the property like this for the compile not to complain */
 		assert.strictEqual(runtimeManager['subprocesses'][mockAppPackage.info.id], mockSubprocessController);

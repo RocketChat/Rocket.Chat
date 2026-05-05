@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-composer",
-	"version": "0.6.0",
+	"version": "1.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/emitter": "^0.32.0",
-		"@rocket.chat/fuselage": "^0.76.0",
+		"@rocket.chat/fuselage": "^0.77.0",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "~0.47.0",
@@ -38,22 +38,22 @@
 		"@storybook/react": "^8.6.18",
 		"@storybook/react-webpack5": "^8.6.18",
 		"@types/jest": "~30.0.0",
-		"@types/react": "~18.3.27",
+		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
-		"react-virtuoso": "^4.12.0",
+		"react-virtuoso": "~4.12.8",
 		"storybook": "^8.6.18",
 		"typescript": "~5.9.3",
-		"webpack": "~5.104.0"
+		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-client": "*",
+		"@rocket.chat/ui-client": "30.0.0",
 		"react": "*",
 		"react-dom": "*"
 	},

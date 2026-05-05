@@ -245,10 +245,12 @@ describe('AppOutboundCommunicationProviderManager', () => {
 		const manager = new AppOutboundCommunicationProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getOutboundPhoneMessageProvider());
 
-		mock.method(OutboundMessageProvider.prototype, 'runGetProviderMetadata', () => Promise.resolve({
-			name: 'test-provider',
-			capabilities: ['sms'],
-		}));
+		mock.method(OutboundMessageProvider.prototype, 'runGetProviderMetadata', () =>
+			Promise.resolve({
+				name: 'test-provider',
+				capabilities: ['sms'],
+			}),
+		);
 
 		const metadata = await manager.getProviderMetadata('testing', 'phone');
 		assert.deepStrictEqual(metadata, {

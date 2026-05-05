@@ -147,7 +147,10 @@ describe('AppApiManager', () => {
 		await assert.doesNotReject(() => ascm.registerApis('non-existant'));
 		await assert.doesNotReject(() => ascm.registerApis('testing'));
 		assert.strictEqual(registerApiSpy.mock.calls.filter((c: any) => c.arguments[0] === 'testing' && c.arguments[1] === regInfo).length, 1);
-		assert.strictEqual(doRegisterApiSpy.mock.calls.filter((c: any) => c.arguments[0] === regInfo && c.arguments[1] === 'testing').length, 1);
+		assert.strictEqual(
+			doRegisterApiSpy.mock.calls.filter((c: any) => c.arguments[0] === regInfo && c.arguments[1] === 'testing').length,
+			1,
+		);
 	});
 
 	it('unregisterApis', async () => {

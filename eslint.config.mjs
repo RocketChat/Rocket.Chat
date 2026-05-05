@@ -289,14 +289,10 @@ export default [
 		},
 	},
 	{
-		files: ['packages/apps-engine/**/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: getAbsolutePath('./packages/apps-engine/tsconfig-lint.json'),
-			},
-		},
+		files: ['packages/apps-engine/**/*'],
 		rules: {
 			'@typescript-eslint/no-empty-object-type': 'off',
+			'@typescript-eslint/no-unnecessary-type-assertion': 'off', // this rule does not deal well with assertions that remove `undefined` from the type
 			'@typescript-eslint/no-unsafe-function-type': 'error',
 			'@typescript-eslint/no-wrapper-object-types': 'error',
 			'@typescript-eslint/naming-convention': [
@@ -342,7 +338,14 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/apps-engine/**/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)/**'],
+		files: ['packages/apps-engine/tests/**/*'],
+		rules: {
+			'@typescript-eslint/no-non-null-assertion': 'off',
+			'testing-library/no-await-sync-queries': 'off',
+		},
+	},
+	{
+		ignores: ['packages/apps-engine/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],

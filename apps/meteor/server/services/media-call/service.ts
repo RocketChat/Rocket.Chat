@@ -335,7 +335,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async getRoomIdForInternalCall(call: IMediaCall): Promise<IRoom> {
-		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(call.uids);
+		const uniqueUids = [...new Set(call.uids)];
+
+		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uniqueUids);
 		if (room) {
 			return room;
 		}

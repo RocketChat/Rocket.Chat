@@ -17,8 +17,7 @@ import { useMemo, type ReactNode } from 'react';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Info as info } from '../../app/utils/rocketchat.info';
 import { useReactiveValue } from '../hooks/useReactiveValue';
-
-const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
+import { absoluteUrl } from '../lib/absoluteUrl';
 
 const callMethod = <MethodName extends ServerMethodName>(
 	methodName: MethodName,

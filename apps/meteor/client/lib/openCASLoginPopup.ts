@@ -1,5 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
+import { absoluteUrl } from './absoluteUrl';
 import { settings } from './settings';
 
 const openCenteredPopup = (url: string, width: number, height: number) => {
@@ -32,7 +31,7 @@ const getPopupUrl = (credentialToken: string): string => {
 		throw new Error('CAS_login_url not set');
 	}
 
-	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	const appUrl = absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	const serviceUrl = `${appUrl}/_cas/${credentialToken}`;
 	const url = new URL(loginUrl);
 	url.searchParams.set('service', serviceUrl);
