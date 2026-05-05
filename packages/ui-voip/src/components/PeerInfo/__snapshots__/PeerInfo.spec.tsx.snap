@@ -63,6 +63,7 @@ exports[`renders InternalUser without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-ilfe77"
           >
             <svg
+              aria-hidden="true"
               class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
               height="24"
               viewBox="0 0 24 24"
@@ -131,6 +132,7 @@ exports[`renders InternalUserWithRemoteStatus without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-ilfe77"
           >
             <svg
+              aria-hidden="true"
               class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
               height="24"
               viewBox="0 0 24 24"
