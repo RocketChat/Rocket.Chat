@@ -8,8 +8,14 @@ const UrlImagePreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>): ReactElement
 	const { maxHeight: oembedMaxHeight } = useOembedLayout();
 
 	return (
-		<Box maxHeight={oembedMaxHeight} maxWidth='100%'>
-			<MessageGenericPreviewImage data-id={url} className='preview-image' url={url || ''} alt='' />
+		<Box maxHeight={oembedMaxHeight} maxWidth='100%' overflow='hidden'>
+			<MessageGenericPreviewImage
+				data-id={url}
+				className='preview-image'
+				url={url || ''}
+				alt=''
+				style={{ maxHeight: oembedMaxHeight, width: 'auto', maxWidth: '100%', objectFit: 'contain' }}
+			/>
 		</Box>
 	);
 };
