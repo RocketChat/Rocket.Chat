@@ -1,5 +1,4 @@
 import { useIsLoggingIn } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
 import { useEffect } from 'react';
 
 export const useStoreCookiesOnLogin = (userId: string) => {
@@ -10,9 +9,10 @@ export const useStoreCookiesOnLogin = (userId: string) => {
 		// preventing race condition setting the rc_token as null forever
 		if (isLoggingIn === false) {
 			const secure = location.protocol === 'https:' ? '; secure' : '';
+			const token = window.localStorage.getItem('Meteor.loginToken') ?? '';
 
 			document.cookie = `rc_uid=${encodeURI(userId)}; path=/${secure}`;
-			document.cookie = `rc_token=${encodeURI(Accounts._storedLoginToken() as string)}; path=/${secure}`;
+			document.cookie = `rc_token=${encodeURI(token)}; path=/${secure}`;
 		}
 	}, [isLoggingIn, userId]);
 };
