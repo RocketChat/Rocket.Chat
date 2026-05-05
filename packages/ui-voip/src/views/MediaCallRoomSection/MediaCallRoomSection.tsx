@@ -167,8 +167,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 					<ButtonGroup>
 						<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
 						<ToggleButton
-							label={t('Popout')}
-							titles={[t('Popout'), t('Close_popout')]}
+							label={t('Open_in_new_window')}
+							titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
+							// TODO: new icons missing
 							icons={['arrow-expand', 'arrow-collapse']}
 							pressed={isPopout}
 							onToggle={isPopout ? onClosePopout : onOpenPopout}

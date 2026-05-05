@@ -31,6 +31,7 @@ const OngoingCall = () => {
 		onForward,
 		onEndCall,
 		onClickDirectMessage,
+		onOpenPopout,
 		streams,
 		onToggleScreenSharing,
 		widgetPositionTracker,
@@ -63,8 +64,17 @@ const OngoingCall = () => {
 				{onClickDirectMessage && (
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
-				{/* TODO: translation and icon */}
-				{isPopout && <ActionButton tiny secondary={false} label={t('Close_popout')} icon='arrow-collapse' onClick={onClosePopout} />}
+
+				<ToggleButton
+					label={t('Open_in_new_window')}
+					titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
+					// TODO: new icons missing
+					icons={['arrow-expand', 'arrow-collapse']}
+					pressed={isPopout}
+					onToggle={isPopout ? onClosePopout : onOpenPopout}
+					danger={false}
+				/>
+
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
