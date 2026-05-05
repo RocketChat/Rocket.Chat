@@ -1219,9 +1219,9 @@ const buildDocumentationContext = async (intervention: any, requestedRoomId?: st
 			})
 		: null;
 	const sessionContext = _buildSessionContextView((room as any)?.medsenseSessionInfo, {
-		bufferTailLimit: 2,
 		formTailLimit: 10,
 		recentAnswerLimit: 5,
+		includeMessages: true,
 	});
 	const pharmacyId = request?.pharmacyId || intervention?.pharmacyId;
 	const pharmacy = pharmacyId
@@ -1254,6 +1254,31 @@ const buildDocumentationContext = async (intervention: any, requestedRoomId?: st
 		sessionContext,
 		intervention,
 	};
+};
+
+const buildDocumentationWebhookPatientContext = (patient: Record<string, any> | null | undefined) => ({
+	name: patient?.name,
+	username: patient?.username,
+});
+
+const buildDocumentationWebhookRequestContext = (request: Record<string, any> | null | undefined) => {
+	if (!request) {
+		return null;
+	}
+
+	const requestContext: Record<string, any> = {
+		_id: request._id,
+		reason: request.reason,
+		contextSummary: request.contextSummary,
+		answers: request.answers || {},
+	};
+	if (request.aiSummary) {
+		requestContext.aiSummary = request.aiSummary;
+	}
+	if (request.currentStepId) {
+		requestContext.currentStepId = request.currentStepId;
+	}
+	return requestContext;
 };
 
 const resolveLocalDocumentationPrefillValue = (field: any, context: Record<string, any>): any => {
@@ -1440,20 +1465,9 @@ const callDocumentationPrefillWebhook = async ({
 			})),
 		},
 		context: {
-			aiRefs,
-			patient: context.patient,
-			request: context.request
-				? {
-						_id: context.request._id,
-						reason: context.request.reason,
-						contextSummary: context.request.contextSummary,
-						aiSummary: context.request.aiSummary,
-						answers: context.request.answers || {},
-						currentStepId: context.request.currentStepId,
-					}
-				: null,
-			session: context.session || context.sessionContext?.session || null,
-			sessionContext: context.sessionContext || null,
+			patient: buildDocumentationWebhookPatientContext(context.patient),
+			request: buildDocumentationWebhookRequestContext(context.request),
+			session: context.session || null,
 			intervention: {
 				_id: intervention._id,
 				type: intervention.type,
@@ -1536,21 +1550,10 @@ const callDocumentationAssistantWebhook = async ({
 		requiredInformation,
 		aiRefs,
 		context: {
-			aiRefs,
-			patient: context.patient,
+			patient: buildDocumentationWebhookPatientContext(context.patient),
 			pharmacy: context.pharmacy,
-			request: context.request
-				? {
-						_id: context.request._id,
-						reason: context.request.reason,
-						contextSummary: context.request.contextSummary,
-						aiSummary: context.request.aiSummary,
-						answers: context.request.answers || {},
-						currentStepId: context.request.currentStepId,
-					}
-				: null,
-			session: context.session || context.sessionContext?.session || null,
-			sessionContext: context.sessionContext || null,
+			request: buildDocumentationWebhookRequestContext(context.request),
+			session: context.session || null,
 		},
 	};
 
@@ -5812,13 +5815,34 @@ const MEDSENSE_SESSION_INFO_VERSION = 3;
 const MEDSENSE_ROOM_CONTEXT_VERSION = 3;
 const MEDSENSE_CONSOLIDATED_CONTEXT_VERSION = 3;
 
+const _buildSessionMessagePayload = (entry: Record<string, any>) => ({
+	messageId: String(entry?.messageId || ''),
+	ts: typeof entry?.ts === 'string' ? entry.ts : new Date().toISOString(),
+	role: entry?.role || 'context',
+	evidenceWeight:
+		entry?.evidenceWeight === 'primary' ||
+		entry?.evidenceWeight === 'secondary' ||
+		entry?.evidenceWeight === 'workflow_artifact' ||
+		entry?.evidenceWeight === 'context'
+			? entry.evidenceWeight
+			: entry?.role === 'patient'
+				? 'primary'
+				: entry?.role === 'staff'
+					? 'secondary'
+					: entry?.role === 'ai' || entry?.role === 'bot' || entry?.role === 'system'
+						? 'workflow_artifact'
+						: 'context',
+	text: typeof entry?.text === 'string' ? entry.text : '',
+});
+
 const _buildSessionContextView = (
 	sessionInfoRaw: any,
 	{
 		bufferTailLimit = 2,
 		formTailLimit = 10,
 		recentAnswerLimit = 5,
-	}: { bufferTailLimit?: number; formTailLimit?: number; recentAnswerLimit?: number } = {},
+		includeMessages = false,
+	}: { bufferTailLimit?: number; formTailLimit?: number; recentAnswerLimit?: number; includeMessages?: boolean } = {},
 ) => {
 	const sessionInfo = _normalizeSessionInfo(sessionInfoRaw);
 	const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
@@ -5840,12 +5864,16 @@ const _buildSessionContextView = (
 		pendingActionSummary: _buildPendingActionSummary(sessionInfo),
 		summary: sessionInfo.summary,
 		summaryUpdate: sessionInfo.summaryUpdate,
-		bufferTail: sessionBufferTail,
 		forms: sessionForms,
 		formSubmissions: roomFormSubmissions,
-		formSubmissionsTail: roomFormSubmissionsTail,
 		recentSubmittedAnswers,
 	};
+	if (includeMessages) {
+		(currentSession as Record<string, any>).messages = sessionBuffer.map(_buildSessionMessagePayload);
+	} else {
+		(currentSession as Record<string, any>).bufferTail = sessionBufferTail;
+		(currentSession as Record<string, any>).formSubmissionsTail = roomFormSubmissionsTail;
+	}
 	return {
 		session: currentSession,
 		voice: sessionInfo.voice,
@@ -6500,25 +6528,7 @@ const _emitSmartFormSubmitIntegration = async ({
 	return payload;
 };
 
-const _buildSmartFormSummaryMessagePayload = (entry: Record<string, any>) => ({
-	messageId: String(entry?.messageId || ''),
-	ts: typeof entry?.ts === 'string' ? entry.ts : new Date().toISOString(),
-	role: entry?.role || 'context',
-	evidenceWeight:
-		entry?.evidenceWeight === 'primary' ||
-		entry?.evidenceWeight === 'secondary' ||
-		entry?.evidenceWeight === 'workflow_artifact' ||
-		entry?.evidenceWeight === 'context'
-			? entry.evidenceWeight
-			: entry?.role === 'patient'
-				? 'primary'
-				: entry?.role === 'staff'
-					? 'secondary'
-					: entry?.role === 'ai' || entry?.role === 'bot' || entry?.role === 'system'
-						? 'workflow_artifact'
-						: 'context',
-	text: typeof entry?.text === 'string' ? entry.text : '',
-});
+const _buildSmartFormSummaryMessagePayload = _buildSessionMessagePayload;
 
 const _resetMedsenseSessionSummaryUpdate = async (roomId: string, triggerMessageId?: string | null): Promise<void> => {
 	const selector: Record<string, any> = { _id: roomId };
