@@ -28,6 +28,9 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 	}
 
 	findOneActiveByClientId(clientId: string, options?: FindOptions<IOAuthApps>): Promise<IOAuthApps | null> {
+		if (typeof clientId !== 'string' || !clientId) {
+			return Promise.resolve(null);
+		}
 		return this.findOne(
 			{
 				active: true,
@@ -42,6 +45,9 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		clientSecret: string,
 		options?: FindOptions<IOAuthApps>,
 	): Promise<IOAuthApps | null> {
+		if (typeof clientId !== 'string' || !clientId || typeof clientSecret !== 'string' || !clientSecret) {
+			return Promise.resolve(null);
+		}
 		return this.findOne(
 			{
 				active: true,
