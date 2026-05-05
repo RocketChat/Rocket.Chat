@@ -215,6 +215,7 @@ export const MessageList = function MessageList({
 					aria-label={t('Message_list')}
 					aria-busy={isLoadingMoreMessages}
 					role='list'
+					className='messages-list'
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();
