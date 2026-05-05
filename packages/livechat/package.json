@@ -77,7 +77,7 @@
 		"babel-loader": "~10.0.0",
 		"cross-env": "^7.0.3",
 		"css-loader": "^4.3.0",
-		"cssnano": "^7.0.7",
+		"cssnano": "^7.1.7",
 		"desvg-loader": "^0.1.0",
 		"eslint": "~9.39.4",
 		"file-loader": "^6.2.0",
