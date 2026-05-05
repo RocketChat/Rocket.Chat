@@ -81,7 +81,7 @@
 		"babel-loader": "~10.0.0",
 		"cross-env": "^7.0.3",
 		"css-loader": "^4.3.0",
-		"cssnano": "^7.0.7",
+		"cssnano": "^7.1.7",
 		"desvg-loader": "^0.1.0",
 		"eslint": "~8.45.0",
 		"eslint-plugin-import": "~2.31.0",
