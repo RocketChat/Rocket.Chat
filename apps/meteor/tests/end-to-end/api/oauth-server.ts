@@ -106,6 +106,37 @@ describe('[OAuth Server]', () => {
 				});
 		});
 
+		it('should return bad request if payload has non string parameters in refresh_token grant', async () => {
+			await request
+				.post(`/oauth/token`)
+				.send({
+					grant_type: 'refresh_token',
+					client_id: { $ne: null },
+					client_secret: { $ne: null },
+					refresh_token: { $ne: null },
+				})
+				.expect((res: Response) => {
+					expect(res.status).to.be.equal(400);
+					expect(res.body).to.have.property('error').that.is.a('string').and.equal('invalid_request');
+				});
+		});
+
+		it('should return bad request if payload has non string parameters in authorization_code grant', async () => {
+			await request
+				.post(`/oauth/token`)
+				.send({
+					grant_type: 'authorization_code',
+					client_id: { $ne: null },
+					client_secret: { $ne: null },
+					code: { $ne: null },
+					redirect_uri: { $ne: null },
+				})
+				.expect((res: Response) => {
+					expect(res.status).to.be.equal(400);
+					expect(res.body).to.have.property('error').that.is.a('string').and.equal('invalid_request');
+				});
+		});
+
 		it('should be able to refresh the access_token', async () => {
 			await request
 				.post(`/oauth/token`)
