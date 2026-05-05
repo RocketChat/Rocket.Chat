@@ -18,11 +18,10 @@ test.describe.serial('message-composer', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test('should have all formatters and the main actions visible on toolbar', async () => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(12);
@@ -30,14 +29,11 @@ test.describe.serial('message-composer', () => {
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
 		await page.setViewportSize({ width: 768, height: 600 });
-		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(6);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
-
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
 		await page.keyboard.press('ArrowRight');
@@ -48,8 +44,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
-
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 
@@ -58,7 +52,6 @@ test.describe.serial('message-composer', () => {
 
 	test('should add a link to the selected text', async ({ page }) => {
 		const url = faker.internet.url();
-		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await page.keyboard.type('hello composer');
 		await page.keyboard.press('Control+A'); // on Windows and Linux
@@ -71,7 +64,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await test.step('mention popup', async () => {
@@ -106,7 +98,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should list popup items correctly', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await test.step('mention popup', async () => {
@@ -117,7 +108,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await test.step('expect to edit last message', async () => {
@@ -145,7 +135,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should close mention popup when canceling a message edit via keyboard', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await test.step('expect to edit last message', async () => {
@@ -174,8 +163,6 @@ test.describe.serial('message-composer', () => {
 
 	test.describe('audio recorder', () => {
 		test('should open audio recorder', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
-
 			await test.step('should be able to record an audio with text content in composer ', async () => {
 				await poHomeChannel.composer.inputMessage.fill('this is a message with audio message');
 				await expect(poHomeChannel.composer.btnAudioMessage).toBeEnabled();
@@ -186,7 +173,6 @@ test.describe.serial('message-composer', () => {
 		});
 
 		test('should stop recording when clicking on cancel', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.composer.btnAudioMessage.click();
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
 
@@ -195,7 +181,6 @@ test.describe.serial('message-composer', () => {
 		});
 
 		test('should attach file to the composer when clicking on "Finish recording"', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.composer.btnAudioMessage.click();
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
 
