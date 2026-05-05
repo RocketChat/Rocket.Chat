@@ -241,9 +241,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 								validate: (members) =>
 									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
 							}}
-							render={({ field: { onChange, value } }) => (
-								<UserAutoCompleteMultiple value={value} onChange={onChange} federated={federated} placeholder={t('Add_people')} />
-							)}
+							render={({ field }) => <UserAutoCompleteMultiple {...field} federated={federated} placeholder={t('Add_people')} />}
 						/>
 						{errors.members && <FieldError>{errors.members.message}</FieldError>}
 					</Field>
@@ -253,12 +251,11 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 							<Controller
 								control={control}
 								name='isPrivate'
-								render={({ field: { onChange, value, ref } }) => (
+								render={({ field: { value, ...field } }) => (
 									<ToggleSwitch
-										ref={ref}
+										{...field}
 										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
-										onChange={onChange}
 									/>
 								)}
 							/>
@@ -278,9 +275,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<Controller
 										control={control}
 										name='federated'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch ref={ref} checked={value} disabled={!canUseFederation} onChange={onChange} />
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
 									/>
 								</FieldRow>
 								<FieldHint>{t(federationFieldHint)}</FieldHint>
@@ -291,9 +286,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<Controller
 										control={control}
 										name='encrypted'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch ref={ref} checked={value} disabled={e2eDisabled} onChange={onChange} />
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={e2eDisabled} />}
 									/>
 								</FieldRow>
 								<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
@@ -304,8 +297,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<Controller
 										control={control}
 										name='readOnly'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch ref={ref} checked={value} disabled={!canSetReadOnly || broadcast || federated} onChange={onChange} />
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
 										)}
 									/>
 								</FieldRow>
@@ -319,9 +312,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<Controller
 										control={control}
 										name='broadcast'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch ref={ref} checked={value} disabled={!!federated} onChange={onChange} />
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
 									/>
 								</FieldRow>
 								{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
