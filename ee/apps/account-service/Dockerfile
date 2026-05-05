@@ -119,7 +119,6 @@ ARG SERVICE
 ENV NODE_ENV=production \
     PORT=3000
 COPY --chown=node:node --from=builder /app /app
-
 WORKDIR /app/ee/apps/${SERVICE}
 USER node
 EXPOSE 3000 9458
