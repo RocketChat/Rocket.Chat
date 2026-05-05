@@ -60,7 +60,7 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/logo": "^0.32.4",
+		"@rocket.chat/logo": "^0.32.5",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-essentials": "^8.6.18",
 		"@storybook/addon-styling-webpack": "^1.0.1",

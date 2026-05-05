@@ -122,7 +122,7 @@
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/log-format": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
-		"@rocket.chat/logo": "^0.32.4",
+		"@rocket.chat/logo": "^0.32.5",
 		"@rocket.chat/media-calls": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/memo": "~0.31.25",

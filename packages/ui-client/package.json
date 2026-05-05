@@ -32,7 +32,7 @@
 		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/layout": "^0.34.2",
-		"@rocket.chat/logo": "^0.32.4",
+		"@rocket.chat/logo": "^0.32.5",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/models": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
