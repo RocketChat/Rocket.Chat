@@ -1,5 +1,5 @@
 import type { ICalendarService } from '@rocket.chat/core-services';
-import { Presence, ServiceClassInternal, api } from '@rocket.chat/core-services';
+import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
@@ -8,8 +8,6 @@ import { CalendarEvent } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { applyStatusChange } from './statusEvents/applyStatusChange';
-import { cancelUpcomingStatusChanges } from './statusEvents/cancelUpcomingStatusChanges';
-import { removeCronJobs } from './statusEvents/removeCronJobs';
 import { getShiftedTime } from './utils/getShiftedTime';
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
@@ -134,7 +132,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await this.setupNextNotification();
 
 			if (startTime || endTime) {
-				await removeCronJobs(eventId, event.uid);
 				const isBusy = busy !== undefined ? busy : event.busy !== false;
 				if (isBusy) {
 					await this.setupNextStatusChange();
@@ -146,11 +143,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
-		const event = await this.get(eventId);
-		if (event) {
-			await removeCronJobs(eventId, event.uid);
-		}
-
 		const result = await CalendarEvent.deleteOne({
 			_id: eventId,
 		});
@@ -168,10 +160,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	public async setupNextStatusChange(): Promise<void> {
 		return this.doSetupNextStatusChange();
-	}
-
-	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
-		return cancelUpcomingStatusChanges(uid, endTime);
 	}
 
 	private async getMeetingUrl(eventData: Partial<ICalendarEvent>): Promise<string | undefined> {
@@ -204,57 +192,30 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	private async doSetupNextStatusChange(): Promise<void> {
-		// This method is called in the following moments:
-		// 1. When a new busy event is created or imported
-		// 2. When a busy event is updated (time/busy status changes)
-		// 3. When a busy event is deleted
-		// 4. When a status change job executes and completes
-		// 5. When an event ends and the status is restored
-		// 6. From Outlook Calendar integration (ee/server/configuration/outlookCalendar.ts)
+		// Schedules a cron job for the next event start time.
+		// End-time handling is delegated to the presence engine via statusExpiresAt.
 
 		const busyStatusEnabled = settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		const schedulerJobId = 'calendar-status-scheduler';
+
 		if (!busyStatusEnabled) {
-			const schedulerJobId = 'calendar-status-scheduler';
 			if (await cronJobs.has(schedulerJobId)) {
 				await cronJobs.remove(schedulerJobId);
 			}
 			return;
 		}
 
-		const schedulerJobId = 'calendar-status-scheduler';
 		if (await cronJobs.has(schedulerJobId)) {
 			await cronJobs.remove(schedulerJobId);
 		}
 
 		const now = new Date();
 		const nextStartEvent = await CalendarEvent.findNextFutureEvent(now);
-		const inProgressEvents = await CalendarEvent.findInProgressEvents(now).toArray();
-		const eventsWithEndTime = inProgressEvents.filter((event) => event.endTime && event.busy !== false);
-		if (eventsWithEndTime.length === 0 && !nextStartEvent) {
+		if (!nextStartEvent) {
 			return;
 		}
 
-		let nextEndTime: Date | null = null;
-		if (eventsWithEndTime.length > 0 && eventsWithEndTime[0].endTime) {
-			nextEndTime = eventsWithEndTime.reduce((earliest, event) => {
-				if (!event.endTime) return earliest;
-				return event.endTime.getTime() < earliest.getTime() ? event.endTime : earliest;
-			}, eventsWithEndTime[0].endTime);
-		}
-
-		let nextProcessTime: Date;
-		if (nextStartEvent && nextEndTime) {
-			nextProcessTime = nextStartEvent.startTime.getTime() < nextEndTime.getTime() ? nextStartEvent.startTime : nextEndTime;
-		} else if (nextStartEvent) {
-			nextProcessTime = nextStartEvent.startTime;
-		} else if (nextEndTime) {
-			nextProcessTime = nextEndTime;
-		} else {
-			// This should never happen due to the earlier check, but just in case
-			return;
-		}
-
-		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime());
+		await cronJobs.addAtTimestamp(schedulerJobId, nextStartEvent.startTime, async () => this.processStatusChangesAtTime());
 	}
 
 	private async processStatusChangesAtTime(): Promise<void> {
@@ -262,41 +223,18 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
 		for await (const event of eventsStartingNow) {
-			if (event.busy === false) {
+			if (event.busy === false || !event.endTime) {
 				continue;
 			}
-			await this.processEventStart(event);
-		}
-
-		const eventsEndingNow = await CalendarEvent.findEventsEndingNow({ now: processTime, offset: 5000 }).toArray();
-		for await (const event of eventsEndingNow) {
-			if (event.busy === false) {
-				continue;
-			}
-			await this.processEventEnd(event);
+			await applyStatusChange({
+				eventId: event._id,
+				uid: event.uid,
+				subject: event.subject,
+				endTime: event.endTime,
+			});
 		}
 
 		await this.doSetupNextStatusChange();
-	}
-
-	private async processEventStart(event: ICalendarEvent): Promise<void> {
-		if (!event.endTime) {
-			return;
-		}
-
-		await applyStatusChange({
-			eventId: event._id,
-			uid: event.uid,
-			endTime: event.endTime,
-		});
-	}
-
-	private async processEventEnd(event: ICalendarEvent): Promise<void> {
-		if (!event.endTime) {
-			return;
-		}
-
-		await Presence.endActiveState(event.uid);
 	}
 
 	private async sendCurrentNotifications(date: Date): Promise<void> {

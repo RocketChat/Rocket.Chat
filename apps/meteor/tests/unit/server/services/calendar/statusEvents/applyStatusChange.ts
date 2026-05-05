@@ -1,151 +1,75 @@
-import { api } from '@rocket.chat/core-services';
+import { Presence } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const UsersMock = {
-	findOneById: sinon.stub(),
-	updateOne: sinon.stub(),
-	updateStatusAndStatusDefault: sinon.stub().resolves(),
-};
-
-const { applyStatusChange } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/applyStatusChange', {
-	'@rocket.chat/core-services': { api },
-	'@rocket.chat/models': {
-		Users: UsersMock,
-	},
-});
-
-describe('Calendar.StatusEvents', () => {
+describe('Calendar.applyStatusChange', () => {
 	let sandbox: sinon.SinonSandbox;
+	let setActiveStateStub: sinon.SinonStub;
+
 	const fakeEventId = 'eventId123';
 	const fakeUserId = 'userId456';
-	const fakeStartTime = new Date('2025-01-01T10:00:00Z');
 	const fakeEndTime = new Date('2025-01-01T11:00:00Z');
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();
-		setupUsersMocks();
-		setupOtherMocks();
+		setActiveStateStub = sandbox.stub(Presence, 'setActiveState').resolves();
 	});
-
-	function setupUsersMocks() {
-		const freshMocks = {
-			findOneById: sinon.stub().resolves({
-				_id: fakeUserId,
-				status: UserStatus.ONLINE,
-				roles: ['user'],
-				username: 'testuser',
-				name: 'Test User',
-			} as any),
-			updateOne: sinon.stub().resolves({ modifiedCount: 1 } as any),
-			updateStatusAndStatusDefault: sinon.stub().resolves(),
-		};
-
-		Object.assign(UsersMock, freshMocks);
-	}
-
-	function setupOtherMocks() {
-		sandbox.stub(api, 'broadcast').resolves();
-	}
 
 	afterEach(() => {
 		sandbox.restore();
 	});
 
-	describe('#applyStatusChange', () => {
-		it('should do nothing if user is not found', async () => {
-			UsersMock.findOneById.resolves(null);
+	// applyStatusChange is tightly coupled to the module loader (proxyquire was used before).
+	// Since it now delegates entirely to Presence.setActiveState, we test via the Presence stub.
+	// The function is simple enough that integration coverage via calendar E2E tests is sufficient.
+	// These tests validate the contract: applyStatusChange calls Presence.setActiveState with the right args.
 
-			await applyStatusChange({
-				eventId: fakeEventId,
-				uid: fakeUserId,
-				startTime: fakeStartTime,
-				endTime: fakeEndTime,
-				status: undefined,
-				shouldScheduleRemoval: false,
-			});
+	it('should call Presence.setActiveState with external source and calendar emoji', async () => {
+		const { applyStatusChange } = await import('../../../../../../server/services/calendar/statusEvents/applyStatusChange');
 
-			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(0);
-			expect((api.broadcast as sinon.SinonStub).callCount).to.equal(0);
+		await applyStatusChange({
+			eventId: fakeEventId,
+			uid: fakeUserId,
+			subject: 'Daily standup',
+			endTime: fakeEndTime,
 		});
 
-		it('should do nothing if user is offline', async () => {
-			UsersMock.findOneById.resolves({
-				_id: fakeUserId,
-				status: UserStatus.OFFLINE,
-			});
+		expect(setActiveStateStub.callCount).to.equal(1);
+		const [uid, state] = setActiveStateStub.firstCall.args;
+		expect(uid).to.equal(fakeUserId);
+		expect(state.statusDefault).to.equal(UserStatus.BUSY);
+		expect(state.statusText).to.equal('Daily standup');
+		expect(state.statusSource).to.equal('external');
+		expect(state.statusEmoji).to.equal('\u{1F4C5}');
+		expect(state.statusExpiresAt).to.deep.equal(fakeEndTime);
+	});
 
-			await applyStatusChange({
-				eventId: fakeEventId,
-				uid: fakeUserId,
-				startTime: fakeStartTime,
-				endTime: fakeEndTime,
-				status: undefined,
-				shouldScheduleRemoval: false,
-			});
+	it('when subject is not provided, statusText should default to empty string', async () => {
+		const { applyStatusChange } = await import('../../../../../../server/services/calendar/statusEvents/applyStatusChange');
 
-			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(0);
-			expect((api.broadcast as sinon.SinonStub).callCount).to.equal(0);
+		await applyStatusChange({
+			eventId: fakeEventId,
+			uid: fakeUserId,
+			endTime: fakeEndTime,
 		});
 
-		it('should use UserStatus.BUSY as default if no status provided', async () => {
-			UsersMock.updateStatusAndStatusDefault.resetHistory();
+		expect(setActiveStateStub.callCount).to.equal(1);
+		const [, state] = setActiveStateStub.firstCall.args;
+		expect(state.statusText).to.equal('');
+	});
 
-			await applyStatusChange({
-				eventId: fakeEventId,
-				uid: fakeUserId,
-				startTime: fakeStartTime,
-				endTime: fakeEndTime,
-				status: undefined,
-				shouldScheduleRemoval: false,
-			});
+	it('when endTime is not provided, should not include statusExpiresAt', async () => {
+		const { applyStatusChange } = await import('../../../../../../server/services/calendar/statusEvents/applyStatusChange');
 
-			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(1);
-			expect(UsersMock.updateStatusAndStatusDefault.firstCall.args[1]).to.equal(UserStatus.BUSY);
+		await applyStatusChange({
+			eventId: fakeEventId,
+			uid: fakeUserId,
 		});
 
-		it('should update user status and broadcast presence update', async () => {
-			const previousStatus = UserStatus.ONLINE;
-			const newStatus = UserStatus.AWAY;
-
-			UsersMock.updateStatusAndStatusDefault.resetHistory();
-			(api.broadcast as sinon.SinonStub).resetHistory();
-
-			UsersMock.findOneById.resolves({
-				_id: fakeUserId,
-				status: previousStatus,
-				roles: ['user'],
-				username: 'testuser',
-				name: 'Test User',
-			});
-
-			await applyStatusChange({
-				eventId: fakeEventId,
-				uid: fakeUserId,
-				startTime: fakeStartTime,
-				endTime: fakeEndTime,
-				status: newStatus,
-				shouldScheduleRemoval: false,
-			});
-
-			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(1);
-			expect(UsersMock.updateStatusAndStatusDefault.firstCall.args).to.deep.equal([fakeUserId, newStatus, newStatus]);
-
-			expect((api.broadcast as sinon.SinonStub).callCount).to.equal(1);
-			expect((api.broadcast as sinon.SinonStub).firstCall.args[0]).to.equal('presence.status');
-		});
-
-		it('should schedule status revert when shouldScheduleRemoval=true', async () => {
-			await applyStatusChange({
-				eventId: fakeEventId,
-				uid: fakeUserId,
-				startTime: fakeStartTime,
-				endTime: fakeEndTime,
-				status: UserStatus.BUSY,
-			});
-		});
+		expect(setActiveStateStub.callCount).to.equal(1);
+		const [, state] = setActiveStateStub.firstCall.args;
+		expect(state.statusExpiresAt).to.be.undefined;
 	});
 });
