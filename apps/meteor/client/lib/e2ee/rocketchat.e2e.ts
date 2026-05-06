@@ -8,7 +8,6 @@ import { isTruthy } from '@rocket.chat/tools';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import sampleSize from 'lodash/sampleSize';
-import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
 import * as Rsa from './crypto/rsa';
@@ -315,8 +314,8 @@ class E2E extends Emitter {
 
 	getKeysFromLocalStorage(): KeyPair {
 		return {
-			public_key: Accounts.storageLocation.getItem('public_key'),
-			private_key: Accounts.storageLocation.getItem('private_key'),
+			public_key: localStorage.getItem('public_key'),
+			private_key: localStorage.getItem('private_key'),
 		};
 	}
 
@@ -335,7 +334,7 @@ class E2E extends Emitter {
 					imperativeModal.close();
 				},
 				onConfirm: () => {
-					Accounts.storageLocation.removeItem('e2e.randomPassword');
+					localStorage.removeItem('e2e.randomPassword');
 					this.setState('READY');
 					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 					this.closeAlert();
@@ -403,7 +402,7 @@ class E2E extends Emitter {
 			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
-		const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
+		const randomPassword = localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
 			this.setState('SAVE_PASSWORD');
 			this.openAlert({
@@ -422,8 +421,8 @@ class E2E extends Emitter {
 		span.info(this.state);
 		this.closeAlert();
 
-		Accounts.storageLocation.removeItem('public_key');
-		Accounts.storageLocation.removeItem('private_key');
+		localStorage.removeItem('public_key');
+		localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
@@ -438,8 +437,8 @@ class E2E extends Emitter {
 	async changePassword(newPassword: string): Promise<void> {
 		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
 
-		if (Accounts.storageLocation.getItem('e2e.randomPassword')) {
-			Accounts.storageLocation.setItem('e2e.randomPassword', newPassword);
+		if (localStorage.getItem('e2e.randomPassword')) {
+			localStorage.setItem('e2e.randomPassword', newPassword);
 		}
 	}
 
@@ -464,13 +463,13 @@ class E2E extends Emitter {
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		const span = log.span('loadKeys');
-		Accounts.storageLocation.setItem('public_key', public_key);
+		localStorage.setItem('public_key', public_key);
 		this.publicKey = public_key;
 
 		try {
 			this.privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
 
-			Accounts.storageLocation.setItem('private_key', private_key);
+			localStorage.setItem('private_key', private_key);
 		} catch (error) {
 			this.setState('ERROR');
 			return span.error('Error importing private key: ', error);
@@ -494,7 +493,7 @@ class E2E extends Emitter {
 			const publicKey = await Rsa.exportPublicKey(keyPair.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
-			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
+			localStorage.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting public key');
@@ -503,7 +502,7 @@ class E2E extends Emitter {
 		try {
 			const privateKey = await Rsa.exportPrivateKey(keyPair.privateKey);
 
-			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
+			localStorage.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting private key');
@@ -518,7 +517,7 @@ class E2E extends Emitter {
 
 	async createRandomPassword(): Promise<string> {
 		const randomPassword = await generatePassphrase();
-		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
+		localStorage.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
 
