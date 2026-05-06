@@ -12,8 +12,8 @@ import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
-import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
