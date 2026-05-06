@@ -13,6 +13,16 @@ jest.mock('react-i18next', () => ({
 	Trans: ({ children }: { children: unknown }) => children,
 }));
 
+jest.mock('@rocket.chat/fuselage', () => {
+	const { createElement } = jest.requireActual<typeof import('react')>('react');
+	return {
+		__esModule: true,
+		Box: ({ is: Tag = 'div', children, position, margin, insetInlineEnd, ...props }: Record<string, any>) =>
+			createElement(Tag, props, children),
+		IconButton: () => null,
+	};
+});
+
 it('renders empty', () => {
 	const { container } = render(<Markup tokens={[]} />);
 	expect(container).toBeEmptyDOMElement();
