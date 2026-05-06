@@ -54,10 +54,10 @@ const ShortDate = ({ value }: { value: Date }) => <Time value={format(value, 'P'
 const LongDate = ({ value }: { value: Date }) => <Time value={format(value, 'Pp')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const FullDate = ({ value }: { value: Date }) => <Time value={format(value, 'PPPppp')} dateTime={value.toISOString()} />;
+const FullDate = ({ value }: { value: Date }) => <Time value={format(value, 'PPPP p')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const FullDateLong = ({ value }: { value: Date }) => <Time value={format(value, 'PPPPpppp')} dateTime={value.toISOString()} />;
+const FullDateLong = ({ value }: { value: Date }) => <Time value={format(value, 'PPPP pp')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
 const Time = ({ value, dateTime }: { value: string; dateTime: string }) => (

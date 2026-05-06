@@ -106,6 +106,28 @@ exports[`Story Tests renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Preview
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <div
+                      data-testid="mock-gazzodown-text"
+                    >
+                      Mocked GazzodownText
+                    </div>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
                     for=":r2:"
                   >
                     Date
@@ -274,6 +296,11 @@ exports[`Story Tests renders Default without crashing 1`] = `
                   >
                     Timezone
                   </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__description"
+                  >
+                    Timezone_picker_description
+                  </span>
                   <span
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
@@ -447,28 +474,6 @@ exports[`Story Tests renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-field__hint"
                   >
                     Timezone_picker_hint
-                  </span>
-                </div>
-              </div>
-              <div
-                class="rcx-box rcx-box--full rcx-css-1bjg207"
-              >
-                <div
-                  class="rcx-box rcx-box--full rcx-field"
-                >
-                  <label
-                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  >
-                    Preview
-                  </label>
-                  <span
-                    class="rcx-box rcx-box--full rcx-field__row"
-                  >
-                    <div
-                      data-testid="mock-gazzodown-text"
-                    >
-                      Mocked GazzodownText
-                    </div>
                   </span>
                 </div>
               </div>
