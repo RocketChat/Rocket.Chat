@@ -443,6 +443,11 @@ exports[`Story Tests renders Default without crashing 1`] = `
                       </i>
                     </button>
                   </span>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__hint"
+                  >
+                    Timezone_picker_hint
+                  </span>
                 </div>
               </div>
               <div
