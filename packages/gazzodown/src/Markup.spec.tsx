@@ -8,6 +8,11 @@ jest.mock('highlight.js', () => ({
 	highlightElement: (): void => undefined,
 }));
 
+jest.mock('react-i18next', () => ({
+	useTranslation: () => ({ t: (key: string) => key }),
+	Trans: ({ children }: { children: unknown }) => children,
+}));
+
 it('renders empty', () => {
 	const { container } = render(<Markup tokens={[]} />);
 	expect(container).toBeEmptyDOMElement();
