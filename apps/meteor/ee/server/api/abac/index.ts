@@ -294,7 +294,7 @@ const abacEndpoints = API.v1
 	)
 	// get single attribute by key
 	.get(
-		'abac/attributes/by-key/:key',
+		'abac/attributes/key/:key',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],

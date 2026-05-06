@@ -34,7 +34,7 @@ export const useAttributeKeysList = (filter: string) => {
 };
 
 export const useSelectedAttribute = (key?: string) => {
-	const getAttributeByKey = useEndpoint('GET', '/v1/abac/attributes/by-key/:key', { key: key ?? '' });
+	const getAttributeByKey = useEndpoint('GET', '/v1/abac/attributes/key/:key', { key: key ?? '' });
 	const isABACAvailable = useIsABACAvailable();
 
 	return useQuery({
