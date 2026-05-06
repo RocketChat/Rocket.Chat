@@ -5369,6 +5369,7 @@
   "Timeouts": "Timeouts",
   "Timestamp": "Timestamp",
   "Timezone": "Timezone",
+  "Timezone_picker_hint": "Choose the timezone for the entered time. Others will see it converted to their own timezone.",
   "Title": "Title",
   "Title_bar_color": "Title bar color",
   "Title_bar_color_offline": "Title bar color offline",
