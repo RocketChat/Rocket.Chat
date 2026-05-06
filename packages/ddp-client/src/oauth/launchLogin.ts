@@ -10,10 +10,7 @@ const REDIRECT_DATA_KEY = 'Meteor.oauth.redirectData';
 
 const saveDataForRedirect = (loginService: string, credentialToken: string): void => {
 	try {
-		sessionStorage.setItem(
-			REDIRECT_DATA_KEY,
-			JSON.stringify({ loginService, credentialToken }),
-		);
+		sessionStorage.setItem(REDIRECT_DATA_KEY, JSON.stringify({ loginService, credentialToken }));
 	} catch {
 		// sessionStorage unavailable (Safari private mode etc.) — the redirect
 		// flow won't work; the caller should have fallen back to popup style.
@@ -49,11 +46,7 @@ export const launchLogin = (options: LaunchLoginOptions): void => {
 	}
 
 	if (options.loginStyle === 'popup') {
-		showPopup(
-			options.loginUrl,
-			() => options.credentialRequestCompleteCallback?.(options.credentialToken),
-			options.popupOptions,
-		);
+		showPopup(options.loginUrl, () => options.credentialRequestCompleteCallback?.(options.credentialToken), options.popupOptions);
 		return;
 	}
 

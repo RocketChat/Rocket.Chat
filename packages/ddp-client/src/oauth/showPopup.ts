@@ -6,11 +6,7 @@ import type { PopupDimensions } from './types';
 //
 // Defaults (650x331) match Meteor's. Provider-specific overrides come through
 // `popupOptions`, e.g. Google uses 600px height and meteor-developer 749px.
-export const showPopup = (
-	url: string,
-	callback: () => void,
-	dimensions?: PopupDimensions,
-): void => {
+export const showPopup = (url: string, callback: () => void, dimensions?: PopupDimensions): void => {
 	const popup = openCenteredPopup(url, dimensions?.width ?? 650, dimensions?.height ?? 331);
 
 	const checkPopupOpen = setInterval(() => {

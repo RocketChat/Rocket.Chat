@@ -19,11 +19,8 @@ export const stateParam = (
 		isCordova: !!options.isCordova,
 	};
 
-	if (
-		loginStyle === 'redirect' ||
-		(options.setRedirectUrlWhenLoginStyleIsPopup && loginStyle === 'popup')
-	) {
-		state.redirectUrl = redirectUrl || (typeof window !== 'undefined' ? `${window.location}` : '');
+	if (loginStyle === 'redirect' || (options.setRedirectUrlWhenLoginStyleIsPopup && loginStyle === 'popup')) {
+		state.redirectUrl = redirectUrl || (typeof window !== 'undefined' ? window.location.toString() : '');
 	}
 
 	// Encode base64 — not all login services URI-encode the state parameter on

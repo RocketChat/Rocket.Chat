@@ -171,21 +171,12 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 
 		void (async () => {
 			try {
-				const result = (await this.client.callAsyncWithOptions(
-					methodName,
-					{ wait: true },
-					...methodArguments,
-				)) as { id?: string; token?: string; tokenExpires?: { $date?: number } | Date } | undefined;
+				const result = (await this.client.callAsyncWithOptions(methodName, { wait: true }, ...methodArguments)) as
+					| { id?: string; token?: string; tokenExpires?: { $date?: number } | Date }
+					| undefined;
 
 				if (result && typeof result === 'object' && typeof result.id === 'string' && typeof result.token === 'string') {
-					const expires = result.tokenExpires;
-					const $date =
-						expires instanceof Date
-							? String(expires.getTime())
-							: typeof expires === 'object' && expires && typeof expires.$date === 'number'
-								? String(expires.$date)
-								: String(Date.now());
-					this.saveCredentials(result.id, result.token, $date);
+					this.saveCredentials(result.id, result.token, normalizeTokenExpires(result.tokenExpires));
 				}
 
 				callback?.(undefined, result);
@@ -195,3 +186,13 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 		})();
 	}
 }
+
+const normalizeTokenExpires = (expires: { $date?: number } | Date | undefined): string => {
+	if (expires instanceof Date) {
+		return String(expires.getTime());
+	}
+	if (typeof expires === 'object' && expires && typeof expires.$date === 'number') {
+		return String(expires.$date);
+	}
+	return String(Date.now());
+};
