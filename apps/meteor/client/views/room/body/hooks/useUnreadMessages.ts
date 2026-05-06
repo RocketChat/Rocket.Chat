@@ -43,7 +43,7 @@ export const useHandleUnread = (
 	counter: readonly [number, Date | undefined];
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
-	debouncedReadMessageRead: () => void;
+	debouncedMessageRead: () => void;
 } => {
 	const subscribed = Boolean(subscription);
 	const [unread, setUnreadCount] = useUnreadMessages(room);
@@ -100,7 +100,7 @@ export const useHandleUnread = (
 
 	const router = useRouter();
 
-	const debouncedReadMessageRead = useMemo(
+	const debouncedMessageRead = useMemo(
 		() =>
 			withDebouncing({ wait: 500 })(() => {
 				if (subscribed) {
@@ -118,22 +118,22 @@ export const useHandleUnread = (
 					return;
 				}
 
-				debouncedReadMessageRead();
+				debouncedMessageRead();
 			}),
-		[debouncedReadMessageRead, router],
+		[debouncedMessageRead, router],
 	);
 
 	useEffect(() => {
 		if (subscription?.alert || subscription?.unread || subscribed) {
-			debouncedReadMessageRead();
+			debouncedMessageRead();
 		}
-	}, [debouncedReadMessageRead, subscription?.alert, subscription?.unread, subscribed]);
+	}, [debouncedMessageRead, subscription?.alert, subscription?.unread, subscribed]);
 
 	useEffect(() => {
 		if (!unread?.count) {
-			return debouncedReadMessageRead();
+			return debouncedMessageRead();
 		}
-	}, [debouncedReadMessageRead, room._id, unread?.count]);
+	}, [debouncedMessageRead, room._id, unread?.count]);
 
 	return {
 		handleUnreadBarJumpToButtonClick,
@@ -141,6 +141,6 @@ export const useHandleUnread = (
 		counter: [unread?.count ?? 0, unread?.since] as const,
 		setUnreadCount,
 		setLastMessageDate,
-		debouncedReadMessageRead,
+		debouncedMessageRead,
 	};
 };

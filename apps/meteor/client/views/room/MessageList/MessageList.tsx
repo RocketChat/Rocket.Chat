@@ -43,7 +43,7 @@ type MessageListProps = {
 	debouncedClearNewMessagesOnScroll: () => void;
 	handleDateScroll: (topMessage: IMessage | undefined) => void;
 	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>;
-	debouncedReadMessageRead: () => void;
+	debouncedMessageRead: () => void;
 };
 
 let lastScrollSize = 0;
@@ -66,7 +66,7 @@ export const MessageList = function MessageList({
 	setLastMessageDate,
 	debouncedClearNewMessagesOnScroll,
 	handleDateScroll,
-	debouncedReadMessageRead,
+	debouncedMessageRead,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
@@ -227,7 +227,7 @@ export const MessageList = function MessageList({
 						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
 						handleTopVisibleMessage(topMessage);
 						handleDateScroll(topMessage);
-						debouncedReadMessageRead();
+						debouncedMessageRead();
 					}}
 				>
 					{canPreview ? (
