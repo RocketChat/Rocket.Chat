@@ -1,0 +1,274 @@
+import type { PersistentEventBase, RoomID, UserID } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
+import { ajv } from '@rocket.chat/rest-typings';
+
+import type { ClientRouter } from './_shared';
+import { MATRIX_ROOM_ID_PATTERN, isImpersonationQueryProps, isMatrixErrorProps, isRoomIdParamsProps, license, tags } from './_shared';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+
+const JoinedMembersResponseSchema = {
+	type: 'object',
+	properties: {
+		joined: {
+			type: 'object',
+			additionalProperties: {
+				type: 'object',
+				properties: {
+					display_name: { type: 'string', nullable: true },
+					avatar_url: { type: 'string', nullable: true },
+				},
+				additionalProperties: true,
+			},
+		},
+	},
+	required: ['joined'],
+};
+
+const isJoinedMembersResponseProps = ajv.compile(JoinedMembersResponseSchema);
+
+const StateArrayResponseSchema = {
+	type: 'array',
+	items: { type: 'object', additionalProperties: true },
+};
+
+const isStateArrayResponseProps = ajv.compile(StateArrayResponseSchema);
+
+const StateEventParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', pattern: MATRIX_ROOM_ID_PATTERN },
+		eventType: { type: 'string' },
+		stateKey: { type: 'string' },
+	},
+	required: ['roomId', 'eventType'],
+};
+
+const isStateEventParamsProps = ajv.compile(StateEventParamsSchema);
+
+const StateContentResponseSchema = {
+	type: 'object',
+	additionalProperties: true,
+};
+
+const isStateContentResponseProps = ajv.compile(StateContentResponseSchema);
+
+const PutStateBodySchema = {
+	type: 'object',
+	additionalProperties: true,
+};
+
+const isPutStateBodyProps = ajv.compile(PutStateBodySchema);
+
+const PutStateResponseSchema = {
+	type: 'object',
+	properties: {
+		event_id: { type: 'string' },
+	},
+	required: ['event_id'],
+};
+
+const isPutStateResponseProps = ajv.compile(PutStateResponseSchema);
+
+export const addRoomsStateRoutes = (router: ClientRouter) => {
+	router
+		// GET /_matrix/client/v3/rooms/:roomId/joined_members
+		.get(
+			'/v3/rooms/:roomId/joined_members',
+			{
+				params: isRoomIdParamsProps,
+				response: {
+					200: isJoinedMembersResponseProps,
+					401: isMatrixErrorProps,
+					404: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const roomId = c.req.param('roomId') as RoomID;
+				try {
+					const state = await federationSDK.getLatestRoomState(roomId);
+					const joined: Record<string, { display_name?: string; avatar_url?: string }> = {};
+					for (const [key, pe] of state) {
+						if (!key.startsWith('m.room.member:')) continue;
+						const content = pe.getContent() as { membership?: string; displayname?: string; avatar_url?: string };
+						if (content?.membership !== 'join') continue;
+						const userId = pe.stateKey;
+						if (!userId) continue;
+						joined[userId] = {
+							...(content.displayname ? { display_name: content.displayname } : {}),
+							...(content.avatar_url ? { avatar_url: content.avatar_url } : {}),
+						};
+					}
+					return {
+						statusCode: 200,
+						body: { joined },
+					};
+				} catch (error) {
+					return {
+						statusCode: 500,
+						body: {
+							errcode: 'M_UNKNOWN',
+							error: 'Failed to fetch joined members',
+						},
+					};
+				}
+			},
+		)
+
+		// GET /_matrix/client/v3/rooms/:roomId/state
+		.get(
+			'/v3/rooms/:roomId/state',
+			{
+				params: isRoomIdParamsProps,
+				response: {
+					200: isStateArrayResponseProps,
+					401: isMatrixErrorProps,
+					404: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const roomId = c.req.param('roomId') as RoomID;
+				try {
+					const state = await federationSDK.getLatestRoomState(roomId);
+					const events: unknown[] = [];
+					for (const pe of state.values()) {
+						events.push(pe.event);
+					}
+					return {
+						statusCode: 200,
+						body: events,
+					};
+				} catch (error) {
+					return {
+						statusCode: 500,
+						body: {
+							errcode: 'M_UNKNOWN',
+							error: 'Failed to fetch room state',
+						},
+					};
+				}
+			},
+		)
+
+		// GET /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey
+		.get(
+			'/v3/rooms/:roomId/state/:eventType/:stateKey',
+			{
+				params: isStateEventParamsProps,
+				response: {
+					200: isStateContentResponseProps,
+					401: isMatrixErrorProps,
+					404: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const roomId = c.req.param('roomId') as RoomID;
+				const eventType = c.req.param('eventType');
+				const stateKey = c.req.param('stateKey') ?? '';
+
+				try {
+					const state = await federationSDK.getLatestRoomState(roomId);
+					const key = `${eventType}:${stateKey}`;
+					let pe: PersistentEventBase | undefined;
+					for (const [k, v] of state) {
+						if (k === key) {
+							pe = v;
+							break;
+						}
+					}
+					if (!pe) {
+						return {
+							statusCode: 404,
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'State event not found',
+							},
+						};
+					}
+					return {
+						statusCode: 200,
+						body: pe.getContent(),
+					};
+				} catch (error) {
+					return {
+						statusCode: 500,
+						body: {
+							errcode: 'M_UNKNOWN',
+							error: 'Failed to fetch state event',
+						},
+					};
+				}
+			},
+		)
+
+		// PUT /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey
+		.put(
+			'/v3/rooms/:roomId/state/:eventType/:stateKey',
+			{
+				params: isStateEventParamsProps,
+				query: isImpersonationQueryProps,
+				body: isPutStateBodyProps,
+				response: {
+					200: isPutStateResponseProps,
+					401: isMatrixErrorProps,
+					403: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+					501: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const roomId = c.req.param('roomId') as RoomID;
+				const eventType = c.req.param('eventType');
+				const senderId = c.get('impersonatedUserId') as UserID;
+				const body = await c.req.json();
+
+				try {
+					if (eventType === 'm.room.name' && typeof body.name === 'string') {
+						const event = await federationSDK.updateRoomName(roomId, body.name, senderId);
+						return {
+							statusCode: 200,
+							body: { event_id: event.eventId },
+						};
+					}
+					if (eventType === 'm.room.topic' && typeof body.topic === 'string') {
+						await federationSDK.setRoomTopic(roomId, senderId, body.topic);
+						return {
+							statusCode: 200,
+							body: { event_id: '' },
+						};
+					}
+
+					// TODO: extend SDK to send arbitrary state events
+					return {
+						statusCode: 501,
+						body: {
+							errcode: 'M_UNRECOGNIZED',
+							error: `State event type ${eventType} not yet implemented`,
+						},
+					};
+				} catch (error) {
+					return {
+						statusCode: 500,
+						body: {
+							errcode: 'M_UNKNOWN',
+							error: 'Failed to send state event',
+						},
+					};
+				}
+			},
+		);
+};

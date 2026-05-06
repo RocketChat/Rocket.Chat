@@ -1,0 +1,28 @@
+import { Router } from '@rocket.chat/http-router';
+
+import { catchAllClient } from './_shared';
+import { addAccountRoutes } from './account';
+import { addDirectoryRoutes } from './directory';
+import { addPresenceRoutes } from './presence';
+import { addProfileRoutes } from './profile';
+import { addRoomsLifecycleRoutes } from './rooms-lifecycle';
+import { addRoomsMessagingRoutes } from './rooms-messaging';
+import { addRoomsStateRoutes } from './rooms-state';
+import { addUserRoutes } from './user';
+import { addVersionsRoutes } from './versions';
+
+export const getClientRoutes = () => {
+	const router = new Router('/client').use(catchAllClient());
+
+	addVersionsRoutes(router);
+	addAccountRoutes(router);
+	addProfileRoutes(router);
+	addPresenceRoutes(router);
+	addDirectoryRoutes(router);
+	addRoomsLifecycleRoutes(router);
+	addRoomsStateRoutes(router);
+	addRoomsMessagingRoutes(router);
+	addUserRoutes(router);
+
+	return router;
+};
