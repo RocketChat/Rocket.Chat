@@ -163,6 +163,41 @@ it('should be idempotent if connect is called while already connected', async ()
 	expect(connection.status).toBe('connected');
 });
 
+it('should share the in-flight connect promise with a concurrent connect() caller', async () => {
+	// Regression: while status === 'connecting', a second connect() used to
+	// receive Promise.resolve(true) immediately, hiding any subsequent
+	// 'failed' payload from the in-flight handshake. Both callers must now
+	// observe the real outcome.
+	const client = new MinimalDDPClient();
+	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const first = connection.connect();
+	expect(connection.status).toBe('connecting');
+
+	const second = connection.connect();
+	expect(second).toBe(first);
+
+	await expect(handleConnectionAndRejects(server, first, second)).rejects.toBe('1');
+	expect(connection.status).toBe('failed');
+});
+
+it('should share the in-flight connect promise with a concurrent reconnect() caller', async () => {
+	// Same as above for the reconnect() entry point — the ws.onclose retry
+	// timer fires `reconnect()` and must piggyback on any handshake the
+	// consumer's bootstrap path already started.
+	const client = new MinimalDDPClient();
+	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const first = connection.connect();
+	expect(connection.status).toBe('connecting');
+
+	const second = connection.reconnect();
+	expect(second).toBe(first);
+
+	await handleConnection(server, first, second);
+	expect(connection.status).toBe('connected');
+});
+
 it('should not surface the retry timer rejection when an external connect won the race', async () => {
 	// Regression: ws.onclose schedules a `void this.reconnect()` timer; if the
 	// consumer (e.g. ddpSdk.ts startConnect) opens a fresh socket before that
