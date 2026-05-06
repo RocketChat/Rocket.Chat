@@ -1,4 +1,4 @@
-import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
+import type { IUpload } from '@rocket.chat/core-typings';
 import type { DeleteResult, UpdateResult, ClientSession, Document, InsertOneResult, WithId, FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -25,6 +25,6 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 	updateFileMetadata(
 		fileId: string,
 		userId: string,
-		metadata: { name?: string; description?: string; typeGroup?: string; content?: EncryptedContent },
+		metadata: { name?: string; description?: string; typeGroup?: string; content?: IUpload['content'] },
 	): Promise<UpdateResult | null>;
 }

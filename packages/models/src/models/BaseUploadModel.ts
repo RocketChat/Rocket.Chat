@@ -1,4 +1,4 @@
-import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
+import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type {
 	DeleteResult,
@@ -132,7 +132,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 	async updateFileMetadata(
 		fileId: string,
 		userId: string,
-		metadata: { name?: string; description?: string; typeGroup?: string; content?: EncryptedContent },
+		metadata: { name?: string; description?: string; typeGroup?: string; content?: IUpload['content'] },
 	): Promise<UpdateResult | null> {
 		return this.updateOne({ _id: fileId, userId }, { $set: metadata });
 	}
