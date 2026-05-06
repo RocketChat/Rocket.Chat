@@ -1,8 +1,7 @@
-import { Field, FieldLabel, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Field, FieldLabel } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import RoomFormAttributeField from './RoomFormAttributeField';
-import { useAttributeList } from '../hooks/useAttributeList';
 
 type RoomFormAttributeFieldsProps = {
 	fields: { id: string }[];
@@ -12,12 +11,6 @@ type RoomFormAttributeFieldsProps = {
 const RoomFormAttributeFields = ({ fields, remove }: RoomFormAttributeFieldsProps) => {
 	const { t } = useTranslation();
 
-	const { data: attributeList, isLoading } = useAttributeList();
-
-	if (isLoading || !attributeList) {
-		return <InputBoxSkeleton />;
-	}
-
 	return fields.map((field, index) => (
 		<Field key={field.id}>
 			<FieldLabel id={field.id} required={index === 0}>
@@ -25,7 +18,6 @@ const RoomFormAttributeFields = ({ fields, remove }: RoomFormAttributeFieldsProp
 			</FieldLabel>
 			<RoomFormAttributeField
 				labelId={field.id}
-				attributeList={attributeList.attributes}
 				required={index === 0}
 				onRemove={() => {
 					remove(index);

@@ -6,27 +6,13 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import type { RoomFormData } from './RoomForm';
 import RoomFormAttributeField from './RoomFormAttributeField';
+import { createFakeLicenseInfo } from '../../../../../tests/mocks/data';
 
-const mockAttribute1 = {
-	_id: 'attr1',
-	_updatedAt: new Date().toISOString(),
-	key: 'Department',
-	values: ['Engineering', 'Sales', 'Marketing'],
-};
-
-const mockAttribute2 = {
-	_id: 'attr2',
-	_updatedAt: new Date().toISOString(),
-	key: 'Security-Level',
-	values: ['Public', 'Internal', 'Confidential'],
-};
-
-const mockAttribute3 = {
-	_id: 'attr3',
-	_updatedAt: new Date().toISOString(),
-	key: 'Location',
-	values: ['US', 'EU', 'APAC'],
-};
+const mockAttributes = [
+	{ _id: 'attr1', _updatedAt: new Date().toISOString(), key: 'Department', values: ['Engineering', 'Sales', 'Marketing'] },
+	{ _id: 'attr2', _updatedAt: new Date().toISOString(), key: 'Security-Level', values: ['Public', 'Internal', 'Confidential'] },
+	{ _id: 'attr3', _updatedAt: new Date().toISOString(), key: 'Location', values: ['US', 'EU', 'APAC'] },
+];
 
 const meta: Meta<typeof RoomFormAttributeField> = {
 	component: RoomFormAttributeField,
@@ -35,7 +21,25 @@ const meta: Meta<typeof RoomFormAttributeField> = {
 	},
 	decorators: [
 		(Story) => {
-			const AppRoot = mockAppRoot().build();
+			const AppRoot = mockAppRoot()
+				.withSetting('ABAC_Enabled', true, {
+					packageValue: false,
+					blocked: false,
+					public: true,
+					type: 'boolean',
+					i18nLabel: 'ABAC_Enabled',
+					i18nDescription: 'ABAC_Enabled_Description',
+				})
+				.withEndpoint('GET', '/v1/licenses.info', async () => ({
+					license: createFakeLicenseInfo({ activeModules: ['abac'] }),
+				}))
+				.withEndpoint('GET', '/v1/abac/attributes', () => ({
+					attributes: mockAttributes,
+					offset: 0,
+					count: mockAttributes.length,
+					total: mockAttributes.length,
+				}))
+				.build();
 
 			const methods = useForm<RoomFormData>({
 				defaultValues: {
@@ -58,11 +62,6 @@ const meta: Meta<typeof RoomFormAttributeField> = {
 	],
 	args: {
 		onRemove: action('onRemove'),
-		attributeList: [
-			{ value: mockAttribute1.key, label: mockAttribute1.key, attributeValues: mockAttribute1.values },
-			{ value: mockAttribute2.key, label: mockAttribute2.key, attributeValues: mockAttribute2.values },
-			{ value: mockAttribute3.key, label: mockAttribute3.key, attributeValues: mockAttribute3.values },
-		],
 		index: 0,
 	},
 };
