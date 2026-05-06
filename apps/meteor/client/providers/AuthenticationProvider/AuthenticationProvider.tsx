@@ -9,6 +9,8 @@ import { useMemo } from 'react';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { onBeforeClearCredentials } from '../../lib/sdk/storedCredentials';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -20,7 +22,7 @@ const callLoginMethod = (
 	options: { loginToken?: string; token?: string; iframe?: boolean },
 	userCallback: ((err?: any) => void) | undefined,
 ) => {
-	Accounts.callLoginMethod({
+	getDdpSdk().account.callLoginMethod({
 		methodArguments: [options],
 		userCallback,
 	});
@@ -73,7 +75,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
 
-				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
+				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService];
 
 				if (!method) {
 					return () => Promise.reject(new Error('Login method not found'));
@@ -112,16 +114,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						resolve();
 					});
 				}),
-			unstoreLoginToken: (callback) => {
-				const { _unstoreLoginToken } = Accounts;
-				Accounts._unstoreLoginToken = function (...args) {
-					callback();
-					_unstoreLoginToken.apply(Accounts, args);
-				};
-				return () => {
-					Accounts._unstoreLoginToken = _unstoreLoginToken;
-				};
-			},
+			unstoreLoginToken: (callback) => onBeforeClearCredentials(callback),
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),

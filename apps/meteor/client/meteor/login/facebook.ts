@@ -1,22 +1,15 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
+import { oauth } from '@rocket.chat/ddp-client';
 import { Random } from '@rocket.chat/random';
-// eslint-disable-next-line import/no-duplicates
-import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import/no-duplicates
-import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { redirectUri } from '../../lib/oauth/redirectUri';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
-const { loginWithFacebook } = Meteor;
-const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
-Meteor.loginWithFacebook = (options, callback) => {
-	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
-};
-
-Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
+const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
 	'facebook',
 	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
 		const options = requestOptions as Meteor.LoginWithExternalServiceOptions & {
@@ -35,10 +28,12 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>
 
 		const loginUrlParameters: Record<string, any> = {
 			client_id: config.appId,
-			redirect_uri: OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
+			redirect_uri: redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
 			display,
 			scope,
-			state: OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl),
+			state: oauth.stateParam(loginStyle, credentialToken, options?.redirectUrl, {
+				isCordova: !!Meteor.isCordova,
+			}),
 			// Handle authentication type (e.g. for force login you need auth_type: "reauthenticate")
 			...(options.auth_type && { auth_type: options.auth_type }),
 		};
@@ -47,7 +42,7 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>
 			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
 			.join('&')}`;
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'facebook',
 			loginStyle,
 			loginUrl,
@@ -56,3 +51,14 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>
 		});
 	},
 );
+
+const Facebook: IOAuthProvider = {
+	name: 'facebook',
+	requestCredential,
+};
+
+const { loginWithFacebook } = Meteor;
+const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
+Meteor.loginWithFacebook = (options, callback) => {
+	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
+};

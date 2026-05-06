@@ -1,8 +1,11 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
+import { credentialStorage } from './credentialStorage';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -176,6 +179,9 @@ const createMeteorBackedConnection = () => {
 
 const createMeteorBackedAccount = () => {
 	return {
+		// Shares the same localStorage keys Meteor's accounts-base uses, so
+		// flag-OFF reads/writes hit the same persistent slot Meteor does.
+		storage: credentialStorage,
 		get uid(): string | undefined {
 			if (typeof Meteor.userId !== 'function') return undefined;
 			try {
@@ -220,6 +226,43 @@ const createMeteorBackedAccount = () => {
 			new Promise<void>((resolve, reject) =>
 				(Meteor as unknown as { logout: (cb: (err?: unknown) => void) => void }).logout((err) => (err ? reject(err) : resolve())),
 			),
+		// `onLogin`/`onLogout` route through Meteor's accounts-base subscriptions
+		// when the SDK transport is OFF — auth lifecycle is owned by Meteor in
+		// that mode, so the SDK's own emitter never fires `login`/`logout`.
+		onLogin: (fn: () => void): (() => void) => {
+			if (typeof Accounts.onLogin !== 'function') {
+				return noopUnsubscribe;
+			}
+			const handle = Accounts.onLogin(() => fn()) as unknown as { stop?: () => void };
+			return () => handle?.stop?.();
+		},
+		onLogout: (fn: () => void): (() => void) => {
+			if (typeof Accounts.onLogout !== 'function') {
+				return noopUnsubscribe;
+			}
+			const handle = Accounts.onLogout(() => fn()) as unknown as { stop?: () => void };
+			return () => handle?.stop?.();
+		},
+		// Delegates to Meteor's `Accounts.callLoginMethod` so the resume / token
+		// rotation / onLogin firing semantics stay identical to develop. Without
+		// this branch, sdk.account.callLoginMethod would dispatch on the SDK
+		// socket (which is the Meteor-backed proxy here) and bypass Meteor's
+		// internal login bookkeeping entirely.
+		callLoginMethod: (options: {
+			methodName?: string;
+			methodArguments?: unknown[];
+			userCallback?: (err?: unknown, res?: unknown) => void;
+		}): void => {
+			if (typeof Accounts.callLoginMethod !== 'function') {
+				options.userCallback?.(new Error('Accounts.callLoginMethod not available'));
+				return;
+			}
+			Accounts.callLoginMethod({
+				...(options.methodName !== undefined && { methodName: options.methodName }),
+				...(options.methodArguments !== undefined && { methodArguments: options.methodArguments }),
+				userCallback: options.userCallback as Parameters<typeof Accounts.callLoginMethod>[0]['userCallback'],
+			} as Parameters<typeof Accounts.callLoginMethod>[0]);
+		},
 		// Emitter shape Account inherits from
 		on: () => () => undefined,
 		off: () => undefined,

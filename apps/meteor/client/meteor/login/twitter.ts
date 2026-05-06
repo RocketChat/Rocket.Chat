@@ -1,32 +1,29 @@
 import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
+import { oauth } from '@rocket.chat/ddp-client';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import/no-duplicates
-import { OAuth } from 'meteor/oauth';
-// eslint-disable-next-line import/no-duplicates
-import { Twitter } from 'meteor/twitter-oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
-const { loginWithTwitter } = Meteor;
-const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(Twitter);
-Meteor.loginWithTwitter = (options, callback) => {
-	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
-};
+// Mirrors `Twitter.validParamsAuthenticate` from meteor/twitter-oauth — the
+// query params Twitter's /authenticate endpoint accepts beyond the OAuth core.
+const TWITTER_VALID_PARAMS_AUTHENTICATE = ['force_login', 'screen_name'];
 
-Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
+const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 	'twitter',
 	({ loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
 		const options = requestOptions as Record<string, string>;
 		const credentialToken = Random.secret();
 
-		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${OAuth._stateParam(
+		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${oauth.stateParam(
 			loginStyle,
 			credentialToken,
 			options?.redirectUrl,
+			{ isCordova: !!Meteor.isCordova },
 		)}`;
 
 		if (Meteor.isCordova) {
@@ -39,7 +36,7 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 		// Support additional, permitted parameters
 		if (options) {
 			const hasOwn = Object.prototype.hasOwnProperty;
-			Twitter.validParamsAuthenticate.forEach((param: string) => {
+			TWITTER_VALID_PARAMS_AUTHENTICATE.forEach((param) => {
 				if (hasOwn.call(options, param)) {
 					loginPath += `&${param}=${encodeURIComponent(options[param])}`;
 				}
@@ -48,7 +45,7 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 
 		const loginUrl = absoluteUrl(loginPath);
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'twitter',
 			loginStyle,
 			loginUrl,
@@ -57,3 +54,14 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 		});
 	},
 );
+
+const Twitter: IOAuthProvider = {
+	name: 'twitter',
+	requestCredential,
+};
+
+const { loginWithTwitter } = Meteor;
+const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(Twitter);
+Meteor.loginWithTwitter = (options, callback) => {
+	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
+};

@@ -1,16 +1,17 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
-import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
+import { oauth } from '@rocket.chat/ddp-client';
+import type { LoginStyle } from '@rocket.chat/ddp-client';
+import { Meteor } from 'meteor/meteor';
 
 import { loginServices } from './loginServices';
+import { OAuthConfigError } from './oauth/errors';
 
 type RequestCredentialOptions = Meteor.LoginWithExternalServiceOptions;
 type RequestCredentialCallback = (credentialTokenOrError?: string | Error) => void;
 
 type RequestCredentialConfig<T extends Partial<OAuthConfiguration>> = {
 	config: T;
-	loginStyle: string;
+	loginStyle: LoginStyle;
 	options: RequestCredentialOptions;
 	credentialRequestCompleteCallback?: RequestCredentialCallback;
 };
@@ -25,11 +26,11 @@ export function wrapRequestCredentialFn<T extends Partial<OAuthConfiguration>>(
 	): Promise<void> => {
 		const config = await loginServices.loadLoginService<T>(serviceName);
 		if (!config) {
-			credentialRequestCompleteCallback?.(new Accounts.ConfigError());
+			credentialRequestCompleteCallback?.(new OAuthConfigError());
 			return;
 		}
 
-		const loginStyle = OAuth._loginStyle(serviceName, config, options);
+		const loginStyle = oauth.resolveLoginStyle(config, options, { isCordova: !!Meteor.isCordova });
 		fn({
 			config,
 			loginStyle,

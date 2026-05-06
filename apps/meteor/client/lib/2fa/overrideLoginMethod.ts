@@ -1,7 +1,8 @@
-import { Accounts } from 'meteor/accounts-base';
+import type { CallLoginMethodOptions } from '@rocket.chat/ddp-client';
 import type { Meteor } from 'meteor/meteor';
 
 import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
+import { getDdpSdk } from '../sdk/ddpSdk';
 
 type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
 
@@ -97,9 +98,9 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 	};
 };
 
-export const callLoginMethod = (options: Omit<Accounts.LoginMethodOptions, 'userCallback'>) =>
+export const callLoginMethod = (options: Omit<CallLoginMethodOptions, 'userCallback'>) =>
 	new Promise<void>((resolve, reject) => {
-		Accounts.callLoginMethod({
+		getDdpSdk().account.callLoginMethod({
 			...options,
 			userCallback: (error) => {
 				if (error) {

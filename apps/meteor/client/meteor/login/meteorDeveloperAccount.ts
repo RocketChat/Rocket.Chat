@@ -1,20 +1,17 @@
+import { oauth } from '@rocket.chat/ddp-client';
+import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import/no-duplicates
-import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
-// eslint-disable-next-line import/no-duplicates
-import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { redirectUri } from '../../lib/oauth/redirectUri';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
-const { loginWithMeteorDeveloperAccount } = Meteor;
-const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(MeteorDeveloperAccounts);
-Meteor.loginWithMeteorDeveloperAccount = (options, callback) => {
-	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], callback, loginWithMeteorDeveloperAccountAndTOTP);
-};
+// Mirrors `MeteorDeveloperAccounts._server` from meteor/meteor-developer-oauth.
+const MDG_SERVER = 'https://www.meteor.com';
 
-MeteorDeveloperAccounts.requestCredential = wrapRequestCredentialFn(
+const requestCredential = wrapRequestCredentialFn(
 	'meteor-developer',
 	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
 		const options = requestOptions as Record<string, any>;
@@ -22,8 +19,8 @@ MeteorDeveloperAccounts.requestCredential = wrapRequestCredentialFn(
 		const credentialToken = Random.secret();
 
 		let loginUrl =
-			`${MeteorDeveloperAccounts._server}/oauth2/authorize?` +
-			`state=${OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)}` +
+			`${MDG_SERVER}/oauth2/authorize?` +
+			`state=${oauth.stateParam(loginStyle, credentialToken, options.redirectUrl, { isCordova: !!Meteor.isCordova })}` +
 			`&response_type=code&` +
 			`client_id=${config.clientId}${options.details ? `&details=${options.details}` : ''}`;
 
@@ -31,9 +28,9 @@ MeteorDeveloperAccounts.requestCredential = wrapRequestCredentialFn(
 			loginUrl += `&user_email=${encodeURIComponent(options.loginHint)}`;
 		}
 
-		loginUrl += `&redirect_uri=${OAuth._redirectUri('meteor-developer', config)}`;
+		loginUrl += `&redirect_uri=${redirectUri('meteor-developer', config)}`;
 
-		OAuth.launchLogin({
+		oauth.launchLogin({
 			loginService: 'meteor-developer',
 			loginStyle,
 			loginUrl,
@@ -43,3 +40,14 @@ MeteorDeveloperAccounts.requestCredential = wrapRequestCredentialFn(
 		});
 	},
 );
+
+const MeteorDeveloperAccounts: IOAuthProvider = {
+	name: 'meteor-developer',
+	requestCredential,
+};
+
+const { loginWithMeteorDeveloperAccount } = Meteor;
+const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(MeteorDeveloperAccounts);
+Meteor.loginWithMeteorDeveloperAccount = (options, callback) => {
+	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], callback, loginWithMeteorDeveloperAccountAndTOTP);
+};

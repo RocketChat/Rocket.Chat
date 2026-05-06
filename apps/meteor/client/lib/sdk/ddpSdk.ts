@@ -1,10 +1,11 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { credentialStorage } from './credentialStorage';
 import { createMeteorBackedSdk } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
+import { clearStoredCredentials } from './storedCredentials';
 import { userIdStore } from '../user';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
@@ -51,6 +52,11 @@ export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
 			instance = DDPSDK.create(computeDdpUrl());
+			// Replace the AccountImpl's default storage with the shared
+			// instance so flag-ON and flag-OFF paths read/write the same
+			// localStorage slot — otherwise a logout via one path would
+			// leave the other's in-memory state out of sync.
+			(instance.account as unknown as { storage: typeof credentialStorage }).storage = credentialStorage;
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
@@ -66,7 +72,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-const readStoredLoginToken = (): string | null => (typeof window !== 'undefined' ? window.localStorage.getItem('Meteor.loginToken') : null);
+const readStoredLoginToken = (): string | null => credentialStorage.getToken();
 
 let inflightLogin: Promise<void> | undefined;
 
@@ -141,7 +147,7 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 			// latter dispatches a `logout` method which itself races against
 			// parallel re-auth flows in CI's parallel-shard environment and
 			// kicked otherwise-healthy tests out.
-			Accounts._unstoreLoginToken();
+			clearStoredCredentials();
 			(Meteor.connection as unknown as { setUserId: (uid: string | null) => void }).setUserId(null);
 			return;
 		}
@@ -191,8 +197,15 @@ export const adoptAccountFromMeteorLoginResult = (result: unknown): void => {
 		tokenExpires = new Date(typeof d === 'string' ? parseInt(d, 10) : d);
 	}
 	const sdk = getDdpSdk();
+	const previousUid = sdk.account.uid;
 	sdk.account.user = { ...sdk.account.user, token: r.token, tokenExpires, id: r.id } as typeof sdk.account.user;
 	sdk.account.uid = r.id;
+	// Emit `uid` so subscribers of `account.onLogin` see the sync — the assignment
+	// itself doesn't fire the Emitter. Skip when uid didn't change to avoid
+	// firing onLogin on a token-refresh that landed on the same account.
+	if (previousUid !== r.id) {
+		(sdk.account as unknown as { emit: (event: 'uid', value: string) => void }).emit('uid', r.id);
+	}
 };
 
 const teardownAuthenticatedConnection = (): void => {

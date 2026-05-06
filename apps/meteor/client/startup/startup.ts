@@ -1,10 +1,10 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { Accounts } from 'meteor/accounts-base';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
-import { ensureConnectedAndAuthenticated } from '../lib/sdk/ddpSdk';
+import { credentialStorage } from '../lib/sdk/credentialStorage';
+import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
 import { userIdStore } from '../lib/user';
 import { removeLocalUserData, synchronizeUserData } from '../lib/userData';
@@ -107,7 +107,7 @@ if (!sdkTransportEnabled) {
 
 	syncOnce(userIdStore.getState());
 
-	Accounts.onLogout(() => {
+	getDdpSdk().account.onLogout(() => {
 		lastSyncedUid = undefined;
 	});
 }
@@ -120,7 +120,7 @@ Users.use.subscribe(() => {
 	emitStatusChange(user.status);
 });
 
-Accounts.onLogout(() => {
+getDdpSdk().account.onLogout(() => {
 	removeLocalUserData();
 	status = undefined;
 });
@@ -131,6 +131,6 @@ Accounts.onLogout(() => {
 // of missing token and missing uid at module init and clean up residual keys
 // (e.g. E2EE public_key / private_key). Do NOT subscribe to userIdStore for this —
 // the valid-session resume path is async and would clobber a valid token mid-flight.
-if (!userIdStore.getState() && localStorage.getItem('Meteor.loginToken') === null) {
+if (!userIdStore.getState() && credentialStorage.getToken() === null) {
 	removeLocalUserData();
 }
