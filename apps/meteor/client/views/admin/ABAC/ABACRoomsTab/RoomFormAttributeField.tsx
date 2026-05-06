@@ -1,25 +1,28 @@
-import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Button, FieldError, FieldRow, MultiSelectFiltered, SelectFiltered } from '@rocket.chat/fuselage';
-import { useCallback, useMemo } from 'react';
+import { Box, Button, FieldError, FieldRow, MultiSelectFiltered, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useCallback, useMemo, useState } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { RoomFormData } from './RoomForm';
+import type { AttributeKeyOption } from '../hooks/useAttributeList';
+import { useAttributeKeysList, useSelectedAttribute } from '../hooks/useAttributeList';
 
 type ABACAttributeAutocompleteProps = {
 	labelId: string;
 	onRemove: () => void;
 	index: number;
-	attributeList: { value: string; label: string; attributeValues: string[] }[];
 	required?: boolean;
 };
 
-const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({ labelId, onRemove, index, required = false }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
 
-	const options: SelectOption[] = useMemo(() => attributeList.map((attribute) => [attribute.value, attribute.label]), [attributeList]);
+	const [filter, setFilter] = useState('');
+	const debouncedFilter = useDebouncedValue(filter, 500);
+	const { data: attributeItems = [], fetchNextPage } = useAttributeKeysList(debouncedFilter);
 
 	const validateRepeatedAttributes = useCallback(
 		(value: string) => {
@@ -46,21 +49,40 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 		rules: { required: t('Required_field', { field: t('Attribute_Values') }) },
 	});
 
+	const { data: selectedAttribute } = useSelectedAttribute(keyField.value);
+
+	const options = useMemo<AttributeKeyOption[]>(() => {
+		if (!selectedAttribute || attributeItems.some((item) => item.value === selectedAttribute.key)) {
+			return attributeItems;
+		}
+		return [
+			...attributeItems,
+			{
+				_id: selectedAttribute._id,
+				value: selectedAttribute.key,
+				label: selectedAttribute.key,
+				attributeValues: selectedAttribute.values,
+			},
+		];
+	}, [attributeItems, selectedAttribute]);
+
 	const valueOptions: [string, string][] = useMemo(() => {
 		if (!keyField.value) {
 			return [];
 		}
 
-		const selectedAttributeData = attributeList.find((option) => option.value === keyField.value);
+		const selected = options.find((option) => option.value === keyField.value);
 
-		return selectedAttributeData?.attributeValues.map((value) => [value, value]) || [];
-	}, [attributeList, keyField.value]);
+		return selected?.attributeValues.map((value) => [value, value]) || [];
+	}, [options, keyField.value]);
 
 	return (
 		<Box display='flex' flexDirection='column' w='full'>
 			<FieldRow>
-				<SelectFiltered
+				<PaginatedSelectFiltered
 					{...keyField}
+					filter={filter}
+					setFilter={setFilter as (value: string | number | undefined) => void}
 					options={options}
 					required={required}
 					aria-required={required}
@@ -70,7 +92,8 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 					placeholder={t('ABAC_Search_Attribute')}
 					mbe={4}
 					error={keyFieldState.error?.message}
-					withTruncatedText
+					withTitle
+					endReached={() => fetchNextPage()}
 					onChange={(value) => {
 						keyField.onChange(value);
 						resetField(`attributes.${index}.values`, { defaultValue: [] });

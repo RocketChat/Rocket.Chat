@@ -24,15 +24,21 @@ const mockAttribute3 = {
 	values: ['US', 'EU', 'APAC'],
 };
 
+const mockAttributes = [mockAttribute1, mockAttribute2, mockAttribute3];
+
 jest.mock('../hooks/useAttributeList', () => ({
-	useAttributeList: jest.fn(() => ({
-		data: {
-			attributes: [
-				{ value: mockAttribute1.key, label: mockAttribute1.key, attributeValues: mockAttribute1.values },
-				{ value: mockAttribute2.key, label: mockAttribute2.key, attributeValues: mockAttribute2.values },
-				{ value: mockAttribute3.key, label: mockAttribute3.key, attributeValues: mockAttribute3.values },
-			],
-		},
+	useAttributeKeysList: jest.fn(() => ({
+		data: mockAttributes.map((attribute) => ({
+			_id: attribute._id,
+			value: attribute.key,
+			label: attribute.key,
+			attributeValues: attribute.values,
+		})),
+		fetchNextPage: jest.fn(),
+		isLoading: false,
+	})),
+	useSelectedAttribute: jest.fn((key?: string) => ({
+		data: key ? mockAttributes.find((attribute) => attribute.key === key) : undefined,
 		isLoading: false,
 	})),
 }));

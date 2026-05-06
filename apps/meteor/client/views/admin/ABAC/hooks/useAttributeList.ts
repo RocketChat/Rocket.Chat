@@ -1,39 +1,48 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-const COUNT = 150;
+const COUNT = 50;
 
-export const useAttributeList = () => {
-	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
+export type AttributeKeyOption = {
+	_id: string;
+	value: string;
+	label: string;
+	attributeValues: string[];
+};
+
+export const useAttributeKeysList = (filter: string) => {
+	const list = useEndpoint('GET', '/v1/abac/attributes');
+	const isABACAvailable = useIsABACAvailable();
+
+	return useInfiniteQuery({
+		enabled: isABACAvailable,
+		queryKey: ABACQueryKeys.roomAttributes.autocomplete(filter),
+		queryFn: async ({ pageParam: offset = 0 }) => list({ ...(filter ? { key: filter } : {}), offset, count: COUNT }),
+		initialPageParam: 0,
+		getNextPageParam: ({ offset, count, total }) => (offset + count < total ? offset + count : undefined),
+		select: (data) =>
+			data.pages.flatMap<AttributeKeyOption>((page) =>
+				page.attributes.map((attribute) => ({
+					_id: attribute._id,
+					value: attribute.key,
+					label: attribute.key,
+					attributeValues: attribute.values,
+				})),
+			),
+	});
+};
+
+export const useSelectedAttribute = (key?: string) => {
+	const list = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
 	return useQuery({
-		enabled: isABACAvailable,
-		queryKey: ABACQueryKeys.roomAttributes.list(),
-		queryFn: async () => {
-			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });
-			const { attributes: firstPageAttributes, total } = firstPage;
-
-			let currentPage = COUNT;
-			const pages = [];
-
-			while (currentPage < total) {
-				pages.push(attributesAutoCompleteEndpoint({ offset: currentPage, count: COUNT }));
-				currentPage += COUNT;
-			}
-			const remainingPages = await Promise.all(pages);
-
-			return {
-				attributes: [...firstPageAttributes, ...remainingPages.flatMap((page) => page.attributes)].map((attribute) => ({
-					_id: attribute._id,
-					label: attribute.key,
-					value: attribute.key,
-					attributeValues: attribute.values,
-				})),
-			};
-		},
+		enabled: isABACAvailable && !!key,
+		queryKey: ABACQueryKeys.roomAttributes.byKey(key ?? ''),
+		queryFn: () => list({ key, offset: 0, count: 25 }),
+		select: (data) => data.attributes.find((attribute) => attribute.key === key),
 	});
 };
