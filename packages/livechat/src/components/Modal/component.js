@@ -50,9 +50,10 @@ export class Modal extends Component {
 		open ? (
 			<div
 				data-qa-type='modal-overlay'
+				role='presentation'
+				className={createClassName(styles, 'modal__overlay')}
 				onTouchStart={this.handleTouchStart}
 				onMouseDown={this.handleMouseDown}
-				className={createClassName(styles, 'modal__overlay')}
 			>
 				<div className={createClassName(styles, 'modal', { animated })} {...props}>
 					{children}

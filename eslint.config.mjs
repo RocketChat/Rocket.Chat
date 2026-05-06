@@ -390,9 +390,7 @@ export default [
 			},
 		},
 		rules: {
-			'jsx-a11y/click-events-have-key-events': 'off',
 			'jsx-a11y/media-has-caption': 'off',
-			'jsx-a11y/no-static-element-interactions': 'off',
 			'jsx-quotes': ['error', 'prefer-single'],
 			'react/jsx-curly-brace-presence': 'off',
 			'react/display-name': [
