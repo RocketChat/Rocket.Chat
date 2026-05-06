@@ -1,16 +1,31 @@
+import { Emitter } from '@rocket.chat/emitter';
+
 import { CachedStoresManager } from '../cachedStores/CachedStoresManager';
 
-// Mirror of `Accounts._unstoreLoginToken()` plus the
-// `client/meteor/overrides/unstoreLoginToken.ts` cache-flush hook.
-// Drops the local credential trio (`Meteor.loginToken`,
-// `Meteor.loginTokenExpires`, `Meteor.userId`) and clears the cached
-// per-user stores so a relog into a different account doesn't show stale
-// data.
-//
-// Keeps the same localStorage keys Meteor uses so consumers like
-// `client/meteor/overrides/ddpOverREST.ts` (which reads
-// `localStorage.getItem('Meteor.loginToken')` directly) stay in sync.
+const emitter = new Emitter<{ beforeClear: void }>();
+
+/**
+ * Subscribe to credential-clear events. Fires before each
+ * `clearStoredCredentials()` (whether triggered by us, by force-logout,
+ * or by Meteor's own logout flow via the `unstoreLoginToken.ts`
+ * override). Returns the unsubscribe function.
+ */
+export const onBeforeClearCredentials = (cb: () => void): (() => void) => emitter.on('beforeClear', cb);
+
+/**
+ * Mirror of `Accounts._unstoreLoginToken()` plus the
+ * `client/meteor/overrides/unstoreLoginToken.ts` cache-flush hook.
+ * Drops the local credential trio (`Meteor.loginToken`,
+ * `Meteor.loginTokenExpires`, `Meteor.userId`) and clears the cached
+ * per-user stores so a relog into a different account doesn't show stale
+ * data.
+ *
+ * Keeps the same localStorage keys Meteor uses so consumers like
+ * `client/meteor/overrides/ddpOverREST.ts` (which reads
+ * `localStorage.getItem('Meteor.loginToken')` directly) stay in sync.
+ */
 export const clearStoredCredentials = (): void => {
+	emitter.emit('beforeClear', undefined);
 	if (typeof window !== 'undefined' && window.localStorage) {
 		window.localStorage.removeItem('Meteor.loginToken');
 		window.localStorage.removeItem('Meteor.loginTokenExpires');
