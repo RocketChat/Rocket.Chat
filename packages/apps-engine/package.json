@@ -34,7 +34,9 @@
 			"email": "douglas.gubert@rocket.chat"
 		}
 	],
-	"files": ["definition/**"],
+	"files": [
+		"definition/**"
+	],
 	"scripts": {
 		"build": "run-s build:clean build:default",
 		"build:clean": "rimraf definition",
