@@ -130,6 +130,6 @@ getDdpSdk().account.onLogout(() => {
 // of missing token and missing uid at module init and clean up residual keys
 // (e.g. E2EE public_key / private_key). Do NOT subscribe to userIdStore for this —
 // the valid-session resume path is async and would clobber a valid token mid-flight.
-if (!userIdStore.getState() && localStorage.getItem('Meteor.loginToken') === null) {
+if (!userIdStore.getState() && getDdpSdk().account.storage.getToken() === null) {
 	removeLocalUserData();
 }

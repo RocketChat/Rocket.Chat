@@ -1,4 +1,5 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
+import { LocalStorageCredentialStorage } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -176,7 +177,12 @@ const createMeteorBackedConnection = () => {
 };
 
 const createMeteorBackedAccount = () => {
+	// Shares the same localStorage keys Meteor's accounts-base uses, so flag-OFF
+	// reads/writes hit the same persistent slot the Meteor flow does.
+	const storage = new LocalStorageCredentialStorage();
+
 	return {
+		storage,
 		get uid(): string | undefined {
 			if (typeof Meteor.userId !== 'function') return undefined;
 			try {

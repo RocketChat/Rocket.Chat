@@ -16,8 +16,6 @@ import { getDdpSdk } from '../sdk/ddpSdk';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
-const readStoredLoginToken = (): string | null => (typeof window !== 'undefined' ? window.localStorage.getItem('Meteor.loginToken') : null);
-
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
@@ -382,7 +380,7 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return readStoredLoginToken();
+		return getDdpSdk().account.storage.getToken();
 	}
 
 	override clearCacheOnLogout() {

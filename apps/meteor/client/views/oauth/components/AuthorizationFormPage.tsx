@@ -7,6 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
+import { getDdpSdk } from '../../../lib/sdk/ddpSdk';
 
 type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
@@ -15,7 +16,7 @@ type AuthorizationFormPageProps = {
 };
 
 const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFormPageProps) => {
-	const token = useMemo(() => window.localStorage.getItem('Meteor.loginToken') ?? undefined, []);
+	const token = useMemo(() => getDdpSdk().account.storage.getToken() ?? undefined, []);
 
 	const formLabelId = useId();
 

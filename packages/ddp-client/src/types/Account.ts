@@ -1,6 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { ClientStream } from './ClientStream';
+import type { CredentialStorage } from './CredentialStorage';
+import { LocalStorageCredentialStorage } from './CredentialStorage';
 import { LoginCancelledError } from './LoginCancelledError';
 
 type User = {
@@ -26,6 +28,7 @@ export type CallLoginMethodOptions = {
 export interface Account extends Emitter<AccountEvents> {
 	uid?: string;
 	user?: User;
+	storage: CredentialStorage;
 	loginWithPassword(username: string, password: string): Promise<void>;
 	loginWithToken(token: string): Promise<{
 		id: string;
@@ -45,8 +48,14 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 
 	user?: { id: string; username?: string; token?: string; tokenExpires?: Date };
 
-	constructor(private readonly client: ClientStream) {
+	readonly storage: CredentialStorage;
+
+	constructor(
+		private readonly client: ClientStream,
+		storage: CredentialStorage = new LocalStorageCredentialStorage(),
+	) {
 		super();
+		this.storage = storage;
 
 		client.onCollection('users', (data) => {
 			if (data.collection !== 'users') {

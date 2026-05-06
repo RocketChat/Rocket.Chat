@@ -66,7 +66,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-const readStoredLoginToken = (): string | null => (typeof window !== 'undefined' ? window.localStorage.getItem('Meteor.loginToken') : null);
+const readStoredLoginToken = (): string | null => getDdpSdk().account.storage.getToken();
 
 let inflightLogin: Promise<void> | undefined;
 
