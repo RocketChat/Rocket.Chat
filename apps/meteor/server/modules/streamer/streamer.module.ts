@@ -197,7 +197,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		// DDPStreamer doesn't have this
 		if (useCollection === true) {
 			// Collection compatibility
-			publication._session.sendAdded(this.subscriptionName, 'id', {
+			publication._session?.sendAdded(this.subscriptionName, 'id', {
 				eventName,
 			});
 		}
@@ -301,7 +301,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 					if (allowed) {
 						const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
 						if (msg) {
-							subscription.subscription._session.socket?.send(msg);
+							subscription.subscription._session?.socket?.send(msg);
 						}
 					}
 				} catch (err) {

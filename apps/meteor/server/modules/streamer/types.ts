@@ -10,7 +10,7 @@ export interface IPublication {
 		socket: {
 			send: (payload: string) => void;
 		};
-	};
+	} | null;
 	client: {
 		meteorClient: boolean;
 		ws: any;

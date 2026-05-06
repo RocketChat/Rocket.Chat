@@ -63,7 +63,7 @@ export class NotificationsModule {
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
-			const { userId } = publication._session;
+			const userId = publication._session?.userId;
 			if (!userId) {
 				return;
 			}
@@ -376,7 +376,7 @@ export class NotificationsModule {
 		this.streamRoles.allowRead('logged');
 
 		this.streamUser.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
-			const { userId } = publication._session;
+			const userId = publication._session?.userId;
 			if (!userId) {
 				return;
 			}
@@ -390,7 +390,7 @@ export class NotificationsModule {
 						args,
 					});
 
-					payload && publication._session.socket?.send(payload);
+					payload && publication._session?.socket?.send(payload);
 				};
 
 				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(
