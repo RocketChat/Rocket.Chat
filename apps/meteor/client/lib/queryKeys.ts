@@ -151,7 +151,6 @@ export const ABACQueryKeys = {
 		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
 		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
 		autocomplete: (filter: string) => [...ABACQueryKeys.roomAttributes.all(), 'autocomplete', filter] as const,
-		byKey: (key: string) => [...ABACQueryKeys.roomAttributes.all(), 'by-key', key] as const,
 		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
 	},
 	rooms: {

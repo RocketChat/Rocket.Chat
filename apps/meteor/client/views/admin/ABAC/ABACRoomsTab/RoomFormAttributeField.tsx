@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { RoomFormData } from './RoomForm';
 import type { AttributeKeyOption } from '../hooks/useAttributeList';
-import { useAttributeKeysList, useSelectedAttribute } from '../hooks/useAttributeList';
+import { useAttributeKeysList, useResolveSavedAttribute } from '../hooks/useAttributeList';
 
 type ABACAttributeAutocompleteProps = {
 	labelId: string;
@@ -49,21 +49,14 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, required = false }: 
 		rules: { required: t('Required_field', { field: t('Attribute_Values') }) },
 	});
 
-	const { data: selectedAttribute } = useSelectedAttribute(keyField.value);
+	const resolvedAttribute = useResolveSavedAttribute(keyField.value);
 
 	const options = useMemo<AttributeKeyOption[]>(() => {
-		if (!selectedAttribute || attributeItems.some((item) => item.value === selectedAttribute.key)) {
+		if (!resolvedAttribute || attributeItems.some((item) => item.value === resolvedAttribute.value)) {
 			return attributeItems;
 		}
-		return [
-			...attributeItems,
-			{
-				value: selectedAttribute.key,
-				label: selectedAttribute.key,
-				attributeValues: selectedAttribute.values,
-			},
-		];
-	}, [attributeItems, selectedAttribute]);
+		return [...attributeItems, resolvedAttribute];
+	}, [attributeItems, resolvedAttribute]);
 
 	const valueOptions: [string, string][] = useMemo(() => {
 		if (!keyField.value) {

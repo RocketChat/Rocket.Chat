@@ -1,5 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
@@ -35,14 +36,17 @@ export const useAttributeKeysList = (filter: string) => {
 	});
 };
 
-export const useSelectedAttribute = (key?: string) => {
-	const getAttributeByKey = useEndpoint('GET', '/v1/abac/attributes/key/:key', { key: key ?? '' });
-	const isABACAvailable = useIsABACAvailable();
+export const useResolveSavedAttribute = (key?: string): AttributeKeyOption | undefined => {
+	const { data: items = [], hasNextPage, isFetching, fetchNextPage } = useAttributeKeysList('');
 
-	return useQuery({
-		enabled: isABACAvailable && !!key,
-		queryKey: ABACQueryKeys.roomAttributes.byKey(key ?? ''),
-		queryFn: () => getAttributeByKey(),
-		staleTime: STALE_TIME,
-	});
+	const found = key ? items.find((item) => item.value === key) : undefined;
+	const shouldFetchMore = !!key && !found && hasNextPage && !isFetching;
+
+	useEffect(() => {
+		if (shouldFetchMore) {
+			fetchNextPage();
+		}
+	}, [shouldFetchMore, fetchNextPage]);
+
+	return found;
 };

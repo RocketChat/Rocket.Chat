@@ -292,25 +292,6 @@ const abacEndpoints = API.v1
 			return API.v1.success(result);
 		},
 	)
-	// get single attribute by key
-	.get(
-		'abac/attributes/key/:key',
-		{
-			authRequired: true,
-			permissionsRequired: ['abac-management'],
-			response: {
-				200: GETAbacAttributeByIdResponseSchema,
-				401: validateUnauthorizedErrorResponse,
-				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
-			},
-		},
-		async function action() {
-			const { key } = this.urlParams;
-			const result = await Abac.getAbacAttributeByKey(key, getActorFromUser(this.user));
-			return API.v1.success(result);
-		},
-	)
 	// delete attribute (only if not in use)
 	.delete(
 		'abac/attributes/:_id',

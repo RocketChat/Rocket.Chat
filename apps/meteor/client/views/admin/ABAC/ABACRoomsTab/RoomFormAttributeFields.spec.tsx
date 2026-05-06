@@ -26,21 +26,21 @@ const mockAttribute3 = {
 
 const mockAttributes = [mockAttribute1, mockAttribute2, mockAttribute3];
 
+const mockOptions = mockAttributes.map((attribute) => ({
+	value: attribute.key,
+	label: attribute.key,
+	attributeValues: attribute.values,
+}));
+
 jest.mock('../hooks/useAttributeList', () => ({
 	useAttributeKeysList: jest.fn(() => ({
-		data: mockAttributes.map((attribute) => ({
-			_id: attribute._id,
-			value: attribute.key,
-			label: attribute.key,
-			attributeValues: attribute.values,
-		})),
+		data: mockOptions,
 		fetchNextPage: jest.fn(),
+		hasNextPage: false,
+		isFetching: false,
 		isLoading: false,
 	})),
-	useSelectedAttribute: jest.fn((key?: string) => ({
-		data: key ? mockAttributes.find((attribute) => attribute.key === key) : undefined,
-		isLoading: false,
-	})),
+	useResolveSavedAttribute: jest.fn((key?: string) => mockOptions.find((option) => option.value === key)),
 }));
 
 const appRoot = mockAppRoot()
