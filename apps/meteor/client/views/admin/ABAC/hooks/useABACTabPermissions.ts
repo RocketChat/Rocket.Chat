@@ -7,8 +7,8 @@ export const ABAC_TAB_ORDER: ABACTab[] = ['settings', 'room-attributes', 'rooms'
 export const useABACTabPermissions = (): Record<ABACTab, boolean> => {
 	return {
 		'settings': usePermission('manage-abac-admin-settings'),
-		'room-attributes': usePermission('manage-abac-admin-attributes'),
-		'rooms': usePermission('manage-abac-admin-room-attributes'),
+		'room-attributes': usePermission('manage-abac-admin-room-attributes'),
+		'rooms': usePermission('manage-abac-admin-rooms'),
 		'logs': usePermission('view-abac-admin-audit'),
 	};
 };

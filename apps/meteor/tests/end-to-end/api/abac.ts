@@ -58,8 +58,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await Promise.all([
 			updatePermission('abac-management', ['admin']),
 			updatePermission('manage-abac-admin-settings', ['admin']),
-			updatePermission('manage-abac-admin-attributes', ['admin']),
 			updatePermission('manage-abac-admin-room-attributes', ['admin']),
+			updatePermission('manage-abac-admin-rooms', ['admin']),
 			updatePermission('view-abac-admin-audit', ['admin']),
 		]);
 		await updateSetting('ABAC_Enabled', true);
@@ -104,19 +104,19 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			after(async () => {
 				await Promise.all([
 					updatePermission('manage-abac-admin-settings', ['admin']),
-					updatePermission('manage-abac-admin-attributes', ['admin']),
 					updatePermission('manage-abac-admin-room-attributes', ['admin']),
+					updatePermission('manage-abac-admin-rooms', ['admin']),
 					updatePermission('view-abac-admin-audit', ['admin']),
 				]);
 			});
 
-			describe('without manage-abac-admin-room-attributes', () => {
+			describe('without manage-abac-admin-rooms', () => {
 				before(async () => {
-					await updatePermission('manage-abac-admin-room-attributes', []);
+					await updatePermission('manage-abac-admin-rooms', []);
 				});
 
 				after(async () => {
-					await updatePermission('manage-abac-admin-room-attributes', ['admin']);
+					await updatePermission('manage-abac-admin-rooms', ['admin']);
 				});
 
 				it('POST /abac/rooms/:rid/attributes should return 403', async () => {
@@ -152,13 +152,13 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 			});
 
-			describe('without manage-abac-admin-attributes', () => {
+			describe('without manage-abac-admin-room-attributes', () => {
 				before(async () => {
-					await updatePermission('manage-abac-admin-attributes', []);
+					await updatePermission('manage-abac-admin-room-attributes', []);
 				});
 
 				after(async () => {
-					await updatePermission('manage-abac-admin-attributes', ['admin']);
+					await updatePermission('manage-abac-admin-room-attributes', ['admin']);
 				});
 
 				it('GET /abac/attributes should return 403', async () => {
@@ -2725,8 +2725,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await Promise.all([
 			updatePermission('abac-management', ['admin']),
 			updatePermission('manage-abac-admin-settings', ['admin']),
-			updatePermission('manage-abac-admin-attributes', ['admin']),
 			updatePermission('manage-abac-admin-room-attributes', ['admin']),
+			updatePermission('manage-abac-admin-rooms', ['admin']),
 			updatePermission('view-abac-admin-audit', ['admin']),
 		]);
 		await updateSetting('ABAC_Enabled', true);
