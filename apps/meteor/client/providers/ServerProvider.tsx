@@ -137,7 +137,11 @@ const getStatus = sdkTransportEnabled
 			ddpSdkStatusDep!.depend();
 			return sdkStatusToMeteor(getDdpSdk().connection.status, Meteor.status());
 		}
-	: () => Meteor.status();
+	: // useReactiveValue stores the snapshot in useSyncExternalStore, which
+		// compares by identity. Meteor.status() reuses the same internal object
+		// (mutated in place), so without spreading the snapshot reference never
+		// changes and ConnectionStatusBar stops re-rendering on connect/drop.
+		() => ({ ...Meteor.status() });
 
 type ServerProviderProps = { children?: ReactNode };
 

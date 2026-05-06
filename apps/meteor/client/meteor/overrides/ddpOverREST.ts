@@ -100,16 +100,32 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				processResult(_message);
 			})
 			.catch((error: unknown) => {
-				// The Rocket.Chat REST middleware throws the parsed JSON body, which
-				// is shaped like { success: false, error, status, message } for a 401
-				// — NOT as a DDP-encoded result frame. If we feed `error.message`
-				// (just a plain string) to processResult, Meteor's `_streamHandlers`
-				// can't parse it and the invoker never sees the rejection: the
-				// stored token stays in localStorage, Meteor.userId() stays set, and
-				// the user is wedged on /home with no main UI and no login form.
-				// Re-encode it as a proper DDP error result so Accounts' resume
-				// callback runs and clears the stale credentials.
 				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
+
+				// method.call / method.callAnon encode the original Meteor error
+				// inside `body.message` as a DDP `result` frame (mountResult in
+				// app/api/server/v1/misc.ts). Forward it untouched so the original
+				// `error.error` survives — re-encoding strips codes like
+				// `totp-required` and `withAsyncTOTP` (totpOnCall.ts) then fails to
+				// open the 2FA modal.
+				if (typeof e.message === 'string') {
+					try {
+						const parsed = DDPCommon.parseDDP(e.message) as { msg?: string; id?: string };
+						if (parsed?.msg === 'result' && parsed.id === message.id) {
+							processResult(e.message);
+							console.error(error);
+							return;
+						}
+					} catch {
+						// fall through to the synthetic frame below
+					}
+				}
+
+				// Auth-middleware errors (e.g. 401) come as
+				// { success: false, error, status, message } with `message` as a
+				// plain string — not a DDP frame. Re-encode as a proper DDP error
+				// result so Accounts' resume callback clears stale creds and the
+				// user isn't wedged on /home with no main UI.
 				const errorMessage = DDPCommon.stringifyDDP({
 					msg: 'result',
 					id: message.id,
