@@ -74,6 +74,8 @@ export class ConnectionImpl
 
 	retryCount = 0;
 
+	private connectPromise?: Promise<boolean>;
+
 	public queue = new Set<string>();
 
 	constructor(
@@ -117,9 +119,15 @@ export class ConnectionImpl
 		// rejected with "Connection in progress" — and because the timer fires
 		// from `void this.reconnect()` the rejection became an unhandled
 		// rejection at the page level.
-		if (this.status === 'connecting' || this.status === 'connected') {
+		if (this.status === 'connected') {
 			clearTimeout(this.retryOptions.retryTimer);
 			return Promise.resolve(true);
+		}
+		if (this.status === 'connecting') {
+			// Share the in-flight handshake promise so a `failed` payload
+			// later in the same attempt isn't masked by a synthesized success.
+			clearTimeout(this.retryOptions.retryTimer);
+			return this.connectPromise as Promise<boolean>;
 		}
 
 		clearTimeout(this.retryOptions.retryTimer);
@@ -137,20 +145,26 @@ export class ConnectionImpl
 		// race; rejecting forced every caller to wrap in `.catch(() => {})`
 		// just to silence noise, and the internal timer's `void this.reconnect()`
 		// path didn't have a catch at all.
-		if (this.status === 'connecting' || this.status === 'connected') {
+		if (this.status === 'connected') {
 			clearTimeout(this.retryOptions.retryTimer);
 			return Promise.resolve(true);
 		}
+		if (this.status === 'connecting') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return this.connectPromise as Promise<boolean>;
+		}
 
 		this.status = 'connecting';
-		this.emit('connecting');
-		this.emitStatus();
 
 		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
 
 		this.ws = ws;
 
-		return new Promise<boolean>((resolve, reject) => {
+		// Build the in-flight promise and publish it on `this.connectPromise`
+		// before emitting any status change, so a synchronous re-entrant
+		// caller (an event listener that calls `connect()`/`reconnect()`)
+		// hits the `'connecting'` guard and gets this same promise.
+		const connectPromise = new Promise<boolean>((resolve, reject) => {
 			ws.onopen = () => {
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
@@ -245,6 +259,13 @@ export class ConnectionImpl
 				}, this.retryOptions.retryTime * this.retryCount);
 			};
 		});
+
+		this.connectPromise = connectPromise;
+
+		this.emit('connecting');
+		this.emitStatus();
+
+		return connectPromise;
 	}
 
 	close() {
