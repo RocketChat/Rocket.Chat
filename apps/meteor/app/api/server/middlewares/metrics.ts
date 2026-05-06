@@ -41,14 +41,15 @@ export const metricsMiddleware =
 		const histogramLabels = {
 			status: c.res.status,
 			method: method.toLowerCase(),
+			version: api.version,
 			entrypoint: basePathRegex && entrypoint.startsWith('method.call') ? decodeURIComponent(path.replace(basePathRegex, '')) : entrypoint,
 		};
 
 		rocketchatRestApiEnd({
 			...histogramLabels,
-			version: api.version,
 			...(settings.get('Prometheus_API_User_Agent') && { user_agent: c.req.header('user-agent') }),
 		});
+
 		rocketchatRestApiHistEnd(histogramLabels);
 
 		const contentLength = parseInt(c.res.headers.get('content-length') || '0', 10);
