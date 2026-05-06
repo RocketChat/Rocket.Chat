@@ -10,7 +10,7 @@ type UnorderedListBlockProps = {
 const UnorderedListBlock = ({ items }: UnorderedListBlockProps): ReactElement => (
 	<ul>
 		{items.map((item, index) => (
-			<li key={index}>
+			<li key={index} style={item.indentLevel ? { marginInlineStart: `${item.indentLevel * 0.5}rem` } : undefined}>
 				<InlineElements>{item.value}</InlineElements>
 			</li>
 		))}

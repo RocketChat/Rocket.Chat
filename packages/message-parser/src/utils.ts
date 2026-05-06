@@ -50,10 +50,11 @@ export const bigEmoji = (value: BigEmoji['value']): BigEmoji => ({
 	value,
 });
 
-export const task = (value: Task['value'], status: boolean): Task => ({
+export const task = (value: Task['value'], status: boolean, indentLevel?: number): Task => ({
 	type: 'TASK',
 	status,
 	value,
+	...(indentLevel ? { indentLevel } : {}),
 });
 
 export const inlineCode = generate('INLINE_CODE');
@@ -131,10 +132,11 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[], number?: number): ListItem => ({
+export const listItem = (text: Inlines[], number?: number, indentLevel?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+	...(indentLevel ? { indentLevel } : {}),
 });
 
 export const mentionUser = (() => {

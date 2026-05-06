@@ -161,7 +161,7 @@ HeadingInlineItem = InlineItemPattern / !EndOfLine @Any
  */
 Tasks = items:Task+ { return tasks(items); }
 
-Task = "- [" flag:TaskFlag "]" [ \t]+ text:Inline { return task(text, flag); }
+Task = indent:[ \t]* "- [" flag:TaskFlag "]" [ \t]+ text:Inline { return task(text, flag, indent.length); }
 
 TaskFlag = "x" { return true; } / " " { return false; }
 
@@ -176,7 +176,7 @@ TaskFlag = "x" { return true; } / " " { return false; }
  */
 OrderedList = items:OrderedListItem+ { return orderedList(items); }
 
-OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, parseInt(number, 10)); }
+OrderedListItem = indent:[ \t]* number:Digits "." [ \t]+ text:Inline { return listItem(text, parseInt(number, 10), indent.length); }
 
 /**
  *
@@ -190,9 +190,9 @@ OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, p
  */
 UnorderedList = items:(UnorderedListHyphenItem+ / UnorderedListAsteriskItem+) { return unorderedList(items); }
 
-UnorderedListHyphenItem = "-" [ \t]+ text:Inline { return listItem(text); }
+UnorderedListHyphenItem = indent:[ \t]* "-" [ \t]+ text:Inline { return listItem(text, undefined, indent.length); }
 
-UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return listItem(text); }
+UnorderedListAsteriskItem = indent:[ \t]* "*" [ \t]+ text:UnorderedListItemContent { return listItem(text, undefined, indent.length); }
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 

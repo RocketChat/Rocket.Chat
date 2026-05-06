@@ -16,7 +16,7 @@ const TaksListBlock = ({ tasks }: TaskListBlockProps): ReactElement => {
 	return (
 		<ul className='task-list'>
 			{tasks.map((item, index) => (
-				<li key={index}>
+				<li key={index} style={item.indentLevel ? { marginInlineStart: `${item.indentLevel * 0.5}rem` } : undefined}>
 					<CheckBox checked={item.status} onChange={onTaskChecked?.(item)} /> <InlineElements>{item.value}</InlineElements>
 				</li>
 			))}
