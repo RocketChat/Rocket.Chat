@@ -11,6 +11,7 @@ import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { createOAuthTotpLoginMethod } from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
 import { loginServices } from '../loginServices';
+import { OAuthConfigError } from '../oauth/errors';
 import { redirectUri } from '../oauth/redirectUri';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
@@ -76,7 +77,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		const config = await loginServices.loadLoginService<OAuthConfiguration>(this.name);
 		if (!config) {
 			if (credentialRequestCompleteCallback) {
-				credentialRequestCompleteCallback(new Accounts.ConfigError());
+				credentialRequestCompleteCallback(new OAuthConfigError());
 			}
 			return;
 		}
