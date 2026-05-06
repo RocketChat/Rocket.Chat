@@ -5,6 +5,7 @@ import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 const COUNT = 50;
+const STALE_TIME = 5 * 60 * 1000;
 
 export type AttributeKeyOption = {
 	value: string;
@@ -22,6 +23,7 @@ export const useAttributeKeysList = (filter: string) => {
 		queryFn: async ({ pageParam: offset = 0 }) => list({ ...(filter ? { key: filter } : {}), offset, count: COUNT }),
 		initialPageParam: 0,
 		getNextPageParam: ({ offset, count, total }) => (offset + count < total ? offset + count : undefined),
+		staleTime: STALE_TIME,
 		select: (data) =>
 			data.pages.flatMap<AttributeKeyOption>((page) =>
 				page.attributes.map((attribute) => ({
@@ -41,5 +43,6 @@ export const useSelectedAttribute = (key?: string) => {
 		enabled: isABACAvailable && !!key,
 		queryKey: ABACQueryKeys.roomAttributes.byKey(key ?? ''),
 		queryFn: () => getAttributeByKey(),
+		staleTime: STALE_TIME,
 	});
 };
