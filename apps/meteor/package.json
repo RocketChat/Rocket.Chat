@@ -300,7 +300,7 @@
 		"universal-perf-hooks": "^1.0.1",
 		"webdav": "^4.11.5",
 		"xml-crypto": "~3.2.1",
-		"xml-encryption": "~3.1.0",
+		"xml-encryption": "~4.0.0",
 		"xml2js": "~0.6.2",
 		"yaqrcode": "^0.2.1",
 		"zod": "~4.3.6",
