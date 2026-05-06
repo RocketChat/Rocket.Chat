@@ -43,6 +43,7 @@ export const useHandleUnread = (
 	counter: readonly [number, Date | undefined];
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
+	debouncedReadMessageRead: () => void;
 } => {
 	const subscribed = Boolean(subscription);
 	const [unread, setUnreadCount] = useUnreadMessages(room);
@@ -140,5 +141,6 @@ export const useHandleUnread = (
 		counter: [unread?.count ?? 0, unread?.since] as const,
 		setUnreadCount,
 		setLastMessageDate,
+		debouncedReadMessageRead,
 	};
 };

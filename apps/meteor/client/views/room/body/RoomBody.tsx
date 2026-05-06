@@ -89,6 +89,7 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 		setUnreadCount,
 		setLastMessageDate,
+		debouncedReadMessageRead,
 	} = useHandleUnread(room, subscription);
 
 	const { handleDateScroll, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
@@ -221,6 +222,7 @@ const RoomBody = (): ReactElement => {
 												setLastMessageDate={setLastMessageDate}
 												debouncedClearNewMessagesOnScroll={debouncedClearNewMessagesOnScroll}
 												handleDateScroll={handleDateScroll}
+												debouncedReadMessageRead={debouncedReadMessageRead}
 											/>
 										</CustomVirtuaScrollbars>
 									</MessageListErrorBoundary>
