@@ -14,9 +14,10 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@rocket.chat/fuselage', () => {
+	const actual = jest.requireActual<typeof import('@rocket.chat/fuselage')>('@rocket.chat/fuselage');
 	const { createElement } = jest.requireActual<typeof import('react')>('react');
 	return {
-		__esModule: true,
+		...actual,
 		Box: ({ is: Tag = 'div', children, position, margin, insetInlineEnd, ...props }: Record<string, any>) =>
 			createElement(Tag, props, children),
 		IconButton: () => null,
