@@ -41,6 +41,7 @@ const lstURL = './tests/e2e/fixtures/files/lst-test.lst';
 const svgLogoURL = './public/images/logo/logo.svg';
 const svgLogoFileName = 'logo.svg';
 
+console.log("MY IS RUNNING")
 describe('[Rooms]', () => {
 	before((done) => getCredentials(done));
 
@@ -1500,6 +1501,37 @@ describe('[Rooms]', () => {
 			]),
 		);
 
+
+		it('should return 400 when t_name is whitespace only (spaces)', async () => {
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({ prid: testChannel._id, t_name: '   ' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('errorType', 'error-invalid-discussion-name');
+				});
+		});
+		it('should create a discussion when t_name has surrounding whitespace but valid content', async () => {
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({ prid: testChannel._id, t_name: '  Valid Name  ' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.discussion.fname).to.equal('Valid Name');
+				});
+		});
+		it('should create a discussion with a valid name', async () => {
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({ prid: testChannel._id, t_name: 'My Discussion' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.discussion.fname).to.equal('My Discussion');
+				});
+		});
 		it('should throw an error when the user tries to create a discussion and the feature is disabled', (done) => {
 			void updateSetting('Discussion_enabled', false).then(() => {
 				void request

@@ -74,6 +74,17 @@ const create = async ({
 	encrypted,
 	topic,
 }: CreateDiscussionProperties): Promise<IRoom & { rid: string }> => {
+	discussionName = discussionName?.trim();
+	
+	if (!discussionName) {
+		throw new Meteor.Error(
+			'error-invalid-discussion-name',
+			'Discussion name cannot be empty', { 
+				method: 'createDiscussion' 
+			},
+		);
+	}
+
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: null | IMessage = null;
 	if (pmid) {
