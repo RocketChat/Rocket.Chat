@@ -7,7 +7,6 @@ import { ABACQueryKeys } from '../../../../lib/queryKeys';
 const COUNT = 50;
 
 export type AttributeKeyOption = {
-	_id: string;
 	value: string;
 	label: string;
 	attributeValues: string[];
@@ -26,7 +25,6 @@ export const useAttributeKeysList = (filter: string) => {
 		select: (data) =>
 			data.pages.flatMap<AttributeKeyOption>((page) =>
 				page.attributes.map((attribute) => ({
-					_id: attribute._id,
 					value: attribute.key,
 					label: attribute.key,
 					attributeValues: attribute.values,
@@ -36,13 +34,12 @@ export const useAttributeKeysList = (filter: string) => {
 };
 
 export const useSelectedAttribute = (key?: string) => {
-	const list = useEndpoint('GET', '/v1/abac/attributes');
+	const getAttributeByKey = useEndpoint('GET', '/v1/abac/attributes/by-key/:key', { key: key ?? '' });
 	const isABACAvailable = useIsABACAvailable();
 
 	return useQuery({
 		enabled: isABACAvailable && !!key,
 		queryKey: ABACQueryKeys.roomAttributes.byKey(key ?? ''),
-		queryFn: () => list({ key, offset: 0, count: 25 }),
-		select: (data) => data.attributes.find((attribute) => attribute.key === key),
+		queryFn: () => getAttributeByKey(),
 	});
 };

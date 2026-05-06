@@ -58,7 +58,6 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, required = false }: 
 		return [
 			...attributeItems,
 			{
-				_id: selectedAttribute._id,
 				value: selectedAttribute.key,
 				label: selectedAttribute.key,
 				attributeValues: selectedAttribute.values,

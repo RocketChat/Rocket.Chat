@@ -420,6 +420,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
+	async getAbacAttributeByKey(key: string, _actor: AbacActor | undefined): Promise<{ key: string; values: string[] }> {
+		const attribute = await AbacAttributes.findOneByKey(key, { projection: { key: 1, values: 1 } });
+		if (!attribute) {
+			throw new AbacAttributeNotFoundError();
+		}
+
+		return {
+			key: attribute.key,
+			values: attribute.values || [],
+		};
+	}
+
 	async isAbacAttributeInUseByKey(key: string): Promise<boolean> {
 		const attribute = await AbacAttributes.findOneByKey(key, { projection: { values: 1 } });
 		if (!attribute) {

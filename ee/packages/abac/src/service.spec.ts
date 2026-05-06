@@ -560,6 +560,39 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('getAbacAttributeByKey', () => {
+		beforeEach(() => {
+			mockAbacFindOne.mockReset();
+		});
+
+		it('throws error-attribute-not-found when attribute does not exist', async () => {
+			mockAbacFindOne.mockResolvedValueOnce(null);
+			await expect(service.getAbacAttributeByKey('missing-key', undefined)).rejects.toThrow('error-attribute-not-found');
+		});
+
+		it('returns attribute by key', async () => {
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id20', key: 'role', values: ['admin', 'user'] });
+
+			const result = await service.getAbacAttributeByKey('role', undefined);
+			expect(mockAbacFindOne).toHaveBeenCalledWith('role', { projection: { key: 1, values: 1 } });
+
+			expect(result).toEqual({
+				key: 'role',
+				values: ['admin', 'user'],
+			});
+		});
+
+		it('returns empty values array when attribute has no values', async () => {
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id21', key: 'empty' });
+
+			const result = await service.getAbacAttributeByKey('empty', undefined);
+			expect(result).toEqual({
+				key: 'empty',
+				values: [],
+			});
+		});
+	});
+
 	describe('setRoomAbacAttributes', () => {
 		// Using top-level mocks (mockSetAbacAttributesById, mockAbacFind) defined in jest.mock factory above
 
