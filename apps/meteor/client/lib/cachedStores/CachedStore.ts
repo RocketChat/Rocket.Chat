@@ -12,6 +12,7 @@ import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { credentialStorage } from '../sdk/credentialStorage';
 import { getDdpSdk } from '../sdk/ddpSdk';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
@@ -380,7 +381,7 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return getDdpSdk().account.storage.getToken();
+		return credentialStorage.getToken();
 	}
 
 	override clearCacheOnLogout() {

@@ -1,7 +1,7 @@
 import { useIsLoggingIn } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { getDdpSdk } from '../../../../lib/sdk/ddpSdk';
+import { credentialStorage } from '../../../../lib/sdk/credentialStorage';
 
 export const useStoreCookiesOnLogin = (userId: string) => {
 	const isLoggingIn = useIsLoggingIn();
@@ -11,7 +11,7 @@ export const useStoreCookiesOnLogin = (userId: string) => {
 		// preventing race condition setting the rc_token as null forever
 		if (isLoggingIn === false) {
 			const secure = location.protocol === 'https:' ? '; secure' : '';
-			const token = getDdpSdk().account.storage.getToken() ?? '';
+			const token = credentialStorage.getToken() ?? '';
 
 			document.cookie = `rc_uid=${encodeURI(userId)}; path=/${secure}`;
 			document.cookie = `rc_token=${encodeURI(token)}; path=/${secure}`;

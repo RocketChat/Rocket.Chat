@@ -3,6 +3,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { credentialStorage } from '../lib/sdk/credentialStorage';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
 import { userIdStore } from '../lib/user';
@@ -130,6 +131,6 @@ getDdpSdk().account.onLogout(() => {
 // of missing token and missing uid at module init and clean up residual keys
 // (e.g. E2EE public_key / private_key). Do NOT subscribe to userIdStore for this —
 // the valid-session resume path is async and would clobber a valid token mid-flight.
-if (!userIdStore.getState() && getDdpSdk().account.storage.getToken() === null) {
+if (!userIdStore.getState() && credentialStorage.getToken() === null) {
 	removeLocalUserData();
 }

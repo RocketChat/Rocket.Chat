@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
-import { getDdpSdk } from '../../../lib/sdk/ddpSdk';
+import { credentialStorage } from '../../../lib/sdk/credentialStorage';
 
 type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
@@ -16,7 +16,7 @@ type AuthorizationFormPageProps = {
 };
 
 const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFormPageProps) => {
-	const token = useMemo(() => getDdpSdk().account.storage.getToken() ?? undefined, []);
+	const token = useMemo(() => credentialStorage.getToken() ?? undefined, []);
 
 	const formLabelId = useId();
 

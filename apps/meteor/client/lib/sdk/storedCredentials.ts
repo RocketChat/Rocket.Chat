@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { getDdpSdk } from './ddpSdk';
+import { credentialStorage } from './credentialStorage';
 import { CachedStoresManager } from '../cachedStores/CachedStoresManager';
 
 const emitter = new Emitter<{ beforeClear: void }>();
@@ -23,6 +23,6 @@ export const onBeforeClearCredentials = (cb: () => void): (() => void) => emitte
  */
 export const clearStoredCredentials = (): void => {
 	emitter.emit('beforeClear', undefined);
-	getDdpSdk().account.storage.clear();
+	credentialStorage.clear();
 	CachedStoresManager.clearAllCachesOnLogout();
 };

@@ -2,6 +2,7 @@ import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 
+import { credentialStorage } from './credentialStorage';
 import { createMeteorBackedSdk } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
 import { clearStoredCredentials } from './storedCredentials';
@@ -51,6 +52,11 @@ export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
 			instance = DDPSDK.create(computeDdpUrl());
+			// Replace the AccountImpl's default storage with the shared
+			// instance so flag-ON and flag-OFF paths read/write the same
+			// localStorage slot — otherwise a logout via one path would
+			// leave the other's in-memory state out of sync.
+			(instance.account as unknown as { storage: typeof credentialStorage }).storage = credentialStorage;
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
@@ -66,7 +72,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-const readStoredLoginToken = (): string | null => getDdpSdk().account.storage.getToken();
+const readStoredLoginToken = (): string | null => credentialStorage.getToken();
 
 let inflightLogin: Promise<void> | undefined;
 

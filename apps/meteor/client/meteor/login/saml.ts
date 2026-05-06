@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
-import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { credentialStorage } from '../../lib/sdk/credentialStorage';
 import { settings } from '../../lib/settings';
 
 declare module 'meteor/meteor' {
@@ -53,7 +53,7 @@ Meteor.logout = async function (...args) {
 
 				// Remove the userId from the client to prevent calls to the server while the logout is processed.
 				// If the logout fails, the userId will be reloaded on the resume call
-				getDdpSdk().account.storage.clearUserId();
+				credentialStorage.clearUserId();
 
 				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 				window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
