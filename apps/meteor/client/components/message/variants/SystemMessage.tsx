@@ -64,6 +64,15 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!isSelecting) return;
+
+		if (!(e.code === 'Space' || e.code === 'Enter')) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
+
 	const checkboxLabel = getCheckboxLabel(message, t);
 
 	return (
@@ -72,6 +81,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={isSelected}
 			data-system-message-type={message.t}
 			{...props}
