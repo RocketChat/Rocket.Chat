@@ -390,7 +390,6 @@ export default [
 			},
 		},
 		rules: {
-			'jsx-a11y/media-has-caption': 'off',
 			'jsx-quotes': ['error', 'prefer-single'],
 			'react/jsx-curly-brace-presence': 'off',
 			'react/display-name': [
