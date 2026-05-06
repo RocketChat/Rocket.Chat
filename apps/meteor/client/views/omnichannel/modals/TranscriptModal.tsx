@@ -78,7 +78,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<FieldGroup>
 					<Field>
-						<FieldLabel>{t('Email')}*</FieldLabel>
+						<FieldLabel required>{t('Email')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='email'
@@ -90,7 +90,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 										disabled={!!emailDefault || !!transcriptRequest}
 										error={errors.email?.message}
 										flexGrow={1}
-										required={true}
+										aria-required='true'
 									/>
 								)}
 							/>
@@ -98,14 +98,14 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 						{errors.email && <FieldError>{errors.email?.message}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel>{t('Subject')}*</FieldLabel>
+						<FieldLabel required>{t('Subject')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='subject'
 								control={control}
 								rules={{ required: t('Required_field', { field: t('Subject') }) }}
 								render={({ field }) => (
-									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} flexGrow={1} required={true} />
+									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} flexGrow={1} aria-required='true' />
 								)}
 							/>
 						</FieldRow>
