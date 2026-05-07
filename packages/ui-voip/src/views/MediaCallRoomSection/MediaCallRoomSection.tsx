@@ -142,7 +142,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 						<Box is='h1' color='font-default' mbe={40}>
 							{t('Call_open_separate_window')}
 						</Box>
-						{/* TODO: new icon missing */}
 						<Button onClick={onClosePopout} icon='arrow-from-cross-box' large>
 							{t('Show_call_here')}
 						</Button>
