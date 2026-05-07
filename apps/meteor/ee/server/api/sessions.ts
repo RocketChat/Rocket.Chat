@@ -95,7 +95,14 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-sort-keys');
 			}
 
-			const sessions = await Sessions.aggregateSessionsByUserId({ uid: this.userId, search, sort, offset, count });
+			const sessions = await Sessions.aggregateSessionsByUserId({
+				uid: this.userId,
+				search,
+				sort,
+				offset,
+				count,
+				currentLoginToken: this.token,
+			});
 			return API.v1.success(sessions);
 		},
 	},
