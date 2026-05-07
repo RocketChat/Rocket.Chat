@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Callout } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -72,6 +72,8 @@ const OngoingCall = () => {
 					pressed={isPopout}
 					onToggle={isPopout ? onClosePopout : onOpenPopout}
 					danger={false}
+					secondary={false}
+					tiny
 				/>
 
 				<DevicePicker />
@@ -80,7 +82,11 @@ const OngoingCall = () => {
 				<CardWidgetContainer>
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 
-					{isPopout && <Callout>{t('Call_open_separate_window')}</Callout>}
+					{isPopout && (
+						<Button onClick={onClosePopout} icon='arrow-from-cross-box' medium w='full'>
+							{t('Show_call_here')}
+						</Button>
+					)}
 
 					{!isPopout && (
 						<>
