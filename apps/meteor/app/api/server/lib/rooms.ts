@@ -46,7 +46,7 @@ export async function findAdminRooms({
 		if (!isABACManagedRoom(room)) {
 			return room;
 		}
-		const { announcement, ...rest } = room;
+		const { announcement, topic, description, ...rest } = room;
 		return rest;
 	});
 
@@ -68,7 +68,7 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 		return null;
 	}
 	if (isABACManagedRoom(room)) {
-		const { announcement, ...rest } = room;
+		const { announcement, topic, description, ...rest } = room;
 		return rest;
 	}
 	return room;

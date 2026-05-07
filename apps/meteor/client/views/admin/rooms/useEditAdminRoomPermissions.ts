@@ -10,10 +10,10 @@ export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsTyp
 
 	const [
 		canViewName,
-		canViewTopic,
+		canViewTopicBase,
 		canViewAnnouncementBase,
 		canViewArchived,
-		canViewDescription,
+		canViewDescriptionBase,
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,
@@ -33,10 +33,10 @@ export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsTyp
 
 	return {
 		canViewName,
-		canViewTopic,
+		canViewTopic: canViewTopicBase && !isAbacManaged,
 		canViewAnnouncement: canViewAnnouncementBase && !isAbacManaged,
 		canViewArchived,
-		canViewDescription,
+		canViewDescription: canViewDescriptionBase && !isAbacManaged,
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,

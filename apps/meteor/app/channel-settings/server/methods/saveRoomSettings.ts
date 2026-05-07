@@ -162,6 +162,34 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
+	async roomTopic({ room, value }) {
+		if (!value && !room.topic) {
+			return;
+		}
+		if (value === room.topic) {
+			return;
+		}
+		if (isABACManagedRoom(room)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing topic of an ABAC managed room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			});
+		}
+	},
+	async roomDescription({ room, value }) {
+		if (!value && !room.description) {
+			return;
+		}
+		if (value === room.description) {
+			return;
+		}
+		if (isABACManagedRoom(room)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing description of an ABAC managed room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			});
+		}
+	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
 			if (!(await roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
