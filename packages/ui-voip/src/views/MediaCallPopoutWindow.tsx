@@ -1,5 +1,5 @@
-import { Box, TargetDocument as FuselageTargetDocument } from '@rocket.chat/fuselage';
-import { TargetDocument as StyledTargetDocument } from '@rocket.chat/styled';
+import { Box, OwnerDocument as FuselageOwnerDocument } from '@rocket.chat/fuselage';
+import { OwnerDocument as StyledOwnerDocument } from '@rocket.chat/styled';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
@@ -142,8 +142,8 @@ const MediaCallPopoutWindow = () => {
 	}
 
 	return (
-		<FuselageTargetDocument.Provider value={contextValue}>
-			<StyledTargetDocument.Provider value={contextValue}>
+		<FuselageOwnerDocument.Provider value={contextValue}>
+			<StyledOwnerDocument.Provider value={contextValue}>
 				{createPortal(
 					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
 						<MediaCallPopoutView
@@ -155,8 +155,8 @@ const MediaCallPopoutWindow = () => {
 					</Box>,
 					container.root,
 				)}
-			</StyledTargetDocument.Provider>
-		</FuselageTargetDocument.Provider>
+			</StyledOwnerDocument.Provider>
+		</FuselageOwnerDocument.Provider>
 	);
 };
 
