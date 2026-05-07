@@ -70,7 +70,11 @@
 		"underscore": "1.13.7",
 		"webpack": "~5.106.0",
 		"xml-crypto/@xmldom/xmldom": "0.8.13",
-		"xml-encryption/@xmldom/xmldom": "0.8.13"
+		"xml-encryption/@xmldom/xmldom": "0.8.13",
+		"form-data@npm:^2.5.0": "2.5.5",
+		"form-data@npm:^4.0.0": "4.0.5",
+		"form-data@npm:^4.0.4": "4.0.5",
+		"form-data@npm:^4.0.5": "4.0.5"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
