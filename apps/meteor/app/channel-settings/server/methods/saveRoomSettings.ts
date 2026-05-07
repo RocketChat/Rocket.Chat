@@ -72,6 +72,21 @@ const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolea
 	);
 };
 
+const guardABACManagedField = (room: IRoom, value: string | undefined, current: string | undefined, fieldName: string): void => {
+	if (!value && !current) {
+		return;
+	}
+	if (value === current) {
+		return;
+	}
+	if (isABACManagedRoom(room)) {
+		throw new Meteor.Error('error-action-not-allowed', `Editing an ABAC managed room's ${fieldName} is not allowed`, {
+			method: 'saveRoomSettings',
+			action: 'Editing_room',
+		});
+	}
+};
+
 const validators: RoomSettingsValidators = {
 	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
@@ -149,46 +164,13 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async roomAnnouncement({ room, value }) {
-		if (!value && !room.announcement) {
-			return;
-		}
-		if (value === room.announcement) {
-			return;
-		}
-		if (isABACManagedRoom(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing announcement of an ABAC managed room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
+		guardABACManagedField(room, value, room.announcement, 'announcement');
 	},
 	async roomTopic({ room, value }) {
-		if (!value && !room.topic) {
-			return;
-		}
-		if (value === room.topic) {
-			return;
-		}
-		if (isABACManagedRoom(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing topic of an ABAC managed room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
+		guardABACManagedField(room, value, room.topic, 'topic');
 	},
 	async roomDescription({ room, value }) {
-		if (!value && !room.description) {
-			return;
-		}
-		if (value === room.description) {
-			return;
-		}
-		if (isABACManagedRoom(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing description of an ABAC managed room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
+		guardABACManagedField(room, value, room.description, 'description');
 	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {

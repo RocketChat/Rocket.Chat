@@ -1488,7 +1488,7 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success({
 				rooms: sanitizedRooms,
-				count: sanitizedRooms.length,
+				count: rooms.length,
 				offset,
 				total,
 			});

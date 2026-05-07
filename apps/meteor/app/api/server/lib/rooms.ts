@@ -46,7 +46,7 @@ export async function findAdminRooms({
 
 	return {
 		rooms: sanitizedRooms,
-		count: sanitizedRooms.length,
+		count: rooms.length,
 		offset,
 		total,
 	};
