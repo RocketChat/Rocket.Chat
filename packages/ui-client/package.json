@@ -19,10 +19,10 @@
 	},
 	"dependencies": {
 		"@rocket.chat/onboarding-ui": "~0.36.2",
-		"dompurify": "~3.3.1"
+		"dompurify": "~3.4.1"
 	},
 	"devDependencies": {
-		"@react-aria/toolbar": "^3.0.0-nightly.5042",
+		"@react-aria/toolbar": "3.0.0-nightly-fb28ab3b4-241024",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "^0.32.0",
