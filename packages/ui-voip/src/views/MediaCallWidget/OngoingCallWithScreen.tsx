@@ -68,8 +68,7 @@ const OngoingCall = () => {
 				<ToggleButton
 					label={t('Open_in_new_window')}
 					titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
-					// TODO: new icons missing
-					icons={['arrow-expand', 'arrow-collapse']}
+					icons={['arrow-to-square-box', 'arrow-from-cross-box']}
 					pressed={isPopout}
 					onToggle={isPopout ? onClosePopout : onOpenPopout}
 					danger={false}
