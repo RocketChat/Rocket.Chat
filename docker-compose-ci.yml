@@ -5,6 +5,7 @@ services:
     build:
       dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
