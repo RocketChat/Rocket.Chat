@@ -14,7 +14,11 @@ import { useTranslation } from 'react-i18next';
 
 import { deviceManagementQueryKeys } from '../lib/queryKeys';
 
-export const useDeviceLogout = (sessionId: string, endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me'): (() => void) => {
+export const useDeviceLogout = (
+	sessionId: string,
+	endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me',
+	isCurrentSession?: boolean,
+): (() => void) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -26,15 +30,13 @@ export const useDeviceLogout = (sessionId: string, endpoint: '/v1/sessions/logou
 	const queryClient = useQueryClient();
 	const logoutEndpoint = useEndpoint('POST', endpoint);
 
-	const isOwnSessionLogout = endpoint === '/v1/sessions/logout.me';
-
 	const handleCloseContextualBar = useCallback(() => deviceManagementRouter.push({}), [deviceManagementRouter]);
 	const isContextualBarOpen = routeId === sessionId;
 
 	const { mutate: logoutDevice } = useMutation({
 		mutationFn: logoutEndpoint,
 		onSettled: () => {
-			if (isOwnSessionLogout) {
+			if (isCurrentSession) {
 				setModal(null);
 				logout();
 			} else {
