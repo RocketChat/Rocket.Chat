@@ -1,7 +1,6 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
@@ -255,7 +254,7 @@ const createStreamManager = () => {
 
 	const streams = new Map<string, StreamMapValue>();
 
-	Accounts.onLogout(() => {
+	getDdpSdk().account.onLogout(() => {
 		streams.forEach((stream) => {
 			stream.unsubList.forEach((stop) => stop());
 		});
