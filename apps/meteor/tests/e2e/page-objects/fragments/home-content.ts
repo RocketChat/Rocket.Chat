@@ -136,12 +136,18 @@ export class HomeContent {
 		// either way Meteor's optimistic insert renders the new list item
 		// before the server confirms, and the `rcx-message--pending` class
 		// drops once the server result lands.
-		const lastMessageBeforeSend = await this.messageListItems.last().getAttribute('id');
+		if ((await this.messageListItems.count()) > 0) {
+			const lastMessageBeforeSend = await this.messageListItems.last().getAttribute('id');
 
-		await this.composer.btnSend.click();
+			await this.composer.btnSend.click();
 
-		await expect.poll(() => this.messageListItems.last().getAttribute('id'), { timeout: 10_000 }).not.toEqual(lastMessageBeforeSend);
-		await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
+			await expect.poll(() => this.messageListItems.last().getAttribute('id'), { timeout: 10_000 }).not.toEqual(lastMessageBeforeSend);
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
+		} else {
+			// No previous messages, nothing to compare
+			await this.composer.btnSend.click();
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
+		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
