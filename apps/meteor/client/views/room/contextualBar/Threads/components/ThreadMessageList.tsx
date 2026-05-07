@@ -124,7 +124,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 		const t1 = setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
-		setMessageJumpQueryStringParameter(null);
+		if (msgJumpParam !== mainMessage._id) {
+			setMessageJumpQueryStringParameter(null);
+		}
 		return () => {
 			clearTimeout(t1);
 		};

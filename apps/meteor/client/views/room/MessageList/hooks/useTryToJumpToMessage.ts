@@ -43,7 +43,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			return;
 		}
 		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
-		if (message && (isThreadMessage(message) || isThreadMainMessage(message))) {
+		if (message && isThreadMessage(message) && !isThreadMainMessage(message)) {
 			setIsJumpingToMessage(false);
 			return;
 		}
@@ -59,7 +59,6 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		}
 
 		const loadedMessage = messages.find((message) => message._id === messageJumpParam);
-
 		if (!loadedMessage) {
 			if (message) {
 				RoomHistoryManager.getSurroundingChannelMessages(message);
@@ -84,7 +83,6 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		setTimeout(() => {
 			setIsJumpingToMessage(false);
 		}, 500);
-
 		setMessageJumpQueryStringParameter(null);
 	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, router, message]);
 };
