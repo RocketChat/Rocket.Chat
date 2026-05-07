@@ -4,6 +4,7 @@ import { memo, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACPage from './AdminABACPage';
+import type { ABACTab } from './hooks/useABACTabPermissions';
 import { ABAC_TAB_ORDER, useABACTabPermissions } from './hooks/useABACTabPermissions';
 import ABACUpsellModal from '../../../components/ABAC/ABACUpsellModal/ABACUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
@@ -22,17 +23,21 @@ const AdminABACRoute = (): ReactElement => {
 	const router = useRouter();
 	const tabPermissions = useABACTabPermissions();
 	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t]);
+	const isAllowedTab = (ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') && tabPermissions[tab as ABACTab];
 
 	const ABACEnabledSetting = useSettingStructure('ABAC_Enabled');
 
 	useLayoutEffect(() => {
-		if (!tab && firstAllowedTab) {
-			router.navigate({
-				name: 'admin-ABAC',
-				params: { tab: firstAllowedTab },
-			});
+		if (firstAllowedTab && !isAllowedTab) {
+			router.navigate(
+				{
+					name: 'admin-ABAC',
+					params: { tab: firstAllowedTab },
+				},
+				{ replace: true },
+			);
 		}
-	}, [tab, router, firstAllowedTab]);
+	}, [router, firstAllowedTab, isAllowedTab]);
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasABAC);
 
@@ -49,7 +54,7 @@ const AdminABACRoute = (): ReactElement => {
 		return <PageSkeleton />;
 	}
 
-	if (!canViewABACPage || (ABACEnabledSetting === undefined && !hasABAC)) {
+	if (!canViewABACPage || !firstAllowedTab || (ABACEnabledSetting === undefined && !hasABAC)) {
 		return <NotAuthorizedPage />;
 	}
 
