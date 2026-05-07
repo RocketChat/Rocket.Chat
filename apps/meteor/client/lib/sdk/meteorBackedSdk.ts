@@ -3,7 +3,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -28,15 +27,27 @@ const safeMeteorStatus = (): { status: string; connected: boolean; retryCount?: 
 };
 
 const onMeteorStatusChange = (cb: () => void): (() => void) => {
-	if (typeof Meteor.status !== 'function' || typeof Tracker.autorun !== 'function') {
-		// Test / SSR environment with a stubbed Meteor — no reactive status to bridge.
+	// Subscribe to Meteor's underlying WebSocket lifecycle events directly instead
+	// of riding Meteor.status's Tracker reactivity. The stream is the canonical
+	// non-reactive source: 'connected' / 'disconnect' / 'reset' fire from
+	// LivedataStream regardless of any Tracker context.
+	const stream = (Meteor.connection as unknown as { _stream?: { on?: (event: string, cb: () => void) => void } } | undefined)?._stream;
+	if (!stream || typeof stream.on !== 'function') {
+		// Test / SSR environment with a stubbed Meteor — no stream to subscribe to.
 		return noopUnsubscribe;
 	}
-	const computation = Tracker.autorun(() => {
-		Meteor.status();
-		cb();
-	});
-	return () => computation.stop();
+	let stopped = false;
+	const handler = (): void => {
+		if (!stopped) cb();
+	};
+	stream.on('connected', handler);
+	stream.on('disconnect', handler);
+	stream.on('reset', handler);
+	// Meteor's stream `on` doesn't expose an `off`; flip a flag instead so the
+	// stale listener becomes a no-op once stopBridge runs.
+	return () => {
+		stopped = true;
+	};
 };
 
 const meteorStatusToSdkStatus = (): string => {

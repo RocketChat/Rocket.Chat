@@ -3,7 +3,6 @@ import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
@@ -315,16 +314,16 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			await this.loadFromServerAndPopulate();
 		}
 
-		this.reconnectionComputation?.stop();
-		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
-		this.reconnectionComputation = Tracker.autorun(() => {
-			const { status } = Meteor.status();
-
-			if (status === 'offline') {
+		this.reconnectionUnsubscribe?.();
+		const sdk = getDdpSdk();
+		let wentOffline = sdk.connection.status !== 'connected';
+		this.reconnectionUnsubscribe = sdk.connection.on('connection', () => {
+			if (sdk.connection.status !== 'connected') {
 				wentOffline = true;
+				return;
 			}
-
-			if (status === 'connected' && wentOffline) {
+			if (wentOffline) {
+				wentOffline = false;
 				this.trySync();
 			}
 		});
@@ -362,7 +361,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		this.setReady(false);
 	}
 
-	private reconnectionComputation: Tracker.Computation | undefined;
+	private reconnectionUnsubscribe: (() => void) | undefined;
 
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);
