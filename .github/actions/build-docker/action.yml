@@ -59,7 +59,9 @@ runs:
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
-        name: build-${{ inputs.type }}
+        # Temporary: rocketchat fips reuses existing Meteor artifacts until build-fips exists.
+        # PR/merge queue runs only produce build-coverage, while release/develop produce build-production.
+        name: build-${{ inputs.type == 'fips' && ((github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production') || inputs.type }}
         path: /tmp/build
 
     - name: Unpack meteor build
