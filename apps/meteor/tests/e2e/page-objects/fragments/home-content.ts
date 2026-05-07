@@ -136,15 +136,11 @@ export class HomeContent {
 		// either way Meteor's optimistic insert renders the new list item
 		// before the server confirms, and the `rcx-message--pending` class
 		// drops once the server result lands.
-		const before = await this.messageListItems.count();
+		const lastMessageBeforeSend = await this.messageListItems.last().getAttribute('id');
 
 		await this.composer.btnSend.click();
 
-		// Use `>=` rather than `==` because some flows (e.g. just-created
-		// encrypted channels) drop additional list items in alongside the
-		// user's send (other in-flight messages, decryption-status items),
-		// so an exact count is racy.
-		await expect.poll(() => this.messageListItems.count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(before + 1);
+		await expect.poll(() => this.messageListItems.last().getAttribute('id'), { timeout: 10_000 }).not.toEqual(lastMessageBeforeSend);
 		await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 	}
 
