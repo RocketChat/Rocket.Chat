@@ -246,8 +246,6 @@ const createMeteorBackedAccount = () => {
 			Accounts.onPageLoadLogin(fn);
 			return () => undefined;
 		},
-		_emitEmailVerificationLink: () => undefined,
-		_emitPageLoadLogin: () => undefined,
 		// Emitter shape Account inherits from
 		on: () => () => undefined,
 		off: () => undefined,

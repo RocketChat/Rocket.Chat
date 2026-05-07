@@ -9,11 +9,14 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
-export interface Account
-	extends Emitter<{
-		uid: string | undefined;
-		user?: User;
-	}> {
+type AccountEvents = {
+	uid: string | undefined;
+	user: User;
+	emailVerificationLink: string;
+	pageLoadLogin: unknown;
+};
+
+export interface Account extends Emitter<AccountEvents> {
 	uid?: string;
 	user?: User;
 	loginWithPassword(username: string, password: string): Promise<void>;
@@ -27,24 +30,12 @@ export interface Account
 	onLogout(fn: () => void): () => void;
 	onEmailVerificationLink(fn: (token: string) => void): () => void;
 	onPageLoadLogin(fn: (loginAttempt: unknown) => void): () => void;
-	_emitEmailVerificationLink(token: string): void;
-	_emitPageLoadLogin(loginAttempt: unknown): void;
 }
 
-export class AccountImpl
-	extends Emitter<{
-		uid: string | undefined;
-		user: User;
-	}>
-	implements Account
-{
+export class AccountImpl extends Emitter<AccountEvents> implements Account {
 	private _uid?: string;
 
 	user?: { id: string; username?: string; token?: string; tokenExpires?: Date };
-
-	private emailVerificationListeners = new Set<(token: string) => void>();
-
-	private pageLoadLoginListeners = new Set<(loginAttempt: unknown) => void>();
 
 	get uid(): string | undefined {
 		return this._uid;
@@ -152,29 +143,15 @@ export class AccountImpl
 		});
 	}
 
-	// onEmailVerificationLink and onPageLoadLogin have no native source in the SDK —
-	// the actual events come from Meteor's accounts-base (URL hash routing for verification,
-	// pending login attempts for OAuth). The bridge in apps/meteor/client/lib/sdk/ddpSdk.ts
-	// hooks Meteor's events to _emit* below; in flag-OFF mode meteorBackedSdk delegates directly.
+	// emailVerificationLink and pageLoadLogin have no native source in the SDK — the actual
+	// events come from Meteor's accounts-base (URL hash routing for verification, pending
+	// login attempts for OAuth). The bridge in apps/meteor/client/lib/sdk/ddpSdk.ts forwards
+	// Meteor's events into this emitter; flag-OFF mode delegates directly via meteorBackedSdk.
 	onEmailVerificationLink(fn: (token: string) => void): () => void {
-		this.emailVerificationListeners.add(fn);
-		return () => {
-			this.emailVerificationListeners.delete(fn);
-		};
+		return this.on('emailVerificationLink', fn);
 	}
 
 	onPageLoadLogin(fn: (loginAttempt: unknown) => void): () => void {
-		this.pageLoadLoginListeners.add(fn);
-		return () => {
-			this.pageLoadLoginListeners.delete(fn);
-		};
-	}
-
-	_emitEmailVerificationLink(token: string): void {
-		this.emailVerificationListeners.forEach((fn) => fn(token));
-	}
-
-	_emitPageLoadLogin(loginAttempt: unknown): void {
-		this.pageLoadLoginListeners.forEach((fn) => fn(loginAttempt));
+		return this.on('pageLoadLogin', fn);
 	}
 }

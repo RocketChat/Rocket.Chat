@@ -112,7 +112,7 @@ describe('login', () => {
 		expect(onLogout).toHaveBeenCalledTimes(1);
 	});
 
-	it('should fan out onEmailVerificationLink and onPageLoadLogin via _emit*', () => {
+	it('should fan out emailVerificationLink and pageLoadLogin events', () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');
 
 		const verify = jest.fn();
@@ -120,14 +120,14 @@ describe('login', () => {
 		const stopVerify = sdk.account.onEmailVerificationLink(verify);
 		sdk.account.onPageLoadLogin(pageLoad);
 
-		sdk.account._emitEmailVerificationLink('tok-1');
-		sdk.account._emitPageLoadLogin({ error: 'totp-required' });
+		sdk.account.emit('emailVerificationLink', 'tok-1');
+		sdk.account.emit('pageLoadLogin', { error: 'totp-required' });
 
 		expect(verify).toHaveBeenCalledWith('tok-1');
 		expect(pageLoad).toHaveBeenCalledWith({ error: 'totp-required' });
 
 		stopVerify();
-		sdk.account._emitEmailVerificationLink('tok-2');
+		sdk.account.emit('emailVerificationLink', 'tok-2');
 		expect(verify).toHaveBeenCalledTimes(1);
 	});
 });

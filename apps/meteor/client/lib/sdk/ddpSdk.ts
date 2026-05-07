@@ -289,13 +289,13 @@ if (typeof window !== 'undefined' && isSdkTransportEnabled()) {
 	// sdk.account.onEmailVerificationLink / onPageLoadLogin fire in flag-ON
 	// mode too. The SDK has no native source for these — they come from
 	// Meteor's hash-route parser (verification link) and Meteor's first-login
-	// resolution (page load login). Register one bridge per event; AccountImpl
-	// internally fans out to whatever consumers attached via onEmailVerificationLink
+	// resolution (page load login). Register one bridge per event; AccountImpl's
+	// emitter fans out to whatever consumers attached via onEmailVerificationLink
 	// / onPageLoadLogin.
 	Accounts.onEmailVerificationLink((token: string) => {
-		sdk.account._emitEmailVerificationLink(token);
+		sdk.account.emit('emailVerificationLink', token);
 	});
 	Accounts.onPageLoadLogin((loginAttempt: unknown) => {
-		sdk.account._emitPageLoadLogin(loginAttempt);
+		sdk.account.emit('pageLoadLogin', loginAttempt);
 	});
 }
