@@ -4,6 +4,7 @@ import xmlenc from 'xml-encryption';
 
 import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { SAMLPOSTEnvelope } from '../../definition/SAMLEnvelope';
 import type { IResponseValidateCallback } from '../../definition/callbacks';
 import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
@@ -17,7 +18,8 @@ export class ResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	public validate(xml: string, callback: IResponseValidateCallback): void {
+	public validate(envelope: SAMLPOSTEnvelope<'SAMLResponse'>, callback: IResponseValidateCallback): void {
+		const { decodedDocument: xml } = envelope;
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log({ msg: 'Validating SAML Response', xml });
 
@@ -242,16 +244,20 @@ export class ResponseParser {
 	}
 
 	private verifySignatures(response: Element, assertionData: ISAMLAssertion, xml: string): void {
-		if (!this.serviceProviderOptions.cert) {
-			return;
-		}
-
 		const signatureType = this.serviceProviderOptions.signatureValidationType;
 
 		const checkEither = signatureType === 'Either';
 		const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
 		const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
 		let anyValidSignature = false;
+
+		if (!this.serviceProviderOptions.cert) {
+			if (checkResponse || checkAssertion) {
+				SAMLUtils.log('Missing Signature validation params');
+				throw new Error('Unable to validate signature');
+			}
+			return;
+		}
 
 		if (checkResponse) {
 			SAMLUtils.log('Verify Document Signature');

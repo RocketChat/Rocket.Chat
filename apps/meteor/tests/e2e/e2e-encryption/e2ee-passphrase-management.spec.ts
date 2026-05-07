@@ -247,6 +247,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
+		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		await page.goto('/home');
 
 		// Logout to remove e2ee keys
@@ -276,9 +277,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await poHomeChannel.btnRoomEnterE2EEPassword.click();
 
-		await page.locator('#modal-root input').fill(e2eePassword);
-
-		await page.locator('#modal-root .rcx-button--primary').click();
+		await enterE2EEPasswordModal.enterPassword(e2eePassword);
 
 		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
