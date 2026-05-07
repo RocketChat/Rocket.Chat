@@ -22,6 +22,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { getDdpSdk } from '../sdk/ddpSdk';
 import { Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
@@ -875,6 +876,6 @@ class E2E extends Emitter {
 
 export const e2e = new E2E();
 
-Accounts.onLogout(() => {
+getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
 });

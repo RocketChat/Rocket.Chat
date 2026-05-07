@@ -13,6 +13,7 @@ import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { getDdpSdk } from '../sdk/ddpSdk';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
@@ -396,7 +397,7 @@ export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends Cach
 			void this.init();
 		});
 
-		Accounts.onLogout(() => {
+		getDdpSdk().account.onLogout(() => {
 			this.release();
 		});
 	}
