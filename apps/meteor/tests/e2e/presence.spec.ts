@@ -13,7 +13,7 @@ test.describe.serial('Presence', () => {
 		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
 
-		await poHomeChannel.goto();
+		await page.goto('/home');
 	});
 
 	test.describe('Login using default settings', () => {
