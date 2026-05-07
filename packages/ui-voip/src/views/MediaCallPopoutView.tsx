@@ -42,7 +42,6 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
-		onClickDirectMessage,
 		streams: { remoteScreen, localScreen },
 	} = useMediaCallView();
 
@@ -126,7 +125,6 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 				}
 				rightSlot={
 					<ButtonGroup>
-						<ActionButton label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 						<ActionButton label={t('Return_to_main_window')} icon='arrow-from-cross-box' onClick={onClickClosePopout} />
 						<ToggleButton
 							label={t('Fullscreen')}
