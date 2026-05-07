@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useCustomSound, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useToastMessageDispatch, useRoomToolbox, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -16,6 +16,7 @@ const NotificationPreferencesWithData = (): ReactElement => {
 	const { closeTab } = useRoomToolbox();
 	const customSound = useCustomSound();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const newMessageNotificationPreference = useUserPreference<string>('newMessageNotification', 'chime') as string;
 
 	const { mutateAsync: saveSettings } = useEndpointMutation('POST', '/v1/rooms.saveNotification', {
 		onSuccess: () => {
@@ -58,7 +59,7 @@ const NotificationPreferencesWithData = (): ReactElement => {
 	const { desktopSound } = methods.watch();
 
 	const handlePlaySound = (): void => {
-		customSound.play(desktopSound);
+		customSound.play(desktopSound === 'default' ? newMessageNotificationPreference : desktopSound);
 	};
 
 	const handleSave = methods.handleSubmit(

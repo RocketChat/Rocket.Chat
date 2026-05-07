@@ -6,6 +6,8 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
+import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../../../client/lib/sdk/ddpSdk';
+import { isSdkTransportEnabled } from '../../../../client/lib/sdk/sdkTransportEnabled';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,6 +20,8 @@ declare module '@rocket.chat/ddp-client' {
 		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
+
+const sdkTransportEnabled = isSdkTransportEnabled();
 
 const isChangedCollectionPayload = (
 	msg: any,
@@ -142,12 +146,112 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 	};
 };
 
+const createNewDdpSdkStream = (
+	streamProxy: Emitter<EventMap>,
+	streamName: StreamNames,
+	key: StreamKeys<StreamNames>,
+	args: unknown[],
+): StreamMapValue => {
+	const ee = new Emitter<{
+		ready: [error: any] | [undefined, any];
+		error: [error: any];
+		stop: undefined;
+	}>();
+	const meta = { ready: false };
+
+	// Defer the actual `subscribe` until DDPSDK is authenticated. Without this,
+	// stream subscriptions fired immediately after re-login (e.g. the
+	// SubscriptionsCachedStore's `notify-user/<uid>/subscriptions-changed`
+	// listener that re-arms via onLoggedIn) hit the SDK socket while it's
+	// still anonymous — server rejects with `not-allowed`/`nosub`, the
+	// stream's `ready` promise emits an error, and the cached store never
+	// receives subsequent server events. The visible failure: an agent that
+	// just took a livechat chat post-relogin sees the chat work but the
+	// "Move to the queue" button never appears, because the new subscription
+	// the server creates for that agent is never replicated to the client's
+	// Subscriptions store, and pseudoRoom (= {...sub, ...room}) ends up with
+	// no `u` for the canMoveQueue check.
+	let subscription: ReturnType<ReturnType<typeof getDdpSdk>['client']['subscribe']> | undefined;
+	let offCollection: (() => void) | undefined;
+	let stopped = false;
+
+	void ensureConnectedAndAuthenticated()
+		.catch(() => undefined)
+		.then(() => {
+			if (stopped) return;
+			const sdk = getDdpSdk();
+			subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+
+			subscription
+				.ready()
+				.then(() => {
+					if (stopped) return;
+					meta.ready = true;
+					ee.emit('ready', [undefined, { msg: 'ready', subs: [subscription!.id] }]);
+				})
+				.catch((err) => {
+					if (stopped) return;
+					ee.emit('ready', [err]);
+					ee.emit('error', err);
+				});
+
+			offCollection = sdk.client.onCollection(`stream-${streamName}`, (data: any) => {
+				if (data?.msg !== 'changed') return;
+				if (data.collection !== `stream-${streamName}`) return;
+				if (data.fields?.eventName !== key) return;
+				streamProxy.emit(`stream-${streamName}/${key}` as keyof EventMap, data.fields.args);
+			});
+		});
+
+	const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
+		if (meta.ready) {
+			cb({ msg: 'ready', subs: [] });
+			return;
+		}
+		ee.once('ready', ([error, result]) => {
+			if (error) {
+				cb({ msg: 'nosub', id: '', error });
+				return;
+			}
+			cb(result);
+		});
+	};
+
+	return {
+		stop: () => {
+			// Mirror Meteor's subscription semantics: explicit stop() does not fire the
+			// 'stop' event (onStop is reserved for server-initiated closures).
+			// Emitting it here would recurse through the onStop handler that
+			// createStreamManager registers, which itself iterates the unsubList.
+			stopped = true;
+			offCollection?.();
+			subscription?.stop();
+		},
+		onChange,
+		ready: () => {
+			if (meta.ready) return Promise.resolve();
+			return new Promise<void>((resolve, reject) => {
+				ee.once('ready', ([err]) => {
+					if (err) {
+						reject(err);
+						return;
+					}
+					resolve();
+				});
+			});
+		},
+		onError: (cb: (...args: any[]) => void) => ee.once('error', (error) => cb(error)),
+		onStop: (cb: () => void) => ee.once('stop', cb),
+		get isReady() {
+			return meta.ready;
+		},
+		unsubList: new Set(),
+	};
+};
+
 const createStreamManager = () => {
 	// Emitter that replicates stream messages to registered callbacks
 	const streamProxy = new Emitter<EventMap>();
-
-	// Collection of unsubscribe callbacks for each stream.
-	// const proxyUnsubLists = new Map<string, Set<() => void>>();
 
 	const streams = new Map<string, StreamMapValue>();
 
@@ -157,13 +261,20 @@ const createStreamManager = () => {
 		});
 	});
 
-	Meteor.connection._stream.on('message', (rawMsg: string) => {
-		const msg = DDPCommon.parseDDP(rawMsg);
-		if (!isChangedCollectionPayload(msg)) {
-			return;
-		}
-		streamProxy.emit(`${msg.collection}/${msg.fields.eventName}` as any, msg.fields.args as any);
-	});
+	if (!sdkTransportEnabled) {
+		// In legacy Meteor mode, stream frames arrive on Meteor.connection._stream
+		// as `changed` collection messages — bridge them into streamProxy so the
+		// per-stream callbacks fire. With SDK transport on, the frames arrive on
+		// the SDK socket and createNewDdpSdkStream registers its own onCollection
+		// listener instead.
+		Meteor.connection._stream.on('message', (rawMsg: string) => {
+			const msg = DDPCommon.parseDDP(rawMsg);
+			if (!isChangedCollectionPayload(msg)) {
+				return;
+			}
+			streamProxy.emit(`${msg.collection}/${msg.fields.eventName}` as any, msg.fields.args as any);
+		});
+	}
 
 	const stream: SDK['stream'] = <N extends StreamNames, K extends StreamKeys<N>>(
 		name: N,
@@ -186,7 +297,11 @@ const createStreamManager = () => {
 
 		streamProxy.on(eventLiteral, proxyCallback);
 
-		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+		const stream =
+			streams.get(eventLiteral) ||
+			(sdkTransportEnabled
+				? createNewDdpSdkStream(streamProxy, name as StreamNames, key as StreamKeys<StreamNames>, args)
+				: createNewMeteorStream(name as StreamNames, key as StreamKeys<StreamNames>, args));
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
@@ -241,20 +356,18 @@ const createStreamManager = () => {
 export const createSDK = (rest: RestClientInterface) => {
 	const { stream, stopAll } = createStreamManager();
 
-	const publish = (name: string, args: unknown[]) => {
-		Meteor.call(`stream-${name}`, ...args);
-	};
+	const publish = sdkTransportEnabled
+		? (name: string, args: unknown[]) => {
+				// DDPSDK queues outbound frames until the WebSocket handshake completes,
+				// so there's no need to gate on an isReady flag here.
+				void getDdpSdk().client.callAsync(`stream-${name}`, ...args);
+			}
+		: (name: string, args: unknown[]) => {
+				Meteor.call(`stream-${name}`, ...args);
+			};
 
 	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
 		return Meteor.callAsync(method, ...args);
-	};
-
-	const disconnect = () => {
-		Meteor.disconnect();
-	};
-
-	const reconnect = () => {
-		Meteor.reconnect();
 	};
 
 	return {
@@ -263,8 +376,6 @@ export const createSDK = (rest: RestClientInterface) => {
 		stream,
 		publish,
 		call,
-		disconnect,
-		reconnect,
 	};
 };
 

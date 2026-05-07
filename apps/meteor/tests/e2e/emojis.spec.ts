@@ -17,11 +17,10 @@ test.describe.serial('emoji', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test('should display emoji picker properly', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.composer.btnEmoji.click();
 
 		await test.step('should display scroller', async () => {
@@ -37,7 +36,6 @@ test.describe.serial('emoji', () => {
 		});
 
 		await test.step('should pick and send grinning emoji', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.pickEmoji('grinning');
 			await page.keyboard.press('Enter');
 
@@ -46,7 +44,6 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect send emoji via text', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(':innocent:');
 		await page.keyboard.press('Enter');
 
@@ -54,8 +51,6 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect render special characters and numbers properly', async () => {
-		await poHomeChannel.navbar.openChat(targetChannel);
-
 		await poHomeChannel.content.sendMessage('® © ™ # *');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');
 	});
@@ -79,7 +74,7 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.addEmojiFlexTab.save();
 			await poAdminEmoji.sidebar.close();
 
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 
 			await poHomeChannel.content.sendMessage(`:${emojiName}:`);
 			await page.keyboard.press('Enter');
@@ -94,7 +89,7 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.editEmojiFlexTab.save();
 			await poAdminEmoji.sidebar.close();
 
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 
 			await poHomeChannel.content.sendMessage(`:${newEmojiName}:`);
 			await page.keyboard.press('Enter');

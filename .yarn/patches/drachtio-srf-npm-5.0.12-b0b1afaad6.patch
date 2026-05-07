@@ -1,7 +1,16 @@
 diff --git a/lib/@types/index.d.ts b/lib/@types/index.d.ts
-index f71a82f458c1432202be8d4585fc70ba94bee4a4..b874ee9e1fa8a051f06d4824fc12161acfadb78a 100644
+index f71a82f458c1432202be8d4585fc70ba94bee4a4..2ad273d1efcaaa54b0a1326ff1c15b6cfc199be3 100644
 --- a/lib/@types/index.d.ts
 +++ b/lib/@types/index.d.ts
+@@ -101,7 +101,7 @@ declare namespace Srf {
+     local: { uri: string; sdp: string; };
+     remote: { uri: string; sdp: string; };
+     req: SrfRequest;
+-    destroy(opts?: { headers: Record<string, string>; }, callback?: (err: any, msg: SrfRequest) => void): void;
++    destroy(opts?: { headers: Record<string, string>; }, callback?: (err: any, msg: SrfRequest) => void): Promise<void>;
+     modify(sdp: string, opts?: { noAck: boolean }): Promise<string>;
+     modify(opts: { noAck: boolean }): Promise<string>;
+     modify(sdp: string, opts?: { noAck: boolean }, callback?: (err: any, msg: SrfResponse) => void): void;
 @@ -119,12 +119,12 @@ declare namespace Srf {
      on(messageType: "modify", callback: (req: SrfRequest, res: SrfResponse) => void): void;
      once(messageType: string, callback: (msg: SrfResponse) => void): void;

@@ -1,16 +1,16 @@
 import { useDebouncedState, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { TooltipComponent } from '@rocket.chat/ui-client';
 import { TooltipContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
-import TooltipPortal from '../portals/TooltipPortal';
+import { TooltipComponent } from '../components/TooltipComponent';
 
 type TooltipProviderProps = {
 	children?: ReactNode;
+	ownerDocument?: Document;
 };
 
-const TooltipProvider = ({ children }: TooltipProviderProps) => {
+const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>();
 	const hasHover = !useMediaQuery('(hover: none)');
 
@@ -31,14 +31,18 @@ const TooltipProvider = ({ children }: TooltipProviderProps) => {
 				const previousAnchor = lastAnchor.current;
 				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
 				lastAnchor.current = anchor;
-				previousAnchor && restoreTitle(previousAnchor);
+				if (previousAnchor) {
+					restoreTitle(previousAnchor);
+				}
 			},
 			close: (): void => {
 				const previousAnchor = lastAnchor.current;
 				setTooltip(null);
 				setTooltip.flush();
 				lastAnchor.current = undefined;
-				previousAnchor && restoreTitle(previousAnchor);
+				if (previousAnchor) {
+					restoreTitle(previousAnchor);
+				}
 			},
 			dismiss: (): void => {
 				setTooltip(null);
@@ -122,22 +126,22 @@ const TooltipProvider = ({ children }: TooltipProviderProps) => {
 			contextValue.dismiss();
 		};
 
-		document.body.addEventListener('mouseover', handleMouseOver, {
+		ownerDocument.body.addEventListener('mouseover', handleMouseOver, {
 			passive: true,
 		});
-		document.body.addEventListener('click', dismissOnClick, { capture: true });
+		ownerDocument.body.addEventListener('click', dismissOnClick, { capture: true });
 
 		return (): void => {
 			contextValue.close();
-			document.body.removeEventListener('mouseover', handleMouseOver);
-			document.body.removeEventListener('click', dismissOnClick);
+			ownerDocument.body.removeEventListener('mouseover', handleMouseOver);
+			ownerDocument.body.removeEventListener('click', dismissOnClick);
 		};
-	}, [contextValue, setTooltip, hasHover]);
+	}, [contextValue, setTooltip, hasHover, ownerDocument]);
 
 	return (
 		<TooltipContext.Provider value={contextValue}>
 			{children}
-			{tooltip && <TooltipPortal>{tooltip}</TooltipPortal>}
+			{tooltip}
 		</TooltipContext.Provider>
 	);
 };

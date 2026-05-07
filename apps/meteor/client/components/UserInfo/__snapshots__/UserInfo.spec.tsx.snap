@@ -66,6 +66,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-902tla"
                     >
                       <svg
+                        aria-hidden="true"
                         class="rcx-status-bullet rcx-status-bullet--offline undefined "
                         fill="none"
                         height="12"
@@ -362,6 +363,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-902tla"
                     >
                       <svg
+                        aria-hidden="true"
                         class="rcx-status-bullet rcx-status-bullet--offline undefined "
                         fill="none"
                         height="12"
@@ -672,6 +674,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-902tla"
                     >
                       <svg
+                        aria-hidden="true"
                         class="rcx-status-bullet rcx-status-bullet--offline undefined "
                         fill="none"
                         height="12"
@@ -1028,6 +1031,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-902tla"
                     >
                       <svg
+                        aria-hidden="true"
                         class="rcx-status-bullet rcx-status-bullet--offline undefined "
                         fill="none"
                         height="12"
