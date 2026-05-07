@@ -5,14 +5,12 @@ import { useMemo } from 'react';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
 
 const getCanChangeType = (room: IRoom | IRoomWithRetentionPolicy, canCreateChannel: boolean, canCreateGroup: boolean, isAdmin: boolean) =>
 	(!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
 
 export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) => {
 	const isAdmin = useRole('admin');
-	const isAbacManaged = useIsABACManagedRoom(room);
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 
@@ -40,7 +38,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const [
 		canViewName,
 		canViewTopic,
-		canViewAnnouncementBase,
+		canViewAnnouncement,
 		canViewArchived,
 		canViewDescription,
 		canViewType,
@@ -76,7 +74,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canArchiveOrUnarchive,
 		canViewName,
 		canViewTopic,
-		canViewAnnouncement: canViewAnnouncementBase && !isAbacManaged,
+		canViewAnnouncement,
 		canViewArchived,
 		canViewDescription,
 		canViewType,
