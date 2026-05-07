@@ -55,7 +55,7 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('verify user is still on the profile page', async () => {
-			await expect(poAccountProfile.profileTitle).toBeVisible();
+			await expect(poAccountProfile.profileHeading).toBeVisible();
 		});
 	});
 

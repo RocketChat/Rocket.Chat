@@ -113,23 +113,23 @@ export class AccountProfile extends Account {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
-	get profileTitle(): Locator {
+	get profileHeading(): Locator {
 		return this.page.getByRole('heading', { name: 'Profile' });
 	}
 
-	get personalAccessTokensTitle(): Locator {
+	get personalAccessTokensHeading(): Locator {
 		return this.page.getByRole('heading', { name: 'Personal Access Tokens' });
 	}
 
-	get omnichannelTitle(): Locator {
+	get omnichannelHeading(): Locator {
 		return this.page.getByRole('heading', { name: 'Omnichannel' });
 	}
 
-	get featurePreviewTitle(): Locator {
+	get featurePreviewHeading(): Locator {
 		return this.page.getByRole('heading', { name: 'Feature preview' });
 	}
 
-	get accessibilityAndAppearanceTitle(): Locator {
+	get accessibilityAndAppearanceHeading(): Locator {
 		return this.page.getByRole('heading', { name: 'Accessibility & Appearance' });
 	}
 
@@ -150,22 +150,22 @@ export class AccountProfile extends Account {
 	}
 
 	async gotoProfile(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/profile', this.profileTitle);
+		await goToRouteAndWait(this.page, '/account/profile', this.profileHeading);
 	}
 
 	async gotoTokens(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/tokens', this.personalAccessTokensTitle);
+		await goToRouteAndWait(this.page, '/account/tokens', this.personalAccessTokensHeading);
 	}
 
 	async gotoOmnichannel(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/omnichannel', this.omnichannelTitle);
+		await goToRouteAndWait(this.page, '/account/omnichannel', this.omnichannelHeading);
 	}
 
 	async gotoFeaturePreview(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/feature-preview', this.featurePreviewTitle);
+		await goToRouteAndWait(this.page, '/account/feature-preview', this.featurePreviewHeading);
 	}
 
 	async gotoAccessibilityAndAppearance(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/accessibility-and-appearance', this.accessibilityAndAppearanceTitle);
+		await goToRouteAndWait(this.page, '/account/accessibility-and-appearance', this.accessibilityAndAppearanceHeading);
 	}
 }
