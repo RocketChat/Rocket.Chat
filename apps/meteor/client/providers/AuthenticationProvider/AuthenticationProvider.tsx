@@ -4,11 +4,10 @@ import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
@@ -29,7 +28,34 @@ const callLoginMethod = (
 	});
 };
 
-const getLoggingIn = () => Accounts.loggingIn();
+// Bridge Accounts.loggingIn() — Meteor's Tracker-reactive flag — into a
+// non-reactive subscribe/getSnapshot pair for useSyncExternalStore. We hook
+// `_setLoggingIn` (Meteor's internal flip, also accessed in
+// apps/meteor/client/meteor/overrides/killMeteorStream.ts) to fan out
+// transitions without entering a Tracker computation.
+const loggingInListeners = new Set<() => void>();
+let loggingInBridgeInstalled = false;
+const installLoggingInBridge = (): void => {
+	if (loggingInBridgeInstalled) return;
+	loggingInBridgeInstalled = true;
+	const wrap = Accounts as unknown as { _setLoggingIn?: (v: boolean) => void };
+	const original = wrap._setLoggingIn;
+	if (typeof original !== 'function') return;
+	wrap._setLoggingIn = function (this: typeof Accounts, v: boolean) {
+		original.call(this, v);
+		loggingInListeners.forEach((cb) => cb());
+	};
+};
+
+const subscribeLoggingIn = (cb: () => void): (() => void) => {
+	installLoggingInBridge();
+	loggingInListeners.add(cb);
+	return () => {
+		loggingInListeners.delete(cb);
+	};
+};
+
+const getLoggingInSnapshot = (): boolean => Accounts.loggingIn();
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
@@ -39,7 +65,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 	useLDAPAndCrowdCollisionWarning();
 
-	const isLoggingIn = useReactiveValue(getLoggingIn);
+	const isLoggingIn = useSyncExternalStore(subscribeLoggingIn, getLoggingInSnapshot);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthenticationContext> => ({
