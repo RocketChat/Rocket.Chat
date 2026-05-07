@@ -4,7 +4,7 @@ import type { FindOptions, Sort } from 'mongodb';
 
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { isABACManagedRoom } from '../../../authorization/server/lib/isABACManagedRoom';
+import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
 
 export async function findAdminRooms({
 	uid,
@@ -42,13 +42,7 @@ export async function findAdminRooms({
 
 	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
 
-	const sanitizedRooms = rooms.map((room) => {
-		if (!isABACManagedRoom(room)) {
-			return room;
-		}
-		const { announcement, topic, description, ...rest } = room;
-		return rest;
-	});
+	const sanitizedRooms = rooms.map(stripABACManagedFieldsForAdmin);
 
 	return {
 		rooms: sanitizedRooms,
@@ -67,11 +61,7 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 	if (!room) {
 		return null;
 	}
-	if (isABACManagedRoom(room)) {
-		const { announcement, topic, description, ...rest } = room;
-		return rest;
-	}
-	return room;
+	return stripABACManagedFieldsForAdmin(room);
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{

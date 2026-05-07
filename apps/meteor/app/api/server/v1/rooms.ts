@@ -59,6 +59,7 @@ import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
@@ -1483,9 +1484,11 @@ export const roomEndpoints = API.v1
 
 			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
+			const sanitizedRooms = rooms.map(stripABACManagedFieldsForAdmin);
+
 			return API.v1.success({
-				rooms,
-				count: rooms.length,
+				rooms: sanitizedRooms,
+				count: sanitizedRooms.length,
 				offset,
 				total,
 			});
