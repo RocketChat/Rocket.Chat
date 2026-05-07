@@ -116,6 +116,22 @@ export class AccountProfile extends Account {
 		return this.page.getByRole('heading', { name: 'Profile' });
 	}
 
+	get personalAccessTokensTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Personal Access Tokens' });
+	}
+
+	get omnichannelTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Omnichannel' });
+	}
+
+	get featurePreviewTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Feature preview' });
+	}
+
+	get accessibilityAndAppearanceTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Accessibility & Appearance' });
+	}
+
 	get btnDeleteMyAccount(): Locator {
 		return this.page.getByRole('button', { name: 'Delete my account' });
 	}
@@ -126,5 +142,29 @@ export class AccountProfile extends Account {
 
 	get errorInvalidUrl(): Locator {
 		return this.getErrorAlertByText('Invalid image URL');
+	}
+
+	async goto(): Promise<void> {
+		await this.gotoProfile();
+	}
+
+	async gotoProfile(): Promise<void> {
+		await this.gotoRoute('/account/profile', this.profileTitle);
+	}
+
+	async gotoTokens(): Promise<void> {
+		await this.gotoRoute('/account/tokens', this.personalAccessTokensTitle);
+	}
+
+	async gotoOmnichannel(): Promise<void> {
+		await this.gotoRoute('/account/omnichannel', this.omnichannelTitle);
+	}
+
+	async gotoFeaturePreview(): Promise<void> {
+		await this.gotoRoute('/account/feature-preview', this.featurePreviewTitle);
+	}
+
+	async gotoAccessibilityAndAppearance(): Promise<void> {
+		await this.gotoRoute('/account/accessibility-and-appearance', this.accessibilityAndAppearanceTitle);
 	}
 }

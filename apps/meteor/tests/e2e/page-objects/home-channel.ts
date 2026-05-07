@@ -92,8 +92,9 @@ export class HomeChannel {
 		return this._tabs;
 	}
 
-	goto() {
-		return this.page.goto('/home');
+	async goto(): Promise<void> {
+		await this.page.goto('/home');
+		await this.waitForHome();
 	}
 
 	async gotoChannel(name: string) {

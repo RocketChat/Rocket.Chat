@@ -15,6 +15,10 @@ export class AdminRooms extends Admin {
 		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Rooms' }) });
 	}
 
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/rooms', this.adminPageContent);
+	}
+
 	get inputSearchRooms(): Locator {
 		return this.adminPageContent.getByPlaceholder('Search rooms');
 	}

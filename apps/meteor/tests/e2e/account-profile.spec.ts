@@ -20,8 +20,8 @@ test.describe.serial('settings-account-profile', () => {
 
 	// FIXME: solve test intermitencies
 	test.describe('Profile', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/account/profile');
+		test.beforeEach(async () => {
+			await poAccountProfile.gotoProfile();
 		});
 
 		test.skip('expect update profile with new name/username', async () => {
@@ -84,7 +84,7 @@ test.describe.serial('settings-account-profile', () => {
 
 	test('Personal Access Tokens', async ({ page }) => {
 		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
-		await page.goto('/account/tokens');
+		await poAccountProfile.gotoTokens();
 		await response;
 
 		await test.step('should show empty personal access tokens table', async () => {
@@ -125,8 +125,8 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Omnichannel', () => {
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/omnichannel');
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			await poAccountProfile.gotoOmnichannel();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
@@ -134,8 +134,8 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Feature Preview', () => {
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/feature-preview');
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			await poAccountProfile.gotoFeaturePreview();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
@@ -143,8 +143,8 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Accessibility & Appearance', () => {
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/accessibility-and-appearance');
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			await poAccountProfile.gotoAccessibilityAndAppearance();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);

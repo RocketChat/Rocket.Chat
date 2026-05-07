@@ -52,7 +52,7 @@ test.describe.serial('Admin > Users', () => {
 
 		test.beforeEach('Go to /admin/users', async ({ page }) => {
 			adminUsers = new AdminUsers(page);
-			await page.goto('/admin/users');
+			await adminUsers.goto();
 		});
 
 		test('After the first login, the user gets listed under the Active tab', async () => {

@@ -11,6 +11,10 @@ export class AdminIntegrations extends Admin {
 		return this.page.getByRole('button', { name: 'Instructions', exact: true });
 	}
 
+	get adminPageContent(): Locator {
+		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Integrations' }) });
+	}
+
 	codeExamplePayload(text: string): Locator {
 		return this.page.locator('code', { hasText: text });
 	}
@@ -39,5 +43,9 @@ export class AdminIntegrations extends Admin {
 		await this.getIntegrationByName(name).click();
 		await this.btnDelete.click();
 		await this.deleteModal.confirmDelete();
+	}
+
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/integrations', this.adminPageContent);
 	}
 }

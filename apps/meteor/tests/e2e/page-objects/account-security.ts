@@ -11,8 +11,9 @@ export class AccountSecurity extends Account {
 		this.enterPasswordModal = new EnterPasswordModal(page);
 	}
 
-	goto() {
-		return this.page.goto('/account/security');
+	async goto(): Promise<void> {
+		await this.page.goto('/account/security');
+		await this.waitForSecurityPage();
 	}
 
 	async waitForSecurityPage() {

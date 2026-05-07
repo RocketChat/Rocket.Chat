@@ -17,7 +17,7 @@ test.describe('Preview public channel', () => {
 		poHomeChannel = new HomeChannel(page);
 		poDirectory = new Directory(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.beforeAll(async ({ api }) => {

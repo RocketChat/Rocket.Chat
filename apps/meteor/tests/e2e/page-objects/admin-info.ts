@@ -10,4 +10,8 @@ export class AdminInfo extends Admin {
 	get adminPageContent(): Locator {
 		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Workspace' }) });
 	}
+
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/info', this.adminPageContent);
+	}
 }

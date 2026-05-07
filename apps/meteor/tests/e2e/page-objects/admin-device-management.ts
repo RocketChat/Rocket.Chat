@@ -26,6 +26,10 @@ export class AdminDeviceManagement extends Admin {
 		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Device management' }) });
 	}
 
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/device-management', this.adminPageContent);
+	}
+
 	get notAuthorizedMessage(): Locator {
 		return this.page.getByRole('main').getByText('You are not authorized to view this page');
 	}

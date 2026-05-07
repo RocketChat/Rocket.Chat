@@ -18,6 +18,10 @@ export class AccountManageDevices extends Account {
 		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Manage Devices' }) });
 	}
 
+	async goto(): Promise<void> {
+		await this.gotoRoute('/account/manage-devices', this.devicesPageContent);
+	}
+
 	async getNthDeviceId(nth: number): Promise<string> {
 		const deviceId = await this.devicesPageContent.getByRole('row').nth(nth).getAttribute('aria-label');
 		if (!deviceId) {

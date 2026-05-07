@@ -24,7 +24,7 @@ test.describe('Admin > Users Role Management', () => {
 
 		test.beforeEach('Go to /admin/users', async ({ page }) => {
 			admin = new AdminUsers(page);
-			await page.goto('/admin/users');
+			await admin.goto();
 		});
 
 		test('Make a newly created user as admin', async () => {

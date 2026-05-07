@@ -58,7 +58,7 @@ test.describe.serial('Global Search', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('should open the correct message when jumping from global search in group to channel thread', async ({ page }) => {

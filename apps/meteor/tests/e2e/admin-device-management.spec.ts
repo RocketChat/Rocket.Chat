@@ -76,7 +76,6 @@ test.describe('Admin Device Management Page', () => {
 		const poUser2Home = new HomeChannel(user2Page);
 
 		await poUser2Home.goto();
-		await poUser2Home.waitForHome();
 
 		await test.step('should list user2 device while user2 is logged in', async () => {
 			await expect(adminDeviceManagement.adminPageContent).toBeVisible();

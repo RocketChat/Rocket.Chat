@@ -21,7 +21,7 @@ test.describe.parallel('Mention User Card [To Member]', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(({ api }) => deleteChannel(api, targetChannel));

@@ -11,6 +11,10 @@ export class AdminSettings extends Admin {
 		return this.page.locator('input[type=search]');
 	}
 
+	get adminPageContent(): Locator {
+		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Settings' }) });
+	}
+
 	get inputSiteURL(): Locator {
 		return this.page.getByRole('textbox', { name: 'Site URL' });
 	}
@@ -41,5 +45,17 @@ export class AdminSettings extends Admin {
 
 	get btnSaveChanges(): Locator {
 		return this.page.getByRole('button', { name: 'Save changes' });
+	}
+
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/settings', this.inputSearchSettings);
+	}
+
+	async gotoGeneral(): Promise<void> {
+		await this.gotoRoute('/admin/settings/General', this.inputSiteURL);
+	}
+
+	async gotoLayout(): Promise<void> {
+		await this.gotoRoute('/admin/settings/Layout', this.getAccordionBtnByName('Custom CSS'));
 	}
 }

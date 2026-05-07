@@ -20,8 +20,7 @@ test.describe.serial('Sidebar', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await page.waitForSelector('main');
+		await poHomeChannel.goto();
 	});
 
 	test.describe('global header', async () => {
@@ -87,8 +86,8 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.sidebar.channelsList.getByRole('link').first()).not.toBeFocused();
 		});
 
-		test('should expand/collapse sidebar groups', async ({ page }) => {
-			await page.goto('/home');
+		test('should expand/collapse sidebar groups', async () => {
+			await poHomeChannel.goto();
 
 			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
 			let isExpanded: boolean;
@@ -103,7 +102,7 @@ test.describe.serial('Sidebar', () => {
 		});
 
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 
 			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
 
@@ -124,7 +123,7 @@ test.describe.serial('Sidebar', () => {
 		});
 
 		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 
 			const collapser = poHomeChannel.sidebar.firstCollapser;
 			await collapser.click();
@@ -150,9 +149,8 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('embedded layout', async () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/home');
-			await page.waitForSelector('main');
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
 		});
 
 		test('should not show Navbar', async ({ page }) => {

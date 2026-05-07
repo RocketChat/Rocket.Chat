@@ -26,10 +26,9 @@ test.describe('teams-management-permissions', () => {
 		});
 	});
 
-	test('should not allow to create public team if user does not have the create-c permission', async ({ page, api }) => {
+	test('should not allow to create public team if user does not have the create-c permission', async ({ api }) => {
 		await expect(await api.post('/permissions.update', { permissions: [{ _id: 'create-c', roles: [] }] })).toBeOK();
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 
 		await poHomeTeam.navbar.openCreate('Team');
 
@@ -37,10 +36,9 @@ test.describe('teams-management-permissions', () => {
 		await expect(newTeamModal.checkboxPrivate).toBeChecked();
 	});
 
-	test('should not allow to create private team if user does not have the create-p permission', async ({ page, api }) => {
+	test('should not allow to create private team if user does not have the create-p permission', async ({ api }) => {
 		await expect(await api.post('/permissions.update', { permissions: [{ _id: 'create-p', roles: [] }] })).toBeOK();
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 
 		await poHomeTeam.navbar.openCreate('Team');
 
@@ -48,7 +46,7 @@ test.describe('teams-management-permissions', () => {
 		await expect(newTeamModal.checkboxPrivate).not.toBeChecked();
 	});
 
-	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ page, api }) => {
+	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api }) => {
 		await expect(
 			await api.post('/permissions.update', {
 				permissions: [
@@ -57,8 +55,7 @@ test.describe('teams-management-permissions', () => {
 				],
 			}),
 		).toBeOK();
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 
 		await poHomeTeam.navbar.btnCreateNew.click();
 		await expect(poHomeTeam.navbar.createNewMenu).toBeVisible();
@@ -100,8 +97,7 @@ test.describe.serial('teams-management', () => {
 		poHomeTeam = new HomeTeam(page);
 		newChannelModal = new CreateNewChannelModal(page);
 
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 	});
 
 	test('should create targetTeam private', async ({ page }) => {

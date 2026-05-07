@@ -16,7 +16,7 @@ test.describe.serial('permissions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.describe.serial('Edit message', () => {

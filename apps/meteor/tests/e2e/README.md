@@ -104,6 +104,7 @@ A change in the DOM structure can break the test.
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
 - They make it easier to write tests that are more readable and maintainable.
 - Always make sure to use the most restricted scope possible - not the whole page to avoid multiple matches.
+- When a page-object already exposes a route-aware `goto()` helper, prefer it over raw `page.goto()` so readiness checks stay coupled to navigation.
 
 If you are writing a new test, make sure to look at the existing page-objects to see if there is a suitable one for your use case.
 
@@ -140,7 +141,7 @@ Usage example:
 
   test('should display sidebar items', async ({ page }) => {
       poHomeChannel = new HomeChannel(page);
-      await page.goto('/home');
+      await poHomeChannel.goto();
       const targetChannel = 'channel-test';
 
       await expect(poHomeChannel.sidebar.getSearchRoomByName(targetChannel)).toBeVisible();
@@ -296,7 +297,7 @@ test.describe.serial('Feature X', () => {
         page = await context.newPage();
         poHomeChannel = new HomeChannel(page);
 
-        await page.goto('/home');
+        await poHomeChannel.goto();
         await poHomeChannel.navbar.openChat(targetChannel);
     });
 
@@ -334,4 +335,3 @@ Recipe for a single spec. Keep PRs to at most 5 files so reviews stay tractable.
 - `test.describe.serial` combined with `beforeEach(async ({ page }) => { await page.goto(...) })` — the context should be shared in `beforeAll`.
 - New non-serial suites whose tests still each carry >3s of UI setup.
 - Inline `api.post('/im.create', …)` / `api.post('/chat.sendMessage', …)` in a spec instead of extending the helpers in `utils/`.
-

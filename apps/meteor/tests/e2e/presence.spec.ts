@@ -13,7 +13,7 @@ test.describe.serial('Presence', () => {
 		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.describe('Login using default settings', () => {
@@ -37,8 +37,8 @@ test.describe.serial('Presence', () => {
 
 			await test.step('update user1 custom status', async () => {
 				const user1Page = await browser.newPage({ storageState: Users.user1.state });
-				await user1Page.goto('/home');
 				const user1Channel = new HomeChannel(user1Page);
+				await user1Channel.goto();
 
 				await user1Channel.navbar.changeUserCustomStatus(customStatus);
 				await user1Page.close();

@@ -11,6 +11,10 @@ export class AdminEmailInboxes extends Admin {
 		return this.page.locator('role=button[name="New Email Inbox"]');
 	}
 
+	get adminPageContent(): Locator {
+		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Email Inboxes' }) });
+	}
+
 	get inputName(): Locator {
 		return this.page.locator('input[name="name"]');
 	}
@@ -61,5 +65,9 @@ export class AdminEmailInboxes extends Admin {
 		await this.itemRow(name).click();
 		await this.btnDelete.click();
 		await this.deleteModal.confirmDelete();
+	}
+
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/email-inboxes', this.adminPageContent);
 	}
 }

@@ -20,8 +20,7 @@ test.describe.serial('channel-management', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {

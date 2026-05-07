@@ -20,6 +20,10 @@ export class AdminUsers extends Admin {
 		this.userRowMenu = new MenuMoreActions(page);
 	}
 
+	get adminPageContent(): Locator {
+		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Users' }) });
+	}
+
 	get btnNewUser(): Locator {
 		return this.page.getByRole('button', { name: 'New user', exact: true });
 	}
@@ -30,6 +34,10 @@ export class AdminUsers extends Admin {
 
 	private get inputSearchUsers(): Locator {
 		return this.page.getByRole('textbox', { name: 'Search Users' });
+	}
+
+	async goto(): Promise<void> {
+		await this.gotoRoute('/admin/users', this.inputSearchUsers);
 	}
 
 	get btnMoreActionsMenu(): Locator {
