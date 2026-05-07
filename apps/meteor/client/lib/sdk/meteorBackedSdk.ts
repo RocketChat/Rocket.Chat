@@ -29,8 +29,15 @@ const safeMeteorStatus = (): { status: string; connected: boolean; retryCount?: 
 const onMeteorStatusChange = (cb: () => void): (() => void) => {
 	// Subscribe to Meteor's underlying WebSocket lifecycle events directly instead
 	// of riding Meteor.status's Tracker reactivity. The stream is the canonical
-	// non-reactive source: 'connected' / 'disconnect' / 'reset' fire from
-	// LivedataStream regardless of any Tracker context.
+	// non-reactive source: `'reset'` fires when a new DDP session is established
+	// (effectively the "connected" signal — see socket-stream-client.js), and
+	// `'disconnect'` fires when the WebSocket drops or each retry attempt restarts.
+	// `'connected'` is intentionally NOT subscribed: the stream's allowed event
+	// list is `['message', 'reset', 'disconnect']` and `on('connected')` throws
+	// `Error: unknown event type: connected`. Throwing here would propagate up
+	// through `connection.on(...)` callers (notably `CachedStore.performInitialization`)
+	// and abort their initialization before `setupListener()` runs, silently
+	// breaking real-time stream subscriptions for settings, subscriptions, etc.
 	const stream = (Meteor.connection as unknown as { _stream?: { on?: (event: string, cb: () => void) => void } } | undefined)?._stream;
 	if (!stream || typeof stream.on !== 'function') {
 		// Test / SSR environment with a stubbed Meteor — no stream to subscribe to.
@@ -40,9 +47,8 @@ const onMeteorStatusChange = (cb: () => void): (() => void) => {
 	const handler = (): void => {
 		if (!stopped) cb();
 	};
-	stream.on('connected', handler);
-	stream.on('disconnect', handler);
 	stream.on('reset', handler);
+	stream.on('disconnect', handler);
 	// Meteor's stream `on` doesn't expose an `off`; flip a flag instead so the
 	// stale listener becomes a no-op once stopBridge runs.
 	return () => {
