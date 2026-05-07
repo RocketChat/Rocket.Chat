@@ -1,4 +1,9 @@
 services:
+  rocketchat:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}-fips
+
   account-service:
     build:
       target: release-fips
