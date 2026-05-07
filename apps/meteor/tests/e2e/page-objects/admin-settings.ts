@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
+import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AdminSettings extends Admin {
 	constructor(page: Page) {
@@ -48,14 +49,14 @@ export class AdminSettings extends Admin {
 	}
 
 	async goto(): Promise<void> {
-		await this.gotoRoute('/admin/settings', this.inputSearchSettings);
+		await goToRouteAndWait(this.page, '/admin/settings', this.inputSearchSettings);
 	}
 
 	async gotoGeneral(): Promise<void> {
-		await this.gotoRoute('/admin/settings/General', this.inputSiteURL);
+		await goToRouteAndWait(this.page, '/admin/settings/General', this.inputSiteURL);
 	}
 
 	async gotoLayout(): Promise<void> {
-		await this.gotoRoute('/admin/settings/Layout', this.getAccordionBtnByName('Custom CSS'));
+		await goToRouteAndWait(this.page, '/admin/settings/Layout', this.getAccordionBtnByName('Custom CSS'));
 	}
 }

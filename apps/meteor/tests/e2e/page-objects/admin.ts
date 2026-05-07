@@ -37,11 +37,6 @@ export abstract class Admin {
 		this.toastMessage = new ToastMessages(page);
 	}
 
-	protected async gotoRoute(path: string, readyLocator: Locator): Promise<void> {
-		await this.page.goto(path);
-		await readyLocator.waitFor({ state: 'visible' });
-	}
-
 	get btnAdd(): Locator {
 		return this.page.getByRole('button', { name: 'Add', exact: true });
 	}

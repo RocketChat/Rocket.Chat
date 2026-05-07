@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
 import { DeleteAccountModal } from './fragments';
+import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AccountProfile extends Account {
 	readonly deleteAccountModal: DeleteAccountModal;
@@ -149,22 +150,22 @@ export class AccountProfile extends Account {
 	}
 
 	async gotoProfile(): Promise<void> {
-		await this.gotoRoute('/account/profile', this.profileTitle);
+		await goToRouteAndWait(this.page, '/account/profile', this.profileTitle);
 	}
 
 	async gotoTokens(): Promise<void> {
-		await this.gotoRoute('/account/tokens', this.personalAccessTokensTitle);
+		await goToRouteAndWait(this.page, '/account/tokens', this.personalAccessTokensTitle);
 	}
 
 	async gotoOmnichannel(): Promise<void> {
-		await this.gotoRoute('/account/omnichannel', this.omnichannelTitle);
+		await goToRouteAndWait(this.page, '/account/omnichannel', this.omnichannelTitle);
 	}
 
 	async gotoFeaturePreview(): Promise<void> {
-		await this.gotoRoute('/account/feature-preview', this.featurePreviewTitle);
+		await goToRouteAndWait(this.page, '/account/feature-preview', this.featurePreviewTitle);
 	}
 
 	async gotoAccessibilityAndAppearance(): Promise<void> {
-		await this.gotoRoute('/account/accessibility-and-appearance', this.accessibilityAndAppearanceTitle);
+		await goToRouteAndWait(this.page, '/account/accessibility-and-appearance', this.accessibilityAndAppearanceTitle);
 	}
 }

@@ -2,6 +2,7 @@ import type { Locator, Page } from 'playwright-core';
 
 import { Account } from './account';
 import { ConfirmLogoutModal, DevicesTable } from './fragments';
+import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AccountManageDevices extends Account {
 	readonly logoutModal: ConfirmLogoutModal;
@@ -19,7 +20,7 @@ export class AccountManageDevices extends Account {
 	}
 
 	async goto(): Promise<void> {
-		await this.gotoRoute('/account/manage-devices', this.devicesPageContent);
+		await goToRouteAndWait(this.page, '/account/manage-devices', this.devicesPageContent);
 	}
 
 	async getNthDeviceId(nth: number): Promise<string> {

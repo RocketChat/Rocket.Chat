@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
 import { EnterPasswordModal } from './fragments/modals';
+import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AccountSecurity extends Account {
 	private readonly enterPasswordModal: EnterPasswordModal;
@@ -12,8 +13,7 @@ export class AccountSecurity extends Account {
 	}
 
 	async goto(): Promise<void> {
-		await this.page.goto('/account/security');
-		await this.waitForSecurityPage();
+		await goToRouteAndWait(this.page, '/account/security', this.securityHeader);
 	}
 
 	async waitForSecurityPage() {

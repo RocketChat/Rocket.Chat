@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
+import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AdminInfo extends Admin {
 	constructor(page: Page) {
@@ -12,6 +13,6 @@ export class AdminInfo extends Admin {
 	}
 
 	async goto(): Promise<void> {
-		await this.gotoRoute('/admin/info', this.adminPageContent);
+		await goToRouteAndWait(this.page, '/admin/info', this.adminPageContent);
 	}
 }

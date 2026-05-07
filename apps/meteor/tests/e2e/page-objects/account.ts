@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { AccountSidebar, ToastMessages } from './fragments';
 
@@ -10,11 +10,6 @@ export abstract class Account {
 	constructor(protected page: Page) {
 		this.toastMessage = new ToastMessages(page);
 		this.sidebar = new AccountSidebar(page);
-	}
-
-	protected async gotoRoute(path: string, readyLocator: Locator): Promise<void> {
-		await this.page.goto(path);
-		await readyLocator.waitFor({ state: 'visible' });
 	}
 
 	protected get saveChangesButton() {
