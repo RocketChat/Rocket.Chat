@@ -143,7 +143,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 							{t('Call_open_separate_window')}
 						</Box>
 						{/* TODO: new icon missing */}
-						<Button onClick={onClosePopout} icon='arrow-collapse' large>
+						<Button onClick={onClosePopout} icon='arrow-from-cross-box' large>
 							{t('Show_call_here')}
 						</Button>
 					</Box>
@@ -169,8 +169,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 						<ToggleButton
 							label={t('Open_in_new_window')}
 							titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
-							// TODO: new icons missing
-							icons={['arrow-expand', 'arrow-collapse']}
+							icons={['arrow-to-square-box', 'arrow-from-cross-box']}
 							pressed={isPopout}
 							onToggle={isPopout ? onClosePopout : onOpenPopout}
 							danger={false}

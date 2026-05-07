@@ -127,8 +127,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 				rightSlot={
 					<ButtonGroup>
 						<ActionButton label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
-						{/* TODO: new icon */}
-						<ActionButton label={t('Return_to_main_window')} icon='arrow-collapse' onClick={onClickClosePopout} />
+						<ActionButton label={t('Return_to_main_window')} icon='arrow-from-cross-box' onClick={onClickClosePopout} />
 						<ToggleButton
 							label={t('Fullscreen')}
 							titles={[t('Fullscreen'), t('Exit_fullscreen')]}
