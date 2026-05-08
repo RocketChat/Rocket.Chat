@@ -1,5 +1,7 @@
-import { Component, type ComponentChildren } from 'preact';
+import type { ComponentChildren } from 'preact';
+import { forwardRef } from 'preact/compat';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
+import { useState, useRef, useLayoutEffect, useCallback } from 'preact/hooks';
 
 import { createClassName } from '../../helpers/createClassName';
 import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
@@ -9,14 +11,13 @@ import styles from './styles.scss';
 type MenuProps = {
 	hidden?: boolean;
 	placement?: string;
-	ref?: any; // FIXME: remove this
-} & Omit<HTMLAttributes<HTMLDivElement>, 'ref'>;
+} & HTMLAttributes<HTMLDivElement>;
 
-export const Menu = ({ children, hidden, placement = '', ...props }: MenuProps) => (
-	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
+const MenuBase = forwardRef<HTMLDivElement, MenuProps>(({ children, hidden, placement = '', ...props }, ref) => (
+	<div ref={ref} className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
-);
+));
 
 type GroupProps = {
 	title?: string;
@@ -50,37 +51,33 @@ type PopoverMenuWrapperProps = {
 	overlayBounds: DOMRect;
 };
 
-type PopoverMenuWrapperState = {
-	position?: {
+const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }: PopoverMenuWrapperProps) => {
+	const [position, setPosition] = useState<{
 		left?: number;
 		right?: number;
 		top?: number;
 		bottom?: number;
-	};
-	placement?: string;
-};
+	}>();
+	const [placement, setPlacement] = useState<string>();
+	const menuRef = useRef<HTMLDivElement | null>(null);
 
-class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuWrapperState> {
-	override state: PopoverMenuWrapperState = {};
+	const handleClick = useCallback(
+		({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
+			if (!(target as HTMLElement)?.closest(`.${styles.menu__item}`)) {
+				return;
+			}
+			dismiss();
+		},
+		[dismiss],
+	);
 
-	menuRef: (Component & { base: Element }) | null = null;
-
-	handleRef = (ref: (Component & { base: Element }) | null) => {
-		this.menuRef = ref;
-	};
-
-	handleClick = ({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
-		if (!(target as HTMLElement)?.closest(`.${styles.menu__item}`)) {
+	useLayoutEffect(() => {
+		const menuEl = menuRef.current;
+		if (!menuEl) {
 			return;
 		}
 
-		const { dismiss } = this.props;
-		dismiss();
-	};
-
-	override componentDidMount() {
-		const { triggerBounds, overlayBounds } = this.props;
-		const menuBounds = normalizeDOMRect(this.menuRef?.base?.getBoundingClientRect());
+		const menuBounds = normalizeDOMRect(menuEl.getBoundingClientRect());
 
 		const menuWidth = menuBounds.right - menuBounds.left;
 		const menuHeight = menuBounds.bottom - menuBounds.top;
@@ -94,26 +91,18 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 		const top = menuHeight < bottomSpace ? triggerBounds.bottom : undefined;
 		const bottom = menuHeight < bottomSpace ? undefined : overlayBounds.bottom - triggerBounds.top;
 
-		const placement = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
+		const placementValue = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
 
-		// eslint-disable-next-line react/no-did-mount-set-state
-		this.setState({
-			position: { left, right, top, bottom },
-			placement,
-		});
-	}
+		setPosition({ left, right, top, bottom });
+		setPlacement(placementValue);
+	}, [triggerBounds, overlayBounds]);
 
-	render = ({ children }: PopoverMenuWrapperProps) => (
-		<Menu
-			ref={this.handleRef}
-			style={{ position: 'absolute', ...this.state.position }}
-			placement={this.state.placement}
-			onClickCapture={this.handleClick}
-		>
+	return (
+		<MenuBase ref={menuRef} style={{ position: 'absolute', ...position }} placement={placement} onClickCapture={handleClick}>
 			{children}
-		</Menu>
+		</MenuBase>
 	);
-}
+};
 
 type PopoverMenuProps = {
 	children?: ComponentChildren;
@@ -136,8 +125,10 @@ export const PopoverMenu = ({ children = null, trigger, overlayed }: PopoverMenu
 	</PopoverTrigger>
 );
 
-Menu.Group = Group;
-Menu.Item = Item;
-Menu.Popover = PopoverMenu;
+export const Menu = Object.assign(MenuBase, {
+	Group,
+	Item,
+	Popover: PopoverMenu,
+});
 
 export default Menu;
