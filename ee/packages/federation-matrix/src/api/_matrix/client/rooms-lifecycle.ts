@@ -1,5 +1,8 @@
+import { Room } from '@rocket.chat/core-services';
+import type { IRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
+import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
@@ -28,6 +31,18 @@ const CreateRoomBodySchema = {
 			items: { type: 'string', pattern: MATRIX_USER_ID_PATTERN },
 		},
 		is_direct: { type: 'boolean' },
+		initial_state: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					type: { type: 'string' },
+					content: { type: 'object' },
+				},
+				required: ['type', 'content'],
+				additionalProperties: true,
+			},
+		},
 	},
 	additionalProperties: true,
 };
@@ -130,23 +145,54 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 				const senderId = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
-				const app = c.get('appService');
+				const serverName = federationSDK.getConfig('serverName');
 
-				console.log('app ->', app);
-				console.log('senderId ->', senderId);
-				console.log('params ->', c.req.param());
-				console.log('body ->', body);
+				const user = await Users.findOneByUsername(senderId, { projection: { _id: 1 } });
+				if (!user) {
+					throw new Error('User not found for creating room');
+				}
 
-				const joinRule = body.preset === 'public_chat' || body.visibility === 'public' ? 'public' : 'invite';
+				const name = body.name || body.room_alias_name || '';
+
+				// get join room from initial_state (for now since this is what bifrost sends)
+				const joinRule =
+					body.initial_state?.find((e: any) => e.type === 'm.room.join_rules')?.content?.join_rule === 'public' ? 'public' : 'private';
 
 				try {
-					const result = await federationSDK.createRoom(senderId, body.name ?? '', joinRule);
+					const result = await federationSDK.createRoomV2({
+						name,
+						alias: body.room_alias_name,
+						owner: senderId,
+						joinRule,
+					});
+
+					// TODO after creating the federated room we must create the room for rocket.chat as well
+					const room = await Rooms.findOne({ 'federation.mrid': result.room_id });
+					if (!room) {
+						await Room.create<IRoomNativeFederated>(user._id, {
+							type: joinRule === 'public' ? 'c' : 'p',
+							name,
+							members: [senderId],
+							options: {
+								forceNew: true, // an invite means the room does not exist yet
+								creator: user._id,
+							},
+							extraData: {
+								federated: true,
+								federation: {
+									version: 1,
+									mrid: result.room_id,
+									origin: serverName,
+								},
+								fname: name,
+							},
+						});
+					}
 
 					for (const invitee of (body.invite ?? []) as string[]) {
 						await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderId, body.is_direct);
 					}
 
-					// TODO: support body.room_alias_name once SDK exposes alias creation
 					return {
 						statusCode: 200,
 						body: {
@@ -185,13 +231,14 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			async (c) => {
 				console.log('join ->', c.req.param('roomIdOrAlias'), c.req.query(), c.get('impersonatedUserId'));
 
+				// TODO need to first invite and then join?
+
+				await federationSDK.joinUser(c.req.param('roomIdOrAlias'), c.get('impersonatedUserId'));
+
 				// TODO(federation-sdk): joinRoom(userId, roomIdOrAlias) — needs alias resolution + invite-less join
 				return {
-					statusCode: 501,
-					body: {
-						errcode: 'M_UNRECOGNIZED',
-						error: 'AS join not yet implemented',
-					},
+					statusCode: 200,
+					body: {},
 				};
 			},
 		)
