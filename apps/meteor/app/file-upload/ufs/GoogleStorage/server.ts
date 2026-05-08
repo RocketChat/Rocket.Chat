@@ -9,6 +9,10 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
+const MIN_URL_EXPIRY_TIME_SPAN_SECONDS = 5;
+
+const GCS_FALLBACK_EXPIRY_SECONDS = 900; // 15 minutes
+
 type GStoreOptions = StoreOptions & {
 	connection: {
 		credentials: {
@@ -56,14 +60,21 @@ class GoogleStorageStore extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
+			const expirySeconds =
+				options.URLExpiryTimeSpan >= MIN_URL_EXPIRY_TIME_SPAN_SECONDS ? options.URLExpiryTimeSpan : GCS_FALLBACK_EXPIRY_SECONDS;
 			const params: GetSignedUrlConfig = {
 				action: 'read',
 				responseDisposition: forceDownload ? 'attachment' : 'inline',
-				expires: Date.now() + options.URLExpiryTimeSpan * 1000,
+				version: 'v2',
+				expires: Date.now() + expirySeconds * 1000,
 			};
 
 			const res = await bucket.file(this.getPath(file)).getSignedUrl(params);
 			return res[0];
+		};
+
+		this.getUrlExpiryTimeSpan = async () => {
+			return options.URLExpiryTimeSpan >= MIN_URL_EXPIRY_TIME_SPAN_SECONDS ? options.URLExpiryTimeSpan : null;
 		};
 
 		/**
