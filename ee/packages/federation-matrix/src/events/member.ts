@@ -302,8 +302,15 @@ async function handleJoin({
 	// it means the join event was sent before the invite event, so we need to create the subscription and then accept the invite.
 	// this will happen when for example the user is unbanned, so the leave event will remove the subscription and then we just
 	// receive the join event without receiving the invite.
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
-
+	let subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+	if (!subscription) {
+		const subId = await Room.createUserSubscription({
+			ts: new Date(),
+			room,
+			userToBeAdded: joiningUser,
+		});
+		subscription = subId ? await Subscriptions.findOneById(subId) : null;
+	}
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
