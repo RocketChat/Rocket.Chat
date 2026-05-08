@@ -1,0 +1,17 @@
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  h_4c386397e672f4 1-2,5,34-45,148-153,155,157,159,162-167,169-190,234-237,240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "52b51cf2b23897fda0aa5bfa4cb8fd94d03dc9e9",
+  "prompts": {},
+  "humans": {
+    "h_3b4d628c7b932e": {
+      "author": "Diego Sampaio"
+    },
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
