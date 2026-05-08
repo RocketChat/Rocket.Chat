@@ -1,5 +1,53 @@
 # @rocket.chat/meteor
 
+## 8.1.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40414](https://github.com/RocketChat/Rocket.Chat/pull/40414) by [@dionisio-bot](https://github.com/dionisio-bot)) Disables SAML login when it is set to validate signatures without the proper configuration for it
+
+- ([#40433](https://github.com/RocketChat/Rocket.Chat/pull/40433) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Slack messages being incorrectly saved on import
+
+- ([#40414](https://github.com/RocketChat/Rocket.Chat/pull/40414) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [a8f685b745075d2d175a6fc0f042f42f2ba33243]:</summary>
+
+  - @rocket.chat/model-typings@2.0.6
+  - @rocket.chat/core-typings@8.1.4
+  - @rocket.chat/models@2.0.6
+  - @rocket.chat/i18n@2.0.2
+  - @rocket.chat/omnichannel-services@0.3.50
+  - @rocket.chat/apps@0.6.6
+  - @rocket.chat/abac@0.1.6
+  - @rocket.chat/federation-matrix@0.0.15
+  - @rocket.chat/license@1.1.13
+  - @rocket.chat/media-calls@0.2.6
+  - @rocket.chat/pdf-worker@0.3.32
+  - @rocket.chat/presence@0.2.53
+  - @rocket.chat/api-client@0.2.53
+  - @rocket.chat/core-services@0.12.6
+  - @rocket.chat/cron@0.1.53
+  - @rocket.chat/fuselage-ui-kit@27.0.4
+  - @rocket.chat/gazzodown@27.0.4
+  - @rocket.chat/http-router@7.9.20
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/rest-typings@8.1.4
+  - @rocket.chat/ui-avatar@23.0.4
+  - @rocket.chat/ui-client@27.0.4
+  - @rocket.chat/ui-contexts@27.0.4
+  - @rocket.chat/ui-voip@17.0.4
+  - @rocket.chat/web-ui-registration@27.0.4
+  - @rocket.chat/omni-core-ee@0.0.18
+  - @rocket.chat/instance-status@0.1.53
+  - @rocket.chat/omni-core@0.0.18
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.32
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@27.0.4
+  </details>
+
 ## 8.1.3
 
 ### Patch Changes

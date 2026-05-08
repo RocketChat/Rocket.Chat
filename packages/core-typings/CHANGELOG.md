@@ -1,5 +1,11 @@
 # @rocket.chat/core-typings
 
+## 8.1.4
+
+### Patch Changes
+
+- ([#40414](https://github.com/RocketChat/Rocket.Chat/pull/40414) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
 ## 8.1.3
 
 ## 8.1.2
