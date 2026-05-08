@@ -13,16 +13,16 @@ import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
-import type { OutboundFrame, OutboundMiddleware } from './middlewares';
-import { applyOutboundMiddlewares, stripAbacAttributes } from './middlewares';
+import type { DenoConfigurationFileSchema } from './typings';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
+import { AppPermissionManager } from '../../managers/AppPermissionManager';
+import { AppPermissions } from '../../permissions/AppPermissions';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
-import type { DenoConfigurationFileSchema } from './typings';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -148,8 +148,6 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private readonly messenger: ProcessMessenger;
 
-	private readonly outboundMiddlewares: OutboundMiddleware[] = [stripAbacAttributes];
-
 	private readonly livenessManager: LivenessManager;
 
 	private readonly tempFilePath: string;
@@ -202,7 +200,9 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
 
 		this.debug = baseDebug.extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger();
+		this.messenger = new ProcessMessenger(() =>
+			Boolean(AppPermissionManager.hasPermission(this.getAppId(), AppPermissions.abac.readAttributes)),
+		);
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
@@ -392,11 +392,6 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		return this.appPackage.info.id;
 	}
 
-	private dispatch(frame: OutboundFrame): void {
-		const transformed = applyOutboundMiddlewares(this.outboundMiddlewares, frame, { appId: this.getAppId() });
-		this.messenger.send(transformed);
-	}
-
 	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params'>, options = this.options): Promise<unknown> {
 		const id = String(Math.random().toString(36)).substring(2);
 
@@ -408,7 +403,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 		try {
 			this.debug('Sending message to subprocess %s', inspect(message));
-			this.dispatch(request);
+			this.messenger.send(request);
 		} catch (e) {
 			abort(e);
 		}
@@ -651,7 +646,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.dispatch(result);
+			this.messenger.send(result);
 
 			return;
 		}
@@ -665,7 +660,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.dispatch(result);
+			this.messenger.send(result);
 
 			return;
 		}

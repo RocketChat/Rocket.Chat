@@ -15,7 +15,7 @@ export class ProcessMessenger {
 
 	private _sendStrategy: (message: Message) => void;
 
-	constructor() {
+	constructor(private readonly canReadAbacAttributes: () => boolean) {
 		this._sendStrategy = this.strategyError;
 	}
 
@@ -41,7 +41,7 @@ export class ProcessMessenger {
 			this._sendStrategy = this.strategySend.bind(this);
 
 			// Get a clean encoder
-			this.encoder = newEncoder();
+			this.encoder = newEncoder(this.canReadAbacAttributes);
 		} else {
 			this._sendStrategy = this.strategyError.bind(this);
 		}

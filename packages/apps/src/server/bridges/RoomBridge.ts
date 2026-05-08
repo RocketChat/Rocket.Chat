@@ -12,10 +12,20 @@ import { AppPermissions } from '../permissions/AppPermissions';
 export { GetMessagesSortableFields };
 export type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };
 
+const READ_ONLY_ROOM_FIELDS = ['abacAttributes'] as const;
+
+const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
+	const out = { ...room };
+	for (const field of READ_ONLY_ROOM_FIELDS) {
+		delete out[field];
+	}
+	return out;
+};
+
 export abstract class RoomBridge extends BaseBridge {
 	public async doCreate(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		if (this.hasWritePermission(appId)) {
-			return this.create(room, members, appId);
+			return this.create(stripReadOnlyRoomFields(room), members, appId);
 		}
 	}
 
@@ -67,7 +77,7 @@ export abstract class RoomBridge extends BaseBridge {
 
 	public async doUpdate(room: IRoom, members: Array<string>, appId: string): Promise<void> {
 		if (this.hasWritePermission(appId)) {
-			return this.update(room, members, appId);
+			return this.update(stripReadOnlyRoomFields(room), members, appId);
 		}
 	}
 
@@ -79,7 +89,7 @@ export abstract class RoomBridge extends BaseBridge {
 		appId: string,
 	): Promise<string> {
 		if (this.hasWritePermission(appId)) {
-			return this.createDiscussion(room, parentMessage, reply, members, appId);
+			return this.createDiscussion(stripReadOnlyRoomFields(room), parentMessage, reply, members, appId);
 		}
 	}
 
