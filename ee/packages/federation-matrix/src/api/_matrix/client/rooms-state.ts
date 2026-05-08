@@ -69,6 +69,43 @@ const PutStateResponseSchema = {
 
 const isPutStateResponseProps = ajv.compile(PutStateResponseSchema);
 
+const getRoomStateEvent = async (roomId: RoomID, eventType: string, stateKey = '') => {
+	try {
+		const state = await federationSDK.getLatestRoomState(roomId);
+
+		const key = `${eventType}:${stateKey}`;
+
+		let pe: PersistentEventBase | undefined;
+		for (const [k, v] of state) {
+			if (k === key) {
+				pe = v;
+				break;
+			}
+		}
+		if (!pe) {
+			return {
+				statusCode: 404 as const,
+				body: {
+					errcode: 'M_NOT_FOUND',
+					error: 'State event not found',
+				},
+			};
+		}
+		return {
+			statusCode: 200 as const,
+			body: pe.getContent(),
+		};
+	} catch (error) {
+		return {
+			statusCode: 500 as const,
+			body: {
+				errcode: 'M_UNKNOWN',
+				error: 'Failed to fetch state event',
+			},
+		};
+	}
+};
+
 export const addRoomsStateRoutes = (router: ClientRouter) => {
 	router
 		// GET /_matrix/client/v3/rooms/:roomId/joined_members
@@ -159,7 +196,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 
 		// GET /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey
 		.get(
-			'/v3/rooms/:roomId/state/:eventType/:stateKey',
+			'/v3/rooms/:roomId/state/:eventType/',
 			{
 				params: isStateEventParamsProps,
 				response: {
@@ -174,41 +211,32 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const eventType = c.req.param('eventType');
+				const eventType = c.req.param('eventType') as string;
+
+				return getRoomStateEvent(roomId, eventType);
+			},
+		)
+
+		.get(
+			'/v3/rooms/:roomId/state/:eventType/:stateKey?',
+			{
+				params: isStateEventParamsProps,
+				response: {
+					200: isStateContentResponseProps,
+					401: isMatrixErrorProps,
+					404: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const roomId = c.req.param('roomId') as RoomID;
+				const eventType = c.req.param('eventType') as string;
 				const stateKey = c.req.param('stateKey') ?? '';
 
-				try {
-					const state = await federationSDK.getLatestRoomState(roomId);
-					const key = `${eventType}:${stateKey}`;
-					let pe: PersistentEventBase | undefined;
-					for (const [k, v] of state) {
-						if (k === key) {
-							pe = v;
-							break;
-						}
-					}
-					if (!pe) {
-						return {
-							statusCode: 404,
-							body: {
-								errcode: 'M_NOT_FOUND',
-								error: 'State event not found',
-							},
-						};
-					}
-					return {
-						statusCode: 200,
-						body: pe.getContent(),
-					};
-				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch state event',
-						},
-					};
-				}
+				return getRoomStateEvent(roomId, eventType, stateKey);
 			},
 		)
 

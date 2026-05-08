@@ -1,4 +1,5 @@
-import type { RoomID, UserID } from '@rocket.chat/federation-sdk';
+import { FederationMatrix } from '@rocket.chat/core-services';
+import type { PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -171,6 +172,9 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				// TODO: deduplicate by txnId to handle bridge retries
 				try {
 					const event = await federationSDK.sendMessage(roomId, body.body, body.formatted_body ?? body.body, senderId);
+
+					await FederationMatrix.saveFederationMessage({ event: event.event as PduForType<'m.room.message'>, event_id: event.eventId });
+
 					return {
 						statusCode: 200,
 						body: {
