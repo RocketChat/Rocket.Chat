@@ -35,7 +35,7 @@
 		"jest-axe": "~10.0.0",
 		"jest-environment-jsdom": "~30.2.0",
 		"jest-environment-node": "~30.2.0",
-		"uuid": "~11.0.5"
+		"uuid": "~11.1.1"
 	},
 	"devDependencies": {
 		"@types/identity-obj-proxy": "^3.0.2",
