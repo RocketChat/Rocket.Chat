@@ -1,5 +1,16 @@
 # @rocket.chat/model-typings
 
+## 2.1.5
+
+### Patch Changes
+
+- ([#40411](https://github.com/RocketChat/Rocket.Chat/pull/40411) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [e7bf76778fd07b9b3cb83182d62175fe0e820e74]:</summary>
+
+  - @rocket.chat/core-typings@8.3.3
+  </details>
+
 ## 2.1.4
 
 ### Patch Changes
