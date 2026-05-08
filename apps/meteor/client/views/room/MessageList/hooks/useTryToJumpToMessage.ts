@@ -79,11 +79,10 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			clearHighlightMessage();
 		}, 2000);
 
-		// REVIEW TODO: Find how to avoid a race condition with the jump to message and jump to bottom
 		setTimeout(() => {
 			setIsJumpingToMessage(false);
-		}, 500);
-		setMessageJumpQueryStringParameter(null);
+			setMessageJumpQueryStringParameter(null);
+		}, 1000);
 	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, router, message]);
 };
 
