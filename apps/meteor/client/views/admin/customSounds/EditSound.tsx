@@ -29,10 +29,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [name, setName] = useState(() => data?.name ?? '');
 	const [sound, setSound] = useState<
 		| {
-				_id: string;
-				name: string;
-				extension?: string;
-		  }
+			_id: string;
+			name: string;
+			extension?: string;
+		}
 		| File
 	>(() => data);
 
@@ -123,7 +123,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		);
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'sound', { fileType: 'audio/mp3' });
 
 	return (
 		<>

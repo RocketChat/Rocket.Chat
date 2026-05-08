@@ -15,7 +15,7 @@ const AppInstallPage = () => {
 	const { file } = watch();
 	const { install, isInstalling } = useInstallApp(file);
 
-	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');
+	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app', { fileType: '.zip' });
 
 	const handleCancel = useCallback(() => {
 		router.navigate({
