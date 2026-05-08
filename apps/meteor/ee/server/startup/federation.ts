@@ -1,9 +1,12 @@
 import { api, FederationMatrix as FederationMatrixService } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { FederationMatrix, configureFederationMatrixSettings, setupFederationMatrix } from '@rocket.chat/federation-matrix';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
+import { Users } from '@rocket.chat/models';
 
+import { slashCommands } from '../../../server/lib/utils/slashCommand';
 import { StreamerCentral } from '../../../server/modules/streamer/streamer.module';
 import { settings } from '../../../server/settings';
 import { registerFederationRoutes } from '../api/federation';
@@ -78,4 +81,24 @@ export const startFederationService = async (): Promise<void> => {
 	} catch (err) {
 		logger.error({ msg: 'Failed to setup federation-matrix:', err });
 	}
+
+	slashCommands.add({
+		command: 'xmpp',
+		callback: async ({ params, message, userId }: SlashCommandCallbackParams<'xmpp'>): Promise<void> => {
+			console.log('Joining xmpp room', { params, message, userId });
+
+			const user = await Users.findOneById(userId);
+			if (!user) {
+				logger.error({ msg: 'User not found for joining xmpp room', userId });
+				return;
+			}
+
+			await FederationMatrixService.joinXMPPChatRoom(params.trim(), user);
+		},
+		options: {
+			description: 'Join xmpp rooms',
+			params: '#channel',
+			// permission: 'archive-room',
+		},
+	});
 };
