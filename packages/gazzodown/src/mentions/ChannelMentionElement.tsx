@@ -22,8 +22,12 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 
 	if (!resolved) {
 		if (/^\d+$/.test(mention) && issueLinksTemplate) {
+			const href = issueLinksTemplate.replace('%s', mention);
+			if (!/^https?:\/\//i.test(href)) {
+				return <>#{mention}</>;
+			}
 			return (
-				<a href={issueLinksTemplate.replace('%s', mention)} target='_blank' rel='noopener noreferrer'>
+				<a href={href} target='_blank' rel='noopener noreferrer'>
 					#{mention}
 				</a>
 			);
