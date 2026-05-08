@@ -127,7 +127,7 @@ export const AppPermissions = {
 		default: { name: 'experimental.default' },
 	},
 	'abac': {
-		readAttributes: { name: 'abac.readAttributes' },
+		read: { name: 'abac.read' },
 	},
 };
 
