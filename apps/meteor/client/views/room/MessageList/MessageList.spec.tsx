@@ -1,4 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
@@ -38,15 +39,6 @@ jest.mock('virtua', () => {
 
 jest.mock('@rocket.chat/fuselage-hooks', () => ({
 	useDebouncedCallback: (callback: (...args: any[]) => void) => callback,
-}));
-
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useSetting: jest.fn((_setting: string, fallback: unknown) => fallback),
-	useUserPreference: jest.fn(() => true),
-}));
-
-jest.mock('react-i18next', () => ({
-	useTranslation: () => ({ t: (key: string) => key }),
 }));
 
 jest.mock('../../../lib/RoomManager', () => ({
@@ -128,6 +120,8 @@ const defaultProps = {
 };
 
 describe('MessageList scroll position', () => {
+	let root: ReturnType<typeof mockAppRoot>;
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockVirtualizerHandle.scrollToIndex.mockClear();
@@ -137,7 +131,8 @@ describe('MessageList scroll position', () => {
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
 		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2')]);
-		(useFirstUnreadMessageId as jest.Mock).mockReturnValue('message-1');
+		(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+		root = mockAppRoot().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true);
 	});
 
 	it('should restore room scroll position based on store', () => {
@@ -149,7 +144,7 @@ describe('MessageList scroll position', () => {
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
 		mockVirtualizerHandle.findItemIndex.mockReturnValue(4);
 
-		render(<MessageList {...defaultProps} />);
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
 		expect(screen.getByTestId('message-list')).toBeInTheDocument();
 		expect(mockVirtualizerHandle.findItemIndex).toHaveBeenCalledWith(123);
@@ -165,9 +160,23 @@ describe('MessageList scroll position', () => {
 		};
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
 
-		render(<MessageList {...defaultProps} shouldJumpToBottom={true} />);
+		render(<MessageList {...defaultProps} shouldJumpToBottom={true} />, { wrapper: root.build() });
 
 		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(2, { align: 'center' });
+	});
+
+	it('should jump to bottom if unreads are present', () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(useFirstUnreadMessageId as jest.Mock).mockReturnValue('message-1');
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} shouldJumpToBottom={true} />, { wrapper: root.build() });
+
+		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(true);
 	});
 
 	it('should do nothing if no previous scroll position is stored', () => {
@@ -178,7 +187,7 @@ describe('MessageList scroll position', () => {
 		};
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
 
-		render(<MessageList {...defaultProps} />);
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
 		expect(screen.getByTestId('message-list')).toBeInTheDocument();
 		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
@@ -194,7 +203,7 @@ describe('MessageList scroll position', () => {
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
 		mockVirtualizerHandle.scrollOffset = 50;
 
-		render(<MessageList {...defaultProps} />);
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
 		fireEvent.scroll(screen.getByTestId('message-list'));
 
