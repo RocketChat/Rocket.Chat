@@ -201,7 +201,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 		this.debug = baseDebug.extend(appPackage.info.id);
 		this.messenger = new ProcessMessenger(() =>
-			Boolean(AppPermissionManager.hasPermission(this.getAppId(), AppPermissions.abac.readAttributes)),
+			Boolean(AppPermissionManager.hasPermission(this.getAppId(), AppPermissions.abac.read)),
 		);
 		this.livenessManager = new LivenessManager({
 			controller: this,
