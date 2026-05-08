@@ -1,5 +1,52 @@
 # @rocket.chat/models
 
+## 2.2.0
+
+### Minor Changes
+
+- ([#40141](https://github.com/RocketChat/Rocket.Chat/pull/40141)) Adds a new REST endpoint to accept or reject media calls without an active media session
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#39495](https://github.com/RocketChat/Rocket.Chat/pull/39495)) Updates omnichannel routing so agents with `offline` status are always excluded from assignment. The `Livechat_enabled_when_agent_idle` setting now only affects agents with `away` status.
+
+### Patch Changes
+
+- ([#39246](https://github.com/RocketChat/Rocket.Chat/pull/39246)) Fixes an issue where messages appeared as unread even when all active users had read them. Read receipts now correctly ignore deactivated users.
+
+- ([#39905](https://github.com/RocketChat/Rocket.Chat/pull/39905)) Fixes array resorting when appending visitor emails/phones to ensure chat transcripts are sent to the correct registration email.
+
+- ([#40175](https://github.com/RocketChat/Rocket.Chat/pull/40175)) Fixes an issue where the Omnichannel routing system ignored the `Livechat_accept_chats_with_no_agents` setting. Now, offline agents are correctly considered for assignment when the setting allows it.
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 4e99ff6c1a99ac569cf444f9de9b5fe5ac3262b2, 8c0e16ca29b393cfa50b425520db48ba5a74f678, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/model-typings@2.2.0
+  - @rocket.chat/core-typings@8.4.0
+  - @rocket.chat/rest-typings@8.4.0
+  </details>
+
+## 2.2.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  - @rocket.chat/rest-typings@8.4.0-rc.2
+  - @rocket.chat/model-typings@2.2.0-rc.2
+  </details>
+
+## 2.2.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  - @rocket.chat/rest-typings@8.4.0-rc.1
+  - @rocket.chat/model-typings@2.2.0-rc.1
+  </details>
+
 ## 2.1.4
 
 ### Patch Changes
@@ -18,6 +65,31 @@
 
   - @rocket.chat/rest-typings@8.3.1
   - @rocket.chat/model-typings@2.1.3
+  </details>
+
+## 2.2.0-rc.0
+
+### Minor Changes
+
+- ([#40141](https://github.com/RocketChat/Rocket.Chat/pull/40141)) Adds a new REST endpoint to accept or reject media calls without an active media session
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#39495](https://github.com/RocketChat/Rocket.Chat/pull/39495)) Updates omnichannel routing so agents with `offline` status are always excluded from assignment. The `Livechat_enabled_when_agent_idle` setting now only affects agents with `away` status.
+
+### Patch Changes
+
+- ([#39246](https://github.com/RocketChat/Rocket.Chat/pull/39246)) Fixes an issue where messages appeared as unread even when all active users had read them. Read receipts now correctly ignore deactivated users.
+
+- ([#39905](https://github.com/RocketChat/Rocket.Chat/pull/39905)) Fixes array resorting when appending visitor emails/phones to ensure chat transcripts are sent to the correct registration email.
+
+- ([#40175](https://github.com/RocketChat/Rocket.Chat/pull/40175)) Fixes an issue where the Omnichannel routing system ignored the `Livechat_accept_chats_with_no_agents` setting. Now, offline agents are correctly considered for assignment when the setting allows it.
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 4e99ff6c1a99ac569cf444f9de9b5fe5ac3262b2, 8c0e16ca29b393cfa50b425520db48ba5a74f678, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/model-typings@2.2.0-rc.0
+  - @rocket.chat/core-typings@8.4.0-rc.0
+  - @rocket.chat/rest-typings@8.4.0-rc.0
   </details>
 
 ## 2.1.2

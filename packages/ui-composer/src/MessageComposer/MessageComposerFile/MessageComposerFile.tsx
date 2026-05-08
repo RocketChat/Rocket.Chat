@@ -85,7 +85,11 @@ const MessageComposerFile = ({
 		>
 			{showPreview ? (
 				<Box minWidth='x48'>
-					{previewUrl ? <Avatar url={previewUrl} size='x48' alt={alt} /> : <Skeleton variant='rect' width='x48' height='x48' />}
+					{previewUrl ? (
+						<Avatar objectFit='cover' url={previewUrl} size='x48' alt={alt} />
+					) : (
+						<Skeleton variant='rect' width='x48' height='x48' />
+					)}
 				</Box>
 			) : (
 				<FilePreviewIcon format={fileFormat} />

@@ -1,5 +1,49 @@
 # @rocket.chat/ui-composer
 
+## 1.0.0
+
+### Minor Changes
+
+- ([#40181](https://github.com/RocketChat/Rocket.Chat/pull/40181)) Adds file thumbnails with image preview to the message composer attachments
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0
+  </details>
+
+## 1.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-client@30.0.0-rc.2
+  </details>
+
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-client@30.0.0-rc.1
+  </details>
+
+## 1.0.0-rc.0
+
+### Minor Changes
+
+- ([#40181](https://github.com/RocketChat/Rocket.Chat/pull/40181)) Adds file thumbnails with image preview to the message composer attachments
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0-rc.0
+  </details>
+
 ## 0.6.0
 
 ### Minor Changes

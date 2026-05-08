@@ -132,8 +132,13 @@ test.describe.serial('file-upload', () => {
 
 	test('should upload file in composer after recording video message', async ({ context }) => {
 		await context.grantPermissions(['camera', 'microphone']);
-
 		await poHomeChannel.navbar.openChat(targetChannel);
+
+		await test.step('should be able to record a video with text content in composer ', async () => {
+			await poHomeChannel.composer.inputMessage.fill('this is a message with video message');
+			await expect(poHomeChannel.composer.btnVideoMessage).toBeEnabled();
+		});
+
 		await poHomeChannel.composer.btnVideoMessage.click();
 		await poHomeChannel.composer.videoRecorderPopup.record();
 

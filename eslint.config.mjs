@@ -289,7 +289,7 @@ export default [
 		},
 	},
 	{
-		files: ['packages/apps-engine/**/*'],
+		files: ['packages/apps-engine/**/*', 'packages/apps/**/*'],
 		rules: {
 			'@typescript-eslint/no-empty-object-type': 'off',
 			'@typescript-eslint/no-unnecessary-type-assertion': 'off', // this rule does not deal well with assertions that remove `undefined` from the type
@@ -338,14 +338,14 @@ export default [
 		},
 	},
 	{
-		files: ['packages/apps-engine/tests/**/*'],
+		files: ['packages/apps-engine/tests/**/*', 'packages/apps/tests/**/*'],
 		rules: {
 			'@typescript-eslint/no-non-null-assertion': 'off',
 			'testing-library/no-await-sync-queries': 'off',
 		},
 	},
 	{
-		ignores: ['packages/apps-engine/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
+		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],
