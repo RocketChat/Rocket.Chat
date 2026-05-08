@@ -200,9 +200,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
 
 		this.debug = baseDebug.extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger(() =>
-			Boolean(AppPermissionManager.hasPermission(this.getAppId(), AppPermissions.abac.read)),
-		);
+		this.messenger = new ProcessMessenger(() => Boolean(AppPermissionManager.hasPermission(this.getAppId(), AppPermissions.abac.read)));
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
