@@ -7843,6 +7843,62 @@ API.v1.addRoute(
 	},
 );
 
+const isMedsenseVoiceCustomFieldValidationError = (error: any): boolean => {
+	const message = String(error?.error || error?.message || '');
+	return /invalid custom fields/i.test(message) || /custom fields not enabled/i.test(message);
+};
+
+const sendMedsenseVoiceCustomFieldMessage = async ({
+	messageUser,
+	roomId,
+	messageText,
+	room,
+	customFieldName,
+	metadata,
+	fallbackWithoutCustomFields = false,
+}: {
+	messageUser: any;
+	roomId: string;
+	messageText: string;
+	room: any;
+	customFieldName: 'medsenseVoiceTranscript' | 'medsenseVoiceMessage';
+	metadata: Record<string, unknown>;
+	fallbackWithoutCustomFields?: boolean;
+}) => {
+	try {
+		return await sendMessage(
+			messageUser,
+			{
+				rid: roomId,
+				msg: messageText,
+				customFields: {
+					[customFieldName]: metadata,
+				},
+			},
+			room,
+		);
+	} catch (error: any) {
+		if (!isMedsenseVoiceCustomFieldValidationError(error) || !fallbackWithoutCustomFields) {
+			throw error;
+		}
+		return sendMessage(
+			messageUser,
+			{
+				rid: roomId,
+				msg: messageText,
+			},
+			room,
+		);
+	}
+};
+
+const appendMedsenseVoiceProcessedEventId = (voice: any, eventId: string): string[] => {
+	if (eventId) {
+		return [...(Array.isArray(voice.processedEventIds) ? voice.processedEventIds : []).slice(-499), eventId];
+	}
+	return Array.isArray(voice.processedEventIds) ? voice.processedEventIds.slice(-500) : [];
+};
+
 API.v1.addRoute(
 	'medsense/voice.transcript.ingest',
 	{ authRequired: false },
@@ -7952,6 +8008,16 @@ API.v1.addRoute(
 				messageUser = staffUser;
 			}
 
+			const transcriptSuppressOutgoingWebhook = source === 'voice_realtime' || Boolean((payload as any).suppressOutgoingWebhook);
+			const transcriptDeliveredToVoice = Boolean((payload as any).deliveredToVoice);
+			if (transcriptSuppressOutgoingWebhook && useLivechatPatientMessage) {
+				useLivechatPatientMessage = false;
+				messageUser = botUser;
+				if (!isAfterHoursVoicemailTranscript && messageText === text) {
+					messageText = `[Patient voice] ${text}`;
+				}
+			}
+
 			const transcriptMetadata = {
 				speaker,
 				source,
@@ -7959,6 +8025,8 @@ API.v1.addRoute(
 				voiceSessionId: sessionId || voice.sessionId || null,
 				timestamp: String((payload as any).timestamp || new Date().toISOString()),
 				confidence: typeof (payload as any).confidence === 'number' ? (payload as any).confidence : undefined,
+				...(transcriptSuppressOutgoingWebhook ? { suppressOutgoingWebhook: true } : {}),
+				...(transcriptDeliveredToVoice ? { deliveredToVoice: true } : {}),
 			};
 
 			let messageRecord: any;
@@ -7982,31 +8050,20 @@ API.v1.addRoute(
 				messageRecord = { _id: livechatMessageId };
 			} else {
 				try {
-					messageRecord = await sendMessage(
+					messageRecord = await sendMedsenseVoiceCustomFieldMessage({
 						messageUser,
-						{
-							rid: roomId,
-							msg: messageText,
-							customFields: {
-								medsenseVoiceTranscript: transcriptMetadata,
-							},
-						},
+						roomId,
+						messageText,
 						room,
-					);
+						customFieldName: 'medsenseVoiceTranscript',
+						metadata: transcriptMetadata,
+						fallbackWithoutCustomFields: !transcriptSuppressOutgoingWebhook,
+					});
 				} catch (error: any) {
-					const message = String(error?.error || error?.message || '');
-					const isCustomFieldValidationError = /invalid custom fields/i.test(message) || /custom fields not enabled/i.test(message);
-					if (!isCustomFieldValidationError) {
-						throw error;
+					if (transcriptSuppressOutgoingWebhook && isMedsenseVoiceCustomFieldValidationError(error)) {
+						return API.v1.failure('Invalid custom fields for suppressed voice transcript');
 					}
-					messageRecord = await sendMessage(
-						messageUser,
-						{
-							rid: roomId,
-							msg: messageText,
-						},
-						room,
-					);
+					throw error;
 				}
 			}
 
@@ -8027,11 +8084,7 @@ API.v1.addRoute(
 					confidence: typeof (payload as any).confidence === 'number' ? (payload as any).confidence : undefined,
 				},
 			];
-			const processedEventIds = eventId
-				? [...(Array.isArray(voice.processedEventIds) ? voice.processedEventIds : []).slice(-499), eventId]
-				: Array.isArray(voice.processedEventIds)
-					? voice.processedEventIds.slice(-500)
-					: [];
+			const processedEventIds = appendMedsenseVoiceProcessedEventId(voice, eventId);
 
 			const next = {
 				...current,
@@ -8051,6 +8104,203 @@ API.v1.addRoute(
 				ok: true,
 				roomId,
 				messageId: (messageRecord as any)?._id || null,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/voice.message.post',
+	{ authRequired: false },
+	{
+		async post() {
+			const rawPayload = this.bodyParams || {};
+			const signatureCheck = verifyVoiceSignature(this.request.headers as Record<string, any>, rawPayload);
+			if (!signatureCheck.ok) {
+				return API.v1.failure(`Invalid voice service signature (${signatureCheck.reason})`);
+			}
+			const payload = stripVoiceAuthFromPayload(rawPayload);
+
+			check(
+				payload,
+				Match.ObjectIncluding({
+					roomId: String,
+					sessionId: Match.Maybe(String),
+					role: Match.Maybe(String),
+					speaker: Match.Maybe(String),
+					text: String,
+					source: Match.Maybe(String),
+					eventId: Match.Maybe(String),
+					patientUserId: Match.Maybe(String),
+					staffUserId: Match.Maybe(String),
+					timestamp: Match.Maybe(String),
+				}),
+			);
+
+			const roomId = String((payload as any).roomId);
+			const text = String((payload as any).text || '').trim();
+			const roleInput = String((payload as any).role || '')
+				.trim()
+				.toLowerCase();
+			const speakerInput = String((payload as any).speaker || '')
+				.trim()
+				.toLowerCase();
+			if (roleInput && !['user', 'patient', 'assistant', 'bot', 'ai', 'staff', 'system'].includes(roleInput)) {
+				return API.v1.failure('role must be user, assistant, staff, or system');
+			}
+			const role =
+				roleInput === 'assistant' || roleInput === 'bot' || roleInput === 'ai'
+					? 'assistant'
+					: roleInput === 'staff'
+						? 'staff'
+						: roleInput === 'system'
+							? 'system'
+							: 'user';
+			const speaker = speakerInput || (role === 'assistant' ? 'bot' : role === 'user' ? 'patient' : role === 'staff' ? 'staff' : 'system');
+			const source = String((payload as any).source || 'voice_realtime').trim() || 'voice_realtime';
+			const eventId = String((payload as any).eventId || '').trim();
+			const sessionId = String((payload as any).sessionId || '').trim();
+			if (!text) {
+				return API.v1.success({ ignored: true, reason: 'empty_text' });
+			}
+			if (!['user', 'assistant', 'staff', 'system'].includes(role)) {
+				return API.v1.failure('role must be user, assistant, staff, or system');
+			}
+			if (!['patient', 'bot', 'ai', 'staff', 'system'].includes(speaker)) {
+				return API.v1.failure('speaker must be patient, bot, ai, staff, or system');
+			}
+
+			const room = await Rooms.findOneById(roomId, {
+				projection: {
+					medsenseSessionInfo: 1,
+					medsenseActiveRequestId: 1,
+					t: 1,
+				},
+			});
+			if (!room?.t) {
+				return API.v1.failure('Room not found');
+			}
+
+			const current = _normalizeSessionInfo((room as any).medsenseSessionInfo);
+			const voice = current.voice || _defaultSessionInfo().voice;
+			if (eventId && Array.isArray(voice.processedEventIds) && voice.processedEventIds.includes(eventId)) {
+				return API.v1.success({ ok: true, ignored: true, reason: 'duplicate_event', eventId });
+			}
+
+			const botUsername = String(settings.get<string>('Medsense_Bot_User') || 'bot').trim();
+			const botUser = await Users.findOneByUsernameIgnoringCase(botUsername, { projection: { _id: 1, username: 1, name: 1 } });
+			if (!botUser?._id) {
+				return API.v1.failure('Medsense bot user not found');
+			}
+
+			let messageUser: any = botUser;
+			let messageText = text;
+			if (role === 'user' || speaker === 'patient') {
+				const patientUserId = String((payload as any).patientUserId || voice.patientUserId || '').trim();
+				if (patientUserId) {
+					const patientUser = await Users.findOneById(patientUserId, { projection: { _id: 1, username: 1, name: 1 } });
+					if (patientUser?._id) {
+						messageUser = patientUser;
+					} else {
+						const visitor = await LivechatVisitors.findOneEnabledById(patientUserId);
+						if (visitor?._id && visitor.username) {
+							messageUser = {
+								_id: visitor._id,
+								username: visitor.username,
+								name: visitor.name || visitor.username,
+							};
+						}
+					}
+				}
+				if (messageUser?._id === botUser._id) {
+					messageText = `[Patient voice] ${text}`;
+				}
+			} else if (role === 'assistant') {
+				messageUser = botUser;
+			} else if (role === 'system' || speaker === 'system') {
+				messageUser = botUser;
+				messageText = `[Voice] ${text}`;
+			} else if (role === 'staff' || speaker === 'staff') {
+				const staffUserId = String((payload as any).staffUserId || '').trim();
+				if (!staffUserId) {
+					return API.v1.failure('staffUserId is required for staff voice messages');
+				}
+				const staffUser = await Users.findOneById(staffUserId, { projection: { _id: 1, username: 1, name: 1 } });
+				if (!staffUser?._id) {
+					return API.v1.failure('staff user not found');
+				}
+				messageUser = staffUser;
+			}
+
+			const deliveredToVoice = role === 'assistant' || speaker === 'bot' || speaker === 'ai' || Boolean((payload as any).deliveredToVoice);
+			const timestamp = String((payload as any).timestamp || new Date().toISOString());
+			const voiceMessageMetadata = {
+				role,
+				speaker,
+				source,
+				eventId: eventId || null,
+				voiceSessionId: sessionId || voice.sessionId || null,
+				timestamp,
+				suppressOutgoingWebhook: true,
+				deliveredToVoice,
+			};
+
+			let messageRecord: any;
+			try {
+				messageRecord = await sendMedsenseVoiceCustomFieldMessage({
+					messageUser,
+					roomId,
+					messageText,
+					room,
+					customFieldName: 'medsenseVoiceMessage',
+					metadata: voiceMessageMetadata,
+				});
+			} catch (error: any) {
+				if (isMedsenseVoiceCustomFieldValidationError(error)) {
+					return API.v1.failure('Invalid custom fields for voice message');
+				}
+				throw error;
+			}
+
+			const processedEventIds = appendMedsenseVoiceProcessedEventId(voice, eventId);
+			const messageRecords = Array.isArray((voice as any).messageRecords) ? (voice as any).messageRecords : [];
+			const nextMessageRecords = [
+				...messageRecords.slice(-199),
+				{
+					messageId: (messageRecord as any)?._id || null,
+					role,
+					speaker,
+					source,
+					eventId: eventId || null,
+					sessionId: sessionId || voice.sessionId || null,
+					text,
+					messageText,
+					deliveredToVoice,
+					timestamp,
+				},
+			];
+
+			const now = new Date().toISOString();
+			const next = {
+				...current,
+				voice: {
+					...voice,
+					patientUserId: String((payload as any).patientUserId || voice.patientUserId || '').trim() || null,
+					lastTranscriptAt: role === 'user' ? now : voice.lastTranscriptAt,
+					lastTtsAt: deliveredToVoice ? now : voice.lastTtsAt,
+					lastEventAt: now,
+					lastEventId: eventId || voice.lastEventId || null,
+					processedEventIds,
+					messageRecords: nextMessageRecords,
+				},
+			};
+			await Rooms.update({ _id: roomId }, { $set: { medsenseSessionInfo: next } });
+
+			return API.v1.success({
+				ok: true,
+				roomId,
+				messageId: (messageRecord as any)?._id || null,
+				eventId: eventId || null,
 			});
 		},
 	},
