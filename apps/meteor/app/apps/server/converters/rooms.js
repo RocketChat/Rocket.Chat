@@ -303,6 +303,7 @@ export class AppRoomsConverter {
 			closer: 'closer',
 			teamId: 'teamId',
 			isTeamMain: 'teamMain',
+			abacAttributes: 'abacAttributes',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
