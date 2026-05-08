@@ -1,0 +1,24 @@
+packages/core-services/src/types/IFederationMatrixService.ts
+  h_4c386397e672f4 37
+ee/packages/federation-matrix/src/FederationMatrix.ts
+  h_4c386397e672f4 1041-1057
+apps/meteor/ee/server/startup/federation.ts
+  h_4c386397e672f4 7,96
+  h_3b4d628c7b932e 2,10,84-95,97-103
+apps/meteor/client/startup/slashCommands/federation.ts
+  h_3b4d628c7b932e 21-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "e96120ee05c07265cf207723692edf4594b83bf5",
+  "prompts": {},
+  "humans": {
+    "h_3b4d628c7b932e": {
+      "author": "Diego Sampaio"
+    },
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
