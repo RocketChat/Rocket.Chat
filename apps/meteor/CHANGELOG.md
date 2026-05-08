@@ -1,5 +1,26 @@
 # @rocket.chat/meteor
 
+## 8.2.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40412](https://github.com/RocketChat/Rocket.Chat/pull/40412) by [@dionisio-bot](https://github.com/dionisio-bot)) Disables SAML login when it is set to validate signatures without the proper configuration for it
+
+- ([#40432](https://github.com/RocketChat/Rocket.Chat/pull/40432) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Slack messages being incorrectly saved on import
+
+- ([#40412](https://github.com/RocketChat/Rocket.Chat/pull/40412) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [f8cee749da561ae6b205cfe6c7ae53d63837eee3]:</summary>
+
+  - @rocket.chat/model-typings@2.1.3
+  - @rocket.chat/core-typings@8.2.3
+  - @rocket.chat/models@2.1.3
+  - @rocket.chat/i18n@2.1.1
+  - @rocket.chat/rest-typings@8.2.3
+  </details>
+
 ## 8.2.2
 
 ### Patch Changes
