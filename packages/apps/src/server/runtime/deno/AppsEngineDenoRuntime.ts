@@ -13,6 +13,8 @@ import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
+import type { OutboundFrame, OutboundMiddleware } from './middlewares';
+import { applyOutboundMiddlewares, stripAbacAttributes } from './middlewares';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
@@ -145,6 +147,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 	private readonly bridges: AppBridges;
 
 	private readonly messenger: ProcessMessenger;
+
+	private readonly outboundMiddlewares: OutboundMiddleware[] = [stripAbacAttributes];
 
 	private readonly livenessManager: LivenessManager;
 
@@ -388,6 +392,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		return this.appPackage.info.id;
 	}
 
+	private dispatch(frame: OutboundFrame): void {
+		const transformed = applyOutboundMiddlewares(this.outboundMiddlewares, frame, { appId: this.getAppId() });
+		this.messenger.send(transformed);
+	}
+
 	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params'>, options = this.options): Promise<unknown> {
 		const id = String(Math.random().toString(36)).substring(2);
 
@@ -399,7 +408,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 		try {
 			this.debug('Sending message to subprocess %s', inspect(message));
-			this.messenger.send(request);
+			this.dispatch(request);
 		} catch (e) {
 			abort(e);
 		}
@@ -642,7 +651,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.messenger.send(result);
+			this.dispatch(result);
 
 			return;
 		}
@@ -656,7 +665,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.messenger.send(result);
+			this.dispatch(result);
 
 			return;
 		}

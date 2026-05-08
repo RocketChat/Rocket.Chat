@@ -57,17 +57,20 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 	const logger = new Logger(method);
 
 	const context: RequestContext = Object.assign(payload, {
-		context: { logger }
-	})
+		context: { logger },
+	});
 
 	const [methodPrefix] = method.split(':') as [keyof Handlers];
 	const handler = methodHandlers[methodPrefix];
 
 	if (!handler) {
-		return Messenger.errorResponse({
-			error: { message: 'Method not found', code: -32601 },
-			id,
-		}, context);
+		return Messenger.errorResponse(
+			{
+				error: { message: 'Method not found', code: -32601 },
+				id,
+			},
+			context,
+		);
 	}
 
 	const result = await handler(context);

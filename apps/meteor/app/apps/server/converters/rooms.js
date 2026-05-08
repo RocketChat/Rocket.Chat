@@ -58,6 +58,7 @@ export class AppRoomsConverter {
 			contactId: 'contactId',
 			departmentId: 'departmentId',
 			parentRoomId: 'prid',
+			abacAttributes: 'abacAttributes',
 			visitor: (data) => {
 				const { v } = data;
 				if (!v) {
