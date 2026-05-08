@@ -1482,12 +1482,10 @@ export const roomEndpoints = API.v1
 				projection: adminFields,
 			});
 
-			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			const sanitizedRooms = rooms.map(stripABACManagedFieldsForAdmin);
+			const [rooms, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
 
 			return API.v1.success({
-				rooms: sanitizedRooms,
+				rooms,
 				count: rooms.length,
 				offset,
 				total,

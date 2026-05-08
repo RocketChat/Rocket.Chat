@@ -2623,6 +2623,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await Promise.all(createdRids.map((rid) => deleteRoom({ type: 'p', roomId: rid })));
 			await request.delete(`${v1}/abac/attributes/${sensitiveAttrId}`).set(credentials).expect(200);
 			await deleteUser(owner);
+			await updateSetting('ABAC_Enabled', false);
 		});
 
 		it('should strip announcement, topic and description from rooms.adminRooms.getRoom on ABAC managed room', async () => {

@@ -40,12 +40,16 @@ export async function findAdminRooms({
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
-
-	const sanitizedRooms = rooms.map(stripABACManagedFieldsForAdmin);
+	const [rooms, total] = await Promise.all([
+		cursor
+			.sort(sort || { default: -1, name: 1 })
+			.map(stripABACManagedFieldsForAdmin)
+			.toArray(),
+		totalCount,
+	]);
 
 	return {
-		rooms: sanitizedRooms,
+		rooms,
 		count: rooms.length,
 		offset,
 		total,
