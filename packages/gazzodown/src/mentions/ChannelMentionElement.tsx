@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
+const NUMERIC_PATTERN = /^\d+$/;
+const SAFE_URL_SCHEME = /^https?:\/\//i;
+
 type ChannelMentionElementProps = {
 	mention: string;
 };
@@ -21,9 +24,9 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 	const buttonProps = useButtonPattern((e) => handleClick?.(e));
 
 	if (!resolved) {
-		if (/^\d+$/.test(mention) && issueLinksTemplate) {
+		if (NUMERIC_PATTERN.test(mention) && issueLinksTemplate) {
 			const href = issueLinksTemplate.replace('%s', mention);
-			if (!/^https?:\/\//i.test(href)) {
+			if (!SAFE_URL_SCHEME.test(href)) {
 				return <>#{mention}</>;
 			}
 			return (
