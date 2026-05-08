@@ -67,43 +67,45 @@ export const strike = generate('STRIKE');
 
 export const codeLine = generate('CODE_LINE');
 
-const isValidLink = (link: string) => {
-	try {
-		return Boolean(new URL(link));
-	} catch (error) {
-		return false;
-	}
-};
+const isValidLink = (link: string) => URL.canParse(link);
+
+const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z][A-Za-z0-9+.-]{0,31}:\/\//.test(src);
 
 export const link = (src: string, label?: Markup[]): Link => ({
 	type: 'LINK',
 	value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
+let cachedAutoLinkDomains: string[] | undefined | null = null;
+let cachedAutoLinkOptions: { detectIp: boolean; allowPrivateDomains: boolean; validHosts: string[] };
+
 export const autoLink = (src: string, customDomains?: string[]) => {
-	const validHosts = ['localhost', ...(customDomains ?? [])];
-	const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
-		detectIp: true,
-		allowPrivateDomains: true,
-		validHosts,
-	});
+	if (cachedAutoLinkDomains !== customDomains) {
+		cachedAutoLinkDomains = customDomains;
+		cachedAutoLinkOptions = {
+			detectIp: true,
+			allowPrivateDomains: true,
+			validHosts: ['localhost', ...(customDomains ?? [])],
+		};
+	}
+	const { validHosts } = cachedAutoLinkOptions;
+	const { isIcann, isIp, isPrivate, domain } = tldParse(src, cachedAutoLinkOptions);
 
 	if (!(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))) {
 		return plain(src);
 	}
 
-	const href = isValidLink(src) || src.startsWith('//') ? src : `//${src}`;
+	const href = isValidLink(src) || src.startsWith('//') || hasAbsoluteSchemePrefix(src) ? src : `//${src}`;
 
 	return link(href, [plain(src)]);
 };
 
+const autoEmailTldOptions = { detectIp: false, allowPrivateDomains: true } as const;
+
 export const autoEmail = (src: string) => {
 	const href = `mailto:${src}`;
 
-	const { isIcann, isIp, isPrivate } = tldParse(href, {
-		detectIp: false,
-		allowPrivateDomains: true,
-	});
+	const { isIcann, isIp, isPrivate } = tldParse(href, autoEmailTldOptions);
 
 	if (!(isIcann || isIp || isPrivate)) {
 		return plain(src);
@@ -183,8 +185,34 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 };
 
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
-	const result: Paragraph['value'] = [];
 	const flattenableValues = values as Array<Inlines | Inlines[]>;
+
+	// Fast path: no nested arrays and no emojis (the common case)
+	let needsSlowPath = false;
+	for (let i = 0; i < flattenableValues.length; i++) {
+		const v = flattenableValues[i];
+		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+			needsSlowPath = true;
+			break;
+		}
+	}
+
+	if (!needsSlowPath) {
+		const result: Paragraph['value'] = [];
+		for (let i = 0; i < flattenableValues.length; i++) {
+			const current = flattenableValues[i] as Inlines;
+			const previous = result[result.length - 1];
+			if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+				previous.value += current.value;
+			} else {
+				result.push(current);
+			}
+		}
+		return result;
+	}
+
+	// Slow path: handles nested arrays and emoji joining
+	const result: Paragraph['value'] = [];
 
 	let previousInline = undefined as Inlines | undefined;
 	let pendingInline = undefined as Inlines | undefined;
@@ -290,13 +318,13 @@ export const timestampFromIsoTime = ({
 	milliseconds,
 	timezone,
 }: {
-	year: string[];
-	month: string[];
-	day: string[];
-	hours: string[];
-	minutes: string[];
-	seconds: string[];
-	milliseconds?: string[];
+	year: string;
+	month: string;
+	day: string;
+	hours: string;
+	minutes: string;
+	seconds: string;
+	milliseconds?: string;
 	timezone?: string;
 }) => {
 	const date =
@@ -304,12 +332,4 @@ export const timestampFromIsoTime = ({
 			1000) |
 		0;
 	return date.toString();
-};
-
-export const extractFirstResult = (value: Types[keyof Types]['value']): Types[keyof Types]['value'] => {
-	if (typeof value !== 'object' || !Array.isArray(value)) {
-		return value;
-	}
-
-	return value.find(Boolean) as Types[keyof Types]['value'];
 };

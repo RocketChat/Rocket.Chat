@@ -65,7 +65,7 @@ describe('SidebarItemBadges', () => {
 			},
 		);
 
-		expect(screen.getByRole('status', { name: 'Invited January 1, 2025' })).toBeInTheDocument();
+		expect(screen.getByRole('status', { name: 'Invited January 1st, 2025' })).toBeInTheDocument();
 	});
 
 	it('should not render InvitationBadge when subscription does not have status INVITED', () => {

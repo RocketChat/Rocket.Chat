@@ -1,8 +1,9 @@
+import type { AriaDialogProps } from '@react-aria/dialog';
+import { useDialog } from '@react-aria/dialog';
+import { FocusScope } from '@react-aria/focus';
 import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
-import type { AriaDialogProps } from 'react-aria';
-import { FocusScope, useDialog } from 'react-aria';
 
 import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';

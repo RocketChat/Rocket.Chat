@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -21,21 +21,23 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
+import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
+import { Subscriptions } from '../../../../stores';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
 import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
-import { useRoom } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
@@ -43,9 +45,9 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -126,23 +128,28 @@ const MessageBox = ({
 	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 
-	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
+	const subscription = useRoomSubscription();
+	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
 			if (node === null && chat.composer) {
+				flushDraft();
 				return chat.setComposerAPI();
 			}
 
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef));
+			chat.setComposerAPI(
+				createComposerAPI(node, persistLocal, initialValue, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }),
+			);
 		},
-		[chat, storageID, quoteChainLimit],
+		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, room._id, tmid],
 	);
 
-	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
+	const isTouchDevice = useMediaQuery('(pointer: coarse)');
+	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -158,17 +165,7 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
-	const {
-		uploads,
-		hasUploads,
-		handleUploadFiles,
-		handleEditUpload,
-		handleRemoveUpload,
-		handleCancelUpload,
-		isUploading,
-		isProcessingUploads,
-	} = useFileUpload(uploadsStore);
+	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
 	const handleSendMessage = useEffectEvent(() => {
 		if (isUploading || isProcessingUploads) {
@@ -301,27 +298,28 @@ const MessageBox = ({
 
 	const federationMatrixEnabled = useIsFederationEnabled();
 
-	const canSend = useReactiveValue(
-		useCallback(() => {
-			if (!room.t) {
+	// canSendMessage directives read from the Subscriptions store, so subscribe to it to re-run on changes
+	// (e.g. user joins/leaves the room). room and federationMatrixEnabled are already React-reactive.
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
+		if (!room.t) {
+			return false;
+		}
+
+		if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+			return false;
+		}
+
+		if (isRoomFederated(room)) {
+			// we are dropping the non native federation for now
+			if (!isRoomNativeFederated(room)) {
 				return false;
 			}
 
-			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
-				return false;
-			}
-
-			if (isRoomFederated(room)) {
-				// we are dropping the non native federation for now
-				if (!isRoomNativeFederated(room)) {
-					return false;
-				}
-
-				return federationMatrixEnabled;
-			}
-			return true;
-		}, [room, federationMatrixEnabled]),
-	);
+			return federationMatrixEnabled;
+		}
+		return true;
+	});
 
 	const sizes = useContentBoxSize(textareaRef);
 
@@ -388,6 +386,20 @@ const MessageBox = ({
 		),
 	);
 
+	const beforeInputHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
+				node.addEventListener('beforeinput', eventHandler);
+
+				return () => {
+					node.removeEventListener('beforeinput', eventHandler);
+				};
+			},
+			[chat],
+		),
+	);
+
 	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		textareaRef,
@@ -395,6 +407,7 @@ const MessageBox = ({
 		callbackRef,
 		autofocusRef,
 		keyDownHandlerCallbackRef,
+		beforeInputHandlerCallbackRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
@@ -436,9 +449,9 @@ const MessageBox = ({
 				unencryptedMessagesAllowed={unencryptedMessagesAllowed}
 				isMobile={isMobile}
 			/>
-			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} uploadsStore={uploadsStore} rid={room._id} tmid={tmid} />}
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{isRecordingAudio && <AudioMessageRecorder rid={room._id} uploadsStore={uploadsStore} isMicrophoneDenied={isMicrophoneDenied} />}
+				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInputExpandable
 					dimensions={sizes}
 					ref={mergedRefs}
@@ -451,15 +464,7 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
-				{hasUploads && (
-					<MessageComposerFiles
-						uploads={uploads}
-						onEdit={handleEditUpload}
-						onRemove={handleRemoveUpload}
-						onCancel={handleCancelUpload}
-						disabled={isProcessingUploads}
-					/>
-				)}
+				<MessageComposerFiles />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -479,7 +484,6 @@ const MessageBox = ({
 						)}
 						<MessageBoxActionsToolbar
 							canSend={canSend}
-							typing={typing}
 							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
 							tmid={tmid}

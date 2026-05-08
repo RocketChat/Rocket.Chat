@@ -48,6 +48,7 @@ export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarEx
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
 export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
+export { useLocationHash } from './hooks/useLocationHash';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
@@ -106,7 +107,7 @@ export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 export { useUserPresence } from './hooks/useUserPresence';
 export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
 export { useOnLogout } from './hooks/useOnLogout';
-export { useMediaDeviceMicrophonePermission, type requestDevice } from './hooks/useMediaDevicePermission';
+export { useMediaDeviceMicrophonePermission } from './hooks/useMediaDevicePermission';
 export { useWriteStream } from './hooks/useWriteStream';
 export { useUserCard } from './hooks/useUserCard';
 export type { SubscriptionWithRoom } from './types/SubscriptionWithRoom';

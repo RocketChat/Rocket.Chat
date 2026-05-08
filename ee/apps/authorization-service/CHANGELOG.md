@@ -1,5 +1,216 @@
 # @rocket.chat/authorization-service
 
+## 0.6.0
+
+### Minor Changes
+
+- ([#39845](https://github.com/RocketChat/Rocket.Chat/pull/39845)) Adds support for setting up Virtru as a PDP (Policy Decision Point) for ABAC.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, c544b805d1c03f8eae9d061cd48838206207a7c9, 4e99ff6c1a99ac569cf444f9de9b5fe5ac3262b2, 8c0e16ca29b393cfa50b425520db48ba5a74f678, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/core-services@0.14.0
+  - @rocket.chat/model-typings@2.2.0
+  - @rocket.chat/models@2.2.0
+  - @rocket.chat/core-typings@8.4.0
+  - @rocket.chat/rest-typings@8.4.0
+  - @rocket.chat/abac@0.2.0
+  - @rocket.chat/network-broker@0.2.35
+  </details>
+
+## 0.6.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  - @rocket.chat/rest-typings@8.4.0-rc.2
+  - @rocket.chat/abac@0.2.0-rc.2
+  - @rocket.chat/core-services@0.14.0-rc.2
+  - @rocket.chat/model-typings@2.2.0-rc.2
+  - @rocket.chat/models@2.2.0-rc.2
+  - @rocket.chat/network-broker@0.2.35-rc.2
+  </details>
+
+## 0.6.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.1
+  - @rocket.chat/abac@0.2.0-rc.1
+  - @rocket.chat/network-broker@0.2.35-rc.1
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  - @rocket.chat/rest-typings@8.4.0-rc.1
+  - @rocket.chat/model-typings@2.2.0-rc.1
+  - @rocket.chat/models@2.2.0-rc.1
+  </details>
+
+## 0.5.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.4
+  - @rocket.chat/core-typings@8.3.2
+  - @rocket.chat/rest-typings@8.3.2
+  - @rocket.chat/abac@0.1.8
+  - @rocket.chat/model-typings@2.1.4
+  - @rocket.chat/models@2.1.4
+  - @rocket.chat/network-broker@0.2.34
+  </details>
+
+## 0.5.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.1
+  - @rocket.chat/rest-typings@8.3.1
+  - @rocket.chat/abac@0.1.7
+  - @rocket.chat/core-services@0.13.3
+  - @rocket.chat/model-typings@2.1.3
+  - @rocket.chat/models@2.1.3
+  - @rocket.chat/network-broker@0.2.33
+  </details>
+
+## 0.6.0-rc.0
+
+### Minor Changes
+
+- ([#39845](https://github.com/RocketChat/Rocket.Chat/pull/39845)) Adds support for setting up Virtru as a PDP (Policy Decision Point) for ABAC.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, c544b805d1c03f8eae9d061cd48838206207a7c9, 4e99ff6c1a99ac569cf444f9de9b5fe5ac3262b2, 8c0e16ca29b393cfa50b425520db48ba5a74f678, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.0
+  - @rocket.chat/model-typings@2.2.0-rc.0
+  - @rocket.chat/models@2.2.0-rc.0
+  - @rocket.chat/core-typings@8.4.0-rc.0
+  - @rocket.chat/rest-typings@8.4.0-rc.0
+  - @rocket.chat/abac@0.2.0-rc.0
+  - @rocket.chat/network-broker@0.2.33-rc.0
+  </details>
+
+## 0.5.6
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, a4e3c1635d55ec4ce04cbde741426770e43581fb, 539659af22bc19880eda047dfc0b152472ccb65c, 5518503736b72674753e711ba4089d177ab988a5, a4341ec67d1f0413f30bbabfd292d1b0a41728b2, 40253146de8d8f83737e71b0ade7c67e0c295a28, 803b8075514de54c9ff34ba0c9aa3ee5fc3bbe61, 1361a1f4f1e3c0cc3f2a191cef8eccc12a714cde, 2a2701098536b32143003be8d267891978c708c9, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, 37acece030bc9f39bdaa86ab0130eb818332033e, d8baf395181b70fef9ce448eb509f65b66049615, ddc0ed34b03072362d166f1160104a9332b362e8, d83a1a9753464ee916845b3c88757bbcf76884a5, eae3fb3136bd0b48294c050a71b0a36d05ca02b0, 4c2e444216efd514ab406fe8e9cd127ef971d566, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, 78b3fe3ef20e3a545b84551ba3f85cb40e862ba7, 98a6c58a38c053c60db2b4d53a9df0e94fecf0ba, 29b453e1def8092a8d78c28736e2bfb24229717b, 39f2e87e1caa6842e69155f033205cfdc4767b9e, c117492ad90d291a361eedc929506f557495caf7, 7c7324184589a15bf3e67b4f0c1cc222f8d48db3]:</summary>
+
+  - @rocket.chat/model-typings@2.1.2
+  - @rocket.chat/models@2.1.2
+  - @rocket.chat/rest-typings@8.3.0
+  - @rocket.chat/network-broker@0.2.32
+  - @rocket.chat/core-services@0.13.2
+  - @rocket.chat/core-typings@8.3.0
+  - @rocket.chat/abac@0.1.6
+  - @rocket.chat/tracing@0.0.2
+  - @rocket.chat/logger@1.0.1
+  </details>
+
+## 0.5.6-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.4
+  - @rocket.chat/rest-typings@8.3.0-rc.4
+  - @rocket.chat/abac@0.1.6-rc.4
+  - @rocket.chat/core-services@0.13.2-rc.4
+  - @rocket.chat/model-typings@2.1.2-rc.4
+  - @rocket.chat/models@2.1.2-rc.4
+  - @rocket.chat/network-broker@0.2.32-rc.4
+  </details>
+
+## 0.5.6-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.3
+  - @rocket.chat/rest-typings@8.3.0-rc.3
+  - @rocket.chat/abac@0.1.6-rc.3
+  - @rocket.chat/core-services@0.13.2-rc.3
+  - @rocket.chat/model-typings@2.1.2-rc.3
+  - @rocket.chat/models@2.1.2-rc.3
+  - @rocket.chat/network-broker@0.2.32-rc.3
+  </details>
+
+## 0.5.6-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.2
+  - @rocket.chat/rest-typings@8.3.0-rc.2
+  - @rocket.chat/abac@0.1.6-rc.2
+  - @rocket.chat/core-services@0.13.2-rc.2
+  - @rocket.chat/model-typings@2.1.2-rc.2
+  - @rocket.chat/models@2.1.2-rc.2
+  - @rocket.chat/network-broker@0.2.32-rc.2
+  </details>
+
+## 0.5.6-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.1
+  - @rocket.chat/rest-typings@8.3.0-rc.1
+  - @rocket.chat/abac@0.1.6-rc.1
+  - @rocket.chat/core-services@0.13.2-rc.1
+  - @rocket.chat/model-typings@2.1.2-rc.1
+  - @rocket.chat/models@2.1.2-rc.1
+  - @rocket.chat/network-broker@0.2.32-rc.1
+  </details>
+
+## 0.5.6-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, a4e3c1635d55ec4ce04cbde741426770e43581fb, 539659af22bc19880eda047dfc0b152472ccb65c, 5518503736b72674753e711ba4089d177ab988a5, a4341ec67d1f0413f30bbabfd292d1b0a41728b2, 40253146de8d8f83737e71b0ade7c67e0c295a28, 803b8075514de54c9ff34ba0c9aa3ee5fc3bbe61, 1361a1f4f1e3c0cc3f2a191cef8eccc12a714cde, 2a2701098536b32143003be8d267891978c708c9, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, 37acece030bc9f39bdaa86ab0130eb818332033e, d8baf395181b70fef9ce448eb509f65b66049615, ddc0ed34b03072362d166f1160104a9332b362e8, d83a1a9753464ee916845b3c88757bbcf76884a5, eae3fb3136bd0b48294c050a71b0a36d05ca02b0, 4c2e444216efd514ab406fe8e9cd127ef971d566, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, 78b3fe3ef20e3a545b84551ba3f85cb40e862ba7, 98a6c58a38c053c60db2b4d53a9df0e94fecf0ba, 29b453e1def8092a8d78c28736e2bfb24229717b, 39f2e87e1caa6842e69155f033205cfdc4767b9e, c117492ad90d291a361eedc929506f557495caf7, 7c7324184589a15bf3e67b4f0c1cc222f8d48db3]:</summary>
+
+  - @rocket.chat/model-typings@2.1.2-rc.0
+  - @rocket.chat/models@2.1.2-rc.0
+  - @rocket.chat/rest-typings@8.3.0-rc.0
+  - @rocket.chat/network-broker@0.2.32-rc.0
+  - @rocket.chat/core-services@0.13.2-rc.0
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  - @rocket.chat/abac@0.1.6-rc.0
+  - @rocket.chat/tracing@0.0.2-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  </details>
+
+## 0.5.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.1
+  - @rocket.chat/rest-typings@8.2.1
+  - @rocket.chat/abac@0.1.5
+  - @rocket.chat/core-services@0.13.1
+  - @rocket.chat/model-typings@2.1.1
+  - @rocket.chat/models@2.1.1
+  - @rocket.chat/network-broker@0.2.31
+  </details>
+
 ## 0.5.4
 
 ### Patch Changes

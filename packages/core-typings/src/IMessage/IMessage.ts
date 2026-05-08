@@ -74,6 +74,8 @@ const MessageTypes = [
 	'room_e2e_disabled',
 	'user-muted',
 	'user-unmuted',
+	'user-banned',
+	'user-unbanned',
 	'room-removed-read-only',
 	'room-set-read-only',
 	'room-allowed-reacting',
@@ -237,6 +239,9 @@ export interface IMessage extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	content?: EncryptedContent;
+
+	// Read receipts migration flag
+	receiptsArchived?: boolean;
 }
 
 export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;

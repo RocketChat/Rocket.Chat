@@ -23,7 +23,11 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
-	wrapSelection(pattern: string): void;
+	wrapSelection(pattern: string): {
+		selectionStart: number;
+		selectionEnd: number;
+		value: string;
+	};
 	insertText(text: string): void;
 	insertNewLine(): void;
 	clear(): void;
@@ -65,6 +69,8 @@ export type ComposerAPI = {
 	readonly formatters: Subscribable<FormattingButton[]>;
 
 	readonly composerRef: RefObject<HTMLElement>;
+
+	readonly uploads: UploadsAPI;
 };
 
 export type DataAPI = {
@@ -116,6 +122,7 @@ export type UploadsAPI = {
 	cancel(id: Upload['id']): void;
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;
+	editUploadDescription: (id: Upload['id'], description: string) => void;
 	send(file: File, encrypted?: never): Promise<void>;
 	send(file: File, encrypted: EncryptedFileUploadContent): Promise<void>;
 };
@@ -125,8 +132,6 @@ export type ChatAPI = {
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
 	readonly data: DataAPI;
-	readonly uploads: UploadsAPI;
-	readonly threadUploads: UploadsAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
 		toPreviousMessage(): Promise<void>;
@@ -156,15 +161,7 @@ export type ChatAPI = {
 	ActionManager: IActionManager;
 
 	readonly flows: {
-		readonly uploadFiles: ({
-			files,
-			uploadsStore,
-			resetFileInput,
-		}: {
-			files: readonly File[];
-			uploadsStore: UploadsAPI;
-			resetFileInput?: () => void;
-		}) => Promise<void>;
+		readonly uploadFiles: ({ files, resetFileInput }: { files: readonly File[]; resetFileInput?: () => void }) => Promise<void>;
 		readonly sendMessage: ({
 			text,
 			tshow,
