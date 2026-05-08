@@ -2,64 +2,54 @@
 
 Yarn 4 + Turborepo monorepo. Workspaces:
 
-- `apps/meteor` — main app (Meteor 3 + React 18 + TypeScript). 90 % of work happens here.
-- `apps/uikit-playground` — Apps-Engine UIKit dev playground.
-- `packages/*` — community-edition shared libs (`core-services`, `core-typings`, `model-typings`, `models`, `rest-typings`, `i18n`, `ui-client`, `fuselage-ui-kit`, `patch-injection`, `tools`, `agenda`, `cron`, `logger`, etc.).
-- `ee/apps/*` — enterprise microservices (`account-service`, `authorization-service`, `ddp-streamer`, `presence-service`, `stream-hub-service`, `queue-worker`, `omnichannel-transcript`, `federation-service`).
-- `ee/packages/*` — enterprise libs (`license`, `abac`, `presence`, `omnichannel-services`, `federation-matrix`, `pdf-worker`, `ui-theming`, `network-broker`, `omni-core-ee`, `media-calls`).
-- `apps/meteor/ee/server/services` — declared as workspace; EE-only server code lives under `apps/meteor/ee/`.
+- `apps/meteor` — main app (Meteor 3 + React 18 + TS). 90% of work here.
+- `apps/uikit-playground` — Apps-Engine UIKit playground.
+- `packages/*` — CE shared libs (typings, models, REST, i18n, UI kits, patch-injection, tooling, ...). List: `ls packages/`.
+- `ee/apps/*` — EE microservices (auth, presence, ddp-streamer, queue-worker, omnichannel-transcript, federation, ...). List: `ls ee/apps/`.
+- `ee/packages/*` — EE libs (license, abac, presence, omnichannel, federation-matrix, pdf-worker, ui-theming, network-broker, ...). List: `ls ee/packages/`.
+- `apps/meteor/ee/server/services` — workspace; EE-only server code under `apps/meteor/ee/`.
 
-For the current Node / Yarn / TypeScript versions check `package.json` (`engines`, `volta`, `devDependencies`) or `.tool-versions`. If available, use `volta`/`nvm` as the node version manager.
+Node/Yarn/TS versions: `package.json` (`engines`, `volta`, `devDependencies`) or `.tool-versions`. Use `volta`/`nvm`.
 
 ### EE vs CE licensing
 
-EE code is under a **different license** from the rest of the repo. Rules:
+EE is **different license**. CE MUST NOT import EE without explicit human approval. EE MUST NOT move into non-EE folders. Applies to **any** EE code anywhere — not just `ee/` paths. EE marker = `LICENSE` file beside it; **recursive** — parent enterprise `LICENSE` makes every descendant EE (e.g. `apps/meteor/ee/LICENSE`, `ee/LICENSE`, `ee/packages/<pkg>/LICENSE`). When in doubt walk up tree until `LICENSE` found.
 
-- CE code MUST NOT carelessly import from EE without explicit human approval.
-- EE code MUST NOT be moved into non-EE folders.
-- This applies to **any** EE code, anywhere in the tree — not just `ee/` paths.
-- Identify EE code by a `LICENSE` file sitting next to it. **License files are recursive**: if a parent folder has an enterprise `LICENSE`, every file in that folder and all its descendants is EE too (e.g. `apps/meteor/ee/LICENSE`, `ee/LICENSE`, `ee/packages/<pkg>/LICENSE`).
-- When in doubt, walk up the tree until you find a `LICENSE`.
-
-## Top-level commands (run from repo root)
+## Commands (repo root)
 
 ```
-yarn build            # turbo build all workspaces
-yarn build:services   # only ee/apps services + deps
-yarn dev              # dev server for @rocket.chat/meteor (parallel turbo)
-yarn dsv              # meteor dev (`meteor npm run dev`) inside apps/meteor
-yarn ms               # microservices dev (TRANSPORTER=TCP by default)
-yarn lint             # turbo lint all workspaces
-yarn testunit         # turbo testunit all workspaces
+yarn build            # turbo build all
+yarn build:services   # ee/apps services + deps only
+yarn dev              # @rocket.chat/meteor dev (parallel turbo)
+yarn dsv              # meteor dev inside apps/meteor
+yarn ms               # microservices dev (TRANSPORTER=TCP default)
+yarn lint             # turbo lint all
+yarn testunit         # turbo testunit all
 ```
 
-`yarn` (no args) bootstraps deps. `turbo run <task> --filter=<workspace>` to scope.
+`yarn` (no args) bootstraps. Scope: `turbo run <task> --filter=<workspace>`.
 
 ## Inside `apps/meteor`
 
-Most relevant scripts:
+Same `yarn dev`/`dsv`/`ms`/`lint` plus:
 
 ```
-yarn dev              # meteor run, excludes legacy/cordova archs
-yarn dsv              # alias for meteor npm run dev (same)
-yarn ms               # microservices mode (TRANSPORTER=TCP)
-yarn obj:dev          # TEST_MODE=true yarn dev   (required for playwright)
+yarn obj:dev          # TEST_MODE=true yarn dev (required for playwright)
 yarn ha:start / ha:add  # multi-instance dev (HA / horizontal scale)
-
-yarn lint             # stylelint + meteor lint + eslint .
-yarn eslint <path>    # eslint with cache; `:fix` variant available
+yarn eslint <path>    # eslint w/ cache; `:fix` variant
 yarn stylelint        # CSS only
 yarn typecheck        # meteor lint + tsc --noEmit (8 GB heap)
 
-yarn testunit         # runs all 3: definition + jest + server-mocha+nyc
-yarn .testunit:jest   # jest only (TZ=UTC, allowJs:false)
-yarn .testunit:server # mocha for server (.mocharc.js)
-yarn .testunit:definition  # mocha for definition (.mocharc.definition.js)
-yarn testapi          # mocha REST integration (.mocharc.api.js) — needs running server (needs server with TEST_MODE=true)
-yarn testapi:livechat # livechat REST integration (needs server with TEST_MODE=true)
-yarn test:e2e         # playwright (needs server with TEST_MODE=true)
-yarn test:e2e ./tests/e2e/foo.spec.ts   # single suite (needs server with TEST_MODE=true)
+yarn testunit              # all 3: definition + jest + server-mocha+nyc
+yarn .testunit:jest        # jest only (TZ=UTC, allowJs:false)
+yarn .testunit:server      # mocha server (.mocharc.js)
+yarn .testunit:definition  # mocha definition (.mocharc.definition.js)
+yarn testapi               # mocha REST integration (.mocharc.api.js); needs server w/ TEST_MODE=true
+yarn testapi:livechat      # livechat REST integration; needs TEST_MODE=true
+yarn test:e2e [path]       # playwright; needs TEST_MODE=true
 ```
+
+`yarn lint` runs stylelint + meteor lint + eslint.
 
 Single test file:
 
@@ -67,82 +57,70 @@ Single test file:
 - Mocha server: `yarn .testunit:server -- path/to/file.spec.ts`
 - Mocha API: `yarn testapi -- --grep "<name>"`
 
-Mocha specs are enumerated in `apps/meteor/.mocharc.js` — new server unit tests must match an entry there or be added to the glob list.
-
-E2E env vars: `BASE_URL=...`, `PWDEBUG=1`. Server must be started with `TEST_MODE=true`.
+Mocha specs enumerated in `apps/meteor/.mocharc.js` — new server unit tests must match an entry or be added to glob. E2E env: `BASE_URL=...`, `PWDEBUG=1`.
 
 ## Architecture (apps/meteor)
 
-Legacy Meteor layout coexists with newer structure. Three roots load code in parallel:
+Legacy Meteor + newer structure coexist. Three roots load in parallel:
 
-- `app/` — legacy per-feature modules (`app/api`, `app/livechat`, `app/authorization`, ...). Contains `client/`, `server/`, sometimes `lib/` per feature. Loaded via `server/importPackages.ts` and `client/importPackages.ts`.
-- `server/` — newer server entry points: `services/`, `methods/`, `publications/`, `routes/`, `lib/`, `startup/`, `cron/`, `settings/`, `models.ts`. `main.ts` is the server bootstrap.
-- `client/` — React app: `views/`, `components/`, `hooks/`, `providers/`, `contexts/`, `stores/`, `cachedStores/`, `router/`, `sidebar/`, `navbar/`, `apps/`, `startup/`. Heavy use of TanStack Query, Fuselage UI, i18next.
-- `ee/` — enterprise overlay: `ee/server/`, `ee/app/`, `ee/client/`. Loaded only when license permits.
+- `app/` — legacy per-feature modules (`app/api`, `app/livechat`, `app/authorization`, ...) w/ `client/`, `server/`, sometimes `lib/`. Loaded via `server/importPackages.ts` + `client/importPackages.ts`.
+- `server/` — newer entry: `services/`, `methods/`, `publications/`, `routes/`, `lib/`, `startup/`, `cron/`, `settings/`, `models.ts`. `main.ts` = bootstrap.
+- `client/` — React: `views/`, `components/`, `hooks/`, `providers/`, `contexts/`, `stores/`, `cachedStores/`, `router/`, `sidebar/`, `navbar/`, `apps/`, `startup/`. Uses TanStack Query, Fuselage UI, i18next.
+- `ee/` — enterprise overlay: `ee/server/`, `ee/app/`, `ee/client/`. Loaded only w/ license.
 - `definition/` — shared types local to meteor (most types live in `packages/core-typings` / `packages/model-typings`).
 - `tests/` — `unit/` (mocha+jest), `end-to-end/` (mocha REST), `e2e/` (playwright), `mocks/`, `data/`.
 
-Models: declared in `packages/model-typings`, implemented in `packages/models/src/models/*` (BaseRaw is the MongoDB raw collection wrapper). Meteor binds them via `apps/meteor/server/models.ts`.
+Models declared in `packages/model-typings`, implemented in `packages/models/src/models/*` (BaseRaw = MongoDB raw collection wrapper). Bound via `apps/meteor/server/models.ts`.
 
-Services: `apps/meteor/server/services/*` are local-broker services consumed via `@rocket.chat/core-services`. EE microservices in `ee/apps/*` register against the network broker (Moleculer).
+Services: `apps/meteor/server/services/*` = local-broker, consumed via `@rocket.chat/core-services`. EE microservices in `ee/apps/*` register against network broker (Moleculer).
 
-REST API: routes registered in `app/api/server/v1/*.ts` against the typed router from `packages/rest-typings`. Client calls go through `@rocket.chat/api-client`.
+REST API: routes in `app/api/server/v1/*.ts` against typed router from `packages/rest-typings`. Client calls via `@rocket.chat/api-client`.
 
-Settings: declared in `apps/meteor/server/settings/`. Auto-generates per-setting permission `change-setting-{id}`; admins bypass via `view-privileged-setting`.
+Settings declared in `apps/meteor/server/settings/`. Auto-generates per-setting permission `change-setting-{id}`; admins bypass via `view-privileged-setting`.
 
 ### CE / EE hook pattern
 
 Do **not** roll ad-hoc hook registries. Use `@rocket.chat/patch-injection`:
 
 ```ts
-// CE side
+// CE
 import { makeFunction } from '@rocket.chat/patch-injection';
-export const doX = makeFunction((arg: A): B => { /* default impl */ });
+export const doX = makeFunction((arg: A): B => { /* default */ });
 
-// EE side (only loaded when license active)
+// EE (only loaded w/ license active)
 doX.patch((next, arg) => { /* override or wrap next(arg) */ });
 ```
 
-Patches stack and run in order; pass `condition` for license/feature gates.
+Patches stack, run in order; `condition` for license/feature gates.
 
 ## Test conventions
 
-- Mocha + chai for server/unit + REST API integration. Jest only where wired (search `jest.config.ts`).
-- Playwright lives in `apps/meteor/tests/e2e/` (`.spec.ts`). Page Objects under `tests/e2e/page-objects/`. Locators must use `getByRole` / `getByLabel` / `getByText` — `data-qa-id` and `getByTestId` are last resort. Locator names start with `btn`/`link`/`input`/`select`/`checkbox`/`text`. See `apps/meteor/tests/e2e/README.md` and `.cursor/rules/playwright.mdc`.
-- REST integration tests assume a running server (default `http://localhost:3000`). They share state — order can matter.
-- Don't mock the database in integration tests — hit the real Mongo.
+- Mocha + chai for server/unit + REST API integration. Jest only where wired (`jest.config.ts`).
+- Playwright at `apps/meteor/tests/e2e/` (`.spec.ts`). Page Objects in `tests/e2e/page-objects/`. Locators MUST use `getByRole` / `getByLabel` / `getByText`; `data-qa-id` / `getByTestId` last resort. Locator names start `btn`/`link`/`input`/`select`/`checkbox`/`text`. See `apps/meteor/tests/e2e/README.md`, `.cursor/rules/playwright.mdc`.
+- REST integration tests assume running server (default `http://localhost:3000`); share state — order can matter.
+- Don't mock DB in integration tests — hit real Mongo.
 
 ## Changesets
 
-**Always confirm with the human before adding a changeset.**
+**Confirm with human before adding.** Every user-visible change needs `yarn changeset` → `.changeset/<random-name>.md` w/ workspaces, bump (`patch`/`minor`/`major`), release-note line. **Only changesets that bump `'@rocket.chat/meteor'` appear in public release notes** — list it for any user-visible change even if actual edit is in sub-package (e.g. `@rocket.chat/ui-client`, `@rocket.chat/i18n`). Still bump every workspace whose published surface changed; `@rocket.chat/meteor` added on top.
 
-Every user-visible change needs a changeset:
+## Migrations
 
-```
-yarn changeset
-```
+`yarn migration:add` (in `apps/meteor`) scaffolds server migration. Runner: `apps/meteor/server/startup/migrations.ts`.
 
-Creates `.changeset/<random-name>.md` with affected workspaces and bump type (`patch`/`minor`/`major`) + a short release-note line. **Only changesets that bump `'@rocket.chat/meteor'` show up in the public release notes** — so it must be listed for any user-visible change, even when the actual code edit is in a sub-package (e.g. `@rocket.chat/ui-client`, `@rocket.chat/i18n`). Still bump every other workspace whose published surface changed; `@rocket.chat/meteor` is added on top of those.
+## PR / commit
 
-## Migrations (Meteor)
+Title prefix: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `ci:`, `test:`, `i18n:`, `regression:`. See `.github/PULL_REQUEST_TEMPLATE.md`. Branch off `develop`; `master` lags. Releases tagged from `develop`. CI: `.github/workflows/ci.yml` = monolith; unit/storybook/E2E/code-check split into peer files.
 
-`yarn migration:add` (in `apps/meteor`) scaffolds a server migration. The migration runner is in `apps/meteor/server/startup/migrations.ts` (search for it).
+## Permissions
 
-## PR / commit conventions
+Two layers: RBAC (`Authorization` service, role-based) + ABAC (EE, `@rocket.chat/abac` + `ee/packages/abac`). Settings auto-generate permissions; check `view-privileged-setting` before assuming admin can read a setting.
 
-- Title prefix: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `ci:`, `test:`, `i18n:`, `regression:`. See `.github/PULL_REQUEST_TEMPLATE.md`.
-- Branch off `develop`; `master` lags. Releases tagged from `develop`.
-- CI: `.github/workflows/ci.yml` is the monolith pipeline; unit/storybook/E2E/code-check split into peer files.
-
-## Permissions / authorization
-
-Two layers: RBAC (`Authorization` service, role-based) and ABAC (EE, `@rocket.chat/abac` + `ee/packages/abac`). Settings auto-generate permissions; check for `view-privileged-setting` before assuming an admin can read a setting.
-
-## Useful entrypoints when lost
+## Entrypoints when lost
 
 - Server bootstrap: `apps/meteor/server/main.ts` → `server/startup/`.
 - Client bootstrap: `apps/meteor/client/startup/`.
-- Method/publication registry: `apps/meteor/server/methods/`, `server/publications/`.
+- Methods/publications: `apps/meteor/server/methods/`, `server/publications/`.
 - REST routes: `apps/meteor/app/api/server/v1/*`.
 - License gating: `ee/packages/license/src/` (`License.has(...)`).
-- Model definitions: `packages/models/src/models/`, types in `packages/model-typings/src/models/`.
+- Models: `packages/models/src/models/`, types `packages/model-typings/src/models/`.
