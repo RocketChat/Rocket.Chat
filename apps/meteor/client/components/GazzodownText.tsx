@@ -3,7 +3,7 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserPreference, useUserId, useUserCard, useSetting } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
@@ -57,6 +57,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	const useRealName = useMessageListShowRealName();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
+	const issueLinksTemplate = useSetting('IssueLinks_LinkTemplate') as string | undefined;
 
 	const resolveUserMention = useCallback(
 		(mention: string) => {
@@ -134,6 +135,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				showMentionSymbol,
 				triggerProps,
 				language: userLanguage,
+				issueLinksTemplate,
 			}}
 		>
 			{children}

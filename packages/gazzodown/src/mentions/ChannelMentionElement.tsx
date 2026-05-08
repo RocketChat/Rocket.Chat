@@ -14,13 +14,20 @@ const handleChannelMention = (mention: string, withSymbol: boolean | undefined):
 
 const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactElement => {
 	const { t } = useTranslation();
-	const { resolveChannelMention, onChannelMentionClick, showMentionSymbol } = useContext(MarkupInteractionContext);
+	const { resolveChannelMention, onChannelMentionClick, showMentionSymbol, issueLinksTemplate } = useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveChannelMention?.(mention), [mention, resolveChannelMention]);
 	const handleClick = useMemo(() => (resolved ? onChannelMentionClick?.(resolved) : undefined), [resolved, onChannelMentionClick]);
 	const buttonProps = useButtonPattern((e) => handleClick?.(e));
 
 	if (!resolved) {
+		if (/^\d+$/.test(mention) && issueLinksTemplate) {
+			return (
+				<a href={issueLinksTemplate.replace('%s', mention)} target='_blank' rel='noopener noreferrer'>
+					#{mention}
+				</a>
+			);
+		}
 		return <>#{mention}</>;
 	}
 
