@@ -1,6 +1,6 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 
 import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
@@ -9,11 +9,6 @@ import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 	const msgId = useSearchParameter('msg');
-	const msgIdRef = useRef(msgId);
-
-	useEffect(() => {
-		msgIdRef.current = msgId;
-	}, [msgId]);
 
 	const ref = useSafeRefCallback(
 		useCallback(
@@ -31,7 +26,8 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 						return;
 					}
 
-					if (msgIdRef.current && !RoomHistoryManager.isLoaded(rid)) {
+					if (msgId && !RoomHistoryManager.isLoaded(rid)) {
+						RoomHistoryManager.getSurroundingMessages({ _id: msgId, rid });
 						return;
 					}
 

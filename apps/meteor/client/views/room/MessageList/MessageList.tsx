@@ -2,7 +2,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -109,23 +109,31 @@ export const MessageList = function MessageList({
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
+	const messageJumpParam = useSearchParameter('msg');
+
 	// Scroll to bottom
 	useEffect(() => {
-		if (isJumpingToMessage) {
+		if (isJumpingToMessage || messageJumpParam) {
 			return;
 		}
 
 		if (!isRoomInitialized.current) {
 			const store = RoomManager.getStore(rid);
 
-			if (!firstUnreadMessageId) {
-				isRoomInitialized.current = true;
-				setShouldJumpToBottom(true);
+			if (!store) {
 				return;
 			}
 
 			if (!store?.atBottom && store?.scroll !== undefined) {
+				// When unreads are present, always scroll to bottom
+				if (firstUnreadMessageId) {
+					isRoomInitialized.current = true;
+					setShouldJumpToBottom(true);
+					return;
+				}
+
 				setShouldJumpToBottom(false);
+
 				const index = virtualizerRef.current?.findItemIndex(store?.scroll);
 				if (index !== undefined) {
 					virtualizerRef.current?.scrollToIndex(index, {
@@ -134,9 +142,11 @@ export const MessageList = function MessageList({
 				} else {
 					virtualizerRef.current?.scrollTo(store?.scroll);
 				}
+				isAtBottom.current = false;
 				isRoomInitialized.current = true;
 				return;
 			}
+			setShouldJumpToBottom(true);
 			isRoomInitialized.current = true;
 		}
 

@@ -47,7 +47,7 @@ const RoomBody = (): ReactElement => {
 	const subscription = useRoomSubscription();
 
 	//MessageList refs
-	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(true);
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(false);
 	const isAtBottom = useRef<boolean>(true);
 	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
 
