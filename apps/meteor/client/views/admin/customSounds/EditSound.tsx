@@ -52,9 +52,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		// FIXME
-		async (sound: any) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
+		async (sound: { _id: string; name: string; extension?: string } | File) => {
+			const extension = 'extension' in sound ? (sound.extension ?? '') : '';
+			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
 				let soundId: string;
@@ -68,7 +68,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				soundData._id = soundId;
 				soundData.random = Math.round(Math.random() * 1000);
 
-				if (sound && sound !== previousSound) {
+				if (sound instanceof File) {
 					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 					const reader = new FileReader();
