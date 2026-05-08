@@ -13,6 +13,8 @@ class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter 
 	}
 }
 
+type ActivePublication = IPublication & { _session: NonNullable<IPublication['_session']> };
+
 export const StreamerCentral = new StreamerCentralClass();
 
 export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmitter implements IStreamer<N> {
@@ -183,6 +185,14 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 			throw new MeteorError('not-allowed');
 		}
 
+		// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+		// we were just not counting on this, session is _session so we actually should not use it
+		// now after any await, the session can potentially be null, so we need to check for that
+		if (!Streamer.isPublicationActive(publication)) {
+			// if the client is disconnected, we don't want to do anything, it will not have an disconnect event to undo anymore
+			throw new MeteorError('publication-client-disconnected');
+		}
+
 		const subscription = {
 			subscription: publication,
 			eventName,
@@ -197,7 +207,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		// DDPStreamer doesn't have this
 		if (useCollection === true) {
 			// Collection compatibility
-			publication._session?.sendAdded(this.subscriptionName, 'id', {
+			publication._session.sendAdded(this.subscriptionName, 'id', {
 				eventName,
 			});
 		}
@@ -281,6 +291,10 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		void this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
 
 		return true;
+	}
+
+	static isPublicationActive(publication: IPublication): publication is ActivePublication {
+		return !publication._isDeactivated();
 	}
 
 	async sendToManySubscriptions(
