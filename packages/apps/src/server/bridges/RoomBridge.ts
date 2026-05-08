@@ -15,11 +15,17 @@ export type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };
 const READ_ONLY_ROOM_FIELDS = ['abacAttributes'] as const;
 
 const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
-	const out = { ...room };
 	for (const field of READ_ONLY_ROOM_FIELDS) {
-		delete out[field];
+		delete room[field];
+
+		// This prevents the field being added when a room gets created
+		// since on room creation `isPartial=false` and so these props are spread on the final room object
+		// If we need to allow abac room creation from apps, we would need to remove this.
+		if ((room as any)._unmappedProperties_) {
+			delete (room as any)._unmappedProperties_[field];
+		}
 	}
-	return out;
+	return room;
 };
 
 export abstract class RoomBridge extends BaseBridge {
