@@ -13,7 +13,7 @@ export const getNodeIconType = (
 		return 'file-pdf';
 	}
 
-	if (mime && ['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(mime)) {
+	if (mime && ['application/vnd.oasis.opendocument.text'].includes(mime)) {
 		return 'file-document';
 	}
 
