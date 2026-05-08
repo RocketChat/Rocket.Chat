@@ -72,7 +72,7 @@ const WebdavFilePickerTable = ({
 								.map((_, index) => <GenericTableLoadingRow key={index} cols={3} />)}
 						{!isLoading &&
 							webdavNodes?.map((webdavNode, index) => {
-								const { icon } = getNodeIconType(webdavNode.basename, webdavNode.type, webdavNode.mime);
+								const icon = getNodeIconType(webdavNode.basename, webdavNode.type, webdavNode.mime);
 
 								return (
 									<GenericTableRow key={index} onClick={(): void => onNodeClick(webdavNode)} tabIndex={index} role='link' action>

@@ -33,7 +33,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 					))}
 			{!isLoading &&
 				webdavNodes.map((webdavNode, index) => {
-					const { icon } = getNodeIconType(webdavNode.basename, webdavNode.type, webdavNode.mime);
+					const icon = getNodeIconType(webdavNode.basename, webdavNode.type, webdavNode.mime);
 
 					return (
 						<WebdavFilePickerGridItem key={index} className={hoverStyle} onClick={(): void => onNodeClick(webdavNode)}>
