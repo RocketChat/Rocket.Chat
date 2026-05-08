@@ -1,0 +1,30 @@
+ee/packages/federation-matrix/src/helpers/handleMediaMessage.ts
+  h_4c386397e672f4 1-93
+ee/packages/federation-matrix/src/FederationMatrix.ts
+  h_4c386397e672f4 2-9,20,27-29,31-33,1041-1173,1175-1190
+  h_3b4d628c7b932e 1040,1174,1191
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  h_4c386397e672f4 72-77,87,95,100,103,107-108,199,214-221,223,236,239
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  h_4c386397e672f4 1-2,175-177
+ee/packages/federation-matrix/src/helpers/getThreadMessageId.ts
+  h_4c386397e672f4 1-17
+ee/packages/federation-matrix/src/events/message.ts
+  h_4c386397e672f4 2,6,11,13,144
+packages/core-services/src/types/IFederationMatrixService.ts
+  h_4c386397e672f4 2,37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "0ffd30d88db45e45c424c4f6da7622897e7a5fac",
+  "prompts": {},
+  "humans": {
+    "h_3b4d628c7b932e": {
+      "author": "Diego Sampaio"
+    },
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
