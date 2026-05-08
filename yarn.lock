@@ -8912,7 +8912,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     typedoc: "npm:~0.28.16"
     typescript: "npm:~5.9.3"
-    uuid: "npm:~11.0.5"
+    uuid: "npm:~11.1.1"
   languageName: unknown
   linkType: soft
 
@@ -8946,7 +8946,7 @@ __metadata:
     stack-trace: "npm:0.0.10"
     ts-node: "npm:^6.2.0"
     typescript: "npm:~5.9.3"
-    uuid: "npm:~11.0.5"
+    uuid: "npm:~11.1.1"
   languageName: unknown
   linkType: soft
 
@@ -9159,7 +9159,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.3"
     underscore: "npm:^1.13.8"
-    uuid: "npm:^11.0.5"
+    uuid: "npm:^11.1.1"
     ws: "npm:~8.19.0"
   languageName: unknown
   linkType: soft
@@ -9491,7 +9491,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~9.39.4"
     express: "npm:^4.21.2"
-    hono: "npm:4.12.14"
+    hono: "npm:4.12.18"
     jest: "npm:~30.2.0"
     qs: "npm:^6.14.2"
     supertest: "npm:~7.1.4"
@@ -9556,7 +9556,7 @@ __metadata:
     jest-environment-jsdom: "npm:~30.2.0"
     jest-environment-node: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
-    uuid: "npm:~11.0.5"
+    uuid: "npm:~11.1.1"
   languageName: unknown
   linkType: soft
 
@@ -10076,7 +10076,7 @@ __metadata:
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
-    hono: "npm:4.12.14"
+    hono: "npm:4.12.18"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -23831,10 +23831,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:4.12.14":
-  version: 4.12.14
-  resolution: "hono@npm:4.12.14"
-  checksum: 10/2e620adb89e773a7e982dee8d8c9917f79c71b89cb051b5bc0d2aa91b5318373e90ba7a236bdc4762dc36026c1d7e5e979d6b48cf1dbbe44fc524a5c4df227d9
+"hono@npm:4.12.18":
+  version: 4.12.18
+  resolution: "hono@npm:4.12.18"
+  checksum: 10/0adda91eeb68c921e073bcbedd8758f026cc47dbbe7824147cf0ee8ef03004b1891f4d4edc80f6ab4c6ab33ec1f2fac52c4f7098752f8acf6833bcb76efb39e4
   languageName: node
   linkType: hard
 
@@ -36970,12 +36970,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.5":
-  version: 11.1.0
-  resolution: "uuid@npm:11.1.0"
+"uuid@npm:^11.1.1, uuid@npm:~11.1.1":
+  version: 11.1.1
+  resolution: "uuid@npm:11.1.1"
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
+  checksum: 10/16411d3dc12a08d6691616c09a75e66a7f900ba1beef6628a76fe0602f82fae2ee537b564d0b7bc95c24f58d059ca9b58c75a1e806118efb50e17822ff00ddd2
   languageName: node
   linkType: hard
 
@@ -36994,15 +36994,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10/9d0b6adb72b736e36f2b1b53da0d559125ba3e39d913b6072f6f033e0c87835b414f0836b45bcfaf2bdf698f92297fea1c3cc19b0b258bc182c9c43cc0fab9f2
-  languageName: node
-  linkType: hard
-
-"uuid@npm:~11.0.5":
-  version: 11.0.5
-  resolution: "uuid@npm:11.0.5"
-  bin:
-    uuid: dist/esm/bin/uuid
-  checksum: 10/0594ecdff3051e15d4a2c614b4c72e73af373bde0a5d156512353c01156975295d024ae8d7151846d7bd4d22ccd251b16ed51b4318fa71505fb20ad984102dc1
   languageName: node
   linkType: hard
 
