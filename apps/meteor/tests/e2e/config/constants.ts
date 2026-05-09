@@ -10,6 +10,8 @@ export const IS_EE = process.env.IS_EE ? !!JSON.parse(process.env.IS_EE) : false
 
 export const URL_MONGODB = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor?retryWrites=false';
 
+export const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || 'http://localhost:4000';
+
 export const ADMIN_CREDENTIALS = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',

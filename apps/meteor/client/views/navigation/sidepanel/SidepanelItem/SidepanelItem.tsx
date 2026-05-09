@@ -59,7 +59,7 @@ const SidePanelItem = ({
 			onFocus={handleFocus}
 			onPointerEnter={handlePointerEnter}
 			aria-label={title}
-			aria-selected={selected}
+			aria-current={selected ? 'page' : undefined}
 			level={2}
 		>
 			<SidebarV2ItemCol>

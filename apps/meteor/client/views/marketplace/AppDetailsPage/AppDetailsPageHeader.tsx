@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
-import moment from 'moment';
+import { formatDistanceToNow } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +31,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 		shortDescription,
 	} = app;
 
-	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
+	const lastUpdated = modifiedAt && formatDistanceToNow(new Date(modifiedAt), { addSuffix: true });
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (

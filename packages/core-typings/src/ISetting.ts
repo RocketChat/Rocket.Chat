@@ -8,14 +8,17 @@ export enum SettingEditor {
 
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = { _id: string; name?: string }[];
+export type SettingValueAction = { method: string; path: string };
 export type SettingValue =
 	| string
 	| boolean
 	| number
 	| SettingValueMultiSelect
 	| SettingValueRoomPick
+	| SettingValueAction
 	| Date
 	| { url?: string; defaultUrl?: string }
+	| { method: 'GET' | 'POST' | 'PUT' | 'DELETE'; path: string }
 	| undefined
 	| null;
 
@@ -122,9 +125,11 @@ interface ISettingCode extends ISettingBase {
 	code?: string;
 }
 
+type SettingActionEndpoint = { method: 'GET' | 'POST' | 'PUT' | 'DELETE'; path: string };
+
 interface ISettingAction extends ISettingBase {
 	type: 'action';
-	value: string;
+	value: string | SettingActionEndpoint;
 	actionText?: string;
 }
 
@@ -159,6 +164,9 @@ export const isSettingColor = (setting: ISettingBase): setting is ISettingColor 
 export const isSettingCode = (setting: ISettingBase): setting is ISettingCode => setting.type === 'code';
 
 export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';
+
+export const isActionSettingWithEndpoint = (value: ISettingAction['value']): value is SettingActionEndpoint =>
+	typeof value === 'object' && value !== null && 'method' in value && 'path' in value;
 
 export const isSettingRange = (setting: ISettingBase): setting is ISettingRange => setting.type === 'range';
 

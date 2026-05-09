@@ -1,7 +1,7 @@
+import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
+import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';

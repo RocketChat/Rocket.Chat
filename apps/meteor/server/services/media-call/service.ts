@@ -7,18 +7,25 @@ import type {
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
-import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
-import { type CallFeature, isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import type {
+	CallFeature,
+	ClientMediaSignal,
+	ServerMediaSignal,
+	ServerMediaCallSignal,
+	ClientMediaSignalAnswer,
+} from '@rocket.chat/media-signaling';
+import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
-import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
+import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
+import { logger } from './logger';
+import { sendVoipPushNotification } from './push/sendVoipPushNotification';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { i18n } from '../../lib/i18n';
 import { createDirectMessage } from '../../methods/createDirectMessage';
-
-const logger = new Logger('media-call service');
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
@@ -28,6 +35,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
 		callServer.emitter.on('historyUpdate', ({ callId }) => setImmediate(() => this.saveCallToHistory(callId)));
+		callServer.emitter.on('pushNotificationRequest', ({ callId, event }) => sendVoipPushNotification(callId, event));
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
@@ -39,21 +47,72 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		this.configureMediaCallServer();
 	}
 
+	public async answerCall(uid: IUser['_id'], params: Omit<ClientMediaSignalAnswer, 'type'>): Promise<IMediaCall> {
+		const { callId, answer } = params;
+
+		const call = await MediaCalls.findOneByIdAndCallee<Pick<IMediaCall, '_id'>>(
+			callId,
+			{ type: 'user', id: uid },
+			{ projection: { _id: 1 } },
+		);
+		if (!call) {
+			throw new Error('not-found');
+		}
+
+		const signal: ClientMediaSignalAnswer = {
+			type: 'answer',
+			...params,
+		};
+
+		await callServer.receiveSignal(uid, signal, { throwIfSkipped: true });
+
+		const updatedCall = await MediaCalls.findOneById(callId);
+		if (!updatedCall) {
+			throw new Error('internal-error');
+		}
+
+		switch (answer) {
+			case 'ack':
+				if (updatedCall.acceptedAt || updatedCall.ended) {
+					throw new Error('invalid-call-state');
+				}
+				break;
+			case 'reject':
+				if (!updatedCall.ended || updatedCall.endedBy?.id !== uid) {
+					throw new Error('invalid-call-state');
+				}
+				break;
+			case 'accept':
+				if (updatedCall.callee.contractId !== signal.contractId) {
+					if (updatedCall.callee.contractId) {
+						throw new Error('invalid-call-state');
+					}
+					throw new Error('internal-error');
+				}
+				break;
+		}
+
+		return updatedCall;
+	}
+
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
-			callServer.receiveSignal(uid, signal);
+			await callServer.receiveSignal(uid, signal);
 		} catch (err) {
 			logger.error({ msg: 'failed to process client signal', err, signal, uid });
 		}
 	}
 
 	public async processSerializedSignal(uid: IUser['_id'], signal: string): Promise<void> {
+		let signalType: string | null = null;
+
 		try {
 			const deserialized = await this.deserializeClientSignal(signal);
+			signalType = deserialized.type;
 
-			callServer.receiveSignal(uid, deserialized);
+			await callServer.receiveSignal(uid, deserialized);
 		} catch (err) {
-			logger.error({ msg: 'failed to process client signal', err, uid });
+			logger.error({ msg: 'failed to process client signal', err, uid, type: signalType });
 		}
 	}
 
@@ -69,6 +128,18 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (err) {
 			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', err });
 		}
+	}
+
+	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
+		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+
+		const signals: ServerMediaCallSignal[] = [];
+		for (const call of calls) {
+			const callSignals = await getSignalsForExistingCall(call, uid, contractId);
+			signals.push(...callSignals);
+		}
+
+		return signals;
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
@@ -187,6 +258,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
+	private getLanguageForUser(user: IUser): string {
+		return user.language || settings.get('Language') || 'en';
+	}
+
 	private async sendHistoryMessage(call: IMediaCall, room: IRoom): Promise<void> {
 		const userId = call.caller.id || call.createdBy?.id; // I think this should always be the caller, since during a transfer the createdBy contact is the one that transferred the call
 
@@ -196,12 +271,16 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		const state = this.getCallHistoryItemState(call);
+		const skipNotifications = state !== 'not-answered' || call.hangupReason === 'rejected';
+		const i18nKey = callStateToTranslationKey(state).i18n?.key;
+
+		const msg = i18nKey ? i18n.t(i18nKey, { lng: this.getLanguageForUser(user) }) : '';
 		const duration = this.getCallDuration(call);
 
-		const record = getHistoryMessagePayload(state, duration, call._id);
+		const record = getHistoryMessagePayload(state, duration, call._id, msg);
 
 		try {
-			const message = await sendMessage(user, record, room);
+			const message = await sendMessage(user, record, room, { skipNotifications });
 
 			if ('_id' in message) {
 				await CallHistory.updateMany({ callId: call._id }, { $set: { messageId: message._id } });
@@ -256,7 +335,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async getRoomIdForInternalCall(call: IMediaCall): Promise<IRoom> {
-		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(call.uids);
+		const uniqueUids = [...new Set(call.uids)];
+
+		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uniqueUids);
 		if (room) {
 			return room;
 		}
@@ -295,6 +376,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	private getMediaServerSettings(): IMediaCallServerSettings {
 		const sipEnabled = settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false;
+		const mobileRinging = settings.get<boolean>('VoIP_TeamCollab_Mobile_Ringing_Enabled') ?? false;
 		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
 
 		return {
@@ -314,6 +396,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
 				},
 			},
+			mobileRinging,
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
 		};

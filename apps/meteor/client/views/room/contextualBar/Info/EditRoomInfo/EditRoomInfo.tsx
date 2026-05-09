@@ -170,8 +170,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					rid: room._id,
 					...data,
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
-					...((data.systemMessages || !hideSysMes) && {
-						systemMessages: hideSysMes && data.systemMessages,
+					...((dirtyFields.hideSysMes || dirtyFields.systemMessages) && {
+						systemMessages: hideSysMes ? (data.systemMessages ?? defaultValues.systemMessages) : [],
 					}),
 					retentionEnabled,
 					retentionOverrideGlobal,
@@ -483,6 +483,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																options={sysMesOptions}
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
+																aria-label={t('Select_messages_to_hide')}
 															/>
 														)}
 													/>
