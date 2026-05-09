@@ -31,7 +31,10 @@ export const getHiddenSystemMessages = () => {
 	return [...configHiddenSystemMessages, ...localHiddenSystemMessages] as string[];
 };
 
-export const canRenderMessage = ({ t }: { t: string }) => {
+export const canRenderMessage = ({ t }: { t?: string }) => {
+	if (!t) {
+		return true; // Messages without a type should be rendered
+	}
 	const hiddenSystemMessages = getHiddenSystemMessages();
 
 	return !msgTypesNotRendered.includes(t) && !hiddenSystemMessages.includes(t);

@@ -5,6 +5,7 @@ import store from '../store';
 import constants from './constants';
 import { loadConfig } from './main';
 import { loadMessages } from './room';
+import type { Alert } from '../store/types';
 
 let connectedListener: (() => void) | undefined;
 let disconnectedListener: (() => void) | undefined;
@@ -53,14 +54,15 @@ const Connection = {
 
 	async clearAlerts() {
 		const { alerts } = store.state;
-		store.setState({
-			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)),
+		const alertIdsToRemove = [livechatDisconnectedAlertId, livechatConnectedAlertId] as string[];
+		await store.setState({
+			alerts: alerts?.filter((alert) => !alertIdsToRemove.includes(alert.id)),
 		});
 	},
 
-	async displayAlert(alert = {}) {
+	async displayAlert(alert: Alert) {
 		const { alerts } = store.state;
-		store.setState({ alerts: (alerts?.push(alert), alerts) });
+		await store.setState({ alerts: [...(alerts || []), alert] });
 	},
 
 	async handleConnected() {
