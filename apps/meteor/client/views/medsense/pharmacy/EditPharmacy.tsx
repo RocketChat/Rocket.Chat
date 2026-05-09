@@ -37,6 +37,15 @@ const buildDefaultOperatingHours = () => ({
 	sunday: { enabled: false, start: '09:00', end: '17:00' },
 });
 
+const buildEmptyOperatingHours = () =>
+	WEEKDAY_KEYS.reduce(
+		(hours, day) => ({
+			...hours,
+			[day]: { enabled: false, start: '', end: '' },
+		}),
+		{} as Record<(typeof WEEKDAY_KEYS)[number], { enabled: boolean; start: string; end: string }>,
+	);
+
 const parseRecipientText = (value: string): string[] =>
 	String(value || '')
 		.split(/[\n,]+/)
@@ -110,13 +119,13 @@ const EditPharmacy = ({ id }: { id?: string }) => {
 	React.useEffect(() => {
 		if (pharmacyData?.pharmacy) {
 			const pharmacy = pharmacyData.pharmacy;
-			const operatingHours = pharmacy.operatingHours || buildDefaultOperatingHours();
+			const operatingHours = pharmacy.operatingHours || buildEmptyOperatingHours();
 			reset({
 				name: pharmacy.name,
 				slug: pharmacy.slug,
 				active: pharmacy.active,
 				voiceInboundNumber: pharmacy.voiceInboundNumber || '',
-				timezone: pharmacy.timezone || detectedTimezone,
+				timezone: pharmacy.timezone || '',
 				operatingHours,
 				afterHoursPatientDelivery: pharmacy.afterHoursPolicy?.patientDelivery || 'both',
 				afterHoursPharmacyDelivery: pharmacy.afterHoursPolicy?.pharmacyDelivery || 'both',

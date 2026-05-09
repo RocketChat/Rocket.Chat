@@ -233,6 +233,31 @@ const getStaffVoicePhone = (user: any): string | null =>
 		user?.customFields?.mobilePhone,
 	);
 
+const VOICE_NON_PATIENT_ROLES = new Set(['admin', 'bot', 'app', 'livechat-agent', 'livechat-manager', 'pharmacy-manager']);
+
+const buildVoiceCallerPhoneQuery = (normalizedPhone: string) => ({
+	roles: 'user',
+	$or: [
+		{ phoneNumber: normalizedPhone },
+		{ phones: { $elemMatch: { phoneNumber: normalizedPhone } } },
+		{ phone: { $elemMatch: { phoneNumber: normalizedPhone } } },
+		{ phone: normalizedPhone },
+	],
+});
+
+const isVoicePatientCandidate = (user: any): boolean => {
+	const roles = Array.isArray(user?.roles) ? user.roles : [];
+	return roles.includes('user') && !roles.some((role: string) => VOICE_NON_PATIENT_ROLES.has(role));
+};
+
+const findUniqueVoiceCallerPatientUser = async (normalizedPhone: string): Promise<any | null> => {
+	const candidates = await Users.find(buildVoiceCallerPhoneQuery(normalizedPhone), {
+		projection: { _id: 1, username: 1, name: 1, roles: 1, emails: 1, phoneNumber: 1, phones: 1, phone: 1 },
+	}).toArray();
+	const patientCandidates = candidates.filter(isVoicePatientCandidate);
+	return patientCandidates.length === 1 ? patientCandidates[0] : null;
+};
+
 const normalizeUrl = (value: string): string => {
 	let trimmed = String(value || '')
 		.trim()
@@ -7408,17 +7433,7 @@ API.v1.addRoute(
 				return API.v1.success({ found: false, reason: 'invalid_from_number' });
 			}
 
-			const patientUser = await Users.findOne(
-				{
-					roles: 'user',
-					$or: [
-						{ phoneNumber: normalizedFrom },
-						{ phones: { $elemMatch: { phoneNumber: normalizedFrom } } },
-						{ phone: { $elemMatch: { phoneNumber: normalizedFrom } } },
-					],
-				},
-				{ projection: { _id: 1, username: 1, name: 1 } },
-			);
+			const patientUser = await findUniqueVoiceCallerPatientUser(normalizedFrom);
 			if (!patientUser?._id) {
 				return API.v1.success({ found: false, normalizedFrom });
 			}
@@ -7527,19 +7542,7 @@ API.v1.addRoute(
 			let patientVisitorToken: string | null = null;
 			let patientIdentityType: 'registered_user' | 'livechat_visitor' | 'bot_fallback' = 'bot_fallback';
 			if (normalizedFrom && !forceGuestIdentity) {
-				patientUser = await Users.findOne(
-					{
-						roles: 'user',
-						$or: [
-							{ phoneNumber: normalizedFrom },
-							{ phones: { $elemMatch: { phoneNumber: normalizedFrom } } },
-							{ phone: { $elemMatch: { phoneNumber: normalizedFrom } } },
-						],
-					},
-					{
-						projection: { _id: 1, username: 1, name: 1, roles: 1, emails: 1, phoneNumber: 1, phones: 1, phone: 1 },
-					},
-				);
+				patientUser = await findUniqueVoiceCallerPatientUser(normalizedFrom);
 			}
 			if (patientUser?._id && confirmedPatientUserId && patientUser._id !== confirmedPatientUserId) {
 				patientUser = null;
@@ -7549,12 +7552,10 @@ API.v1.addRoute(
 			}
 			if (!patientUser?._id && normalizedFrom) {
 				try {
-					const existingVisitor = await LivechatVisitors.findOneVisitorByPhone(normalizedFrom);
 					const callerDigits = normalizedFrom.replace(/\D/g, '');
-					const guestToken =
-						String(existingVisitor?.token || '').trim() || `medsense-voice-${callerDigits || randomBytes(4).toString('hex')}`;
-					const guestUsername = String(existingVisitor?.username || '').trim() || `voice-${callerDigits || randomBytes(4).toString('hex')}`;
-					const guestName = String(existingVisitor?.name || '').trim() || `Voice caller ${callerDigits.slice(-4) || 'unknown'}`;
+					const guestToken = `medsense-voice-${callerDigits || randomBytes(4).toString('hex')}`;
+					const guestUsername = `voice-${callerDigits || randomBytes(4).toString('hex')}`;
+					const guestName = `Voice caller ${callerDigits.slice(-4) || 'unknown'}`;
 					const registeredVisitor = await registerGuest(
 						{
 							token: guestToken,
@@ -7771,6 +7772,7 @@ API.v1.addRoute(
 				sessionId,
 				roomName: nextSessionInfo.voice.roomName,
 				patientUserId: patientUser?._id || null,
+				patientName: patientIdentityType === 'registered_user' ? String(patientUser?.name || patientUser?.username || '').trim() || null : null,
 				patientVisitorToken: patientVisitorToken || null,
 				patientIdentityType,
 				availability,
@@ -7937,13 +7939,7 @@ API.v1.addRoute(
 				return API.v1.success({ ignored: true, reason: 'empty_text' });
 			}
 
-			const room = await Rooms.findOneById(roomId, {
-				projection: {
-					medsenseSessionInfo: 1,
-					medsenseActiveRequestId: 1,
-					t: 1,
-				},
-			});
+			const room = await Rooms.findOneById(roomId);
 			if (!room?.t) {
 				return API.v1.failure('Room not found');
 			}
@@ -8170,13 +8166,7 @@ API.v1.addRoute(
 				return API.v1.failure('speaker must be patient, bot, ai, staff, or system');
 			}
 
-			const room = await Rooms.findOneById(roomId, {
-				projection: {
-					medsenseSessionInfo: 1,
-					medsenseActiveRequestId: 1,
-					t: 1,
-				},
-			});
+			const room = await Rooms.findOneById(roomId);
 			if (!room?.t) {
 				return API.v1.failure('Room not found');
 			}
@@ -8204,11 +8194,7 @@ API.v1.addRoute(
 					} else {
 						const visitor = await LivechatVisitors.findOneEnabledById(patientUserId);
 						if (visitor?._id && visitor.username) {
-							messageUser = {
-								_id: visitor._id,
-								username: visitor.username,
-								name: visitor.name || visitor.username,
-							};
+							messageUser = botUser;
 						}
 					}
 				}
@@ -8777,6 +8763,14 @@ API.v1.addRoute(
 			const staffPhone = getStaffVoicePhone(staffUser || this.user);
 			if (!staffPhone) {
 				return API.v1.failure('No valid staff phone number is saved on your user record.');
+			}
+			const callerNumber =
+				normalizeVoiceInboundNumber((sessionInfo.voice as any).callerNumber) ||
+				normalizeVoiceInboundNumber((sessionInfo.voice as any).fromNumber);
+			if (callerNumber && callerNumber === staffPhone) {
+				return API.v1.failure(
+					'Your saved staff phone number matches the active caller number. Use browser Join Voice, or update your staff phone before using Call My Phone.',
+				);
 			}
 
 			try {
