@@ -1,10 +1,10 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
+import { RoomBridge } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';

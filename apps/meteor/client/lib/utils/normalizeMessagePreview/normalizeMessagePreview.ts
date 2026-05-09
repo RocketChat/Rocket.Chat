@@ -11,11 +11,7 @@ export const normalizeMessagePreview = (message: IMessage, t: TFunction): string
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
-
-		if (attachment?.description) {
-			return escapeHTML(attachment.description);
-		}
+		const attachment = message.attachments.find((attachment) => attachment.title);
 
 		if (attachment?.title) {
 			return escapeHTML(attachment.title);

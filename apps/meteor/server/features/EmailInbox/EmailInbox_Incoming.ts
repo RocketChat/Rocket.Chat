@@ -48,7 +48,10 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 			email,
 			department,
 		},
-		{ shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') },
+		{
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+		},
 	);
 
 	if (!livechatVisitor) {

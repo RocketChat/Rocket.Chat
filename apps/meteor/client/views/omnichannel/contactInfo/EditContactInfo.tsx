@@ -1,5 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import {
 	CustomFieldsForm,
@@ -192,9 +193,6 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	);
 
 	const formId = useId();
-	const nameField = useId();
-	const emailField = useId();
-	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
 		return <ContextualbarSkeleton onClose={onClose} />;
@@ -209,33 +207,19 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
-					<FieldLabel htmlFor={nameField} required>
-						{t('Name')}
-					</FieldLabel>
+					<FieldLabel required>{t('Name')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='name'
 							control={control}
 							rules={{ validate: validateName }}
-							render={({ field }) => (
-								<TextInput
-									id={nameField}
-									{...field}
-									error={errors.name?.message}
-									aria-invalid={errors.name ? 'true' : 'false'}
-									aria-describedby={`${nameField}-error`}
-								/>
-							)}
+							render={({ field }) => <TextInput {...field} error={errors.name?.message} />}
 						/>
 					</FieldRow>
-					{errors.name && (
-						<FieldError id={`${nameField}-error`} role='alert'>
-							{errors.name.message}
-						</FieldError>
-					)}
+					{errors.name && <FieldError>{errors.name.message}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel id={emailField}>{t('Email')}</FieldLabel>
+					<FieldLabel>{t('Email')}</FieldLabel>
 					{emailFields.map((field, index) => (
 						<Fragment key={field.id}>
 							<FieldRow>
@@ -246,24 +230,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 										required: t('Required_field', { field: t('Email') }),
 										validate: validateEmailFormat,
 									}}
-									render={({ field }) => (
-										<TextInput
-											{...field}
-											aria-labelledby={emailField}
-											error={errors.emails?.[index]?.address?.message}
-											aria-invalid={errors.emails?.[index]?.address ? 'true' : 'false'}
-											aria-describedby={`${emailField + index}-error`}
-											aria-required='true'
-										/>
-									)}
+									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />}
 								/>
 								<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} mis={8} icon='trash' />
 							</FieldRow>
-							{errors.emails?.[index]?.address && (
-								<FieldError id={`${emailField + index}-error`} role='alert'>
-									{errors.emails?.[index]?.address?.message}
-								</FieldError>
-							)}
+							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
 						</Fragment>
 					))}
 					<Button
@@ -274,7 +245,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 					</Button>
 				</Field>
 				<Field>
-					<FieldLabel id={phoneField}>{t('Phone')}</FieldLabel>
+					<FieldLabel>{t('Phone')}</FieldLabel>
 					{phoneFields.map((field, index) => (
 						<Fragment key={field.id}>
 							<FieldRow>
@@ -285,24 +256,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 										required: t('Required_field', { field: t('Phone') }),
 										validate: validatePhone,
 									}}
-									render={({ field }) => (
-										<TextInput
-											{...field}
-											aria-labelledby={phoneField}
-											error={errors.phones?.[index]?.phoneNumber?.message}
-											aria-invalid={errors.phones?.[index]?.phoneNumber ? 'true' : 'false'}
-											aria-describedby={`${phoneField + index}-error`}
-											aria-required='true'
-										/>
-									)}
+									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />}
 								/>
 								<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} mis={8} icon='trash' />
 							</FieldRow>
-							{errors.phones?.[index]?.phoneNumber && (
-								<FieldError id={`${phoneField + index}-error`} role='alert'>
-									{errors.phones?.[index]?.phoneNumber?.message}
-								</FieldError>
-							)}
+							{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
 						</Fragment>
 					))}
 					<Button

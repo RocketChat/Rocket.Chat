@@ -119,8 +119,7 @@ export async function executeSetReaction(
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	const userAlreadyReacted =
-		message.reactions && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.includes(user.username as string);
+	const userAlreadyReacted = Boolean(message.reactions?.[reaction]?.usernames?.includes(user.username as string));
 
 	// When shouldReact was not informed, toggle the reaction.
 	if (shouldReact === undefined) {

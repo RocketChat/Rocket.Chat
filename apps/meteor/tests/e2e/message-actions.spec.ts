@@ -2,7 +2,7 @@ import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { CreateNewDiscussionModal } from './page-objects/fragments';
-import { createTargetChannel, createTargetTeam } from './utils';
+import { createTargetChannel, createTargetTeam, getPermissionRoles, sendTargetChannelMessage } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
@@ -13,21 +13,13 @@ test.describe.serial('message-actions', () => {
 	let forwardChannel: string;
 	let forwardTeam: string;
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		targetChannel = await createTargetChannel(api, { members: ['user2'] });
 		forwardChannel = await createTargetChannel(api);
 		forwardTeam = await createTargetTeam(api);
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat(targetChannel);
-	});
-	test('expect reply the message in direct', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
-		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Reply in direct message"]').click();
-
-		await expect(page).toHaveURL(/.*reply/);
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test('expect reply the message', async ({ page }) => {
@@ -134,7 +126,7 @@ test.describe.serial('message-actions', () => {
 		await createDiscussionModal.inputName.fill(discussionName);
 		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(discussionName);
-		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.gotoChannel(targetChannel);
 		// Should fail if more than one discussion has been created
 		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
@@ -169,6 +161,38 @@ test.describe.serial('message-actions', () => {
 		expect(clipboardText).toContain('http');
 	});
 
+	test.describe.serial('expect reply in direct message', () => {
+		test.use({ storageState: Users.user2.state });
+
+		let defaultCreateDRoles: string[];
+
+		test.beforeAll(async ({ api }) => {
+			defaultCreateDRoles = await getPermissionRoles(api, 'create-d');
+
+			await sendTargetChannelMessage(api, targetChannel, { msg: 'message from admin for reply in DM' });
+		});
+
+		test('expect option be visible and redirect to DM', async ({ page }) => {
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.btnOptionReplyInDm.click();
+
+			await expect(page).toHaveURL(/.*reply/);
+		});
+
+		test('expect option not be visible without create-d permission and no existing DM', async ({ api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin'] }] })).status()).toBe(200);
+
+			await poHomeChannel.content.openLastMessageMenu();
+			await expect(poHomeChannel.content.btnOptionReplyInDm).toBeHidden();
+		});
+
+		test.afterAll(async ({ api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: defaultCreateDRoles }] })).status()).toBe(
+				200,
+			);
+		});
+	});
+
 	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
 		test.beforeAll(async ({ api }) => {
 			await setUserPreferences(api, { hideFlexTab: true });
@@ -178,13 +202,12 @@ test.describe.serial('message-actions', () => {
 		});
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			await page.goto('/home');
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 		});
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('role=menuitem[name="Reply in direct message"]').click();
+			await poHomeChannel.content.btnOptionReplyInDm.click();
 
 			await expect(page).toHaveURL(/.*reply/);
 		});
@@ -195,7 +218,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.navbar.openChat(forwardChannel);
+		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -228,7 +251,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.navbar.openChat(forwardChannel);
+		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -240,7 +263,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.navbar.openChat(forwardChannel);
+		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -252,7 +275,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.navbar.openChat(forwardChannel);
+		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -264,7 +287,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.navbar.openChat(forwardChannel);
+		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -276,7 +299,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.navbar.openChat(forwardChannel);
+		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 });

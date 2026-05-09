@@ -10,7 +10,6 @@
     emoji,
     emojiUnicode,
     emoticon,
-    extractFirstResult,
     heading,
     image,
     inlineCode,
@@ -43,9 +42,6 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
-let skipBoldEmoji = false;
-let skipItalicEmoji = false;
-let skipInlineEmoji = false;
 }}
 
 Start
@@ -97,20 +93,20 @@ BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Para
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
-Unixtime = d:Digit |10| { return d.join(''); }
+Unixtime = $(Digit |10|)
 
-TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
+TimestampHoursMinutesSeconds = hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromHours(hours, minutes, seconds, tz); }
 
-TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
+TimestampHoursMinutes = hours:$(Digit |2|) ":" minutes:$(Digit |2|) tz:Timezone? { return timestampFromHours(hours, minutes, undefined, tz); }
 
 
 Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
 
-Timezone = offset:('+'/'-') tzHour: Digit |2| ':' tzMinute: Digit |2| { return `${offset}${tzHour.join('')}:${tzMinute.join('')}`  }
+Timezone = offset:('+'/'-') tzHour:$(Digit |2|) ":" tzMinute:$(Digit |2|) { return offset + tzHour + ':' + tzMinute; }
 
-ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), milliseconds: milliseconds.join(''), timezone: tz}) }
+ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) "." milliseconds:$(Digit |3|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone: tz }); }
 
-ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), timezone: tz}) }
+ISO8601DateWithoutMilliseconds = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, timezone: tz }); }
 
 
 TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
@@ -132,7 +128,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-CodeChunk = text:$(!EndOfLine !"```" .)+ { return plain(text); }
+// Charclass avoids per-char lookahead; never consume start of "```"
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
  *
@@ -144,11 +142,13 @@ CodeChunk = text:$(!EndOfLine !"```" .)+ { return plain(text); }
  * #### Heading 4
  *
 */
-Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading([text], count); }
+Heading = count:HeadingStart [ \t]+ text:HeadingChunk EndOfLine? { return heading(text, count); }
 
 HeadingStart = value:"#" |1..4| { return value.length; }
 
-HeadingChunk = text:$(!EndOfLine .)+ { return plain(text); }
+HeadingChunk = items:HeadingInlineItem+ { return reducePlainTexts(items); }
+
+HeadingInlineItem = InlineItemPattern / !EndOfLine @Any
 
 /**
  *
@@ -196,7 +196,7 @@ UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return li
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 
-UnorderedListItemContentItem = & {skipInlineEmoji = false; return true} item:(InlineItemPattern / !"*" @Any) { skipInlineEmoji = false; return item }
+UnorderedListItemContentItem = InlineItemPattern / !"*" @Any
 
 /**
  *
@@ -208,7 +208,7 @@ UnorderedListItemContentItem = & {skipInlineEmoji = false; return true} item:(In
  * \end{cases}$$
  *
  */
-Katex = KatexStart content:$(!KatexEnd .)* KatexEnd { return katex(content); }
+Katex = KatexStart content:$([^$\\] / !KatexEnd .)* KatexEnd { return katex(content); }
 
 KatexStart
   = & { return options.katex?.parenthesisSyntax; } "\\["
@@ -219,7 +219,7 @@ KatexEnd
   / & { return options.katex?.dollarSyntax; } "$$"
 
 KatexInline
-  = KatexInlineStart content:$(!KatexInlineEnd .)* KatexInlineEnd {
+  = KatexInlineStart content:$([^$\\\r\n] / !KatexInlineEnd .)* KatexInlineEnd {
       return inlineKatex(content);
     }
 
@@ -251,36 +251,64 @@ Paragraph = value:Inline { return paragraph(value); }
  * Inline
  *
 */
-Inline = & {skipInlineEmoji = false; return true; } value:InlinePattern+ EndOfLine? { skipInlineEmoji = false; return reducePlainTexts(value); }
+Inline = value:(InlineItemPattern / Any)+ EndOfLine? { return reducePlainTexts(value); }
 
-InlinePattern = InlineItem / InlineItemFallback
+InlineEmoji = emo:Emoji { return emo; }
 
-InlineItem = item:InlineItemPattern { skipInlineEmoji = false; return item; }
+InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return emo; }
 
-InlineItemFallback = item:Any { skipInlineEmoji = true; return item; }
+// Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
+PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
-InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
+PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
 
-InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
+EscapedTimestampRules
+  = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
+      return plain(`<t:${rawDate}:${format}>`);
+    }
+  / "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" {
+      return plain(`<t:${rawDate}>`);
+    }
 
-InlineItemPattern = Whitespace
-  / TimestampRules
-  / MaybeReferences
-  / AutolinkedPhone
-  / AutolinkedEmail
+// First-character dispatch: skip the full alternative chain by routing
+// each character to only the rules that can start with it.
+InlineItemPattern
+  = & [ \t]  @Whitespace
+  / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
+  / & "["    @MaybeReferences
+  / & "<"    @(TimestampRules / MaybeReferences / InlineEmoticon)
+  / & "!"    @Image
+  / & "|"    @Spoiler
+  / & "@"    @UserMentionDirect
+  / & "`"    @InlineCode
+  / & "+"    @AutolinkedPhone
+  / & "$"    @KatexInline
+  / & ":"    @(InlineEmoji / InlineEmoticon)
+  / & "*"    @(EmphasisWithWhitespace / Emphasis / InlineEmoticon)
+  / & "~"    @(EmphasisWithWhitespace / Emphasis)
+  / & "-"    @(PlainRunBeforeEmoticon / InlineEmoticon)
+  / InlineItemSlowPath
+
+// Non-dispatched chars: emphasis with _, URLs, emails, emoticons, color, plain text
+// Preserves original rule ordering to maintain parsing behavior
+InlineItemSlowPath
+  = AutolinkedEmail
+  / PlainUnderscoreThenDomain
   / AutolinkedURL
-  / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
-  / UserMention
   / ChannelMention
   / InlineEmoji
-  / InlineCode
-  / Image
+  / PlainRunBeforeEmoticon
   / InlineEmoticon
   / Color
-  / KatexInline
-  / Escaped
+  / PlainRun
+
+// Letters/digits: try email/URL (with cheap guards), then plain text
+InlineItemAlphaPath
+  = AutolinkedEmail
+  / AutolinkedURL
+  / PlainRun
 
 /**
  *
@@ -288,16 +316,12 @@ InlineItemPattern = Whitespace
  * e.g: ||spoiler||, ||spoiler **bold**||
  *
  */
-Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
+Spoiler = "||" text:SpoilerContentItems "||" { return spoiler(text); }
 
 SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
 
 // Ensure we consume at least one character and do not accidentally match the closing "||"
-SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
-
-SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
-
-SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
+SpoilerContentItem = !"||" @InlineItemPattern / !"||" @Any
 
 /**
  *
@@ -311,7 +335,11 @@ References
   = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
-LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
+// Fast-path: bulk consume chars that can't start ]( or ] [ and aren't emphasis markers
+LinkTitle
+  = (Whitespace / Emphasis)
+  / anyTitle:$[^\]()*_~ \t\r\n]+ { return plain(anyTitle) }
+  / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
@@ -326,8 +354,7 @@ MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
 
 // MarkdownLinkURL allows parentheses in URLs when inside markdown link syntax [title](url)
 MarkdownLinkURL
-  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
-  / $(URLAuthorityHost MarkdownLinkURLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(MarkdownLinkURLBody*) { return head + tail; }
 
 MarkdownLinkURLBody
   = (
@@ -344,8 +371,7 @@ MarkdownLinkExtra = [.,!%*\"':;=]
 Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
-  = $(URLScheme URLAuthority URLBody*)
-  / $(URLAuthorityHost URLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(URLBody*) { return head + tail; }
 
 URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
@@ -378,7 +404,7 @@ DomainName
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
-DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
+DomainChar = [a-zA-Z0-9] / !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
 /**
  *
@@ -420,7 +446,8 @@ LocalPartChar = AlphaNumericOrMarkChar+ LocalPartSpecialChars*
 
 LocalPartSpecialChars = [!#$%&'*+/=?^_\`{|}~-]
 
-AutolinkedEmail = e:Email { return autoEmail(e); }
+// Guard: only attempt email parse if @ exists ahead on this line
+AutolinkedEmail = &([^ \t\r\n@]* "@") e:Email { return autoEmail(e); }
 
 /**
  *
@@ -429,13 +456,18 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
  * with customDomains options as intranet: protocol://internaltool.intranet
  *
  */
-AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
+// _example.com (underscore + domain without closing _) → plain
+PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { return plain('_' + d); }
+
+// Guard: only attempt URL parse if :// or . exists ahead on this line
+AutolinkedURL = &([^ \t\r\n:./@]* ("://" / ".")) u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
-  = $(URLScheme URLAuthority AutoLinkURLBody*)
-  / $(URLAuthorityHost AutoLinkURLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
-AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
+AutoLinkURLBody
+  = [^ \t\r\n.,!%~*\"':;()=~]
+  / !(Extra* (Whitespace / EndOfLine / !.)) .
 
 /**
  *
@@ -451,62 +483,28 @@ Emphasis = MaybeBold / MaybeItalic / MaybeStrikethrough
  *
  */
 
-// This rule is used inside expressions that have a JS code ensuring they always fail,
-// Without any pattern to match, peggy will think the rule may end up succedding without consuming any input, which could cause infinite loops
-// So this unreachable rule is added to them to satisfy peggy's requirement.
+// Prevent re-entrant emphasis (infinite recursion); reset on backtrack via second branch
 BlockedByJavascript = 'unreachable'
 
 MaybeBold
-  = result:(
-    & {
-      if (skipBold) { return false; }
-      skipBold = true;
-      return true;
-    }
-    (
-      (text:Bold { skipBold = false; return text; })
-      / (& { skipBold = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipBold) { return false; } skipBold = true; return true; }
+    @( text:Bold { skipBold = false; return text; }
+     / & { skipBold = false; return false; } BlockedByJavascript )
 
 MaybeStrikethrough
-  = result:(
-    & {
-      if (skipStrikethrough) { return false; }
-      skipStrikethrough = true;
-      return true;
-    }
-    (
-      (text:Strikethrough { skipStrikethrough = false; return text; })
-      / (& { skipStrikethrough = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipStrikethrough) { return false; } skipStrikethrough = true; return true; }
+    @( text:Strikethrough { skipStrikethrough = false; return text; }
+     / & { skipStrikethrough = false; return false; } BlockedByJavascript )
 
 MaybeItalic
-  = result:(
-    & {
-      if (skipItalic) { return false; }
-      skipItalic = true;
-      return true;
-    }
-    (
-      (text:Italic { skipItalic = false; return text; })
-      / (& { skipItalic = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipItalic) { return false; } skipItalic = true; return true; }
+    @( text:Italic { skipItalic = false; return text; }
+     / & { skipItalic = false; return false; } BlockedByJavascript )
 
 MaybeReferences
-  = result:(
-    & {
-      if (skipReferences) { return false; }
-      skipReferences = true;
-      return true;
-    }
-    (
-      (text:References { skipReferences = false; return text; })
-      / (& { skipReferences = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipReferences) { return false; } skipReferences = true; return true; }
+    @( text:References { skipReferences = false; return text; }
+     / & { skipReferences = false; return false; } BlockedByJavascript )
 
 /* Italic */
 Italic
@@ -520,16 +518,15 @@ Italic
   / [\x5F] [\x5F] @ItalicContent [\x5F] [\x5F]
   / [\x5F] @ItalicContent [\x5F]
 
-ItalicContent = & { skipItalicEmoji = false; return true; } text:ItalicContentItems { skipItalicEmoji = false; return italic(text); }
+ItalicContent = text:ItalicContentItems { return italic(text); }
 
 ItalicContentItems = text:ItalicContentItem+ { return reducePlainTexts(text); }
 
-ItalicContentItem = ItalicContentPreferentialItem / ItalicContentFallbackItem
+ItalicContentItem = ItalicContentPreferentialItem / ItalicPlainRun / AnyItalic / Line
 
-ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { skipItalicEmoji = false; return item; }
-
-ItalicContentPreferentialItemPattern = Whitespace
+ItalicContentPreferentialItem = Whitespace
   / InlineCode
+  / TimestampRules
   / MaybeReferences
   / UserMention
   / ChannelMention
@@ -538,45 +535,44 @@ ItalicContentPreferentialItemPattern = Whitespace
   / ItalicEmoji
   / ItalicEmoticon
 
-ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { skipItalicEmoji = true; return item; }
+ItalicEmoji = emo:Emoji { return emo; }
 
-ItalicContentFallbackItemPattern = AnyItalic / Line
-
-ItalicEmoji = & { return !skipItalicEmoji; } emo:Emoji { return emo; }
-
-ItalicEmoticon = & { return !skipItalicEmoji; } emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { skipItalicEmoji = false; return emo; }
+ItalicEmoticon = emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { return emo; }
 
 /* Bold */
 Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 
-BoldContent = & { skipBoldEmoji = false; return true; } text:BoldContentItem+ { skipBoldEmoji = false; return bold(reducePlainTexts(text)); }
+BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
 
-BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { skipBoldEmoji = false; return item; }
+BoldContentPreferentialItem = Whitespace / InlineCode / TimestampRules / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
-BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
+BoldContentItem = BoldContentPreferentialItem / BoldPlainRun / AnyBold / Line
 
-BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
+BoldEmoji = emo:Emoji { return emo; }
 
-BoldContentFallbackItemPattern = AnyBold / Line
-
-BoldContentItem = BoldContentPreferentialItem / BoldContentFallbackItem
-
-BoldEmoji = & { return !skipBoldEmoji; } emo:Emoji { return emo; }
-
-BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) { skipBoldEmoji = false; return emo; }
+BoldEmoticon = emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) { return emo; }
 
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(StrikePlainRunFull / EscapedTimestampRules / TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 
+// Like StrikePlainRun but also excludes chars that start inline rules inside strike
+StrikePlainRunFull = run:$[^\x0a\~ *_:`@#\[\]\\<!\x7C\uD83C\uD83D\uD83E\u2300-\u27BF\u2600-\u26FF]+ { return plain(run); }
+
+// Exclude _ and ~ so nested italic/strike can be parsed
+BoldPlainRun = run:$[^\x0a\* _~ ]+ { return plain(run); }
 AnyBold = t:[^\x0a\* ] { return plain(t); }
 
-AnyStrike = t:[^\x0a\~ ] { return plain(t); }
-
+// Exclude * and ~ so nested bold/strike can be parsed
+ItalicPlainRun = run:$[^\x0a\_ *~]+ { return plain(run); }
 AnyItalic = t:[^\x0a\_ ] { return plain(t); }
+
+// Exclude * and _ so nested bold/italic can be parsed
+StrikePlainRun = run:$[^\x0a\~ *_]+ { return plain(run); }
+AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 
 /**
  * Emphasis with only whitespaces return plain text
@@ -584,24 +580,12 @@ AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 */
 EmphasisWithWhitespace = AsteriskWithWhitespace / UnderscoreWithWhitespace / TildeWithWhitespace
 
-AsteriskWithWhitespace = first:Asterisk second:Whitespace third:Asterisk
-{
-  return reducePlainTexts([first,second,third])[0];
-}
+AsteriskWithWhitespace = a:$"*"+ w:$Space+ b:$"*"+ { return plain(a + w + b); }
 
-UnderscoreWithWhitespace = first:Underscore second:Whitespace third:Underscore
-{
-  return reducePlainTexts([first,second,third])[0];
-}
+UnderscoreWithWhitespace = a:$"_"+ w:$Space+ b:$"_"+ { return plain(a + w + b); }
 
-TildeWithWhitespace = first:Tilde second:Whitespace third:Tilde
-{
-  return reducePlainTexts([first,second,third])[0];
-}
+TildeWithWhitespace = a:$"~"+ w:$Space+ b:$"~"+ { return plain(a + w + b); }
 
-Asterisk = t:"*"+ {return plain(t.join(""))}
-Underscore = t:"_"+ {return plain(t.join(""))}
-Tilde = t:"~"+ {return plain(t.join(""))}
 
 /**
  *
@@ -609,13 +593,18 @@ Tilde = t:"~"+ {return plain(t.join(""))}
  * e.g: @user, #channel
  *
 */
+// Direct form: starts with @, used by dispatch
+UserMentionDirect
+  = "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) & { return !user.endsWith('__'); } {
+      return mentionUser(user);
+    }
+
+// Full form: includes text@user fallback, used by SlowPath
 UserMention
   = t:Text "@"+ user:AlphaNumericChar {
       return reducePlainTexts([t, plain('@' + user)])[0];
     }
-  / "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) {
-      return mentionUser(user);
-    }
+  / UserMentionDirect
 
 ChannelMention
   = t:Text "#" channel:AlphaNumericChar {
@@ -645,76 +634,110 @@ Emoticon = & { return options.emoticons; } @EmoticonPattern
 
 EmoticonNeighbor = EndOfLine / Whitespace / [\x2A] / !.
 
+// Emoticon first-char dispatch: group alternatives by starting character
 EmoticonPattern
-  = e:$"<3" { return emoticon(e, 'heart'); }
-  / e:$"</3" { return emoticon(e, 'broken_heart'); }
-  / e:$(":D" / ":-D" / "=D") { return emoticon(e, 'smiley'); }
-  / e:$(">:)" / ">;)" / ">:-)" / ">=)") { return emoticon(e, 'laughing'); }
-  / e:$("':)" / "':-)" / "'=)" / "':D" / "':-D" / "'=D") {
-      return emoticon(e, 'sweat_smile');
-    }
+  = & ":"  @EmoticonColon
+  / & ";"  @EmoticonSemicolon
+  / & "<"  @EmoticonLT
+  / & ">"  @EmoticonGT
+  / & "="  @EmoticonEquals
+  / & "D"  @EmoticonD
+  / & "B"  @EmoticonB
+  / & "8"  @Emoticon8
+  / & "'"  @EmoticonApostrophe
+  / & "O"  @EmoticonO
+  / & "0"  @EmoticonZero
+  / & "*"  @EmoticonAsterisk
+  / & "X"  @EmoticonX
+  / & "#"  @EmoticonHash
+  / & "%"  @EmoticonPercent
+  / & "("  @EmoticonParen
+  / & "-"  @EmoticonDash
+  / & "\\" @EmoticonBackslash
+
+EmoticonLT
+  = e:$"</3" { return emoticon(e, 'broken_heart'); }
+  / e:$"<3" { return emoticon(e, 'heart'); }
+
+EmoticonColon
+  = e:$(":-D" / ":D") { return emoticon(e, 'smiley'); }
   / e:$(":')" / ":'-)") { return emoticon(e, 'joy'); }
-  / e:$(
-    "O:-)"
-    / "0:-3"
-    / "0:3"
-    / "0:-)"
-    / "0:)"
-    / "0;^)"
-    / "O:)"
-    / "O;-)"
-    / "O=)"
-    / "0;-)"
-    / "O:-3"
-    / "O:3"
-  ) { return emoticon(e, 'innocent'); }
-  / e:$(":)" / ":-)" / "=]" / "=)" / ":]") {
-      return emoticon(e, 'slight_smile');
-    }
-  / e:$(";)" / ";-)" / "*-)" / "*)" / ";-]" / ";]" / ";D" / ";^)") {
-      return emoticon(e, 'wink');
-    }
-  / e:$(":*" / ":-*" / "=*" / ":^*") { return emoticon(e, 'kissing_heart'); }
-  / e:$(":P" / ":-P" / "=P" / ":-\u00de" / ":\u00de" / ":-b" / ":b") {
-      return emoticon(e, 'stuck_out_tongue');
-    }
-  / e:$(">:P" / "X-P") { return emoticon(e, 'stuck_out_tongue_winking_eye'); }
-  / e:$("B-)" / "B)" / "8)" / "8-)" / "B-D" / "8-D") {
-      return emoticon(e, 'sunglasses');
-    }
-  / e:$(">:[" / ":-(" / ":(" / ":-[" / ":[" / "=(") {
-      return emoticon(e, 'disappointed');
-    }
-  / e:$(
-    ">:\\"
-    / ">:\/"
-    / ":-\/"
-    / ":-."
-    / ":\/"
-    / ":\\"
-    / "=\/"
-    / "=\\"
-    / ":L"
-    / "=L"
-  ) { return emoticon(e, 'confused'); }
+  / e:$(":-)" / ":)" / ":]") { return emoticon(e, 'slight_smile'); }
+  / e:$(":-*" / ":*" / ":^*") { return emoticon(e, 'kissing_heart'); }
+  / e:$(":-P" / ":P" / ":-\u00de" / ":\u00de" / ":-b" / ":b") { return emoticon(e, 'stuck_out_tongue'); }
+  / e:$(":-(" / ":(" / ":-[" / ":[") { return emoticon(e, 'disappointed'); }
+  / e:$(":-/" / ":-." / ":/" / ":\\" / ":L") { return emoticon(e, 'confused'); }
+  / e:$(":'(" / "':-(") { return emoticon(e, 'cry'); }
+  / e:$":@" { return emoticon(e, 'angry'); }
+  / e:$(":$") { return emoticon(e, 'flushed'); }
+  / e:$(":-X" / ":X" / ":-#" / ":#") { return emoticon(e, 'no_mouth'); }
+  / e:$(":-O" / ":O") { return emoticon(e, 'open_mouth'); }
+
+EmoticonEquals
+  = e:$"=D" { return emoticon(e, 'smiley'); }
+  / e:$("=]" / "=)") { return emoticon(e, 'slight_smile'); }
+  / e:$"=*" { return emoticon(e, 'kissing_heart'); }
+  / e:$"=P" { return emoticon(e, 'stuck_out_tongue'); }
+  / e:$"=(" { return emoticon(e, 'disappointed'); }
+  / e:$("=/" / "=\\" / "=L") { return emoticon(e, 'confused'); }
+  / e:$("=$") { return emoticon(e, 'flushed'); }
+  / e:$("=X" / "=#") { return emoticon(e, 'no_mouth'); }
+
+EmoticonGT
+  = e:$(">:)" / ">;)" / ">:-)" / ">=)") { return emoticon(e, 'laughing'); }
   / e:$">.<" { return emoticon(e, 'persevere'); }
-  / e:$(":'(" / ":'-(" / ";(" / ";-(") { return emoticon(e, 'cry'); }
-  / e:$(">:(" / ">:-(" / ":@") { return emoticon(e, 'angry'); }
-  / e:$(":$" / "=$") { return emoticon(e, 'flushed'); }
-  / e:$"D:" { return emoticon(e, 'fearful'); }
+  / e:$">:P" { return emoticon(e, 'stuck_out_tongue_winking_eye'); }
+  / e:$(">:\\" / ">;/") { return emoticon(e, 'confused'); }
+  / e:$(">:(" / ">:-(") { return emoticon(e, 'angry'); }
+  / e:$(">:[") { return emoticon(e, 'disappointed'); }
+  / e:$">:O" { return emoticon(e, 'open_mouth'); }
+
+EmoticonApostrophe
+  = e:$("':)" / "':-)" / "'=)" / "':D" / "':-D" / "'=D") { return emoticon(e, 'sweat_smile'); }
   / e:$("':(" / "':-(" / "'=(") { return emoticon(e, 'sweat'); }
-  / e:$(":-X" / ":X" / ":-#" / ":#" / "=X" / "=#") {
-      return emoticon(e, 'no_mouth');
-    }
-  / e:$("-_-" / "-__-" / "-___-") { return emoticon(e, 'expressionless'); }
-  / e:$(":-O" / ":O" / "O_O" / ">:O") { return emoticon(e, 'open_mouth'); }
-  / e:$("#-)" / "#)" / "%-)" / "%)" / "X)" / "X-)") {
-      return emoticon(e, 'dizzy_face');
-    }
-  / e:$"(y)" { return emoticon(e, 'thumbsup'); }
-  / e:$("*\\0\/*" / "\\0\/" / "*\\O\/*" / "\\O\/") {
-      return emoticon(e, 'person_gesturing_ok');
-    }
+
+EmoticonO
+  = e:$("O:-)" / "O:)" / "O;-)" / "O=)" / "O:-3" / "O:3") { return emoticon(e, 'innocent'); }
+  / e:$"O_O" { return emoticon(e, 'open_mouth'); }
+
+EmoticonZero
+  = e:$("0:-3" / "0:3" / "0:-)" / "0:)" / "0;^)" / "0;-)") { return emoticon(e, 'innocent'); }
+
+EmoticonSemicolon
+  = e:$(";)" / ";-)" / ";-]" / ";]" / ";D" / ";^)") { return emoticon(e, 'wink'); }
+  / e:$(";(" / ";-(") { return emoticon(e, 'cry'); }
+
+EmoticonAsterisk
+  = e:$("*-)" / "*)") { return emoticon(e, 'wink'); }
+  / e:$("*\\0\/*" / "*\\O\/*") { return emoticon(e, 'person_gesturing_ok'); }
+
+EmoticonB
+  = e:$("B-)" / "B)" / "B-D") { return emoticon(e, 'sunglasses'); }
+
+Emoticon8
+  = e:$("8)" / "8-)" / "8-D") { return emoticon(e, 'sunglasses'); }
+
+EmoticonD
+  = e:$"D:" { return emoticon(e, 'fearful'); }
+
+EmoticonX
+  = e:$"X-P" { return emoticon(e, 'stuck_out_tongue_winking_eye'); }
+  / e:$("X)" / "X-)") { return emoticon(e, 'dizzy_face'); }
+
+EmoticonHash
+  = e:$("#-)" / "#)") { return emoticon(e, 'dizzy_face'); }
+
+EmoticonPercent
+  = e:$("%-)" / "%)") { return emoticon(e, 'dizzy_face'); }
+
+EmoticonParen
+  = e:$"(y)" { return emoticon(e, 'thumbsup'); }
+
+EmoticonDash
+  = e:$("-___-" / "-__-" / "-_-") { return emoticon(e, 'expressionless'); }
+
+EmoticonBackslash
+  = e:$("\\0\\/" / "\\O\\/") { return emoticon(e, 'person_gesturing_ok'); }
 
 /* Unicode emojis */
 UnicodeEmoji
@@ -765,9 +788,7 @@ UnicodeEmojiFlags = $([\uD83C] [\uDD00-\uDDFF] [\uD83C] [\uDD00-\uDDFF])
  * e.g: `console.log('hello world')`
  *
  */
-InlineCode = "`" text:$InlineCode__+ "`" { return inlineCode(plain(text)); }
-
-InlineCode__ = $(!"`" !"\n" .)
+InlineCode = "`" text:$([^`\n]+) "`" { return inlineCode(plain(text)); }
 
 /**
  *
@@ -794,7 +815,7 @@ Space = " " / "\t"
 
 Escaped = "\\" t:[*_~`#.] { return plain(t); }
 
-Any = !EndOfLine t:. p:$AutolinkedPhone? u:$URL? { return plain(t + p + u); }
+Any = t:[^\r\n] { return plain(t); }
 
 AnyText = [\x20-\x27\x2B-\x40\x41-\x5A\x61-\x7A] / NonASCII
 
