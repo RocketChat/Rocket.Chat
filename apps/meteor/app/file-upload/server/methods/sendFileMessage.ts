@@ -45,7 +45,7 @@ export const parseFileIntoMessageAttachments = async (
 	const safeMetadata = {
 		...(typeof file.name === 'string' && { name: file.name }),
 		...(typeof file.description === 'string' && { description: file.description }),
-		...(typeof file.typeGroup === 'string' && { typeGroup: file.typeGroup }),
+		...(file.type && { typeGroup: file.type.split('/').shift() }),
 		...(file.content && typeof file.content === 'object' && { content: file.content }),
 	};
 

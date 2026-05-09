@@ -58,7 +58,6 @@ describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => 
 			type: 'text/plain',
 			size: 1024,
 			description: 12345, // invalid type, must be ignored
-			typeGroup: 'image', // only valid field
 			content: null, // invalid type, must be ignored
 			maliciousRoleAssignment: 'admin', // mass assignment, must be ignored
 			$set: { bypassSecurity: true }, // mongo injection, must be ignored
@@ -74,7 +73,7 @@ describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => 
 		expect(userId).to.equal('user123');
 
 		expect(safeMetadata).to.deep.equal({
-			typeGroup: 'image',
+			typeGroup: 'text',
 		});
 	});
 
