@@ -64,7 +64,7 @@ export async function process2faReturn({
 	error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined;
 	result: unknown;
 	originalCallback: LoginCallback | undefined;
-	onCode: (code: string, method: string) => void;
+	onCode: (code: string, method: string) => void | Promise<void>;
 	emailOrUsername: { username: string } | { email: string } | { id: string } | string | null | undefined;
 }): Promise<void> {
 	if (!(isTotpRequiredError(error) || isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
@@ -74,23 +74,13 @@ export async function process2faReturn({
 
 	const props = {
 		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername),
-		// eslint-disable-next-line no-nested-ternary
-		invalidAttempt: isTotpInvalidError(error),
 	};
 
-	try {
-		const code = await invokeTwoFactorModal(props);
+	const validateCode = async (code: string, method: string): Promise<void> => {
+		await onCode(code, method);
+	};
 
-		onCode(code, props.method);
-	} catch (error) {
-		process2faReturn({
-			error: error as globalThis.Error | Meteor.Error | Meteor.TypedError | undefined,
-			result,
-			originalCallback,
-			onCode,
-			emailOrUsername,
-		});
-	}
+	await invokeTwoFactorModal(props, validateCode);
 }
 
 export async function process2faAsyncReturn<TResult>({
@@ -111,44 +101,65 @@ export async function process2faAsyncReturn<TResult>({
 	const props = {
 		method: error.details.method,
 		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
-		// eslint-disable-next-line no-nested-ternary
-		invalidAttempt: isTotpInvalidError(error),
 	};
 
 	assertModalProps(props);
 
-	try {
-		const code = await invokeTwoFactorModal(props);
+	let result: TResult | undefined;
 
-		return onCode(code, props.method);
-	} catch (error) {
-		return process2faAsyncReturn({
-			error,
-			onCode,
-			emailOrUsername,
-		});
+	const validateCode = async (code: string, method: string): Promise<void> => {
+		result = await onCode(code, method);
+	};
+
+	await invokeTwoFactorModal(props, validateCode);
+
+	if (result === undefined) {
+		throw new Error('Unexpected error: result is undefined');
 	}
+
+	return result;
 }
 
-export const invokeTwoFactorModal = async (props: {
-	method: 'totp' | 'email' | 'password';
-	emailOrUsername?: string | undefined;
-	invalidAttempt?: boolean;
-}) => {
+export const invokeTwoFactorModal = async (
+	props: {
+		method: 'totp' | 'email' | 'password';
+		emailOrUsername?: string | undefined;
+	},
+	validateCode?: (code: string, method: string) => Promise<void>,
+) => {
 	assertModalProps(props);
 
 	return new Promise<string>((resolve, reject) => {
+		let isResolved = false;
+		let isClosed = false;
+
 		imperativeModal.open({
 			component: TwoFactorModal,
 			props: {
 				...props,
-				onConfirm: (code: string, method: string): void => {
+				onConfirm: async (code: string, method: string): Promise<void> => {
+					if (validateCode) {
+						await validateCode(code, method);
+					}
+					isResolved = true;
 					imperativeModal.close();
 					resolve(method === 'password' ? SHA256(code) : code);
 				},
 				onClose: (): void => {
+					if (isClosed) {
+						return;
+					}
+					isClosed = true;
 					imperativeModal.close();
-					reject(new Meteor.Error('totp-canceled'));
+					if (!isResolved) {
+						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+							dispatchToastMessage({
+								type: 'error',
+								message: t('Two-factor_authentication_cancelled'),
+							});
+						});
+						reject(new Meteor.Error('totp-canceled'));
+					}
 				},
 			},
 		});

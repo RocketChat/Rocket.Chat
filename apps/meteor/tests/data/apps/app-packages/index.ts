@@ -7,3 +7,7 @@ export const appAPIParameterTest = path.resolve(__dirname, './api-parameter-test
 export const appCausingNestedRequests = path.resolve(__dirname, './nested-requests_0.0.1.zip');
 
 export const appUpdateStatusTest = path.resolve(__dirname, './update-status-test_0.0.1.zip');
+
+export const appExternalIdTest = path.resolve(__dirname, './external-id-test_0.0.1.zip');
+
+export const messageReactionTest = path.resolve(__dirname, './message-updater-test_0.0.1.zip');

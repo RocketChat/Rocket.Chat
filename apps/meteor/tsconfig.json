@@ -23,6 +23,8 @@
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
 			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
+			"swiper/modules/index.mjs": ["./node_modules/swiper/types/modules/index.d.ts"],
+			"swiper/swiper-react.mjs": ["./node_modules/swiper/swiper-react.d.ts"],
 		},
 		"preserveSymlinks": true,
 

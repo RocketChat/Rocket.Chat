@@ -10,7 +10,7 @@ import { setRealName } from '../../../app/lib/server/functions/setRealName';
 import { settings } from '../../../app/settings/server';
 
 export const loginHandlerCAS = async (options: any): Promise<undefined | Accounts.LoginMethodResult> => {
-	if (!options.cas) {
+	if (!settings.get('CAS_enabled') || !options.cas || typeof options.cas.credentialToken !== 'string') {
 		return undefined;
 	}
 
@@ -19,6 +19,8 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	if (credentials === undefined || credentials === null) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
+
+	await CredentialTokens.removeById(credentials._id);
 
 	const result = credentials.userInfo;
 	const syncUserDataFieldMap = settings.get<string>('CAS_Sync_User_Data_FieldMap').trim();

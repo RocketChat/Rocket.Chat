@@ -1,10 +1,9 @@
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { pick } from '@rocket.chat/tools';
-import { Babel } from 'meteor/babel-compiler';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { compileIntegrationScript } from './compileIntegrationScript';
 import { isScriptEngineFrozen } from './validateScriptEngine';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -171,26 +170,20 @@ export const validateOutgoingIntegration = async function (
 		delete integrationData.triggerWords;
 	}
 
-	// Only compile the script if it is enabled and using a sandbox that is not frozen
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
+	integrationData.skipTranspile = skipTranspile;
+
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
 		integration.scriptEnabled === true &&
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		try {
-			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
-				compact: true,
-				minified: true,
-				comments: false,
-			});
-
-			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-			integrationData.scriptError = undefined;
-		} catch (e) {
-			integrationData.scriptCompiled = undefined;
-			integrationData.scriptError = e instanceof Error ? pick(e, 'name', 'message', 'stack') : undefined;
-		}
+		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		integrationData.scriptCompiled = script;
+		integrationData.scriptError = error;
 	}
 
 	if (typeof integration.runOnEdits !== 'undefined') {

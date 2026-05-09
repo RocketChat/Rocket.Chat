@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/sha256",
-	"version": "1.0.13-rc.0",
+	"version": "1.0.13",
 	"private": true,
 	"description": "SHA256 implementation; Fork of Meteor's SHA256 package",
 	"main": "./dist/sha256.js",
@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},
