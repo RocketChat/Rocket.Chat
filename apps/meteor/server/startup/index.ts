@@ -2,6 +2,7 @@ import './appcache';
 import './callbacks';
 import { startCronJobs } from './cron';
 import './initialData';
+import './importantMessageMarkerRole';
 import './serverRunning';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';

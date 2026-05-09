@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -51,7 +51,6 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
-
 	return Boolean(target.value.trim());
 };
 
@@ -64,7 +63,6 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 	}
 
 	const key = event.key.toLowerCase();
-
 	const formatter = formattingButtons.find((formatter) => 'command' in formatter && formatter.command === key);
 
 	if (!formatter || !('pattern' in formatter)) {
@@ -82,7 +80,7 @@ const getEmptyArray = () => a;
 
 type MessageBoxProps = {
 	tmid?: IMessage['_id'];
-	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
+	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; isImportant?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
@@ -116,6 +114,7 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
+	const [isImportantActive, setIsImportantActive] = useState(false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -125,7 +124,7 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const textareaRef = useRef(null);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
@@ -180,7 +179,16 @@ const MessageBox = ({
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
+			isImportant: isImportantActive,
 		});
+		
+		setIsImportantActive(false);
+	});
+
+	const handleImportantToggle = useEffectEvent((active: boolean) => {
+		console.log('[MessageBox] Important toggle clicked:', { active });
+		setIsImportantActive(active);
+		textareaRef.current?.focus();
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
@@ -352,7 +360,6 @@ const MessageBox = ({
 				}
 
 				const imageExtension = fileItem ? getImageExtensionFromMime(fileItem.type) : undefined;
-
 				const extension = imageExtension ? `.${imageExtension}` : '';
 
 				Object.defineProperty(fileItem, 'name', {
@@ -489,6 +496,8 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isImportantActive={isImportantActive}
+							onImportantToggle={handleImportantToggle}
 							isEditing={isEditing}
 						/>
 					</MessageComposerToolbarActions>

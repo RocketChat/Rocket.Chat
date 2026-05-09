@@ -52,7 +52,7 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 
 				case 'removed': {
 					const { _id: roleId, scope, u } = role;
-					if (!!scope || !u) return;
+					if (!u) return;
 
 					queryClient.setQueryData(roomsQueryKeys.roles(rid), (data: RoomRoles[] | undefined = []) => {
 						const index = data?.findIndex((record) => record.rid === rid && record.u._id === u._id) ?? -1;
@@ -65,6 +65,8 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 
 						return [...data];
 					});
+
+					queryClient.invalidateQueries({ queryKey: roomsQueryKeys.roles(rid) });
 					break;
 				}
 			}

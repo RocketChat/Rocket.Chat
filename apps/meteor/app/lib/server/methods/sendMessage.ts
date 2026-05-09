@@ -149,6 +149,7 @@ Meteor.methods<ServerMethods>({
 			federation: Match.Maybe(Object),
 			groupable: Match.Maybe(Boolean),
 			sentByEmail: Match.Maybe(Boolean),
+			isImportant: Match.Maybe(Boolean),
 		});
 
 		const user = (await Meteor.userAsync()) as IUser;
@@ -158,13 +159,28 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (message.isImportant) {
+			console.log('[sendMessage] Received important message:', { 
+				messageId: message._id, 
+				userId: user._id, 
+				roomId: message.rid 
+			});
+		}
+
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
 
 		try {
-			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
+			const result = await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
+			if (message.isImportant) {
+				console.log('[sendMessage] Important message saved successfully:', { messageId: result._id });
+			}
+			return result;
 		} catch (error: any) {
+			if (message.isImportant) {
+				console.error('[sendMessage] Error saving important message:', error);
+			}
 			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
 					method: 'sendMessage',

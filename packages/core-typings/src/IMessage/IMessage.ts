@@ -169,6 +169,8 @@ export interface IMessage extends IRocketChatRecord {
 	pinnedAt?: Date;
 	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
+	isImportant?: boolean;
+	importantReadBy?: string[];
 	temp?: boolean;
 	drid?: IRoom['_id'];
 	tlm?: Date;
