@@ -70,7 +70,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 			);
 			setRecordingRoomId(rid);
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			chat?.composer?.setRecordingMode(false);
 		}
 	});

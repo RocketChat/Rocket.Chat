@@ -9,8 +9,6 @@ import { baseURI } from '../lib/baseURI';
 import { getUser } from '../lib/user';
 import { Rooms } from '../stores';
 
-// FIXME: replace non-null assertions with proper error handling
-
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	private _baseURL: string;
 
@@ -20,8 +18,12 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		this._baseURL = baseURI.replace(/\/$/, '');
 	}
 
-	private getUserAvatarUrl(username: string) {
-		const avatarUrl = getUserAvatarURL(username)!;
+	private getUserAvatarUrl(username: string): string {
+		const avatarUrl = getUserAvatarURL(username);
+
+		if (!avatarUrl) {
+			return '';
+		}
 
 		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
 			return `${this._baseURL}${avatarUrl}`;
@@ -33,7 +35,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {
 		const room = RoomManager.opened ? Rooms.state.get(RoomManager.opened) : undefined;
 		if (!room) {
-			throw new Error('Room not found');
+			throw new Error('RealAppsEngineUIHost: room is null in getClientRoomInfo');
 		}
 		const { name: slugifiedName, _id: id } = room;
 
@@ -41,31 +43,44 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members.map(
-				({ _id, username }): IExternalComponentUserInfo => ({
-					id: _id,
-					username: username!,
-					avatarUrl: this.getUserAvatarUrl(username!),
-				}),
-			);
+			cachedMembers = members.reduce<IExternalComponentUserInfo[]>((acc, { _id, username }) => {
+				if (typeof username === 'string' && username.length > 0) {
+					acc.push({
+						id: _id,
+						username,
+						avatarUrl: this.getUserAvatarUrl(username),
+					});
+				}
+				return acc;
+			}, []);
 		} catch (error) {
-			console.warn(error);
+			console.warn('RealAppsEngineUIHost: failed to fetch room members', error);
 		}
 
 		return {
 			id,
-			slugifiedName: slugifiedName!,
+			slugifiedName: slugifiedName ?? id,
 			members: cachedMembers,
 		};
 	}
 
 	async getClientUserInfo(): Promise<IExternalComponentUserInfo> {
-		const { username, _id } = getUser()!;
+		const user = getUser();
+
+		if (!user) {
+			throw new Error('RealAppsEngineUIHost: user is null in getClientUserInfo');
+		}
+
+		const { username, _id } = user;
+
+		if (!username) {
+			throw new Error('RealAppsEngineUIHost: username is missing on authenticated user');
+		}
 
 		return {
 			id: _id,
-			username: username!,
-			avatarUrl: this.getUserAvatarUrl(username!) || '',
+			username,
+			avatarUrl: this.getUserAvatarUrl(username),
 		};
 	}
 }
