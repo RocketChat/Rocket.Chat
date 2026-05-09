@@ -1,8 +1,8 @@
 import type { IAppServerOrchestrator, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type { ITypingDescriptor } from '@rocket.chat/apps/dist/server/bridges/MessageBridge';
+import { MessageBridge } from '@rocket.chat/apps/dist/server/bridges/MessageBridge';
 import type { Reaction } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
-import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';

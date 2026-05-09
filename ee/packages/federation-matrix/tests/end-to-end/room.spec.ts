@@ -95,7 +95,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				await deleteUser(createdUser, {}, rc1AdminRequestConfig);
 			});
 
-			it('It should create a federated room when federated members are added', async () => {
+			it('should create a federated room when federated members are added', async () => {
 				const response = await createRoom({
 					type: 'd',
 					username: federationConfig.hs1.adminMatrixUserId,
@@ -112,7 +112,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				expect(roomInfo.room).toHaveProperty('federated', true);
 			});
 
-			it('It should create a non-federated room when only local members are added', async () => {
+			it('should create a non-federated room when only local members are added', async () => {
 				const response = await createRoom({
 					type: 'd',
 					username: federationConfig.rc1.additionalUser1.username,
@@ -132,7 +132,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		describe('Create a room on RC as private, explicitly not federated, with federated users in creation modal', () => {
 			describe('Add 1 federated user in the creation modal', () => {
-				it('It should not allow the creation of the room', async () => {
+				it('should not allow the creation of the room', async () => {
 					const channelName = `non-federated-channel-single-fed-${Date.now()}`;
 
 					// RC view: Attempt to create a non-federated private room with 1 federated user
@@ -154,7 +154,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 
 			describe('Add 2 federated users in the creation modal', () => {
-				it('It should not allow the creation of the room', async () => {
+				it('should not allow the creation of the room', async () => {
 					const channelName = `non-federated-channel-multi-fed-${Date.now()}`;
 
 					// RC view: Attempt to create a non-federated private room with 2 federated users
@@ -176,7 +176,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 
 			describe('Add 1 federated user and 1 local user in the creation modal', () => {
-				it('It should not allow the creation of the room', async () => {
+				it('should not allow the creation of the room', async () => {
 					const channelName = `non-federated-channel-mixed-${Date.now()}`;
 
 					// RC view: Attempt to create a non-federated private room with 1 federated user and 1 local user
@@ -226,7 +226,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			// No cleanup needed - rooms are left for debugging purposes
 
 			describe('Go to the members list and try to add a federated user', () => {
-				it('It should not allow and show an error message', async () => {
+				it('should not allow and show an error message', async () => {
 					// RC view: Attempt to add a federated user to the non-federated room
 					const response = await addUserToRoom({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
@@ -258,7 +258,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 
 			describe('Go to the composer and use the /invite slash command to add a federated user', () => {
-				it('It should not allow and show an error message', async () => {
+				it('should not allow and show an error message', async () => {
 					// Set up DDP listener to catch ephemeral messages
 					const ddpListener = createDDPListener(federationConfig.rc1.url, rc1AdminRequestConfig);
 
@@ -347,7 +347,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// expect(acceptedRoomId, 'Expected to have joined the room, but joinedRoomId is different from acceptedRoomId').to.equal(joinedRoomId);
 				}, 10000);
 
-				it('It should show the room on the remote Element or RC', async () => {
+				it('should show the room on the remote Element or RC', async () => {
 					// RC view: Check in RC
 					const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 					expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -358,7 +358,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(elementRoom).toHaveProperty('name', channelName);
 				});
 
-				it('It should show the new user in the members list', async () => {
+				it('should show the new user in the members list', async () => {
 					// RC view: Check in RC that the federated user is in the members list
 					const rc1AdminUserInRC = await findRoomMember(
 						federatedChannel._id,
@@ -388,7 +388,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(hs1AdminUserInSynapse).not.toBeNull();
 				});
 
-				it('It should show the system message that the user was invited', async () => {
+				it('should show the system message that the user was invited', async () => {
 					// RC view: Check in RC. We don't check in Synapse because this is not part of the protocol
 					// Get the room history to find the system message
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -447,7 +447,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// expect(acceptedRoomId, 'Expected to have joined the room, but joinedRoomId is different from acceptedRoomId').to.equal(joinedRoomId);
 				}, 15000);
 
-				it('It should show the room on all the involved remote Element or RC', async () => {
+				it('should show the room on all the involved remote Element or RC', async () => {
 					// RC view: Check in RC
 					const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 					expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -462,7 +462,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(elementRoom2).toHaveProperty('name', channelName);
 				});
 
-				it('It should show the new users in the members list of all RCs involved', async () => {
+				it('should show the new users in the members list of all RCs involved', async () => {
 					// RC view: Check in RC that both federated users are in the members list
 					const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
 					const hs1AdminUserInRC = await findRoomMember(
@@ -505,7 +505,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(hs1User1InSynapseUser1).not.toBeNull();
 				});
 
-				it('It should show the system messages that the users were invited', async () => {
+				it('should show the system messages that the users were invited', async () => {
 					// RC view: Check in RC. We don't check in Synapse because this is not part of the protocol
 					// Get the room history to find the system messages
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -530,7 +530,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(hs1User1InviteMessage?.u?.username).toBe(federationConfig.rc1.adminUser);
 				});
 
-				it('It should show the system messages that the users joined when they accept the invites', async () => {
+				it('should show the system messages that the users joined when they accept the invites', async () => {
 					// RC view: Check in RC. We don't check in Synapse because this is not part of the protocol
 					// Get the room history to find the system messages
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -596,7 +596,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					await acceptRoomInvite(federatedChannel._id, rc1User1RequestConfig);
 				}, 15000);
 
-				it('It should show the room on the remote Element or RC and local for the second user', async () => {
+				it('should show the room on the remote Element or RC and local for the second user', async () => {
 					// RC view: Check in RC (admin view)
 					const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 					expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -613,7 +613,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(room.getMyMembership()).toBe('join');
 				});
 
-				it('It should show the 2 new users in the members list', async () => {
+				it('should show the 2 new users in the members list', async () => {
 					// RC view: Check in RC (admin view) that both users are in the members list
 					const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
 					const rc1User1InRC = await findRoomMember(
@@ -675,7 +675,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(hs1AdminUserInSynapse).not.toBeNull();
 				});
 
-				it('It should show the 2 system messages that the users were invited', async () => {
+				it('should show the 2 system messages that the users were invited', async () => {
 					// RC view: Check in RC (admin view) for system messages about both users being invited
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					expect(Array.isArray(historyResponse.messages)).toBe(true);
@@ -859,7 +859,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(acceptedRoomId).not.toBe('');
 					}, 15000);
 
-					it('It should show the room on the remote Element or RC', async () => {
+					it('should show the room on the remote Element or RC', async () => {
 						// RC view: Check in RC
 						const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 						expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -870,7 +870,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(elementRoom).toHaveProperty('name', channelName);
 					});
 
-					it('It should show the new user in the members list', async () => {
+					it('should show the new user in the members list', async () => {
 						// RC view: Check in RC that both users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(
 							federatedChannel._id,
@@ -900,7 +900,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(hs1AdminUserInSynapse).not.toBeNull();
 					});
 
-					it('It should show the system message that the user joined', async () => {
+					it('should show the system message that the user joined', async () => {
 						// RC view: Check in RC
 						// Get the room history to find the system messages
 						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -965,7 +965,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(acceptedRoomId2).not.toBe('');
 					}, 15000);
 
-					it('It should show the room on all the involved remote Element or RC', async () => {
+					it('should show the room on all the involved remote Element or RC', async () => {
 						// RC view: Check in RC
 						const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 						expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -980,7 +980,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(elementRoom2).toHaveProperty('name', channelName);
 					});
 
-					it('It should show the new users in the members list of all RCs involved', async () => {
+					it('should show the new users in the members list of all RCs involved', async () => {
 						// RC view: Check in RC that all users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
 						const hs1AdminUserInRC = await findRoomMember(
@@ -1027,7 +1027,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(hs1User1InSynapseUser1).not.toBeNull();
 					});
 
-					it('It should show the system messages that the users joined', async () => {
+					it('should show the system messages that the users joined', async () => {
 						// RC view: Check in RC
 						// Get the room history to find the system messages
 						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -1101,7 +1101,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						await acceptRoomInvite(federatedChannel._id, rc1User1RequestConfig);
 					}, 15000);
 
-					it('It should show the room on the remote Element or RC and local for the second user', async () => {
+					it('should show the room on the remote Element or RC and local for the second user', async () => {
 						// RC view: Check in RC (admin view)
 						const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 						expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -1118,7 +1118,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(room.getMyMembership()).toBe('join');
 					});
 
-					it('It should show the 2 new users in the members list', async () => {
+					it('should show the 2 new users in the members list', async () => {
 						// RC view: Check in RC (admin view) that all users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
 						const rc1User1InRC = await findRoomMember(
@@ -1180,7 +1180,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(hs1AdminUserInSynapse).not.toBeNull();
 					});
 
-					it('It should show the 2 system messages that the user joined', async () => {
+					it('should show the 2 system messages that the user joined', async () => {
 						// RC view: Check in RC (admin view) for system messages about both users joining
 						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						expect(Array.isArray(historyResponse.messages)).toBe(true);
@@ -1270,7 +1270,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(acceptedRoomId).not.toBe('');
 					}, 15000);
 
-					it('It should show the room on the remote Element or RC', async () => {
+					it('should show the room on the remote Element or RC', async () => {
 						// RC view: Check in RC
 						const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 						expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -1281,7 +1281,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(elementRoom).toHaveProperty('name', channelName);
 					});
 
-					it('It should show the new user in the members list', async () => {
+					it('should show the new user in the members list', async () => {
 						// RC view: Check in RC that both users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(
 							federatedChannel._id,
@@ -1311,7 +1311,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(hs1AdminUserInSynapse).not.toBeNull();
 					});
 
-					it('It should show the system message that the user joined', async () => {
+					it('should show the system message that the user joined', async () => {
 						// RC view: Check in RC
 						// Get the room history to find the system messages
 						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -1376,7 +1376,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(acceptedRoomId2).not.toBe('');
 					}, 15000);
 
-					it('It should show the room on all the involved remote Element or RC', async () => {
+					it('should show the room on all the involved remote Element or RC', async () => {
 						// RC view: Check in RC
 						const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 						expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -1391,7 +1391,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(elementRoom2).toHaveProperty('name', channelName);
 					});
 
-					it('It should show the new users in the members list of all RCs involved', async () => {
+					it('should show the new users in the members list of all RCs involved', async () => {
 						// RC view: Check in RC that all users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
 						const hs1AdminUserInRC = await findRoomMember(
@@ -1438,7 +1438,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(hs1User1InSynapseUser1).not.toBeNull();
 					});
 
-					it('It should show the system messages that the user joined on all RCs involved', async () => {
+					it('should show the system messages that the user joined on all RCs involved', async () => {
 						// RC view: Check in RC
 						// Get the room history to find the system messages
 						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -1511,7 +1511,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						await acceptRoomInvite(federatedChannel._id, rc1User1RequestConfig);
 					}, 15000);
 
-					it('It should show the room on the remote Element or RC and local for the second user', async () => {
+					it('should show the room on the remote Element or RC and local for the second user', async () => {
 						// RC view: Check in RC (admin view)
 						const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
 						expect(roomInfo.room).toHaveProperty('_id', federatedChannel._id);
@@ -1528,7 +1528,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(room.getMyMembership()).toBe('join');
 					});
 
-					it('It should show the 2 new users in the members list', async () => {
+					it('should show the 2 new users in the members list', async () => {
 						// RC view: Check in RC (admin view) that all users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
 						const rc1User1InRC = await findRoomMember(
@@ -1590,7 +1590,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(hs1AdminUserInSynapse).not.toBeNull();
 					});
 
-					it('It should show the 2 system messages that the user joined', async () => {
+					it('should show the 2 system messages that the user joined', async () => {
 						// RC view: Check in RC (admin view) for system messages about both users joining
 						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						expect(Array.isArray(historyResponse.messages)).toBe(true);
@@ -1661,7 +1661,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('federated', true);
 				}, 10000);
 
-				it('It should not allow admin to accept invitation on behalf of another user', async () => {
+				it('should not allow admin to accept invitation on behalf of another user', async () => {
 					// RC view: Admin tries to accept rc1User1's invitation
 					const response = await acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
 					expect(response.success).toBe(false);
@@ -1670,7 +1670,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					);
 				});
 
-				it('It should not allow admin to reject invitation on behalf of another user', async () => {
+				it('should not allow admin to reject invitation on behalf of another user', async () => {
 					// RC view: Admin tries to reject rc1User1's invitation
 					const response = await rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
 					expect(response.success).toBe(false);
@@ -1711,7 +1711,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				}, 15000);
 
 				describe('It should reflect all the members and messagens on the rocket.chat side', () => {
-					it('It should show all the three users in the members list', async () => {
+					it('should show all the three users in the members list', async () => {
 						await retry(
 							'Getting room members until all are present',
 							async () => {
@@ -1796,10 +1796,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(acceptResponse.success).toBe(false);
 				});
 
-				it('should allow RC user to reject the revoked invitation and remove the subscription', async () => {
-					const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
-					expect(rejectResponse.success).toBe(true);
-
+				it('should not have the subscription on the RC side after revoked invitation', async () => {
 					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
 					expect(invitedSub).toBeFalsy();
@@ -1808,6 +1805,146 @@ import { SynapseClient } from '../helper/synapse-client';
 				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
 					expect(member?.membership).toBe('leave');
+				});
+			});
+		});
+
+		describe('Re-inviting a RC user from Synapse after leaving or being kicked', () => {
+			describe('Kick a RC user from Synapse, send a message, then re-invite the same user', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-reinvite-kicked-${Date.now()}`;
+
+					// Step 1: Create a room on Synapse
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					// Step 2: Invite RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 3: RC user accepts the invite
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+					expect(pendingInvitation).not.toBeUndefined();
+
+					const rid = pendingInvitation!.rid!;
+					await acceptRoomInvite(rid, rc1AdminRequestConfig);
+
+					// Wait for join to propagate to Synapse
+					await retry(
+						'waiting for RC user join to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('join');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 4: Kick RC user from Synapse
+					await hs1AdminApp.matrixClient.kick(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Kicked for re-invite test');
+
+					// Wait for kick to propagate to Synapse
+					await retry(
+						'waiting for RC user kick to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('leave');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 5: Send a message from Synapse (while RC user is kicked)
+					await hs1AdminApp.matrixClient.sendTextMessage(matrixRoomId, 'Message sent after kicking RC user');
+				}, 30000);
+
+				it('should allow re-inviting the same RC user after being kicked', async () => {
+					// Step 6: Re-invite the same RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 7: Validate the invite was created successfully on the RC side
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(pendingInvitation).not.toBeUndefined();
+					expect(pendingInvitation).toHaveProperty('rid');
+					expect(pendingInvitation).toHaveProperty('fname');
+					expect(pendingInvitation!.fname).toContain(channelName);
+				});
+			});
+
+			describe('RC user leaves the room, Synapse sends a message, then re-invites the same user', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-reinvite-left-${Date.now()}`;
+
+					// Step 1: Create a room on Synapse
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					// Step 2: Invite RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 3: RC user accepts the invite
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+					expect(pendingInvitation).not.toBeUndefined();
+
+					const rid = pendingInvitation!.rid!;
+					await acceptRoomInvite(rid, rc1AdminRequestConfig);
+
+					// Wait for join to propagate to Synapse
+					await retry(
+						'waiting for RC user join to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('join');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 4: RC user leaves the room
+					await rc1AdminRequestConfig.request
+						.post(api('rooms.leave'))
+						.set(rc1AdminRequestConfig.credentials)
+						.send({ roomId: rid })
+						.expect(200);
+
+					// Wait for leave to propagate to Synapse
+					await retry(
+						'waiting for RC user leave to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('leave');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 5: Send a message from Synapse (while RC user has left)
+					await hs1AdminApp.matrixClient.sendTextMessage(matrixRoomId, 'Message sent after RC user left');
+				}, 30000);
+
+				it('should allow re-inviting the same RC user after they left', async () => {
+					// Step 6: Re-invite the same RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 7: Validate the invite was created successfully on the RC side
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(pendingInvitation).not.toBeUndefined();
+					expect(pendingInvitation).toHaveProperty('rid');
+					expect(pendingInvitation).toHaveProperty('fname');
+					expect(pendingInvitation!.fname).toContain(channelName);
 				});
 			});
 		});
