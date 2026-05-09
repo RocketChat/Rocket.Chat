@@ -1,5 +1,23 @@
 # @rocket.chat/tools
 
+## 0.3.0
+
+### Minor Changes
+
+- ([#40096](https://github.com/RocketChat/Rocket.Chat/pull/40096)) Adds new function for censoring URL components in logs
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#40096](https://github.com/RocketChat/Rocket.Chat/pull/40096)) Adds new function for censoring URL components in logs
+
+## 0.2.5
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 0.2.5-rc.0
 
 ### Patch Changes

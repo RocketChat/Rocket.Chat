@@ -8,7 +8,7 @@ import { isTotpInvalidError } from '../../lib/2fa/utils';
 const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	const callWithTotp =
 		(methodName: string, args: unknown[], callback: LoginCallback) =>
-		(twoFactorCode: string, twoFactorMethod: string): unknown =>
+		(twoFactorCode: string, twoFactorMethod: string): void =>
 			call(
 				methodName,
 				...args,

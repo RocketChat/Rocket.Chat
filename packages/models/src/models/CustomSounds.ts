@@ -14,36 +14,21 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// find
-	findByName(name: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
+	findByName(name: string, exceptId?: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
 		const query = {
 			name,
+			...(exceptId && { _id: { $nin: [exceptId] } }),
 		};
 
 		return this.find(query, options);
-	}
-
-	findByNameExceptId(name: string, except: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
-		const query = {
-			_id: { $nin: [except] },
-			name,
-		};
-
-		return this.find(query, options);
-	}
-
-	// update
-	setName(_id: string, name: string): Promise<UpdateResult> {
-		const update = {
-			$set: {
-				name,
-			},
-		};
-
-		return this.updateOne({ _id }, update);
 	}
 
 	// INSERT
 	create(data: Omit<ICustomSound, '_id'>): Promise<InsertOneResult<WithId<ICustomSound>>> {
 		return this.insertOne(data);
+	}
+
+	updateById(_id: string, data: Partial<Omit<ICustomSound, '_id'>>): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: data });
 	}
 }

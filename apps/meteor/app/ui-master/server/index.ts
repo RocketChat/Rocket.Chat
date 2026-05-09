@@ -28,6 +28,10 @@ Meteor.startup(() => {
 		injectIntoHead('noreferrer', `<meta name="referrer" content="${value}" />`);
 	});
 
+	settings.watch<boolean>('Use_RC_SDK', (value) => {
+		injectIntoHead('Use_RC_SDK', `<meta name="rc-sdk-transport-enabled" content="${value ? 'on' : 'off'}" />`);
+	});
+
 	if (process.env.DISABLE_ANIMATION) {
 		injectIntoHead(
 			'disable-animation',

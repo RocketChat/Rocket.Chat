@@ -4,7 +4,29 @@ import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
+import { getDdpSdk } from './sdk/ddpSdk';
+import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+
+const sdkTransportEnabled = isSdkTransportEnabled();
+
+const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }): void => {
+	if (!sdkTransportEnabled) {
+		// Flag off: route directly through Meteor.subscribe — bit-for-bit develop
+		// behaviour, no DDPSDK socket created, no proxy in the call path.
+		Meteor.subscribe('stream-user-presence', '', payload);
+		return;
+	}
+	const ddp = getDdpSdk();
+	if (ddp.connection.status === 'connected' && ddp.account.uid) {
+		// Fire the command-style subscription over our SDK; it has no lifecycle
+		// (the server registers the added/removed uids and moves on), matching
+		// Meteor.subscribe's behaviour here.
+		ddp.client.subscribe('stream-user-presence', '', payload);
+		return;
+	}
+	Meteor.subscribe('stream-user-presence', '', payload);
+};
 
 type InternalEvents = {
 	remove: IUser['_id'];
@@ -55,7 +77,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			const ids = Array.from(currentUids);
 			const removed = Array.from(deletedUids);
 
-			Meteor.subscribe('stream-user-presence', '', {
+			subscribeUserPresence({
 				...(ids.length > 0 && { added: Array.from(currentUids) }),
 				...(removed.length && { removed: Array.from(deletedUids) }),
 			});
@@ -73,6 +95,8 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 				const { users } = await sdk.rest.get('/v1/users.presence', params);
 
+				const fallbackStatus = status === 'disabled' ? UserStatus.DISABLED : UserStatus.OFFLINE;
+
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
 						notify(user);
@@ -81,7 +105,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					notify({ _id: uid, status: UserStatus.OFFLINE });
+					notify({ _id: uid, status: fallbackStatus });
 				});
 
 				currentUids.clear();

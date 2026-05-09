@@ -1,7 +1,7 @@
 import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
-import moment from 'moment';
+import { differenceInMinutes } from 'date-fns';
 
 import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
@@ -10,6 +10,7 @@ import { Messages, Rooms, Subscriptions } from '../../stores';
 import { settings } from '../settings';
 import { getUserId } from '../user';
 import { prependReplies } from '../utils/prependReplies';
+import { upsertThreadMessageInCache } from '../utils/threadMessageUtils';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const composeMessage = async (
@@ -77,7 +78,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
-		const elapsedMinutes = moment().diff(message.ts, 'minutes');
+		const elapsedMinutes = differenceInMinutes(new Date(), message.ts);
 		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
 			return false;
 		}
@@ -162,7 +163,12 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		Messages.state.store({ ...message, rid, ...(tmid && { tmid }) });
+		const fullMessage = { ...message, rid, ...(tmid && { tmid }) } as IMessage;
+		Messages.state.store(fullMessage);
+
+		if (tmid) {
+			upsertThreadMessageInCache(fullMessage, rid, tmid);
+		}
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
@@ -215,7 +221,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
-		const elapsedMinutes = moment().diff(message.ts, 'minutes');
+		const elapsedMinutes = differenceInMinutes(new Date(), message.ts);
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
 		return deleteAllowed && onTimeForDelete;

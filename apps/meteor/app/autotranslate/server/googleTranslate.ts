@@ -195,7 +195,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
-						q: attachment.description || attachment.text || '',
+						q: attachment.text || '',
 					},
 				});
 				if (!result.ok) {

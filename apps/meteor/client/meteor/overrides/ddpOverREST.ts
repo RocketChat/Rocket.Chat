@@ -6,12 +6,22 @@ import { getUserId } from '../../lib/user';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
+const isResumeLogin = ({ method, params }: Meteor.IDDPMessage): boolean => method === 'login' && Boolean(params?.[0]?.resume);
+
 const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 	if (msg !== 'method') {
 		return true;
 	}
 
-	if (method === 'login' && params[0]?.resume) {
+	// In microservices CI, ddp-streamer-service registers `login`, `logout`,
+	// `setUserStatus`, and `UserPresence:*` as native methods (configureServer.ts
+	// in ee/apps/ddp-streamer); every other method delegates to the Meteor
+	// service via callMethodWithToken (extra hop). Bypassing these to Meteor's
+	// own WS routes them straight to ddp-streamer for the fast path; routing
+	// them through REST would wedge them on the slow rocketchat-main path
+	// instead, blowing past the 5s `expect(...).toBeVisible()` timeouts the
+	// post-relogin tests rely on.
+	if (method === 'login' && params?.[0]?.resume) {
 		return true;
 	}
 
@@ -32,16 +42,10 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 			return _send.call(this, message, ...args);
 		}
 
-		const endpoint = !getUserId() ? 'method.callAnon' : 'method.call';
-
-		const restParams = {
-			message: DDPCommon.stringifyDDP({ ...message }),
-		};
-
-		const processResult = (_message: string): void => {
-			// Prevent error on reconnections and method retry.
-			// On those cases the API will be called 2 times but
-			// the handler will be deleted after the first execution.
+		const processResult = (resultMessage: string): void => {
+			// Prevent error on reconnections and method retry: on those cases the
+			// API will be called twice but the handler is deleted after the first
+			// execution.
 			if (!this._methodInvokers[message.id]) {
 				return;
 			}
@@ -49,8 +53,33 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				msg: 'updated',
 				methods: [message.id],
 			});
+			this._streamHandlers.onMessage(resultMessage);
+		};
 
-			this._streamHandlers.onMessage(_message);
+		const wasResumeLogin = isResumeLogin(message);
+
+		// Note on login routing: `login + resume` is bypassed in shouldBypass
+		// (handled by Meteor's own WS → ddp-streamer's native handler). Other
+		// login flavours (SAML credential exchange, password, OAuth) MUST route
+		// through REST below — never through the DDPSDK socket. ddp-streamer
+		// only exposes `login` natively for the resume shape; non-resume logins
+		// get delegated via MeteorService.callMethodWithToken (extra hop), and
+		// the SDK socket would also race the follow-up `Meteor.loginWithToken`
+		// resume that gets queued from the success handler — two logins on
+		// different sockets for the same user, with diverging account state.
+		// REST → rocketchat-main is one hop and lets the resume follow-up
+		// settle the SDK auth via ensureConnectedAndAuthenticated.
+
+		// Login itself is the call that establishes auth — running it through
+		// `method.call` would force the REST middleware to validate the very
+		// token we're trying to use, and the server would 401 with "You must
+		// be logged in" before even invoking the login method. The 401 then
+		// short-circuits the resume callback, leaving the stale token in
+		// localStorage and the user wedged on /home with no main UI.
+		const endpoint = !getUserId() || wasResumeLogin ? 'method.callAnon' : 'method.call';
+
+		const restParams = {
+			message: DDPCommon.stringifyDDP({ ...message }),
 		};
 
 		const method = encodeURIComponent(message.method.replace(/\//g, ':'));
@@ -58,43 +87,66 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 		sdk.rest
 			.post(`/v1/${endpoint}/${method}`, restParams)
 			.then(({ message: _message }) => {
-				// Calling Meteor.loginWithToken before processing the result of the first login will ensure that the new login request
-				// is added to the top of the list of methodInvokers.
-				// The request itself will only be sent after the first login result is processed, but
-				// the Accounts.onLogin callbacks will be called before this request is effectively sent;
-				// This way, any requests done inside of onLogin callbacks will be added to the list
-				// and processed only after the Meteor.loginWithToken request is done
-				// So, the effective order is:
-				//   1. regular login with password is sent
-				//   2. result of the password login is received
-				//   3. login with token is added to the list of pending requests
-				//   4. result of the password login is processed
-				//   5. Accounts.onLogin callbacks are triggered, Meteor.userId is set
-				//   6. the request for the login with token is effectively sent
-				//   7. login with token result is processed
-				//   8. requests initiated inside of the Accounts.onLogin callback are then finally sent
-				//
-				// Keep in mind that there's a difference in how meteor3 processes the request results, compared to older meteor versions
-				// On meteor3, any collection writes triggered by a request result are done async, which means that the `processResult` call
-				// will not immediatelly trigger the callbacks, like it used to in older versions.
-				// That means that on meteor3+, it doesn't really make a difference if processResult is called before or after the Meteor.loginWithToken here
-				// as the result will be processed async, the loginWithToken call will be initiated before it is effectively processed anyway.
-				if (message.method === 'login') {
+				// Calling Meteor.loginWithToken before processing the result of the first login adds the new login request
+				// to the top of the methodInvokers queue. The request itself only sends after the first login result is
+				// processed, but the Accounts.onLogin callbacks fire before that follow-up request — so any requests
+				// initiated inside onLogin callbacks queue behind the loginWithToken and only run after it completes.
+				if (!wasResumeLogin && message.method === 'login') {
 					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}
 				}
-
 				processResult(_message);
 			})
-			.catch(async (error) => {
-				if ('message' in error && error.message) {
-					processResult(error.message);
+			.catch((error: unknown) => {
+				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
+
+				// method.call / method.callAnon encode the original Meteor error
+				// inside `body.message` as a DDP `result` frame (mountResult in
+				// app/api/server/v1/misc.ts). Forward it untouched so the original
+				// `error.error` survives — re-encoding strips codes like
+				// `totp-required` and `withAsyncTOTP` (totpOnCall.ts) then fails to
+				// open the 2FA modal.
+				if (typeof e.message === 'string') {
+					try {
+						const parsed = DDPCommon.parseDDP(e.message) as { msg?: string; id?: string };
+						if (parsed?.msg === 'result' && parsed.id === message.id) {
+							processResult(e.message);
+							console.error(error);
+							return;
+						}
+					} catch {
+						// fall through to the synthetic frame below
+					}
 				}
+
+				// Auth-middleware errors (e.g. 401) come as
+				// { success: false, error, status, message } with `message` as a
+				// plain string — not a DDP frame. Re-encode as a proper DDP error
+				// result so Accounts' resume callback clears stale creds and the
+				// user isn't wedged on /home with no main UI.
+				const errorMessage = DDPCommon.stringifyDDP({
+					msg: 'result',
+					id: message.id,
+					error: {
+						isClientSafe: true,
+						error: e.error ?? 'unknown',
+						reason: (e.reason as string) ?? (e.message as string) ?? 'Unknown error',
+						message: (e.message as string) ?? (e.reason as string) ?? 'Unknown error',
+						errorType: 'Meteor.Error',
+					} as unknown as Meteor.Error,
+				});
+				processResult(errorMessage);
 				console.error(error);
 			});
 	};
 };
 
+// Wrap `_send` unconditionally — develop already routed all non-bypassed
+// methods (including user/password login) through REST. In MS the WS
+// connects to `ddp-streamer-service`, whose native `login` handler only
+// accepts `{ resume }` tokens and 403s everything else; routing login via
+// REST hits `rocketchat-main` directly so the full
+// `Accounts.registerLoginHandler` chain runs.
 Meteor.connection._send = withDDPOverREST(Meteor.connection._send);

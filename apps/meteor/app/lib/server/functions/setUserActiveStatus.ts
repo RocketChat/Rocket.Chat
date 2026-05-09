@@ -113,7 +113,7 @@ export async function setUserActiveStatus(
 	}
 
 	if (user.username) {
-		const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, !active);
+		const { modifiedCount } = await Subscriptions.setArchivedForDMsWithUsername(user.username, !active);
 		if (modifiedCount) {
 			void notifyOnSubscriptionChangedByNameAndRoomType({ t: 'd', name: user.username });
 		}

@@ -49,6 +49,8 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 			algorithm: settings.get(`${service}_signature_algorithm`) || 'SHA1',
 		},
 		signatureValidationType: settings.get(`${service}_signature_validation_type`),
+		validateLogoutRequestSignature: settings.get(`${service}_validate_logout_request_signature`),
+		validateLogoutResponseSignature: settings.get(`${service}_validate_logout_response_signature`),
 		userDataFieldMap: settings.get(`${service}_user_data_fieldmap`),
 		allowedClockDrift: settings.get(`${service}_allowed_clock_drift`),
 		customAuthnContext: defaultAuthnContext,
@@ -67,6 +69,17 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 
 	SAMLUtils.events.emit('loadConfigs', service, configs);
 	return configs;
+};
+
+const isValidConfiguration = function (key: string, samlConfigs: SAMLConfiguration): boolean {
+	const needsCert = samlConfigs.signatureValidationType !== 'None';
+
+	if (!samlConfigs.secret.cert && needsCert) {
+		SAMLUtils.log({ msg: 'SAML Configuration missing Custom Certificate setting', key });
+		return false;
+	}
+
+	return true;
 };
 
 const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
@@ -99,6 +112,8 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 		defaultUserRole: samlConfigs.defaultUserRole,
 		allowedClockDrift: parseInt(samlConfigs.allowedClockDrift) || 0,
 		signatureValidationType: samlConfigs.signatureValidationType,
+		validateLogoutRequestSignature: samlConfigs.validateLogoutRequestSignature,
+		validateLogoutResponseSignature: samlConfigs.validateLogoutResponseSignature,
 		identifierFormat: samlConfigs.identifierFormat,
 		nameIDPolicyTemplate: samlConfigs.nameIDPolicyTemplate,
 		authnContextTemplate: samlConfigs.authnContextTemplate,
@@ -124,10 +139,15 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 			services.map(async ([key, value]) => {
 				if (value === true) {
 					const samlConfigs = getSamlConfigs(key);
-					SAMLUtils.log({ key });
-					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
-					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
-					return configureSamlService(samlConfigs);
+
+					if (isValidConfiguration(key, samlConfigs)) {
+						SAMLUtils.log({ msg: 'Loading SAML Provider', key });
+						await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
+						void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+						return configureSamlService(samlConfigs);
+					}
+
+					SAMLUtils.logger?.warn({ msg: 'SAML Provider not loaded due to invalid configuration', key });
 				}
 
 				const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
@@ -207,6 +227,7 @@ export const addSettings = async function (name: string): Promise<void> {
 					await this.add(`SAML_Custom_${name}_signature_validation_type`, 'All', {
 						type: 'select',
 						values: [
+							{ key: 'None', i18nLabel: 'SAML_Custom_signature_validation_none' },
 							{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
 							{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
 							{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
@@ -214,6 +235,14 @@ export const addSettings = async function (name: string): Promise<void> {
 						],
 						i18nLabel: 'SAML_Custom_signature_validation_type',
 						i18nDescription: 'SAML_Custom_signature_validation_type_description',
+					});
+					await this.add(`SAML_Custom_${name}_validate_logout_request_signature`, true, {
+						type: 'boolean',
+						i18nLabel: 'SAML_Custom_validate_logout_request_signature',
+					});
+					await this.add(`SAML_Custom_${name}_validate_logout_response_signature`, true, {
+						type: 'boolean',
+						i18nLabel: 'SAML_Custom_validate_logout_response_signature',
 					});
 					await this.add(`SAML_Custom_${name}_private_key`, '', {
 						type: 'string',

@@ -104,7 +104,21 @@ const reportedMessagesResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		user: { type: ['object', 'null'] },
+		user: {
+			oneOf: [
+				{
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						username: { type: 'string' },
+						name: { type: 'string' },
+					},
+					required: ['_id', 'username'],
+					additionalProperties: false,
+				},
+				{ type: 'null' },
+			],
+		},
 		messages: { type: 'array', items: { type: 'object' } },
 		count: { type: 'number' },
 		total: { type: 'number' },
@@ -122,7 +136,7 @@ const reportedMessagesResponseSchema = ajv.compile<{
 // aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
 // relaxed inline schema here that accepts `ts` as a string.
 const reportsByUserIdResponseSchema = ajv.compile<{
-	user: IUser | null;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'active' | 'roles' | 'emails' | 'createdAt'> | null;
 	reports: IModerationReport[];
 	count: number;
 	total: number;
@@ -130,7 +144,26 @@ const reportsByUserIdResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		user: { type: ['object', 'null'] },
+		user: {
+			oneOf: [
+				{
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						username: { type: 'string' },
+						name: { type: 'string' },
+						avatarETag: { type: 'string' },
+						active: { type: 'boolean' },
+						roles: { type: 'array', items: { type: 'string' } },
+						emails: { type: 'array', items: { type: 'object' } },
+						createdAt: { type: 'string' },
+					},
+					required: ['_id', 'username'],
+					additionalProperties: false,
+				},
+				{ type: 'null' },
+			],
+		},
 		reports: { type: 'array', items: { type: 'object' } },
 		count: { type: 'number' },
 		total: { type: 'number' },
