@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
-	"version": "8.4.0-develop",
+	"version": "8.5.0-develop",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -21,13 +21,13 @@
 		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"typia": "~9.7.2",
+		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
 		"zod": "~4.3.6"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@types/express": "^4.17.25",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"mongodb": "6.16.0",
 		"npm-run-all": "~4.1.5",
 		"prettier": "~3.3.3",

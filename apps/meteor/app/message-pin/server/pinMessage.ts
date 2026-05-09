@@ -3,7 +3,7 @@ import { Message } from '@rocket.chat/core-services';
 import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -91,9 +91,6 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-	if (settings.get('Message_Read_Receipt_Store_Users')) {
-		await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
-	}
 	if (isTheLastMessage(room, originalMessage)) {
 		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 	}
@@ -119,7 +116,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				text: originalMessage.msg,
 				author_name: originalMessage.u.username,
 				author_icon: getUserAvatarURL(originalMessage.u.username),
-				content: originalMessage.content,
+				...(originalMessage.content && { content: originalMessage.content }),
 				ts: originalMessage.ts,
 				attachments: attachments.map(recursiveRemove),
 			},
@@ -136,7 +133,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	let originalMessage = await Messages.findOneById(message._id);
-	if (originalMessage == null || originalMessage._id == null) {
+	if (originalMessage?._id == null) {
 		throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
 			method: 'unpinMessage',
 			action: 'Message_pinning',
@@ -192,9 +189,6 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-	if (settings.get('Message_Read_Receipt_Store_Users')) {
-		await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
-	}
 	void notifyOnMessageChange({
 		id: message._id,
 	});

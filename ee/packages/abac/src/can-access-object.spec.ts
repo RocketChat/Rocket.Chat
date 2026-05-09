@@ -33,6 +33,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Settings: {
 		get: (...args: any[]) => mockSettingsGetValueById(...args),
 	},
+	MeteorError: class extends Error {},
+	isMeteorError: () => false,
 }));
 
 describe('AbacService.canAccessObject (unit)', () => {
@@ -54,6 +56,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 
 	beforeEach(() => {
 		service = new AbacService();
+		service.setPdpStrategy('local');
 		jest.clearAllMocks();
 		// Default behaviors
 		mockSettingsGetValueById.mockResolvedValue(300); // 5 minute cache
@@ -169,8 +172,6 @@ describe('AbacService.canAccessObject (unit)', () => {
 				abacLastTimeChecked: within,
 			});
 
-			const internalLogger = (service as any).logger;
-			const loggerDebug = jest.spyOn(internalLogger, 'debug').mockImplementation(() => undefined);
 			service.decisionCacheTimeout = ttlSeconds;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
@@ -178,11 +179,6 @@ describe('AbacService.canAccessObject (unit)', () => {
 			expect(result).toBe(true);
 			expect(mockUsersFindOne).not.toHaveBeenCalled();
 			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();
-			expect(loggerDebug).toHaveBeenCalledWith({
-				msg: 'Using cached ABAC decision',
-				userId: baseUser._id,
-				roomId: baseRoom._id,
-			});
 		});
 
 		it('re-evaluates when cache expired (timestamp older than TTL)', async () => {

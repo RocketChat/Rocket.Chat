@@ -1,6 +1,6 @@
+import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
+import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
-import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/core-services';
 import type { LicenseImp } from '@rocket.chat/license';
 import { expect } from 'chai';
@@ -33,9 +33,6 @@ const getDefaultApp = (): IAppStorageItem => ({
 	createdAt: new Date('2024-10-09T19:27:33.923Z'),
 	updatedAt: new Date('2024-10-09T19:27:33.923Z'),
 });
-
-// We will be passing promises to the `expect` function
-/* eslint-disable @typescript-eslint/no-floating-promises */
 
 describe('canEnableApp', () => {
 	it('should throw the message "apps-engine-not-initialized" when appropriate', () => {

@@ -1,3 +1,4 @@
+import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -12,11 +13,18 @@ const makeError = (message: string): Record<string, any> => ({
 });
 
 Accounts.registerLoginHandler('saml', async (loginRequest) => {
-	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
+	if (
+		!loginRequest.saml ||
+		!loginRequest.credentialToken ||
+		typeof loginRequest.credentialToken !== 'string' ||
+		SAMLUtils.serviceProviders.length === 0
+	) {
 		return undefined;
 	}
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
+
+	await CredentialTokens.removeById(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {

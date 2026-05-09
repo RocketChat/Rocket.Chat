@@ -16,6 +16,6 @@
 		"colors": "^1.4.0",
 		"diff": "^5.1.0",
 		"semver": "^7.5.4",
-		"@xmldom/xmldom": "^0.8.10"
+		"@xmldom/xmldom": "^0.8.13"
 	}
 }

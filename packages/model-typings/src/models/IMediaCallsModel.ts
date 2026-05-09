@@ -1,9 +1,21 @@
-import type { IMediaCall, IUser, MediaCallActorType, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	IUser,
+	MediaCallActor,
+	MediaCallActorType,
+	MediaCallContact,
+	MediaCallSignedContact,
+} from '@rocket.chat/core-typings';
 import type { Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
+	findOneByIdAndCallee<T extends Document = IMediaCall>(
+		id: IMediaCall['_id'],
+		callee: MediaCallActor,
+		options?: FindOptions<IMediaCall>,
+	): Promise<T | null>;
 	findOneByCallerRequestedId<T extends Document = IMediaCall>(
 		id: Required<IMediaCall>['callerRequestedId'],
 		caller: { type: MediaCallActorType; id: string },

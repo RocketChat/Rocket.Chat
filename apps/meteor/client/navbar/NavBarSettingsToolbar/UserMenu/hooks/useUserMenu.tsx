@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
+import { useKeyboardShortcutsModalHandler } from './useKeyboardShortcutsModalHandler';
 import { useStatusItems } from './useStatusItems';
 
 export const useUserMenu = (user: IUser) => {
@@ -13,11 +14,19 @@ export const useUserMenu = (user: IUser) => {
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const handleKeyboardShortcuts = useKeyboardShortcutsModalHandler();
 
 	const logout = useLogout();
 	const handleLogout = useEffectEvent(() => {
 		logout();
 	});
+
+	const keyboardShortcutsItem: GenericMenuItemProps = {
+		id: 'keyboardShortcuts',
+		icon: 'keyboard',
+		content: t('Keyboard_Shortcuts_Title'),
+		onClick: handleKeyboardShortcuts,
+	};
 
 	const logoutItem: GenericMenuItemProps = {
 		id: 'logout',
@@ -38,6 +47,9 @@ export const useUserMenu = (user: IUser) => {
 		{
 			title: t('Account'),
 			items: accountItems,
+		},
+		{
+			items: [keyboardShortcutsItem],
 		},
 		{
 			items: [logoutItem],
