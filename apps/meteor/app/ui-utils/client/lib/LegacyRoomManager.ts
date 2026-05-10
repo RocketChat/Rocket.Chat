@@ -257,6 +257,12 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 					({ unread: _, ...r }) => r,
 				);
 			}),
+
+			sdk.stream('notify-room', [`${record.rid}/readCountsChanged`], () => {
+				fireGlobalEvent('read-counts-changed', {
+					rid: record.rid,
+				});
+			}),
 		],
 	);
 
