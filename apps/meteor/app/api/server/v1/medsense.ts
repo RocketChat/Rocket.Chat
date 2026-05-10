@@ -26,6 +26,7 @@ import {
 	MedsensePatientContext,
 	MedsenseDocumentationTemplates,
 	MedsenseDrugCatalog,
+	MedsenseAudit,
 	LivechatVisitors,
 	Settings,
 	Users,
@@ -257,6 +258,75 @@ const findUniqueVoiceCallerPatientUser = async (normalizedPhone: string): Promis
 	const patientCandidates = candidates.filter(isVoicePatientCandidate);
 	return patientCandidates.length === 1 ? patientCandidates[0] : null;
 };
+
+const VOICE_IDENTITY_PENDING_TTL_MS = 5 * 60 * 1000;
+const VOICE_IDENTITY_MAX_CANDIDATES = 10;
+const VOICE_IDENTITY_MATCH_THRESHOLD = 0.84;
+
+const normalizeVoiceIdentityName = (value: unknown): string =>
+	String(value || '')
+		.normalize('NFKD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, ' ')
+		.trim()
+		.replace(/\s+/g, ' ');
+
+const getVoiceIdentityNameTokens = (value: unknown): string[] => normalizeVoiceIdentityName(value).split(' ').filter(Boolean);
+
+const getVoiceIdentityCandidateNames = (user: any): string[] => {
+	const customFields = user?.customFields && typeof user.customFields === 'object' ? user.customFields : {};
+	const customNames = [
+		customFields.legalName,
+		customFields.fullLegalName,
+		customFields.preferredName,
+		customFields.patientName,
+		customFields.fullName,
+		customFields.firstName && customFields.lastName ? `${customFields.firstName} ${customFields.lastName}` : null,
+	];
+	return [...new Set([user?.name, user?.username, ...customNames].map((value) => String(value || '').trim()).filter(Boolean))];
+};
+
+const scoreVoiceIdentityName = (spokenName: unknown, candidateName: unknown): number => {
+	const spoken = normalizeVoiceIdentityName(spokenName);
+	const candidate = normalizeVoiceIdentityName(candidateName);
+	if (!spoken || !candidate) {
+		return 0;
+	}
+	if (spoken === candidate) {
+		return 0.96;
+	}
+
+	const spokenTokens = getVoiceIdentityNameTokens(spoken);
+	const candidateTokens = getVoiceIdentityNameTokens(candidate);
+	if (!spokenTokens.length || !candidateTokens.length) {
+		return 0;
+	}
+
+	const spokenFirst = spokenTokens[0];
+	const spokenLast = spokenTokens[spokenTokens.length - 1];
+	const candidateFirst = candidateTokens[0];
+	const candidateLast = candidateTokens[candidateTokens.length - 1];
+	if (spokenFirst === candidateFirst && spokenLast === candidateLast) {
+		return 0.9;
+	}
+
+	const candidateTokenSet = new Set(candidateTokens);
+	const overlap = spokenTokens.filter((token) => candidateTokenSet.has(token)).length;
+	const overlapRatio = overlap / Math.max(spokenTokens.length, candidateTokens.length);
+	if (spokenLast === candidateLast && overlapRatio >= 0.5) {
+		return 0.84;
+	}
+	if (spokenFirst === candidateFirst && overlapRatio >= 0.75) {
+		return 0.8;
+	}
+	return overlapRatio >= 0.75 ? 0.78 : 0;
+};
+
+const scoreVoiceIdentityUser = (spokenName: unknown, user: any): number =>
+	Math.max(0, ...getVoiceIdentityCandidateNames(user).map((candidateName) => scoreVoiceIdentityName(spokenName, candidateName)));
+
+const getVoiceIdentityDisplayName = (user: any): string => String(user?.name || user?.username || user?._id || '').trim();
 
 const normalizeUrl = (value: string): string => {
 	let trimmed = String(value || '')
@@ -6679,8 +6749,14 @@ const _defaultSessionInfo = () => ({
 		active: false,
 		sessionId: null as string | null,
 		patientUserId: null as string | null,
+		patientName: null as string | null,
 		patientVisitorToken: null as string | null,
 		patientIdentityType: null as string | null,
+		voiceIdentityStatus: null as string | null,
+		profileFetchForbidden: true,
+		pendingIdentity: null as Record<string, any> | null,
+		identityConfirmedAt: null as string | null,
+		identityConfirmationMethod: null as string | null,
 		transport: null as string | null,
 		roomName: null as string | null,
 		state: 'idle',
@@ -7374,6 +7450,412 @@ API.v1.addRoute(
 	},
 );
 
+const resolveVoiceIdentityContext = async (
+	payload: Record<string, unknown>,
+): Promise<
+	| {
+			ok: true;
+			room: any;
+			sessionInfo: any;
+			voice: any;
+			sessionId: string;
+			pharmacyId: string;
+			activeRequest: any | null;
+	  }
+	| { ok: false; reason: 'invalid_session' }
+> => {
+	const roomId = String((payload as any).roomId || '').trim();
+	const sessionId = String((payload as any).sessionId || '').trim();
+	if (!roomId || !sessionId) {
+		return { ok: false, reason: 'invalid_session' };
+	}
+
+	const room = await Rooms.findOneById(roomId, {
+		projection: {
+			_id: 1,
+			t: 1,
+			name: 1,
+			fname: 1,
+			customFields: 1,
+			medsenseActiveRequestId: 1,
+			medsenseSessionInfo: 1,
+		},
+	});
+	if (!room) {
+		return { ok: false, reason: 'invalid_session' };
+	}
+
+	const sessionInfo = _normalizeSessionInfo((room as any).medsenseSessionInfo);
+	const voice = sessionInfo.voice || _defaultSessionInfo().voice;
+	if (voice.active === false || !voice.sessionId || String(voice.sessionId) !== sessionId) {
+		return { ok: false, reason: 'invalid_session' };
+	}
+
+	let activeRequest = null;
+	if ((room as any).medsenseActiveRequestId) {
+		activeRequest = await MedsenseRequests.findOneById((room as any).medsenseActiveRequestId);
+	}
+	if (!activeRequest) {
+		activeRequest = await MedsenseRequests.findOne({ roomId }, { sort: { createdAt: -1 } });
+	}
+
+	const roomPharmacyId =
+		String((voice as any).pharmacyId || '').trim() ||
+		String((room as any).customFields?.pharmacyId || '').trim() ||
+		String((activeRequest as any)?.pharmacyId || '').trim();
+	const requestedPharmacyId = String((payload as any).pharmacyId || '').trim();
+	if (!roomPharmacyId || (requestedPharmacyId && requestedPharmacyId !== roomPharmacyId)) {
+		return { ok: false, reason: 'invalid_session' };
+	}
+
+	return {
+		ok: true,
+		room,
+		sessionInfo,
+		voice,
+		sessionId,
+		pharmacyId: roomPharmacyId,
+		activeRequest,
+	};
+};
+
+const findVoiceIdentityPatientCandidates = async (pharmacyId: string, normalizedPhone: string): Promise<any[]> => {
+	const mappings = await MedsensePatientPharmacy.find(
+		{ pharmacyId },
+		{
+			projection: {
+				patientUserId: 1,
+			},
+		},
+	).toArray();
+	const patientUserIds = [...new Set(mappings.map((mapping: any) => String(mapping.patientUserId || '')).filter(Boolean))];
+	if (!patientUserIds.length) {
+		return [];
+	}
+
+	const users = await Users.find(
+		{
+			...buildVoiceCallerPhoneQuery(normalizedPhone),
+			_id: { $in: patientUserIds },
+		},
+		{
+			projection: {
+				_id: 1,
+				username: 1,
+				name: 1,
+				roles: 1,
+				type: 1,
+				phoneNumber: 1,
+				phones: 1,
+				phone: 1,
+				customFields: 1,
+			},
+		},
+	).toArray();
+	if (!users.length) {
+		return [];
+	}
+
+	const staffMemberships = await MedsensePharmacyMemberships.find(
+		{
+			pharmacyId,
+			userId: { $in: users.map((user: any) => String(user._id)) },
+			active: { $ne: false },
+		},
+		{
+			projection: {
+				userId: 1,
+			},
+		},
+	).toArray();
+	const staffUserIds = new Set(staffMemberships.map((membership: any) => String(membership.userId || '')).filter(Boolean));
+	return users.filter((user: any) => isVoicePatientCandidate(user) && !staffUserIds.has(String(user._id)));
+};
+
+const ensureVoiceIdentityPatientInRoom = async (room: any, patientUser: any): Promise<void> => {
+	const existingPatientSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, patientUser._id, {
+		projection: { _id: 1 },
+	});
+	if (existingPatientSub) {
+		return;
+	}
+
+	const botUsername = String(settings.get<string>('Medsense_Bot_User') || 'bot').trim();
+	const botUser = await Users.findOneByUsernameIgnoringCase(botUsername, { projection: { _id: 1, username: 1, name: 1 } });
+	if (!botUser?._id || !botUser.username) {
+		throw new Error('Medsense bot user not found');
+	}
+
+	try {
+		await addUserToRoom(
+			room._id,
+			{ _id: patientUser._id, username: patientUser.username },
+			{ _id: botUser._id, username: botUser.username },
+			{ skipSystemMessage: true, skipAlertSound: true },
+		);
+	} catch {
+		// Fall back to a direct subscription below, matching existing voice room behavior.
+	}
+
+	const ensuredPatientSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, patientUser._id, {
+		projection: { _id: 1 },
+	});
+	if (!ensuredPatientSub) {
+		const fullRoom = (await Rooms.findOneById(room._id)) || room;
+		const now = new Date();
+		await Subscriptions.createWithRoomAndUser(fullRoom, patientUser as any, {
+			open: true,
+			ts: now,
+			ls: now,
+			alert: false,
+			unread: 0,
+		});
+	}
+};
+
+const auditVoiceIdentityConfirmed = async ({
+	roomId,
+	pharmacyId,
+	patientUserId,
+	sessionId,
+	confidence,
+	confirmationMethod,
+}: {
+	roomId: string;
+	pharmacyId: string;
+	patientUserId: string;
+	sessionId: string;
+	confidence?: number;
+	confirmationMethod?: string;
+}): Promise<void> => {
+	try {
+		await MedsenseAudit.create({
+			roomId,
+			pharmacyId,
+			action: 'voice_identity_confirmed',
+			userId: 'medsense_voice_service',
+			patientUserId,
+			at: new Date(),
+			reason: 'Voice caller confirmed matched identity by DTMF',
+			meta: {
+				sessionId,
+				confidence: typeof confidence === 'number' ? confidence : undefined,
+				confirmationMethod: confirmationMethod || undefined,
+			},
+		});
+	} catch (error) {
+		console.warn('[MedsenseVoiceIdentity] failed to audit voice identity confirmation', {
+			roomId,
+			pharmacyId,
+			patientUserId,
+			error: String((error as any)?.message || error || ''),
+		});
+	}
+};
+
+API.v1.addRoute(
+	'medsense/voice.identity.match',
+	{ authRequired: false },
+	{
+		async post() {
+			const rawPayload = this.bodyParams || {};
+			const signatureCheck = verifyVoiceSignature(this.request.headers as Record<string, any>, rawPayload);
+			if (!signatureCheck.ok) {
+				return API.v1.failure(`Invalid voice service signature (${signatureCheck.reason})`);
+			}
+			const payload = stripVoiceAuthFromPayload(rawPayload);
+			check(
+				payload,
+				Match.ObjectIncluding({
+					roomId: String,
+					sessionId: String,
+					phone: Match.OneOf(String, null, undefined),
+					spokenName: Match.OneOf(String, null, undefined),
+					pharmacyId: Match.Maybe(String),
+				}),
+			);
+
+			const context = await resolveVoiceIdentityContext(payload);
+			if (!context.ok) {
+				return API.v1.success({ ok: true, matchStatus: 'invalid_session', requiresConfirmation: false });
+			}
+
+			const normalizedPhone = normalizeVoiceInboundNumber((payload as any).phone);
+			if (!normalizedPhone) {
+				return API.v1.success({ ok: true, matchStatus: 'invalid_phone', requiresConfirmation: false });
+			}
+
+			const candidates = await findVoiceIdentityPatientCandidates(context.pharmacyId, normalizedPhone);
+			if (!candidates.length) {
+				return API.v1.success({ ok: true, matchStatus: 'no_match', requiresConfirmation: false });
+			}
+			if (candidates.length > VOICE_IDENTITY_MAX_CANDIDATES) {
+				return API.v1.success({ ok: true, matchStatus: 'too_many_candidates', requiresConfirmation: false });
+			}
+
+			const spokenName = String((payload as any).spokenName || '').trim();
+			const scoredCandidates = candidates
+				.map((candidate: any) => ({
+					user: candidate,
+					displayName: getVoiceIdentityDisplayName(candidate),
+					confidence: scoreVoiceIdentityUser(spokenName, candidate),
+				}))
+				.sort((left, right) => right.confidence - left.confidence);
+			const strongCandidates = scoredCandidates.filter((candidate) => candidate.confidence >= VOICE_IDENTITY_MATCH_THRESHOLD);
+			if (strongCandidates.length === 0) {
+				return API.v1.success({ ok: true, matchStatus: 'no_match', requiresConfirmation: false });
+			}
+			if (strongCandidates.length > 1) {
+				return API.v1.success({ ok: true, matchStatus: 'ambiguous', requiresConfirmation: false });
+			}
+
+			const matchedCandidate = strongCandidates[0];
+			const now = new Date();
+			const pendingIdentity = {
+				userId: String(matchedCandidate.user._id),
+				displayName: matchedCandidate.displayName,
+				confidence: matchedCandidate.confidence,
+				matchStatus: 'matched',
+				sessionId: context.sessionId,
+				pharmacyId: context.pharmacyId,
+				createdAt: now.toISOString(),
+				expiresAt: new Date(now.getTime() + VOICE_IDENTITY_PENDING_TTL_MS).toISOString(),
+			};
+			const nextSessionInfo = {
+				...context.sessionInfo,
+				voice: {
+					...context.voice,
+					voiceIdentityStatus: 'pending_confirmation',
+					profileFetchForbidden: true,
+					pendingIdentity,
+					lastEventAt: now.toISOString(),
+				},
+			};
+			await Rooms.update({ _id: context.room._id }, { $set: { medsenseSessionInfo: nextSessionInfo } });
+
+			return API.v1.success({
+				ok: true,
+				matchStatus: 'matched',
+				requiresConfirmation: true,
+				userId: pendingIdentity.userId,
+				displayName: pendingIdentity.displayName,
+				confidence: pendingIdentity.confidence,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'medsense/voice.identity.confirm',
+	{ authRequired: false },
+	{
+		async post() {
+			const rawPayload = this.bodyParams || {};
+			const signatureCheck = verifyVoiceSignature(this.request.headers as Record<string, any>, rawPayload);
+			if (!signatureCheck.ok) {
+				return API.v1.failure(`Invalid voice service signature (${signatureCheck.reason})`);
+			}
+			const payload = stripVoiceAuthFromPayload(rawPayload);
+			check(
+				payload,
+				Match.ObjectIncluding({
+					roomId: String,
+					sessionId: String,
+					userId: String,
+					confirmationMethod: String,
+					pharmacyId: Match.Maybe(String),
+				}),
+			);
+
+			const context = await resolveVoiceIdentityContext(payload);
+			if (!context.ok) {
+				return API.v1.success({ ok: false, confirmed: false, error: 'invalid_session' });
+			}
+
+			const userId = String((payload as any).userId || '').trim();
+			const { pendingIdentity } = context.voice as any;
+			if (!pendingIdentity || typeof pendingIdentity !== 'object') {
+				return API.v1.success({ ok: false, confirmed: false, error: 'pending_match_not_found' });
+			}
+			if (
+				String(pendingIdentity.sessionId || '') !== context.sessionId ||
+				String(pendingIdentity.pharmacyId || '') !== context.pharmacyId
+			) {
+				return API.v1.success({ ok: false, confirmed: false, error: 'pending_match_not_found' });
+			}
+			const pendingExpiresAtMs = new Date(String(pendingIdentity.expiresAt || '')).getTime();
+			if (!Number.isFinite(pendingExpiresAtMs) || pendingExpiresAtMs <= Date.now()) {
+				return API.v1.success({ ok: false, confirmed: false, error: 'pending_match_expired' });
+			}
+			if (String(pendingIdentity.userId || '') !== userId) {
+				return API.v1.success({ ok: false, confirmed: false, error: 'user_mismatch' });
+			}
+
+			const patientUser = await Users.findOneById(userId, {
+				projection: { _id: 1, username: 1, name: 1, roles: 1 },
+			});
+			if (!patientUser?._id || !isVoicePatientCandidate(patientUser)) {
+				return API.v1.success({ ok: false, confirmed: false, error: 'user_not_found' });
+			}
+			const patientPharmacy = await MedsensePatientPharmacy.findOne({ patientUserId: userId, pharmacyId: context.pharmacyId });
+			if (!patientPharmacy) {
+				return API.v1.success({ ok: false, confirmed: false, error: 'user_not_found' });
+			}
+
+			await ensureVoiceIdentityPatientInRoom(context.room, patientUser);
+
+			const nowIso = new Date().toISOString();
+			const displayName = getVoiceIdentityDisplayName(patientUser);
+			const confirmationMethod = String((payload as any).confirmationMethod || '').trim();
+			const nextSessionInfo = {
+				...context.sessionInfo,
+				voice: {
+					...context.voice,
+					patientUserId: userId,
+					patientName: displayName,
+					patientIdentityType: 'registered_user_verified',
+					voiceIdentityStatus: 'confirmed',
+					profileFetchForbidden: false,
+					pendingIdentity: null,
+					identityConfirmedAt: nowIso,
+					identityConfirmationMethod: confirmationMethod,
+					lastEventAt: nowIso,
+				},
+			};
+			await Rooms.update({ _id: context.room._id }, { $set: { medsenseSessionInfo: nextSessionInfo } });
+			if (context.activeRequest?._id) {
+				await MedsenseRequests.updateOne(
+					{ _id: context.activeRequest._id },
+					{
+						$set: {
+							requestedByUserId: userId,
+							requestedByUsername: patientUser.username,
+							_updatedAt: new Date(),
+						},
+					},
+				);
+			}
+
+			await auditVoiceIdentityConfirmed({
+				roomId: context.room._id,
+				pharmacyId: context.pharmacyId,
+				patientUserId: userId,
+				sessionId: context.sessionId,
+				confidence: typeof pendingIdentity.confidence === 'number' ? pendingIdentity.confidence : undefined,
+				confirmationMethod,
+			});
+
+			return API.v1.success({
+				ok: true,
+				confirmed: true,
+				userId,
+				displayName,
+				identityStatus: 'confirmed',
+			});
+		},
+	},
+);
+
 API.v1.addRoute(
 	'medsense/voice.pharmacy.resolve',
 	{ authRequired: false },
@@ -7540,7 +8022,8 @@ API.v1.addRoute(
 			let patientUser = null;
 			let patientVisitor: ILivechatVisitor | null = null;
 			let patientVisitorToken: string | null = null;
-			let patientIdentityType: 'registered_user' | 'livechat_visitor' | 'bot_fallback' = 'bot_fallback';
+			let patientIdentityType: 'registered_user_unverified' | 'registered_user_verified' | 'livechat_visitor' | 'bot_fallback' =
+				'bot_fallback';
 			if (normalizedFrom && !forceGuestIdentity) {
 				patientUser = await findUniqueVoiceCallerPatientUser(normalizedFrom);
 			}
@@ -7548,7 +8031,7 @@ API.v1.addRoute(
 				patientUser = null;
 			}
 			if (patientUser?._id) {
-				patientIdentityType = 'registered_user';
+				patientIdentityType = confirmedPatientUserId === patientUser._id ? 'registered_user_verified' : 'registered_user_unverified';
 			}
 			if (!patientUser?._id && normalizedFrom) {
 				try {
@@ -7585,8 +8068,13 @@ API.v1.addRoute(
 				}
 			}
 
-			const requesterId = patientUser?._id || botUser._id;
-			const requesterUsername = patientUser?.username || botUser.username;
+			const hasVerifiedRegisteredVoiceIdentity = patientIdentityType === 'registered_user_verified';
+			const requesterId =
+				hasVerifiedRegisteredVoiceIdentity || patientIdentityType === 'livechat_visitor' ? patientUser?._id || botUser._id : botUser._id;
+			const requesterUsername =
+				hasVerifiedRegisteredVoiceIdentity || patientIdentityType === 'livechat_visitor'
+					? patientUser?.username || botUser.username
+					: botUser.username;
 			const requestStatus = availability.isOpen ? 'ai_preassessment' : 'after_hours';
 			const requestId = await MedsenseRequests.createRequest({
 				roomId: null,
@@ -7605,7 +8093,7 @@ API.v1.addRoute(
 				createdAt: new Date(),
 			});
 
-			const usePatientAsRoomOwner = patientIdentityType === 'registered_user' && Boolean(patientUser?._id);
+			const usePatientAsRoomOwner = hasVerifiedRegisteredVoiceIdentity && Boolean(patientUser?._id);
 			let room;
 			if (patientIdentityType === 'livechat_visitor' && patientVisitor?._id && patientVisitor.token) {
 				room = await createLivechatRoom({
@@ -7648,7 +8136,7 @@ API.v1.addRoute(
 					},
 				});
 			}
-			if (patientUser?._id && !usePatientAsRoomOwner && patientIdentityType !== 'livechat_visitor') {
+			if (patientUser?._id && hasVerifiedRegisteredVoiceIdentity && !usePatientAsRoomOwner && patientIdentityType !== 'livechat_visitor') {
 				const existingPatientSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, patientUser._id, {
 					projection: { _id: 1 },
 				});
@@ -7682,15 +8170,33 @@ API.v1.addRoute(
 			const sessionId = String((payload as any).sessionId || '').trim() || (callId ? callId.slice(0, 12) : randomBytes(6).toString('hex'));
 
 			const existingSessionInfo = _normalizeSessionInfo((room as any).medsenseSessionInfo);
+			const nowIso = new Date().toISOString();
+			const confirmedVoicePatientUserId =
+				hasVerifiedRegisteredVoiceIdentity || patientIdentityType === 'livechat_visitor' ? patientUser?._id || null : null;
+			let voiceIdentityStatus = null as string | null;
+			if (hasVerifiedRegisteredVoiceIdentity) {
+				voiceIdentityStatus = 'confirmed';
+			} else if (patientIdentityType === 'registered_user_unverified') {
+				voiceIdentityStatus = 'unconfirmed';
+			}
 			const nextSessionInfo = {
 				...existingSessionInfo,
 				voice: {
 					...existingSessionInfo.voice,
 					active: true,
 					sessionId,
-					patientUserId: patientUser?._id || null,
+					patientUserId: confirmedVoicePatientUserId,
+					patientName:
+						hasVerifiedRegisteredVoiceIdentity && patientUser
+							? String(patientUser.name || patientUser.username || '').trim() || null
+							: null,
 					patientVisitorToken: patientVisitorToken || null,
 					patientIdentityType,
+					voiceIdentityStatus,
+					profileFetchForbidden: !hasVerifiedRegisteredVoiceIdentity,
+					pendingIdentity: null,
+					identityConfirmedAt: hasVerifiedRegisteredVoiceIdentity ? nowIso : null,
+					identityConfirmationMethod: hasVerifiedRegisteredVoiceIdentity ? 'session_start_confirmed_patient_user_id' : null,
 					state: availability.isOpen ? 'ai_active' : 'after_hours_voicemail',
 					transport: String((payload as any).transport || 'signalwire_swml'),
 					roomName: `medsense-room-${sessionId}`,
@@ -7699,7 +8205,7 @@ API.v1.addRoute(
 					inboundToNumber: normalizedTo,
 					callerNumber: normalizedFrom || null,
 					pharmacyId: pharmacy._id,
-					lastEventAt: new Date().toISOString(),
+					lastEventAt: nowIso,
 				},
 			};
 
@@ -7771,8 +8277,8 @@ API.v1.addRoute(
 				requestStatus,
 				sessionId,
 				roomName: nextSessionInfo.voice.roomName,
-				patientUserId: patientUser?._id || null,
-				patientName: patientIdentityType === 'registered_user' ? String(patientUser?.name || patientUser?.username || '').trim() || null : null,
+				patientUserId: nextSessionInfo.voice.patientUserId,
+				patientName: hasVerifiedRegisteredVoiceIdentity ? String(patientUser?.name || patientUser?.username || '').trim() || null : null,
 				patientVisitorToken: patientVisitorToken || null,
 				patientIdentityType,
 				availability,
