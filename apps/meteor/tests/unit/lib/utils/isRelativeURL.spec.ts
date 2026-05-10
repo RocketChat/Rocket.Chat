@@ -13,6 +13,8 @@ describe('isRelativeURL', () => {
 		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', false],
 		['//', false],
 		['//example.com', false],
+		['javascript:alert(1)', false],
+		['JAVASCRIPT:alert(1)', false],
 	] as const;
 
 	testCases.forEach(([parameter, expectedResult]) => {
