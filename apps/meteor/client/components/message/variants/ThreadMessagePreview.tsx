@@ -78,7 +78,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			aria-roledescription={t('thread_message_preview')}
 			tabIndex={0}
 			onClick={handleThreadClick}
-			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
+			onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && handleThreadClick()}
 			isSelected={isSelected}
 			{...props}
 		>
