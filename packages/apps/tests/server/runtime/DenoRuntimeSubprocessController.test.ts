@@ -14,6 +14,7 @@ import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import { kSecureFields } from '../../../src/lib/SecureFields';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
@@ -244,5 +245,49 @@ describe('DenoRuntimeSubprocessController', () => {
 				return true;
 			},
 		);
+	});
+
+	it('parses messages containing @@SecureFields exchanged with the subprocess', async () => {
+		const roomWithSecureFields = {
+			id: 'room-id',
+			name: 'general',
+			[kSecureFields]: [{ permission: 'abac.read', name: 'abacAttributes', value: { department: 'support' } }],
+		};
+
+		const result = await controller.sendRequest({
+			method: 'ping',
+			params: [roomWithSecureFields],
+		});
+
+		assert.strictEqual(result, 'pong');
+	});
+
+	it('preserves @@SecureFields in bridge results so they can be encoded back to the subprocess', async () => {
+		const roomBridge = manager.getBridges().getRoomBridge();
+		const roomWithSecureFields = {
+			id: 'room-id',
+			name: 'general',
+			type: 'c' as any,
+			[kSecureFields]: [{ permission: 'abac.read', name: 'abacAttributes', value: { department: 'support' } }],
+		};
+		mock.method(roomBridge, 'doGetById', () => Promise.resolve(roomWithSecureFields));
+
+		const { id, result } = await controller['handleBridgeMessage']({
+			type: rpcTypeRequest,
+			payload: {
+				jsonrpc: '2.0',
+				id: 'requestId',
+				method: 'bridges:getRoomBridge:doGetById',
+				params: ['room-id', 'APP_ID'],
+				serialize: () => '',
+			},
+		});
+
+		assert.strictEqual(id, 'requestId');
+		assert.partialDeepStrictEqual(result, {
+			id: 'room-id',
+			name: 'general',
+			[kSecureFields]: [{ permission: 'abac.read', name: 'abacAttributes', value: { department: 'support' } }],
+		});
 	});
 });
