@@ -19,7 +19,7 @@ import { useScreenShareStreams } from './useScreenShareStreams';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
 import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
-import type { AvailableViews } from '../context/MediaCallInstanceContext';
+// import type { AvailableViews } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
@@ -36,7 +36,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId, setCurrentViews } = useMediaCallInstance();
+	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
@@ -210,26 +210,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	};
 
 	const onOpenPopout = useCallback(() => {
-		setCurrentViews((prev) => {
-			if (prev.has('popout')) {
-				return prev;
-			}
-			const next = new Set<AvailableViews>(prev);
-			next.add('popout');
-			return next;
-		});
-	}, [setCurrentViews]);
+		registerView('popout');
+	}, [registerView]);
 
 	const onClosePopout = useCallback(() => {
-		setCurrentViews((prev) => {
-			if (!prev.has('popout')) {
-				return prev;
-			}
-			const next = new Set<AvailableViews>(prev);
-			next.delete('popout');
-			return next;
-		});
-	}, [setCurrentViews]);
+		unregisterView('popout');
+	}, [unregisterView]);
 
 	const streams = useScreenShareStreams(instance);
 

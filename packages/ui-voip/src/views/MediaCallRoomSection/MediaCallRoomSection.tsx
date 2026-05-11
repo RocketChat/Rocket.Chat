@@ -62,7 +62,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	} = useMediaCallView();
 	const { currentViews } = useMediaCallInstance();
 
-	const isPopout = currentViews.has('popout');
+	const isPopout = currentViews.includes('popout');
 
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 

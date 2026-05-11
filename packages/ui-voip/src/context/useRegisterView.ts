@@ -1,44 +1,16 @@
-import { useLayoutEffect, useMemo } from 'react';
+import { useLayoutEffect } from 'react';
 
 import { useMediaCallInstance } from '.';
 import type { AvailableViews } from './MediaCallInstanceContext';
 
-const useRegisterView = (view: AvailableViews, filter?: (view: Set<AvailableViews>) => boolean): Set<AvailableViews> => {
-	const { currentViews, setCurrentViews } = useMediaCallInstance();
-
-	const shouldAddToSet = useMemo(() => {
-		if (!filter) {
-			return true;
-		}
-
-		return filter(currentViews);
-	}, [currentViews, filter]);
+const useRegisterView = (view: AvailableViews): AvailableViews[] => {
+	const { currentViews, registerView, unregisterView } = useMediaCallInstance();
 
 	useLayoutEffect(() => {
-		if (!shouldAddToSet) {
-			return;
-		}
+		registerView(view);
 
-		setCurrentViews((prev) => {
-			if (prev.has(view)) {
-				return prev;
-			}
-
-			prev.add(view);
-			return new Set<AvailableViews>(prev);
-		});
-
-		return () => {
-			setCurrentViews((prev) => {
-				if (!prev.has(view)) {
-					return prev;
-				}
-
-				prev.delete(view);
-				return new Set<AvailableViews>(prev);
-			});
-		};
-	}, [setCurrentViews, view, shouldAddToSet]);
+		return () => unregisterView(view);
+	}, [view, registerView, unregisterView]);
 
 	return currentViews;
 };
