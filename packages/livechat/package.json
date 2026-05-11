@@ -52,10 +52,10 @@
 		"whatwg-fetch": "^3.6.20"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.6",
-		"@babel/preset-env": "~7.28.6",
-		"@babel/preset-react": "~7.27.1",
-		"@babel/preset-typescript": "~7.27.1",
+		"@babel/core": "~7.29.0",
+		"@babel/preset-env": "~7.29.5",
+		"@babel/preset-react": "~7.28.5",
+		"@babel/preset-typescript": "~7.28.5",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
