@@ -1,7 +1,16 @@
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+
+// Meteor's accounts-password package registers `verifyEmail` server-side; declare
+// it here so the typed `sdk.call` accepts it from client code.
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		verifyEmail(token: string): void;
+	}
+}
+
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
@@ -40,16 +49,15 @@ const whenMainReady = (): Promise<void> => {
 	});
 };
 
-getDdpSdk().account.onEmailVerificationLink((token: string) => {
-	Accounts.verifyEmail(token, async (error) => {
+getDdpSdk().account.onEmailVerificationLink(async (token: string) => {
+	try {
+		await sdk.call('verifyEmail', token);
 		await whenMainReady();
-
-		if (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-			throw new Meteor.Error('verify-email', 'E-mail not verified');
-		} else {
-			void sdk.call('afterVerifyEmail');
-			dispatchToastMessage({ type: 'success', message: t('Email_verified') });
-		}
-	});
+		void sdk.call('afterVerifyEmail');
+		dispatchToastMessage({ type: 'success', message: t('Email_verified') });
+	} catch (error) {
+		await whenMainReady();
+		dispatchToastMessage({ type: 'error', message: error });
+		throw new Meteor.Error('verify-email', 'E-mail not verified');
+	}
 });
