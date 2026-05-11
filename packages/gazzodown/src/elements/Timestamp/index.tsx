@@ -77,17 +77,23 @@ const RelativeTime = ({ value }: { value: Date }) => {
 	const time = value.getTime();
 
 	const { language } = useContext(MarkupInteractionContext);
-	const [text, setTime] = useState(() => intlFormatDistance(time, Date.now(), { locale: language ?? 'en' }));
+	const locale = language ?? 'en';
+	const [text, setText] = useState(() => intlFormatDistance(time, Date.now(), { locale }));
 	const [timeToRefresh, setTimeToRefresh] = useState(() => getTimeToRefresh(time));
 
 	useEffect(() => {
+		setText(intlFormatDistance(time, Date.now(), { locale }));
+		setTimeToRefresh(getTimeToRefresh(time));
+	}, [time, locale]);
+
+	useEffect(() => {
 		const interval = setInterval(() => {
-			setTime(intlFormatDistance(value.getTime(), Date.now(), { locale: 'en' }));
+			setText(intlFormatDistance(time, Date.now(), { locale }));
 			setTimeToRefresh(getTimeToRefresh(time));
 		}, timeToRefresh);
 
 		return () => clearInterval(interval);
-	}, [time, timeToRefresh, value]);
+	}, [time, timeToRefresh, locale]);
 
 	return <Time value={text} dateTime={value.toISOString()} />;
 };
