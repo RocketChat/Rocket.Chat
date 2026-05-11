@@ -1,6 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../app/utils/lib/i18n';
+import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { dispatchToastMessage } from '../../lib/toast';
+import { userIdStore } from '../../lib/user';
+import { useUserDataSyncReady } from '../../lib/userData';
 
 // Meteor's accounts-password package registers `verifyEmail` server-side; declare
 // it here so the typed `sdk.call` accepts it from client code.
@@ -10,13 +16,6 @@ declare module '@rocket.chat/ddp-client' {
 		verifyEmail(token: string): void;
 	}
 }
-
-import { t } from '../../../app/utils/lib/i18n';
-import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
-import { getDdpSdk } from '../../lib/sdk/ddpSdk';
-import { dispatchToastMessage } from '../../lib/toast';
-import { userIdStore } from '../../lib/user';
-import { useUserDataSyncReady } from '../../lib/userData';
 
 const whenMainReady = (): Promise<void> => {
 	const isMainReady = (): boolean => {

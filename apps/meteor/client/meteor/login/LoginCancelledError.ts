@@ -3,6 +3,7 @@
 // without importing from meteor/accounts-base.
 export class LoginCancelledError extends Error {
 	static readonly numericError = 0x8acdc2f;
+
 	override name = 'Accounts.LoginCancelledError';
 
 	constructor(reason?: string) {
