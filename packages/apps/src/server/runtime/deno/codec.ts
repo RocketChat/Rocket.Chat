@@ -35,9 +35,14 @@ extensionCodec.register({
 
 extensionCodec.register({
 	type: SECURE_FIELDS_HANDLER_EXT,
-	encode: (object: unknown) => {
+	encode: (object: unknown, context = { ignoreNested: false }) => {
+		if (context?.ignoreNested) {
+			context.ignoreNested = false;
+			return null;
+		}
+
 		if (hasSecureFields(object)) {
-			return encode(object, { extensionCodec });
+			return encode(object, { extensionCodec, context: { ignoreNested: true } });
 		}
 	},
 

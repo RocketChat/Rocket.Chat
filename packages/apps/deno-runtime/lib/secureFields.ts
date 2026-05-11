@@ -19,7 +19,7 @@ export function applySecureFields(object: WithSecureFields<Record<string, unknow
 			return;
 		}
 
-		Object.defineProperty(rest, name, { value });
+		rest[name] = value;
 	});
 
 	return rest;
