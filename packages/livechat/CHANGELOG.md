@@ -1,5 +1,33 @@
 # @rocket.chat/livechat Change Log
 
+## 2.1.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36
+  - @rocket.chat/gazzodown@30.0.0
+  </details>
+
+## 2.1.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@30.0.0-rc.2
+  </details>
+
+## 2.1.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@30.0.0-rc.1
+  </details>
+
 ## 2.1.2
 
 ### Patch Changes
@@ -16,6 +44,16 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/gazzodown@29.0.1
+  </details>
+
+## 2.1.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36-rc.0
+  - @rocket.chat/gazzodown@30.0.0-rc.0
   </details>
 
 ## 2.1.0

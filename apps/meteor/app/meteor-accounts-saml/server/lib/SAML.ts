@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
+import { getSAMLEnvelope } from './getSAMLEnvelope';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -283,11 +284,21 @@ export class SAML {
 	}
 
 	private static async processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
+		const errorHandler = (err: unknown) => {
+			SystemLogger.error({ err });
+			throw new Meteor.Error('Unable to Validate Logout Request');
+		};
+
+		const envelope = await getSAMLEnvelope(req, 'SAMLRequest', 'HTTP-Redirect').catch(errorHandler);
+		if (!envelope) {
+			errorHandler('No envelope found for SAML Logout Request');
+			return;
+		}
+
 		const serviceProvider = new SAMLServiceProvider(service);
-		await serviceProvider.validateLogoutRequest(req.query.SAMLRequest, async (err, result) => {
+		await serviceProvider.validateLogoutRequest(envelope, async (err, result) => {
 			if (err) {
-				SystemLogger.error({ err });
-				throw new Meteor.Error('Unable to Validate Logout Request');
+				errorHandler(err);
 			}
 
 			if (!result?.nameID || !result?.idpSession) {
@@ -350,15 +361,16 @@ export class SAML {
 	}
 
 	private static async processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
-		if (!req.query.SAMLResponse) {
+		const envelope = await getSAMLEnvelope(req, 'SAMLResponse', 'HTTP-Redirect');
+		if (!envelope) {
 			SAMLUtils.error({ msg: 'Invalid LogoutResponse received: missing SAMLResponse parameter.', query: req.query });
 			throw new Error('Invalid LogoutResponse received.');
 		}
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		await serviceProvider.validateLogoutResponse(req.query.SAMLResponse, async (err, inResponseTo) => {
+		await serviceProvider.validateLogoutResponse(envelope, async (err, inResponseTo) => {
 			if (err) {
-				return;
+				throw new Error('Logout Response Validation failed');
 			}
 
 			if (!inResponseTo) {
@@ -460,15 +472,29 @@ export class SAML {
 		res.end();
 	}
 
-	private static processValidateAction(
+	private static async processValidateAction(
 		req: IIncomingMessage,
 		res: ServerResponse,
 		service: IServiceProviderOptions,
 		_samlObject: ISAMLAction,
-	): void {
+	): Promise<void> {
+		const redirect = (url?: string) => {
+			res.writeHead(302, {
+				Location: url ?? Meteor.absoluteUrl(),
+			});
+			res.end();
+		};
+
+		const envelope = await getSAMLEnvelope(req, 'SAMLResponse', 'HTTP-POST').catch((err) => SAMLUtils.error(err));
+
+		if (!envelope) {
+			SAMLUtils.error({ msg: 'No envelope found for SAML Response' });
+			return redirect();
+		}
+
 		const serviceProvider = new SAMLServiceProvider(service);
-		SAMLUtils.relayState = req.body.RelayState;
-		serviceProvider.validateResponse(req.body.SAMLResponse, async (err, profile /* , loggedOut*/) => {
+		SAMLUtils.relayState = envelope.relayState ?? null;
+		serviceProvider.validateResponse(envelope, async (err, profile /* , loggedOut*/) => {
 			try {
 				if (err) {
 					SAMLUtils.error(err);
@@ -490,16 +516,10 @@ export class SAML {
 
 				await this.storeCredential(credentialToken, loginResult);
 				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
-				res.writeHead(302, {
-					Location: url,
-				});
-				res.end();
+				redirect(url);
 			} catch (err) {
 				SAMLUtils.error({ err });
-				res.writeHead(302, {
-					Location: Meteor.absoluteUrl(),
-				});
-				res.end();
+				redirect();
 			}
 		});
 	}

@@ -1,5 +1,45 @@
 # Change Log
 
+## 30.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 5cff1f41d388b036c77a8f774f233b1921e9066e, e792aba7f56f1b2ece62951087591819995a1446, c544b805d1c03f8eae9d061cd48838206207a7c9, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/core-typings@8.4.0
+  - @rocket.chat/apps-engine@1.62.0
+  - @rocket.chat/gazzodown@30.0.0
+  - @rocket.chat/ui-avatar@26.0.0
+  - @rocket.chat/ui-contexts@30.0.0
+  - @rocket.chat/ui-video-conf@30.0.0
+  </details>
+
+## 30.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  - @rocket.chat/gazzodown@30.0.0-rc.2
+  - @rocket.chat/ui-avatar@26.0.0-rc.2
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  - @rocket.chat/ui-video-conf@30.0.0-rc.2
+  </details>
+
+## 30.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  - @rocket.chat/gazzodown@30.0.0-rc.1
+  - @rocket.chat/ui-avatar@26.0.0-rc.1
+  - @rocket.chat/ui-video-conf@30.0.0-rc.1
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  </details>
+
 ## 29.0.2
 
 ### Patch Changes
@@ -25,6 +65,20 @@
   - @rocket.chat/ui-avatar@25.0.1
   - @rocket.chat/ui-contexts@29.0.1
   - @rocket.chat/ui-video-conf@29.0.1
+  </details>
+
+## 30.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 5cff1f41d388b036c77a8f774f233b1921e9066e, e792aba7f56f1b2ece62951087591819995a1446, c544b805d1c03f8eae9d061cd48838206207a7c9, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.0
+  - @rocket.chat/apps-engine@1.62.0-rc.0
+  - @rocket.chat/gazzodown@30.0.0-rc.0
+  - @rocket.chat/ui-avatar@26.0.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
+  - @rocket.chat/ui-video-conf@30.0.0-rc.0
   </details>
 
 ## 29.0.0

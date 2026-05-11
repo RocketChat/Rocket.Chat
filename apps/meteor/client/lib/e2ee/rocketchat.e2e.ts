@@ -521,29 +521,36 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
+	openEnterE2EEPasswordModal(onEnterE2EEPassword: (password: string) => Promise<void>) {
+		const close = () => {
+			this.closeAlert();
+			imperativeModal.close();
+		};
 		imperativeModal.open({
 			component: EnterE2EPasswordModal,
 			props: {
-				onClose: imperativeModal.close,
+				onClose: close,
 				onCancel: () => {
 					failedToDecodeKey = false;
 					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-					this.closeAlert();
-					imperativeModal.close();
+					close();
 				},
-				onConfirm: (password) => {
-					onEnterE2EEPassword?.(password);
-					this.closeAlert();
-					imperativeModal.close();
+				onConfirm: async (password) => {
+					await onEnterE2EEPassword(password);
+					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
+					close();
 				},
 			},
 		});
 	}
 
-	async requestPasswordAlert(): Promise<string> {
+	async requestPasswordAlert(validatePassword: (password: string) => Promise<void>): Promise<void> {
 		return new Promise((resolve) => {
-			const showModal = () => this.openEnterE2EEPasswordModal((password) => resolve(password));
+			const showModal = () =>
+				this.openEnterE2EEPasswordModal(async (password) => {
+					await validatePassword(password);
+					resolve();
+				});
 
 			const showAlert = () => {
 				this.openAlert({
@@ -566,48 +573,47 @@ class E2E extends Emitter {
 		});
 	}
 
-	async requestPasswordModal(): Promise<string> {
-		return new Promise((resolve) => this.openEnterE2EEPasswordModal((password) => resolve(password)));
+	async requestPasswordModal(validatePassword: (password: string) => Promise<void>): Promise<void> {
+		return new Promise((resolve) => {
+			this.openEnterE2EEPasswordModal(async (password) => {
+				await validatePassword(password);
+				resolve();
+			});
+		});
 	}
 
 	async decodePrivateKeyFlow() {
-		const password = await this.requestPasswordModal();
-
 		if (!this.db_private_key) {
 			return;
 		}
 
 		try {
-			const privateKey = await this.keychain.decryptKey(this.db_private_key, password);
+			let privateKey: string | undefined;
+			await this.requestPasswordModal(async (password) => {
+				privateKey = await this.keychain.decryptKey(this.db_private_key as string, password);
+			});
 
 			if (this.db_public_key && privateKey) {
 				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
-				this.setState('READY');
 			} else {
 				await this.createAndLoadKeys();
-				this.setState('READY');
 			}
+			this.setState('READY');
+
 			dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
 			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-			throw new Error('E2E -> Error decrypting private key', { cause: error });
+			throw new Error('E2E -> Error loading keys', { cause: error });
 		}
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
-		// const span = log.span('decodePrivateKey');
-		const password = await this.requestPasswordAlert();
-		try {
-			const privKey = await this.keychain.decryptKey(privateKey, password);
-			return privKey;
-		} catch (error) {
-			this.setState('ENTER_PASSWORD');
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
-			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-			throw new Error('E2E -> Error decrypting private key', { cause: error });
-		}
+		let decryptedKey: string | undefined;
+		await this.requestPasswordAlert(async (password) => {
+			decryptedKey = await this.keychain.decryptKey(privateKey, password);
+		});
+		return decryptedKey as string;
 	}
 
 	async decryptFileContent(file: IUploadWithUser): Promise<IUploadWithUser> {

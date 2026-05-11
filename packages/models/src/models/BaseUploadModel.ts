@@ -1,4 +1,4 @@
-import type { IUpload } from '@rocket.chat/core-typings';
+import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type {
 	DeleteResult,
@@ -137,5 +137,13 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 
 	async findOneByIdAndUserIdAndRoomId(fileId: string, userId: string, rid: string, options?: FindOptions<T>): Promise<T | null> {
 		return this.findOne({ _id: fileId, userId, rid }, options);
+	}
+
+	async updateFileMetadata(
+		fileId: string,
+		userId: string,
+		metadata: { name?: string; description?: string; typeGroup?: string; content?: EncryptedContent },
+	): Promise<UpdateResult | null> {
+		return this.updateOne({ _id: fileId, userId }, { $set: metadata });
 	}
 }

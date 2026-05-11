@@ -1,19 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import {
-	FieldError,
-	Field,
-	FieldLabel,
-	FieldRow,
-	TextAreaInput,
-	TextInput,
-	ButtonGroup,
-	Button,
-	Icon,
-	FieldGroup,
-	Select,
-	InputBox,
-	Callout,
-} from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Icon, InputBox, Callout } from '@rocket.chat/fuselage';
+import { FieldError, Field, FieldLabel, FieldRow, TextAreaInput, FieldGroup, Select, TextInput } from '@rocket.chat/fuselage-forms';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import {
@@ -197,13 +184,8 @@ const ExportMessages = () => {
 	};
 
 	const formId = useId();
-	const methodField = useId();
-	const formatField = useId();
-	const toUsersField = useId();
 	const dateFromField = useId();
 	const dateToField = useId();
-	const additionalEmailsField = useId();
-	const subjectField = useId();
 
 	return (
 		<ContextualbarDialog aria-labelledby={`${formId}-title`}>
@@ -216,14 +198,13 @@ const ExportMessages = () => {
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
 						<Field>
-							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
+							<FieldLabel>{t('Method')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='type'
 									control={control}
 									render={({ field }) => (
 										<Select
-											id={methodField}
 											data-testid='export-messages-method'
 											{...field}
 											placeholder={t('Type')}
@@ -235,7 +216,7 @@ const ExportMessages = () => {
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={formatField}>{t('Output_format')}</FieldLabel>
+							<FieldLabel>{t('Output_format')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='format'
@@ -254,7 +235,6 @@ const ExportMessages = () => {
 										return (
 											<Select
 												{...field}
-												id={formatField}
 												data-testid='export-messages-output-format'
 												disabled={type === 'email'}
 												placeholder={t('Format')}
@@ -292,7 +272,7 @@ const ExportMessages = () => {
 						{type === 'email' && (
 							<>
 								<Field>
-									<FieldLabel htmlFor={toUsersField}>{t('To_users')}</FieldLabel>
+									<FieldLabel>{t('To_users')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='toUsers'
@@ -308,9 +288,9 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field: { value, onChange, onBlur, name } }) => (
+											render={({ field: { value, onChange, onBlur, name, ...field } }) => (
 												<UserAutoCompleteMultiple
-													id={toUsersField}
+													{...field}
 													value={value}
 													onChange={(value) => {
 														onChange(value);
@@ -318,22 +298,15 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													name={name}
-													aria-label={t('To_users')}
-													aria-describedby={`${toUsersField}-error`}
-													aria-invalid={Boolean(errors?.toUsers?.message)}
 													error={errors?.toUsers?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.toUsers && (
-										<FieldError role='alert' id={`${toUsersField}-error`}>
-											{errors.toUsers.message}
-										</FieldError>
-									)}
+									{errors?.toUsers && <FieldError>{errors.toUsers.message}</FieldError>}
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={additionalEmailsField}>{t('To_additional_emails')}</FieldLabel>
+									<FieldLabel>{t('To_additional_emails')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='additionalEmails'
@@ -361,40 +334,30 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field: { value, onChange, onBlur, name } }) => (
+											render={({ field: { onChange, onBlur, ...field } }) => (
 												<TextInput
-													id={additionalEmailsField}
-													value={value}
+													{...field}
 													onChange={(e) => {
 														onChange(e);
 														clearErrors('toUsers');
 													}}
 													onBlur={onBlur}
-													name={name}
 													placeholder={t('Email_Placeholder_any')}
 													addon={<Icon name='mail' size='x20' />}
-													aria-describedby={`${additionalEmailsField}-error`}
-													aria-invalid={Boolean(errors?.additionalEmails?.message)}
 													error={errors?.additionalEmails?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.additionalEmails && (
-										<FieldError role='alert' id={`${additionalEmailsField}-error`}>
-											{errors.additionalEmails.message}
-										</FieldError>
-									)}
+									{errors?.additionalEmails && <FieldError>{errors.additionalEmails.message}</FieldError>}
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={subjectField}>{t('Subject')}</FieldLabel>
+									<FieldLabel>{t('Subject')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='subject'
 											control={control}
-											render={({ field }) => (
-												<TextAreaInput rows={3} id={subjectField} {...field} addon={<Icon name='edit' size='x20' />} />
-											)}
+											render={({ field }) => <TextAreaInput rows={3} {...field} addon={<Icon name='edit' size='x20' />} />}
 										/>
 									</FieldRow>
 								</Field>
