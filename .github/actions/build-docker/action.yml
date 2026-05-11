@@ -8,12 +8,12 @@ inputs:
   CR_PAT:
     required: true
     description: 'GitHub Container Registry Personal Access Token'
-  TEMP_DOCKERHUB_FIPS_USER:
+  DOCKER_USER:
     required: false
-    description: 'Temporary DockerHub user for FIPS base image pulls'
-  TEMP_DOCKERHUB_FIPS_PASS:
+    description: 'DockerHub username for private base image pulls'
+  DOCKER_PASS:
     required: false
-    description: 'Temporary DockerHub password/token for FIPS base image pulls'
+    description: 'DockerHub password/token for private base image pulls'
   deno-version:
     required: true
     description: 'Deno version'
@@ -50,11 +50,12 @@ runs:
         password: ${{ inputs.CR_PAT }}
 
     - name: Login to DockerHub for FIPS base images
-      if: inputs.type == 'fips' && inputs.TEMP_DOCKERHUB_FIPS_USER != '' && inputs.TEMP_DOCKERHUB_FIPS_PASS != ''
+      if: inputs.type == 'fips' && inputs.DOCKER_USER != '' && inputs.DOCKER_PASS != ''
       uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
-        username: ${{ inputs.TEMP_DOCKERHUB_FIPS_USER }}
-        password: ${{ inputs.TEMP_DOCKERHUB_FIPS_PASS }}
+        username: ${{ inputs.DOCKER_USER }}
+        password: ${{ inputs.DOCKER_PASS }}
+
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
