@@ -376,8 +376,8 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
-          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service }}
@@ -711,8 +711,6 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
   test-api-livechat-fips:
     name: 🔨 Test API Livechat (FIPS)
@@ -732,8 +730,6 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
   test-ui-fips:
     name: 🔨 Test UI (FIPS)
@@ -756,8 +752,6 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
