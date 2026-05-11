@@ -30,6 +30,9 @@ const Picker = lazy(async () => {
 	return Picker;
 });
 
+const host =
+	window.SERVER_URL ?? parse(window.location.search).serverUrl ?? (process.env.NODE_ENV === 'development' ? 'https://chatbot-stg.charisma.digital' : null);
+
 class Chat extends Component {
 	state = {
 		atBottom: true,
