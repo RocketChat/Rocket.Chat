@@ -7,9 +7,9 @@ import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
-import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 

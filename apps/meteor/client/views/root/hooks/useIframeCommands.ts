@@ -1,12 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import {
-	type LocationPathname,
-	UserContext,
-	useLoginWithCustomOauth,
-	useLoginWithToken,
-	useSetting,
-} from '@rocket.chat/ui-contexts';
+import { type LocationPathname, UserContext, useLoginWithCustomOauth, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect } from 'react';
 
 import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
