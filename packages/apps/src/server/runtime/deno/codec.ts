@@ -1,4 +1,4 @@
-import { Decoder as _Decoder, Encoder as _Encoder, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
 
 const extensionCodec = new ExtensionCodec();
 
@@ -25,6 +25,19 @@ extensionCodec.register({
 
 	// msgpack will reuse the Uint8Array instance, so WE NEED to copy it instead of simply creating a view
 	decode: (data: Uint8Array) => Buffer.from(data),
+});
+
+extensionCodec.register({
+	type: 2,
+	encode: (object: unknown) => {
+		if (object?.['@secureFields']) {
+			return encode(object, { extensionCodec });
+		}
+
+		return null;
+	},
+
+	decode: (_data: Uint8Array) => undefined,
 });
 
 /**
