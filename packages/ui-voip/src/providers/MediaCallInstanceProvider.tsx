@@ -4,10 +4,11 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useAudioStream } from './useAudioStream';
+import useAvailableViewTracker from './useAvailableViewTracker';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
-import type { Signals, AvailableViews } from '../context/MediaCallInstanceContext';
+import type { Signals } from '../context/MediaCallInstanceContext';
 
 type MediaCallInstanceProviderProps = {
 	children: ReactNode;
@@ -15,7 +16,7 @@ type MediaCallInstanceProviderProps = {
 
 const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps) => {
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
-	const [currentViews, setCurrentViews] = useState(() => new Set<AvailableViews>());
+	const { currentViews, registerView, unregisterView } = useAvailableViewTracker();
 	const user = useUser();
 	const instance = useMediaSessionInstance(user?._id);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
@@ -33,9 +34,10 @@ const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps)
 			setOpenRoomId,
 			getAutocompleteOptions,
 			currentViews,
-			setCurrentViews,
+			registerView,
+			unregisterView,
 		}),
-		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, currentViews, setCurrentViews],
+		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, currentViews, registerView, unregisterView],
 	);
 
 	return (
