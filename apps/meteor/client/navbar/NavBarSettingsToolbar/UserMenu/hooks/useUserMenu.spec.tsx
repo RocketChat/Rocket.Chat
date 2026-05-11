@@ -72,7 +72,7 @@ describe('user menu with role conditions', () => {
 		});
 	});
 
-	it('should filter out the action if the user doesn`t have admin role', async () => {
+	it('should filter out the action if the user does not have admin role', async () => {
 		const { result } = renderHook(() => useUserMenu(fakeUser), {
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
@@ -122,7 +122,7 @@ describe('user menu with permission conditions', () => {
 		});
 	});
 
-	it('should filter out the action if the user doesn`t have `any` permission', async () => {
+	it('should filter out the action if the user does not have any permission', async () => {
 		const { result } = renderHook(() => useUserMenu(fakeUser), {
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
