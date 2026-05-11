@@ -65,7 +65,7 @@ describe('user menu with role conditions', () => {
 		expect(result.current[4]?.items[0]).toEqual(expect.objectContaining({ id: 'APP_ID_ACTION_ID' }));
 	});
 
-	it('should return filter the action if the user doesn`t have admin role', async () => {
+	it('should filter out the action if the user doesn`t have admin role', async () => {
 		const { result } = renderHook(() => useUserMenu(fakeUser), {
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
