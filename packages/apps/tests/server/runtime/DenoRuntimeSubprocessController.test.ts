@@ -225,4 +225,24 @@ describe('DenoRuntimeSubprocessController', () => {
 		assert.strictEqual(id, 'requestId');
 		assert.strictEqual(result, 'random-message-id');
 	});
+
+	it('parses request and response messages exchanged with the subprocess', async () => {
+		const result = await controller.sendRequest({
+			method: 'ping',
+			params: [{ payload: { text: 'hello' }, bytes: Buffer.from('rocket-chat') }],
+		});
+
+		assert.strictEqual(result, 'pong');
+	});
+
+	it('parses error responses exchanged with the subprocess', async () => {
+		await assert.rejects(
+			() => controller.sendRequest({ method: 'invalid:method', params: [] }),
+			(error: Error & { code?: number }) => {
+				assert.strictEqual(error.code, -32601);
+				assert.strictEqual(error.message, 'Method not found');
+				return true;
+			},
+		);
+	});
 });
