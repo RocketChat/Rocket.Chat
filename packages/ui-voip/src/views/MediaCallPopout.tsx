@@ -1,11 +1,18 @@
-import { useLayoutEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect } from 'react';
 
 import { useMediaCallInstance, useMediaCallView } from '../context';
 import MediaCallPopoutWindow from './MediaCallPopoutWindow';
+import { usePopoutWindow } from './usePopoutWindow';
 
 const MediaCallPopout = () => {
 	const { currentViews } = useMediaCallInstance();
 	const { sessionState, onClosePopout } = useMediaCallView();
+	const { container, closePopoutWindow, openPopoutWindow } = usePopoutWindow();
+
+	const onClosePopoutAndWindow = useCallback(() => {
+		onClosePopout();
+		closePopoutWindow();
+	}, [onClosePopout, closePopoutWindow]);
 
 	useLayoutEffect(() => {
 		if (sessionState.state !== 'ongoing') {
@@ -13,11 +20,20 @@ const MediaCallPopout = () => {
 		}
 	}, [sessionState.state, onClosePopout]);
 
-	if (!currentViews.has('popout')) {
+	useEffect(() => {
+		if (currentViews.includes('popout')) {
+			// TODO: Fix this title
+			openPopoutWindow('Call with Peer X', onClosePopout);
+			return;
+		}
+		closePopoutWindow();
+	}, [currentViews, openPopoutWindow, closePopoutWindow, onClosePopout]);
+
+	if (!container) {
 		return null;
 	}
 
-	return <MediaCallPopoutWindow />;
+	return <MediaCallPopoutWindow container={container} onClosePopout={onClosePopoutAndWindow} />;
 };
 
 export default MediaCallPopout;
