@@ -11,7 +11,7 @@ import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils'
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
-import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
+import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -125,7 +125,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						resolve();
 					});
 				}),
-			getLoginToken: () => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? null,
+			getLoginToken: () => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN),
 			wipeLocalAuth: () => {
 				removeStoredItem(STORAGE_KEYS.USER_ID);
 				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
