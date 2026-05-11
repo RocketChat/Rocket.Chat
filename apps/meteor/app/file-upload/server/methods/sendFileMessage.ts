@@ -14,7 +14,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
-import { omit } from '../../../../lib/utils/omit';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -36,7 +35,21 @@ export const parseFileIntoMessageAttachments = async (
 ): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
-	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
+	if (!upload) {
+		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+			method: 'sendFileMessage',
+		});
+	}
+
+	const safeMetadata = {
+		...(typeof file.name === 'string' && { name: file.name }),
+		...(typeof file.description === 'string' && { description: file.description }),
+		...(file.type && { typeGroup: file.type.split('/').shift() }),
+		...(file.content && typeof file.content === 'object' && { content: file.content }),
+	};
+
+	await Uploads.updateFileMetadata(file._id, user._id, safeMetadata);
 
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 

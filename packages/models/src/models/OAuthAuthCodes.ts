@@ -14,6 +14,9 @@ export class OAuthAuthCodesRaw extends BaseRaw<IOAuthAuthCode> implements IOAuth
 	}
 
 	findOneByAuthCode(authCode: string, options?: FindOptions<IOAuthAuthCode>): Promise<IOAuthAuthCode | null> {
+		if (typeof authCode !== 'string' || !authCode) {
+			return Promise.resolve(null);
+		}
 		return this.findOne({ authCode }, options);
 	}
 }
