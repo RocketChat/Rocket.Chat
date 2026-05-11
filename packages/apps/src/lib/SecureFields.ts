@@ -8,7 +8,9 @@ export const kSecureFields = '@@SecureFields';
 
 export type WithSecureFields<T extends Record<string, unknown>> = T & { [kSecureFields]: SecureFieldDescriptor<T, keyof T>[] };
 
-export function secureFieldsMapper<T extends Record<string, unknown>>(mapper: (object: T) => WithSecureFields<T>) {
+export function secureFieldsMapper<T extends Record<string, unknown>>(
+	mapper: (object: T) => SecureFieldDescriptor<T, keyof T>[] | undefined,
+) {
 	return { [kSecureFields]: mapper };
 }
 
