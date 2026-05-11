@@ -15,7 +15,7 @@ export function applySecureFields(object: WithSecureFields<Record<string, unknow
 	}
 
 	secureFields.forEach(({ permission, name, value }) => {
-		if (app.getInfo().permissions?.findIndex((p) => p.name === permission) === -1) {
+		if (!app.getInfo().permissions?.find((p) => p.name === permission)) {
 			return;
 		}
 

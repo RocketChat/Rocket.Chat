@@ -35,17 +35,28 @@ extensionCodec.register({
 
 extensionCodec.register({
 	type: SECURE_FIELDS_HANDLER_EXT,
-	encode: (object: unknown, context = { ignoreNested: false }) => {
-		if (context?.ignoreNested) {
-			context.ignoreNested = false;
+	/**
+	 * This extension doesn't really change the encoding process, but by
+	 * not returning null or undefined, msgpack attributes the decoding of this
+	 * object to this extension, allowing us to handle secure field logic on the
+	 * subprocess side, without having to iterate through all objects in search
+	 * of the field.
+	 */
+	encode: (object: unknown, context: { ignoreRoot?: boolean } = {}) => {
+		// Ignoring the root object allows msgpack to take care of encoding the object's properties,
+		// while we mark the root object itself as an extension type.
+		if (context?.ignoreRoot) {
+			context.ignoreRoot = false;
+
 			return null;
 		}
 
 		if (hasSecureFields(object)) {
-			return encode(object, { extensionCodec, context: { ignoreNested: true } });
+			return encode(object, { extensionCodec, context: { ignoreRoot: true } });
 		}
 	},
 
+	// We don't really need to handle decoding here, as the subprocess will never send a message with secure fields
 	decode: (_data: Uint8Array) => undefined,
 });
 
