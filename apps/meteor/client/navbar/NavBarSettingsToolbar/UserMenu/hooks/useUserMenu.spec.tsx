@@ -37,8 +37,12 @@ it('should return one action from the server with no conditions', async () => {
 			])
 			.build(),
 	});
-	await waitFor(() => expect(result.current[4]?.title).toBe('Apps'));
-	expect(result.current[4]?.items[0]).toEqual(expect.objectContaining({ id: 'APP_ID_ACTION_ID' }));
+
+	await waitFor(() => {
+		const appsGroup = result.current.find((group) => group.title === 'Apps');
+		expect(appsGroup).toBeDefined();
+		expect(appsGroup?.items).toContainEqual(expect.objectContaining({ id: 'APP_ID_ACTION_ID' }));
+	});
 });
 
 describe('user menu with role conditions', () => {
@@ -61,8 +65,11 @@ describe('user menu with role conditions', () => {
 				.build(),
 		});
 
-		await waitFor(() => expect(result.current[4].title).toBe('Apps'));
-		expect(result.current[4]?.items[0]).toEqual(expect.objectContaining({ id: 'APP_ID_ACTION_ID' }));
+		await waitFor(() => {
+			const appsGroup = result.current.find((group) => group.title === 'Apps');
+			expect(appsGroup).toBeDefined();
+			expect(appsGroup?.items).toContainEqual(expect.objectContaining({ id: 'APP_ID_ACTION_ID' }));
+		});
 	});
 
 	it('should filter out the action if the user doesn`t have admin role', async () => {
@@ -82,7 +89,10 @@ describe('user menu with role conditions', () => {
 				.build(),
 		});
 
-		await waitFor(() => expect(result.current[4].items[0]).toEqual(expect.objectContaining({ id: 'logout' })));
+		await waitFor(() => {
+			const appsGroup = result.current.find((group) => group.title === 'Apps');
+			expect(appsGroup).not.toBeDefined();
+		});
 	});
 });
 
@@ -105,16 +115,14 @@ describe('user menu with permission conditions', () => {
 				.build(),
 		});
 
-		await waitFor(() =>
-			expect(result.current[4].items[0]).toEqual(
-				expect.objectContaining({
-					id: 'APP_ID_ACTION_ID',
-				}),
-			),
-		);
+		await waitFor(() => {
+			const appsGroup = result.current.find((group) => group.title === 'Apps');
+			expect(appsGroup).toBeDefined();
+			expect(appsGroup?.items).toContainEqual(expect.objectContaining({ id: 'APP_ID_ACTION_ID' }));
+		});
 	});
 
-	it('should filter the action if the user doesn`t have `any` permission', async () => {
+	it('should filter out the action if the user doesn`t have `any` permission', async () => {
 		const { result } = renderHook(() => useUserMenu(fakeUser), {
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
@@ -131,6 +139,9 @@ describe('user menu with permission conditions', () => {
 				.build(),
 		});
 
-		await waitFor(() => expect(result.current[4]?.items[0]).toEqual(expect.objectContaining({ id: 'logout' })));
+		await waitFor(() => {
+			const appsGroup = result.current.find((group) => group.title === 'Apps');
+			expect(appsGroup).not.toBeDefined();
+		});
 	});
 });
