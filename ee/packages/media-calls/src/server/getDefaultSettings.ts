@@ -8,6 +8,10 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 		},
 		sip: {
 			enabled: false,
+			identityLookup: {
+				enabled: false,
+				customFieldName: '',
+			},
 			drachtio: {
 				host: '',
 				port: 9022,

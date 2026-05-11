@@ -22,6 +22,10 @@ export interface IMediaCallServerSettings {
 
 	sip: {
 		enabled: boolean;
+		identityLookup: {
+			enabled: boolean;
+			customFieldName: string;
+		};
 		drachtio: {
 			host: string;
 			port: number;

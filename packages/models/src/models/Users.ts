@@ -2765,6 +2765,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	findOneByCustomFieldValue<T extends Document = IUser>(fieldName: string, value: unknown, options: FindOptions<IUser> = {}) {
+		return this.findOne<T>(
+			{
+				active: true,
+				[`customFields.${fieldName}`]: value,
+			} as Filter<IUser>,
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id: IUser['_id'], importIds: string[]) {
 		importIds = ([] as string[]).concat(importIds);

@@ -39,6 +39,12 @@ export function addSettings(): Promise<void> {
 				});
 
 				await this.section('VoIP_TeamCollab_SIP_Integration', async function () {
+					const sipEnabledQuery = { _id: 'VoIP_TeamCollab_SIP_Integration_Enabled', value: true };
+					const customFieldLookupEnabledQuery = {
+						_id: 'VoIP_TeamCollab_SIP_Identity_Lookup_Enabled',
+						value: true,
+					};
+
 					await this.add('VoIP_TeamCollab_SIP_Integration_Enabled', false, {
 						type: 'boolean',
 						public: true,
@@ -52,34 +58,55 @@ export function addSettings(): Promise<void> {
 						alert: 'VoIP_TeamCollab_Internal_SIP_Beta_Alert',
 					});
 
+					await this.add('VoIP_TeamCollab_SIP_Identity_Lookup_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						enableQuery: sipEnabledQuery,
+						alert: 'VoIP_TeamCollab_SIP_Identity_Lookup_Enabled_Alert',
+					});
+
+					await this.add('VoIP_TeamCollab_SIP_Identity_Lookup_Custom_Field_Name', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery: [sipEnabledQuery, customFieldLookupEnabledQuery],
+						i18nDescription: 'VoIP_TeamCollab_SIP_Identity_Lookup_Custom_Field_Name_Description',
+					});
+
 					await this.add('VoIP_TeamCollab_Drachtio_Host', '', {
 						type: 'string',
 						public: false,
 						invalidValue: '',
+						enableQuery: sipEnabledQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_Drachtio_Port', 9022, {
 						type: 'int',
 						public: false,
 						invalidValue: 9022,
+						enableQuery: sipEnabledQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_Drachtio_Password', '', {
 						type: 'password',
 						secret: true,
 						invalidValue: '',
+						enableQuery: sipEnabledQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_SIP_Server_Host', '', {
 						type: 'string',
 						public: false,
 						invalidValue: '',
+						enableQuery: sipEnabledQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_SIP_Server_Port', 5060, {
 						type: 'int',
 						public: false,
 						invalidValue: 5060,
+						enableQuery: sipEnabledQuery,
 					});
 				});
 			},

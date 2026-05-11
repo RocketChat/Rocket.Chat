@@ -4,6 +4,13 @@ import type { CallRole } from '@rocket.chat/media-signaling';
 import type { IMediaCallAgent } from './IMediaCallAgent';
 import type { GetActorContactOptions, MediaCallHeader, MinimalUserData } from './common';
 
+export interface ICastDirectorSettings {
+	identityLookup: {
+		enabled: boolean;
+		customFieldName: string;
+	};
+}
+
 export interface IMediaCallCastDirector {
 	getAgentsFromCall(call: MediaCallHeader): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }>;
 	getAgentFromCall(call: MediaCallHeader, role: CallRole): Promise<IMediaCallAgent | null>;
@@ -29,4 +36,5 @@ export interface IMediaCallCastDirector {
 	): Promise<MediaCallContact | null>;
 
 	getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null>;
+	configure(settings: ICastDirectorSettings): void;
 }

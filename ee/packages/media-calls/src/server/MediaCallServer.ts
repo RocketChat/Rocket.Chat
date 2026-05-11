@@ -10,6 +10,7 @@ import type {
 
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
+import { getCastDirector } from './injection';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type {
 	IMediaCallServer,
@@ -140,6 +141,7 @@ export class MediaCallServer implements IMediaCallServer {
 		logger.debug({ msg: 'Media Server Configuration' });
 		this.session.configure(settings);
 		this.settings = settings;
+		getCastDirector().configure({ identityLookup: settings.sip.identityLookup });
 	}
 
 	public async permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {

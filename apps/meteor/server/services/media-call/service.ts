@@ -389,6 +389,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			},
 			sip: {
 				enabled: sipEnabled,
+				identityLookup: {
+					enabled: settings.get<boolean>('VoIP_TeamCollab_SIP_Identity_Lookup_Enabled') ?? false,
+					customFieldName: settings.get<string>('VoIP_TeamCollab_SIP_Identity_Lookup_Custom_Field_Name') ?? '',
+				},
 				drachtio: {
 					host: settings.get<string>('VoIP_TeamCollab_Drachtio_Host') ?? '',
 					port: settings.get<number>('VoIP_TeamCollab_Drachtio_Port') ?? 9022,

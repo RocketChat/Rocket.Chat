@@ -443,6 +443,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAgentsAvailableWithoutBusinessHours(userIds?: IUser['_id'][]): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult | Document>;
 	findOneByFreeSwitchExtension<T extends Document = IUser>(freeSwitchExtension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findOneByCustomFieldValue<T extends Document = IUser>(fieldName: string, value: unknown, options?: FindOptions<IUser>): Promise<T | null>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;

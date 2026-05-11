@@ -2,16 +2,23 @@ import type { IUser, MediaCallActor, MediaCallActorType, MediaCallContact, Media
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
+import { BroadcastActorAgent } from './BroadcastAgent';
+import { getDefaultSettings } from './getDefaultSettings';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
+import type { IMediaCallCastDirector, ICastDirectorSettings } from '../definition/IMediaCallCastDirector';
 import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
 import { UserActorAgent } from '../internal/agents/UserActorAgent';
 import { logger } from '../logger';
-import { BroadcastActorAgent } from './BroadcastAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
 export class MediaCallCastDirector implements IMediaCallCastDirector {
+	private settings: ICastDirectorSettings = { identityLookup: getDefaultSettings().sip.identityLookup };
+
+	public configure(settings: ICastDirectorSettings): void {
+		this.settings = settings;
+	}
+
 	public async getAgentsFromCall(call: MediaCallHeader): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }> {
 		const callerAgent = await this.getAgentFromCall(call, 'caller');
 		if (!callerAgent) {
@@ -89,9 +96,24 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 
 		const list = user
 			? this.buildContactListForUser(user, defaultContactInfo)
-			: this.buildContactListForExtension(sipExtension, defaultContactInfo);
+			: await this.buildContactListForExtension(sipExtension, defaultContactInfo);
 
 		return this.getContactFromList(list, options);
+	}
+
+	private async findUserByIndentityLookup(
+		sipIdentifier: string,
+	): Promise<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> | null> {
+		const { identityLookup } = this.settings;
+		if (!identityLookup.enabled || !identityLookup.customFieldName) {
+			return null;
+		}
+
+		return Users.findOneByCustomFieldValue<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(
+			identityLookup.customFieldName,
+			sipIdentifier,
+			{ projection: { name: 1, username: 1, freeSwitchExtension: 1 } },
+		);
 	}
 
 	public async getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null> {
@@ -141,10 +163,17 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		};
 	}
 
-	protected buildContactListForExtension(sipExtension: string, defaultContactInfo?: MediaCallContactInformation): ContactList {
+	protected async buildContactListForExtension(
+		sipExtension: string,
+		defaultContactInfo?: MediaCallContactInformation,
+	): Promise<ContactList> {
+		const user = await this.findUserByIndentityLookup(sipExtension);
+
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,
 			...(sipExtension && { sipExtension }),
+			...(user?.username && { username: user.username }),
+			...(user?.name && { displayName: user.name }),
 		};
 
 		return {
