@@ -14,6 +14,9 @@ export class OAuthRefreshTokensRaw extends BaseRaw<IOAuthRefreshToken> implement
 	}
 
 	findOneByRefreshToken(refreshToken: string, options?: FindOptions<IOAuthRefreshToken>): Promise<IOAuthRefreshToken | null> {
+		if (typeof refreshToken !== 'string' || !refreshToken) {
+			return Promise.resolve(null);
+		}
 		return this.findOne({ refreshToken }, options);
 	}
 }
