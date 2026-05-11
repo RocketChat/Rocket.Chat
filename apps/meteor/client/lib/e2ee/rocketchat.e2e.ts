@@ -8,7 +8,6 @@ import { isTruthy } from '@rocket.chat/tools';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import sampleSize from 'lodash/sampleSize';
-import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
 import * as Rsa from './crypto/rsa';
@@ -28,6 +27,7 @@ import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
 import { getDdpSdk } from '../sdk/ddpSdk';
+import { STORAGE_KEYS, getStoredItem, removeStoredItem, setStoredItem } from '../sdk/storage';
 import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
@@ -315,8 +315,8 @@ class E2E extends Emitter {
 
 	getKeysFromLocalStorage(): KeyPair {
 		return {
-			public_key: Accounts.storageLocation.getItem('public_key'),
-			private_key: Accounts.storageLocation.getItem('private_key'),
+			public_key: getStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY),
+			private_key: getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY),
 		};
 	}
 
@@ -335,7 +335,7 @@ class E2E extends Emitter {
 					imperativeModal.close();
 				},
 				onConfirm: () => {
-					Accounts.storageLocation.removeItem('e2e.randomPassword');
+					removeStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 					this.setState('READY');
 					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 					this.closeAlert();
@@ -403,7 +403,7 @@ class E2E extends Emitter {
 			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
-		const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
+		const randomPassword = getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 		if (randomPassword) {
 			this.setState('SAVE_PASSWORD');
 			this.openAlert({
@@ -422,8 +422,8 @@ class E2E extends Emitter {
 		span.info(this.state);
 		this.closeAlert();
 
-		Accounts.storageLocation.removeItem('public_key');
-		Accounts.storageLocation.removeItem('private_key');
+		removeStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY);
+		removeStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY);
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
@@ -438,8 +438,8 @@ class E2E extends Emitter {
 	async changePassword(newPassword: string): Promise<void> {
 		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
 
-		if (Accounts.storageLocation.getItem('e2e.randomPassword')) {
-			Accounts.storageLocation.setItem('e2e.randomPassword', newPassword);
+		if (getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD)) {
+			setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, newPassword);
 		}
 	}
 
@@ -464,13 +464,13 @@ class E2E extends Emitter {
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		const span = log.span('loadKeys');
-		Accounts.storageLocation.setItem('public_key', public_key);
+		setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, public_key);
 		this.publicKey = public_key;
 
 		try {
 			this.privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
 
-			Accounts.storageLocation.setItem('private_key', private_key);
+			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, private_key);
 		} catch (error) {
 			this.setState('ERROR');
 			return span.error('Error importing private key: ', error);
@@ -494,7 +494,7 @@ class E2E extends Emitter {
 			const publicKey = await Rsa.exportPublicKey(keyPair.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
-			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
+			setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting public key');
@@ -503,7 +503,7 @@ class E2E extends Emitter {
 		try {
 			const privateKey = await Rsa.exportPrivateKey(keyPair.privateKey);
 
-			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
+			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, JSON.stringify(privateKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting private key');
@@ -518,7 +518,7 @@ class E2E extends Emitter {
 
 	async createRandomPassword(): Promise<string> {
 		const randomPassword = await generatePassphrase();
-		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
+		setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, randomPassword);
 		return randomPassword;
 	}
 
