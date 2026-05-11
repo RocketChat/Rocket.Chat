@@ -49,10 +49,6 @@ on:
         required: true
       CR_PAT:
         required: true
-      TEMP_DOCKERHUB_FIPS_USER:
-        required: false
-      TEMP_DOCKERHUB_FIPS_PASS:
-        required: false
       QASE_API_TOKEN:
         required: false
       REPORTER_ROCKETCHAT_URL:
@@ -88,8 +84,6 @@ jobs:
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
     strategy:
       fail-fast: false
@@ -136,13 +130,6 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
-
-      - name: Login to DockerHub for FIPS base images
-        if: inputs.release == 'fips' && env.TEMP_DOCKERHUB_FIPS_USER != '' && env.TEMP_DOCKERHUB_FIPS_PASS != ''
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-          password: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
