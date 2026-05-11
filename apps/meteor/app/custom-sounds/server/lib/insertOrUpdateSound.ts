@@ -9,12 +9,8 @@ export type ICustomSoundData = {
 	name: string;
 	extension: string;
 	previousName?: string;
-	previousSound?: {
-		extension?: string;
-	};
 	previousExtension?: string;
 	newFile?: boolean;
-	random?: number;
 };
 
 export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<string> => {
