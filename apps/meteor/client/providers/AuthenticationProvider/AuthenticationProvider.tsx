@@ -10,6 +10,8 @@ import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisio
 import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -125,27 +127,16 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 				}),
 			getLoginToken: () => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? null,
 			wipeLocalAuth: () => {
-				try {
-					Accounts._unstoreLoginToken();
-				} catch {
-					// ignore
-				}
+				removeStoredItem(STORAGE_KEYS.USER_ID);
+				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
 				try {
 					(Meteor.connection as unknown as { setUserId: (uid: string | null) => void }).setUserId(null);
 				} catch {
 					// ignore
 				}
 			},
-			unstoreLoginToken: (callback) => {
-				const { _unstoreLoginToken } = Accounts;
-				Accounts._unstoreLoginToken = function (...args) {
-					callback();
-					_unstoreLoginToken.apply(Accounts, args);
-				};
-				return () => {
-					Accounts._unstoreLoginToken = _unstoreLoginToken;
-				};
-			},
+			unstoreLoginToken: (callback) => getDdpSdk().account.onLogout(callback),
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
