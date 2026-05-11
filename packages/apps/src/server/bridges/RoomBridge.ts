@@ -21,10 +21,9 @@ const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
 		// This prevents the field being added when a room gets created
 		// since on room creation `isPartial=false` and so these props are spread on the final room object
 		// If we need to allow abac room creation from apps, we would need to remove this.
-		if ((room as any)._unmappedProperties_) {
-			delete (room as any)._unmappedProperties_[field];
-		}
+		delete (room as any)._unmappedProperties_?.[field];
 	}
+
 	return room;
 };
 
