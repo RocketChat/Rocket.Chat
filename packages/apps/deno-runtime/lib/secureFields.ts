@@ -1,17 +1,12 @@
+import { kSecureFields, WithSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
+
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 
-export type DataObjectWithSecureFields = {
-	'@secureFields': {
-		permission: string,
-		name: string,
-		value: unknown;
-	}[],
-	[key: string]: unknown,
-}
+export type { WithSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
 
-export function applySecureFields(object: DataObjectWithSecureFields) {
-	const { '@secureFields': secureFields, ...rest } = object;
+export function applySecureFields(object: WithSecureFields<Record<string, unknown>>) {
+	const { [kSecureFields]: secureFields, ...rest } = object;
 
 	const app = AppObjectRegistry.get<App>('app');
 
