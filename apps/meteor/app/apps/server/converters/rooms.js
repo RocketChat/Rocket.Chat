@@ -1,3 +1,4 @@
+import { mapWithSecureFields, secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
@@ -283,49 +284,37 @@ export class AppRoomsConverter {
 		}
 
 		const map = {
-			'id': '_id',
-			'displayName': 'fname',
-			'slugifiedName': 'name',
-			'members': 'members',
-			'userIds': 'uids',
-			'messageCount': 'msgs',
-			'createdAt': 'ts',
-			'updatedAt': '_updatedAt',
-			'closedAt': 'closedAt',
-			'lastModifiedAt': 'lm',
-			'customFields': 'customFields',
-			'livechatData': 'livechatData',
-			'isWaitingResponse': 'waitingResponse',
-			'isOpen': 'open',
-			'_USERNAMES': '_USERNAMES',
-			'description': 'description',
-			'source': 'source',
-			'closer': 'closer',
-			'teamId': 'teamId',
-			'isTeamMain': 'teamMain',
-			'@secureFields': (room) => {
-				const value = [
-					{
-						permission: 'abac.read',
-						name: 'abacAttributes',
-						value: room.abacAttributes,
-					},
-				];
-
-				delete room.abacAttributes;
-				return value;
-			},
-			'isDefault': (room) => {
+			id: '_id',
+			displayName: 'fname',
+			slugifiedName: 'name',
+			members: 'members',
+			userIds: 'uids',
+			messageCount: 'msgs',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			closedAt: 'closedAt',
+			lastModifiedAt: 'lm',
+			customFields: 'customFields',
+			livechatData: 'livechatData',
+			isWaitingResponse: 'waitingResponse',
+			isOpen: 'open',
+			_USERNAMES: '_USERNAMES',
+			description: 'description',
+			source: 'source',
+			closer: 'closer',
+			teamId: 'teamId',
+			isTeamMain: 'teamMain',
+			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
 				return result;
 			},
-			'isReadOnly': (room) => {
+			isReadOnly: (room) => {
 				const result = !!room.ro;
 				delete room.ro;
 				return result;
 			},
-			'displaySystemMessages': (room) => {
+			displaySystemMessages: (room) => {
 				const { sysMes } = room;
 
 				if (typeof sysMes === 'undefined') {
@@ -335,12 +324,12 @@ export class AppRoomsConverter {
 				delete room.sysMes;
 				return sysMes;
 			},
-			'type': (room) => {
+			type: (room) => {
 				const result = this._convertTypeToApp(room.t);
 				delete room.t;
 				return result;
 			},
-			'creator': async (room) => {
+			creator: async (room) => {
 				const { u } = room;
 
 				if (!u) {
@@ -351,7 +340,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(u._id);
 			},
-			'visitor': (room) => {
+			visitor: (room) => {
 				const { v } = room;
 
 				if (!v) {
@@ -360,7 +349,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('visitors').convertById(v._id);
 			},
-			'contact': (room) => {
+			contact: (room) => {
 				const { contactId } = room;
 
 				if (!contactId) {
@@ -375,7 +364,7 @@ export class AppRoomsConverter {
 			// let's call X and Y. Then if the contact sends a message using X phone number,
 			// then room.v.phoneNo would be X and correspondingly we'll store the timestamp of
 			// the last message from this visitor from X phone no on room.v.lastMessageTs
-			'visitorChannelInfo': (room) => {
+			visitorChannelInfo: (room) => {
 				const { v } = room;
 
 				if (!v) {
@@ -389,7 +378,7 @@ export class AppRoomsConverter {
 					...(lastMessageTs && { lastMessageTs }),
 				};
 			},
-			'department': async (room) => {
+			department: async (room) => {
 				const { departmentId } = room;
 
 				if (!departmentId) {
@@ -400,7 +389,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('departments').convertById(departmentId);
 			},
-			'closedBy': async (room) => {
+			closedBy: async (room) => {
 				const { closedBy } = room;
 
 				if (!closedBy) {
@@ -414,7 +403,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
-			'servedBy': async (room) => {
+			servedBy: async (room) => {
 				const { servedBy } = room;
 
 				if (!servedBy) {
@@ -425,7 +414,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(servedBy._id);
 			},
-			'responseBy': async (room) => {
+			responseBy: async (room) => {
 				const { responseBy } = room;
 
 				if (!responseBy) {
@@ -436,7 +425,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(responseBy._id);
 			},
-			'parentRoom': async (room) => {
+			parentRoom: async (room) => {
 				const { prid } = room;
 
 				if (!prid) {
@@ -447,6 +436,22 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('rooms').convertById(prid);
 			},
+			...secureFieldsMapper((room) => {
+				if (!room.abacAttributes) {
+					return undefined;
+				}
+
+				const value = [
+					{
+						permission: 'abac.read',
+						name: 'abacAttributes',
+						value: room.abacAttributes,
+					},
+				];
+
+				delete room.abacAttributes;
+				return value;
+			}),
 		};
 
 		return transformMappedData(originalRoom, map);

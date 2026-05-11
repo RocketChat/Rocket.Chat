@@ -3,12 +3,16 @@ import { Buffer } from 'node:buffer';
 import { decode, Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
-import { applySecureFields, DataObjectWithSecureFields } from './secureFields.ts';
+import { applySecureFields, type WithSecureFields } from './secureFields.ts';
+
+const FUNCTION_DISABLER_EXT = 0;
+const BUFFER_HANDLER_EXT = 1;
+const SECURE_FIELDS_HANDLER_EXT = 2;
 
 const extensionCodec = new ExtensionCodec();
 
 extensionCodec.register({
-	type: 0,
+	type: FUNCTION_DISABLER_EXT,
 	encode: (object: unknown) => {
 		// We don't care about functions, but also don't want to throw an error
 		if (typeof object === 'function' || object instanceof App) {
@@ -22,7 +26,7 @@ extensionCodec.register({
 
 // Since Deno doesn't have Buffer by default, we need to use Uint8Array
 extensionCodec.register({
-	type: 1,
+	type: BUFFER_HANDLER_EXT,
 	encode: (object: unknown) => {
 		if (object instanceof Buffer) {
 			return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
@@ -37,9 +41,9 @@ extensionCodec.register({
 });
 
 extensionCodec.register({
-	type: 2,
+	type: SECURE_FIELDS_HANDLER_EXT,
 	encode: (_object: unknown) => null,
-	decode: (data: Uint8Array) => applySecureFields(decode(data, { extensionCodec }) as DataObjectWithSecureFields),
+	decode: (data: Uint8Array) => applySecureFields(decode(data, { extensionCodec }) as WithSecureFields<Record<string, unknown>>),
 });
 
 export const encoder = new Encoder({ extensionCodec });

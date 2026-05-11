@@ -1,9 +1,15 @@
 import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
 
+import { hasSecureFields } from '../../../lib/SecureFields';
+
 const extensionCodec = new ExtensionCodec();
 
+const FUNCTION_DISABLER_EXT = 0;
+const BUFFER_HANDLER_EXT = 1;
+const SECURE_FIELDS_HANDLER_EXT = 2;
+
 extensionCodec.register({
-	type: 0,
+	type: FUNCTION_DISABLER_EXT,
 	encode: (object: unknown) => {
 		// We don't care about functions, but also don't want to throw an error
 		if (typeof object === 'function') {
@@ -16,7 +22,7 @@ extensionCodec.register({
 
 // We need to handle Buffers because Deno needs its own decoding
 extensionCodec.register({
-	type: 1,
+	type: BUFFER_HANDLER_EXT,
 	encode: (object: unknown) => {
 		if (object instanceof Buffer) {
 			return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
@@ -28,13 +34,11 @@ extensionCodec.register({
 });
 
 extensionCodec.register({
-	type: 2,
+	type: SECURE_FIELDS_HANDLER_EXT,
 	encode: (object: unknown) => {
-		if (object?.['@secureFields']) {
+		if (hasSecureFields(object)) {
 			return encode(object, { extensionCodec });
 		}
-
-		return null;
 	},
 
 	decode: (_data: Uint8Array) => undefined,
