@@ -1,4 +1,4 @@
-import { mapWithSecureFields, secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
+import { secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
@@ -59,7 +59,6 @@ export class AppRoomsConverter {
 			contactId: 'contactId',
 			departmentId: 'departmentId',
 			parentRoomId: 'prid',
-			abacAttributes: 'abacAttributes',
 			visitor: (data) => {
 				const { v } = data;
 				if (!v) {

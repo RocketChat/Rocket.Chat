@@ -13,16 +13,14 @@ import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
-import type { DenoConfigurationFileSchema } from './typings';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
-import { AppPermissionManager } from '../../managers/AppPermissionManager';
-import { AppPermissions } from '../../permissions/AppPermissions';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
+import type { DenoConfigurationFileSchema } from './typings';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -200,7 +198,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
 
 		this.debug = baseDebug.extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger(() => Boolean(AppPermissionManager.hasPermission(this.getAppId(), AppPermissions.abac.read)));
+		this.messenger = new ProcessMessenger();
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
