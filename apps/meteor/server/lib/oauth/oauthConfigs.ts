@@ -1,4 +1,5 @@
 import type { Strategy } from 'passport';
+import { Strategy as AppleStrategy } from 'passport-apple';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -20,6 +21,10 @@ export const OAuthConfigs: Record<string, OAuthConfig> = {
 	google: {
 		strategy: GoogleStrategy,
 		scope: ['email', 'profile'],
+	},
+	apple: {
+		strategy: AppleStrategy,
+		scope: ['name', 'email'],
 	},
 } as const;
 

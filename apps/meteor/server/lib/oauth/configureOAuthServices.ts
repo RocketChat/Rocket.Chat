@@ -21,12 +21,11 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 			new Strategy(
 				{
 					clientID: config.clientId,
-					clientSecret: config.clientSecret,
 					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
 					state: true,
 					pkce: true,
-					scope: config.scope,
 					profileFields: ['id', 'displayName', 'emails'],
+					...config,
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
