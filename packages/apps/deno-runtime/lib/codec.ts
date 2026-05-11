@@ -1,8 +1,10 @@
 import { Buffer } from 'node:buffer';
-import { Decoder, Encoder, ExtensionCodec, decode as decodeMsgpack } from '@msgpack/msgpack';
 
+import { decode, Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 import type { App as _App } from '@rocket.chat/apps-engine/definition/App';
+
 import { require } from './require.ts';
+import { applySecureFields, DataObjectWithSecureFields } from './secureFields.ts';
 
 const { App } = require('@rocket.chat/apps-engine/definition/App.js') as {
 	App: typeof _App;
@@ -39,12 +41,10 @@ extensionCodec.register({
 	},
 });
 
-// Type 2 wraps objects that the host stripped fields from before sending.
-// The subprocess never produces type 2 itself; it only needs to unwrap.
 extensionCodec.register({
 	type: 2,
-	encode: () => null,
-	decode: (data: Uint8Array) => decodeMsgpack(data, { extensionCodec }),
+	encode: (_object: unknown) => null,
+	decode: (data: Uint8Array) => applySecureFields(decode(data, { extensionCodec }) as DataObjectWithSecureFields),
 });
 
 export const encoder = new Encoder({ extensionCodec });
