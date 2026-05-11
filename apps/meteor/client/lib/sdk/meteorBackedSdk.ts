@@ -1,8 +1,9 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
+
+import { parseDDP } from './ddpProtocol';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -100,7 +101,7 @@ const createMeteorBackedClient = () => {
 		const handler = (rawMsg: string): void => {
 			let msg: unknown;
 			try {
-				msg = DDPCommon.parseDDP(rawMsg);
+				msg = parseDDP(rawMsg);
 			} catch {
 				return;
 			}
