@@ -1,43 +1,48 @@
-import {
-	Decoder as _Decoder,
-	Encoder as _Encoder,
-	ExtensionCodec,
-	decode as decodeMsgpack,
-	encode as encodeMsgpack,
-} from '@msgpack/msgpack';
+import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
 
-const ABAC_ATTRIBUTES_KEY = 'abacAttributes';
+import { hasSecureFields } from '../../../lib/SecureFields';
 
-const registerSharedTypes = (extensionCodec: ExtensionCodec): void => {
-	extensionCodec.register({
-		type: 0,
-		encode: (object: unknown) => {
-			// We don't care about functions, but also don't want to throw an error
-			if (typeof object === 'function') {
-				return new Uint8Array([0]);
-			}
-		},
+const extensionCodec = new ExtensionCodec();
 
-		decode: (_data: Uint8Array) => undefined,
-	});
+const FUNCTION_DISABLER_EXT = 0;
+const BUFFER_HANDLER_EXT = 1;
+const SECURE_FIELDS_HANDLER_EXT = 2;
 
-	// We need to handle Buffers because Deno needs its own decoding
-	extensionCodec.register({
-		type: 1,
-		encode: (object: unknown) => {
-			if (object instanceof Buffer) {
-				return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
-			}
-		},
+extensionCodec.register({
+	type: FUNCTION_DISABLER_EXT,
+	encode: (object: unknown) => {
+		// We don't care about functions, but also don't want to throw an error
+		if (typeof object === 'function') {
+			return new Uint8Array([0]);
+		}
+	},
 
-		// msgpack will reuse the Uint8Array instance, so WE NEED to copy it instead of simply creating a view
-		decode: (data: Uint8Array) => Buffer.from(data),
-	});
-};
+	decode: (_data: Uint8Array) => undefined,
+});
 
-export type Encoder = {
-	encode(data: unknown): Uint8Array;
-};
+// We need to handle Buffers because Deno needs its own decoding
+extensionCodec.register({
+	type: BUFFER_HANDLER_EXT,
+	encode: (object: unknown) => {
+		if (object instanceof Buffer) {
+			return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
+		}
+	},
+
+	// msgpack will reuse the Uint8Array instance, so WE NEED to copy it instead of simply creating a view
+	decode: (data: Uint8Array) => Buffer.from(data),
+});
+
+extensionCodec.register({
+	type: SECURE_FIELDS_HANDLER_EXT,
+	encode: (object: unknown) => {
+		if (hasSecureFields(object)) {
+			return encode(object, { extensionCodec });
+		}
+	},
+
+	decode: (_data: Uint8Array) => undefined,
+});
 
 /**
  * The Encoder and Decoder classes perform "stateful" operations, i.e. they read from a
@@ -50,43 +55,8 @@ export type Encoder = {
  * For that reason, we can't have a singleton instance of Encoder and Decoder, but rather one
  * instance for each time we create a new subprocess
  */
-export const newEncoder = (canReadAbacAttributes: () => boolean): Encoder => {
-	const extensionCodec = new ExtensionCodec();
-	registerSharedTypes(extensionCodec);
+export const newEncoder = () => new _Encoder({ extensionCodec });
+export const newDecoder = () => new _Decoder({ extensionCodec });
 
-	extensionCodec.register({
-		type: 2,
-		encode: (object: unknown) => {
-			if (typeof object !== 'object' || object === null || !(ABAC_ATTRIBUTES_KEY in object)) {
-				return null;
-			}
-
-			if (canReadAbacAttributes()) {
-				return null;
-			}
-
-			const rest = { ...object };
-			delete (rest as Record<string, unknown>)[ABAC_ATTRIBUTES_KEY];
-			return encodeMsgpack(rest, { extensionCodec });
-		},
-		decode: (data: Uint8Array) => decodeMsgpack(data, { extensionCodec }),
-	});
-
-	const encoder = new _Encoder({ extensionCodec });
-	return { encode: (data: unknown) => encoder.encode(data) };
-};
-
-export const newDecoder = (): _Decoder => {
-	const extensionCodec = new ExtensionCodec();
-	registerSharedTypes(extensionCodec);
-
-	extensionCodec.register({
-		type: 2,
-		encode: () => null,
-		decode: (data: Uint8Array) => decodeMsgpack(data, { extensionCodec }),
-	});
-
-	return new _Decoder({ extensionCodec });
-};
-
+export type Encoder = _Encoder;
 export type Decoder = _Decoder;
