@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { RequiredField } from '@rocket.chat/core-typings';
 
+import type { ICustomSoundData } from './insertOrUpdateSound';
 import { RocketChatFile } from '../../../file/server';
-import type { ICustomSoundData } from '../methods/insertOrUpdateSound';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 export const uploadCustomSound = async (
