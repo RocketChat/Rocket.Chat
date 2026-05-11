@@ -1,12 +1,9 @@
 import { Buffer } from 'node:buffer';
-import { Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 
-import type { App as _App } from '@rocket.chat/apps-engine/definition/App';
-import { require } from './require.ts';
+import { decode, Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
+import { App } from '@rocket.chat/apps-engine/definition/App';
 
-const { App } = require('@rocket.chat/apps-engine/definition/App.js') as {
-	App: typeof _App;
-};
+import { applySecureFields, DataObjectWithSecureFields } from './secureFields.ts';
 
 const extensionCodec = new ExtensionCodec();
 
@@ -37,6 +34,12 @@ extensionCodec.register({
 	decode: (data: Uint8Array) => {
 		return Buffer.from(data);
 	},
+});
+
+extensionCodec.register({
+	type: 2,
+	encode: (_object: unknown) => null,
+	decode: (data: Uint8Array) => applySecureFields(decode(data, { extensionCodec }) as DataObjectWithSecureFields),
 });
 
 export const encoder = new Encoder({ extensionCodec });
