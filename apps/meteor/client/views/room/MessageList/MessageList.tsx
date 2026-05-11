@@ -186,7 +186,6 @@ export const MessageList = function MessageList({
 		if (!handle) {
 			return false;
 		}
-		// `unreadMarkIndex` is the index in `messages`; VList also has a leading row when `canPreview`.
 		const listIndexOffset = canPreview ? 1 : 0;
 		const markListIndex = listIndexOffset + unreadMarkIndex.current;
 		const viewStartIndex = handle.findItemIndex(handle.scrollOffset);

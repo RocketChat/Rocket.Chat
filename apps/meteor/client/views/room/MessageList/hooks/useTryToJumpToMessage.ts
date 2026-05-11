@@ -34,10 +34,6 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		enabled: !!messageJumpParam,
 	});
 
-	// REVIEW TODO: Check if we can use the onScroll event to do this
-	// Context: jump to message only works in the scroll event if the message is not loaded yet
-	// If the message is loaded, the scrollelement does not resize, not triggering the scroll event
-
 	useEffect(() => {
 		if (!messageJumpParam) {
 			return;
@@ -75,14 +71,19 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 
 		setHighlightMessage(loadedMessage._id);
 
-		setTimeout(() => {
+		const clearHighlightMessageTimeout = setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 
-		setTimeout(() => {
+		const setIsJumpingToMessageTimeout = setTimeout(() => {
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
 		}, 1000);
+
+		return () => {
+			clearTimeout(clearHighlightMessageTimeout);
+			clearTimeout(setIsJumpingToMessageTimeout);
+		};
 	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, router, message]);
 };
 

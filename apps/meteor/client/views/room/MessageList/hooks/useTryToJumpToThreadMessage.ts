@@ -9,11 +9,6 @@ import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
-/**
- * Handles `?msg=` deep links that point to a thread reply or thread main message: opens the
- * thread in the room toolbox and loads surrounding channel history. Scrolling to the target
- * inside the thread is done in `ThreadMessageList` using the same `msg` param.
- */
 const useTryToJumpToThreadMessage = (): void => {
 	const messageJumpParam = useSearchParameter('msg');
 	const goToRoom = useGoToRoom();
