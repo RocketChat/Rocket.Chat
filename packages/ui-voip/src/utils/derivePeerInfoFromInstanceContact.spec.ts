@@ -32,6 +32,18 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				number: 'unknown',
 			});
 		});
+
+		it('returns external peer info with displayName when provided', () => {
+			const contact: CallContact = {
+				type: 'sip',
+				id: '+5511999999999',
+				displayName: 'Customer Support',
+			};
+			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				number: '+5511999999999',
+				displayName: 'Customer Support',
+			});
+		});
 	});
 
 	describe('user contact', () => {
