@@ -491,7 +491,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant for all ABAC rooms',
 				userId: user._id,
 			});
-			return abacRooms as IRoom[];
+			return abacRooms;
 		}
 
 		const decisionRequests = abacRooms.map((room) => ({

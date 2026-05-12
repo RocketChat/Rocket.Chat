@@ -1,4 +1,4 @@
-import { Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { api, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type {
@@ -428,6 +428,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return Rooms.isAbacAttributeInUse(key, attribute.values || []);
 	}
 
+	private broadcastRoomUpdate(room: IRoom): void {
+		void api.broadcast('watch.rooms', { clientAction: 'updated', room });
+	}
+
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
@@ -435,6 +439,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
 			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
+			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
 			return;
 		}
 
@@ -444,6 +449,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
+
+		if (updated) {
+			this.broadcastRoomUpdate(updated);
+		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (diffAttributeSets(previous, normalized).added) {
@@ -476,6 +485,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 			);
 			const next = [...previous, { key, values }];
 
+			this.broadcastRoomUpdate({ ...room, abacAttributes: next });
+
 			await this.onRoomAttributesChanged(room, next);
 			return;
 		}
@@ -486,7 +497,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
+		const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 		void Audit.objectAttributeChanged(
 			{ _id: room._id, name: room.name },
 			room.abacAttributes || [],
@@ -494,6 +505,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			'key-updated',
 			actor,
 		);
+
+		if (updated) {
+			this.broadcastRoomUpdate(updated);
+		}
 
 		if (diffAttributeSets([previous[existingIndex]], [{ key, values }]).added) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
@@ -516,17 +531,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 			await Rooms.unsetAbacAttributesById(rid);
 			void Audit.objectAttributesRemoved({ _id: room._id }, previous, actor);
 
+			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
+
 			return;
 		}
 
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
-		void Audit.objectAttributeRemoved(
-			{ _id: room._id, name: room.name },
-			previous,
-			previous.filter((a) => a.key !== key),
-			'key-removed',
-			actor,
-		);
+		const next = previous.filter((a) => a.key !== key);
+		void Audit.objectAttributeRemoved({ _id: room._id, name: room.name }, previous, next, 'key-removed', actor);
+
+		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
 	}
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
@@ -549,6 +563,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, previous, next, 'key-added', actor);
 
+		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
+
 		await this.onRoomAttributesChanged(room, next);
 	}
 
@@ -570,6 +586,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 				'key-updated',
 				actor,
 			);
+
+			if (updated) {
+				this.broadcastRoomUpdate(updated);
+			}
+
 			if (diffAttributeSets([exists], [{ key, values }]).added) {
 				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
@@ -582,13 +603,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
-		void Audit.objectAttributeChanged(
-			{ _id: room._id, name: room.name },
-			room.abacAttributes || [],
-			updated?.abacAttributes || [],
-			'key-added',
-			actor,
-		);
+		const nextAttributes = updated?.abacAttributes || [...(room.abacAttributes || []), { key, values }];
+		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], nextAttributes, 'key-added', actor);
+
+		this.broadcastRoomUpdate({ ...room, abacAttributes: nextAttributes });
 
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
