@@ -106,6 +106,7 @@ export class IncomingSipCall extends BaseSipCall {
 			calleeAgent,
 			features: SIP_CALL_FEATURES,
 			...(divertedBy && { divertedBy }),
+			sipCallId: req.get('Call-ID'),
 		});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
