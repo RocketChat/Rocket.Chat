@@ -38,7 +38,7 @@ const onMeteorStatusChange = (cb: () => void): (() => void) => {
 	// through `connection.on(...)` callers (notably `CachedStore.performInitialization`)
 	// and abort their initialization before `setupListener()` runs, silently
 	// breaking real-time stream subscriptions for settings, subscriptions, etc.
-	const stream = (Meteor.connection as unknown as { _stream?: { on?: (event: string, cb: () => void) => void } } | undefined)?._stream;
+	const stream = Meteor.connection?._stream;
 	if (!stream || typeof stream.on !== 'function') {
 		// Test / SSR environment with a stubbed Meteor — no stream to subscribe to.
 		return noopUnsubscribe;
@@ -75,8 +75,8 @@ const meteorStatusToSdkStatus = (): string => {
 };
 
 const createMeteorBackedClient = () => {
-	const subscribe = (name: string, ...args: unknown[]) => {
-		const sub = (Meteor.connection.subscribe as (name: string, ...args: unknown[]) => Meteor.SubscriptionHandle)(name, ...args);
+	const subscribe = (name: string, ...args: Parameters<typeof Meteor.connection.subscribe>) => {
+		const sub = Meteor.connection.subscribe(name, ...args);
 		// Approximate DDPSDK's Subscription shape with Meteor's handle. The
 		// codebase only reads `stop`/`ready`/`isReady`/`id` from it.
 		return Object.assign(sub, {
@@ -84,7 +84,7 @@ const createMeteorBackedClient = () => {
 			isReady: false,
 			ready: () => Promise.resolve(),
 			onChange: () => undefined,
-		}) as unknown as ReturnType<DDPSDK['client']['subscribe']>;
+		});
 	};
 
 	const callAsync = (method: string, ...args: unknown[]): Promise<unknown> & { id: string } => {
@@ -108,7 +108,7 @@ const createMeteorBackedClient = () => {
 			if ((msg as { collection?: unknown }).collection !== id) return;
 			callback(msg);
 		};
-		const stream = (Meteor.connection as unknown as { _stream: { on: (k: 'message', cb: (raw: string) => void) => void } })._stream;
+		const stream = Meteor.connection._stream!;
 		stream.on('message', handler);
 		// Meteor's stream `on` doesn't expose an off; the listener is harmless
 		// and lives for the page lifetime. Caller's stop is a no-op.
