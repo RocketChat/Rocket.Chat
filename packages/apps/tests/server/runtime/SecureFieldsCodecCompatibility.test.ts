@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as assert from 'node:assert';
-import { describe, it, beforeEach, afterEach, before, after } from 'node:test';
+import { describe, it, before, after } from 'node:test';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -99,29 +99,30 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 		let appPackage: IParseAppPackageResult;
 		let appStorageItem: IAppStorageItem;
 
-		before(async () => {
-			manager = buildManager();
-			appPackage = await parseAppPackage(manager, 'secure-fields-test-with-abac_0.0.1.zip');
-			appStorageItem = {
-				id: 'secure-fields-test-with-abac',
-				status: AppStatus.MANUALLY_ENABLED,
-			} as IAppStorageItem;
-		});
+		before(
+			async () => {
+				manager = buildManager();
+				appPackage = await parseAppPackage(manager, 'secure-fields-test-with-abac_0.0.1.zip');
+				appStorageItem = {
+					id: 'secure-fields-test-with-abac',
+					status: AppStatus.MANUALLY_ENABLED,
+				} as IAppStorageItem;
 
-		beforeEach(async () => {
-			controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
-			await controller.setupApp();
-		});
+				controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+				await controller.setupApp();
+			},
+			{ timeout: 60_000 },
+		);
 
-		afterEach(async () => {
-			await controller?.stopApp();
-		});
+		after(
+			async () => {
+				await controller?.stopApp();
+				await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch(() => undefined);
+			},
+			{ timeout: 30_000 },
+		);
 
-		after(async () => {
-			await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch(() => undefined);
-		});
-
-		it('receives abacAttributes when the room is encoded with @@SecureFields', async () => {
+		it('receives abacAttributes when the room is encoded with @@SecureFields', { timeout: 15_000 }, async () => {
 			/**
 			 * The app's checkPreRoomCreatePrevent returns Array.isArray(room.abacAttributes).
 			 * Because the app has abac.read, Deno's applySecureFields should attach
@@ -135,7 +136,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 			assert.strictEqual(result, true, 'App with abac.read should receive abacAttributes from a @@SecureFields-encoded room');
 		});
 
-		it('still receives regular (non-secured) room fields alongside the secure field', async () => {
+		it('still receives regular (non-secured) room fields alongside the secure field', { timeout: 15_000 }, async () => {
 			/**
 			 * Verify that applying secure fields does not discard ordinary room properties.
 			 * The handler returns `true` only when abacAttributes is an array AND the
@@ -152,7 +153,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 			assert.strictEqual(result, true, 'abacAttributes should be applied to a room that also carries non-secure fields');
 		});
 
-		it('does not throw when the room carries no @@SecureFields descriptor', async () => {
+		it('does not throw when the room carries no @@SecureFields descriptor', { timeout: 15_000 }, async () => {
 			/**
 			 * Plain rooms (without @@SecureFields) must still be decodable and routable
 			 * to the handler.  abacAttributes will be absent, so the handler returns false,
@@ -183,29 +184,30 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 		let appPackage: IParseAppPackageResult;
 		let appStorageItem: IAppStorageItem;
 
-		before(async () => {
-			manager = buildManager();
-			appPackage = await parseAppPackage(manager, 'secure-fields-test-no-abac_0.0.1.zip');
-			appStorageItem = {
-				id: 'secure-fields-test-no-abac',
-				status: AppStatus.MANUALLY_ENABLED,
-			} as IAppStorageItem;
-		});
+		before(
+			async () => {
+				manager = buildManager();
+				appPackage = await parseAppPackage(manager, 'secure-fields-test-no-abac_0.0.1.zip');
+				appStorageItem = {
+					id: 'secure-fields-test-no-abac',
+					status: AppStatus.MANUALLY_ENABLED,
+				} as IAppStorageItem;
 
-		beforeEach(async () => {
-			controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
-			await controller.setupApp();
-		});
+				controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+				await controller.setupApp();
+			},
+			{ timeout: 60_000 },
+		);
 
-		afterEach(async () => {
-			await controller?.stopApp();
-		});
+		after(
+			async () => {
+				await controller?.stopApp();
+				await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch(() => undefined);
+			},
+			{ timeout: 30_000 },
+		);
 
-		after(async () => {
-			await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch(() => undefined);
-		});
-
-		it('does not receive abacAttributes when the app lacks abac.read permission', async () => {
+		it('does not receive abacAttributes when the app lacks abac.read permission', { timeout: 15_000 }, async () => {
 			/**
 			 * The room is encoded with @@SecureFields for abacAttributes, but this app
 			 * does not declare abac.read.  Deno's applySecureFields should withhold the
@@ -219,7 +221,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 			assert.strictEqual(result, false, 'App without abac.read must not receive abacAttributes from a @@SecureFields-encoded room');
 		});
 
-		it('still decodes regular (non-secured) room fields correctly', async () => {
+		it('still decodes regular (non-secured) room fields correctly', { timeout: 15_000 }, async () => {
 			/**
 			 * Even though abacAttributes is withheld, the remaining room properties
 			 * (id, type, slugifiedName, customFields, messageCount, …) must survive
