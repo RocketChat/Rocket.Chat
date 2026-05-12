@@ -36,11 +36,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onStartBusinessHours(): Promise<void> {
 		try {
-			await this.UsersRepository.removeBusinessHoursFromAllUsers();
-
-			// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
-			await makeAgentsUnavailableBasedOnBusinessHour();
-
 			const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 			const day = currentTime.format('dddd');
 			const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
@@ -54,12 +49,17 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
 			bhLogger.info({
 				msg: 'Starting Multiple Business Hours',
+				totalActiveBusinessHours: activeBusinessHours.length,
 				totalBusinessHoursToOpen: businessHoursToOpen.length,
 				top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
 			});
+
+			await this.UsersRepository.removeBusinessHoursFromAllUsers();
+			await makeAgentsUnavailableBasedOnBusinessHour();
+
 			for (const businessHour of businessHoursToOpen) {
-				void this.openBusinessHour(businessHour).catch((err) => {
-					bhLogger.error({ msg: 'Error while opening business hour during start', businessHourId: businessHour._id, err });
+				void openBusinessHour(businessHour).catch((err) => {
+					bhLogger.error({ msg: 'Error opening business hour during start', businessHourId: businessHour._id, err });
 				});
 			}
 		} catch (err) {
@@ -75,7 +75,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			},
 		});
 		for (const businessHour of businessHours) {
-			void this.openBusinessHour(businessHour);
+			void this.openBusinessHour(businessHour).catch((err) => {
+				bhLogger.error({ msg: 'Error opening business hour during cron', businessHourId: businessHour._id, err });
+			});
 		}
 	}
 
