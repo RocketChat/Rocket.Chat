@@ -15,6 +15,8 @@ type MediaCallHistoryExternalProps = {
 const getContact = (item: ExternalCallEndpointData['item']) => {
 	return {
 		number: item.contactExtension,
+		name: item.contactName,
+		username: item.contactUsername,
 	};
 };
 

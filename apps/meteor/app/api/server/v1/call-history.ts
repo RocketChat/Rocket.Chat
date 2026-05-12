@@ -114,11 +114,9 @@ const callHistoryListEndpoints = API.v1.get(
 			...(filterText && {
 				$or: [
 					{
-						external: false,
 						contactName: { $regex: escapeRegExp(filterText), $options: 'i' },
 					},
 					{
-						external: false,
 						contactUsername: { $regex: escapeRegExp(filterText), $options: 'i' },
 					},
 					{

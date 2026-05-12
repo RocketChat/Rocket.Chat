@@ -134,7 +134,7 @@ const CallHistoryPage = () => {
 				return {
 					_id: item._id,
 					contact: item.contactExtension
-						? ({ number: item.contactExtension } as CallHistoryTableExternalContact)
+						? ({ number: item.contactExtension, name: item.contactName, username: item.contactUsername } as CallHistoryTableExternalContact)
 						: ({ unknown: true } as CallHistoryUnknownContact),
 					type: item.direction,
 					status: item.state,

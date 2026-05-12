@@ -48,6 +48,8 @@ export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	external: true;
 
 	contactExtension: string;
+	contactName?: string;
+	contactUsername?: string;
 }
 
 export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;

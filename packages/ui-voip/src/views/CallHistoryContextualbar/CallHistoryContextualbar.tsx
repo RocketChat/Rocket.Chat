@@ -30,6 +30,8 @@ export type InternalCallHistoryContact = {
 
 export type ExternalCallHistoryContact = {
 	number: string;
+	name?: string;
+	username?: string;
 };
 
 export type CallHistoryData = {
@@ -81,7 +83,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 						{isInternalCallHistoryContact(contact) ? (
 							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} />
 						) : (
-							<CallHistoryExternalUser number={contact.number} />
+							<CallHistoryExternalUser number={contact.number} name={contact.name} username={contact.username} />
 						)}
 					</InfoPanelSection>
 					<InfoPanelSection>

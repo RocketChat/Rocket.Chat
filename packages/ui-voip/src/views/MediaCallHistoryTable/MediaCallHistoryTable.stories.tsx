@@ -78,8 +78,15 @@ const getContact = (index: number): CallHistoryTableInternalContact | CallHistor
 			unknown: true,
 		};
 	}
+	if (index % 2 === 0) {
+		return {
+			number: `1234567890${index}`,
+			name: `External ${index}`,
+		};
+	}
 	return {
 		number: `1234567890${index}`,
+		username: `external_${index}`,
 	};
 };
 

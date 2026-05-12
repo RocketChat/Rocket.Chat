@@ -380,9 +380,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        12345678902
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 2
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          12345678902
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -643,17 +652,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        12345678905
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          12345678905
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -924,9 +940,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        12345678908
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 8
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          12345678908
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -1187,17 +1212,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789011
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789011
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -1468,9 +1500,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789014
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 14
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789014
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -1731,17 +1772,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789017
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789017
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -2012,9 +2060,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789020
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 20
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789020
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -2275,17 +2332,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789023
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789023
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -2556,9 +2620,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789026
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 26
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789026
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -2819,17 +2892,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789029
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789029
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -3100,9 +3180,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789032
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 32
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789032
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -3363,17 +3452,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789035
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789035
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -3644,9 +3740,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789038
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 38
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789038
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -3907,17 +4012,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789041
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789041
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -4188,9 +4300,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789044
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 44
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789044
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -4451,17 +4572,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789047
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789047
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -4732,9 +4860,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789050
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 50
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789050
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -4995,17 +5132,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789053
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789053
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -5276,9 +5420,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789056
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 56
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789056
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -5539,17 +5692,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789059
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789059
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -5820,9 +5980,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789062
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 62
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789062
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -6083,17 +6252,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789065
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789065
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -6364,9 +6540,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789068
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 68
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789068
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -6627,17 +6812,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789071
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789071
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -6908,9 +7100,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789074
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 74
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789074
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -7171,17 +7372,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789077
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789077
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -7452,9 +7660,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789080
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 80
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789080
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -7715,17 +7932,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789083
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789083
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -7996,9 +8220,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789086
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 86
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789086
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -8259,17 +8492,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789089
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789089
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -8540,9 +8780,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789092
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 92
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789092
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -8803,17 +9052,24 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                         >
-                          
-                        </i>
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789095
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789095
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -9084,9 +9340,18 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-css-1tbw8nv"
                       >
-                        123456789098
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          External 98
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full"
+                        >
+                          123456789098
+                        </div>
                       </div>
                     </div>
                   </td>

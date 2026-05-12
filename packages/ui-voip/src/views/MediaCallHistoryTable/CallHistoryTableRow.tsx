@@ -11,6 +11,8 @@ import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../componen
 
 export type CallHistoryTableExternalContact = {
 	number: string;
+	name?: string;
+	username?: string;
 };
 
 export type CallHistoryTableInternalContact = {
@@ -66,7 +68,9 @@ const CallHistoryTableRow = <T extends CallHistoryTableRowContact>({
 	return (
 		<GenericTableRow key={_id} onClick={onClick} tabIndex={0} role='link' action>
 			<GenericTableCell>
-				{isCallHistoryTableExternalContact(contact) && <CallHistoryExternalUser showIcon={false} number={contact.number} />}
+				{isCallHistoryTableExternalContact(contact) && (
+					<CallHistoryExternalUser showIcon={false} number={contact.number} name={contact.name} username={contact.username} />
+				)}
 				{isCallHistoryTableInternalContact(contact) && (
 					<CallHistoryInternalUser username={contact.username ?? ''} name={contact.name} _id={contact._id} />
 				)}

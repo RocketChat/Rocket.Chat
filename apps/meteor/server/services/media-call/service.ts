@@ -183,6 +183,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const contact = callerIsInternal ? call.callee : call.caller;
 
 		const contactExtension = contact.sipExtension || contact.id;
+		const contactName = contact.displayName || contactExtension;
 
 		const historyItem: InsertionModel<IExternalMediaCallHistoryItem> = {
 			uid,
@@ -195,6 +196,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			external: true,
 			direction,
 			contactExtension,
+			contactName,
+			contactUsername: contact.username,
 		};
 
 		await CallHistory.insertOne(historyItem).catch((err: unknown) => logger.error({ msg: 'Failed to insert item into Call History', err }));
