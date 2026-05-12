@@ -548,8 +548,17 @@ API.v1.post(
 		const lastLoggedIn = new Date();
 		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
 
-		// since we're deactiving users that are not logged in, there is no need to send data through WS
+		const cursor = Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn, role, { projection: { _id: 1 } });
+
 		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+		await cursor.forEach(({ _id }) => {
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: _id,
+				diff: { 'services.resume.loginTokens': [], 'active': false },
+			});
+		});
 
 		return API.v1.success({
 			count,
