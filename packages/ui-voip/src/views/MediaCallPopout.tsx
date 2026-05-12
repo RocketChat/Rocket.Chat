@@ -7,7 +7,7 @@ import { usePopoutWindow } from './usePopoutWindow';
 const MediaCallPopout = () => {
 	const { currentViews } = useMediaCallInstance();
 	const { sessionState, onClosePopout } = useMediaCallView();
-	const { container, closePopoutWindow, openPopoutWindow } = usePopoutWindow();
+	const { container, closePopoutWindow, openPopoutWindow } = usePopoutWindow(onClosePopout);
 
 	const onClosePopoutAndWindow = useCallback(() => {
 		onClosePopout();
@@ -23,11 +23,11 @@ const MediaCallPopout = () => {
 	useEffect(() => {
 		if (currentViews.includes('popout')) {
 			// TODO: Fix this title
-			openPopoutWindow('Call with Peer X', onClosePopout);
+			openPopoutWindow('Call with Peer X');
 			return;
 		}
 		closePopoutWindow();
-	}, [currentViews, openPopoutWindow, closePopoutWindow, onClosePopout]);
+	}, [currentViews, openPopoutWindow, closePopoutWindow]);
 
 	if (!container) {
 		return null;

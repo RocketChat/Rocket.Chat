@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const createRootElement = (externalWindow: Window) => {
 	const newRoot = externalWindow.document.createElement('div');
@@ -25,19 +25,13 @@ const copyStylesheets = (externalWindow: Window) => {
 	});
 };
 
-const attachEventListeners = (externalWindow: Window, onBeforeUnload: () => void) => {
-	externalWindow.addEventListener('beforeunload', onBeforeUnload);
-	window.addEventListener('beforeunload', onBeforeUnload);
-};
-
-const openExternalWindow = (title: string, onBeforeUnload: () => void) => {
+const openExternalWindow = (title: string) => {
 	try {
 		const externalWindow = window.open('', title, 'width=800,height=500,popup');
 		if (!externalWindow) {
 			throw new Error('No window was opened');
 		}
 		copyStylesheets(externalWindow);
-		attachEventListeners(externalWindow, onBeforeUnload);
 		const root = createRootElement(externalWindow);
 		return { root, externalWindow };
 	} catch (error) {
@@ -49,7 +43,7 @@ const openExternalWindow = (title: string, onBeforeUnload: () => void) => {
 
 export type PopoutContainer = { root: HTMLDivElement; ownerDocument: Document };
 type PopoutRef = { root: HTMLDivElement; externalWindow: Window; closing: boolean };
-type OpenPopoutWindow = (title: string, onCloseOrFail: () => void) => void;
+type OpenPopoutWindow = (title: string) => void;
 type ClosePopoutWindow = () => void;
 
 type UsePopoutWindowReturn = {
@@ -58,31 +52,28 @@ type UsePopoutWindowReturn = {
 	closePopoutWindow: ClosePopoutWindow;
 };
 
-export const usePopoutWindow = (): UsePopoutWindowReturn => {
+export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowReturn => {
 	const popoutRef = useRef<PopoutRef | null>(null);
 	const [container, setContainer] = useState<PopoutContainer | null>(null);
 
-	const openPopoutWindow = useCallback((title: string, onCloseOrFail: () => void) => {
-		if (!!popoutRef.current && popoutRef.current.externalWindow?.closed === false) {
-			return;
-		}
-
-		const container = openExternalWindow(title, () => {
-			if (popoutRef.current) {
-				popoutRef.current.closing = true;
+	const openPopoutWindow = useCallback(
+		(title: string) => {
+			if (!!popoutRef.current && popoutRef.current.externalWindow?.closed === false) {
+				return;
 			}
-			onCloseOrFail();
-			popoutRef.current = null;
-		});
 
-		if (container) {
-			const { root, externalWindow } = container;
-			popoutRef.current = { root, externalWindow, closing: false };
-			setContainer({ root, ownerDocument: externalWindow.document });
-			return;
-		}
-		onCloseOrFail();
-	}, []);
+			const result = openExternalWindow(title);
+
+			if (result) {
+				const { root, externalWindow } = result;
+				popoutRef.current = { root, externalWindow, closing: false };
+				setContainer({ root, ownerDocument: externalWindow.document });
+				return;
+			}
+			onBeforeUnload();
+		},
+		[onBeforeUnload],
+	);
 
 	const closePopoutWindow = useCallback(() => {
 		if (popoutRef.current !== null && popoutRef.current?.externalWindow?.closed !== true && !popoutRef.current.closing) {
@@ -91,6 +82,27 @@ export const usePopoutWindow = (): UsePopoutWindowReturn => {
 			setContainer(null);
 		}
 	}, []);
+
+	useEffect(() => {
+		const externalWindow = popoutRef.current?.externalWindow;
+		if (!externalWindow || !container) return;
+
+		const handleBeforeUnload = () => {
+			if (popoutRef.current) {
+				popoutRef.current.closing = true;
+			}
+			onBeforeUnload();
+			popoutRef.current = null;
+		};
+
+		externalWindow.addEventListener('beforeunload', handleBeforeUnload);
+		window.addEventListener('beforeunload', closePopoutWindow);
+
+		return () => {
+			externalWindow.removeEventListener('beforeunload', handleBeforeUnload);
+			window.removeEventListener('beforeunload', closePopoutWindow);
+		};
+	}, [container, onBeforeUnload, closePopoutWindow]);
 
 	return {
 		container,
