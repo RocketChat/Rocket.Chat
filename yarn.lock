@@ -9766,6 +9766,7 @@ __metadata:
     "@types/passport-facebook": "npm:^3.0.4"
     "@types/passport-github2": "npm:^1.2.9"
     "@types/passport-google-oauth20": "npm:^2"
+    "@types/passport-twitter": "npm:^1"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
     "@types/proxyquire": "npm:^1.3.31"
@@ -9911,6 +9912,7 @@ __metadata:
     passport-facebook2: "npm:^1.0.3"
     passport-github2: "npm:^0.1.12"
     passport-google-oauth20: "npm:^2.0.0"
+    passport-twitter: "npm:^1.0.4"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:10.3.1"
@@ -14697,6 +14699,16 @@ __metadata:
     "@types/oauth": "npm:*"
     "@types/passport": "npm:*"
   checksum: 10/f874fb3c8646a720c4ae2b7da905b9db03e19617981e42c64b1dbe3313e7df9ab66682de41538db3279e1805b146ba6fc35902462c1858d605c30bb20cac7609
+  languageName: node
+  linkType: hard
+
+"@types/passport-twitter@npm:^1":
+  version: 1.0.40
+  resolution: "@types/passport-twitter@npm:1.0.40"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/passport": "npm:*"
+  checksum: 10/cf97db9469acff4dffff11ecf4e12ac016fc55d478e2fbd881c7961fe36f26ba232a55f74fdd0bd0216ea49d3a9dcd4e18afac852b6bb10450f43413e4a464b7
   languageName: node
   linkType: hard
 
@@ -29239,6 +29251,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oauth@npm:0.9.x":
+  version: 0.9.15
+  resolution: "oauth@npm:0.9.15"
+  checksum: 10/6b0b10be19a461da417a37ea2821a773ef74dd667563291e1e83b2024b88e6571b0323a0a6887f2390fbaf28cc6ce5bfe0484fc22162b975305b1e19b76f5597
+  languageName: node
+  linkType: hard
+
 "object-assign@npm:^4, object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
@@ -29949,6 +29968,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-oauth1@npm:1.x.x":
+  version: 1.3.0
+  resolution: "passport-oauth1@npm:1.3.0"
+  dependencies:
+    oauth: "npm:0.9.x"
+    passport-strategy: "npm:1.x.x"
+    utils-merge: "npm:1.x.x"
+  checksum: 10/56f725cf3e3358ccb72212a6342e237ae9366172b94fdb9ac8ab380456da07dc1bb776bcdcddc9964e8e9056922fbf31c2f142d0421fd8a5b0140132d0cd9671
+  languageName: node
+  linkType: hard
+
 "passport-oauth2@npm:1.x.x":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
@@ -29966,6 +29996,16 @@ __metadata:
   version: 1.0.0
   resolution: "passport-strategy@npm:1.0.0"
   checksum: 10/5086693f2508e538dffa55a338c89fe8192fb5f4478c71f80cd5890b8573419a098f4fec88b505374f60bbe9049f6f24b9f3992678612528a3370b4dc73354a2
+  languageName: node
+  linkType: hard
+
+"passport-twitter@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "passport-twitter@npm:1.0.4"
+  dependencies:
+    passport-oauth1: "npm:1.x.x"
+    xtraverse: "npm:0.1.x"
+  checksum: 10/46c2efcbd8893c2de329770f16703b027531e2becfc8865dd288290635dcc9a678bbcec82a66ad52e49742bccd77ff4fc49f576fef2d711f49363e1b75ac1e80
   languageName: node
   linkType: hard
 
@@ -37778,6 +37818,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"xmldom@npm:0.1.x":
+  version: 0.1.31
+  resolution: "xmldom@npm:0.1.31"
+  checksum: 10/eddc09391c928be61c504a355d5b7c42cbec526e94cc1e2d092d006ed5bc1525b869fb922cbcf3f6f7aac946a6b25ec4243dc2630afb5cbec61b723829211792
+  languageName: node
+  linkType: hard
+
 "xorshift@npm:^1.1.1":
   version: 1.2.0
   resolution: "xorshift@npm:1.2.0"
@@ -37810,6 +37857,15 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: 10/ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
+  languageName: node
+  linkType: hard
+
+"xtraverse@npm:0.1.x":
+  version: 0.1.0
+  resolution: "xtraverse@npm:0.1.0"
+  dependencies:
+    xmldom: "npm:0.1.x"
+  checksum: 10/86e837a626ef363c01efa55a3e20b1d85b49d87f3de504955af119b451cb1f2c63e887bff6061335314c1d49005d851f4bc1d0cf2603dce18271aceb3e673d8a
   languageName: node
   linkType: hard
 
