@@ -25,6 +25,7 @@ import type { MediaStreamIdentification, IMediaStreamWrapper } from '../definiti
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
+import type { IPexRTCProcessor, PexipConnectionState, PexRTCInternalStateMap } from '../definition/services/pexip/IPexRTCProcessor';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -124,20 +125,24 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public get muted(): boolean {
-		if (!this.webrtcProcessor) {
+		const { serviceProcessor } = this;
+
+		if (!serviceProcessor) {
 			return false;
 		}
 
-		return this.webrtcProcessor.muted;
+		return serviceProcessor.muted;
 	}
 
 	/** indicates if the call is on hold */
 	public get held(): boolean {
-		if (!this.webrtcProcessor) {
+		const { serviceProcessor } = this;
+
+		if (!serviceProcessor) {
 			return false;
 		}
 
-		return this.webrtcProcessor.held;
+		return serviceProcessor.held;
 	}
 
 	private _remoteHeld: boolean;
@@ -176,6 +181,17 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
+
+	protected pexipProcessor: IPexRTCProcessor | null = null;
+
+	public get serviceProcessor(): IWebRTCProcessor | IPexRTCProcessor | null {
+		switch (this.service) {
+			case 'pexip':
+				return this.pexipProcessor;
+			default:
+				return this.webrtcProcessor;
+		}
+	}
 
 	private acceptedLocally: boolean;
 
@@ -424,19 +440,17 @@ export class ClientMediaCall implements IClientMediaCall {
 				return this.rejectAsUnavailable();
 			}
 
-			if (this._service === 'webrtc') {
-				try {
-					this.prepareWebRtcProcessor();
-				} catch (e) {
-					this.sendError({
-						errorType: 'service',
-						errorCode: 'service-initialization-failed',
-						critical: true,
-						errorDetails: serializeError(e),
-					});
-					await this.rejectAsUnavailable();
-					throw e;
-				}
+			try {
+				await this.prepareService();
+			} catch (e) {
+				this.sendError({
+					errorType: 'service',
+					errorCode: 'service-initialization-failed',
+					critical: true,
+					errorDetails: serializeError(e),
+				});
+				await this.rejectAsUnavailable();
+				throw e;
 			}
 
 			// Send an ACK so the server knows that this session exists and is reachable
@@ -510,23 +524,25 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 				return 'pending';
 			case 'accepted':
-				if (!this.negotiationManager.currentNegotiationId) {
-					return 'waiting-for-offer';
-				}
-
-				if (this._role === 'caller') {
-					if (!this.sentLocalSdp) {
-						return 'generating-local-sdp';
-					}
-					if (!this.receivedRemoteSdp) {
-						return 'waiting-for-answer';
-					}
-				} else {
-					if (!this.receivedRemoteSdp) {
+				if (!this.shouldIgnoreWebRTC()) {
+					if (!this.negotiationManager.currentNegotiationId) {
 						return 'waiting-for-offer';
 					}
-					if (!this.sentLocalSdp) {
-						return 'generating-local-sdp';
+
+					if (this._role === 'caller') {
+						if (!this.sentLocalSdp) {
+							return 'generating-local-sdp';
+						}
+						if (!this.receivedRemoteSdp) {
+							return 'waiting-for-answer';
+						}
+					} else {
+						if (!this.receivedRemoteSdp) {
+							return 'waiting-for-offer';
+						}
+						if (!this.sentLocalSdp) {
+							return 'generating-local-sdp';
+						}
 					}
 				}
 
@@ -547,10 +563,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.inputTrack = newInputTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setInputTrack(newInputTrack);
-		}
 
-		if (newInputTrack && !hadInputTrack) {
-			await this.negotiationManager.processNegotiations();
+			if (newInputTrack && !hadInputTrack) {
+				await this.negotiationManager.processNegotiations();
+			}
 		}
 	}
 
@@ -570,10 +586,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.screenVideoTrack = newVideoTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setScreenVideoTrack(newVideoTrack);
-		}
 
-		if (newVideoTrack && !hadVideoTrack) {
-			await this.negotiationManager.processNegotiations();
+			if (newVideoTrack && !hadVideoTrack) {
+				await this.negotiationManager.processNegotiations();
+			}
 		}
 	}
 
@@ -599,7 +615,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return null;
 		}
 
-		return this.webrtcProcessor.streams.getLocalStreamByTag(tag || 'main');
+		return this.serviceProcessor.streams.getLocalStreamByTag(tag || 'main');
 	}
 
 	public getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null {
@@ -608,7 +624,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return null;
 		}
 
-		return this.webrtcProcessor.streams.getRemoteStreamByTag(tag || 'main');
+		return this.serviceProcessor.streams.getRemoteStreamByTag(tag || 'main');
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -772,14 +788,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.isOver() || this.hidden) {
 			return;
 		}
-		if (!this.webrtcProcessor && !muted) {
+		const { serviceProcessor } = this;
+		if (!serviceProcessor) {
 			return;
 		}
 
-		this.requireWebRTC();
-		const wasMuted = this.webrtcProcessor.muted;
-		this.webrtcProcessor.setMuted(muted);
-		if (wasMuted !== this.webrtcProcessor.muted) {
+		const wasMuted = serviceProcessor.muted;
+		serviceProcessor.setMuted(muted);
+		if (wasMuted !== serviceProcessor.muted) {
 			this.emitter.emit('trackStateChange');
 		}
 	}
@@ -788,14 +804,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.isOver() || this.hidden) {
 			return;
 		}
-		if (!this.webrtcProcessor && !held) {
+		const { serviceProcessor } = this;
+		if (!serviceProcessor) {
 			return;
 		}
 
-		this.requireWebRTC();
-		const wasOnHold = this.webrtcProcessor.held;
-		this.webrtcProcessor.setHeld(held);
-		if (wasOnHold !== this.webrtcProcessor.held) {
+		const wasOnHold = serviceProcessor.held;
+		serviceProcessor.setHeld(held);
+		if (wasOnHold !== serviceProcessor.held) {
 			this.emitter.emit('trackStateChange');
 		}
 	}
@@ -806,17 +822,23 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		if (!this.webrtcProcessor && !requested) {
+		const { serviceProcessor } = this;
+		if (!serviceProcessor) {
 			return;
 		}
 
 		if (!this.isFeatureAvailable('screen-share')) {
-			this.throwError('Screen sharing is not available for this call.');
+			if (requested) {
+				this.throwError('Screen sharing is not available for this call.');
+			}
+			return;
 		}
 
-		this.requireWebRTC();
-
-		this.emitter.emit('screenShareRequestChange', requested);
+		if (this.service === 'pexip') {
+			this.pexipProcessor?.requestScreenShare(requested);
+		} else {
+			this.emitter.emit('screenShareRequestChange', requested);
+		}
 	}
 
 	public setContractState(state: 'signed' | 'ignored') {
@@ -850,7 +872,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.hidden && !wasHidden) {
 			this.emitter.emit('hidden');
 		}
-		this.maybeStopWebRTC();
+		this.maybeStopService();
 	}
 
 	public reportStates(): void {
@@ -931,7 +953,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const oldState = this._state;
 		this._state = newState;
-		this.maybeStopWebRTC();
+		this.maybeStopService();
 		this.updateClientState();
 
 		this.emitter.emit('stateChange', oldState);
@@ -977,13 +999,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.emitter.emit('clientStateChange', oldClientState);
 	}
 
-	private maybeStopWebRTC(): void {
-		if (!this.webrtcProcessor) {
+	private maybeStopService(): void {
+		const { serviceProcessor } = this;
+		if (!serviceProcessor) {
 			return;
 		}
 
 		if (this.isOver() || this.hidden) {
-			this.webrtcProcessor.stop();
+			serviceProcessor.stop();
 		}
 	}
 
@@ -1204,6 +1227,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		// Both sides of the call have accepted it, we can change the state now
 		this.changeState('accepted');
+
+		if (this.pexipProcessor) {
+			this.pexipProcessor.joinConference();
+		}
 	}
 
 	private flagAsEnded(reason: CallHangupReason): void {
@@ -1331,6 +1358,29 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.emitter.emit('trackStateChange');
 	}
 
+	private onPexipInternalStateChange(stateName: keyof PexRTCInternalStateMap): void {
+		this.config.logger?.debug('ClientMediaCall.onPexipInternalStateChange');
+		if (!this.pexipProcessor) {
+			return;
+		}
+		const stateValue = this.pexipProcessor.getInternalState(stateName);
+
+		if (typeof stateValue === 'string' && this.serviceStates.get(stateName) !== stateValue) {
+			this.config.logger?.debug(stateName, stateValue);
+			this.serviceStates.set(stateName, stateValue);
+
+			switch (stateName) {
+				case 'connection':
+					this.onPexipConnectionStateChange(stateValue);
+					break;
+			}
+
+			this.requestStateReport();
+		}
+
+		// this.updateRemoteStates();
+	}
+
 	private onWebRTCInternalStateChange(stateName: keyof WebRTCInternalStateMap): void {
 		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalStateChange');
 		if (!this.webrtcProcessor) {
@@ -1359,6 +1409,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!this.webrtcProcessor?.streams.screenShareLocal.hasVideo() && this.hasScreenVideoTrack()) {
 			void this.setScreenVideoTrack(null);
 		}
+		this.emitter.emit('streamChange');
+	}
+
+	private onPexipStreamChanged(): void {
+		this.config.logger?.debug('ClientMediaCall.onPexipStreamChanged');
+		// if (!this.pexipProcessor?.streams.screenShareLocal.hasVideo() && this.hasScreenVideoTrack()) {
+		// 	void this.setScreenVideoTrack(null);
+		// }
 		this.emitter.emit('streamChange');
 	}
 
@@ -1420,6 +1478,47 @@ export class ClientMediaCall implements IClientMediaCall {
 			}
 		} catch (e) {
 			this.config.logger?.error('An error occured while reviewing the webrtc connection state change', e);
+		}
+	}
+
+	private onPexipConnectionStateChange(stateValue: PexipConnectionState): void {
+		this.config.logger?.debug('onPexipConnectionStateChange', stateValue);
+		if (this.hidden) {
+			return;
+		}
+
+		try {
+			switch (stateValue) {
+				case 'connected':
+					if (this.state === 'accepted') {
+						this.changeState('active');
+					}
+					break;
+				case 'error':
+					if (!this.isOver()) {
+						this.sendError({
+							errorType: 'service',
+							errorCode: 'connection-failed',
+							critical: true,
+						});
+
+						this.hangup('service-error');
+					}
+					break;
+				case 'disconnected':
+					if (!this.isOver()) {
+						this.sendError({
+							errorType: 'service',
+							errorCode: 'connection-closed',
+							critical: true,
+						});
+
+						this.hangup('service-error');
+					}
+					break;
+			}
+		} catch (e) {
+			this.config.logger?.error('An error occured while reviewing the pexip connection state change', e);
 		}
 	}
 
@@ -1529,20 +1628,25 @@ export class ClientMediaCall implements IClientMediaCall {
 		});
 	}
 
-	private mayUseStreams(): this is ClientMediaCallWebRTC {
+	private mayUseStreams(): this is ClientMediaCallProcessor {
 		if (this.hidden || !this.signed) {
 			return false;
 		}
 
-		if (this.shouldIgnoreWebRTC()) {
-			return false;
-		}
-
-		if (!this.webrtcProcessor) {
+		if (!this.serviceProcessor) {
 			return false;
 		}
 
 		return true;
+	}
+
+	private async prepareService(): Promise<void> {
+		switch (this.service) {
+			case 'webrtc':
+				return this.prepareWebRtcProcessor();
+			case 'pexip':
+				return this.preparePexipProcessor();
+		}
 	}
 
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
@@ -1550,6 +1654,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
+
+		if (this.service !== 'webrtc') {
+			this.throwError('invalid-service');
+		}
 
 		const {
 			logger,
@@ -1579,15 +1687,54 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {
+		if (!this.webrtcProcessor) {
+			throw new Error('webrtc-not-initialized');
+		}
+	}
+
+	private async preparePexipProcessor(): Promise<void> {
+		this.config.logger?.debug('ClientMediaCall.preparePexipProcessor');
+
+		const {
+			logger,
+			processorFactories: { pexip: pexipFactory },
+		} = this.config;
+
+		if (!pexipFactory) {
+			this.throwError('pexip-not-implemented');
+		}
+
 		try {
-			this.prepareWebRtcProcessor();
-		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'webrtc-not-implemented', critical: true, errorDetails: serializeError(e) });
-			throw e;
+			this.pexipProcessor = await pexipFactory({
+				logger,
+				nodeDomain: '192.168.2.235',
+				conferenceAlias: '1234',
+				displayName: this.selfContact?.displayName || 'local user',
+				pin: '123456',
+				call: this,
+			});
+
+			this.pexipProcessor.emitter.on('internalStateChange', (stateName) => this.onPexipInternalStateChange(stateName));
+			this.pexipProcessor.emitter.on('streamChanged', () => this.onPexipStreamChanged());
+			this.config.logger?.debug('Successfully wrapped PexRTC');
+		} catch (err) {
+			this.config.logger?.error('Failed to Wrap PexRTC');
+			this.config.logger?.error(err);
+			throw err;
 		}
 	}
 }
 
 export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
 	public abstract override webrtcProcessor: IWebRTCProcessor;
+}
+
+export abstract class ClientMediaCallPexip extends ClientMediaCall {
+	public abstract override pexipProcessor: IPexRTCProcessor;
+}
+
+export abstract class ClientMediaCallProcessor extends ClientMediaCall {
+	public override get serviceProcessor(): IWebRTCProcessor | IPexRTCProcessor {
+		return super.serviceProcessor as IWebRTCProcessor | IPexRTCProcessor;
+	}
 }

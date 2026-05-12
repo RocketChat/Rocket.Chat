@@ -204,7 +204,8 @@ export class GlobalSignalProcessor {
 		}
 
 		const services = signal.supportedServices ?? [];
-		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
+		// const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
+		const requestedService = services.includes('pexip') ? 'pexip' : services[0];
 		const features = signal.supportedFeatures ?? DEFAULT_CALL_FEATURES;
 
 		const params: InternalCallParams = {

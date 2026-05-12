@@ -54,7 +54,7 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 			type: 'array',
 			items: {
 				type: 'string',
-				enum: ['webrtc'],
+				enum: ['webrtc', 'pexip'],
 				nullable: false,
 			},
 			nullable: false,

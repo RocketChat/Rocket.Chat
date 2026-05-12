@@ -17,7 +17,7 @@ export class MediaStreamManager implements IMediaStreamManager {
 	public readonly screenShareRemote: MediaStreamWrapper;
 
 	constructor(
-		protected readonly peer: RTCPeerConnection,
+		protected readonly peer: RTCPeerConnection | null,
 		protected readonly logger?: IMediaSignalLogger,
 	) {
 		this.emitter = new Emitter();
