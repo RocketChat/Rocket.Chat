@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Removes insertOrUpdate and uploadCustomSound Meteor methods
+Removes insertOrUpdateSound and uploadCustomSound Meteor methods
