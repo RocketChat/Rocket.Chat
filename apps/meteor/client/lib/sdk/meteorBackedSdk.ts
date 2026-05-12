@@ -1,5 +1,6 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -220,6 +221,31 @@ const createMeteorBackedAccount = () => {
 			new Promise<void>((resolve, reject) =>
 				(Meteor as unknown as { logout: (cb: (err?: unknown) => void) => void }).logout((err) => (err ? reject(err) : resolve())),
 			),
+		// Lifecycle handlers delegate to Meteor's accounts-base. The unsubscribe
+		// shape (returning a () => void) matches the SDK contract; Meteor's
+		// onLogin/onLogout hand back a `{ stop }` handle, while
+		// onEmailVerificationLink/onPageLoadLogin don't expose an unsubscribe at
+		// all — call sites for those are singletons registered at module load,
+		// so a no-op unsubscribe is acceptable.
+		onLogin: (fn: () => void): (() => void) => {
+			const handle = Accounts.onLogin(fn);
+			return () => handle.stop();
+		},
+		onLogout: (fn: () => void): (() => void) => {
+			// @types/meteor declares onLogout's return as void, but at runtime it
+			// returns the same `{ stop }` handle as onLogin (Meteor source:
+			// packages/accounts-base/accounts_common.js).
+			const handle = (Accounts.onLogout as unknown as (fn: () => void) => { stop: () => void })(fn);
+			return () => handle.stop();
+		},
+		onEmailVerificationLink: (fn: (token: string) => void): (() => void) => {
+			Accounts.onEmailVerificationLink(fn);
+			return () => undefined;
+		},
+		onPageLoadLogin: (fn: (loginAttempt: unknown) => void): (() => void) => {
+			Accounts.onPageLoadLogin(fn);
+			return () => undefined;
+		},
 		// Emitter shape Account inherits from
 		on: () => () => undefined,
 		off: () => undefined,

@@ -1,10 +1,9 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { Accounts } from 'meteor/accounts-base';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
-import { ensureConnectedAndAuthenticated } from '../lib/sdk/ddpSdk';
+import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
 import { userIdStore } from '../lib/user';
 import { removeLocalUserData, synchronizeUserData } from '../lib/userData';
@@ -107,7 +106,7 @@ if (!sdkTransportEnabled) {
 
 	syncOnce(userIdStore.getState());
 
-	Accounts.onLogout(() => {
+	getDdpSdk().account.onLogout(() => {
 		lastSyncedUid = undefined;
 	});
 }
@@ -120,7 +119,7 @@ Users.use.subscribe(() => {
 	emitStatusChange(user.status);
 });
 
-Accounts.onLogout(() => {
+getDdpSdk().account.onLogout(() => {
 	removeLocalUserData();
 	status = undefined;
 });

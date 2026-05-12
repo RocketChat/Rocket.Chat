@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { createMeteorBackedSdk } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
+import { STORAGE_KEYS, getStoredItem } from './storage';
 import { userIdStore } from '../user';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
@@ -66,7 +67,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-const readStoredLoginToken = (): string | null => (typeof window !== 'undefined' ? window.localStorage.getItem('Meteor.loginToken') : null);
+const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
 let inflightLogin: Promise<void> | undefined;
 
@@ -283,5 +284,19 @@ if (typeof window !== 'undefined' && isSdkTransportEnabled()) {
 		} else {
 			teardownAuthenticatedConnection();
 		}
+	});
+
+	// Bridge Meteor's URL-routing-based account events into the SDK so
+	// sdk.account.onEmailVerificationLink / onPageLoadLogin fire in flag-ON
+	// mode too. The SDK has no native source for these — they come from
+	// Meteor's hash-route parser (verification link) and Meteor's first-login
+	// resolution (page load login). Register one bridge per event; AccountImpl's
+	// emitter fans out to whatever consumers attached via onEmailVerificationLink
+	// / onPageLoadLogin.
+	Accounts.onEmailVerificationLink((token: string) => {
+		sdk.account.emit('emailVerificationLink', token);
+	});
+	Accounts.onPageLoadLogin((loginAttempt: unknown) => {
+		sdk.account.emit('pageLoadLogin', loginAttempt);
 	});
 }

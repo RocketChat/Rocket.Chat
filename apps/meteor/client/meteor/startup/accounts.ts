@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { dispatchToastMessage } from '../../lib/toast';
 import { userIdStore } from '../../lib/user';
 import { useUserDataSyncReady } from '../../lib/userData';
@@ -39,7 +40,7 @@ const whenMainReady = (): Promise<void> => {
 	});
 };
 
-Accounts.onEmailVerificationLink((token: string) => {
+getDdpSdk().account.onEmailVerificationLink((token: string) => {
 	Accounts.verifyEmail(token, async (error) => {
 		await whenMainReady();
 

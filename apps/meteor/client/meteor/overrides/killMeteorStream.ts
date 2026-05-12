@@ -1,6 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 import { userIdStore } from '../../lib/user';
 
@@ -50,7 +51,7 @@ if (isSdkTransportEnabled()) {
 		}
 	});
 
-	Accounts.onLogout(() => {
+	getDdpSdk().account.onLogout(() => {
 		conn._outstandingMethodBlocks = [];
 		conn._methodInvokers = Object.create(null);
 		conn._methodsBlockingQuiescence = Object.create(null);
