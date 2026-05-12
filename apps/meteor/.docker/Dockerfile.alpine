@@ -66,6 +66,27 @@ EXPOSE 3000
 
 CMD ["node", "main.js"]
 
-FROM release-standard AS release-fips
+FROM rocketchat/dhi-node:22.22.2-alpine3.23-fips AS release-fips
+
+LABEL maintainer="buildmaster@rocket.chat"
+
+# needs a mongo instance - defaults to container linking with alias 'mongo'
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads
+
+USER node
+
+COPY --from=builder --chown=node:node /app /app
+
+VOLUME /app/uploads
+
+WORKDIR /app/bundle
+
+EXPOSE 3000
 
 CMD ["node", "main.js"]
