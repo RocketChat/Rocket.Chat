@@ -2569,6 +2569,264 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			]);
 		});
 	});
+
+	describe('[Admin Rooms - Sensitive Fields] (ABAC managed rooms)', () => {
+		const sensitiveAttrKey = `attr_sensitive_${Date.now()}`;
+		const createdRids: string[] = [];
+		let sensitiveAttrId: string;
+		let owner: IUser;
+		let ownerCredentials: Credentials;
+
+		const sensitiveFields = [
+			{ name: 'announcement', settingKey: 'roomAnnouncement', roomKey: 'announcement' },
+			{ name: 'topic', settingKey: 'roomTopic', roomKey: 'topic' },
+			{ name: 'description', settingKey: 'roomDescription', roomKey: 'description' },
+		] as const;
+
+		const createPrivateRoomWithField = async (
+			settingKey: (typeof sensitiveFields)[number]['settingKey'],
+			value: string | undefined,
+		): Promise<{ rid: string; name: string }> => {
+			const name = `abac-sensitive-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+			const created = (await createRoom({ type: 'p', name })).body.group as IRoom;
+			if (value !== undefined) {
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: created._id, [settingKey]: value })
+					.expect(200);
+			}
+			createdRids.push(created._id);
+			return { rid: created._id, name };
+		};
+
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: sensitiveAttrKey, values: ['v1'] })
+				.expect(200);
+
+			const listRes = await request.get(`${v1}/abac/attributes`).query({ key: sensitiveAttrKey }).set(credentials).expect(200);
+			const attr = listRes.body.attributes.find((a: { _id: string; key: string }) => a.key === sensitiveAttrKey);
+			expect(attr, 'attribute should have been created').to.exist;
+			sensitiveAttrId = attr._id;
+
+			owner = await createUser();
+			ownerCredentials = await login(owner.username, password);
+		});
+
+		after(async () => {
+			await Promise.all(createdRids.map((rid) => request.delete(`${v1}/abac/rooms/${rid}/attributes`).set(credentials).expect(200)));
+			await Promise.all(createdRids.map((rid) => deleteRoom({ type: 'p', roomId: rid })));
+			await request.delete(`${v1}/abac/attributes/${sensitiveAttrId}`).set(credentials).expect(200);
+			await deleteUser(owner);
+			await updateSetting('ABAC_Enabled', false);
+		});
+
+		it('should strip announcement, topic and description from rooms.adminRooms.getRoom on ABAC managed room', async () => {
+			const { rid } = await createPrivateRoomWithField('roomAnnouncement', 'SECRET_ANN');
+			await request
+				.post(`${v1}/rooms.saveRoomSettings`)
+				.set(credentials)
+				.send({ rid, roomTopic: 'SECRET_TOPIC', roomDescription: 'SECRET_DESC' })
+				.expect(200);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
+
+			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
+
+			expect(res.body).to.not.have.property('announcement');
+			expect(res.body).to.not.have.property('topic');
+			expect(res.body).to.not.have.property('description');
+		});
+
+		it('should return announcement, topic and description from rooms.adminRooms.getRoom on non-ABAC private room (control)', async () => {
+			const { rid } = await createPrivateRoomWithField('roomAnnouncement', 'VISIBLE_ANN');
+			await request
+				.post(`${v1}/rooms.saveRoomSettings`)
+				.set(credentials)
+				.send({ rid, roomTopic: 'VISIBLE_TOPIC', roomDescription: 'VISIBLE_DESC' })
+				.expect(200);
+
+			const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid }).expect(200);
+
+			expect(res.body).to.have.property('announcement', 'VISIBLE_ANN');
+			expect(res.body).to.have.property('topic', 'VISIBLE_TOPIC');
+			expect(res.body).to.have.property('description', 'VISIBLE_DESC');
+		});
+
+		it('should strip announcement, topic and description from rooms.adminRooms list on ABAC managed rows', async () => {
+			const { rid, name } = await createPrivateRoomWithField('roomAnnouncement', 'LIST_SECRET_ANN');
+			await request
+				.post(`${v1}/rooms.saveRoomSettings`)
+				.set(credentials)
+				.send({ rid, roomTopic: 'LIST_SECRET_TOPIC', roomDescription: 'LIST_SECRET_DESC' })
+				.expect(200);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
+
+			const res = await request.get(`${v1}/rooms.adminRooms`).set(credentials).query({ 'filter': name, 'types[]': 'p' }).expect(200);
+
+			const found = (res.body.rooms as Array<IRoom>).find((r) => r._id === rid);
+			expect(found, 'created room should appear in admin list').to.exist;
+			expect(found).to.not.have.property('announcement');
+			expect(found).to.not.have.property('topic');
+			expect(found).to.not.have.property('description');
+		});
+
+		it('should strip announcement, topic and description from rooms.adminRooms.privateRooms list on ABAC managed rows', async () => {
+			const { rid, name } = await createPrivateRoomWithField('roomAnnouncement', 'PRIVATE_SECRET_ANN');
+			await request
+				.post(`${v1}/rooms.saveRoomSettings`)
+				.set(credentials)
+				.send({ rid, roomTopic: 'PRIVATE_SECRET_TOPIC', roomDescription: 'PRIVATE_SECRET_DESC' })
+				.expect(200);
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
+
+			const res = await request.get(`${v1}/rooms.adminRooms.privateRooms`).set(credentials).query({ filter: name }).expect(200);
+
+			const found = (res.body.rooms as Array<IRoom>).find((r) => r._id === rid);
+			expect(found, 'created room should appear in admin private rooms list').to.exist;
+			expect(found).to.not.have.property('announcement');
+			expect(found).to.not.have.property('topic');
+			expect(found).to.not.have.property('description');
+		});
+
+		sensitiveFields.forEach(({ name, settingKey, roomKey }) => {
+			describe(`${name}`, () => {
+				it(`should reject ${settingKey} save on ABAC managed room (admin)`, async () => {
+					const { rid } = await createPrivateRoomWithField(settingKey, 'original');
+					await request
+						.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+
+					const res = await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: 'changed' })
+						.expect(400);
+
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+
+				it(`should accept idempotent ${settingKey} re-submit on ABAC managed room`, async () => {
+					const { rid } = await createPrivateRoomWithField(settingKey, 'keep-me');
+					await request
+						.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+
+					await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: 'keep-me' })
+						.expect(200);
+				});
+
+				it(`should accept ${settingKey} save on non-ABAC private room (control)`, async () => {
+					const { rid } = await createPrivateRoomWithField(settingKey, 'original');
+
+					await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: 'changed' })
+						.expect(200);
+				});
+
+				it(`should reject empty-string unset on ABAC managed room with ${roomKey} set`, async () => {
+					const { rid } = await createPrivateRoomWithField(settingKey, 'X');
+					await request
+						.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+
+					const res = await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: '' })
+						.expect(400);
+
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+
+				it(`should accept idempotent empty submit on ABAC room with no ${roomKey} set (direct API contract)`, async () => {
+					const { rid } = await createPrivateRoomWithField(settingKey, undefined);
+					await request
+						.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+
+					await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: '' })
+						.expect(200);
+				});
+
+				it(`should accept ${settingKey} save after the last ABAC attribute is removed (transition)`, async () => {
+					const { rid } = await createPrivateRoomWithField(settingKey, 'initial');
+					await request
+						.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+
+					await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: 'changed' })
+						.expect(400);
+
+					await request.delete(`${v1}/abac/rooms/${rid}/attributes`).set(credentials).expect(200);
+
+					await request
+						.post(`${v1}/rooms.saveRoomSettings`)
+						.set(credentials)
+						.send({ rid, [settingKey]: 'changed' })
+						.expect(200);
+				});
+			});
+		});
+
+		it('should reject roomAnnouncement save on ABAC managed room (non-admin owner)', async () => {
+			const { rid } = await createPrivateRoomWithField('roomAnnouncement', 'original');
+
+			await request.post(`${v1}/groups.invite`).set(credentials).send({ roomId: rid, userId: owner._id }).expect(200);
+			await request.post(`${v1}/groups.addOwner`).set(credentials).send({ roomId: rid, userId: owner._id }).expect(200);
+
+			await request
+				.post(`${v1}/abac/rooms/${rid}/attributes/${sensitiveAttrKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
+
+			const res = await request
+				.post(`${v1}/rooms.saveRoomSettings`)
+				.set(ownerCredentials)
+				.send({ rid, roomAnnouncement: 'owner-changed' })
+				.expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+		});
+	});
 });
 
 (IS_EE ? describe : describe.skip)('[ABAC] External PDP (mock-server)', function () {
