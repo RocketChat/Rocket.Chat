@@ -6,7 +6,8 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
-import type { IStreamer, IStreamerConstructor, IPublication } from '../streamer/types';
+import { Streamer as StreamerModule } from '../streamer/streamer.module';
+import type { IStreamer, IStreamerConstructor } from '../streamer/types';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -62,7 +63,11 @@ export class NotificationsModule {
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
-		this.streamRoomMessage.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
+		this.streamRoomMessage.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
+			if (!StreamerModule.isPublicationActive(publication)) {
+				return;
+			}
+
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -375,7 +380,14 @@ export class NotificationsModule {
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');
 
-		this.streamUser.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
+		this.streamUser.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
+			// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+			// we were just not counting on this, session is _session so we actually should not use it
+			// now after any await, the session can potentially be null, so we need to check for that
+			if (!StreamerModule.isPublicationActive(publication)) {
+				return;
+			}
+
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -389,8 +401,17 @@ export class NotificationsModule {
 						eventName: `${userId}/rooms-changed`,
 						args,
 					});
+					if (!payload) {
+						return;
+					}
 
-					payload && publication._session.socket?.send(payload);
+					// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+					// we were just not counting on this, session is _session so we actually should not use it
+					// now after any await, the session can potentially be null, so we need to check for that
+					if (!StreamerModule.isPublicationActive(publication)) {
+						return;
+					}
+					publication._session.socket.send(payload);
 				};
 
 				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(

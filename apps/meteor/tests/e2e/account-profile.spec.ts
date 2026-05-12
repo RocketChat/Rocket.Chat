@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -70,6 +71,13 @@ test.describe.serial('settings-account-profile', () => {
 				await poAccountProfile.btnSetAvatarLink.click();
 
 				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
+
+			test('should not allow avatar URL change when avatar changes are disabled', async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', false);
+				await expect(poAccountProfile.btnSetAvatarLink).toBeDisabled();
+				await expect(poAccountProfile.inputAvatarLink).toBeDisabled();
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
 			});
 		});
 	});

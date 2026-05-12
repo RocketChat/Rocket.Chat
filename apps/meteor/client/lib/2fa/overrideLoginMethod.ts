@@ -16,44 +16,48 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 	loginMethod(...loginArgs, async (error: LoginError | undefined, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
 			callback?.(error);
-			return;
+			return error;
 		}
 
 		const { process2faReturn } = await import('./process2faReturn');
 
-		await process2faReturn({
-			error,
-			result,
-			emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
-			originalCallback: callback,
-			onCode: (code: string) => {
-				loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
-					if (!error) {
-						callback?.(undefined, result);
-						return;
-					}
+		try {
+			await process2faReturn({
+				error,
+				result,
+				emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
+				originalCallback: callback,
+				onCode: (code: string) => {
+					return new Promise<void>((resolve, reject) => {
+						loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
+							if (!error) {
+								callback?.(undefined, result);
+								resolve();
+								return;
+							}
 
-					if (isTotpInvalidError(error)) {
-						callback?.(error);
-						return;
-					}
+							if (isTotpInvalidError(error)) {
+								reject(error);
+								return;
+							}
 
-					Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
-						if (isTotpMaxAttemptsError(error)) {
-							dispatchToastMessage({
-								type: 'error',
-								message: t('totp-max-attempts'),
+							Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+								if (isTotpMaxAttemptsError(error)) {
+									dispatchToastMessage({ type: 'error', message: t('totp-max-attempts') });
+									reject(error);
+									return;
+								}
+
+								dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+								reject(error);
 							});
-							callback?.(undefined);
-							return;
-						}
-
-						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-						callback?.(undefined);
+						});
 					});
-				});
-			},
-		});
+				},
+			});
+		} catch (error) {
+			callback?.(error as LoginError);
+		}
 	});
 };
 

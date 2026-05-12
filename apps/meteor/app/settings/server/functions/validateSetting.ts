@@ -1,9 +1,14 @@
-import type { ISetting } from '@rocket.chat/core-typings';
+import { isActionSettingWithEndpoint, type ISetting } from '@rocket.chat/core-typings';
 
 export const validateSetting = <T extends ISetting>(_id: T['_id'], type: T['type'], value: T['value'] | unknown): boolean => {
 	switch (type) {
 		case 'asset':
 			if (typeof value !== 'object') {
+				throw new Error(`Setting ${_id} is of type ${type} but got ${typeof value}`);
+			}
+			break;
+		case 'action':
+			if (typeof value !== 'string' && !isActionSettingWithEndpoint(value as never)) {
 				throw new Error(`Setting ${_id} is of type ${type} but got ${typeof value}`);
 			}
 			break;
@@ -14,7 +19,6 @@ export const validateSetting = <T extends ISetting>(_id: T['_id'], type: T['type
 		case 'color':
 		case 'font':
 		case 'code':
-		case 'action':
 		case 'roomPick':
 		case 'group':
 			if (typeof value !== 'string') {
