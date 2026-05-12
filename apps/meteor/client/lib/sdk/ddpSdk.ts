@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { createMeteorBackedSdk } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
 import { STORAGE_KEYS, getStoredItem } from './storage';
+import { getRootUrl } from '../meteorRuntimeConfig';
 import { userIdStore } from '../user';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
@@ -13,7 +14,7 @@ const sdkTransportEnabled = isSdkTransportEnabled();
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value);
 
 const computeDdpUrl = (): string => {
-	const rootUrl = typeof __meteor_runtime_config__ !== 'undefined' ? __meteor_runtime_config__.ROOT_URL : undefined;
+	const rootUrl = getRootUrl();
 	const source = rootUrl && rootUrl !== '/' ? rootUrl : window.location.origin;
 	return stripTrailingSlash(source.replace(/^http/, 'ws'));
 };
