@@ -217,7 +217,7 @@ export class LDAPManager {
 	}
 
 	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
-		const escapedUsername = ldapEscape.filter`${username}`;
+		const escapedUsername = ldapEscape.filter`${username}`.replace(/[/+<>;=]/g, (c) => `\\${c.charCodeAt(0).toString(16).padStart(2, '0')}`);
 
 		try {
 			const users = await ldap.searchByUsername(escapedUsername);
@@ -251,7 +251,7 @@ export class LDAPManager {
 	}
 
 	private static async findAuthenticatedUser(ldap: LDAPConnection, username: string): Promise<ILDAPEntry | undefined> {
-		const escapedUsername = ldapEscape.filter`${username}`;
+		const escapedUsername = ldapEscape.filter`${username}`.replace(/[/+<>;=]/g, (c) => `\\${c.charCodeAt(0).toString(16).padStart(2, '0')}`);
 
 		try {
 			const users = await ldap.searchByUsername(escapedUsername);
