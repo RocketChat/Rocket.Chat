@@ -3,6 +3,8 @@ services:
     build:
       target: release-fips
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}-fips
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/livez', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
 
   account-service:
     build:
