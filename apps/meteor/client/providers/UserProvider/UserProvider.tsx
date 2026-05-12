@@ -6,7 +6,7 @@ import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts
 import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
+import type { Filter, ObjectId } from 'mongodb';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import type { StoreApi, UseBoundStore } from 'zustand';
@@ -21,8 +21,8 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
-import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
@@ -138,9 +138,24 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		(): ContextType<typeof UserContext> => ({
 			userId,
 			user,
-			queryPreference: createReactiveSubscriptionFactory(
-				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
-			),
+			queryPreference: <T,>(
+				key: string | ObjectId,
+				defaultValue?: T,
+			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined] => {
+				const subscribe = (onStoreChange: () => void): (() => void) => {
+					const unsubUsers = Users.use.subscribe(onStoreChange);
+					// getUserPreference falls back to settings.watch(`Accounts_Default_User_Preferences_${key}`)
+					// when the user record has no override. Subscribe to that specific
+					// setting key so admin-side default changes still propagate.
+					const unsubSettings = settings.observe(`Accounts_Default_User_Preferences_${String(key)}`, onStoreChange);
+					return () => {
+						unsubUsers();
+						unsubSettings();
+					};
+				};
+				const getSnapshot = (): T | undefined => getUserPreference(userId, String(key), defaultValue);
+				return [subscribe, getSnapshot];
+			},
 			querySubscription,
 			queryRoom,
 			querySubscriptions,
