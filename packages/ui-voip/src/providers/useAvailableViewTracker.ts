@@ -45,7 +45,7 @@ const useAvailableViewTracker = () => {
 				if (viewsArray.length === filteredViewsRef.current.length && viewsArray.every((view) => filteredViewsRef.current.includes(view))) {
 					return;
 				}
-				filteredViewsRef.current = [...viewsRef.current].filter(filter);
+				filteredViewsRef.current = viewsArray;
 				return sub?.();
 			}, FLUSH_DELAY);
 		};
