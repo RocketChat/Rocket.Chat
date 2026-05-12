@@ -548,11 +548,13 @@ API.v1.post(
 		const lastLoggedIn = new Date();
 		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
 
-		const cursor = Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn, role, { projection: { _id: 1 } });
+		const ids = await Users.findActiveNotLoggedInAfterWithRole(lastLoggedIn, role, { projection: { _id: 1 } })
+			.map(({ _id }: { _id: string }) => _id)
+			.toArray();
 
 		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
 
-		await cursor.forEach(({ _id }) => {
+		ids.forEach((_id) => {
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: _id,
