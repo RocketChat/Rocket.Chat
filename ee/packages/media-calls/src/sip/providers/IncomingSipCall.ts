@@ -99,12 +99,19 @@ export class IncomingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
+		const from = req.get('from');
+		const parsedFrom = (from && req.getParsedHeader('from')) || null;
+
 		const call = await mediaCallDirector.createCall({
 			caller,
 			callee,
 			callerAgent,
 			calleeAgent,
 			features: SIP_CALL_FEATURES,
+			metadata: {
+				sipCallId: req.get('Call-ID'),
+				sipRemoteTag: parsedFrom?.params?.tag,
+			},
 		});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);

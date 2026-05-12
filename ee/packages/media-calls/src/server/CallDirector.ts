@@ -24,6 +24,7 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
+	metadata?: IMediaCall['metadata'];
 };
 
 // expiration checks by call id
@@ -61,7 +62,12 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
+		data: {
+			calleeContractId: string;
+			webrtcAnswer?: RTCSessionDescriptionInit;
+			supportedFeatures: CallFeature[];
+			metadata?: IMediaCall['metadata'];
+		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
@@ -233,6 +239,7 @@ class MediaCallDirector {
 			...(parentCallId && { parentCallId }),
 
 			features: allowedFeatures,
+			metadata: Object.fromEntries(Object.entries(params.metadata || {}).filter(([_key, value]) => value)),
 		};
 
 		logger.debug({ msg: 'creating call', call });
