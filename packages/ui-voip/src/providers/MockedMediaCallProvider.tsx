@@ -176,8 +176,6 @@ const MockedMediaCallProvider = ({
 		openRoomId: undefined,
 		setOpenRoomId: () => undefined,
 		getAutocompleteOptions,
-		inRoomView: false,
-		setInRoomView: () => undefined,
 	};
 
 	return (
