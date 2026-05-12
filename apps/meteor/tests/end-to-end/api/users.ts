@@ -4812,6 +4812,29 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
+
+		it('should revoke login tokens of deactivated idle users', async () => {
+			const idleUser = await createUser();
+			await request.post(api('roles.addUserToRole')).set(credentials).send({ roleId: testRoleId, username: idleUser.username }).expect(200);
+
+			const idleUserCredentials = await login(idleUser.username, password);
+			await request.get(api('me')).set(idleUserCredentials).expect(200);
+
+			await updatePermission('edit-other-user-active-status', ['admin']);
+			await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({ daysIdle: 0, role: testRoleId })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').that.is.greaterThan(0);
+				});
+
+			await request.get(api('me')).set(idleUserCredentials).expect(401);
+
+			await deleteUser(idleUser);
+		});
 	});
 
 	describe('[/users.requestDataDownload]', () => {
