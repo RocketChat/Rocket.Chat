@@ -125,7 +125,7 @@ export type DefaultUserInfo = Pick<
 >;
 
 export type UsersBehaviourMetricsParamsGET = {
-	userId: string;
+	userId: IUser['_id'];
 	days?: 7 | 30 | 90;
 };
 
@@ -151,7 +151,7 @@ export const isUsersBehaviourMetricsParamsGET = ajv.compile<UsersBehaviourMetric
 export type UsersEndpoints = {
 	'/v1/admin/users/behaviour-metrics': {
 		GET: (params: UsersBehaviourMetricsParamsGET) => {
-			userId: string;
+			userId: IUser['_id'];
 			windowDays: number;
 			accountAgeDays: number;
 			metrics: {
