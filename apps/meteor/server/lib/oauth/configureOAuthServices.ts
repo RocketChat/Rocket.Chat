@@ -60,20 +60,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 			),
 		);
 
-		oAuthRouter.get(
-			`/oauth/${config.provider}`,
-			(req, _res, next) => {
-				console.log('authenticate', req.session, req.session.id);
-				next();
-			},
-			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
-		);
-		oAuthRouter.get(
-			`/oauth/${config.provider}/callback`,
-			(req: Request, _res: Response, next: NextFunction) => {
-				console.log('callback', req.session, req.session.id);
-				next();
-			},
+		const callbackHandler = [
 			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
 			async (req: Request, res: Response) => {
 				console.log('req -> user', req.user);
@@ -95,18 +82,20 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					}
 				});
 			},
-			(err: any, req: Request, res: Response, _next: NextFunction) => {
-				res.send(
-					JSON.stringify(
-						{
-							error: err.message,
-							req: req.user,
-						},
-						null,
-						2,
-					),
-				);
+		];
+
+		oAuthRouter.get(
+			`/oauth/${config.provider}`,
+			(req, _res, next) => {
+				console.log('authenticate', req.session, req.session.id);
+				next();
 			},
+			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
 		);
+
+		oAuthRouter
+			.route(`/oauth/${config.provider}/callback`)
+			.get(...callbackHandler)
+			.post(...callbackHandler);
 	});
 };
