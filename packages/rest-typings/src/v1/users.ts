@@ -124,7 +124,47 @@ export type DefaultUserInfo = Pick<
 	| 'freeSwitchExtension'
 >;
 
+export type UsersBehaviourMetricsParamsGET = {
+	userId: string;
+	days?: 7 | 30 | 90;
+};
+
+const UsersBehaviourMetricsParamsGETSchema = {
+	type: 'object',
+	properties: {
+		userId: {
+			type: 'string',
+			minLength: 1,
+		},
+		days: {
+			type: 'number',
+			enum: [7, 30, 90],
+			nullable: true,
+		},
+	},
+	required: ['userId'],
+	additionalProperties: false,
+};
+
+export const isUsersBehaviourMetricsParamsGET = ajv.compile<UsersBehaviourMetricsParamsGET>(UsersBehaviourMetricsParamsGETSchema);
+
 export type UsersEndpoints = {
+	'/v1/admin/users/behaviour-metrics': {
+		GET: (params: UsersBehaviourMetricsParamsGET) => {
+			userId: string;
+			windowDays: number;
+			accountAgeDays: number;
+			metrics: {
+				messagesSent: number;
+				messagesPerHour: number;
+				distinctRoomsMessaged: number;
+				dmRoomsMessaged: number;
+				urlMessages: number;
+				urlDensity: number;
+			};
+		};
+	};
+
 	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
 	};
