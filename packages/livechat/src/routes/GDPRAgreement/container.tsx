@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next';
-import type { FunctionalComponent } from 'preact';
+import type { Ref } from 'preact';
 import { useContext } from 'preact/hooks';
 import { route } from 'preact-router';
 import { withTranslation } from 'react-i18next';
@@ -7,11 +7,16 @@ import { withTranslation } from 'react-i18next';
 import GDPRAgreement from './component';
 import { StoreContext } from '../../store';
 
-const GDPRContainer: FunctionalComponent<{ t: TFunction }> = ({ ref, t }) => {
+type GDPRContainerProps = {
+	t: TFunction;
+	ref?: Ref<any>;
+};
+
+const GDPRContainer = ({ ref, t }: GDPRContainerProps) => {
 	const { config: { messages: { dataProcessingConsentText: consentText = '' } = {} } = {}, dispatch } = useContext(StoreContext);
 
 	const handleAgree = async () => {
-		await dispatch({ gdpr: { accepted: true } });
+		dispatch({ gdpr: { accepted: true } });
 		route('/');
 	};
 
