@@ -1,7 +1,7 @@
 import type { Browser, Page } from '@playwright/test';
 import { chromium } from '@playwright/test';
 
-export interface LighthouseResult {
+export interface ILighthouseResult {
 	lhr: {
 		categories: Record<string, { score: number | null; title: string }>;
 		audits: Record<string, { numericValue?: number; score: number | null; title: string }>;
@@ -11,16 +11,16 @@ export interface LighthouseResult {
 	report: string;
 }
 
-export interface LighthouseHelper {
+export interface ILighthouseHelper {
 	/** Creates a page in the Lighthouse browser for authentication/navigation. */
 	newPage(): Promise<Page>;
 	/** Runs a Lighthouse audit against `url`. Authenticate via newPage() first. */
-	runAudit(url: string, preset?: 'desktop' | 'mobile'): Promise<LighthouseResult>;
+	runAudit(url: string, preset?: 'desktop' | 'mobile'): Promise<ILighthouseResult>;
 	/** Closes the underlying browser. Called automatically by the fixture teardown. */
 	close(): Promise<void>;
 }
 
-export async function createLighthouseHelper(port: number): Promise<LighthouseHelper> {
+export async function createLighthouseHelper(port: number): Promise<ILighthouseHelper> {
 	// The port is passed both here (so Playwright controls the browser) and to the
 	// Lighthouse config (so Lighthouse can connect to the same running instance).
 	const browser: Browser = await chromium.launch({
@@ -32,7 +32,7 @@ export async function createLighthouseHelper(port: number): Promise<LighthouseHe
 	return {
 		newPage: () => context.newPage(),
 
-		async runAudit(url: string, preset: 'desktop' | 'mobile' = 'desktop'): Promise<LighthouseResult> {
+		async runAudit(url: string, preset: 'desktop' | 'mobile' = 'desktop'): Promise<ILighthouseResult> {
 			const { default: lighthouse } = await import('lighthouse');
 
 			// Presets are applied via the config parameter, not flags.
@@ -73,7 +73,7 @@ export async function createLighthouseHelper(port: number): Promise<LighthouseHe
 				throw new Error('Lighthouse returned no result');
 			}
 
-			return result as unknown as LighthouseResult;
+			return result as unknown as ILighthouseResult;
 		},
 
 		close: () => browser.close(),

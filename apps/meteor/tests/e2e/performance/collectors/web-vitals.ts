@@ -1,14 +1,14 @@
 import type { Page } from '@playwright/test';
 import { test } from '@playwright/test';
 
-export interface WebVitals {
+export interface IWebVitals {
 	LCP: number | null;
 	CLS: number;
 	INP: number | null;
 }
 
-export interface WebVitalsCollector {
-	getVitals(): Promise<WebVitals>;
+export interface IWebVitalsCollector {
+	getVitals(): Promise<IWebVitals>;
 }
 
 // Injected into the page via addInitScript — runs before the first byte loads.
@@ -49,11 +49,11 @@ const INJECT_SCRIPT = () => {
 	}
 };
 
-export async function createWebVitalsCollector(page: Page): Promise<WebVitalsCollector> {
+export async function createWebVitalsCollector(page: Page): Promise<IWebVitalsCollector> {
 	await page.addInitScript(INJECT_SCRIPT);
 
 	return {
-		async getVitals(): Promise<WebVitals> {
+		async getVitals(): Promise<IWebVitals> {
 			// Wait for a requestIdleCallback after the final interaction so the browser
 			// finishes the paint following the last event, ensuring INP is fully captured.
 			await page.evaluate(
@@ -67,7 +67,7 @@ export async function createWebVitalsCollector(page: Page): Promise<WebVitalsCol
 					}),
 			);
 
-			const vitals = await page.evaluate<WebVitals>(() => (window as any).__webVitals ?? { LCP: null, CLS: 0, INP: null });
+			const vitals = await page.evaluate<IWebVitals>(() => (window as any).__webVitals ?? { LCP: null, CLS: 0, INP: null });
 
 			test.info().annotations.push({
 				type: 'web-vitals',

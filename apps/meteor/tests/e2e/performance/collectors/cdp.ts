@@ -1,6 +1,6 @@
 import type { CDPSession, Page } from '@playwright/test';
 
-export interface CDPMetrics {
+export interface ICDPMetrics {
 	JSHeapUsedSize: number;
 	JSHeapTotalSize: number;
 	LayoutCount: number;
@@ -19,13 +19,13 @@ export async function openCDPSession(page: Page): Promise<CDPSession> {
 	return session;
 }
 
-export async function getMetrics(session: CDPSession): Promise<CDPMetrics> {
+export async function getMetrics(session: CDPSession): Promise<ICDPMetrics> {
 	const result = (await session.send('Performance.getMetrics')) as { metrics: Array<{ name: string; value: number }> };
 	const map: Record<string, number> = {};
 	for (const { name, value } of result.metrics) {
 		map[name] = value;
 	}
-	return map as unknown as CDPMetrics;
+	return map as unknown as ICDPMetrics;
 }
 
 export async function collectGarbage(session: CDPSession): Promise<void> {

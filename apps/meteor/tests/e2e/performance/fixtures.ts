@@ -3,22 +3,22 @@ import getPort from 'get-port';
 
 import { test as baseTest } from '../utils/test';
 import { openCDPSession, setCPUThrottling, setNetworkThrottling } from './collectors/cdp';
-import type { LongTaskTracker } from './collectors/long-tasks';
+import type { ILongTaskTracker } from './collectors/long-tasks';
 import { startLongTaskTracking } from './collectors/long-tasks';
-import type { HeapSnapshotHelper } from './collectors/memory';
+import type { IHeapSnapshotHelper } from './collectors/memory';
 import { createMemoryHelper } from './collectors/memory';
-import type { WebVitalsCollector } from './collectors/web-vitals';
+import type { IWebVitalsCollector } from './collectors/web-vitals';
 import { createWebVitalsCollector } from './collectors/web-vitals';
-import type { LighthouseHelper } from './lighthouse';
+import type { ILighthouseHelper } from './lighthouse';
 import { createLighthouseHelper } from './lighthouse';
-import type { SoftNavTracker } from './soft-navigation';
+import type { ISoftNavTracker } from './soft-navigation';
 import { createSoftNavTracker } from './soft-navigation';
 
-export type { WebVitals } from './collectors/web-vitals';
-export type { LongTask, LongTaskTracker } from './collectors/long-tasks';
-export type { HeapSnapshotHelper } from './collectors/memory';
-export type { SoftNavMetrics, SoftNavTracker } from './soft-navigation';
-export type { LighthouseResult, LighthouseHelper } from './lighthouse';
+export type { IWebVitals as WebVitals } from './collectors/web-vitals';
+export type { ILongTask as LongTask, ILongTaskTracker as LongTaskTracker } from './collectors/long-tasks';
+export type { IHeapSnapshotHelper as HeapSnapshotHelper } from './collectors/memory';
+export type { ISoftNavMetrics as SoftNavMetrics, ISoftNavTracker as SoftNavTracker } from './soft-navigation';
+export type { ILighthouseResult as LighthouseResult, ILighthouseHelper as LighthouseHelper } from './lighthouse';
 
 // Test-scoped performance fixtures — each is independently opt-in.
 // Destructure only what a given test needs; unused fixtures are never activated.
@@ -27,15 +27,15 @@ type PerformanceFixtures = {
 	 *  Network throttling (Fast 3G) is applied automatically. */
 	cdpSession: CDPSession;
 	/** Captures LCP, CLS, and INP via PerformanceObserver injected before first page load. */
-	webVitals: WebVitalsCollector;
+	webVitals: IWebVitalsCollector;
 	/** Before/after heap snapshot helper with warm-up and GC-before-snapshot. Depends on cdpSession. */
-	heapSnapshot: HeapSnapshotHelper;
+	heapSnapshot: IHeapSnapshotHelper;
 	/** Tracks soft navigation events and maps interaction-contentful-paint to Soft LCP. */
-	softNavTracker: SoftNavTracker;
+	softNavTracker: ISoftNavTracker;
 	/** CDP-based long task tracker. Depends on cdpSession. */
-	longTaskTracker: LongTaskTracker;
+	longTaskTracker: ILongTaskTracker;
 	/** Worker-shared Lighthouse helper. Use newPage() to authenticate, then runAudit(). */
-	lighthouseAudit: LighthouseHelper;
+	lighthouseAudit: ILighthouseHelper;
 };
 
 // Worker-scoped fixtures share state within a single Playwright worker process.

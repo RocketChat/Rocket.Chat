@@ -1,19 +1,19 @@
 import type { CDPSession } from '@playwright/test';
 
-export interface LongTask {
+export interface ILongTask {
 	name: string;
 	duration: number;
 	startTime: number;
 	navigationId: string | undefined;
 }
 
-export interface LongTaskTracker {
-	getLongTasks(): LongTask[];
+export interface ILongTaskTracker {
+	getLongTasks(): ILongTask[];
 	reset(): void;
 }
 
-export async function startLongTaskTracking(session: CDPSession): Promise<LongTaskTracker> {
-	const tasks: LongTask[] = [];
+export async function startLongTaskTracking(session: CDPSession): Promise<ILongTaskTracker> {
+	const tasks: ILongTask[] = [];
 
 	await session.send('PerformanceTimeline.enable', { eventTypes: ['longtask'] });
 

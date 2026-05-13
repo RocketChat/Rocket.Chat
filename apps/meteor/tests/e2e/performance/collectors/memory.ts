@@ -2,7 +2,7 @@ import type { CDPSession, Page } from '@playwright/test';
 
 import { collectGarbage } from './cdp';
 
-export interface HeapSnapshotHelper {
+export interface IHeapSnapshotHelper {
 	snapshot(): Promise<number>;
 	detectLeak(journey: (page: Page) => Promise<void>, options?: { iterations?: number; thresholdBytes?: number }): Promise<void>;
 }
@@ -16,7 +16,7 @@ async function snapshot(session: CDPSession): Promise<number> {
 	return entry?.value ?? 0;
 }
 
-export function createMemoryHelper(session: CDPSession, page: Page): HeapSnapshotHelper {
+export function createMemoryHelper(session: CDPSession, page: Page): IHeapSnapshotHelper {
 	return {
 		snapshot: () => snapshot(session),
 

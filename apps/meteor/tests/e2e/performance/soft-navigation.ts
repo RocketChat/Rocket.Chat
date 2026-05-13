@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-export interface SoftNavMetrics {
+export interface ISoftNavMetrics {
 	navigationId: string;
 	url: string;
 	startTime: number;
@@ -10,8 +10,8 @@ export interface SoftNavMetrics {
 	INP: number | null;
 }
 
-export interface SoftNavTracker {
-	getNavigations(): Promise<SoftNavMetrics[]>;
+export interface ISoftNavTracker {
+	getNavigations(): Promise<ISoftNavMetrics[]>;
 }
 
 // Injected into the page via addInitScript — the Soft Navigation API is experimental
@@ -92,12 +92,12 @@ const INJECT_SCRIPT = () => {
 	}
 };
 
-export async function createSoftNavTracker(page: Page): Promise<SoftNavTracker> {
+export async function createSoftNavTracker(page: Page): Promise<ISoftNavTracker> {
 	await page.addInitScript(INJECT_SCRIPT);
 
 	return {
-		async getNavigations(): Promise<SoftNavMetrics[]> {
-			return page.evaluate<SoftNavMetrics[]>(() => (window as any).__softNavs ?? []);
+		async getNavigations(): Promise<ISoftNavMetrics[]> {
+			return page.evaluate<ISoftNavMetrics[]>(() => (window as any).__softNavs ?? []);
 		},
 	};
 }
