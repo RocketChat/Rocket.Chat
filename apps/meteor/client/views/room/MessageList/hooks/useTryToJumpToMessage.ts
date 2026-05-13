@@ -1,5 +1,5 @@
 import { isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useEffect } from 'react';
@@ -20,7 +20,6 @@ type UseTryToJumpToMessageProps = {
 
 const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
-	const router = useRouter();
 
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 
@@ -36,6 +35,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 
 	useEffect(() => {
 		if (!messageJumpParam) {
+			setIsJumpingToMessage(false);
 			return;
 		}
 		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
@@ -84,7 +84,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			clearTimeout(clearHighlightMessageTimeout);
 			clearTimeout(setIsJumpingToMessageTimeout);
 		};
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, router, message]);
+	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message]);
 };
 
 export default useTryToJumpToMessage;

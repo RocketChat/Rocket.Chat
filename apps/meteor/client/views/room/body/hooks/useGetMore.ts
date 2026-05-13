@@ -86,7 +86,7 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 					element.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[isJumpingToMessage, rid],
+			[isJumpingToMessage, msgId, rid],
 		),
 	);
 

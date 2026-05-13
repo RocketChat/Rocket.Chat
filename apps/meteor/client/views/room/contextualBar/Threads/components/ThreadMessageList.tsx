@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
-import { useRouter, useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
 import { Fragment, useEffect, useMemo, useRef } from 'react';
@@ -54,7 +54,6 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
 
@@ -130,7 +129,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 		return () => {
 			clearTimeout(t1);
 		};
-	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, router]);
+	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id]);
 
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;

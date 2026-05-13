@@ -46,8 +46,6 @@ type MessageListProps = {
 	debouncedMessageRead: () => void;
 };
 
-let lastScrollSize = 0;
-
 export const MessageList = function MessageList({
 	rid,
 	canPreview,
@@ -76,6 +74,7 @@ export const MessageList = function MessageList({
 	});
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
+	const lastScrollSizeRef = useRef(0);
 
 	const messages = useMessages({ rid });
 
@@ -160,13 +159,13 @@ export const MessageList = function MessageList({
 			});
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom
-		if (isAtBottom.current && lastScrollSize !== handle?.scrollSize) {
-			lastScrollSize = handle?.scrollSize ?? 0;
+		if (isAtBottom.current && lastScrollSizeRef.current !== handle?.scrollSize) {
+			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
 			handle?.scrollToIndex(lastItemIndex + 1, {
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, rid, firstUnreadMessageId, setShouldJumpToBottom]);
+	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, messageJumpParam, rid, firstUnreadMessageId, setShouldJumpToBottom]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 
