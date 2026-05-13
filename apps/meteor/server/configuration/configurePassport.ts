@@ -33,6 +33,7 @@ oAuthRouter.set('trust proxy', true);
 oAuthRouter.use(passport.initialize());
 oAuthRouter.use(passport.session());
 oAuthRouter.use(flash());
+oAuthRouter.use(express.urlencoded({ extended: true }));
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
