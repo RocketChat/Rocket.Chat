@@ -5,6 +5,7 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { settings } from '../../../../client/lib/settings';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { getUser, getUserId } from '../../../../client/lib/user';
+import { upsertThreadMessageInCache } from '../../../../client/lib/utils/threadMessageUtils';
 import { Messages, Rooms } from '../../../../client/stores';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { t } from '../../../utils/lib/i18n';
@@ -45,5 +46,10 @@ export const runOptimisticSendMessage = async (
 
 	const processed = await onClientMessageReceived(optimistic);
 	Messages.state.store(processed);
+
+	if (processed.tmid) {
+		upsertThreadMessageInCache(processed, processed.rid, processed.tmid);
+	}
+
 	await clientCallbacks.run('afterSaveMessage', processed, { room, user });
 };

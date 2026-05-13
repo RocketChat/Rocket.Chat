@@ -43,7 +43,7 @@ export abstract class CreateNewModal extends Modal {
 		await this.inputAddMembers.click();
 		await this.inputAddMembers.fill(memberName, { force: true });
 		await this.listbox.selectOption(memberName);
-		await this.root.getByRole('combobox', { name: 'Members' }).click();
+		await this.inputAddMembers.click();
 	}
 }
 

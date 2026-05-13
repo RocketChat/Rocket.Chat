@@ -7,6 +7,7 @@ import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 
@@ -90,6 +91,16 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						});
 					});
 			},
+			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
+				const methodName = `loginWith${capitalizeService(service, true)}`;
+				const method = (Meteor as any)[methodName] as
+					| ((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void)
+					| undefined;
+				if (!method) {
+					return;
+				}
+				method.call(Meteor, options, callback);
+			},
 			loginWithIframe: (token: string, callback) =>
 				new Promise<void>((resolve, reject) => {
 					callLoginMethod({ iframe: true, token }, (error) => {
@@ -112,6 +123,19 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						resolve();
 					});
 				}),
+			getLoginToken: () => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? null,
+			wipeLocalAuth: () => {
+				try {
+					Accounts._unstoreLoginToken();
+				} catch {
+					// ignore
+				}
+				try {
+					(Meteor.connection as unknown as { setUserId: (uid: string | null) => void }).setUserId(null);
+				} catch {
+					// ignore
+				}
+			},
 			unstoreLoginToken: (callback) => {
 				const { _unstoreLoginToken } = Accounts;
 				Accounts._unstoreLoginToken = function (...args) {
