@@ -69,4 +69,28 @@ export default {
 	maxFailures: process.env.CI ? 5 : undefined,
 	// Retry on CI only.
 	retries: parseInt(String(process.env.PLAYWRIGHT_RETRIES)) || 0,
+	projects: [
+		{
+			name: 'performance',
+			testMatch: 'tests/e2e/performance/**/*.spec.ts',
+			timeout: 120_000,
+			// Run 3 times in CI so baseline.ts can compute a median and reduce noise.
+			repeatEach: process.env.CI ? 3 : 1,
+			use: {
+				trace: 'on-first-retry',
+				launchOptions: {
+					args: [
+						'--use-gl=egl',
+						'--use-fake-ui-for-media-stream',
+						'--use-fake-device-for-media-stream',
+						// Required for the experimental Soft Navigation API used by soft-navigation.ts
+						'--enable-experimental-web-platform-features',
+					],
+				},
+				// CPU throttling (4×) and network throttling (Fast 3G) are applied per-test
+				// via Emulation.setCPUThrottlingRate and Emulation.setNetworkConditions in
+				// the cdpSession fixture (see performance/collectors/cdp.ts).
+			},
+		},
+	],
 } as PlaywrightTestConfig;
