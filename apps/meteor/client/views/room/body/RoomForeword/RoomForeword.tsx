@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isMultipleDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
@@ -26,6 +26,8 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 		return null;
 	}
 
+	const isOneToOneDm = !isMultipleDirectMessageRoom(room);
+
 	return (
 		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column' mb={8}>
 			<Flex.Item grow={1}>
@@ -41,7 +43,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>
-				<RoomForewordUsernameList usernames={usernames} />
+				<RoomForewordUsernameList isOneToOneDm={isOneToOneDm} usernames={usernames} />
 			</Box>
 		</Box>
 	);
