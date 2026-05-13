@@ -1,5 +1,11 @@
 # @rocket.chat/i18n
 
+## 1.13.1
+
+### Patch Changes
+
+- ([#40418](https://github.com/RocketChat/Rocket.Chat/pull/40418) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
 ## 1.13.0
 
 ### Minor Changes
