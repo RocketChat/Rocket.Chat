@@ -25,6 +25,7 @@ import { useContextualBarContextValue } from '../../../../uikit/hooks/useContext
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
+import { useRoom } from '../../contexts/RoomContext';
 
 type UiKitContextualBarProps = {
 	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes
@@ -34,7 +35,8 @@ type UiKitContextualBarProps = {
 const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Element => {
 	const actionManager = useUiKitActionManager();
 	const { view, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useContextualBarContextValue({ view, values, updateValues });
+	const room = useRoom();
+	const contextValue = useContextualBarContextValue({ view, values, updateValues, rid: room._id });
 
 	const { closeTab } = useRoomToolbox();
 
@@ -50,6 +52,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 			},
 			viewId: view.id,
+			rid: room._id,
 		});
 	});
 
@@ -66,6 +69,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 				isCleared: false,
 			},
+			rid: room._id,
 		});
 	});
 
@@ -82,6 +86,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 				isCleared: true,
 			},
+			rid: room._id,
 		});
 	});
 
