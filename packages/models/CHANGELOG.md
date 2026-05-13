@@ -1,5 +1,17 @@
 # @rocket.chat/models
 
+## 1.6.11
+
+### Patch Changes
+
+- ([#40419](https://github.com/RocketChat/Rocket.Chat/pull/40419) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [7509293fa2964542fa21f6c6862f3139bbc7ac17]:</summary>
+
+  - @rocket.chat/model-typings@1.7.11
+  - @rocket.chat/rest-typings@7.10.11
+  </details>
+
 ## 1.6.10
 
 ### Patch Changes

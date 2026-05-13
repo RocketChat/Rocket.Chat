@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.10.10",
+	"version": "7.10.11",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
