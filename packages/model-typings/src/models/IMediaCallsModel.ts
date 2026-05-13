@@ -24,7 +24,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	startRingingById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	acceptCallById(
 		callId: string,
-		data: { calleeContractId: string; supportedFeatures: string[]; metadata?: IMediaCall['metadata'] },
+		data: { calleeContractId: string; supportedFeatures: string[]; sipCallId?: string },
 		expiresAt: Date,
 	): Promise<UpdateResult>;
 	activateCallById(callId: string, expiresAt: Date): Promise<UpdateResult>;

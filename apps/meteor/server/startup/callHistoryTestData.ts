@@ -134,7 +134,6 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			activatedAt: new Date(),
 			uids: [uid, extraUid],
 			features: ['audio'],
-			metadata: {},
 		},
 		{
 			_id: callId2,
@@ -168,7 +167,6 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			activatedAt: new Date(),
 			uids: [uid, extraUid],
 			features: ['audio'],
-			metadata: {},
 		},
 		{
 			_id: callId3,
@@ -202,7 +200,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			activatedAt: new Date(),
 			uids: [uid],
 			features: ['audio'],
-			metadata: {},
+			sipCallId: 'sipCallId3',
 		},
 		{
 			_id: callId4,
@@ -236,7 +234,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			activatedAt: new Date(),
 			uids: [uid],
 			features: ['audio'],
-			metadata: {},
+			sipCallId: 'sipCallId4',
 		},
 	]);
 }

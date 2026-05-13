@@ -89,16 +89,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 
 	public async acceptCallById(
 		callId: string,
-		data: { calleeContractId: string; supportedFeatures: string[]; metadata?: IMediaCall['metadata'] },
+		data: { calleeContractId: string; supportedFeatures: string[]; sipCallId?: string },
 		expiresAt: Date,
 	): Promise<UpdateResult> {
-		const { calleeContractId, metadata = [] } = data;
-
-		const metadataChanges = Object.fromEntries(
-			Object.entries(metadata)
-				.filter(([_key, value]) => value)
-				.map(([key, value]) => [`metadata.${key}`, value]),
-		);
+		const { calleeContractId, sipCallId } = data;
 
 		return this.updateOne(
 			{
@@ -111,7 +105,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'callee.contractId': calleeContractId,
 					'acceptedAt': new Date(),
 					expiresAt,
-					...metadataChanges,
+					...(sipCallId && { sipCallId }),
 				},
 				$pull: {
 					features: {

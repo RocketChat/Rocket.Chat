@@ -24,7 +24,7 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
-	metadata?: IMediaCall['metadata'];
+	sipCallId?: string;
 };
 
 // expiration checks by call id
@@ -66,7 +66,7 @@ class MediaCallDirector {
 			calleeContractId: string;
 			webrtcAnswer?: RTCSessionDescriptionInit;
 			supportedFeatures: CallFeature[];
-			metadata?: IMediaCall['metadata'];
+			sipCallId?: string;
 		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
@@ -239,7 +239,7 @@ class MediaCallDirector {
 			...(parentCallId && { parentCallId }),
 
 			features: allowedFeatures,
-			metadata: Object.fromEntries(Object.entries(params.metadata || {}).filter(([_key, value]) => value)),
+			...(params.sipCallId && { sipCallId: params.sipCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
