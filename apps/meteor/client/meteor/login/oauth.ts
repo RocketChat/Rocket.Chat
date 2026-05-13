@@ -4,6 +4,7 @@ import { OAuth } from 'meteor/oauth';
 
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
@@ -99,7 +100,7 @@ export const createOAuthTotpLoginMethod =
 
 Accounts.oauth.credentialRequestCompleteHandler = credentialRequestCompleteHandler;
 
-Accounts.onPageLoadLogin(async (loginAttempt: any) => {
+getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
 	if (loginAttempt?.error?.error !== 'totp-required') {
 		return;
 	}

@@ -96,6 +96,13 @@ export const createGeneralSettings = async () => {
 			type: 'boolean',
 		});
 
+		await this.add('Use_RC_SDK', false, {
+			type: 'boolean',
+			public: true,
+			alert: 'Use_RC_SDK_Alert',
+			i18nDescription: 'Use_RC_SDK_Description',
+		});
+
 		await this.add('Extra_CSP_Domains', '', {
 			type: 'string',
 			multiline: true,

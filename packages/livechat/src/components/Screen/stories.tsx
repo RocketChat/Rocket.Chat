@@ -1,29 +1,14 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { Screen } from '.';
+import { Screen, ScreenContent } from '.';
 import { gazzoAvatar, screenDecorator } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Components/Screen',
 	component: Screen,
 	args: {
-		theme: {
-			color: '',
-			fontColor: '',
-			iconColor: '',
-		},
 		title: 'Title',
-		notificationsEnabled: true,
-		minimized: false,
-		expanded: false,
-		windowed: false,
-		onEnableNotifications: action('enableNotifications'),
-		onDisableNotifications: action('disableNotifications'),
-		onMinimize: action('minimize'),
-		onRestore: action('restore'),
-		onOpenWindow: action('openWindow'),
 	},
 	decorators: [screenDecorator],
 	parameters: {
@@ -33,30 +18,12 @@ export default {
 
 const Template: StoryFn<ComponentProps<typeof Screen>> = (args) => (
 	<Screen {...args}>
-		<Screen.Content>Content</Screen.Content>
+		<ScreenContent>Content</ScreenContent>
 	</Screen>
 );
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';
-
-export const Minimized = Template.bind({});
-Minimized.storyName = 'minimized';
-Minimized.args = {
-	minimized: true,
-};
-
-export const Expanded = Template.bind({});
-Expanded.storyName = 'expanded';
-Expanded.args = {
-	expanded: true,
-};
-
-export const Windowed = Template.bind({});
-Windowed.storyName = 'windowed';
-Windowed.args = {
-	windowed: true,
-};
 
 export const WithAgentEmail = Template.bind({});
 WithAgentEmail.storyName = 'with agent (email)';
@@ -107,15 +74,4 @@ WithHiddenAgent.args = {
 	agent: {
 		hiddenInfo: true,
 	},
-};
-
-export const WithMultipleAlerts = Template.bind({});
-WithMultipleAlerts.storyName = 'with multiple alerts';
-WithMultipleAlerts.args = {
-	alerts: [
-		{ id: 1, children: 'Success alert', success: true },
-		{ id: 2, children: 'Warning alert', warning: true, timeout: 0 },
-		{ id: 3, children: 'Error alert', error: true, timeout: 1000 },
-		{ id: 4, children: 'Custom colored alert', color: '#000', timeout: 5000 },
-	],
 };
