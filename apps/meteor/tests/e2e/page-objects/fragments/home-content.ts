@@ -4,6 +4,7 @@ import { resolve, join, relative } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 
 import { RoomComposer, ThreadComposer } from './composer';
+import { createMediaResponsePromise } from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
 const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
@@ -15,7 +16,7 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
-	protected readonly composer: RoomComposer;
+	readonly composer: RoomComposer;
 
 	protected readonly threadComposer: ThreadComposer;
 
@@ -53,6 +54,14 @@ export class HomeContent {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
 	}
 
+	get mainMessageListScroller(): Locator {
+		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.mainMessageList });
+	}
+
+	get threadMessageListScroller(): Locator {
+		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.threadMessageList });
+	}
+
 	get systemMessageListItems(): Locator {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="system message"]');
 	}
@@ -65,8 +74,16 @@ export class HomeContent {
 		return this.messageListItems.last();
 	}
 
+	get lastUserThreadMessage(): Locator {
+		return this.threadMessageListItems.last();
+	}
+
 	get lastThreadMessagePreview(): Locator {
 		return this.page.getByRole('listitem').locator('[role="link"][aria-roledescription="thread message preview"]').last();
+	}
+
+	get lastUserMessageDownloadLink(): Locator {
+		return this.lastUserMessage.getByRole('link', { name: 'Download' });
 	}
 
 	nthMessage(index: number): Locator {
@@ -108,24 +125,27 @@ export class HomeContent {
 		await expect(this.composer.inputMessage).toBeEnabled();
 		await this.composer.inputMessage.fill(text);
 
-		if (enforce) {
-			const responsePromise = this.page.waitForResponse(
-				(response) =>
-					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-			);
-
+		if (!enforce) {
 			await this.composer.btnSend.click();
-
-			const response = await (await responsePromise).json();
-
-			const mid = JSON.parse(response.message).result._id;
-			const messageLocator = this.getMessageById(mid);
-
-			await expect(messageLocator).toBeVisible();
-			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
-		} else {
-			await this.composer.btnSend.click();
+			return;
 		}
+
+		// Wait for the message to settle in the DOM. Transport-agnostic — the
+		// message may be sent via REST (`/api/v1/method.call/sendMessage`) or
+		// via DDP/WS depending on whether DDPSDK is the active dispatcher;
+		// either way Meteor's optimistic insert renders the new list item
+		// before the server confirms, and the `rcx-message--pending` class
+		// drops once the server result lands.
+		const before = await this.messageListItems.count();
+
+		await this.composer.btnSend.click();
+
+		// Use `>=` rather than `==` because some flows (e.g. just-created
+		// encrypted channels) drop additional list items in alongside the
+		// user's send (other in-flight messages, decryption-status items),
+		// so an exact count is racy.
+		await expect.poll(() => this.messageListItems.count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(before + 1);
+		await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -154,7 +174,7 @@ export class HomeContent {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
-	get fileUploadModal(): Locator {
+	private get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
 	}
 
@@ -170,12 +190,6 @@ export class HomeContent {
 		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
 	}
 
-	get modalFilePreview(): Locator {
-		return this.page.locator(
-			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
-		);
-	}
-
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
@@ -188,16 +202,20 @@ export class HomeContent {
 		return this.page.getByRole('button', { name: 'Dismiss quoted message' });
 	}
 
-	get descriptionInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
-	}
-
 	get getFileDescription(): Locator {
 		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
-	get fileNameInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
+	get inputFileUploadName(): Locator {
+		return this.fileUploadModal.getByRole('textbox', { name: 'File name' });
+	}
+
+	get btnUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Update' });
+	}
+
+	get btnCancelUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Cancel' });
 	}
 
 	// -----------------------------------------
@@ -269,10 +287,6 @@ export class HomeContent {
 		return this.threadMessageListItems.first();
 	}
 
-	get lastThreadMessageText(): Locator {
-		return this.threadMessageListItems.last();
-	}
-
 	get lastThreadMessagePreviewText(): Locator {
 		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
 	}
@@ -310,16 +324,12 @@ export class HomeContent {
 		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
 	}
 
+	get btnOptionReplyInDm(): Locator {
+		return this.menuMore.getByRole('menuitem', { name: 'Reply in direct message', exact: true });
+	}
+
 	get btnVoiceCall(): Locator {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
-	}
-
-	get userCard(): Locator {
-		return this.page.getByRole('dialog', { name: 'User card', exact: true });
-	}
-
-	get linkUserCard(): Locator {
-		return this.userCard.locator('a');
 	}
 
 	get btnContactInformation(): Locator {
@@ -358,7 +368,7 @@ export class HomeContent {
 		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
-	async dragAndDropTxtFile(): Promise<void> {
+	async dragAndDropTxtFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -369,12 +379,15 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
-	async dragAndDropLstFile(): Promise<void> {
+	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -385,12 +398,15 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
-	async dragAndDropTxtFileToThread(): Promise<void> {
+	async dragAndDropTxtFileToThread({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -401,13 +417,29 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.threadComposer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
-	async sendFileMessage(fileName: string): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
+	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
+		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		if (responsePromise) {
+			await responsePromise;
+		}
+	}
+
+	async sendFileMessageToThread(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		await this.threadComposer.inputMessage.click();
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
+		await this.page.getByLabel('Thread composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -417,9 +449,9 @@ export class HomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.threadMessageList.last().hover();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).click();
+		await this.lastUserThreadMessage.hover();
+		await this.lastUserThreadMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserThreadMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
@@ -518,6 +550,13 @@ export class HomeContent {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
 		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
+		await messageList.waitFor();
+
+		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+	}
+
+	async waitForThread(): Promise<void> {
+		const messageList = this.page.getByRole('list', { name: 'Thread message list', exact: true });
 		await messageList.waitFor();
 
 		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');

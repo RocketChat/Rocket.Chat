@@ -60,7 +60,6 @@ const AppsPageContentBody = ({
 						onSetCurrent(value);
 						scrollableRef.current?.scrollTo(0, 0);
 					}}
-					bg='light'
 					{...paginationProps}
 				/>
 			)}

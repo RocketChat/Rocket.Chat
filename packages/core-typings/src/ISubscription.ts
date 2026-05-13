@@ -6,7 +6,7 @@ import type { RoomType } from './RoomType';
 
 type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
 
-export type SubscriptionStatus = 'INVITED';
+export type SubscriptionStatus = 'INVITED' | 'BANNED';
 
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
@@ -20,9 +20,9 @@ export interface ISubscription extends IRocketChatRecord {
 	alert?: boolean;
 	unread: number;
 	t: RoomType;
-	ls: Date;
+	ls?: Date;
 	f?: boolean;
-	lr: Date;
+	lr?: Date;
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
 	teamMain?: boolean;
@@ -65,6 +65,8 @@ export interface ISubscription extends IRocketChatRecord {
 
 	department?: unknown;
 
+	draft?: string;
+
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';
 	emailPrefOrigin?: 'subscription' | 'user';
@@ -87,4 +89,12 @@ export interface IInviteSubscription extends ISubscription {
 
 export const isInviteSubscription = (subscription: ISubscription): subscription is IInviteSubscription => {
 	return subscription?.status === 'INVITED' && !!subscription.inviter;
+};
+
+export interface IBannedSubscription extends ISubscription {
+	status: 'BANNED';
+}
+
+export const isBannedSubscription = (subscription: ISubscription): subscription is IBannedSubscription => {
+	return subscription?.status === 'BANNED';
 };

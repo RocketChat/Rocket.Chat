@@ -39,6 +39,7 @@ export default {
 				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
 				'<rootDir>/ee/app/license/server/**/*.spec.ts',
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
+				'<rootDir>/ee/server/cron/**/*.spec.ts',
 				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',

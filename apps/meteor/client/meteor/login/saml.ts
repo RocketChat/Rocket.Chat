@@ -3,6 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { absoluteUrl } from '../../lib/absoluteUrl';
+import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
 import { settings } from '../../lib/settings';
 
 declare module 'meteor/meteor' {
@@ -72,10 +74,10 @@ Meteor.logout = async function (...args) {
 
 				// Remove the userId from the client to prevent calls to the server while the logout is processed.
 				// If the logout fails, the userId will be reloaded on the resume call
-				Accounts.storageLocation.removeItem(Accounts.USER_ID_KEY);
+				removeStoredItem(STORAGE_KEYS.USER_ID);
 
 				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-				window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
+				window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
 			})
 			.catch(() => logout.apply(Meteor));
 		return;

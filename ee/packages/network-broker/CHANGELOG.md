@@ -1,5 +1,126 @@
 # @rocket.chat/network-broker
 
+## 0.2.35
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/core-services@0.14.0
+  </details>
+
+## 0.2.35-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.2
+  </details>
+
+## 0.2.35-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.1
+  </details>
+
+## 0.2.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.4
+  </details>
+
+## 0.2.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.3
+  </details>
+
+## 0.2.35-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.0
+  </details>
+
+## 0.2.32
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
+
+  - @rocket.chat/core-services@0.13.2
+  </details>
+
+## 0.2.32-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.4
+  </details>
+
+## 0.2.32-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.3
+  </details>
+
+## 0.2.32-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.2
+  </details>
+
+## 0.2.32-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.1
+  </details>
+
+## 0.2.32-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
+
+  - @rocket.chat/core-services@0.13.2-rc.0
+  </details>
+
+## 0.2.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.13.1
+  </details>
+
 ## 0.2.30
 
 ### Patch Changes

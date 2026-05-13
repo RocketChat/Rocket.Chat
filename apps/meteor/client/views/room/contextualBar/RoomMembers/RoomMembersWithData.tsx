@@ -55,7 +55,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { data, fetchNextPage, isPending, refetch, hasNextPage } = useMembersList(
+	const { data, fetchNextPage, isPending, isSuccess, refetch, hasNextPage } = useMembersList(
 		useMemo(() => ({ rid, type, limit: 20, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
 
@@ -118,7 +118,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
-			loading={isPending}
+			isPending={isPending}
+			isSuccess={isSuccess}
 			type={type}
 			text={text}
 			setText={handleTextChange}

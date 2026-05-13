@@ -1,5 +1,134 @@
 # @rocket.chat/mock-providers
 
+## 0.4.16
+
+### Patch Changes
+
+- ([#40058](https://github.com/RocketChat/Rocket.Chat/pull/40058)) Fixed UI becoming unresponsive after clicking "See on Engagement Dashboard" from the workspace info card, which required a manual page refresh to recover.
+
+- <details><summary>Updated dependencies [32f67f20fbcfdab051c7d2f99d8a7a3d18ebf474, 8c0e16ca29b393cfa50b425520db48ba5a74f678, 9f38b54c671ba3f0583c0d248a2afe09652fcdf4, 2356c889ed82507e1dd1208fab6d4ab186701fef]:</summary>
+
+  - @rocket.chat/i18n@3.0.0
+  - @rocket.chat/ui-contexts@30.0.0
+  </details>
+
+## 0.4.16-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  </details>
+
+## 0.4.16-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  </details>
+
+## 0.4.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.2
+  </details>
+
+## 0.4.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.1
+  </details>
+
+## 0.4.16-rc.0
+
+### Patch Changes
+
+- ([#40058](https://github.com/RocketChat/Rocket.Chat/pull/40058)) Fixed UI becoming unresponsive after clicking "See on Engagement Dashboard" from the workspace info card, which required a manual page refresh to recover.
+
+- <details><summary>Updated dependencies [32f67f20fbcfdab051c7d2f99d8a7a3d18ebf474, 8c0e16ca29b393cfa50b425520db48ba5a74f678, 9f38b54c671ba3f0583c0d248a2afe09652fcdf4, 2356c889ed82507e1dd1208fab6d4ab186701fef]:</summary>
+
+  - @rocket.chat/i18n@3.0.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
+  </details>
+
+## 0.4.13
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [652ff8cfe26b9068a776c39132c0eb5440702894, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 85c0ac7d8c7a5b7b89ef58f4a42b18467a8e2dd4, c217b0bde182e5f76dbe1892d9b37d61ffab71db, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd, d83a1a9753464ee916845b3c88757bbcf76884a5, 788c161bb6c9544bec37034c93e2f60de1a6c316]:</summary>
+
+  - @rocket.chat/i18n@2.2.0
+  - @rocket.chat/ui-contexts@29.0.0
+  </details>
+
+## 0.4.13-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.4
+  </details>
+
+## 0.4.13-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.3
+  </details>
+
+## 0.4.13-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.2
+  </details>
+
+## 0.4.13-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.1
+  </details>
+
+## 0.4.13-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [652ff8cfe26b9068a776c39132c0eb5440702894, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 85c0ac7d8c7a5b7b89ef58f4a42b18467a8e2dd4, c217b0bde182e5f76dbe1892d9b37d61ffab71db, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd, d83a1a9753464ee916845b3c88757bbcf76884a5]:</summary>
+
+  - @rocket.chat/i18n@2.2.0-rc.0
+  - @rocket.chat/ui-contexts@29.0.0-rc.0
+  </details>
+
+## 0.4.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@28.0.1
+  </details>
+
 ## 0.4.11
 
 ### Patch Changes

@@ -162,6 +162,10 @@ export class ListenersModule {
 				return;
 			}
 
+			if (settings.get('Presence_broadcast_disabled')) {
+				return;
+			}
+
 			notifications.notifyUserInThisInstance(_id, 'userData', {
 				type: 'updated',
 				id: _id,

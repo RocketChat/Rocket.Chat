@@ -7,13 +7,16 @@ import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,
-	storageID: string,
+	persistDraft: (value: string) => void,
+	initialDraft: string,
 	quoteChainLimit: number,
 	composerRef: RefObject<HTMLElement>,
+	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
@@ -37,19 +40,12 @@ export const createComposerAPI = (
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
-		if (input.value) {
-			Accounts.storageLocation.setItem(storageID, input.value);
-			return;
-		}
-
-		Accounts.storageLocation.removeItem(storageID);
+		persistDraft(input.value);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
-
-	input.addEventListener('input', persist);
 
 	const setText = (
 		text: string,
@@ -300,13 +296,21 @@ export const createComposerAPI = (
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 		focus();
+
+		return {
+			selectionStart: input.selectionStart,
+			selectionEnd: input.selectionEnd,
+			value: input.value,
+		};
 	};
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
+	setText(initialDraft, {
 		skipFocus: true,
 	});
+
+	input.addEventListener('input', persist);
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
@@ -385,5 +389,6 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type {
 	IMediaCall,
 	IMediaCallNegotiation,
@@ -78,11 +80,14 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as accepted', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 
-		const updatedCall = await MediaCalls.findOneById(call._id, { projection: { features: 1 } });
-		const features = (updatedCall?.features || ['audio']) as CallFeature[];
+		const updatedCall = await MediaCalls.findOneById(call._id);
+		if (!updatedCall) {
+			logger.error({ msg: 'Unable to find up to date call data', callId: call._id });
+			return false;
+		}
 
-		await calleeAgent.onCallAccepted(call._id, { signedContractId: data.calleeContractId, features });
-		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, { signedContractId: call.caller.contractId, features });
+		await calleeAgent.onCallAccepted(updatedCall);
+		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
 		if (data.webrtcAnswer && negotiation) {
 			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
@@ -177,17 +182,7 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const {
-			caller,
-			callee,
-			requestedCallId,
-			requestedService,
-			callerAgent,
-			calleeAgent,
-			parentCallId,
-			requestedBy,
-			features = ['audio'],
-		} = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -212,7 +207,10 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
+		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const call: Omit<IMediaCall, '_updatedAt'> = {
+			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
+			_id: randomUUID(),
 			service,
 			kind: 'direct',
 			state: 'none',
@@ -234,7 +232,7 @@ class MediaCallDirector {
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
 
-			features,
+			features: allowedFeatures,
 		};
 
 		logger.debug({ msg: 'creating call', call });

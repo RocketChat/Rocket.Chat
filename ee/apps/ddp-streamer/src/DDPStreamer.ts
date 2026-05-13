@@ -53,12 +53,30 @@ export class DDPStreamer extends ServiceClass {
 		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			this.wss?.clients.forEach((ws) => {
 				const client = clientMap.get(ws);
-				if (sessionId && client?.connection.id === sessionId) {
-					ws.close();
+				if (sessionId) {
+					if (client?.connection.id === sessionId) {
+						ws.close();
+					}
 					return;
 				}
 				if (client?.userId === uid) {
-					ws.terminate();
+					// Graceful close: lets the WS lib flush queued frames (including
+					// the `notify-user/<uid>/force_logout` stream message that the
+					// monolith listener at apps/meteor/server/modules/listeners/listeners.module.ts:49
+					// just enqueued) before the socket goes down. Previously this was
+					// `ws.terminate()`, which sends a TCP RST immediately and drops
+					// the queued frames — clients depending on the stream message
+					// (useForceLogout hook → Accounts._unstoreLoginToken + setUserId(null))
+					// then never see the cleanup, leaving stale credentials in
+					// localStorage. Falls back to terminate() after a short grace
+					// period for unresponsive sockets.
+					ws.close();
+					const guard = setTimeout(() => {
+						if (ws.readyState !== ws.CLOSED) {
+							ws.terminate();
+						}
+					}, 5000);
+					ws.once('close', () => clearTimeout(guard));
 				}
 			});
 		});

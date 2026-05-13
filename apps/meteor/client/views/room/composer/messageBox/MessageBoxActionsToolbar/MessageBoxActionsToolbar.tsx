@@ -22,12 +22,12 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageBoxActionsToolbarProps = {
 	canSend: boolean;
-	typing: boolean;
 	isMicrophoneDenied: boolean;
 	variant: 'small' | 'large';
 	isRecording: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	isEditing: boolean;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
@@ -39,12 +39,12 @@ const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) =>
 
 const MessageBoxActionsToolbar = ({
 	canSend,
-	typing,
 	isRecording,
 	rid,
 	tmid,
 	variant = 'large',
 	isMicrophoneDenied,
+	isEditing = false,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
 	const chatContext = useChat();
@@ -55,10 +55,10 @@ const MessageBoxActionsToolbar = ({
 
 	const room = useRoom();
 
-	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
-	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || typing || isRecording);
-	const webdavActions = useWebdavActions();
+	const audioMessageAction = useAudioMessageAction(!canSend || isRecording || isMicrophoneDenied, isMicrophoneDenied);
+	const videoMessageAction = useVideoMessageAction(!canSend || isRecording);
+	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
+	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
 	const timestampAction = useTimestampAction(chatContext.composer);

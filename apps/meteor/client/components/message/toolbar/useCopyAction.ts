@@ -6,8 +6,8 @@ import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/Me
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
-	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
-	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
+	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.title || '';
+	newMessage.md = newMessage.md || undefined;
 	return { ...newMessage };
 };
 

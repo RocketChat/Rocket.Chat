@@ -1,5 +1,57 @@
 # Change Log
 
+## 0.31.36
+
+### Patch Changes
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add property-based fuzz testing using `fast-check` to continuously evaluate memory limits, structural boundaries, and backtracking behavior against heavily randomized markdown arrays.
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) feat(message-parser): implement BlockSplitter PoC (Layer 1)
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for isNodeOfType guard bringing branch coverage to 100%
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for joinEmoji behavior through reducePlainTexts
+
+## 0.31.36-rc.0
+
+### Patch Changes
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add property-based fuzz testing using `fast-check` to continuously evaluate memory limits, structural boundaries, and backtracking behavior against heavily randomized markdown arrays.
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) feat(message-parser): implement BlockSplitter PoC (Layer 1)
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for isNodeOfType guard bringing branch coverage to 100%
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for joinEmoji behavior through reducePlainTexts
+
+## 0.31.35
+
+### Patch Changes
+
+- ([#39062](https://github.com/RocketChat/Rocket.Chat/pull/39062) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixed blockquotes with empty lines between paragraphs not rendering as a single blockquote. Lines like `> ` or `>` (empty quote lines) are now treated as part of the surrounding blockquote rather than breaking it into separate quotes.
+
+- ([#39046](https://github.com/RocketChat/Rocket.Chat/pull/39046) by [@smirk-dev](https://github.com/smirk-dev)) Replaces wasteful `filter().shift()` with `find(Boolean)` in `extractFirstResult` to avoid allocating an intermediate filtered array just to get the first truthy element.
+
+- ([#39069](https://github.com/RocketChat/Rocket.Chat/pull/39069) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes trailing punctuation (e.g. periods, exclamation marks) being incorrectly included in parsed URLs when they appear at the end of a message. For example, `go to https://www.google.com.` now correctly parses the URL as `https://www.google.com` without the trailing period.
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#39052](https://github.com/RocketChat/Rocket.Chat/pull/39052) by [@Shreyas2004wagh](https://github.com/Shreyas2004wagh)) Fixes ordered list AST generation to preserve `number: 0` for list items that start at index `0`.
+
+## 0.31.35-rc.0
+
+### Patch Changes
+
+- ([#39062](https://github.com/RocketChat/Rocket.Chat/pull/39062) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixed blockquotes with empty lines between paragraphs not rendering as a single blockquote. Lines like `> ` or `>` (empty quote lines) are now treated as part of the surrounding blockquote rather than breaking it into separate quotes.
+
+- ([#39046](https://github.com/RocketChat/Rocket.Chat/pull/39046) by [@smirk-dev](https://github.com/smirk-dev)) Replaces wasteful `filter().shift()` with `find(Boolean)` in `extractFirstResult` to avoid allocating an intermediate filtered array just to get the first truthy element.
+
+- ([#39069](https://github.com/RocketChat/Rocket.Chat/pull/39069) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes trailing punctuation (e.g. periods, exclamation marks) being incorrectly included in parsed URLs when they appear at the end of a message. For example, `go to https://www.google.com.` now correctly parses the URL as `https://www.google.com` without the trailing period.
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#39052](https://github.com/RocketChat/Rocket.Chat/pull/39052) by [@Shreyas2004wagh](https://github.com/Shreyas2004wagh)) Fixes ordered list AST generation to preserve `number: 0` for list items that start at index `0`.
+
 ## 0.31.34
 
 ### Patch Changes
