@@ -19,10 +19,7 @@ import _ from 'underscore';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-
-const MIN_URL_EXPIRY_TIME_SPAN_SECONDS = 5;
-
-const S3_FALLBACK_EXPIRY_SECONDS = 900; // 15 minutes
+import { getUrlExpiryWithFallback, getValidUrlExpiryTimeSpan } from '../../server/lib/urlExpiry';
 
 export type S3Options = StoreOptions & {
 	connection: S3ClientConfig;
@@ -85,8 +82,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
-			const expiresIn =
-				classOptions.URLExpiryTimeSpan >= MIN_URL_EXPIRY_TIME_SPAN_SECONDS ? classOptions.URLExpiryTimeSpan : S3_FALLBACK_EXPIRY_SECONDS;
+			const expiresIn = getUrlExpiryWithFallback(classOptions.URLExpiryTimeSpan);
 			return getSignedUrl(
 				s3,
 				new GetObjectCommand({
@@ -208,7 +204,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getUrlExpiryTimeSpan = async () => {
-			return classOptions.URLExpiryTimeSpan >= MIN_URL_EXPIRY_TIME_SPAN_SECONDS ? classOptions.URLExpiryTimeSpan : null;
+			return getValidUrlExpiryTimeSpan(classOptions.URLExpiryTimeSpan);
 		};
 	}
 }
