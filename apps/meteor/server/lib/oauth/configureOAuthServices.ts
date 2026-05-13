@@ -1,6 +1,6 @@
 import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
