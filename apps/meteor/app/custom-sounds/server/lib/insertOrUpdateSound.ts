@@ -2,8 +2,16 @@ import { api } from '@rocket.chat/core-services';
 import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import type { ICustomSoundData } from '../methods/insertOrUpdateSound';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+
+export type ICustomSoundData = {
+	_id?: string;
+	name: string;
+	extension: string;
+	previousName?: string;
+	previousExtension?: string;
+	newFile?: boolean;
+};
 
 export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<string> => {
 	// silently strip colon; this allows for uploading :soundname: as soundname
