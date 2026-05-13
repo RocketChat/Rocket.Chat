@@ -7,12 +7,13 @@ import {
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
+import { useId, useEffect, useRef } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
+import { MAX_FILE_SIZE_PREVIEW } from '../../../../../lib/constants';
 import MessageCollapsible from '../../../MessageCollapsible';
 import AttachmentSize from '../structure/AttachmentSize';
 
@@ -32,13 +33,43 @@ const GenericFileAttachment = ({
 	const uid = useId();
 	const { t } = useTranslation();
 
-	const handleTitleClick = (event: UIEvent): void => {
+	const blobUrlRef = useRef<string | undefined>(undefined);
+
+	useEffect(() => {
+		return () => {
+			if (blobUrlRef.current) {
+				URL.revokeObjectURL(blobUrlRef.current);
+				blobUrlRef.current = undefined;
+			}
+		};
+	}, []);
+
+	const handleTitleClick = async (event: UIEvent): Promise<void> => {
 		if (!link) {
 			return;
 		}
 
-		if (openDocumentViewer && format === 'PDF') {
+		const isEncrypted = link.includes('/file-decrypt/');
+
+		if (format === 'PDF' && openDocumentViewer) {
 			event.preventDefault();
+
+			if (isEncrypted) {
+				if (size && size > MAX_FILE_SIZE_PREVIEW) {
+					registerDownloadForUid(uid, t, title);
+					forAttachmentDownload(uid, link);
+					return;
+				}
+				if (blobUrlRef.current) {
+					URL.revokeObjectURL(blobUrlRef.current);
+				}
+				const response = await fetch(getURL(link));
+				const blob = await response.blob();
+				const blobUrl = URL.createObjectURL(blob);
+				blobUrlRef.current = blobUrl;
+				openDocumentViewer(blobUrl, format, title ?? '');
+				return;
+			}
 
 			const url = new URL(getURL(link), window.location.origin);
 			url.searchParams.set('contentDisposition', 'inline');
@@ -46,9 +77,8 @@ const GenericFileAttachment = ({
 			return;
 		}
 
-		if (link.includes('/file-decrypt/')) {
+		if (isEncrypted) {
 			event.preventDefault();
-
 			registerDownloadForUid(uid, t, title);
 			forAttachmentDownload(uid, link);
 		}
