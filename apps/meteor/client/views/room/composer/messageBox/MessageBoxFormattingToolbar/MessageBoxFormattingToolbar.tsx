@@ -1,5 +1,5 @@
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FormattingToolbarDropdown from './FormattingToolbarDropdown';
@@ -16,6 +16,26 @@ type MessageBoxFormattingToolbarProps = {
 
 const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled }: MessageBoxFormattingToolbarProps) => {
 	const { t } = useTranslation();
+	const [activeModes, setActiveModes] = useState<Record<string, boolean>>({});
+
+	useEffect(() => {
+		const textarea = composer.composerRef.current?.querySelector('textarea');
+		if (!textarea) return;
+
+		const handleInput = () => {
+			if (!textarea.value) {
+				setActiveModes({});
+			}
+		};
+
+		textarea.addEventListener('input', handleInput);
+		return () => textarea.removeEventListener('input', handleInput);
+	}, [composer]);
+
+	const toggleMode = (pattern: string, label: string) => {
+		composer.wrapSelection(pattern);
+		setActiveModes((prev) => ({ ...prev, [label]: !prev[label] }));
+	};
 
 	if (variant === 'small') {
 		const collapsedItems = [...items];
@@ -26,11 +46,14 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
 						onClick={() =>
-							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
+							isPromptButton(featuredFormatter)
+								? featuredFormatter.prompt(composer)
+								: toggleMode(featuredFormatter.pattern, featuredFormatter.label)
 						}
 						icon={featuredFormatter.icon}
 						title={t(featuredFormatter.label)}
 						disabled={disabled}
+						pressed={!!activeModes[featuredFormatter.label]}
 					/>
 				)}
 				<FormattingToolbarDropdown composer={composer} items={collapsedItems} disabled={disabled} />
@@ -43,30 +66,18 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 			{items.map((formatter) =>
 				'icon' in formatter ? (
 					<MessageComposerAction
-						disabled={disabled}
-						icon={formatter.icon}
 						key={formatter.label}
-						data-id={formatter.label}
+						icon={formatter.icon}
 						title={t(formatter.label)}
-						onClick={(): void => {
-							if (isPromptButton(formatter)) {
-								formatter.prompt(composer);
-								return;
-							}
-							if ('link' in formatter) {
-								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
-								return;
-							}
-							composer.wrapSelection(formatter.pattern);
+						disabled={disabled}
+						pressed={!!activeModes[formatter.label]}
+						onClick={() => {
+							if (isPromptButton(formatter)) return formatter.prompt(composer);
+							if ('link' in formatter) return window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
+							toggleMode(formatter.pattern, formatter.label);
 						}}
 					/>
-				) : (
-					<span key={formatter.label} {...(disabled && { style: { pointerEvents: 'none' } })} title={formatter.label}>
-						<a href={formatter.link} target='_blank' rel='noopener noreferrer'>
-							{formatter.text()}
-						</a>
-					</span>
-				),
+				) : null,
 			)}
 		</>
 	);

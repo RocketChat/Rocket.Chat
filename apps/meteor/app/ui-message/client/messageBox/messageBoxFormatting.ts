@@ -17,7 +17,6 @@ type TextButton = {
 type PatternButton = {
 	icon: IconName;
 	pattern: string;
-	// text?: () => string | undefined;
 	command?: string;
 	link?: string;
 } & FormattingButtonDefault;
@@ -35,19 +34,19 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Bold',
 		icon: 'bold',
-		pattern: '*{{text}}*',
+		pattern: '**{{text}}**',
 		command: 'b',
 	},
 	{
 		label: 'Italic',
 		icon: 'italic',
-		pattern: '_{{text}}_',
+		pattern: '\u200B_{{text}}_\u200B',
 		command: 'i',
 	},
 	{
 		label: 'Strikethrough',
 		icon: 'strike',
-		pattern: '~{{text}}~',
+		pattern: '~~{{text}}~~',
 	},
 	{
 		label: 'Inline_code',
@@ -57,14 +56,13 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Multi_line_code',
 		icon: 'multiline',
-		pattern: '```\n{{text}}\n``` ',
+		pattern: '```\n{{text}}\n```',
 	},
 	{
 		label: 'Link',
 		icon: 'link',
 		prompt: (composerApi: ComposerAPI) => {
 			const { selection } = composerApi;
-
 			const selectedText = composerApi.substring(selection.start, selection.end);
 
 			const onClose = () => {
@@ -73,10 +71,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 			};
 
 			const onConfirm = (url: string, text: string) => {
-				// Composer API can't handle the selection of the text while the modal is open
-				flushSync(() => {
-					onClose();
-				});
+				flushSync(() => onClose());
 				flushSync(() => {
 					composerApi.replaceText(`[${text}](${url})`, selection);
 					composerApi.setCursorToEnd();
@@ -90,15 +85,9 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'KaTeX' as TranslationKey,
 		icon: 'katex',
 		text: () => {
-			if (!settings.peek('Katex_Enabled')) {
-				return;
-			}
-			if (settings.peek('Katex_Dollar_Syntax')) {
-				return '$$KaTeX$$';
-			}
-			if (settings.peek('Katex_Parenthesis_Syntax')) {
-				return '\\[KaTeX\\]';
-			}
+			if (!settings.peek('Katex_Enabled')) return;
+			if (settings.peek('Katex_Dollar_Syntax')) return '$$KaTeX$$';
+			if (settings.peek('Katex_Parenthesis_Syntax')) return '\\[KaTeX\\]';
 		},
 		link: 'https://khan.github.io/KaTeX/function-support.html',
 		condition: () => settings.watch('Katex_Enabled') ?? true,
