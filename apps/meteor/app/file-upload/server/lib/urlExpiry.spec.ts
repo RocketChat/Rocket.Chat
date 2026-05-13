@@ -10,8 +10,8 @@ import {
 
 describe('file-upload/ufs/urlExpiry', () => {
 	it('returns null when configured value is below minimum', () => {
-		expect(getValidUrlExpiryTimeSpan(0)).to.be.null();
-		expect(getValidUrlExpiryTimeSpan(4)).to.be.null();
+		expect(getValidUrlExpiryTimeSpan(0)).to.equal(null);
+		expect(getValidUrlExpiryTimeSpan(4)).to.equal(null);
 	});
 
 	it('returns configured value when it is at or above minimum', () => {
