@@ -47,7 +47,7 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 			)}
 			{mediaQuery && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{lastMessage && formatDate(lastMessage.ts)}
+					{lastMessage?.ts && formatDate(lastMessage.ts)}
 				</GenericTableCell>
 			)}
 			{mediaQuery && (
