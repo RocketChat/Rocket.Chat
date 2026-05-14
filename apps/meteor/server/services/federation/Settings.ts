@@ -1,7 +1,5 @@
 import crypto from 'crypto';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import { settings, settingsRegistry } from '../../../app/settings/server';
 
 export const addMatrixBridgeFederationSettings = async (): Promise<void> => {
@@ -36,7 +34,7 @@ export const addMatrixBridgeFederationSettings = async (): Promise<void> => {
 		section: 'Matrix Bridge',
 	});
 
-	const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
+	const uniqueId = settings.get('uniqueID') || crypto.randomUUID().slice(0, 15).replaceAll('-', '_');
 	const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
 	const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 

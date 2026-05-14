@@ -1,10 +1,10 @@
+import { randomUUID } from 'crypto';
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
@@ -200,7 +200,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 			}
 		}
 
-		const generatedFileName = uuidv4();
+		const generatedFileName = randomUUID();
 		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {
