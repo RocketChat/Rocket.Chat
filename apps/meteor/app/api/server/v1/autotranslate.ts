@@ -152,7 +152,7 @@ const autotranslateEndpoints = API.v1
 
 			const room = await Rooms.findOneById(message.rid);
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.forbidden();
+				return API.v1.forbidden('error-not-allowed');
 			}
 
 			const translatedMessage = await translateMessage(targetLanguage, message);
