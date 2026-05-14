@@ -554,9 +554,11 @@ API.v1.post(
 
 		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
 
-		await OAuthAccessTokens.deleteByUserIds(ids);
-		await OAuthRefreshTokens.deleteByUserIds(ids);
-		await OAuthAuthCodes.deleteByUserIds(ids);
+		await Promise.all([
+			OAuthAccessTokens.deleteByUserIds(ids),
+			OAuthRefreshTokens.deleteByUserIds(ids),
+			OAuthAuthCodes.deleteByUserIds(ids),
+		]);
 
 		ids.forEach((_id) => {
 			void notifyOnUserChange({

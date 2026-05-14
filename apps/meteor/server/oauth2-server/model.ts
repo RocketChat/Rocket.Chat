@@ -53,8 +53,8 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			throw new Error('Invalid clientId');
 		}
 
-		const user = await Users.findOneById(token.userId, { projection: { active: 1 } });
-		if (!user?.active) {
+		const user = await Users.findOneActiveById(token.userId, { projection: { _id: 1 } });
+		if (!user) {
 			return;
 		}
 
@@ -233,8 +233,8 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			throw new Error('Invalid clientId');
 		}
 
-		const user = await Users.findOneById(token.userId, { projection: { active: 1 } });
-		if (!user?.active) {
+		const user = await Users.findOneActiveById(token.userId, { projection: { _id: 1 } });
+		if (!user) {
 			throw new Error('Invalid token');
 		}
 

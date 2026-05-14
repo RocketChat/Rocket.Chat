@@ -121,9 +121,11 @@ export async function setUserActiveStatus(
 
 	if (active === false) {
 		await Users.unsetLoginTokens(userId);
-		await OAuthAccessTokens.deleteByUserId(userId);
-		await OAuthRefreshTokens.deleteByUserId(userId);
-		await OAuthAuthCodes.deleteByUserId(userId);
+		await Promise.all([
+			OAuthAccessTokens.deleteByUserId(userId),
+			OAuthRefreshTokens.deleteByUserId(userId),
+			OAuthAuthCodes.deleteByUserId(userId),
+		]);
 		await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
 
 		void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], active } });
