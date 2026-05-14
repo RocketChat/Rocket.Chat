@@ -7,14 +7,17 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 async function authorizeAndExchange(loginToken: string, cId: string, cSecret: string, redirectUri: string) {
+	const params = new URLSearchParams({
+		client_id: cId,
+		response_type: 'code',
+		redirect_uri: redirectUri,
+	});
+
 	const authRes = await request
-		.post(`/oauth/authorize`)
+		.post(`/oauth/authorize?${params.toString()}`)
 		.type('form')
 		.send({
 			token: loginToken,
-			client_id: cId,
-			response_type: 'code',
-			redirect_uri: redirectUri,
 			allow: 'yes',
 		})
 		.expect(302);
