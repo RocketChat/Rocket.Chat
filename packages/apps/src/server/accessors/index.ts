@@ -9,6 +9,7 @@ import { ExternalComponentsExtend } from './ExternalComponentsExtend';
 import { Http } from './Http';
 import { HttpExtend } from './HttpExtend';
 import { LivechatRead } from './LivechatRead';
+import { MediaCallRead } from './MediaCallRead';
 import { MessageBuilder } from './MessageBuilder';
 import { MessageExtender } from './MessageExtender';
 import { MessageRead } from './MessageRead';
@@ -58,6 +59,7 @@ export {
 	Http,
 	HttpExtend,
 	LivechatRead,
+	MediaCallRead,
 	MessageBuilder,
 	MessageExtender,
 	MessageRead,

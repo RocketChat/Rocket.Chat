@@ -14,6 +14,7 @@ import type { IInternalBridge } from './IInternalBridge';
 import type { IInternalFederationBridge } from './IInternalFederationBridge';
 import type { IListenerBridge } from './IListenerBridge';
 import { LivechatBridge } from './LivechatBridge';
+import { MediaCallBridge } from './MediaCallBridge';
 import { MessageBridge } from './MessageBridge';
 import { ModerationBridge } from './ModerationBridge';
 import { OutboundMessageBridge } from './OutboundMessagesBridge';
@@ -35,6 +36,7 @@ export {
 	EnvironmentalVariableBridge,
 	HttpBridge,
 	LivechatBridge,
+	MediaCallBridge,
 	MessageBridge,
 	PersistenceBridge,
 	AppActivationBridge,
