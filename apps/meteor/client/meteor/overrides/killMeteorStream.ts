@@ -30,13 +30,7 @@ import { userIdStore } from '../../lib/user';
  * ddpOverREST intercepts and routes to REST (or DDPSDK for `login`).
  */
 if (isSdkTransportEnabled()) {
-	const conn = Meteor.connection as unknown as {
-		_subsBeingRevived: Record<string, unknown>;
-		_methodsBlockingQuiescence: Record<string, unknown>;
-		_messagesBufferedUntilQuiescence: unknown[];
-		_outstandingMethodBlocks: unknown[];
-		_methodInvokers: Record<string, unknown>;
-	};
+	const conn = Meteor.connection;
 
 	conn._subsBeingRevived = Object.create(null);
 	conn._methodsBlockingQuiescence = Object.create(null);

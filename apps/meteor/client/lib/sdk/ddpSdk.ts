@@ -143,7 +143,7 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 			// parallel re-auth flows in CI's parallel-shard environment and
 			// kicked otherwise-healthy tests out.
 			Accounts._unstoreLoginToken();
-			(Meteor.connection as unknown as { setUserId: (uid: string | null) => void }).setUserId(null);
+			Meteor.connection.setUserId(null);
 			return;
 		}
 		console.warn('[ddpSdk] loginWithToken failed', error);

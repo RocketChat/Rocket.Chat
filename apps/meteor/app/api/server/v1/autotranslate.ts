@@ -1,13 +1,15 @@
 import type { IMessage, ISupportedLanguage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	isAutotranslateSaveSettingsParamsPOST,
 	isAutotranslateGetSupportedLanguagesParamsGET,
 } from '@rocket.chat/rest-typings';
 
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { getSupportedLanguages } from '../../../autotranslate/server/functions/getSupportedLanguages';
 import { saveAutoTranslateSettings } from '../../../autotranslate/server/functions/saveSettings';
 import { translateMessage } from '../../../autotranslate/server/functions/translateMessage';
@@ -124,6 +126,7 @@ const autotranslateEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -137,6 +140,11 @@ const autotranslateEndpoints = API.v1
 			const message = await Messages.findOneById(messageId);
 			if (!message) {
 				return API.v1.failure('Message not found.');
+			}
+
+			const room = await Rooms.findOneById(message.rid);
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.forbidden();
 			}
 
 			const translatedMessage = await translateMessage(targetLanguage, message);
