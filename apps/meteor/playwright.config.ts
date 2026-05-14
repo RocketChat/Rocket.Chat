@@ -72,11 +72,12 @@ export default {
 	projects: [
 		{
 			name: 'performance',
-			testMatch: 'tests/e2e/performance/**/*.spec.ts',
+			testMatch: '*.perf.spec.ts',
 			timeout: 120_000,
 			// Run 3 times in CI so baseline.ts can compute a median and reduce noise.
 			repeatEach: process.env.CI ? 3 : 1,
 			use: {
+				channel: 'chromium',
 				trace: 'on-first-retry',
 				launchOptions: {
 					args: [
@@ -85,6 +86,7 @@ export default {
 						'--use-fake-device-for-media-stream',
 						// Required for the experimental Soft Navigation API used by soft-navigation.ts
 						'--enable-experimental-web-platform-features',
+						'--enable-blink-features=SoftNavigationHeuristics',
 					],
 				},
 				// CPU throttling (4×) and network throttling (Fast 3G) are applied per-test
