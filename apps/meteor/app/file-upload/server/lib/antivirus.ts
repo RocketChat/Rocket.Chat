@@ -69,8 +69,6 @@ export const scanFileUploadWithAntivirus = async ({
  		return;
  	}
 
- 	const options = getScanOptions(language);
-
 	const options = getScanOptions(language);
 	let verdict: VerdictValue;
 
