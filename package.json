@@ -68,7 +68,7 @@
 		"markdown-it": "^14.1.1",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
-		"protobufjs": "7.5.5",
+		"protobufjs": "7.5.6",
 		"webdav/axios": "0.31.1",
 		"flatted@npm:^3.1.0": "3.4.2",
 		"flatted@npm:^3.2.9": "3.4.2",
