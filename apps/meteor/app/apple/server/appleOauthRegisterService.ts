@@ -50,6 +50,8 @@ settings.watchMultiple(
 
 		passport.unuse('apple');
 
+		const callbackURL = `${settings.get<string>('Site_Url')}/oauth/apple/callback`;
+		console.log('CALLBACK URL -> ', callbackURL);
 		passport.use(
 			'apple',
 			new AppleStrategy(
@@ -58,7 +60,7 @@ settings.watchMultiple(
 					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
 					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
 					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
-					callbackURL: `${settings.get<string>('Site_Url')}/oauth/apple/callback`,
+					callbackURL,
 					scope: ['name', 'email'],
 					passReqToCallback: false,
 					state: true,
@@ -103,6 +105,7 @@ settings.watchMultiple(
 
 						return done(null, userFromDB);
 					} catch (error: any) {
+						done(error);
 						return {
 							type: 'apple',
 							error: new MeteorError(Accounts.LoginCancelledError.numericError, error.message),
