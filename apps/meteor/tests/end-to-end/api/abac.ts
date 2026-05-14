@@ -1573,8 +1573,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await updateSetting('ABAC_Enabled', false);
 				await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: roomId, roomType: 'c' }).expect(200);
 
-				const roomRes = await request.get(`${v1}/channels.info?roomId=${roomId}`).set(credentials).expect(200);
-				expect(roomRes.body.channel).to.not.have.property('abacAttributes');
+				const roomRes = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid: roomId }).expect(200);
+				expect(roomRes.body).to.not.have.property('abacAttributes');
 
 				await deleteRoom({ type: 'c', roomId });
 			});
@@ -1591,9 +1591,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await updateSetting('ABAC_Enabled', false);
 				await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: roomId, roomTopic: 'still private' }).expect(200);
 
-				const roomRes = await request.get(`${v1}/groups.info?roomId=${roomId}`).set(credentials).expect(200);
-				expect(roomRes.body.group).to.have.property('abacAttributes').that.is.an('array').with.lengthOf(1);
-				expect(roomRes.body.group.abacAttributes[0]).to.have.property('key', attrKey);
+				const roomRes = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid: roomId }).expect(200);
+				expect(roomRes.body).to.have.property('abacAttributes').that.is.an('array').with.lengthOf(1);
+				expect(roomRes.body.abacAttributes[0]).to.have.property('key', attrKey);
 
 				await deleteRoom({ type: 'p', roomId });
 			});
