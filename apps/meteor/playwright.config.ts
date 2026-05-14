@@ -81,6 +81,7 @@ export default {
 				trace: 'on-first-retry',
 				launchOptions: {
 					args: [
+						'--expose-gc',
 						'--use-gl=egl',
 						'--use-fake-ui-for-media-stream',
 						'--use-fake-device-for-media-stream',
