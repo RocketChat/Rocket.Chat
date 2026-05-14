@@ -61,6 +61,7 @@ settings.watchMultiple(
 					callbackURL: `${settings.get<string>('Site_Url')}/oauth/apple/callback`,
 					scope: ['name', 'email'],
 					passReqToCallback: false,
+					state: true,
 				},
 				async (accessToken: string, refreshToken: string, idToken: string, profile: Profile, done) => {
 					console.log('profile', profile);
