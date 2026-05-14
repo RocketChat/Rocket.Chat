@@ -1,31 +1,16 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import {
-	MIN_URL_EXPIRY_TIME_SPAN_SECONDS,
-	URL_EXPIRY_FALLBACK_SECONDS,
-	getUrlExpiryWithFallback,
-	getValidUrlExpiryTimeSpan,
-} from './urlExpiry';
+import { MIN_URL_EXPIRY_TIME_SPAN_SECONDS, URL_EXPIRY_FALLBACK_SECONDS, getUrlExpiryTimeSpanWithFallback } from './urlExpiry';
 
-describe('file-upload/ufs/urlExpiry', () => {
-	it('returns null when configured value is below minimum', () => {
-		expect(getValidUrlExpiryTimeSpan(0)).to.equal(null);
-		expect(getValidUrlExpiryTimeSpan(4)).to.equal(null);
-	});
-
-	it('returns configured value when it is at or above minimum', () => {
-		expect(getValidUrlExpiryTimeSpan(MIN_URL_EXPIRY_TIME_SPAN_SECONDS)).to.equal(MIN_URL_EXPIRY_TIME_SPAN_SECONDS);
-		expect(getValidUrlExpiryTimeSpan(120)).to.equal(120);
-	});
-
+describe('getUrlExpiryTimeSpanWithFallback', () => {
 	it('uses fallback when configured value is below minimum', () => {
-		expect(getUrlExpiryWithFallback(0)).to.equal(URL_EXPIRY_FALLBACK_SECONDS);
-		expect(getUrlExpiryWithFallback(3)).to.equal(URL_EXPIRY_FALLBACK_SECONDS);
+		expect(getUrlExpiryTimeSpanWithFallback(0)).to.equal(URL_EXPIRY_FALLBACK_SECONDS);
+		expect(getUrlExpiryTimeSpanWithFallback(3)).to.equal(URL_EXPIRY_FALLBACK_SECONDS);
 	});
 
 	it('uses configured value when at or above minimum', () => {
-		expect(getUrlExpiryWithFallback(MIN_URL_EXPIRY_TIME_SPAN_SECONDS)).to.equal(MIN_URL_EXPIRY_TIME_SPAN_SECONDS);
-		expect(getUrlExpiryWithFallback(300)).to.equal(300);
+		expect(getUrlExpiryTimeSpanWithFallback(MIN_URL_EXPIRY_TIME_SPAN_SECONDS)).to.equal(MIN_URL_EXPIRY_TIME_SPAN_SECONDS);
+		expect(getUrlExpiryTimeSpanWithFallback(300)).to.equal(300);
 	});
 });

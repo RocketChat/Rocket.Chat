@@ -8,7 +8,7 @@ import type { OptionalId } from 'mongodb';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import { getUrlExpiryWithFallback, getValidUrlExpiryTimeSpan } from '../../server/lib/urlExpiry';
+import { getUrlExpiryTimeSpanWithFallback } from '../../server/lib/urlExpiry';
 
 type GStoreOptions = StoreOptions & {
 	connection: {
@@ -57,7 +57,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
-			const expirySeconds = getUrlExpiryWithFallback(options.URLExpiryTimeSpan);
+			const expirySeconds = getUrlExpiryTimeSpanWithFallback(options.URLExpiryTimeSpan);
 			const params: GetSignedUrlConfig = {
 				action: 'read',
 				responseDisposition: forceDownload ? 'attachment' : 'inline',
@@ -70,7 +70,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		};
 
 		this.getUrlExpiryTimeSpan = async () => {
-			return getValidUrlExpiryTimeSpan(options.URLExpiryTimeSpan);
+			return getUrlExpiryTimeSpanWithFallback(options.URLExpiryTimeSpan);
 		};
 
 		/**
