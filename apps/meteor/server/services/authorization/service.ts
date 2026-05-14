@@ -169,7 +169,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 					{ projection: { roles: 1 } },
 				))) ||
 			{};
-		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
+		return [...userRoles, ...subscriptionsRoles].toSorted((a, b) => a.localeCompare(b));
 	}
 
 	private async atLeastOne(user: string | IUser, permissions: string[] = [], scope?: string): Promise<boolean> {
