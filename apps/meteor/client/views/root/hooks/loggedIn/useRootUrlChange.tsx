@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UrlChangeModal from '../../../../components/UrlChangeModal';
+import { getRootUrl, getRootUrlPathPrefix } from '../../../../lib/meteorRuntimeConfig';
 
 export const useRootUrlChange = () => {
 	const { t } = useTranslation();
@@ -13,7 +14,7 @@ export const useRootUrlChange = () => {
 	const setModal = useSetModal();
 	const closeModal = useEffectEvent(() => setModal(null));
 
-	const currentUrl = location.origin + window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	const currentUrl = location.origin + getRootUrlPathPrefix();
 	const siteUrl = useSetting('Site_Url', '');
 	const documentDomain = useSetting('Document_Domain', '');
 	const setSiteUrl = useSettingSetValue('Site_Url');
@@ -42,7 +43,8 @@ export const useRootUrlChange = () => {
 		if (isPending || isSuccess) {
 			return;
 		}
-		if (window.__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') === currentUrl) {
+		const rootUrl = getRootUrl();
+		if (rootUrl && rootUrl.replace(/\/$/, '') === currentUrl) {
 			return;
 		}
 		const onConfirm = () => {

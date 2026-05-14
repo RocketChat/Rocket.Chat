@@ -31,6 +31,7 @@ import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import Emoji from '../../Emoji';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
@@ -69,13 +70,15 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 		return toggleSelected();
 	};
 
+	const checkboxLabel = getCheckboxLabel(message, t);
+
 	return (
 		<ThreadMessage
 			role='link'
 			aria-roledescription={t('thread_message_preview')}
 			tabIndex={0}
 			onClick={handleThreadClick}
-			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
+			onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && handleThreadClick()}
 			isSelected={isSelected}
 			{...props}
 		>
@@ -117,7 +120,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							size='x18'
 						/>
 					)}
-					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>

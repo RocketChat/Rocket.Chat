@@ -15,7 +15,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { isImagePreviewSupported } from './isImagePreviewSupported';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
-import { omit } from '../../../../lib/utils/omit';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -46,7 +45,14 @@ export const parseFileIntoMessageAttachments = async (
 		});
 	}
 
-	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+	const safeMetadata = {
+		...(typeof file.name === 'string' && { name: file.name }),
+		...(typeof file.description === 'string' && { description: file.description }),
+		...(typeof file.typeGroup === 'string' && { typeGroup: file.typeGroup }),
+		...(file.content && typeof file.content === 'object' && { content: file.content }),
+	};
+
+	await Uploads.updateFileMetadata(file._id, user._id, safeMetadata);
 
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 

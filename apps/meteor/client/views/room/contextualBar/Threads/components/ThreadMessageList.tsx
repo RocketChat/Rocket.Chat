@@ -20,7 +20,7 @@ import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
-import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
+import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
@@ -54,7 +54,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const { t } = useTranslation();
 	const { innerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
+	const { data: messages = [], isLoading: loading } = useThreadMessagesQuery(mainMessage._id);
 
 	const { innerRef: listScrollRef, jumpToRef } = useLegacyThreadMessageListScrolling(mainMessage);
 

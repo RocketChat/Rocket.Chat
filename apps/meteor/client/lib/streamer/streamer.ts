@@ -21,12 +21,14 @@ interface StreamerOptions {
 }
 
 interface StreamerDDPConnection {
-	_stream: {
-		on: {
-			(key: 'message', callback: (data: string) => void): void;
-			(key: 'reset', callback: () => void): void;
-		};
-	};
+	_stream:
+		| {
+				on: {
+					(key: 'message', callback: (data: string) => void): void;
+					(key: 'reset', callback: () => void): void;
+				};
+		  }
+		| undefined;
 	subscribe(name: string, ...args: unknown[]): SubscriptionHandle;
 	call(methodName: string, ...args: unknown[]): void;
 	hasMeteorStreamerEventListeners?: boolean;
@@ -46,7 +48,7 @@ export class StreamerCentral extends EV {
 			return;
 		}
 
-		ddpConnection._stream.on('message', (rawMessage?: unknown) => {
+		ddpConnection._stream!.on('message', (rawMessage?: unknown) => {
 			if (typeof rawMessage !== 'string') {
 				return;
 			}
@@ -75,7 +77,7 @@ export class StreamerCentral extends EV {
 	getStreamer<N extends EventNames>(name: N, options: StreamerOptions): Streamer<N> {
 		const existingInstance = this.instances[name];
 		if (existingInstance) {
-			return existingInstance as Streamer<N>;
+			return existingInstance;
 		}
 
 		const streamer = new Streamer(name, options);
@@ -107,7 +109,7 @@ export class Streamer<N extends EventNames> extends EV {
 		this.name = name;
 		this.useCollection = useCollection;
 
-		this.ddpConnection._stream.on('reset', () => {
+		this.ddpConnection._stream!.on('reset', () => {
 			super.emit('__reconnect__');
 		});
 	}

@@ -30,6 +30,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import {
 	useMessageListShowRealName,
 	useMessageListShowUsername,
@@ -63,19 +64,31 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!isSelecting) return;
+
+		if (!(e.code === 'Space' || e.code === 'Enter')) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
+
+	const checkboxLabel = getCheckboxLabel(message, t);
+
 	return (
 		<MessageSystem
 			role='listitem'
 			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={isSelected}
 			data-system-message-type={message.t}
 			{...props}
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
-				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
