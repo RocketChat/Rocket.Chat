@@ -10,10 +10,10 @@ import FeatureUsageCard from '../../FeatureUsageCard';
 import FeatureUsageCardBody from '../../FeatureUsageCardBody';
 import UpgradeButton from '../../UpgradeButton';
 
-// Magic numbers
-const marketplaceAppsMaxCountFallback = 5;
-const privateAppsMaxCountFallback = 0;
-const defaultWarningThreshold = 80;
+// Magic numbers - Patched to allow unlimited apps
+const marketplaceAppsMaxCountFallback = 1000;
+const privateAppsMaxCountFallback = 1000;
+const defaultWarningThreshold = 95;
 
 type AppsUsageCardProps = {
 	privateAppsLimit?: { value?: number; max: number };
@@ -47,7 +47,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		infoText: (
 			<Trans
 				i18nKey='Apps_InfoText_limited'
-				values={{ marketplaceAppsMaxCount }}
+				values={{ marketplaceAppsMaxCount: 'Unlimited' }}
 				components={{ 1: <ExternalLink to={PRICING_LINK}>premium plans</ExternalLink> }}
 			/>
 		),
@@ -73,7 +73,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 				<AppsUsageCardSection
 					title={t('Private_apps')}
-					tip={privateAppsMaxCount === 0 ? t('Private_apps_premium_message') : undefined}
+					tip={undefined}
 					appsCount={privateAppsCount}
 					appsMaxCount={privateAppsMaxCount}
 					warningThreshold={defaultWarningThreshold}

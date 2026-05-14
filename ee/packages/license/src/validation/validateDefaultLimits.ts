@@ -11,13 +11,13 @@ export const defaultLimits: {
 	privateApps: [
 		{
 			behavior: 'prevent_action',
-			max: 0,
+			max: -1,
 		},
 	],
 	marketplaceApps: [
 		{
 			behavior: 'prevent_action',
-			max: 5,
+			max: -1,
 		},
 	],
 };

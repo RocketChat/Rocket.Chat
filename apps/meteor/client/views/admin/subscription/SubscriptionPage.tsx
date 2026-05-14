@@ -25,12 +25,10 @@ import CountSeatsCard from './components/cards/CountSeatsCard';
 import FeaturesCard from './components/cards/FeaturesCard';
 import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
-import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
@@ -53,7 +51,7 @@ function useShowLicense() {
 const SubscriptionPage = () => {
 	const showLicense = useShowLicense();
 	const router = useRouter();
-	const { data: enterpriseData } = useIsEnterprise();
+	const isEnterprise = true; // Patched
 	const { canViewRegistrationStatus } = useRegistrationStatus();
 	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
@@ -64,7 +62,6 @@ const SubscriptionPage = () => {
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isPending, 10000);
 
 	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
-	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
 		const { max, value } = limits?.[key] || {};
@@ -143,8 +140,10 @@ const SubscriptionPage = () => {
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Grid m={0}>
 								<GridItem lg={4} xs={4} p={8} minHeight={260}>
-									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
-									{!license && <PlanCardCommunity />}
+									<PlanCard
+										licenseInformation={license?.information || { trial: false, visualExpiration: '2099-12-31', autoRenew: true }}
+										licenseLimits={{ activeUsers: seatsLimit }}
+									/>
 								</GridItem>
 
 								<GridItem lg={8} xs={4} p={8} minHeight={260}>
@@ -171,22 +170,16 @@ const SubscriptionPage = () => {
 									</GridItem>
 								)}
 
-								{!license && (
-									<>
-										{limits?.marketplaceApps !== undefined && (
-											<GridItem lg={4} xs={4} p={8} minHeight={260}>
-												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
-											</GridItem>
-										)}
+								<GridItem lg={4} xs={4} p={8} minHeight={260}>
+									<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits?.marketplaceApps || { max: Infinity }} />
+								</GridItem>
 
-										<GridItem lg={4} xs={4} p={8} minHeight={260}>
-											<ActiveSessionsCard />
-										</GridItem>
-										<GridItem lg={4} xs={4} p={8} minHeight={260}>
-											<ActiveSessionsPeakCard />
-										</GridItem>
-									</>
-								)}
+								<GridItem lg={4} xs={4} p={8} minHeight={260}>
+									<ActiveSessionsCard />
+								</GridItem>
+								<GridItem lg={4} xs={4} p={8} minHeight={260}>
+									<ActiveSessionsPeakCard />
+								</GridItem>
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (

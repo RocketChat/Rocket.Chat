@@ -11,6 +11,9 @@ type _canEnableAppDependencies = {
 };
 
 export const _canEnableApp = async ({ Apps, License }: _canEnableAppDependencies, app: IAppStorageItem): Promise<void> => {
+	// Bypass all limits for development
+	return;
+
 	if (!(await Apps.isInitialized())) {
 		throw new Error('apps-engine-not-initialized');
 	}

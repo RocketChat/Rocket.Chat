@@ -375,7 +375,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 	}
 
 	public hasValidLicense(): boolean {
-		return Boolean(this.getLicense());
+		return true;
 	}
 
 	public getLicense(): ILicenseV3 | undefined {

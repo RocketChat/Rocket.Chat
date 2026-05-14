@@ -278,7 +278,7 @@ export class AppServerOrchestrator {
 	}
 
 	async disableMarketplaceApps() {
-		return this.disableApps('marketplace', false, 5);
+		return this.disableApps('marketplace', false, Infinity);
 	}
 
 	async disablePrivateApps() {

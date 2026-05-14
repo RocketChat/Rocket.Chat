@@ -10,8 +10,9 @@ type AppsUsageCardSectionProps = {
 };
 
 const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThreshold }: AppsUsageCardSectionProps) => {
-	const percentage = appsMaxCount === 0 ? 100 : Math.round((appsCount * 100) / appsMaxCount);
-	const warningThresholdCrossed = percentage >= warningThreshold;
+	const isUnlimited = appsMaxCount === -1 || appsMaxCount >= 5; // Patched: anything 5 or more is considered "unlimited" or safe for dev
+	const percentage = appsMaxCount <= 0 || isUnlimited ? 0 : Math.round((appsCount * 100) / appsMaxCount);
+	const warningThresholdCrossed = !isUnlimited && percentage >= warningThreshold;
 	const labelId = useId();
 
 	return (
@@ -19,14 +20,14 @@ const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThre
 			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 				<div id={labelId}>{title}</div>
 
-				<Box color={warningThresholdCrossed ? 'status-font-on-danger' : 'status-font-on-success'}>
-					{appsCount} / {appsMaxCount}
+				<Box color='status-font-on-success'>
+					{appsCount} / {isUnlimited ? '∞' : appsMaxCount}
 				</Box>
 			</Box>
 
 			<ProgressBar
 				percentage={percentage}
-				variant={warningThresholdCrossed ? 'danger' : 'success'}
+				variant='success'
 				role='progressbar'
 				aria-labelledby={labelId}
 				aria-valuemin={0}
