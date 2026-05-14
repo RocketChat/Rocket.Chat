@@ -54,10 +54,13 @@ export const useUnread = () => {
 
 		if (unreadCount > 0) {
 			setUnread(unreadCount > 999 ? '999+' : unreadCount);
+			window.RocketChatDesktop?.setBadge(unreadCount);
 		} else if (badgeIndicator !== false) {
 			setUnread(badgeIndicator);
+			window.RocketChatDesktop?.setBadge('•');
 		} else {
 			setUnread('');
+			window.RocketChatDesktop?.setBadge(0);
 		}
 
 		fireEventUnreadChanged(unreadCount);
