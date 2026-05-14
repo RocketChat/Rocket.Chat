@@ -3,8 +3,8 @@ import getPort from 'get-port';
 
 import { test as baseTest } from '../utils/test';
 import { openCDPSession, setCPUThrottling, setNetworkThrottling } from './collectors/cdp';
-import type { ILongTaskTracker } from './collectors/long-tasks';
-import { startLongTaskTracking } from './collectors/long-tasks';
+import type { ILongAnimationFrameTracker } from './collectors/long-animation-frames';
+import { createLongAnimationFrameCollector } from './collectors/long-animation-frames';
 import type { IHeapSnapshotHelper } from './collectors/memory';
 import { createMemoryHelper } from './collectors/memory';
 import type { IWebVitalsCollector } from './collectors/web-vitals';
@@ -15,7 +15,10 @@ import type { ISoftNavTracker } from './soft-navigation';
 import { createSoftNavTracker } from './soft-navigation';
 
 export type { IWebVitals as WebVitals } from './collectors/web-vitals';
-export type { ILongTask as LongTask, ILongTaskTracker as LongTaskTracker } from './collectors/long-tasks';
+export type {
+	ILongAnimationFrame as LongAnimationFrame,
+	ILongAnimationFrameTracker as LongAnimationFrameTracker,
+} from './collectors/long-animation-frames';
 export type { IHeapSnapshotHelper as HeapSnapshotHelper } from './collectors/memory';
 export type { ISoftNavMetrics as SoftNavMetrics, ISoftNavTracker as SoftNavTracker } from './soft-navigation';
 export type { ILighthouseResult as LighthouseResult, ILighthouseHelper as LighthouseHelper } from './lighthouse';
@@ -32,8 +35,8 @@ type PerformanceFixtures = {
 	heapSnapshot: IHeapSnapshotHelper;
 	/** Tracks soft navigation events and maps interaction-contentful-paint to Soft LCP. */
 	softNavTracker: ISoftNavTracker;
-	/** CDP-based long task tracker. Depends on cdpSession. */
-	longTaskTracker: ILongTaskTracker;
+	/** Tracks Long Animation Frames via PerformanceObserver injected before first page load. */
+	longAnimationFrameTracker: ILongAnimationFrameTracker;
 	/** Worker-shared Lighthouse helper. Use newPage() to authenticate, then runAudit(). */
 	lighthouseAudit: ILighthouseHelper;
 };
@@ -84,10 +87,8 @@ export const test = baseTest.extend<PerformanceFixtures, WorkerFixtures>({
 		await use(tracker);
 	},
 
-	// longTaskTracker depends on cdpSession so PerformanceTimeline runs in the
-	// same session as the other CDP domains.
-	longTaskTracker: async ({ cdpSession }, use) => {
-		const tracker = await startLongTaskTracking(cdpSession);
+	longAnimationFrameTracker: async ({ page }, use) => {
+		const tracker = await createLongAnimationFrameCollector(page);
 		await use(tracker);
 	},
 

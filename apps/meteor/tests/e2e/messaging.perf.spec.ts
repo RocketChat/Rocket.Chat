@@ -9,7 +9,7 @@ import { test, expect } from './performance/fixtures';
 import { assertWithinBaseline } from './performance/reporter/baseline';
 import { createTargetChannel, deleteChannel } from './utils';
 
-const MY_SUITE = 'messaging-perf';
+const SUITE = 'messaging-perf';
 
 test.describe('Messaging Performance', () => {
 	test.use({ storageState: Users.user1.state });
@@ -27,7 +27,9 @@ test.describe('Messaging Performance', () => {
 		await Promise.all([deleteChannel(api, targetChannel), deleteChannel(api, secondChannel)]);
 	});
 
-	test.beforeEach(async ({ page }) => {
+	// Scripts added through addInitScript only run after the first navigation
+	// So the fixtures have to be set up before page.goto
+	test.beforeEach(async ({ page, webVitals: _wv, cdpSession: _cdp, longAnimationFrameTracker: _loaf, softNavTracker: _snt }) => {
 		await page.goto('/home');
 	});
 
@@ -44,28 +46,29 @@ test.describe('Messaging Performance', () => {
 
 		expect(vitals.CLS, 'CLS must stay below the "Good" threshold').toBeLessThan(0.1);
 
-		if (vitals.LCP !== null) assertWithinBaseline(MY_SUITE, 'channel-open-lcp', vitals.LCP);
-		if (vitals.INP !== null) assertWithinBaseline(MY_SUITE, 'channel-open-inp', vitals.INP);
-		assertWithinBaseline(MY_SUITE, 'channel-open-cls', vitals.CLS);
+
+		if (vitals.LCP !== null) assertWithinBaseline(SUITE, 'channel-open-lcp', vitals.LCP);
+		if (vitals.INP !== null) assertWithinBaseline(SUITE, 'channel-open-inp', vitals.INP);
+		assertWithinBaseline(SUITE, 'channel-open-cls', vitals.CLS);
 	});
 
 	// ── 2. Send message — CDP metrics and long tasks ────────────────────────────
 	// Captures layout recalculations and JS long tasks (>50ms) triggered by a
 	// single message send, using the same CDP session for both.
-	test('send message — layout count and long tasks', async ({ page, cdpSession, longTaskTracker }) => {
+	test('send message — layout count and long tasks', async ({ page, cdpSession, longAnimationFrameTracker }) => {
 		const po = new HomeChannel(page);
 		await po.navbar.openChat(targetChannel);
 		await expect(po.content.lastUserMessageBody).toBeVisible();
 
 		const before = await getMetrics(cdpSession);
-		longTaskTracker.reset();
+		longAnimationFrameTracker.reset();
 
 		const text = faker.lorem.sentence();
 		await po.content.sendMessage(text);
 		await expect(po.content.lastUserMessageBody).toHaveText(text);
 
 		const after = await getMetrics(cdpSession);
-		const tasks = longTaskTracker.getLongTasks();
+		const tasks = longAnimationFrameTracker.getLongAnimationFrames();
 
 		const layoutsTriggered = after.LayoutCount - before.LayoutCount;
 		const totalLongTaskMs = tasks.reduce((sum, t) => sum + t.duration, 0);
@@ -75,15 +78,16 @@ test.describe('Messaging Performance', () => {
 			description: JSON.stringify({ layoutsTriggered, longTaskCount: tasks.length, totalLongTaskMs }),
 		});
 
-		assertWithinBaseline(MY_SUITE, 'send-layouts', layoutsTriggered);
-		assertWithinBaseline(MY_SUITE, 'send-long-task-count', tasks.length);
-		assertWithinBaseline(MY_SUITE, 'send-total-long-task-ms', totalLongTaskMs);
+
+		assertWithinBaseline(SUITE, 'send-layouts', layoutsTriggered);
+		assertWithinBaseline(SUITE, 'send-long-task-count', tasks.length);
+		assertWithinBaseline(SUITE, 'send-total-long-task-ms', totalLongTaskMs);
 	});
 
 	// ── 3. Receive message — render latency and heap growth ─────────────────────
 	// Posts a message via the REST API (simulating a remote sender) and measures
 	// how long it takes for the message to appear in the receiving user's view.
-	test('receive message — render latency and heap growth', async ({ page, browser, api, cdpSession, longTaskTracker }) => {
+	test('receive message — render latency and heap growth', async ({ page, browser, api, cdpSession, longAnimationFrameTracker }) => {
 		const { page: auxPage } = await createAuxContext(browser, Users.user2);
 
 		try {
@@ -92,7 +96,7 @@ test.describe('Messaging Performance', () => {
 			await expect(po.content.lastUserMessageBody).toBeVisible();
 
 			const before = await getMetrics(cdpSession);
-			longTaskTracker.reset();
+			longAnimationFrameTracker.reset();
 			const t0 = Date.now();
 
 			const text = faker.lorem.sentence();
@@ -101,7 +105,8 @@ test.describe('Messaging Performance', () => {
 
 			const renderLatencyMs = Date.now() - t0;
 			const after = await getMetrics(cdpSession);
-			const tasks = longTaskTracker.getLongTasks();
+			// TODO change name from tasks to long animation frames and update related names
+			const tasks = longAnimationFrameTracker.getLongAnimationFrames();
 
 			test.info().annotations.push({
 				type: 'perf-receive',
@@ -112,8 +117,9 @@ test.describe('Messaging Performance', () => {
 				}),
 			});
 
-			assertWithinBaseline(MY_SUITE, 'receive-render-ms', renderLatencyMs);
-			assertWithinBaseline(MY_SUITE, 'receive-long-task-count', tasks.length);
+
+			assertWithinBaseline(SUITE, 'receive-render-ms', renderLatencyMs);
+			assertWithinBaseline(SUITE, 'receive-long-task-count', tasks.length);
 		} finally {
 			await auxPage.close();
 		}
@@ -123,20 +129,25 @@ test.describe('Messaging Performance', () => {
 	// The Soft Navigation API (enabled via --enable-experimental-web-platform-features)
 	// tracks client-side route changes as "soft navigations" and maps
 	// interaction-contentful-paint entries to a per-route "Soft LCP".
-	test('channel switch — Soft Navigation Soft LCP and duration', async ({ page, softNavTracker, longTaskTracker, cdpSession }) => {
+	test('channel switch — Soft Navigation Soft LCP and duration', async ({
+		page,
+		softNavTracker,
+		longAnimationFrameTracker,
+		cdpSession,
+	}) => {
 		const po = new HomeChannel(page);
 
 		// Open first channel (hard navigation — baseline, not a soft nav)
 		await po.navbar.openChat(targetChannel);
 		await expect(po.content.lastUserMessageBody).toBeVisible();
 
-		longTaskTracker.reset();
+		longAnimationFrameTracker.reset();
 
 		// Switch to second channel — SPA client-side route change
 		await po.navbar.openChat(secondChannel);
 
 		const navs = await softNavTracker.getNavigations();
-		const tasks = longTaskTracker.getLongTasks();
+		const tasks = longAnimationFrameTracker.getLongAnimationFrames();
 		const after = await getMetrics(cdpSession);
 
 		if (navs.length > 0) {
@@ -147,12 +158,14 @@ test.describe('Messaging Performance', () => {
 				description: JSON.stringify({ softLCP: nav.softLCP, duration: nav.duration, CLS: nav.CLS }),
 			});
 
-			if (nav.softLCP !== null) assertWithinBaseline(MY_SUITE, 'switch-soft-lcp', nav.softLCP);
-			assertWithinBaseline(MY_SUITE, 'switch-duration', nav.duration);
+
+			if (nav.softLCP !== null) assertWithinBaseline(SUITE, 'switch-soft-lcp', nav.softLCP);
+			assertWithinBaseline(SUITE, 'switch-duration', nav.duration);
 		}
 
-		assertWithinBaseline(MY_SUITE, 'switch-long-task-count', tasks.length);
-		assertWithinBaseline(MY_SUITE, 'switch-recalc-style-count', after.RecalcStyleCount);
+		console.log({ tasks });
+		assertWithinBaseline(SUITE, 'switch-long-task-count', tasks.length);
+		assertWithinBaseline(SUITE, 'switch-recalc-style-count', after.RecalcStyleCount);
 	});
 
 	// ── 5. Repeated sends — memory leak detection ───────────────────────────────
@@ -201,8 +214,9 @@ test.describe('Messaging Performance', () => {
 			description: JSON.stringify({ perfScore, lcp, tbt, cls }),
 		});
 
-		assertWithinBaseline(MY_SUITE, 'lighthouse-score', perfScore);
-		assertWithinBaseline(MY_SUITE, 'lighthouse-lcp', lcp);
-		assertWithinBaseline(MY_SUITE, 'lighthouse-tbt', tbt);
+
+		assertWithinBaseline(SUITE, 'lighthouse-score', perfScore);
+		assertWithinBaseline(SUITE, 'lighthouse-lcp', lcp);
+		assertWithinBaseline(SUITE, 'lighthouse-tbt', tbt);
 	});
 });
