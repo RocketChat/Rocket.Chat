@@ -45,7 +45,7 @@ const extractCallbacks = (args: unknown[]): { params: unknown[]; callbacks: Subs
 type MeteorSubscriptionHandle = Meteor.SubscriptionHandle;
 
 if (isSdkTransportEnabled()) {
-	(Meteor.connection as any).subscribe = ((name: string, ...rest: unknown[]): MeteorSubscriptionHandle => {
+	Meteor.connection.subscribe = (name: string, ...rest: unknown[]): MeteorSubscriptionHandle => {
 		const { params, callbacks } = extractCallbacks(rest);
 		const subscription = getDdpSdk().client.subscribe(name, ...params);
 
@@ -61,5 +61,5 @@ if (isSdkTransportEnabled()) {
 			},
 			ready: () => subscription.isReady,
 		} as MeteorSubscriptionHandle;
-	}) as Meteor.IMeteorConnection['subscribe'];
+	};
 }

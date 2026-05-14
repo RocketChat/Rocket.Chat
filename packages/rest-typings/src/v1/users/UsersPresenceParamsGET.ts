@@ -10,7 +10,8 @@ const UsersPresenceParamsGetSchema = {
 	properties: {
 		from: { type: 'string', nullable: true },
 		ids: {
-			anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			type: ['string', 'array'],
+			items: { type: 'string' },
 		},
 	},
 	additionalProperties: false,

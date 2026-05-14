@@ -3,7 +3,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -28,15 +27,33 @@ const safeMeteorStatus = (): { status: string; connected: boolean; retryCount?: 
 };
 
 const onMeteorStatusChange = (cb: () => void): (() => void) => {
-	if (typeof Meteor.status !== 'function' || typeof Tracker.autorun !== 'function') {
-		// Test / SSR environment with a stubbed Meteor — no reactive status to bridge.
+	// Subscribe to Meteor's underlying WebSocket lifecycle events directly instead
+	// of riding Meteor.status's Tracker reactivity. The stream is the canonical
+	// non-reactive source: `'reset'` fires when a new DDP session is established
+	// (effectively the "connected" signal — see socket-stream-client.js), and
+	// `'disconnect'` fires when the WebSocket drops or each retry attempt restarts.
+	// `'connected'` is intentionally NOT subscribed: the stream's allowed event
+	// list is `['message', 'reset', 'disconnect']` and `on('connected')` throws
+	// `Error: unknown event type: connected`. Throwing here would propagate up
+	// through `connection.on(...)` callers (notably `CachedStore.performInitialization`)
+	// and abort their initialization before `setupListener()` runs, silently
+	// breaking real-time stream subscriptions for settings, subscriptions, etc.
+	const stream = Meteor.connection?._stream;
+	if (!stream || typeof stream.on !== 'function') {
+		// Test / SSR environment with a stubbed Meteor — no stream to subscribe to.
 		return noopUnsubscribe;
 	}
-	const computation = Tracker.autorun(() => {
-		Meteor.status();
-		cb();
-	});
-	return () => computation.stop();
+	let stopped = false;
+	const handler = (): void => {
+		if (!stopped) cb();
+	};
+	stream.on('reset', handler);
+	stream.on('disconnect', handler);
+	// Meteor's stream `on` doesn't expose an `off`; flip a flag instead so the
+	// stale listener becomes a no-op once stopBridge runs.
+	return () => {
+		stopped = true;
+	};
 };
 
 const meteorStatusToSdkStatus = (): string => {
@@ -58,8 +75,8 @@ const meteorStatusToSdkStatus = (): string => {
 };
 
 const createMeteorBackedClient = () => {
-	const subscribe = (name: string, ...args: unknown[]) => {
-		const sub = (Meteor.connection.subscribe as (name: string, ...args: unknown[]) => Meteor.SubscriptionHandle)(name, ...args);
+	const subscribe = (name: string, ...args: Parameters<typeof Meteor.connection.subscribe>) => {
+		const sub = Meteor.connection.subscribe(name, ...args);
 		// Approximate DDPSDK's Subscription shape with Meteor's handle. The
 		// codebase only reads `stop`/`ready`/`isReady`/`id` from it.
 		return Object.assign(sub, {
@@ -67,7 +84,7 @@ const createMeteorBackedClient = () => {
 			isReady: false,
 			ready: () => Promise.resolve(),
 			onChange: () => undefined,
-		}) as unknown as ReturnType<DDPSDK['client']['subscribe']>;
+		});
 	};
 
 	const callAsync = (method: string, ...args: unknown[]): Promise<unknown> & { id: string } => {
@@ -91,7 +108,7 @@ const createMeteorBackedClient = () => {
 			if ((msg as { collection?: unknown }).collection !== id) return;
 			callback(msg);
 		};
-		const stream = (Meteor.connection as unknown as { _stream: { on: (k: 'message', cb: (raw: string) => void) => void } })._stream;
+		const stream = Meteor.connection._stream!;
 		stream.on('message', handler);
 		// Meteor's stream `on` doesn't expose an off; the listener is harmless
 		// and lives for the page lifetime. Caller's stop is a no-op.
