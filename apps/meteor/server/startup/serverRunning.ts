@@ -1,4 +1,5 @@
 import fs from 'fs';
+import crypto from 'node:crypto';
 import path from 'path';
 
 // import { Users } from '@rocket.chat/models';
@@ -48,6 +49,8 @@ Meteor.startup(async () => {
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
 			`           Site URL: ${settings.get('Site_Url')}`,
+			`    OpenSSL Version: ${process.versions.openssl}`,
+			`      FIPS Provider: ${crypto.getFips() ? 'Enabled' : 'Disabled'}`,
 		];
 
 		if (Info.commit?.hash) {
