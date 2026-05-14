@@ -11,7 +11,10 @@ type Args = [username: string, statusChanged?: UserStatus, statusText?: string];
 export const useUserPresenceListener = (): void => {
 	useEffect(() => {
 		const { stop } = sdk.onAnyStreamEvent('user-presence', (uid, args) => {
-			const [username, statusChanged, statusText] = args as Args;
+			// `user-presence` frames carry the tuple nested one level deeper than other streams
+			// (`fields.args === [[username, statusChanged, statusText]]`). The legacy streamer
+			// spread `fields.args` into the listener, masking this; here we unwrap explicitly.
+			const [[username, statusChanged, statusText]] = args as [Args];
 			Presence.notify({ _id: uid, username, status: STATUS_MAP[statusChanged as any], statusText });
 		});
 		return stop;
