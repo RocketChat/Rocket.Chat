@@ -14,12 +14,15 @@ import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 
 export const oAuthRouter = express();
 
+oAuthRouter.enable('trust proxy');
+oAuthRouter.set('trust proxy', true);
+
 oAuthRouter.use(
 	session({
 		name: 'oauth',
 		secret: Random.secret(),
 		resave: false,
-		saveUninitialized: false,
+		saveUninitialized: true,
 		cookie: {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
@@ -28,9 +31,6 @@ oAuthRouter.use(
 		},
 	}),
 );
-
-oAuthRouter.enable('trust proxy');
-oAuthRouter.set('trust proxy', true);
 
 oAuthRouter.use(passport.initialize());
 oAuthRouter.use(passport.session());

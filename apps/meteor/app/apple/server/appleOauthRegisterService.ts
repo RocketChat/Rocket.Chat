@@ -115,6 +115,7 @@ settings.watchMultiple(
 		const callbackHandler = [
 			(req: Request, _res: Response, next: NextFunction) => {
 				console.log('req in 2nd callback ->', req.session);
+				console.log('req cookies in 2nd callback -> ', req.headers.cookie);
 				next();
 			},
 			passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
