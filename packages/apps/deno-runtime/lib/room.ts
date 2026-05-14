@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from '@rocket.chat/apps-engine/definition/abac/AbacAttributes';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
@@ -41,6 +42,8 @@ export class Room {
 	public customFields?: { [key: string]: unknown };
 
 	public userIds?: Array<string>;
+
+	public abacAttributes?: IAbacAttributeDefinition[];
 
 	private _USERNAMES: Promise<Array<string>> | undefined;
 
@@ -88,6 +91,7 @@ export class Room {
 			lastModifiedAt: this.lastModifiedAt,
 			customFields: this.customFields,
 			userIds: this.userIds,
+			abacAttributes: this.abacAttributes,
 		};
 	}
 

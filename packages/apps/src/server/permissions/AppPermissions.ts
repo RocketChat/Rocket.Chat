@@ -126,6 +126,9 @@ export const AppPermissions = {
 	'experimental': {
 		default: { name: 'experimental.default' },
 	},
+	'abac': {
+		read: { name: 'abac.read' },
+	},
 };
 
 /**
