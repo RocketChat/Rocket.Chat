@@ -36,7 +36,7 @@ export async function oAuth2ServerAuth(partialRequest: { authorization?: string;
 
 	const user = await Users.findOneById(accessToken.userId);
 
-	if (user == null) {
+	if (user == null || !user.active) {
 		return;
 	}
 
@@ -55,7 +55,7 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 		return res.status(401).send('Invalid Token');
 	}
 	const user = await Users.findOneById(token.userId);
-	if (user == null) {
+	if (user == null || !user.active) {
 		return res.status(401).send('Invalid Token');
 	}
 	return res.send({
