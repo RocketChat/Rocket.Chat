@@ -65,7 +65,9 @@ export const scanFileUploadWithAntivirus = async ({
 	content?: Buffer | string;
 	language: string;
 }): Promise<void> => {
-	if (!settings.get<boolean>('FileUpload_Antivirus_Enabled') || !content || !file.size) {
+	if (!settings.get<boolean>('FileUpload_Antivirus_Enabled') || !content) {
+ 		return;
+ 	}
 		return;
 	}
 
