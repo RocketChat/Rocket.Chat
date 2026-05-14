@@ -16,10 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 			args: [key: K, ...args: unknown[]],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
 		): ReturnType<ClientStream['subscribe']>;
-		onAnyStreamEvent<N extends StreamNames>(
-			name: N,
-			callback: (eventName: string, args: unknown[]) => void,
-		): { stop: () => void };
+		onAnyStreamEvent<N extends StreamNames>(name: N, callback: (eventName: string, args: unknown[]) => void): { stop: () => void };
 		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
@@ -377,10 +374,7 @@ const anyStreamEmitters = new Map<string, Emitter<Record<string, [eventName: str
 const anyStreamBridged = new Set<string>();
 
 const createOnAnyStreamEvent = () => {
-	return <N extends StreamNames>(
-		name: N,
-		callback: (eventName: string, args: unknown[]) => void,
-	): { stop: () => void } => {
+	return <N extends StreamNames>(name: N, callback: (eventName: string, args: unknown[]) => void): { stop: () => void } => {
 		const collectionId = `stream-${name}`;
 
 		let emitter = anyStreamEmitters.get(collectionId);
@@ -427,7 +421,7 @@ const createOnAnyStreamEvent = () => {
 
 		return {
 			stop: () => {
-				emitter!.off('event', handler);
+				emitter.off('event', handler);
 			},
 		};
 	};

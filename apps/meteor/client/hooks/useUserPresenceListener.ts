@@ -1,22 +1,19 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import { useStreamAll } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Presence } from '../lib/presence';
 
 const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY, UserStatus.DISABLED];
 
-type Args = [username: string, statusChanged?: UserStatus, statusText?: string];
-
 export const useUserPresenceListener = (): void => {
-	useEffect(() => {
-		const { stop } = sdk.onAnyStreamEvent('user-presence', (uid, args) => {
-			// `user-presence` frames carry the tuple nested one level deeper than other streams
-			// (`fields.args === [[username, statusChanged, statusText]]`). The legacy streamer
-			// spread `fields.args` into the listener, masking this; here we unwrap explicitly.
-			const [[username, statusChanged, statusText]] = args as [Args];
-			Presence.notify({ _id: uid, username, status: STATUS_MAP[statusChanged as any], statusText });
-		});
-		return stop;
-	}, []);
+	const subscribe = useStreamAll('user-presence');
+
+	useEffect(
+		() =>
+			subscribe((uid, [[username, statusChanged, statusText]]) => {
+				Presence.notify({ _id: uid, username, status: STATUS_MAP[statusChanged as any], statusText });
+			}),
+		[subscribe],
+	);
 };
