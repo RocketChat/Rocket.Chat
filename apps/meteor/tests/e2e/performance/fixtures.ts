@@ -48,7 +48,9 @@ export const test = baseTest.extend<PerformanceFixtures, WorkerFixtures>({
 	// Acquires a guaranteed-free port once per worker to prevent address conflicts
 	// when running with multiple workers or other processes using a fixed port.
 	lighthousePort: [
-		async (_, use) => {
+		// Playwright requires that the first parameter be a destructured object, even if it's empty.
+		// eslint-disable-next-line no-empty-pattern
+		async ({}, use) => {
 			const port = await getPort();
 			await use(port);
 		},
