@@ -54,6 +54,7 @@ import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
 import { ContactRead } from './read/ContactRead';
 import { ExperimentalRead } from './read/ExperimentalRead';
 import { LivechatRead } from './read/LivechatRead';
+import { MediaCallRead } from './read/MediaCallRead';
 import { MessageRead } from './read/MessageRead';
 import { OAuthAppsReader } from './read/OAuthAppsReader';
 import { PersistenceRead } from './read/PersistenceRead';
@@ -302,6 +303,7 @@ export class AppAccessors {
 				new ThreadRead(this.senderFn),
 				new RoleRead(this.senderFn),
 				new ExperimentalRead(this.senderFn),
+				new MediaCallRead(this.senderFn),
 			);
 		}
 
