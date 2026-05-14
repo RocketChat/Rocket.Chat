@@ -23,6 +23,7 @@ oAuthRouter.use(
 		secret: Random.secret(),
 		resave: false,
 		saveUninitialized: true,
+		proxy: true,
 		cookie: {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
