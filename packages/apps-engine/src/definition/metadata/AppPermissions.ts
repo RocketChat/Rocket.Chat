@@ -124,6 +124,9 @@ export const AppPermissions = {
 	'abac': {
 		read: { name: 'abac.read' },
 	},
+	'mediaCall': {
+		read: { name: 'media-call.read' },
+	},
 };
 
 /**
