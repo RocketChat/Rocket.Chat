@@ -1,4 +1,4 @@
-import type { IMedsensePharmacy } from '@rocket.chat/core-typings';
+import type { IMedsensePharmacy, IMedsenseRequest } from '@rocket.chat/core-typings';
 
 export type MedsenseEndpoints = {
 	'/v1/medsense/pharmacies.list': {
@@ -75,6 +75,24 @@ export type MedsenseEndpoints = {
 					name?: string;
 				};
 			}[];
+		};
+	};
+	'/v1/medsense/context.requestManagement': {
+		GET: (params: { roomId: string; patientUserId?: string }) => {
+			context: {
+				contextVersion: number;
+				roomId: string;
+				requestId?: string;
+				requestStatus?: IMedsenseRequest['status'];
+				specialtyActionId?: string;
+				patientUserId?: string;
+				patientName?: string;
+				pharmacyId?: string;
+				pharmacyName?: string;
+				assigned?: 'Staff' | 'AI';
+				session?: unknown;
+				voice?: unknown;
+			};
 		};
 	};
 	'/v1/medsense/pending.list': {

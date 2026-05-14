@@ -1,15 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useCallback } from 'react';
 
-import { useCustomSound, useUserPreference } from '@rocket.chat/ui-contexts';
-
+import { useUnreadMessages } from './hooks/useUnreadMessages';
 import { useMedsenseQueue } from '../../hooks/medsense/useMedsenseQueue';
 import { useMedsenseQueueDelta } from '../../hooks/medsense/useMedsenseQueueDelta';
-import { useUnreadMessages } from './hooks/useUnreadMessages';
+import MedsenseNotificationPet from '../medsense/pet/MedsenseNotificationPet';
 
 const useRouteTitleFocus = () => {
 	return useCallback((node: HTMLElement | null) => {
@@ -93,6 +92,7 @@ const DocumentTitleWrapper = ({ children }: DocumentTitleWrapperProps) => {
 				{title}
 			</Box>
 			{children}
+			<MedsenseNotificationPet />
 		</>
 	);
 };

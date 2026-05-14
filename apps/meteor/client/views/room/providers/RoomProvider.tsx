@@ -16,6 +16,7 @@ import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import { Rooms, Subscriptions } from '../../../stores';
+import MedsensePetRoomBridge from '../../medsense/pet/MedsensePetRoomBridge';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
@@ -107,6 +108,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
+				<MedsensePetRoomBridge />
 				<ImageGalleryProvider>
 					<UserCardProvider>
 						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
