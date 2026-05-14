@@ -25,6 +25,7 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
+import { scanFileUploadWithAntivirus } from './antivirus';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -188,6 +189,8 @@ export const FileUpload = {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
+
+		await scanFileUploadWithAntivirus({ file, content, language });
 
 		// App IPreFileUpload event hook
 		try {

@@ -26,6 +26,97 @@ export const createFileUploadSettings = () =>
 			alert: 'FileUpload_MediaTypeBlackList_Alert',
 		});
 
+		await this.section('Antivirus', async function () {
+			await this.add('FileUpload_Antivirus_Enabled', false, {
+				type: 'boolean',
+				i18nDescription: 'FileUpload_Antivirus_Enabled_Description',
+			});
+
+			await this.add('FileUpload_Antivirus_ClamAV_Mode', 'Local', {
+				type: 'select',
+				values: [
+					{
+						key: 'Local',
+						i18nLabel: 'FileUpload_Antivirus_ClamAV_Mode_Local',
+					},
+					{
+						key: 'TCP',
+						i18nLabel: 'FileUpload_Antivirus_ClamAV_Mode_TCP',
+					},
+					{
+						key: 'Socket',
+						i18nLabel: 'FileUpload_Antivirus_ClamAV_Mode_Socket',
+					},
+				],
+				enableQuery: {
+					_id: 'FileUpload_Antivirus_Enabled',
+					value: true,
+				},
+			});
+
+			await this.add('FileUpload_Antivirus_ClamAV_Host', '127.0.0.1', {
+				type: 'string',
+				i18nDescription: 'FileUpload_Antivirus_ClamAV_Host_Description',
+				enableQuery: [
+					{
+						_id: 'FileUpload_Antivirus_Enabled',
+						value: true,
+					},
+					{
+						_id: 'FileUpload_Antivirus_ClamAV_Mode',
+						value: 'TCP',
+					},
+				],
+			});
+
+			await this.add('FileUpload_Antivirus_ClamAV_Port', 3310, {
+				type: 'int',
+				i18nDescription: 'FileUpload_Antivirus_ClamAV_Port_Description',
+				enableQuery: [
+					{
+						_id: 'FileUpload_Antivirus_Enabled',
+						value: true,
+					},
+					{
+						_id: 'FileUpload_Antivirus_ClamAV_Mode',
+						value: 'TCP',
+					},
+				],
+			});
+
+			await this.add('FileUpload_Antivirus_ClamAV_Socket', '', {
+				type: 'string',
+				i18nDescription: 'FileUpload_Antivirus_ClamAV_Socket_Description',
+				enableQuery: [
+					{
+						_id: 'FileUpload_Antivirus_Enabled',
+						value: true,
+					},
+					{
+						_id: 'FileUpload_Antivirus_ClamAV_Mode',
+						value: 'Socket',
+					},
+				],
+			});
+
+			await this.add('FileUpload_Antivirus_ClamAV_Timeout', 15000, {
+				type: 'int',
+				i18nDescription: 'FileUpload_Antivirus_ClamAV_Timeout_Description',
+				enableQuery: [
+					{
+						_id: 'FileUpload_Antivirus_Enabled',
+						value: true,
+					},
+					{
+						_id: 'FileUpload_Antivirus_ClamAV_Mode',
+						value: {
+							$ne: 'Local',
+						},
+					},
+				],
+			});
+		});
+
 		await this.add('FileUpload_ProtectFiles', true, {
 			type: 'boolean',
 			public: true,

@@ -24,6 +24,7 @@ const systemLoggerStub = {
 const roomCoordinatorStub = {
 	getRoomDirectives: sinon.stub(),
 };
+const scanFileUploadWithAntivirusStub = sinon.stub();
 
 const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUpload', {
 	'@rocket.chat/models': {
@@ -51,6 +52,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'../../../utils/server/restrictions': sinon.stub(),
 	'../../../api/server/lib/MultipartUploadHandler': sinon.stub(),
 	'@rocket.chat/account-utils': { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
+	'./antivirus': { scanFileUploadWithAntivirus: scanFileUploadWithAntivirusStub },
 });
 
 describe('FileUpload', () => {
@@ -69,6 +71,8 @@ describe('FileUpload', () => {
 		validateAndDecodeJWTStub.reset();
 		systemLoggerStub.error.reset();
 		roomCoordinatorStub.getRoomDirectives.reset();
+		scanFileUploadWithAntivirusStub.reset();
+		scanFileUploadWithAntivirusStub.resolves();
 		settingsGetMap.clear();
 		settingsGetMap.set('FileUpload_Storage_Type', 'fakeStorage');
 	});

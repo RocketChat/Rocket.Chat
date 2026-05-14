@@ -10034,6 +10034,7 @@ __metadata:
     pino-pretty: "npm:13.1.3"
     playwright-core: "npm:~1.52.0"
     playwright-qase-reporter: "npm:~2.5.0"
+    pompelmi: "npm:1.11.0"
     postcss: "npm:8.5.10"
     postcss-custom-properties: "npm:^14.0.6"
     postcss-easy-import: "npm:^4.0.0"
@@ -30366,6 +30367,13 @@ __metadata:
   dependencies:
     big-integer: "npm:^1.6.51"
   checksum: 10/602ae31ccfcdfab0c2f71847e63fbcd92ef94db4659a03a33ecd9be5f2c038d45eaad7205cefa5cbfc2366c3df037872caa4f0d6b070b6debc0091967e898af8
+  languageName: node
+  linkType: hard
+
+"pompelmi@npm:1.11.0":
+  version: 1.11.0
+  resolution: "pompelmi@npm:1.11.0"
+  checksum: 10/9d71d4d3f1f64e4f2aeefd97125ed3a88cc1df54ba77d26ba53e19a3562c7f6f2d98886ec2c27685a8d9aadc2d5a063568f2d4c5940ec654ba3d7e0b7d0ff9d3
   languageName: node
   linkType: hard
 

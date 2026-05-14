@@ -264,6 +264,7 @@
 		"path": "^0.12.7",
 		"path-to-regexp": "^6.3.0",
 		"pino": "10.3.1",
+		"pompelmi": "1.11.0",
 		"postis": "^2.2.0",
 		"prom-client": "^14.2.0",
 		"prometheus-gc-stats": "^1.1.0",
