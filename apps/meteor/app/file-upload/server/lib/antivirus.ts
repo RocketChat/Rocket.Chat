@@ -68,8 +68,8 @@ export const scanFileUploadWithAntivirus = async ({
 	if (!settings.get<boolean>('FileUpload_Antivirus_Enabled') || !content) {
  		return;
  	}
-		return;
-	}
+
+ 	const options = getScanOptions(language);
 
 	const options = getScanOptions(language);
 	let verdict: VerdictValue;
