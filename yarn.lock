@@ -5580,14 +5580,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@node-oauth/oauth2-server@npm:~5.2.1":
-  version: 5.2.1
-  resolution: "@node-oauth/oauth2-server@npm:5.2.1"
+"@node-oauth/oauth2-server@npm:~5.3.0":
+  version: 5.3.0
+  resolution: "@node-oauth/oauth2-server@npm:5.3.0"
   dependencies:
     "@node-oauth/formats": "npm:1.0.0"
     basic-auth: "npm:2.0.1"
     type-is: "npm:2.0.1"
-  checksum: 10/258d2a86586fedc3aa3d4284850b6aa9639464e4a3c193a81593ccea6715b3893e0228c8fc41fb465a3d426fa50cad2158860c468bd9bfb5b9e4374bccb5bdb9
+  checksum: 10/650d6e011105a79011a96533f9c20a30162032f8cecc7928e7065eb529251252d9bacf2f875fd757fa37162674d08f43205c4beae64282aa2275574fe454adb4
   languageName: node
   linkType: hard
 
@@ -9750,7 +9750,7 @@ __metadata:
     "@nivo/line": "npm:0.88.0"
     "@nivo/pie": "npm:0.88.0"
     "@noble/ed25519": "npm:^3.0.0"
-    "@node-oauth/oauth2-server": "npm:~5.2.1"
+    "@node-oauth/oauth2-server": "npm:~5.3.0"
     "@opentelemetry/api": "npm:^1.9.1"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.217.0"
     "@opentelemetry/sdk-node": "npm:^0.217.0"

@@ -83,7 +83,7 @@
 		"@nivo/line": "0.88.0",
 		"@nivo/pie": "0.88.0",
 		"@noble/ed25519": "^3.0.0",
-		"@node-oauth/oauth2-server": "~5.2.1",
+		"@node-oauth/oauth2-server": "~5.3.0",
 		"@opentelemetry/api": "^1.9.1",
 		"@opentelemetry/exporter-trace-otlp-grpc": "^0.217.0",
 		"@opentelemetry/sdk-node": "^0.217.0",
