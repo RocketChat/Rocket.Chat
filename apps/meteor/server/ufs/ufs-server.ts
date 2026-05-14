@@ -1,8 +1,8 @@
 import domain from 'domain';
-import fs from 'fs';
-import stream from 'stream';
-import URL from 'url';
-import zlib from 'zlib';
+import fs from 'node:fs';
+import stream from 'node:stream';
+import URL from 'node:url';
+import zlib from 'node:zlib';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';

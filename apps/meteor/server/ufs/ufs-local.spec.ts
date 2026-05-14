@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import { expect } from 'chai';
 import { before, beforeEach, afterEach, describe, it } from 'mocha';

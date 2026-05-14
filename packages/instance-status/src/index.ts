@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';

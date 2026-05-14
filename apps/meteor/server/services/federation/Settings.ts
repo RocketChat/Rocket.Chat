@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { settings, settingsRegistry } from '../../../app/settings/server';
 

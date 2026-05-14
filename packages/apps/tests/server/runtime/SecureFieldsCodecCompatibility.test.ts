@@ -1,8 +1,8 @@
-import * as fs from 'fs/promises';
 import * as assert from 'node:assert';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { describe, it, before, after } from 'node:test';
-import * as os from 'os';
-import * as path from 'path';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';

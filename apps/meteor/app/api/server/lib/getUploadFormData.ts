@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ReadableStream } from 'stream/web';
 
 import { MeteorError } from '@rocket.chat/core-services';

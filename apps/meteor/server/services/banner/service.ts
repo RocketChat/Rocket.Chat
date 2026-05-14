@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IBannerService } from '@rocket.chat/core-services';

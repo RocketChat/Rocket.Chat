@@ -1,6 +1,6 @@
-import fs from 'fs';
-import type * as http from 'http';
-import type stream from 'stream';
+import fs from 'node:fs';
+import type * as http from 'node:http';
+import type stream from 'node:stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';

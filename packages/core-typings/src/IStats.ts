@@ -1,4 +1,4 @@
-import type { CpuInfo } from 'os';
+import type { CpuInfo } from 'node:os';
 
 import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';

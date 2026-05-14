@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';

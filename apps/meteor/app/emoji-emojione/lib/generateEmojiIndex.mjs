@@ -3,7 +3,7 @@
 // before using this script make sure to run: npm i --no-save node-sprite-generator
 
 // node --experimental-modules generateEmojiIndex.mjs
-import fs from 'fs';
+import fs from 'node:fs';
 import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]

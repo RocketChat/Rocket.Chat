@@ -1,4 +1,4 @@
-import type { Socket } from 'net';
+import type { Socket } from 'node:net';
 
 import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';

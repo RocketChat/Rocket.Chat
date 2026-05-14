@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events';
-import net from 'net';
-import util from 'util';
+import { EventEmitter } from 'node:events';
+import net from 'node:net';
+import util from 'node:util';
 
 import { Logger } from '@rocket.chat/logger';
 

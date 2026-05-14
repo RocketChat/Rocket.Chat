@@ -1,5 +1,5 @@
-import type { Readable } from 'stream';
-import stream from 'stream';
+import type { Readable } from 'node:stream';
+import stream from 'node:stream';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';

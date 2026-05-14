@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import debugInitializer from 'debug';
 import humanInterval from 'human-interval';

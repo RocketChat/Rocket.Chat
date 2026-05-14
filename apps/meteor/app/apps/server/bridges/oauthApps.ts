@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { OAuthAppsBridge } from '@rocket.chat/apps/dist/server/bridges/OAuthAppsBridge';
