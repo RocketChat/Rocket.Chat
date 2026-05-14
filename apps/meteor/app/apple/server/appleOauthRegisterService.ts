@@ -2,6 +2,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import passport from 'passport';
@@ -117,6 +118,8 @@ settings.watchMultiple(
 
 		const callbackHandler = [
 			(req: Request, _res: Response, next: NextFunction) => {
+				console.log('2nd callback url');
+				console.log('query -> ', req.query);
 				console.log('req in 2nd callback ->', req.session);
 				console.log('req cookies in 2nd callback -> ', req.headers.cookie);
 				next();
@@ -152,9 +155,47 @@ settings.watchMultiple(
 			},
 		);
 
-		oAuthRouter
-			.route('/oauth/apple/callback')
-			.get(...callbackHandler)
-			.post(...callbackHandler);
+		// oAuthRouter.route('/oauth/apple/callback').post(...callbackHandler);
+
+		// Apple is different in that they POST back to the callback.
+		// Because of SameSite policies in browsers don't allow cookies to be included in external POST requests
+		// we wouldn't be able to access our express session here, and thereby not authenticate the session.
+		// Therefore we redirect the POST request to GET (with query parameters).
+		// https://github.com/ananay/passport-apple/issues/51#issuecomment-2312651378
+		oAuthRouter.post('/oauth/apple/callback', express.urlencoded({ extended: true }), (req, res) => {
+			const { body } = req;
+			const sp = new URLSearchParams();
+			Object.entries(body).forEach(([key, value]) => sp.set(key, String(value)));
+			console.log('apple callback search params - ', sp.toString());
+			res.redirect(`/oauth/apple/callback?${sp.toString()}`);
+		});
+
+		// Here we handle the GET request after the redirect from the POST callback above
+		// oAuthRouter.get(
+		// 	'/oauth/apple/callback',
+		// 	passport.authenticate('apple', {
+		// 		successReturnToOrRedirect: '/success',
+		// 		failureRedirect: '/login',
+		// 	}),
+		// 	async (err, _req, res, _next) => {
+		// 		// for some reason, `failureRedirect` doesn't receive certain errors, so we need an error handler here.
+		// 		if (err instanceof Error && (err.name === 'AuthorizationError' || err.name === 'TokenError')) {
+		// 			// Common errors:
+		// 			// - AuthorizationError { code: 'user_cancelled_authorize' } - When the user cancels the operation
+		// 			// - TokenError { code: 'invalid_grant' } - The code has already been used
+		// 			console.log('ERROR - ', err);
+		// 			const sp = new URLSearchParams({ error: err.name });
+		// 			if ('code' in err && typeof err.code === 'string') {
+		// 				sp.set('code', err.code);
+		// 			}
+		// 			res.redirect(`${'/login'}${sp.toString()}`);
+		// 			return;
+		// 		}
+
+		// 		// unknown err object
+		// 		res.redirect('/login');
+		// 	},
+		// );
+		oAuthRouter.get('/oauth/apple/callback', ...callbackHandler);
 	},
 );
