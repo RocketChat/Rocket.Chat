@@ -7,6 +7,7 @@ import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
 import { baseURI } from '../../../lib/baseURI';
 import { loginServices } from '../../../lib/loginServices';
+import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
 import { settings } from '../../../lib/settings';
 import { router } from '../../../providers/RouterProvider';
 
@@ -37,10 +38,7 @@ export const useIframeCommands = () => {
 					{} as Record<string, string>,
 				);
 
-				const newPath = newUrl.pathname.replace(
-					new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
-					'',
-				) as LocationPathname;
+				const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(getRootUrlPathPrefix())}`), '') as LocationPathname;
 				router.navigate({
 					pathname: newPath,
 					search: { ...router.getSearchParameters(), ...newParams },
