@@ -5,6 +5,7 @@ import {
 	isCustomSoundsGetOneProps,
 	isCustomSoundsListProps,
 	isCustomSoundsCreateProps,
+	isCustomSoundsDeleteProps,
 	isCustomSoundsUpdateProps,
 	ajv,
 	validateBadRequestErrorResponse,
@@ -16,6 +17,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../../lib/constants';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { deleteCustomSound } from '../../../custom-sounds/server/lib/deleteCustomSound';
 import { insertOrUpdateSound } from '../../../custom-sounds/server/lib/insertOrUpdateSound';
 import { uploadCustomSound } from '../../../custom-sounds/server/lib/uploadCustomSound';
 import { getExtension, getMimeTypeFromFileName } from '../../../utils/lib/mimeTypes';
@@ -277,6 +279,48 @@ const customSoundsEndpoints = API.v1
 				return API.v1.success({});
 			} catch (error) {
 				SystemLogger.error({ error });
+				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
+			}
+		},
+	)
+	.post(
+		'custom-sounds.delete',
+		{
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+			authRequired: true,
+			body: isCustomSoundsDeleteProps,
+			permissionsRequired: ['manage-sounds'],
+		},
+		async function action() {
+			const { _id } = this.bodyParams;
+
+			try {
+				await deleteCustomSound(_id);
+
+				return API.v1.success({});
+			} catch (error: any) {
+				SystemLogger.error({ error });
+
+				if (error.error === 'Custom_Sound_Error_Invalid_Sound') {
+					return API.v1.notFound('Custom Sound not found.');
+				}
+
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
 			}
 		},
