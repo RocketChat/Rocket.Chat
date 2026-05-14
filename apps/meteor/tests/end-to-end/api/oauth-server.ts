@@ -15,6 +15,7 @@ async function authorizeAndExchange(loginToken: string, cId: string, cSecret: st
 			client_id: cId,
 			response_type: 'code',
 			redirect_uri: redirectUri,
+			state: 'test-state',
 			allow: 'yes',
 		})
 		.expect(302);
