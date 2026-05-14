@@ -24,7 +24,7 @@ oAuthRouter.use(
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: 5 * 60 * 1000, // 5 minutes
-			sameSite: false,
+			sameSite: 'none',
 		},
 	}),
 );
@@ -39,11 +39,13 @@ oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
+		console.log('serialize user -> ', user);
 		done(null, user._id);
 	});
 
 	passport.deserializeUser(async (id, done) => {
 		const user = await Users.findOneById(id as string);
+		console.log('deserialize user -> ', user, id);
 		// we don’t actually use this user later
 		done(null, user);
 	});

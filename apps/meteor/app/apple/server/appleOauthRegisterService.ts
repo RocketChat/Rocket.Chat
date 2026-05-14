@@ -1,7 +1,7 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import passport from 'passport';
@@ -113,6 +113,10 @@ settings.watchMultiple(
 		);
 
 		const callbackHandler = [
+			(req: Request, _res: Response, next: NextFunction) => {
+				console.log('req in 2nd callback ->', req.session);
+				next();
+			},
 			passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
 			async (req: Request, res: Response) => {
 				console.log('req -> user', req.user);
@@ -138,6 +142,10 @@ settings.watchMultiple(
 		oAuthRouter.get(
 			'/oauth/apple',
 			passport.authenticate('apple', { scope: ['name', 'email'], prompt: 'consent', failureRedirect: '/login' }),
+			(req: Request, _res: Response, next: NextFunction) => {
+				console.log('req in 1st callback ->', req.session);
+				next();
+			},
 		);
 
 		oAuthRouter
