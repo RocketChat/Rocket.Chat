@@ -1,9 +1,18 @@
-import { KJUR } from 'jsrsasign';
+import { MeteorError } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import type { Request, Response } from 'express';
+import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import passport from 'passport';
+import { Strategy as AppleStrategy } from 'passport-apple';
+import type { Profile } from 'passport-apple';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
+import { oAuthRouter } from '../../../server/configuration/configurePassport';
 import { settings } from '../../settings/server';
 import { config } from '../lib/config';
+import { handleIdentityToken } from '../lib/handleIdentityToken';
 
 new AppleCustomOAuth('apple', config);
 
@@ -17,6 +26,7 @@ settings.watchMultiple(
 	],
 	async ([enabled, clientId, serverSecret, iss, kid]) => {
 		if (!enabled) {
+			passport.unuse('apple');
 			return ServiceConfiguration.configurations.removeAsync({
 				service: 'apple',
 			});
@@ -38,43 +48,100 @@ settings.watchMultiple(
 			return;
 		}
 
-		const HEADER = {
-			kid,
-			alg: 'ES256',
-		};
+		passport.unuse('apple');
 
-		const now = new Date();
-		const exp = new Date();
-		exp.setMonth(exp.getMonth() + 5); // from Apple docs expiration time must no be greater than 6 months
-
-		const secret = KJUR.jws.JWS.sign(
-			null,
-			HEADER,
-			{
-				iss,
-				iat: Math.floor(now.getTime() / 1000),
-				exp: Math.floor(exp.getTime() / 1000),
-				aud: 'https://appleid.apple.com',
-				sub: clientId,
-			},
-			serverSecret as string,
-		);
-
-		await ServiceConfiguration.configurations.upsertAsync(
-			{
-				service: 'apple',
-			},
-			{
-				$set: {
-					showButton: true,
-					secret,
-					enabled: settings.get('Accounts_OAuth_Apple'),
-					loginStyle: 'popup',
-					clientId: clientId as string,
-					buttonColor: '#000',
-					buttonLabelColor: '#FFF',
+		passport.use(
+			'apple',
+			new AppleStrategy(
+				{
+					clientID: settings.get<string>('Accounts_OAuth_Apple_id'),
+					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
+					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
+					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
+					callbackURL: `${settings.get<string>('Site_Url')}/oauth/apple/callback`,
+					scope: ['name', 'email'],
+					passReqToCallback: false,
 				},
-			},
+				async (accessToken: string, refreshToken: string, idToken: string, profile: Profile, done) => {
+					console.log('profile', profile);
+					console.log('idToken', idToken);
+
+					try {
+						const serviceData = await handleIdentityToken(idToken);
+						console.log('serviceData', serviceData);
+						if (profile?.name) {
+							serviceData.name = `${profile.name.firstName}${profile.name.middleName ? ` ${profile.name.middleName}` : ''}${
+								profile.name.lastName ? ` ${profile.name.lastName}` : ''
+							}`;
+						}
+
+						if (!serviceData.email && profile?.email) {
+							serviceData.email = profile.email;
+						}
+
+						// eslint-disable-next-line @typescript-eslint/await-thenable
+						const user = await Accounts.updateOrCreateUserFromExternalService(
+							'apple',
+							{
+								accessToken,
+								refreshToken,
+								...serviceData,
+							},
+							{},
+						);
+
+						if (!user?.userId || typeof user?.userId !== 'string') {
+							return done(new Error('User not found'));
+						}
+
+						const userFromDB = await Users.findOneById(user.userId);
+
+						if (!userFromDB) {
+							return done(new Error('User not found'));
+						}
+
+						return done(null, userFromDB);
+					} catch (error: any) {
+						return {
+							type: 'apple',
+							error: new MeteorError(Accounts.LoginCancelledError.numericError, error.message),
+						};
+					}
+				},
+			),
 		);
+
+		const callbackHandler = [
+			passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
+			async (req: Request, res: Response) => {
+				console.log('req -> user', req.user);
+				const oAuthUser = req.user as IUser;
+
+				if (!oAuthUser) {
+					return res.redirect('/noOauthUser');
+				}
+
+				const stampedToken = Accounts._generateStampedLoginToken();
+				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
+
+				res.redirect(`/home?resumeToken=${stampedToken.token}`);
+
+				req.session.destroy((err) => {
+					if (err) {
+						console.error('Error destroying session', err);
+					}
+				});
+			},
+		];
+
+		oAuthRouter.get(
+			'/oauth/apple',
+			passport.authenticate('apple', { scope: ['name', 'email'], prompt: 'consent', failureRedirect: '/login' }),
+		);
+
+		oAuthRouter
+			.route('/oauth/apple/callback')
+			.get(...callbackHandler)
+			.post(...callbackHandler);
 	},
 );

@@ -1,5 +1,6 @@
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import bodyParser from 'body-parser';
 import express from 'express';
 import flash from 'express-flash';
 import session from 'express-session';
@@ -23,6 +24,7 @@ oAuthRouter.use(
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: 5 * 60 * 1000, // 5 minutes
+			sameSite: false,
 		},
 	}),
 );
@@ -33,7 +35,7 @@ oAuthRouter.set('trust proxy', true);
 oAuthRouter.use(passport.initialize());
 oAuthRouter.use(passport.session());
 oAuthRouter.use(flash());
-oAuthRouter.use(express.urlencoded({ extended: true }));
+oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {

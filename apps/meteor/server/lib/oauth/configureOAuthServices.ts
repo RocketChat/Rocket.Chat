@@ -23,8 +23,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					clientID: config.clientId,
 					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
 					state: true,
-					// pkce: true,
-					// profileFields: ['id', 'displayName', 'emails'],
+					pkce: true,
+					profileFields: ['id', 'displayName', 'emails'],
 					...config,
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
@@ -56,6 +56,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					}
 
 					return done(null, userFromDB);
+				},
+				{
+					debug: true,
 				},
 			),
 		);
