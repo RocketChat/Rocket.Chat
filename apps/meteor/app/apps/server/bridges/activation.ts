@@ -1,6 +1,7 @@
 import type { IAppServerOrchestrator, AppStatus } from '@rocket.chat/apps';
 import type { ProxiedApp } from '@rocket.chat/apps/dist/server/ProxiedApp';
 import { AppActivationBridge as ActivationBridge } from '@rocket.chat/apps/dist/server/bridges/AppActivationBridge';
+import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
@@ -14,6 +15,7 @@ export class AppActivationBridge extends ActivationBridge {
 
 		// Calls made via AppActivationBridge should NOT go through
 		// View https://github.com/RocketChat/Rocket.Chat/pull/29180 for details
+		void api.broadcast('license.sync');
 		return undefined;
 	}
 
@@ -21,11 +23,13 @@ export class AppActivationBridge extends ActivationBridge {
 		// Calls made via AppActivationBridge should NOT go through
 		// View https://github.com/RocketChat/Rocket.Chat/pull/29180 for details
 		// await this.orch.getNotifier().appUpdated(app.getID());
+		void api.broadcast('license.sync');
 		return undefined;
 	}
 
 	protected async appRemoved(app: ProxiedApp): Promise<void> {
 		await this.orch.getNotifier().appRemoved(app.getID());
+		void api.broadcast('license.sync');
 	}
 
 	protected async appStatusChanged(app: ProxiedApp, status: AppStatus): Promise<void> {
@@ -34,6 +38,9 @@ export class AppActivationBridge extends ActivationBridge {
 		await Users.updateStatusByAppId(app.getID(), userStatus);
 
 		await this.orch.getNotifier().appStatusUpdated(app.getID(), status);
+
+		// Force license sync to update the UI counters
+		void api.broadcast('license.sync');
 	}
 
 	protected async actionsChanged(): Promise<void> {

@@ -25,7 +25,7 @@ API.v1.addRoute(
 
 			try {
 				// TODO: Remove this logic after setting type object is implemented.
-				const cloudSyncAnnouncement = JSON.parse(settings.get('Cloud_Sync_Announcement_Payload') ?? null);
+				const cloudSyncAnnouncement = null; // JSON.parse(settings.get('Cloud_Sync_Announcement_Payload') ?? null);
 				const canManageCloud = await hasPermissionAsync(this.userId, 'manage-cloud');
 				return API.v1.success({
 					license,

@@ -14,4 +14,5 @@ echo "🚀 Préparation du PATH terminée."
 echo "📦 Lancement de Rocket.Chat avec yarn dsv (limité à 4 CPUs)..."
 
 # Lancer avec yarn dsv et limitation CPU
+yarn build
 yarn dsv --concurrency 4

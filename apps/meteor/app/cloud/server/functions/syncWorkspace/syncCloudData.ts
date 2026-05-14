@@ -33,7 +33,7 @@ export async function syncCloudData() {
 			data: workspaceRegistrationData,
 		});
 
-		await Settings.updateValueById('Cloud_Sync_Announcement_Payload', JSON.stringify(cloudSyncAnnouncement ?? null));
+		await Settings.updateValueById('Cloud_Sync_Announcement_Payload', 'null');
 
 		if (removeLicense) {
 			await callbacks.run('workspaceLicenseRemoved');

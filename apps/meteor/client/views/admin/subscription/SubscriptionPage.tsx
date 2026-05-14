@@ -105,14 +105,8 @@ const SubscriptionPage = () => {
 		<Page bg='tint'>
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
-					{canViewRegistrationStatus && (
-						<Button loading={syncLicenseUpdate.isPending} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
-							{t('Sync_license_update')}
-						</Button>
-					)}
-					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary>
-						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
-					</UpgradeButton>
+
+
 				</ButtonGroup>
 			</PageHeaderNoShadow>
 			{cloudSyncAnnouncement && (
@@ -153,7 +147,7 @@ const SubscriptionPage = () => {
 								{seatsLimit.value !== undefined && (
 									<GridItem lg={6} xs={4} p={8} minHeight={260}>
 										{seatsLimit.max !== Infinity ? (
-											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
+											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={true} />
 										) : (
 											<CountSeatsCard activeUsers={seatsLimit?.value} />
 										)}
@@ -163,7 +157,7 @@ const SubscriptionPage = () => {
 								{macLimit.value !== undefined && (
 									<GridItem lg={6} xs={4} p={8} minHeight={260}>
 										{macLimit.max !== Infinity ? (
-											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
+											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={true} />
 										) : (
 											<CountMACCard macsCount={macLimit.value} />
 										)}

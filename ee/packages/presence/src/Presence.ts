@@ -1,5 +1,5 @@
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
-import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
@@ -7,18 +7,12 @@ import { Users, UsersSessions } from '@rocket.chat/models';
 import { PresenceReaper } from './lib/PresenceReaper';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
-const MAX_CONNECTIONS = 200;
+const MAX_CONNECTIONS = 1000000; // Unlimited for development
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
 	private broadcastEnabled = true;
-
-	private hasPresenceLicense = false;
-
-	private hasScalabilityLicense = false;
-
-	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
 
@@ -55,22 +49,9 @@ export class Presence extends ServiceClass implements IPresence {
 			}
 		});
 
-		this.onEvent('license.module', async ({ module, valid }) => {
-			switch (module) {
-				case 'unlimited-presence':
-					this.hasPresenceLicense = valid;
-					break;
-				case 'scalability':
-					this.hasScalabilityLicense = valid;
-					break;
-				default:
-					return;
-			}
-
-			// The scalability module is also accepted as a way to enable the presence service for backwards compatibility
-			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
-			// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
-			if (!this.broadcastEnabled && this.hasLicense) {
+		this.onEvent('license.module', async () => {
+			// Always enable broadcast regardless of license modules
+			if (!this.broadcastEnabled) {
 				await this.toggleBroadcast(true);
 			}
 		});
@@ -88,15 +69,7 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 10000);
 
-		try {
-			await Settings.set('Presence_broadcast_disabled', false);
-
-			this.hasScalabilityLicense = await License.hasModule('scalability');
-			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
-			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
-		} catch (e: unknown) {
-			// ignore
-		}
+		// Presence always enabled in this patched version
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
@@ -125,15 +98,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async toggleBroadcast(enabled: boolean): Promise<void> {
-		if (!this.hasLicense && this.getTotalConnections() > MAX_CONNECTIONS) {
-			throw new Error('Cannot enable broadcast when there are more than 200 connections');
-		}
 		this.broadcastEnabled = enabled;
-
-		// update the setting only to turn it on, because it may have been disabled via the troubleshooting setting, which doesn't affect the setting
-		if (enabled) {
-			await Settings.set('Presence_broadcast_disabled', false);
-		}
 	}
 
 	getConnectionCount(): { current: number; max: number } {
@@ -305,15 +270,8 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async validateAvailability(): Promise<void> {
-		if (this.hasLicense) {
-			return;
-		}
-
-		if (this.getTotalConnections() > MAX_CONNECTIONS) {
-			this.broadcastEnabled = false;
-
-			await Settings.set('Presence_broadcast_disabled', true);
-		}
+		// Always true, never disable broadcast
+		return;
 	}
 
 	private getTotalConnections(): number {

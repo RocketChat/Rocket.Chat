@@ -79,11 +79,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 					))}
 				</Box>
 			</CardBody>
-			<CardControls>
-				<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>
-					{t('Compare_plans')}
-				</a>
-			</CardControls>
+
 		</Card>
 	);
 };

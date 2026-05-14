@@ -16,10 +16,10 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 
 	const { maxMonthlyPeakConnections } = data || {};
 
-	const total = 200;
+	const total = 1000000; // Unlimited
 	const used = maxMonthlyPeakConnections || 0;
 
-	const exceedLimit = used >= total;
+	const exceedLimit = false; // Always false for development
 
 	const card: CardProps = {
 		title: t('ActiveSessionsPeak'),
@@ -47,7 +47,7 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 		<FeatureUsageCard card={card}>
 			<Box color='font-secondary-info' textAlign='center'>
 				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
-					{used} / {total}
+					{used} / ∞
 				</Box>
 				{formatDate(new Date())}
 			</Box>

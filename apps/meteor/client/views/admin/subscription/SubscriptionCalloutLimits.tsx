@@ -31,16 +31,6 @@ export const SubscriptionCalloutLimits = () => {
 						value={{ val: start_fair_policy.map(toTranslationKey) }}
 					>
 						Your workspace reached the <>{start_fair_policy.map(toTranslationKey)}</> limit.
-						<ExternalLink
-							to={manageSubscriptionUrl({
-								target: 'callout',
-								action: 'start_fair_policy',
-								limits: start_fair_policy.join(','),
-							})}
-						>
-							Manage your subscription
-						</ExternalLink>
-						to increase limits.
 					</Trans>
 				</Callout>
 			)}
@@ -53,16 +43,6 @@ export const SubscriptionCalloutLimits = () => {
 						values={{ val: prevent_action.map(toTranslationKey) }}
 					>
 						Your workspace exceeded the <>{prevent_action.map(toTranslationKey)}</> license limit.
-						<ExternalLink
-							to={manageSubscriptionUrl({
-								target: 'callout',
-								action: 'prevent_action',
-								limits: prevent_action.join(','),
-							})}
-						>
-							Manage your subscription
-						</ExternalLink>
-						to increase limits.
 					</Trans>
 				</Callout>
 			)}
@@ -75,16 +55,6 @@ export const SubscriptionCalloutLimits = () => {
 						values={{ val: disable_modules.map(toTranslationKey) }}
 					>
 						Your workspace exceeded the <>{disable_modules.map(toTranslationKey)}</> license limit.
-						<ExternalLink
-							to={manageSubscriptionUrl({
-								target: 'callout',
-								action: 'disable_modules',
-								limits: disable_modules.join(','),
-							})}
-						>
-							Manage your subscription
-						</ExternalLink>
-						to increase limits.
 					</Trans>
 				</Callout>
 			)}
@@ -97,16 +67,6 @@ export const SubscriptionCalloutLimits = () => {
 						values={{ val: invalidate_license.map(toTranslationKey) }}
 					>
 						Your workspace exceeded the <>{invalidate_license.map(toTranslationKey)}</> license limit.
-						<ExternalLink
-							to={manageSubscriptionUrl({
-								target: 'callout',
-								action: 'invalidate_license',
-								limits: invalidate_license.join(','),
-							})}
-						>
-							Manage your subscription
-						</ExternalLink>
-						to increase limits.
 					</Trans>
 				</Callout>
 			)}

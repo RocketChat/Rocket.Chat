@@ -13,7 +13,7 @@ const getLimits = ({ max, current }: { max: number; current: number }) => {
 	const used = current || 0;
 	const available = total - used;
 
-	const exceedLimit = used >= total;
+	const exceedLimit = false; // used >= total && total < 1000000; // Disable exceed check for unlimited
 
 	return {
 		total,
@@ -44,6 +44,8 @@ const ActiveSessionsCard = (): ReactElement => {
 
 	const { total, used, available, exceedLimit } = getLimits(result.data);
 
+	const isUnlimited = true; // total >= 1000000;
+
 	return (
 		<FeatureUsageCard
 			card={{
@@ -60,9 +62,9 @@ const ActiveSessionsCard = (): ReactElement => {
 			<FeatureUsageCardBody justifyContent='flex-start'>
 				<Box color='font-secondary-info' textAlign='center'>
 					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
-						{used} / {total}
+						{used} / {isUnlimited ? '∞' : total}
 					</Box>
-					{available} {t('ActiveSessions_available')}
+					{isUnlimited ? t('Unlimited') : `${available} ${t('ActiveSessions_available')}`}
 				</Box>
 			</FeatureUsageCardBody>
 		</FeatureUsageCard>

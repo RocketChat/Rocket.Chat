@@ -444,7 +444,7 @@
   "ActiveSessions": "Active sessions",
   "ActiveSessionsPeak": "Active sessions peak",
   "ActiveSessionsPeak_InfoText": "Highest amount of active connections in the past 30 days",
-  "ActiveSessions_InfoText": "Total concurrent connections. A single user can be connected multiple times. User presence service is disabled at 200 or more to prevent performance issues.",
+  "ActiveSessions_InfoText": "Total concurrent connections. A single user can be connected multiple times. Unlimited connections available.",
   "ActiveSessions_available": "sessions available",
   "Active_connections": "Active connections",
   "Active_users": "Active users",

@@ -66,9 +66,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 			</CardGrid>
 			<Box pbs={24}>
 				<ButtonGroup large vertical>
-					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
-						{t('Compare_plans')}
-					</Button>
+
 					{children}
 				</ButtonGroup>
 			</Box>
