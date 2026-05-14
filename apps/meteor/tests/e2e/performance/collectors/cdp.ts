@@ -15,7 +15,7 @@ export interface ICDPMetrics {
 export async function openCDPSession(page: Page): Promise<CDPSession> {
 	const session = await page.context().newCDPSession(page);
 	await session.send('Performance.enable');
-	await session.send('Memory.prepareForLeakDetection');
+	// await session.send('Memory.prepareForLeakDetection');
 	return session;
 }
 
