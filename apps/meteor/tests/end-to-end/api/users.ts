@@ -1392,6 +1392,48 @@ describe('[Users]', () => {
 					.end(done);
 			});
 
+			it('should return presence for a single id', async () => {
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: 'rocket.cat' })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(1);
+				expect(res.body.users[0]).to.have.property('_id', 'rocket.cat');
+			});
+
+			it('should correctly parse comma-separated ids and not return an empty result', async () => {
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: `rocket.cat,${credentials['X-User-Id']}` })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				// only rocket.cat is guaranteed to be online; admin may be offline
+				expect(res.body.users.map((u: IUser) => u._id)).to.include('rocket.cat');
+			});
+
+			it('should return presence for repeated ids params', async () => {
+				const res = await request
+					.get(api('users.presence'))
+					.query(`ids=rocket.cat&ids=${credentials['X-User-Id']}`)
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				// only rocket.cat is guaranteed to be online; admin may be offline
+				expect(res.body.users.map((u: IUser) => u._id)).to.include('rocket.cat');
+			});
+
 			it('should return full list of online users for more than 10 minutes in the past', (done) => {
 				const date = new Date();
 				date.setMinutes(date.getMinutes() - 11);
