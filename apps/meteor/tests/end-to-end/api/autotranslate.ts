@@ -489,9 +489,9 @@ describe('AutoTranslate', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('success', false);
 						const parsedBody = JSON.parse(res.body.message);
 						expect(parsedBody).to.have.a.property('error');
 					})
@@ -511,9 +511,9 @@ describe('AutoTranslate', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('success', false);
 						const parsedBody = JSON.parse(res.body.message);
 						expect(parsedBody).to.have.a.property('error');
 						expect(parsedBody.error).to.have.a.property('error', 'error-not-allowed');
