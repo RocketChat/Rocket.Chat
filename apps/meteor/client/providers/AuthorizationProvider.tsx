@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
@@ -6,6 +7,12 @@ import { createAuthorizationFunctions } from '../../app/authorization/lib/create
 import { PermissionsCachedStore } from '../cachedStores';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
 
+// Only the slice of IUser that the authorization helpers actually read.
+// Snapshotting just `roles` (instead of the full user document) keeps the
+// provider from re-rendering on presence/status updates, last-login flips,
+// avatar etag changes, etc. — none of which affect any permission answer.
+type AuthorizableUser = Pick<IUser, '_id' | 'roles'>;
+
 type AuthorizationProviderProps = {
 	children?: ReactNode;
 };
@@ -13,6 +20,11 @@ type AuthorizationProviderProps = {
 const noopSubscribe = (): (() => void) => () => undefined;
 
 const subscribeToSubscriptions = (onStoreChange: () => void): (() => void) => Subscriptions.use.subscribe(onStoreChange);
+
+const selectUserRoles = (userId: IUser['_id'] | undefined): AuthorizableUser['roles'] | undefined => {
+	if (!userId) return undefined;
+	return Users.use.getState().get(userId)?.roles;
+};
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 	const isReady = PermissionsCachedStore.useReady();
@@ -26,22 +38,30 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 
 	const userId = useUserId();
 
-	// Reactive snapshots of the three stores that change infrequently (admin-driven
-	// or login-time only). A re-render here propagates the new auth answer through
-	// context to every consumer without forcing them to re-evaluate `hasPermission`
-	// for unrelated traffic. Subscriptions.use is intentionally NOT observed here
-	// — it updates on every incoming message, member change, and unread-count flip,
-	// so subscribing globally would re-render every gated component on every chat
-	// frame. Subscription-scoped permission checks subscribe per-call below.
-	const usersState = useSyncExternalStore(Users.use.subscribe, () => Users.use.getState());
+	// Permissions and Roles change infrequently (admin-driven or login-time only);
+	// observing the whole map is cheap and re-renders propagate the new auth
+	// answers through context to every consumer.
 	const permissionsState = useSyncExternalStore(Permissions.use.subscribe, () => Permissions.use.getState());
 	const rolesState = useSyncExternalStore(Roles.use.subscribe, () => Roles.use.getState());
+	// For Users, only the current user's `roles` array is relevant for auth
+	// decisions (hooks dispatch via getCurrentUserId; `userHasAllPermission` with
+	// an arbitrary userId has no real callers). Subscribing to the full Users map
+	// would re-render the provider on every presence update for every user. The
+	// custom getSnapshot returns the same array reference until the current
+	// user's roles actually change, so useSyncExternalStore short-circuits via
+	// Object.is and the provider stays still through unrelated user churn.
+	const currentUserRoles = useSyncExternalStore(Users.use.subscribe, () => selectUserRoles(userId));
+	// Subscriptions.use is intentionally NOT observed here — it updates on every
+	// incoming message, member change, and unread-count flip. Subscription-scoped
+	// permission checks subscribe per-call below.
 
 	const auth = useMemo(
 		() =>
 			createAuthorizationFunctions({
 				getCurrentUserId: () => userId,
-				getUserRoles: (id) => usersState.get(id)?.roles,
+				// Fast path for the only userId hook consumers ever pass; live read for
+				// any other userId (only userHasAllPermission can reach this branch).
+				getUserRoles: (id) => (id === userId ? currentUserRoles : Users.use.getState().get(id)?.roles),
 				getPermission: (id) => permissionsState.get(id),
 				getRoleScope: (id) => rolesState.get(id)?.scope,
 				// Read Subscriptions live — reactivity for scoped checks is wired through
@@ -53,7 +73,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 						?.roles?.includes(roleId) ?? false,
 				isReady: () => true,
 			}),
-		[userId, usersState, permissionsState, rolesState],
+		[userId, currentUserRoles, permissionsState, rolesState],
 	);
 
 	const contextValue = useMemo(
