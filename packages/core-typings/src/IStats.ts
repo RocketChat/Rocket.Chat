@@ -273,4 +273,5 @@ export interface IStats {
 	abacTotalAttributeValues?: number;
 	abacRoomsEnrolled?: number;
 	allowUnsafeQueryAndFieldsApiParamsEnabled?: boolean;
+	fips?: boolean;
 }

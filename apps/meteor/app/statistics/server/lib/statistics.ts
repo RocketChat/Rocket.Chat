@@ -1,4 +1,5 @@
 import { log } from 'console';
+import crypto from 'node:crypto';
 import os from 'os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
@@ -344,6 +345,8 @@ export const statistics = {
 			method: process.env.DEPLOY_METHOD || 'tar',
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
+
+		statistics.fips = !!crypto.getFips();
 
 		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
 		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
