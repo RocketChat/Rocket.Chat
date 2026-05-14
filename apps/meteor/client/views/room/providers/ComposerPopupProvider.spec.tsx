@@ -3,19 +3,8 @@ import { render, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
-import { useComposerPopupOptions } from '../contexts/ComposerPopupContext';
-import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
 import { createFakeRoom } from '../../../../tests/mocks/data';
-
-const mockGrantedPermissions = new Set<string>();
-
-jest.mock('../../../../app/authorization/client', () => ({
-	hasAtLeastOnePermission: (permissions: string[] | string, scope?: string) => {
-		const permissionList = Array.isArray(permissions) ? permissions : [permissions];
-
-		return permissionList.some((permission) => mockGrantedPermissions.has(`${scope}:${permission}`));
-	},
-}));
+import { useComposerPopupOptions } from '../contexts/ComposerPopupContext';
 
 jest.mock('../../../../app/utils/client', () => ({
 	slashCommands: {
@@ -40,23 +29,18 @@ const PopupOptionsConsumer = ({ onReady }: PopupOptionsConsumerProps) => {
 const renderProvider = async (permissions: string[] = []) => {
 	const room = createFakeRoom({ _id: 'permission-scoped-room', t: 'c' });
 
-	mockGrantedPermissions.clear();
-	permissions.forEach((permission) => mockGrantedPermissions.add(`${room._id}:${permission}`));
-
-	const appRoot = mockAppRoot().build();
+	const appRoot = permissions.reduce((builder, permission) => builder.withPermission(permission), mockAppRoot().withRoom(room)).build();
 
 	let popupOptions: ReturnType<typeof useComposerPopupOptions> | undefined;
 
 	render(
-		<FakeRoomProvider roomOverrides={room}>
-			<ComposerPopupProvider room={room}>
-				<PopupOptionsConsumer
-					onReady={(options) => {
-						popupOptions = options;
-					}}
-				/>
-			</ComposerPopupProvider>
-		</FakeRoomProvider>,
+		<ComposerPopupProvider room={room}>
+			<PopupOptionsConsumer
+				onReady={(options) => {
+					popupOptions = options;
+				}}
+			/>
+		</ComposerPopupProvider>,
 		{ wrapper: appRoot },
 	);
 
@@ -72,30 +56,30 @@ const renderProvider = async (permissions: string[] = []) => {
 
 describe('ComposerPopupProvider', () => {
 	it('does not show @all or @here in autocomplete when user does not have permissions', async () => {
-		const itemIds = await renderProvider();
+		const view = await renderProvider();
 
-		expect(itemIds).not.toContain('all');
-		expect(itemIds).not.toContain('here');
+		expect(view).not.toContain('all');
+		expect(view).not.toContain('here');
 	});
 
 	it('shows only @all when user has mention-all permission', async () => {
-		const itemIds = await renderProvider(['mention-all']);
+		const view = await renderProvider(['mention-all']);
 
-		expect(itemIds).toContain('all');
-		expect(itemIds).not.toContain('here');
+		expect(view).toContain('all');
+		expect(view).not.toContain('here');
 	});
 
 	it('shows only @here when user has mention-here permission', async () => {
-		const itemIds = await renderProvider(['mention-here']);
+		const view = await renderProvider(['mention-here']);
 
-		expect(itemIds).toContain('here');
-		expect(itemIds).not.toContain('all');
+		expect(view).toContain('here');
+		expect(view).not.toContain('all');
 	});
 
 	it('shows both @all and @here when user has both permissions', async () => {
-		const itemIds = await renderProvider(['mention-all', 'mention-here']);
+		const view = await renderProvider(['mention-all', 'mention-here']);
 
-		expect(itemIds).toContain('all');
-		expect(itemIds).toContain('here');
+		expect(view).toContain('all');
+		expect(view).toContain('here');
 	});
 });

@@ -3,7 +3,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -84,6 +84,8 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const queryClient = useQueryClient();
 	const uid = useUserId();
 	const call = useMethod('getSlashCommandPreviews');
+	const canMentionAll = useAtLeastOnePermission(['mention-all'], rid);
+	const canMentionHere = useAtLeastOnePermission(['mention-here'], rid);
 
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
@@ -93,9 +95,6 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				getItemsFromLocal: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
-
-					const canMentionAll = hasAtLeastOnePermission('mention-all', rid);
-					const canMentionHere = hasAtLeastOnePermission('mention-here', rid);
 
 					const roomMessageUsers = getLastRecentUsers(rid, uid!)
 						.filter((u) => {
@@ -391,6 +390,8 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 		].filter(Boolean);
 	}, [
 		call,
+		canMentionAll,
+		canMentionHere,
 		cannedResponseEnabled,
 		encrypted,
 		i18n,
