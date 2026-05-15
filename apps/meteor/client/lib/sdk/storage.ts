@@ -6,6 +6,7 @@
 export const STORAGE_KEYS = {
 	USER_ID: 'Meteor.userId',
 	LOGIN_TOKEN: 'Meteor.loginToken',
+	LOGIN_TOKEN_EXPIRES: 'Meteor.loginTokenExpires',
 	E2EE_PUBLIC_KEY: 'public_key',
 	E2EE_PRIVATE_KEY: 'private_key',
 	E2EE_RANDOM_PASSWORD: 'e2e.randomPassword',
