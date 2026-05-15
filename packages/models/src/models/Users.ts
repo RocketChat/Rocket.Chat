@@ -59,6 +59,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
 			{ key: { statusConnection: 1 }, sparse: true },
+			{ key: { statusExpiresAt: 1 }, sparse: true },
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
@@ -1096,25 +1097,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	updateStatus(_id: IUser['_id'], status: UserStatus) {
-		const update = {
-			$set: {
-				status,
-			},
-		};
+	findExpiredStatuses(limit: number) {
+		return this.find<Pick<IUser, '_id'>>(
+			{ statusExpiresAt: { $lt: new Date() } },
+			{ projection: { _id: 1 }, sort: { statusExpiresAt: 1 }, limit },
+		);
+	}
 
-		return this.updateOne({ _id }, update);
+	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[]) {
+		const $unset = clear?.length ? Object.fromEntries(clear.map((field) => [field, '' as const])) : undefined;
+
+		return this.findOneAndUpdate({ _id: userId }, { $set: values, ...($unset && { $unset }) }, { returnDocument: 'after' });
 	}
 
 	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
-		const update = {
-			$set: {
-				status,
-				statusDefault,
-			},
-		};
-
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, { $set: { status, statusDefault } });
 	}
 
 	updateStatusByAppId(appId: string, status: UserStatus) {

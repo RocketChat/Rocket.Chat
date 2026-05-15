@@ -2,10 +2,11 @@ import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
-import { processPresenceAndStatus } from './lib/processConnectionStatus';
+import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
 
 const MAX_CONNECTIONS = 200;
 
@@ -96,6 +97,26 @@ export class Presence extends ServiceClass implements IPresence {
 			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
 		} catch (e: unknown) {
 			// ignore
+		}
+
+		// TODO: Agenda default lockLifetime is 10 min. This job executes in ms and runs every 1 min.
+		// If an instance crashes mid-execution, expired statuses stay locked for up to 10 min.
+		// Reduce lockLifetime to 60s once @rocket.chat/agenda exposes the option in its typed API.
+		await cronJobs.add('presence-status-expiration', '* * * * *', () => this.processExpiredStatuses());
+	}
+
+	private async processExpiredStatuses(batchSize = 100): Promise<void> {
+		const expiredUsers = await Users.findExpiredStatuses(batchSize).toArray();
+
+		if (expiredUsers.length === 0) {
+			return;
+		}
+
+		const results = await Promise.allSettled(expiredUsers.map(({ _id }) => this.endActiveState(_id)));
+		const successful = results.filter((result) => result.status === 'fulfilled').length;
+
+		if (expiredUsers.length === batchSize && successful > 0) {
+			return this.processExpiredStatuses();
 		}
 	}
 
@@ -230,27 +251,47 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.map(({ _id }) => _id);
 	}
 
-	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
-		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
-
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'roles' | 'status'>>(uid, {
-			projection: { username: 1, roles: 1, status: 1 },
-		});
-
-		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-
-		const result = await Users.updateStatusById(uid, {
-			statusDefault,
-			status,
-			statusConnection,
-			statusText,
-		});
-
-		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user?.username, status, statusText, roles: user?.roles || [] }, user?.status);
+	/**
+	 * @deprecated Use setActiveState, endActiveState, or clearActiveState instead.
+	 */
+	async setStatus(userId: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
+		if (statusDefault === UserStatus.ONLINE && !statusText) {
+			return this.updateUserPresence(userId, { type: 'clearActive' });
 		}
 
-		return !!result.modifiedCount;
+		return this.updateUserPresence(userId, {
+			type: 'setActive',
+			newState: {
+				statusDefault,
+				statusSource: 'manual',
+				...(statusText != null && { statusText }),
+			},
+		});
+	}
+
+	/**
+	 * Applies a presence claim from a source (manual, external, internal).
+	 */
+	async setActiveState(
+		userId: string,
+		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+	): Promise<void> {
+		await this.updateUserPresence(userId, { type: 'setActive', newState });
+	}
+
+	/**
+	 * Ends the current active claim. Restores previous if valid, otherwise
+	 * falls back to system-managed.
+	 */
+	async endActiveState(userId: string): Promise<void> {
+		await this.updateUserPresence(userId, { type: 'endActive' });
+	}
+
+	/**
+	 * Removes all presence claims and resets to "Online" with no text.
+	 */
+	async clearActiveState(userId: string): Promise<void> {
+		await this.updateUserPresence(userId, { type: 'clearActive' });
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
@@ -261,34 +302,51 @@ export class Presence extends ServiceClass implements IPresence {
 		return !!result.modifiedCount;
 	}
 
-	async updateUserPresence(uid: string): Promise<void> {
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
+	private async updateUserPresence(uid: string, claimUpdate?: ClaimUpdate): Promise<boolean> {
+		const user = await Users.findOneById<
+			Pick<
+				IUser,
+				| '_id'
+				| 'username'
+				| 'roles'
+				| 'status'
+				| 'statusDefault'
+				| 'statusSource'
+				| 'statusText'
+				| 'statusExpiresAt'
+				| 'statusConnection'
+				| 'previousState'
+			>
+		>(uid, {
 			projection: {
 				username: 1,
-				statusDefault: 1,
-				statusText: 1,
 				roles: 1,
 				status: 1,
+				statusDefault: 1,
+				statusSource: 1,
+				statusText: 1,
+				statusExpiresAt: 1,
+				statusConnection: 1,
+				previousState: 1,
 			},
 		});
 		if (!user) {
-			return;
+			return false;
 		}
 
-		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
+		const userSessions = await UsersSessions.findOneById(uid);
+		const sessions = userSessions?.connections ?? [];
 
-		const { statusDefault } = user;
-
-		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-
-		const result = await Users.updateStatusById(uid, {
-			status,
-			statusConnection,
-		});
-
-		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles }, user.status);
+		const result = processPresence(user, sessions, claimUpdate);
+		if (Object.keys(result.values).length === 0) {
+			return false;
 		}
+
+		const updatedUser = await Users.updatePresenceAndStatus(uid, result.values, result.clear);
+		if (updatedUser) {
+			this.broadcast(updatedUser, user.status);
+		}
+		return !!updatedUser;
 	}
 
 	private broadcast(

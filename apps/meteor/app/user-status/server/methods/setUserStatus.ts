@@ -26,7 +26,17 @@ export const setUserStatusMethod = async (
 				method: 'setUserStatus',
 			});
 		}
-		await Presence.setStatus(user._id, statusType);
+
+		if (statusType === 'online' && !statusText) {
+			await Presence.clearActiveState(user._id);
+		} else {
+			await Presence.setActiveState(user._id, {
+				statusDefault: statusType,
+				statusSource: 'manual',
+				...(statusText != null && { statusText }),
+			});
+		}
+		return;
 	}
 
 	if (statusText || statusText === '') {

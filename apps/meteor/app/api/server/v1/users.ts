@@ -1,4 +1,4 @@
-import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -1998,47 +1998,36 @@ API.v1
 				return API.v1.forbidden();
 			}
 
-			const { _id, username, roles, name } = user;
-			let { statusText, status } = user;
-
-			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user, this.bodyParams.message, { emit: false });
-				statusText = this.bodyParams.message;
-			}
-
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
-				if (validStatus.includes(this.bodyParams.status)) {
-					status = this.bodyParams.status;
-
-					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-							method: 'users.setStatus',
-						});
-					}
-
-					await Users.updateOne(
-						{ _id: user._id },
-						{
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						},
-					);
-
-					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-				} else {
+				if (!validStatus.includes(this.bodyParams.status)) {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',
 					});
 				}
-			}
 
-			void api.broadcast('presence.status', {
-				user: { status, _id, username, statusText, roles, name },
-				previousStatus: user.status,
-			});
+				if (this.bodyParams.status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+					throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+						method: 'users.setStatus',
+					});
+				}
+
+				const { status } = this.bodyParams;
+
+				if (status === 'online' && !this.bodyParams.message) {
+					await Presence.clearActiveState(user._id);
+				} else {
+					await Presence.setActiveState(user._id, {
+						statusDefault: status,
+						statusSource: 'manual',
+						...(this.bodyParams.message != null && { statusText: this.bodyParams.message }),
+					});
+				}
+
+				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
+			} else if (this.bodyParams.message != null) {
+				await setStatusText(user, this.bodyParams.message);
+			}
 
 			return API.v1.success();
 		},
