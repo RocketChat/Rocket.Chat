@@ -64,6 +64,9 @@ export interface IMediaCall extends IRocketChatRecord {
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
 
+	/** The party whose line was diverted at the SIP level (from the Diversion header), signed with the session contract */
+	divertedBy?: MediaCallContact;
+
 	uids: IUser['_id'][];
 
 	/** The list of features that may be used in this call. Values are final once the call is accepted. */
