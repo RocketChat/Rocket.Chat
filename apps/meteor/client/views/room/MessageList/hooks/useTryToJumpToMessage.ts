@@ -71,19 +71,14 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 
 		setHighlightMessage(loadedMessage._id);
 
-		const clearHighlightMessageTimeout = setTimeout(() => {
+		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 
-		const setIsJumpingToMessageTimeout = setTimeout(() => {
+		setTimeout(() => {
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
 		}, 1000);
-
-		return () => {
-			clearTimeout(clearHighlightMessageTimeout);
-			clearTimeout(setIsJumpingToMessageTimeout);
-		};
 	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message]);
 };
 

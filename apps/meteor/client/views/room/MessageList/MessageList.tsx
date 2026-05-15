@@ -113,6 +113,11 @@ export const MessageList = function MessageList({
 	// Scroll to bottom
 	useEffect(() => {
 		if (isJumpingToMessage || messageJumpParam) {
+			if (!isRoomInitialized.current) {
+				// Jump to message will have to load messages, thus removing the need to initialize the room here
+				isRoomInitialized.current = true;
+				setShouldJumpToBottom(false);
+			}
 			return;
 		}
 
