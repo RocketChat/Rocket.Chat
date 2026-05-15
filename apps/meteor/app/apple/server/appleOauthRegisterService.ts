@@ -188,14 +188,7 @@ settings.watchMultiple(
 									info,
 								});
 							}
-
-							req.logIn(user, (loginErr) => {
-								if (loginErr) {
-									return next(loginErr);
-								}
-
-								next();
-							});
+							next();
 						},
 					) as import('express').RequestHandler
 				)(req, res, next);
@@ -254,11 +247,13 @@ settings.watchMultiple(
 
 			passport.authenticate('apple', {
 				scope: ['name', 'email'],
-				prompt: 'consent',
 			}),
 		);
 
-		oAuthRouter.route('/oauth/apple/callback').post(...callbackHandler);
+		oAuthRouter
+			.route('/oauth/apple/callback')
+			.post(...callbackHandler)
+			.get(...callbackHandler);
 
 		// Apple is different in that they POST back to the callback.
 		// Because of SameSite policies in browsers don't allow cookies to be included in external POST requests
