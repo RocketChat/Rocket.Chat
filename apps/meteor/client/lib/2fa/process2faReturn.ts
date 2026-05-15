@@ -1,6 +1,5 @@
 import { SHA256 } from '@rocket.chat/sha256';
 import { imperativeModal } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 import { lazy } from 'react';
 
 import type { LoginCallback } from './overrideLoginMethod';
@@ -159,7 +158,7 @@ export const invokeTwoFactorModal = async (
 								message: t('Two-factor_authentication_cancelled'),
 							});
 						});
-						reject(new Meteor.Error('totp-canceled'));
+						reject(new Error('totp-canceled'));
 					}
 				},
 			},

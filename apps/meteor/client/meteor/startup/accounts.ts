@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
@@ -57,6 +55,6 @@ getDdpSdk().account.onEmailVerificationLink(async (token: string) => {
 	} catch (error) {
 		await whenMainReady();
 		dispatchToastMessage({ type: 'error', message: error });
-		throw new Meteor.Error('verify-email', 'E-mail not verified');
+		throw new Error('verify-email: E-mail not verified', { cause: error });
 	}
 });
