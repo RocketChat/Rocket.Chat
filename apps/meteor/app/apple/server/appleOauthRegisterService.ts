@@ -121,7 +121,10 @@ settings.watchMultiple(
 				console.log('2nd callback url');
 				console.log('query -> ', req.query);
 				console.log('req in 2nd callback ->', req.session);
-				console.log('req cookies in 2nd callback -> ', req.headers.cookie);
+				console.log('CALLBACK HOST', req.hostname);
+				console.log('CALLBACK URL', req.originalUrl);
+				console.log('CALLBACK COOKIE', req.headers.cookie);
+				console.log('CALLBACK HEADERS', req.headers);
 				next();
 			},
 			passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
@@ -148,11 +151,15 @@ settings.watchMultiple(
 
 		oAuthRouter.get(
 			'/oauth/apple',
-			passport.authenticate('apple', { scope: ['name', 'email'], prompt: 'consent', failureRedirect: '/login' }),
 			(req: Request, _res: Response, next: NextFunction) => {
 				console.log('req in 1st callback ->', req.session);
+				console.log('LOGIN HOST', req.hostname);
+				console.log('LOGIN ORIGIN', req.get('origin'));
+				console.log('LOGIN URL', req.originalUrl);
+				console.log('LOGIN COOKIE', req.headers.cookie);
 				next();
 			},
+			passport.authenticate('apple', { scope: ['name', 'email'], prompt: 'consent', failureRedirect: '/login' }),
 		);
 
 		// oAuthRouter.route('/oauth/apple/callback').post(...callbackHandler);
@@ -163,6 +170,11 @@ settings.watchMultiple(
 		// Therefore we redirect the POST request to GET (with query parameters).
 		// https://github.com/ananay/passport-apple/issues/51#issuecomment-2312651378
 		oAuthRouter.post('/oauth/apple/callback', express.urlencoded({ extended: true }), (req, res) => {
+			console.log('POST CALLBACK');
+			console.log('CALLBACK HOST', req.hostname);
+			console.log('CALLBACK URL', req.originalUrl);
+			console.log('CALLBACK COOKIE', req.headers.cookie);
+			console.log('CALLBACK HEADERS', req.headers);
 			const { body } = req;
 			const sp = new URLSearchParams();
 			Object.entries(body).forEach(([key, value]) => sp.set(key, String(value)));
