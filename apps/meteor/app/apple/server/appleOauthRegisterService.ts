@@ -64,7 +64,7 @@ settings.watchMultiple(
 					callbackURL,
 					scope: ['name', 'email'],
 					passReqToCallback: false,
-					state: true,
+					state: false,
 				},
 				async (accessToken: string, refreshToken: string, idToken: string, profile: Profile, done) => {
 					console.log('profile', profile);
