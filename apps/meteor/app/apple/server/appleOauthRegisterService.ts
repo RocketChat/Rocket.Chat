@@ -164,36 +164,7 @@ settings.watchMultiple(
 
 				next();
 			},
-
-			(req: Request, res: Response, next: NextFunction) => {
-				(
-					passport.authenticate(
-						'apple',
-						{
-							failWithError: true,
-							session: true,
-						},
-						(err: any, user: any, info: any) => {
-							console.log('AUTH ERR', err);
-							console.log('AUTH USER', user);
-							console.log('AUTH INFO', info);
-
-							if (err) {
-								return next(err);
-							}
-
-							if (!user) {
-								return res.status(500).json({
-									noUser: true,
-									info,
-								});
-							}
-							next();
-						},
-					) as import('express').RequestHandler
-				)(req, res, next);
-			},
-
+			passport.authenticate('apple', { failWithError: true, session: true, keepSessionInfo: true }),
 			async (req: Request, res: Response) => {
 				console.log('SUCCESS USER', req.user);
 
@@ -210,17 +181,17 @@ settings.watchMultiple(
 				res.redirect(`/home?resumeToken=${stampedToken.token}`);
 			},
 
-			(err: any, _req: Request, res: Response, _next: NextFunction) => {
-				console.error('FINAL ERROR', err);
+			// (err: any, _req: Request, res: Response, _next: NextFunction) => {
+			// 	console.error('FINAL ERROR', err);
 
-				res.status(500).json({
-					message: err?.message,
-					name: err?.name,
-					code: err?.code,
-					stack: err?.stack,
-					info: err,
-				});
-			},
+			// 	res.status(500).json({
+			// 		message: err?.message,
+			// 		name: err?.name,
+			// 		code: err?.code,
+			// 		stack: err?.stack,
+			// 		info: err,
+			// 	});
+			// },
 		];
 
 		oAuthRouter.get(
