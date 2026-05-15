@@ -374,6 +374,64 @@ describe('AutoTranslate', () => {
 					})
 					.end(done);
 			});
+
+			describe('room access check', () => {
+				let userA: TestUser<IUser>;
+				let userB: TestUser<IUser>;
+				let credA: Credentials;
+				let credB: Credentials;
+				let privateRoom: IRoom;
+				let privateMessage: IMessage;
+
+				before(async () => {
+					await updateSetting('AutoTranslate_Enabled', true);
+
+					userA = await createUser();
+					userB = await createUser();
+
+					credA = await login(userA.username, password);
+					credB = await login(userB.username, password);
+
+					privateRoom = (
+						await createRoom({
+							type: 'p',
+							name: `test-autotranslate-access-${Date.now()}`,
+							credentials: credA,
+						})
+					).body.group;
+
+					const msgRes = await sendSimpleMessage({
+						roomId: privateRoom._id,
+						text: 'Isso é um teste',
+						userCredentials: credA,
+					});
+					privateMessage = msgRes.body.message;
+				});
+
+				after(async () => {
+					await Promise.all([
+						updateSetting('AutoTranslate_Enabled', false),
+						deleteUser(userA),
+						deleteUser(userB),
+						deleteRoom({ type: 'p', roomId: privateRoom._id }),
+					]);
+				});
+
+				it('should return 403 forbidden when the user is not a member of the room', (done) => {
+					void request
+						.post(api('autotranslate.translateMessage'))
+						.set(credB)
+						.send({
+							messageId: privateMessage._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
 		});
 
 		describe('[autoTranslate.translateMessage method]', () => {
