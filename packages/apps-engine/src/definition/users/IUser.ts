@@ -15,6 +15,9 @@ export interface IUser {
 	status: string;
 	statusConnection: UserStatusConnection;
 	statusText?: string;
+	statusDefault?: string;
+	statusSource?: 'internal' | 'external' | 'manual';
+	statusExpiresAt?: Date;
 	utcOffset: number;
 	createdAt: Date;
 	updatedAt: Date;
