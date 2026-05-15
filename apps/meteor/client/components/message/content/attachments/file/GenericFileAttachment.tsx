@@ -34,9 +34,13 @@ const GenericFileAttachment = ({
 	const { t } = useTranslation();
 
 	const blobUrlRef = useRef<string | undefined>(undefined);
+	const abortControllerRef = useRef<AbortController | null>(null);
 
 	useEffect(() => {
 		return () => {
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
 			if (blobUrlRef.current) {
 				URL.revokeObjectURL(blobUrlRef.current);
 				blobUrlRef.current = undefined;
@@ -60,14 +64,33 @@ const GenericFileAttachment = ({
 					forAttachmentDownload(uid, link);
 					return;
 				}
+
 				if (blobUrlRef.current) {
 					URL.revokeObjectURL(blobUrlRef.current);
+					blobUrlRef.current = undefined;
 				}
-				const response = await fetch(getURL(link));
-				const blob = await response.blob();
-				const blobUrl = URL.createObjectURL(blob);
-				blobUrlRef.current = blobUrl;
-				openDocumentViewer(blobUrl, format, title ?? '');
+
+				if (abortControllerRef.current) {
+					abortControllerRef.current.abort();
+				}
+				abortControllerRef.current = new AbortController();
+
+				try {
+					const response = await fetch(getURL(link), {
+						signal: abortControllerRef.current.signal,
+					});
+					const blob = await response.blob();
+					if (abortControllerRef.current.signal.aborted) {
+						return;
+					}
+					const blobUrl = URL.createObjectURL(blob);
+					blobUrlRef.current = blobUrl;
+					openDocumentViewer(blobUrl, format, title ?? '');
+				} catch (error: any) {
+					if (error.name !== 'AbortError') {
+						console.error('Error fetching encrypted PDF', error);
+					}
+				}
 				return;
 			}
 
