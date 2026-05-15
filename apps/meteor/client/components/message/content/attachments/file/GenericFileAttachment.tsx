@@ -79,6 +79,9 @@ const GenericFileAttachment = ({
 					const response = await fetch(getURL(link), {
 						signal: abortControllerRef.current.signal,
 					});
+					if (!response.ok) {
+						throw new Error(`Failed to fetch encrypted PDF: ${response.status}`);
+					}
 					const blob = await response.blob();
 					if (abortControllerRef.current.signal.aborted) {
 						return;
@@ -88,7 +91,7 @@ const GenericFileAttachment = ({
 					openDocumentViewer(blobUrl, format, title ?? '');
 				} catch (error: any) {
 					if (error.name !== 'AbortError') {
-						console.error('Error fetching encrypted PDF', error);
+						console.error('Error opening preview of encrypted PDF', error);
 					}
 				}
 				return;
