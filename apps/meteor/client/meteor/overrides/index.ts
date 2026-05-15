@@ -1,3 +1,4 @@
+import './absoluteUrl';
 import './ddpOverREST';
 import './ddpSdkCollectionBridge';
 import './subscribeViaSDK';
