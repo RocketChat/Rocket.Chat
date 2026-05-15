@@ -9766,6 +9766,7 @@ __metadata:
     "@types/passport-facebook": "npm:^3.0.4"
     "@types/passport-github2": "npm:^1.2.9"
     "@types/passport-google-oauth20": "npm:^2"
+    "@types/passport-oauth2": "npm:^1"
     "@types/passport-twitter": "npm:^1"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
@@ -9912,6 +9913,7 @@ __metadata:
     passport-facebook2: "npm:^1.0.3"
     passport-github2: "npm:^0.1.12"
     passport-google-oauth20: "npm:^2.0.0"
+    passport-oauth2: "npm:^1.8.0"
     passport-twitter: "npm:^1.0.4"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
@@ -14691,7 +14693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-oauth2@npm:*":
+"@types/passport-oauth2@npm:*, @types/passport-oauth2@npm:^1":
   version: 1.8.0
   resolution: "@types/passport-oauth2@npm:1.8.0"
   dependencies:
@@ -29979,7 +29981,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.x.x":
+"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.8.0":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
   dependencies:

@@ -41,7 +41,7 @@ declare module 'meteor/accounts-base' {
 			serviceName: string,
 			serviceData: Record<string, unknown>,
 			options: Record<string, unknown>,
-		): Record<string, unknown>;
+		): Promise<Record<string, unknown> | undefined>;
 
 		function _clearAllLoginTokens(userId: string | null): void;
 
