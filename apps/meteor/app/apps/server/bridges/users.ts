@@ -190,7 +190,7 @@ export class AppUserBridge extends UserBridge {
 			statusDefault: state.statusDefault as UserStatus,
 			statusText: state.statusText,
 			statusSource: state.statusSource as PresenceSource,
-			statusExpiresAt: state.statusExpiresAt,
+			...(state.statusExpiresAt && { statusExpiresAt: state.statusExpiresAt }),
 		});
 	}
 
