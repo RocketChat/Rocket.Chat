@@ -16,7 +16,6 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
@@ -142,18 +141,24 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				key: string | ObjectId,
 				defaultValue?: T,
 			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined] => {
+				const effectiveKey = String(key);
+
 				const subscribe = (onStoreChange: () => void): (() => void) => {
 					const unsubUsers = Users.use.subscribe(onStoreChange);
-					// getUserPreference falls back to settings.watch(`Accounts_Default_User_Preferences_${key}`)
-					// when the user record has no override. Subscribe to that specific
-					// setting key so admin-side default changes still propagate.
-					const unsubSettings = settings.observe(`Accounts_Default_User_Preferences_${String(key)}`, onStoreChange);
+					const unsubSettings = settings.observe(`Accounts_Default_User_Preferences_${effectiveKey}`, onStoreChange);
 					return () => {
 						unsubUsers();
 						unsubSettings();
 					};
 				};
-				const getSnapshot = (): T | undefined => getUserPreference(userId, String(key), defaultValue);
+
+				const getSnapshot = (): T | undefined => {
+					return (
+						(user?.settings?.preferences?.[effectiveKey] as T | undefined) ??
+						defaultValue ??
+						settings.peek(`Accounts_Default_User_Preferences_${effectiveKey}`)
+					);
+				};
 				return [subscribe, getSnapshot];
 			},
 			querySubscription,
