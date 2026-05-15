@@ -79,6 +79,27 @@ export const link = (src: string, label?: Markup[]): Link => ({
 let cachedAutoLinkDomains: string[] | undefined | null = null;
 let cachedAutoLinkOptions: { detectIp: boolean; allowPrivateDomains: boolean; validHosts: string[] };
 
+const TLD_CACHE_LIMIT = 256;
+const tldLinkCache = new Map<string, { isIcann: boolean; isIp: boolean; isPrivate: boolean; domain: string | null }>();
+const tldEmailCache = new Map<string, { isIcann: boolean; isIp: boolean; isPrivate: boolean }>();
+
+const memoTldLink = (src: string, opts: typeof cachedAutoLinkOptions) => {
+	const cached = tldLinkCache.get(src);
+	if (cached !== undefined) {
+		tldLinkCache.delete(src);
+		tldLinkCache.set(src, cached);
+		return cached;
+	}
+	const { isIcann, isIp, isPrivate, domain } = tldParse(src, opts);
+	const entry = { isIcann: !!isIcann, isIp: !!isIp, isPrivate: !!isPrivate, domain: domain ?? null };
+	if (tldLinkCache.size >= TLD_CACHE_LIMIT) {
+		const firstKey = tldLinkCache.keys().next().value;
+		if (firstKey !== undefined) tldLinkCache.delete(firstKey);
+	}
+	tldLinkCache.set(src, entry);
+	return entry;
+};
+
 export const autoLink = (src: string, customDomains?: string[]) => {
 	if (cachedAutoLinkDomains !== customDomains) {
 		cachedAutoLinkDomains = customDomains;
@@ -87,9 +108,10 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 			allowPrivateDomains: true,
 			validHosts: ['localhost', ...(customDomains ?? [])],
 		};
+		tldLinkCache.clear();
 	}
 	const { validHosts } = cachedAutoLinkOptions;
-	const { isIcann, isIp, isPrivate, domain } = tldParse(src, cachedAutoLinkOptions);
+	const { isIcann, isIp, isPrivate, domain } = memoTldLink(src, cachedAutoLinkOptions);
 
 	if (!(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))) {
 		return plain(src);
@@ -102,10 +124,27 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 
 const autoEmailTldOptions = { detectIp: false, allowPrivateDomains: true } as const;
 
+const memoTldEmail = (href: string) => {
+	const cached = tldEmailCache.get(href);
+	if (cached !== undefined) {
+		tldEmailCache.delete(href);
+		tldEmailCache.set(href, cached);
+		return cached;
+	}
+	const { isIcann, isIp, isPrivate } = tldParse(href, autoEmailTldOptions);
+	const entry = { isIcann: !!isIcann, isIp: !!isIp, isPrivate: !!isPrivate };
+	if (tldEmailCache.size >= TLD_CACHE_LIMIT) {
+		const firstKey = tldEmailCache.keys().next().value;
+		if (firstKey !== undefined) tldEmailCache.delete(firstKey);
+	}
+	tldEmailCache.set(href, entry);
+	return entry;
+};
+
 export const autoEmail = (src: string) => {
 	const href = `mailto:${src}`;
 
-	const { isIcann, isIp, isPrivate } = tldParse(href, autoEmailTldOptions);
+	const { isIcann, isIp, isPrivate } = memoTldEmail(href);
 
 	if (!(isIcann || isIp || isPrivate)) {
 		return plain(src);
