@@ -116,47 +116,127 @@ settings.watchMultiple(
 			),
 		);
 
+		// const callbackHandler = [
+		// 	(req: Request, _res: Response, next: NextFunction) => {
+		// 		console.log('2nd callback url');
+		// 		console.log('query -> ', req.query);
+		// 		console.log('req in 2nd callback ->', req.session);
+		// 		console.log('CALLBACK HOST', req.hostname);
+		// 		console.log('CALLBACK URL', req.originalUrl);
+		// 		console.log('CALLBACK COOKIE', req.headers.cookie);
+		// 		console.log('CALLBACK HEADERS', req.headers);
+		// 		next();
+		// 	},
+		// 	passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
+		// 	async (req: Request, res: Response) => {
+		// 		console.log('req -> user', req.user);
+		// 		const oAuthUser = req.user as IUser;
+
+		// 		if (!oAuthUser) {
+		// 			return res.redirect('/noOauthUser');
+		// 		}
+
+		// 		const stampedToken = Accounts._generateStampedLoginToken();
+		// 		await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
+
+		// 		res.redirect(`/home?resumeToken=${stampedToken.token}`);
+
+		// 		req.session.destroy((err) => {
+		// 			if (err) {
+		// 				console.error('Error destroying session', err);
+		// 			}
+		// 		});
+		// 	},
+		// ];
+
 		const callbackHandler = [
+			express.urlencoded({ extended: true }),
 			(req: Request, _res: Response, next: NextFunction) => {
-				console.log('2nd callback url');
-				console.log('query -> ', req.query);
-				console.log('req in 2nd callback ->', req.session);
-				console.log('CALLBACK HOST', req.hostname);
-				console.log('CALLBACK URL', req.originalUrl);
-				console.log('CALLBACK COOKIE', req.headers.cookie);
-				console.log('CALLBACK HEADERS', req.headers);
+				console.log('CALLBACK HIT');
+				console.log('METHOD', req.method);
+
+				console.log('BODY', req.body);
+				console.log('QUERY', req.query);
+
+				console.log('SESSION', req.session);
+
+				console.log('COOKIE', req.headers.cookie);
+
 				next();
 			},
-			passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
+
+			(req: Request, res: Response, next: NextFunction) => {
+				(
+					passport.authenticate(
+						'apple',
+						{
+							failWithError: true,
+							session: true,
+						},
+						(err: any, user: any, info: any) => {
+							console.log('AUTH ERR', err);
+							console.log('AUTH USER', user);
+							console.log('AUTH INFO', info);
+
+							if (err) {
+								return next(err);
+							}
+
+							if (!user) {
+								return res.status(500).json({
+									noUser: true,
+									info,
+								});
+							}
+
+							req.logIn(user, (loginErr) => {
+								if (loginErr) {
+									return next(loginErr);
+								}
+
+								next();
+							});
+						},
+					) as import('express').RequestHandler
+				)(req, res, next);
+			},
+
 			async (req: Request, res: Response) => {
-				console.log('req -> user', req.user);
+				console.log('SUCCESS USER', req.user);
+
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
-					return res.redirect('/noOauthUser');
+					return res.status(500).send('No user');
 				}
 
 				const stampedToken = Accounts._generateStampedLoginToken();
+
 				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
 
 				res.redirect(`/home?resumeToken=${stampedToken.token}`);
+			},
 
-				req.session.destroy((err) => {
-					if (err) {
-						console.error('Error destroying session', err);
-					}
+			(err: any, _req: Request, res: Response, _next: NextFunction) => {
+				console.error('FINAL ERROR', err);
+
+				res.status(500).json({
+					message: err?.message,
+					name: err?.name,
+					code: err?.code,
+					stack: err?.stack,
+					info: err,
 				});
 			},
 		];
 
 		oAuthRouter.get(
 			'/oauth/apple',
+
 			(req: Request, _res: Response, next: NextFunction) => {
-				console.log('req in 1st callback ->', req.session);
-				console.log('LOGIN HOST', req.hostname);
-				console.log('LOGIN ORIGIN', req.get('origin'));
-				console.log('LOGIN URL', req.originalUrl);
-				console.log('LOGIN COOKIE', req.headers.cookie);
+				console.log('LOGIN START');
+
+				console.log('SESSION BEFORE', req.session);
 
 				//@ts-ignore
 				req.session.appleOAuthInit = true;
@@ -166,32 +246,38 @@ settings.watchMultiple(
 						return next(err);
 					}
 
+					console.log('SESSION SAVED');
+
 					next();
 				});
 			},
-			passport.authenticate('apple', { scope: ['name', 'email'], prompt: 'consent', failureRedirect: '/login' }),
+
+			passport.authenticate('apple', {
+				scope: ['name', 'email'],
+				prompt: 'consent',
+			}),
 		);
 
-		// oAuthRouter.route('/oauth/apple/callback').post(...callbackHandler);
+		oAuthRouter.route('/oauth/apple/callback').post(...callbackHandler);
 
 		// Apple is different in that they POST back to the callback.
 		// Because of SameSite policies in browsers don't allow cookies to be included in external POST requests
 		// we wouldn't be able to access our express session here, and thereby not authenticate the session.
 		// Therefore we redirect the POST request to GET (with query parameters).
 		// https://github.com/ananay/passport-apple/issues/51#issuecomment-2312651378
-		oAuthRouter.post('/oauth/apple/callback', express.urlencoded({ extended: true }), (req, res) => {
-			console.log('POST CALLBACK');
-			console.log('CALLBACK HOST', req.hostname);
-			console.log('CALLBACK SESSION', req.session);
-			console.log('CALLBACK URL', req.originalUrl);
-			console.log('CALLBACK COOKIE', req.headers.cookie);
-			console.log('CALLBACK HEADERS', req.headers);
-			const { body } = req;
-			const sp = new URLSearchParams();
-			Object.entries(body).forEach(([key, value]) => sp.set(key, String(value)));
-			console.log('apple callback search params - ', sp.toString());
-			res.redirect(`/oauth/apple/callback?${sp.toString()}`);
-		});
+		// oAuthRouter.post('/oauth/apple/callback', express.urlencoded({ extended: true }), (req, res) => {
+		// 	console.log('POST CALLBACK');
+		// 	console.log('CALLBACK HOST', req.hostname);
+		// 	console.log('CALLBACK SESSION', req.session);
+		// 	console.log('CALLBACK URL', req.originalUrl);
+		// 	console.log('CALLBACK COOKIE', req.headers.cookie);
+		// 	console.log('CALLBACK HEADERS', req.headers);
+		// 	const { body } = req;
+		// 	const sp = new URLSearchParams();
+		// 	Object.entries(body).forEach(([key, value]) => sp.set(key, String(value)));
+		// 	console.log('apple callback search params - ', sp.toString());
+		// 	res.redirect(`/oauth/apple/callback?${sp.toString()}`);
+		// });
 
 		// Here we handle the GET request after the redirect from the POST callback above
 		// oAuthRouter.get(
@@ -219,6 +305,6 @@ settings.watchMultiple(
 		// 		res.redirect('/login');
 		// 	},
 		// );
-		oAuthRouter.get('/oauth/apple/callback', ...callbackHandler);
+		// oAuthRouter.get('/oauth/apple/callback', ...callbackHandler);
 	},
 );
