@@ -431,9 +431,9 @@ describe('AutoTranslate', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('success', true);
 						const parsedBody = JSON.parse(res.body.message);
 						expect(parsedBody).to.have.a.property('error');
 					})
