@@ -37,16 +37,21 @@ const GenericFileAttachment = ({
 			return;
 		}
 
+		const isEncrypted = link.includes('/file-decrypt/');
+
 		if (openDocumentViewer && format === 'PDF') {
 			event.preventDefault();
 
 			const url = new URL(getURL(link), window.location.origin);
 			url.searchParams.set('contentDisposition', 'inline');
-			openDocumentViewer(url.toString(), format, '');
+			openDocumentViewer(url.toString(), format, {
+				filename: title ?? 'document.pdf',
+				isEncrypted,
+			});
 			return;
 		}
 
-		if (link.includes('/file-decrypt/')) {
+		if (isEncrypted) {
 			event.preventDefault();
 
 			registerDownloadForUid(uid, t, title);
