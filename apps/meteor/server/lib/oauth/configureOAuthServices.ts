@@ -22,6 +22,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				{
 					clientID: config.clientId,
 					clientSecret: config.clientSecret,
+					consumerKey: config.clientId,
+					consumerSecret: config.clientSecret,
 					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
 					state: true,
 					pkce: true,
