@@ -1,9 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
 
+import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
 
-type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
+type LoginError = MeteorErrorLike;
 
 export type LoginCallback = (error: LoginError | undefined, result?: unknown) => void;
 
