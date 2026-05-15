@@ -157,7 +157,17 @@ settings.watchMultiple(
 				console.log('LOGIN ORIGIN', req.get('origin'));
 				console.log('LOGIN URL', req.originalUrl);
 				console.log('LOGIN COOKIE', req.headers.cookie);
-				next();
+
+				//@ts-ignore
+				req.session.appleOAuthInit = true;
+
+				req.session.save((err) => {
+					if (err) {
+						return next(err);
+					}
+
+					next();
+				});
 			},
 			passport.authenticate('apple', { scope: ['name', 'email'], prompt: 'consent', failureRedirect: '/login' }),
 		);
@@ -172,6 +182,7 @@ settings.watchMultiple(
 		oAuthRouter.post('/oauth/apple/callback', express.urlencoded({ extended: true }), (req, res) => {
 			console.log('POST CALLBACK');
 			console.log('CALLBACK HOST', req.hostname);
+			console.log('CALLBACK SESSION', req.session);
 			console.log('CALLBACK URL', req.originalUrl);
 			console.log('CALLBACK COOKIE', req.headers.cookie);
 			console.log('CALLBACK HEADERS', req.headers);
