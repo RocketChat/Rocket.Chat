@@ -258,9 +258,9 @@ export class AppsRestApi {
 
 					if (this.bodyParams.url) {
 						try {
-							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							const response = await fetch(this.bodyParams.url, {
-								ignoreSsrfValidation: true,
+								ignoreSsrfValidation: false,
+								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 
 							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -825,9 +825,9 @@ export class AppsRestApi {
 					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
-						// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 						const response = await fetch(this.bodyParams.url, {
-							ignoreSsrfValidation: true,
+							ignoreSsrfValidation: false,
+							allowList: settings.get<string>('SSRF_Allowlist'),
 						});
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
