@@ -4,13 +4,14 @@ export type Connection = any;
 
 export interface IPublication {
 	connection: Connection;
+	_isDeactivated(): this is IPublication & { _session: null };
 	_session: {
 		sendAdded(publicationName: string, id: string, fields: Record<string, any>): void;
 		userId: string | undefined;
 		socket: {
 			send: (payload: string) => void;
 		};
-	};
+	} | null;
 	client: {
 		meteorClient: boolean;
 		ws: any;
@@ -82,7 +83,7 @@ export interface IStreamer<N extends StreamNames> {
 
 	on<K extends StreamKeys<N>>(event: K, fn: (...data: any[]) => void): void;
 
-	on(event: '_afterPublish', fn: (streamer: this, ...data: any[]) => void): void;
+	on(event: '_afterPublish', fn: (streamer: this, publication: IPublication, eventName: string, ...data: any[]) => void): void;
 
 	removeSubscription(subscription: DDPSubscription, eventName: string): void;
 

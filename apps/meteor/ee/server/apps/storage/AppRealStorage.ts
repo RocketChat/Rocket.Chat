@@ -1,9 +1,9 @@
+import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
+import { AppMetadataStorage } from '@rocket.chat/apps/dist/server/storage/AppMetadataStorage';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 import type { UpdateFilter } from 'mongodb';

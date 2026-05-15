@@ -23,4 +23,3 @@ import '../app/slashcommands-unarchiveroom/client';
 import '../app/wordpress/client';
 import '../app/utils/client';
 import '../app/ui-utils/client';
-import '../app/reactions/client';

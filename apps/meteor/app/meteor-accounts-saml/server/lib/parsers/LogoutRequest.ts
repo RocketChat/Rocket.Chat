@@ -1,8 +1,10 @@
 import xmldom from '@xmldom/xmldom';
 
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { SAMLRedirectEnvelope } from '../../definition/SAMLEnvelope';
 import type { ILogoutRequestValidateCallback } from '../../definition/callbacks';
 import { SAMLUtils } from '../Utils';
+import { validateRedirectSignature } from '../signature/validateRedirectSignature';
 
 export class LogoutRequestParser {
 	serviceProviderOptions: IServiceProviderOptions;
@@ -11,8 +13,15 @@ export class LogoutRequestParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	public async validate(xmlString: string, callback: ILogoutRequestValidateCallback): Promise<void> {
+	public async validate(envelope: SAMLRedirectEnvelope<'SAMLRequest'>, callback: ILogoutRequestValidateCallback): Promise<void> {
+		const { decodedDocument: xmlString } = envelope;
+
 		SAMLUtils.log({ msg: 'Validating SAML Logout Request', xmlString });
+
+		if (!this.verifySignature(envelope)) {
+			SAMLUtils.log({ msg: 'Failed to verify signature from Logout Request' });
+			return callback('Signature validation failed');
+		}
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
@@ -45,5 +54,13 @@ export class LogoutRequestParser {
 
 			return callback(err instanceof Error ? err : String(err), null);
 		}
+	}
+
+	private verifySignature(envelope: SAMLRedirectEnvelope<'SAMLRequest'>): boolean {
+		if (!this.serviceProviderOptions.validateLogoutRequestSignature) {
+			return true;
+		}
+
+		return validateRedirectSignature(envelope, this.serviceProviderOptions.cert);
 	}
 }

@@ -225,14 +225,8 @@ export function buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IA
 	return conditions;
 }
 
-export async function getAbacRoom(
-	rid: string,
-): Promise<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>> {
-	const room = await Rooms.findOneByIdAndType<
-		Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
-	>(rid, 'p', {
-		projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-	});
+export async function getAbacRoom(rid: string): Promise<IRoom> {
+	const room = await Rooms.findOneByIdAndType(rid, 'p');
 	if (!room) {
 		throw new AbacRoomNotFoundError();
 	}

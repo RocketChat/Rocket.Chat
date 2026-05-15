@@ -40,7 +40,7 @@ declare module '../DDPSDK' {
 }
 
 export class LivechatClientImpl extends DDPSDK implements LivechatStream, LivechatEndpoints {
-	private token?: string;
+	public token?: string;
 
 	public readonly credentials: { token?: string } = { token: this.token };
 

@@ -65,7 +65,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
-	const customFieldEntries = useValidCustomFields(livechatData);
+	const customFieldEntries = useValidCustomFields(livechatData, 'room');
 
 	const onEditClick = useEffectEvent(() => {
 		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;

@@ -96,6 +96,11 @@ export class HomeChannel {
 		return this.page.goto('/home');
 	}
 
+	async gotoChannel(name: string) {
+		await this.page.goto(`/channel/${name}`);
+		await this.content.waitForChannel();
+	}
+
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}

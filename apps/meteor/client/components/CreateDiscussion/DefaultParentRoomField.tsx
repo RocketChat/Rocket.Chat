@@ -1,4 +1,5 @@
-import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
+import { Skeleton, Callout } from '@rocket.chat/fuselage';
+import { TextInput } from '@rocket.chat/fuselage-forms';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentPropsWithoutRef } from 'react';
