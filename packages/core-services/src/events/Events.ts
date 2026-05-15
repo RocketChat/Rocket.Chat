@@ -158,7 +158,7 @@ export type EventSignatures = {
 		};
 	}): void;
 	'presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
 	'watch.messages'(data: { message: IMessage }): void;

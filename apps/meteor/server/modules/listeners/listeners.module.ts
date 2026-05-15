@@ -157,7 +157,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('presence.status', ({ user }) => {
-			const { _id, username, name, status, statusText, roles } = user;
+			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
 				return;
 			}
@@ -172,16 +172,29 @@ export class ListenersModule {
 				diff: {
 					status,
 					...(statusText && { statusText }),
+					...(statusSource && { statusSource }),
+					...(statusExpiresAt && { statusExpiresAt }),
 				},
 				unset: {
 					...(!statusText && { statusText: 1 }),
+					...(!statusSource && { statusSource: 1 }),
+					...(!statusExpiresAt && { statusExpiresAt: 1 }),
 				},
 			});
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+			notifications.notifyLoggedInThisInstance('user-status', [
+				_id,
+				username,
+				STATUS_MAP[status],
+				statusText,
+				name,
+				roles,
+				statusSource,
+				statusExpiresAt,
+			]);
 
 			if (_id) {
-				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
+				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);
 			}
 		});
 

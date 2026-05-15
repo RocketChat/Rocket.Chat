@@ -350,7 +350,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private broadcast(
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>,
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles'>,
 		previousStatus: UserStatus | undefined,
 	): void {
 		if (!this.broadcastEnabled) {
