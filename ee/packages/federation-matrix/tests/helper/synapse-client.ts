@@ -3,6 +3,7 @@
  * This file provides validated federation configuration for federation tests.
  */
 
+import { createHmac } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -738,5 +739,111 @@ export class SynapseClient {
 			await this.matrixClient.logout(true);
 			this._matrixClient = null;
 		}
+	}
+
+	/**
+	 * Registers a new user on Synapse using the shared-secret registration Admin API.
+	 *
+	 * @param baseUrl - The Synapse homeserver URL
+	 * @param options - Registration options
+	 * @returns The registered user's access token and user ID
+	 */
+	static async registerUser(
+		baseUrl: string,
+		options: { username: string; password: string; displayname?: string; admin?: boolean; sharedSecret: string },
+	): Promise<{ accessToken: string; userId: string }> {
+		const nonceResponse = await fetch(`${baseUrl}/_synapse/admin/v1/register`, { method: 'GET' });
+		if (!nonceResponse.ok) {
+			throw new Error(`Failed to get registration nonce: ${nonceResponse.status} ${nonceResponse.statusText}`);
+		}
+		const { nonce } = (await nonceResponse.json()) as { nonce: string };
+
+		const adminFlag = options.admin ? 'admin' : 'notadmin';
+		const mac = createHmac('sha1', options.sharedSecret)
+			.update(`${nonce}\0${options.username}\0${options.password}\0${adminFlag}`)
+			.digest('hex');
+
+		const registerResponse = await fetch(`${baseUrl}/_synapse/admin/v1/register`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				nonce,
+				username: options.username,
+				password: options.password,
+				mac,
+				admin: options.admin ?? false,
+				displayname: options.displayname ?? options.username,
+			}),
+		});
+
+		if (!registerResponse.ok) {
+			const errorBody = await registerResponse.text();
+			throw new Error(`Failed to register user ${options.username}: ${registerResponse.status} ${errorBody}`);
+		}
+
+		const result = (await registerResponse.json()) as { access_token: string; user_id: string };
+		return { accessToken: result.access_token, userId: result.user_id };
+	}
+
+	/**
+	 * Deactivates and erases a user on Synapse via the Admin API.
+	 * Failures are logged but do not throw so that test cleanup is not interrupted.
+	 *
+	 * @param baseUrl - The Synapse homeserver URL
+	 * @param userId - The full Matrix user ID (e.g. @user:hs1)
+	 * @param adminAccessToken - An access token from a Synapse admin user
+	 */
+	static async deactivateUser(baseUrl: string, userId: string, adminAccessToken: string): Promise<void> {
+		try {
+			const response = await fetch(`${baseUrl}/_synapse/admin/v1/deactivate/${encodeURIComponent(userId)}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${adminAccessToken}`,
+				},
+				body: JSON.stringify({ erase: true }),
+			});
+
+			if (!response.ok) {
+				console.warn(`Warning: Failed to deactivate user ${userId}: ${response.status} ${response.statusText}`);
+			}
+		} catch (error) {
+			console.warn(`Warning: Error deactivating user ${userId}:`, error);
+		}
+	}
+
+	/**
+	 * Creates a new Synapse user with a unique username, registers it on the homeserver,
+	 * and returns an initialized SynapseClient along with the user's credentials.
+	 *
+	 * @param baseUrl - The Synapse homeserver URL
+	 * @param domain - The Synapse homeserver domain (e.g. 'hs1')
+	 * @param options - Options including optional prefix and the shared secret
+	 * @returns An object with the initialized client, username, password, and matrixUserId
+	 */
+	static async createAndInitializeUser(
+		baseUrl: string,
+		domain: string,
+		options: { prefix?: string; sharedSecret: string; admin?: boolean },
+	): Promise<{ client: SynapseClient; username: string; password: string; matrixUserId: string }> {
+		const username = `${options.prefix || 'synapse-user'}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+		const password = 'testpass123';
+		const matrixUserId = `@${username}:${domain}`;
+
+		await SynapseClient.registerUser(baseUrl, {
+			username,
+			password,
+			admin: options.admin,
+			sharedSecret: options.sharedSecret,
+		});
+
+		const client = new SynapseClient(baseUrl, username, password);
+		await client.initialize();
+
+		// Explicitly set the Matrix profile display name so that federated servers
+		// see a human-friendly name rather than the full matrix user ID.
+		await client.matrixClient.setDisplayName(username);
+
+		return { client, username, password, matrixUserId };
 	}
 }

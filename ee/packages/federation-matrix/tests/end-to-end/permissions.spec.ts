@@ -14,6 +14,8 @@ import { SynapseClient } from '../helper/synapse-client';
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1User1RequestConfig: IRequestConfig;
 	let hs1AdminApp: SynapseClient;
+	let hs1PrimaryApp: SynapseClient;
+	let hs1PrimaryMatrixUserId: string;
 
 	beforeAll(async () => {
 		// Create admin request config for RC1
@@ -33,6 +35,15 @@ import { SynapseClient } from '../helper/synapse-client';
 		// Create admin Synapse client for HS1
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
 		await hs1AdminApp.initialize();
+
+		// Create dynamic primary Synapse user for test participant operations
+		const primaryUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+			sharedSecret: federationConfig.hs1.registrationSharedSecret,
+			admin: true,
+		});
+		hs1PrimaryApp = primaryUser.client;
+		hs1PrimaryMatrixUserId = primaryUser.matrixUserId;
+
 		await rc1AdminRequestConfig.request
 			.post(api('permissions.update'))
 			.set(rc1AdminRequestConfig.credentials)
@@ -51,7 +62,18 @@ import { SynapseClient } from '../helper/synapse-client';
 			.expect(200),
 	);
 
-	afterAll(async () => hs1AdminApp.close());
+	afterAll(async () => {
+		const adminAccessToken = hs1AdminApp?.matrixClient?.getAccessToken();
+		if (hs1PrimaryApp) {
+			await hs1PrimaryApp.close();
+		}
+		if (hs1PrimaryMatrixUserId && adminAccessToken) {
+			await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1PrimaryMatrixUserId, adminAccessToken);
+		}
+		if (hs1AdminApp) {
+			await hs1AdminApp.close();
+		}
+	});
 
 	describe('Access Federation Permission', () => {
 		describe('Users without access-federation permission', () => {
@@ -98,18 +120,20 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				beforeAll(async () => {
 					channelName = `federated-room-${Date.now()}`;
-					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+					matrixRoomId = await hs1PrimaryApp.createRoom(channelName);
 				});
 
 				it('should throw an error if a remote user tries to invite a user without access-federation permission to a room', async () => {
-					await expect(hs1AdminApp.matrixClient.invite(matrixRoomId, `@${user.username}:${federationConfig.rc1.domain}`)).rejects.toThrow();
+					await expect(
+						hs1PrimaryApp.matrixClient.invite(matrixRoomId, `@${user.username}:${federationConfig.rc1.domain}`),
+					).rejects.toThrow();
 					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
 					expect(invitedSub).toBeUndefined();
 				});
 
 				it('should be able to invite a user to a room if the user has access-federation permission', async () => {
-					await expect(hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId)).resolves.not.toThrow();
+					await expect(hs1PrimaryApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId)).resolves.not.toThrow();
 
 					await retry('waiting for invitation to be processed', async () => {
 						const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
@@ -193,7 +217,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
 					addUserResponse = await addUserToRoom({
-						usernames: [federationConfig.hs1.adminMatrixUserId],
+						usernames: [hs1PrimaryMatrixUserId],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
 					});
@@ -742,7 +766,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						.expect('Content-Type', 'application/json')
 						.expect(200);
 
-					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+					matrixRoomId = await hs1PrimaryApp.createRoom(channelName);
 				});
 
 				afterAll(async () => {
@@ -752,7 +776,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it('should accept invitation for user with verified email matching federation domain', async () => {
 					await expect(
-						hs1AdminApp.matrixClient.invite(matrixRoomId, `@${userWithMatchingEmail.username}:${federationConfig.rc1.domain}`),
+						hs1PrimaryApp.matrixClient.invite(matrixRoomId, `@${userWithMatchingEmail.username}:${federationConfig.rc1.domain}`),
 					).resolves.not.toThrow();
 
 					await retry('this is an async operation, so we need to wait for the room to be created in RC', async () => {
@@ -782,7 +806,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it('should reject invitation for user with verified email NOT matching federation domain', async () => {
 					await expect(
-						hs1AdminApp.matrixClient.invite(matrixRoomId, `@${userWithNonMatchingEmail.username}:${federationConfig.rc1.domain}`),
+						hs1PrimaryApp.matrixClient.invite(matrixRoomId, `@${userWithNonMatchingEmail.username}:${federationConfig.rc1.domain}`),
 					).rejects.toThrow();
 
 					const subscriptions = await getSubscriptions(userWithNonMatchingEmailRequestConfig);

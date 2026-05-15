@@ -58,9 +58,6 @@ services:
       echo '';
       echo '=====> Running register_new_matrix_user...';
       register_new_matrix_user -u admin -p admin --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
-      register_new_matrix_user -u alice -p alice --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
-      register_new_matrix_user -u bob -p bob --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
-      register_new_matrix_user -u cleiton -p cleiton --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
       echo '=====> Finished register_new_matrix_user.';
       wait"
     volumes:
