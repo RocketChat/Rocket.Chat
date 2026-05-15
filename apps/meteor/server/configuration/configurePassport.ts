@@ -26,10 +26,10 @@ oAuthRouter.use(
 		proxy: true,
 		cookie: {
 			httpOnly: true,
-			// secure: process.env.NODE_ENV === 'production',
-			secure: true,
+			secure: process.env.NODE_ENV === 'production',
+			// secure: true,
 			maxAge: 5 * 60 * 1000, // 5 minutes
-			sameSite: 'none',
+			sameSite: 'lax',
 		},
 	}),
 );
@@ -41,6 +41,7 @@ oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
+		// done(null, user);
 		console.log('serialize user -> ', user);
 		done(null, user._id);
 	});

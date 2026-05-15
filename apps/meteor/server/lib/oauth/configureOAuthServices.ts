@@ -9,6 +9,10 @@ import type { OAuthServiceConfig } from './createOAuthServiceConfig';
 import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
+interface IOAuthRequest extends Request {
+	user?: IUser;
+}
+
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
 		const Strategy = config.strategy;
@@ -57,16 +61,17 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 					return done(null, userFromDB);
 				},
-				{
-					debug: true,
-				},
 			),
 		);
 
-		const callbackHandler = [
+		oAuthRouter.get(
+			`/oauth/${config.provider}`,
+			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
+		);
+		oAuthRouter.get(
+			`/oauth/${config.provider}/callback`,
 			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
-			async (req: Request, res: Response) => {
-				console.log('req -> user', req.user);
+			async (req: IOAuthRequest, res: Response) => {
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
@@ -85,20 +90,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					}
 				});
 			},
-		];
-
-		oAuthRouter.get(
-			`/oauth/${config.provider}`,
-			(req, _res, next) => {
-				console.log('authenticate', req.session, req.session.id);
-				next();
-			},
-			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
 		);
-
-		oAuthRouter
-			.route(`/oauth/${config.provider}/callback`)
-			.get(...callbackHandler)
-			.post(...callbackHandler);
 	});
 };
