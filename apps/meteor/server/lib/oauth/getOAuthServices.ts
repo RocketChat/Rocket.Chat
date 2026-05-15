@@ -16,6 +16,7 @@ export const getOAuthServices = (settings: ICachedSettings) => {
 			if (serviceName === 'Meteor') {
 				serviceName = 'meteor-developer';
 			}
+
 			if (/Accounts_OAuth_Custom-/.test(key)) {
 				return;
 			}
