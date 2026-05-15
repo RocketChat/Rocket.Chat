@@ -282,7 +282,7 @@
 		"react-stately": "~3.17.0",
 		"react-virtuoso": "~4.12.8",
 		"reflect-metadata": "^0.2.2",
-		"sanitize-html": "~2.16.0",
+		"sanitize-html": "~2.17.4",
 		"semver": "^7.6.3",
 		"sharp": "^0.33.5",
 		"sodium-native": "^4.3.3",
