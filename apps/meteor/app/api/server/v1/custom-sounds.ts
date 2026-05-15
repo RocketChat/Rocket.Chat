@@ -318,7 +318,7 @@ const customSoundsEndpoints = API.v1
 				SystemLogger.error({ error });
 
 				if (error.error === 'Custom_Sound_Error_Invalid_Sound') {
-					return API.v1.notFound('Custom Sound not found.');
+					return API.v1.failure('Custom Sound not found.');
 				}
 
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
