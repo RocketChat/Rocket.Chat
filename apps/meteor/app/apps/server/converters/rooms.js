@@ -1,3 +1,4 @@
+import { secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
@@ -435,6 +436,22 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('rooms').convertById(prid);
 			},
+			...secureFieldsMapper((room) => {
+				if (!room.abacAttributes) {
+					return undefined;
+				}
+
+				const value = [
+					{
+						permission: 'abac.read',
+						name: 'abacAttributes',
+						value: room.abacAttributes,
+					},
+				];
+
+				delete room.abacAttributes;
+				return value;
+			}),
 		};
 
 		return transformMappedData(originalRoom, map);

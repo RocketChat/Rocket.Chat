@@ -33,7 +33,7 @@ const ImagePreview = ({ url, file, alt = '' }: ImagePreviewProps): ReactElement 
 				src={url}
 				alt={alt}
 				maxWidth='full'
-				style={{ objectFit: 'contain' }}
+				objectFit='contain'
 				onLoad={handleLoad}
 				onError={handleError}
 				display={loading ? 'none' : 'initial'}

@@ -64,13 +64,17 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		await this.checkPlatformHealth();
 		const token = await this.checkIdpConnectivity();
 		await this.checkAuthorizedAccess(token);
+		pdpLogger.info({ msg: 'Virtru PDP health check passed' });
 	}
 
 	private async checkIdpConnectivity(): Promise<string> {
 		try {
 			this.tokenCache = null;
-			return await this.getClientToken();
-		} catch {
+			const token = await this.getClientToken();
+			pdpLogger.info({ msg: 'Virtru PDP health check: IdP connectivity OK' });
+			return token;
+		} catch (err) {
+			pdpLogger.warn({ msg: 'Virtru PDP health check: IdP connectivity failed', err });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_IdP_Failed');
 		}
 	}
@@ -85,14 +89,16 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			});
 
 			if (!response.ok) {
-				throw new Error();
+				throw new Error(`Platform healthz returned HTTP ${response.status}`);
 			}
 
 			const data = (await response.json()) as { status?: string };
 			if (data.status !== 'SERVING') {
-				throw new Error();
+				throw new Error(`Platform healthz status is '${data.status ?? 'unknown'}'`);
 			}
-		} catch {
+			pdpLogger.info({ msg: 'Virtru PDP health check: platform OK', status: data.status });
+		} catch (err) {
+			pdpLogger.warn({ msg: 'Virtru PDP health check: platform failed', err });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_Platform_Failed');
 		}
 	}
@@ -109,9 +115,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			});
 
 			if (!response.ok) {
-				throw new Error();
+				throw new Error(`Authorization endpoint returned HTTP ${response.status}`);
 			}
-		} catch {
+			pdpLogger.info({ msg: 'Virtru PDP health check: authorization OK' });
+		} catch (err) {
+			pdpLogger.warn({ msg: 'Virtru PDP health check: authorization failed', err });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_Authorization_Failed');
 		}
 	}
@@ -284,14 +292,21 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		});
 
 		if (decision === 'DECISION_PERMIT') {
+			pdpLogger.debug({ msg: 'Virtru PDP canAccessObject: permitted', roomId: room._id, userId: user._id });
 			return { granted: true };
 		}
 
 		if (decision === 'DECISION_DENY') {
+			pdpLogger.debug({ msg: 'Virtru PDP canAccessObject: denied', roomId: room._id, userId: user._id });
 			return { granted: false, userToRemove: fullUser };
 		}
 
-		// If we get an inconclusive or error decision, we err on the side of caution and deny access, but do not remove the user since we can't be sure
+		pdpLogger.debug({
+			msg: 'Virtru PDP canAccessObject: inconclusive decision, denying without removal',
+			roomId: room._id,
+			userId: user._id,
+			decision,
+		});
 		return { granted: false };
 	}
 
@@ -476,7 +491,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant for all ABAC rooms',
 				userId: user._id,
 			});
-			return abacRooms as IRoom[];
+			return abacRooms;
 		}
 
 		const decisionRequests = abacRooms.map((room) => ({

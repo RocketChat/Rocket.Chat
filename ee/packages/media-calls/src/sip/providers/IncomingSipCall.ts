@@ -298,7 +298,11 @@ export class IncomingSipCall extends BaseSipCall {
 		this.lastCallState = 'hangup';
 
 		if (sipDialog) {
-			sipDialog.destroy();
+			try {
+				await sipDialog.destroy();
+			} catch (err) {
+				logger.error({ msg: 'Failed to destroy SIP dialog', err, method: 'IncomingSipCall.processEndedCall' });
+			}
 		}
 	}
 

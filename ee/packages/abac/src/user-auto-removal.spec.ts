@@ -17,6 +17,11 @@ jest.mock('@rocket.chat/core-services', () => ({
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
+	api: {
+		broadcast: jest.fn(),
+	},
+	MeteorError: class extends Error {},
+	isMeteorError: () => false,
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {

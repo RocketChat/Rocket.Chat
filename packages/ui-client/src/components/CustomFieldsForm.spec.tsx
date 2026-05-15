@@ -1,6 +1,6 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Control } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
@@ -50,7 +50,7 @@ describe('CustomFieldsForm', () => {
 		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />);
 
 		expect(screen.getByRole('textbox', { name: 'Field 1' })).toBeInTheDocument();
-		expect(within(screen.getByLabelText('Field 2')).getByRole('combobox', { hidden: true })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Field 2/ })).toBeInTheDocument();
 	});
 
 	it('should render a text input', () => {
@@ -80,7 +80,7 @@ describe('CustomFieldsForm', () => {
 
 		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: appRoot });
 
-		expect(within(screen.getByLabelText('Field 2')).getByRole('combobox', { hidden: true })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Field 2/ })).toBeInTheDocument();
 	});
 
 	it('should show required error message', async () => {

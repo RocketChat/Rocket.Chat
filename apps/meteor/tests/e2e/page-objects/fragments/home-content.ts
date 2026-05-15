@@ -125,24 +125,27 @@ export class HomeContent {
 		await expect(this.composer.inputMessage).toBeEnabled();
 		await this.composer.inputMessage.fill(text);
 
-		if (enforce) {
-			const responsePromise = this.page.waitForResponse(
-				(response) =>
-					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-			);
-
+		if (!enforce) {
 			await this.composer.btnSend.click();
-
-			const response = await (await responsePromise).json();
-
-			const mid = JSON.parse(response.message).result._id;
-			const messageLocator = this.getMessageById(mid);
-
-			await expect(messageLocator).toBeVisible();
-			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
-		} else {
-			await this.composer.btnSend.click();
+			return;
 		}
+
+		// Wait for the message to settle in the DOM. Transport-agnostic — the
+		// message may be sent via REST (`/api/v1/method.call/sendMessage`) or
+		// via DDP/WS depending on whether DDPSDK is the active dispatcher;
+		// either way Meteor's optimistic insert renders the new list item
+		// before the server confirms, and the `rcx-message--pending` class
+		// drops once the server result lands.
+		const before = await this.messageListItems.count();
+
+		await this.composer.btnSend.click();
+
+		// Use `>=` rather than `==` because some flows (e.g. just-created
+		// encrypted channels) drop additional list items in alongside the
+		// user's send (other in-flight messages, decryption-status items),
+		// so an exact count is racy.
+		await expect.poll(() => this.messageListItems.count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(before + 1);
+		await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {

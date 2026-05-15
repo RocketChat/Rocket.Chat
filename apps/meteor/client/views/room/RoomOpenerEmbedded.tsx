@@ -1,8 +1,7 @@
-import type { RoomType } from '@rocket.chat/core-typings';
+import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,15 +9,12 @@ import { useTranslation } from 'react-i18next';
 import NotSubscribedRoom from './NotSubscribedRoom';
 import RoomSkeleton from './RoomSkeleton';
 import { useOpenRoom } from './hooks/useOpenRoom';
-import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { SubscriptionsCachedStore } from '../../cachedStores';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
-import { subscriptionsQueryKeys } from '../../lib/queryKeys';
-import { mapSubscriptionFromApi } from '../../lib/utils/mapSubscriptionFromApi';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
@@ -34,47 +30,23 @@ type RoomOpenerProps = {
 const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const uid = useUserId();
-
-	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
-
 	const subscribeToNotifyUser = useStream('notify-user');
 
 	const rid = data?.rid;
-	const { data: subscriptionData, refetch } = useQuery({
-		queryKey: rid ? subscriptionsQueryKeys.subscription(rid) : [],
-		queryFn: () => {
-			if (!rid) {
-				throw new Error('Room not found');
-			}
-			return getSubscription({ roomId: rid });
-		},
-		enabled: !!rid,
-	});
 
 	useEffect(() => {
-		if (!subscriptionData?.subscription) {
+		if (!uid || !rid) {
 			return;
 		}
 
-		SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
-
-		// yes this must be done here, this is already called in useOpenRoom, but it skips subscription streams because of the subscriptions list is empty
-		// now that we inserted the subscription, we can open the room
-		LegacyRoomManager.open({ typeName: type + reference, rid: subscriptionData.subscription.rid });
-	}, [subscriptionData, type, rid, reference]);
-
-	useEffect(() => {
-		if (!uid) {
-			return;
-		}
 		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
 			if (sub.rid !== rid || event === 'removed') {
 				return;
 			}
 
-			refetch();
+			SubscriptionsCachedStore.upsertSubscription(sub as ISubscription);
 		});
-	}, [refetch, rid, subscribeToNotifyUser, uid]);
+	}, [rid, subscribeToNotifyUser, uid]);
 
 	const { t } = useTranslation();
 

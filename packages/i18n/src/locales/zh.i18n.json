@@ -5909,7 +5909,6 @@
   "You_will_not_be_able_to_recover_file": "您将不能恢复此文件！",
   "You_wont_receive_email_notifications_because_you_have_not_verified_your_email": "您将不会收到电子邮件通知，因为您还没有验证您的电子邮箱地址。",
   "Your_E2EE_password_is": "你的 E2EE 密码是：",
-  "Your_E2EE_password_is_incorrect": "你的 E2EE 密码不正确",
   "Your_TOTP_has_been_reset": "您的两步验证 TOTP 已重置。",
   "Your_e2e_key_has_been_reset": "您的端到端加密密钥已被重置",
   "Your_email_address_has_changed": "您的电子邮箱已更改。",
