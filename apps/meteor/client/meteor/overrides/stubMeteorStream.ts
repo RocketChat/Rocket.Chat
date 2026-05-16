@@ -1,8 +1,8 @@
 import { Accounts } from 'meteor/accounts-base';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { type DDPMessage, parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 
@@ -85,7 +85,7 @@ function installStubMeteorStream(): void {
 		send(data) {
 			let frame: { msg?: string; id?: string; method?: string; name?: string; params?: unknown[] } | undefined;
 			try {
-				frame = DDPCommon.parseDDP(data) as typeof frame;
+				frame = parseDDP(data) as typeof frame;
 			} catch {
 				return;
 			}
@@ -114,9 +114,7 @@ function installStubMeteorStream(): void {
 	};
 
 	const bridgePongFor = (id?: string): void => {
-		conn._streamHandlers.onMessage(
-			DDPCommon.stringifyDDP({ msg: 'pong', ...(id != null && { id }) } as unknown as Parameters<typeof DDPCommon.stringifyDDP>[0]),
-		);
+		conn._streamHandlers.onMessage(stringifyDDP({ msg: 'pong', ...(id != null && { id }) } as unknown as DDPMessage));
 	};
 
 	type SdkDdp = {
@@ -178,10 +176,10 @@ function installStubMeteorStream(): void {
 		if (c._lastSessionId) return;
 		try {
 			conn._streamHandlers.onMessage(
-				DDPCommon.stringifyDDP({
+				stringifyDDP({
 					msg: 'connected',
 					session: 'sdk-bridged',
-				} as unknown as Parameters<typeof DDPCommon.stringifyDDP>[0]),
+				} as unknown as DDPMessage),
 			);
 			fire('reset');
 		} catch (err) {
