@@ -6,7 +6,7 @@ import DeleteMessageConfirmModal from '../../../views/room/modals/DeleteMessageC
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
-export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): Promise<void> => {
+export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage, groupedMessages?: IMessage[]): Promise<void> => {
 	if (!(await chat.data.canDeleteMessage(message))) {
 		dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
 		return;
@@ -36,6 +36,7 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 				resolve,
 				reject,
 				message,
+				groupedMessages,
 				onCancel: onCloseModal,
 			},
 		});

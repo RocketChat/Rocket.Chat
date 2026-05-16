@@ -13,12 +13,14 @@ const DeleteMessageConfirmModal = ({
 	reject,
 	onCancel,
 	message,
+	groupedMessages,
 }: {
 	room?: IRoom;
 	chat: ChatAPI;
 	resolve: () => void;
 	reject: (reason?: any) => void;
 	message: IMessage;
+	groupedMessages?: IMessage[];
 	onCancel: () => void;
 }) => {
 	const { t } = useTranslation();
@@ -32,6 +34,10 @@ const DeleteMessageConfirmModal = ({
 			}
 
 			await chat.data.deleteMessage(message);
+
+			if (groupedMessages?.length) {
+				await Promise.all(groupedMessages.map((msg) => chat.data.deleteMessage(msg)));
+			}
 		},
 		onSuccess: () => {
 			if (mid === message._id) {

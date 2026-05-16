@@ -192,7 +192,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							onReachBeginning={loadMore}
 							initialSlide={images.length - 1}
 						>
-							{[...images].reverse().map(({ _id, path, url, description }) => (
+							{[...images].reverse().map(({ _id, path, url, name, description }) => (
 								<SwiperSlide key={_id}>
 									<div className='swiper-zoom-container'>
 										{/* eslint-disable-next-line
@@ -210,6 +210,19 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 											<Throbber inheritColor />
 										</div>
 									</div>
+									{name && (
+										<Box
+											display='flex'
+											justifyContent='center'
+											color='font-pure-white'
+											fontScale='p2'
+											pbs={8}
+											withTruncatedText
+											onClick={preventPropagation}
+										>
+											{name}
+										</Box>
+									)}
 								</SwiperSlide>
 							))}
 						</Swiper>

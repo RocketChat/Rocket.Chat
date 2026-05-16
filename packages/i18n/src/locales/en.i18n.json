@@ -7166,6 +7166,10 @@
     "one": "{{count}} file pruned",
     "other": "{{count}} files pruned"
   },
+  "__count__files": {
+    "one": "{{count}} file",
+    "other": "{{count}} files"
+  },
   "__count__files_failed_to_upload": {
     "one": "{{count}} file failed to upload and will not be sent: {{name}}",
     "other": "{{count}} files failed to upload and will not be sent."

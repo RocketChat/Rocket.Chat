@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { getFileGroupMessages } from '../../../views/room/MessageList/lib/fileGroupStore';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
 export const useDeleteMessageAction = (
@@ -46,7 +47,8 @@ export const useDeleteMessageAction = (
 		variant: 'danger',
 		type: 'management',
 		async action() {
-			await chat?.flows.requestMessageDeletion(message);
+			const groupedMessages = getFileGroupMessages(message._id);
+			await chat?.flows.requestMessageDeletion(message, groupedMessages);
 		},
 		order: 10,
 		group: 'menu',
