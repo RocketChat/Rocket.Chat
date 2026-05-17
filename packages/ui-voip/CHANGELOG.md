@@ -1,5 +1,333 @@
 # @rocket.chat/ui-voip
 
+## 20.0.0
+
+### Minor Changes
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#39741](https://github.com/RocketChat/Rocket.Chat/pull/39741)) Fixes empty notifications sent when a voice call ends
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a, 2632182e429d337325fe3b1e28ea52ab12d99591, 21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0
+  - @rocket.chat/media-signaling@1.0.0
+  - @rocket.chat/fuselage-ui-kit@30.0.0
+  - @rocket.chat/ui-avatar@26.0.0
+  - @rocket.chat/ui-contexts@30.0.0
+  </details>
+
+## 20.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.2
+  - @rocket.chat/ui-avatar@26.0.0-rc.2
+  - @rocket.chat/ui-client@30.0.0-rc.2
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  </details>
+
+## 20.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2632182e429d337325fe3b1e28ea52ab12d99591]:</summary>
+
+  - @rocket.chat/media-signaling@1.0.0-rc.1
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.1
+  - @rocket.chat/ui-avatar@26.0.0-rc.1
+  - @rocket.chat/ui-client@30.0.0-rc.1
+  </details>
+
+## 19.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.2
+  - @rocket.chat/ui-avatar@25.0.2
+  - @rocket.chat/ui-client@29.0.2
+  - @rocket.chat/ui-contexts@29.0.2
+  </details>
+
+## 19.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.1
+  - @rocket.chat/ui-avatar@25.0.1
+  - @rocket.chat/ui-client@29.0.1
+  - @rocket.chat/ui-contexts@29.0.1
+  </details>
+
+## 20.0.0-rc.0
+
+### Minor Changes
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#39741](https://github.com/RocketChat/Rocket.Chat/pull/39741)) Fixes empty notifications sent when a voice call ends
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a, 21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0-rc.0
+  - @rocket.chat/media-signaling@0.3.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.0
+  - @rocket.chat/ui-avatar@26.0.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
+  </details>
+
+## 19.0.0
+
+### Minor Changes
+
+- ([#37922](https://github.com/RocketChat/Rocket.Chat/pull/37922)) Introduces native screen sharing for internal voice calls. This feature is currently in beta and can be disabled through admin settings.
+
+### Patch Changes
+
+- ([#39670](https://github.com/RocketChat/Rocket.Chat/pull/39670)) Fixes mismatched translations for Voice calling UI
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0
+  - @rocket.chat/media-signaling@0.2.0
+  - @rocket.chat/desktop-api@1.1.1
+  - @rocket.chat/ui-contexts@29.0.0
+  - @rocket.chat/ui-avatar@25.0.0
+  - @rocket.chat/ui-client@29.0.0
+  </details>
+
+## 19.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.4
+  - @rocket.chat/ui-avatar@25.0.0-rc.4
+  - @rocket.chat/ui-client@29.0.0-rc.4
+  - @rocket.chat/ui-contexts@29.0.0-rc.4
+  </details>
+
+## 19.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.3
+  - @rocket.chat/ui-avatar@25.0.0-rc.3
+  - @rocket.chat/ui-client@29.0.0-rc.3
+  - @rocket.chat/ui-contexts@29.0.0-rc.3
+  </details>
+
+## 19.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.2
+  - @rocket.chat/ui-avatar@25.0.0-rc.2
+  - @rocket.chat/ui-client@29.0.0-rc.2
+  - @rocket.chat/ui-contexts@29.0.0-rc.2
+  </details>
+
+## 19.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.1
+  - @rocket.chat/ui-avatar@25.0.0-rc.1
+  - @rocket.chat/ui-client@29.0.0-rc.1
+  - @rocket.chat/ui-contexts@29.0.0-rc.1
+  </details>
+
+## 19.0.0-rc.0
+
+### Minor Changes
+
+- ([#37922](https://github.com/RocketChat/Rocket.Chat/pull/37922)) Introduces native screen sharing for internal voice calls. This feature is currently in beta and can be disabled through admin settings.
+
+### Patch Changes
+
+- ([#39670](https://github.com/RocketChat/Rocket.Chat/pull/39670)) Fixes mismatched translations for Voice calling UI
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.0
+  - @rocket.chat/media-signaling@0.2.0-rc.0
+  - @rocket.chat/desktop-api@1.1.1-rc.0
+  - @rocket.chat/ui-contexts@29.0.0-rc.0
+  - @rocket.chat/ui-avatar@25.0.0-rc.0
+  - @rocket.chat/ui-client@29.0.0-rc.0
+  </details>
+
+## 18.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@28.0.1
+  - @rocket.chat/ui-avatar@24.0.1
+  - @rocket.chat/ui-client@28.0.1
+  - @rocket.chat/ui-contexts@28.0.1
+  </details>
+
+## 18.0.0
+
+### Patch Changes
+
+- ([#38417](https://github.com/RocketChat/Rocket.Chat/pull/38417)) Fixes select not closing when dragging the new call widget
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@28.0.0
+  - @rocket.chat/ui-avatar@24.0.0
+  - @rocket.chat/ui-client@28.0.0
+  - @rocket.chat/ui-contexts@28.0.0
+  </details>
+
+## 18.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@28.0.0-rc.2
+  - @rocket.chat/ui-avatar@24.0.0-rc.2
+  - @rocket.chat/ui-client@28.0.0-rc.2
+  - @rocket.chat/ui-contexts@28.0.0-rc.2
+  </details>
+
+## 18.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@28.0.0-rc.1
+  - @rocket.chat/ui-avatar@24.0.0-rc.1
+  - @rocket.chat/ui-client@28.0.0-rc.1
+  - @rocket.chat/ui-contexts@28.0.0-rc.1
+  </details>
+
+## 18.0.0-rc.0
+
+### Patch Changes
+
+- ([#38417](https://github.com/RocketChat/Rocket.Chat/pull/38417)) Fixes select not closing when dragging the new call widget
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@28.0.0-rc.0
+  - @rocket.chat/ui-avatar@24.0.0-rc.0
+  - @rocket.chat/ui-client@28.0.0-rc.0
+  - @rocket.chat/ui-contexts@28.0.0-rc.0
+  </details>
+
+## 17.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@27.0.1
+  - @rocket.chat/ui-avatar@23.0.1
+  - @rocket.chat/ui-client@27.0.1
+  - @rocket.chat/ui-contexts@27.0.1
+  </details>
+
+## 17.0.0
+
+### Minor Changes
+
+- ([#37616](https://github.com/RocketChat/Rocket.Chat/pull/37616)) Introduces realtime user presence updates for the selected user when starting/transferring a voice call.
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies [00b36c5a59fb45573f72c5409735238a817ff5ca, 719b85aa769fed231d0455bdd60f28867ceecfbe]:</summary>
+
+  - @rocket.chat/ui-client@27.0.0
+  - @rocket.chat/ui-contexts@27.0.0
+  - @rocket.chat/fuselage-ui-kit@27.0.0
+  - @rocket.chat/ui-avatar@23.0.0
+  </details>
+
+## 17.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.2
+  - @rocket.chat/ui-avatar@23.0.0-rc.2
+  - @rocket.chat/ui-client@27.0.0-rc.2
+  - @rocket.chat/ui-contexts@27.0.0-rc.2
+  </details>
+
+## 17.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@27.0.0-rc.1
+  - @rocket.chat/ui-client@27.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.1
+  - @rocket.chat/ui-avatar@23.0.0-rc.1
+  </details>
+
+## 17.0.0-rc.0
+
+### Minor Changes
+
+- ([#37616](https://github.com/RocketChat/Rocket.Chat/pull/37616)) Introduces realtime user presence updates for the selected user when starting/transferring a voice call.
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies [00b36c5a59fb45573f72c5409735238a817ff5ca, 719b85aa769fed231d0455bdd60f28867ceecfbe]:</summary>
+
+  - @rocket.chat/ui-client@27.0.0-rc.0
+  - @rocket.chat/ui-contexts@27.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.0
+  - @rocket.chat/ui-avatar@23.0.0-rc.0
+
+  </details>
+
+## 16.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/fuselage-ui-kit@26.0.1
+
+  - @rocket.chat/ui-avatar@22.0.1
+  - @rocket.chat/ui-client@26.0.1
+  - @rocket.chat/ui-contexts@26.0.1
+
+  </details>
+
 ## 16.0.0
 
 ### Major Changes

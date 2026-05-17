@@ -4,11 +4,13 @@ import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { loginServices } from '../../lib/loginServices';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -26,7 +28,34 @@ const callLoginMethod = (
 	});
 };
 
-const getLoggingIn = () => Accounts.loggingIn();
+// Bridge Accounts.loggingIn() — Meteor's Tracker-reactive flag — into a
+// non-reactive subscribe/getSnapshot pair for useSyncExternalStore. We hook
+// `_setLoggingIn` (Meteor's internal flip, also accessed in
+// apps/meteor/client/meteor/overrides/killMeteorStream.ts) to fan out
+// transitions without entering a Tracker computation.
+const loggingInListeners = new Set<() => void>();
+let loggingInBridgeInstalled = false;
+const installLoggingInBridge = (): void => {
+	if (loggingInBridgeInstalled) return;
+	loggingInBridgeInstalled = true;
+	const wrap = Accounts as unknown as { _setLoggingIn?: (v: boolean) => void };
+	const original = wrap._setLoggingIn;
+	if (typeof original !== 'function') return;
+	wrap._setLoggingIn = function (this: typeof Accounts, v: boolean) {
+		original.call(this, v);
+		loggingInListeners.forEach((cb) => cb());
+	};
+};
+
+const subscribeLoggingIn = (cb: () => void): (() => void) => {
+	installLoggingInBridge();
+	loggingInListeners.add(cb);
+	return () => {
+		loggingInListeners.delete(cb);
+	};
+};
+
+const getLoggingInSnapshot = (): boolean => Accounts.loggingIn();
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
@@ -36,7 +65,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 	useLDAPAndCrowdCollisionWarning();
 
-	const isLoggingIn = useReactiveValue(getLoggingIn);
+	const isLoggingIn = useSyncExternalStore(subscribeLoggingIn, getLoggingInSnapshot);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthenticationContext> => ({
@@ -73,7 +102,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
 
-				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
+				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService];
 
 				if (!method) {
 					return () => Promise.reject(new Error('Login method not found'));
@@ -89,6 +118,16 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 							reject(error);
 						});
 					});
+			},
+			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
+				const methodName = `loginWith${capitalizeService(service, true)}`;
+				const method = (Meteor as any)[methodName] as
+					| ((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void)
+					| undefined;
+				if (!method) {
+					return;
+				}
+				method.call(Meteor, options, callback);
 			},
 			loginWithIframe: (token: string, callback) =>
 				new Promise<void>((resolve, reject) => {
@@ -112,16 +151,18 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						resolve();
 					});
 				}),
-			unstoreLoginToken: (callback) => {
-				const { _unstoreLoginToken } = Accounts;
-				Accounts._unstoreLoginToken = function (...args) {
-					callback();
-					_unstoreLoginToken.apply(Accounts, args);
-				};
-				return () => {
-					Accounts._unstoreLoginToken = _unstoreLoginToken;
-				};
+			getLoginToken: () => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN),
+			wipeLocalAuth: () => {
+				removeStoredItem(STORAGE_KEYS.USER_ID);
+				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
+				try {
+					Meteor.connection.setUserId(null);
+				} catch {
+					// ignore
+				}
 			},
+			unstoreLoginToken: (callback) => getDdpSdk().account.onLogout(callback),
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),

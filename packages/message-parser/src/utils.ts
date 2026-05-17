@@ -60,49 +60,52 @@ export const inlineCode = generate('INLINE_CODE');
 export const tasks = generate('TASKS');
 
 export const italic = generate('ITALIC');
+export const spoiler = generate('SPOILER');
 
 export const plain = generate('PLAIN_TEXT');
 export const strike = generate('STRIKE');
 
 export const codeLine = generate('CODE_LINE');
 
-const isValidLink = (link: string) => {
-	try {
-		return Boolean(new URL(link));
-	} catch (error) {
-		return false;
-	}
-};
+const isValidLink = (link: string) => URL.canParse(link);
+
+const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z][A-Za-z0-9+.-]{0,31}:\/\//.test(src);
 
 export const link = (src: string, label?: Markup[]): Link => ({
 	type: 'LINK',
 	value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
+let cachedAutoLinkDomains: string[] | undefined | null = null;
+let cachedAutoLinkOptions: { detectIp: boolean; allowPrivateDomains: boolean; validHosts: string[] };
+
 export const autoLink = (src: string, customDomains?: string[]) => {
-	const validHosts = ['localhost', ...(customDomains ?? [])];
-	const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
-		detectIp: false,
-		allowPrivateDomains: true,
-		validHosts,
-	});
+	if (cachedAutoLinkDomains !== customDomains) {
+		cachedAutoLinkDomains = customDomains;
+		cachedAutoLinkOptions = {
+			detectIp: true,
+			allowPrivateDomains: true,
+			validHosts: ['localhost', ...(customDomains ?? [])],
+		};
+	}
+	const { validHosts } = cachedAutoLinkOptions;
+	const { isIcann, isIp, isPrivate, domain } = tldParse(src, cachedAutoLinkOptions);
 
 	if (!(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))) {
 		return plain(src);
 	}
 
-	const href = isValidLink(src) || src.startsWith('//') ? src : `//${src}`;
+	const href = isValidLink(src) || src.startsWith('//') || hasAbsoluteSchemePrefix(src) ? src : `//${src}`;
 
 	return link(href, [plain(src)]);
 };
 
+const autoEmailTldOptions = { detectIp: false, allowPrivateDomains: true } as const;
+
 export const autoEmail = (src: string) => {
 	const href = `mailto:${src}`;
 
-	const { isIcann, isIp, isPrivate } = tldParse(href, {
-		detectIp: false,
-		allowPrivateDomains: true,
-	});
+	const { isIcann, isIp, isPrivate } = tldParse(href, autoEmailTldOptions);
 
 	if (!(isIcann || isIp || isPrivate)) {
 		return plain(src);
@@ -117,6 +120,7 @@ export const image = (() => {
 })();
 
 export const quote = generate('QUOTE');
+export const spoilerBlock = generate('SPOILER_BLOCK');
 
 export const mentionChannel = (() => {
 	const fn = generate('MENTION_CHANNEL');
@@ -130,7 +134,7 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
-	...(number && { number }),
+	...(number !== undefined && { number }),
 });
 
 export const mentionUser = (() => {
@@ -172,7 +176,7 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 		}
 
 		return {
-			...current.value,
+			type: 'PLAIN_TEXT',
 			value: `:${current.value.value}:`,
 		};
 	}
@@ -180,23 +184,86 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] =>
-	values.flat().reduce(
-		(result, item, index, values) => {
-			const next = values[index + 1];
-			const current = joinEmoji(item, values[index - 1], next);
-			const previous: Inlines = result[result.length - 1];
+export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
+	const flattenableValues = values as Array<Inlines | Inlines[]>;
 
-			if (previous) {
-				if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
-					previous.value += current.value;
-					return result;
-				}
+	// Fast path: no nested arrays and no emojis (the common case)
+	let needsSlowPath = false;
+	for (let i = 0; i < flattenableValues.length; i++) {
+		const v = flattenableValues[i];
+		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+			needsSlowPath = true;
+			break;
+		}
+	}
+
+	if (!needsSlowPath) {
+		const result: Paragraph['value'] = [];
+		for (let i = 0; i < flattenableValues.length; i++) {
+			const current = flattenableValues[i] as Inlines;
+			const previous = result[result.length - 1];
+			if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+				previous.value += current.value;
+			} else {
+				result.push(current);
 			}
-			return [...result, current];
-		},
-		[] as Paragraph['value'],
-	);
+		}
+		return result;
+	}
+
+	// Slow path: handles nested arrays and emoji joining
+	const result: Paragraph['value'] = [];
+
+	let previousInline = undefined as Inlines | undefined;
+	let pendingInline = undefined as Inlines | undefined;
+
+	const appendJoinedInline = (inline: Inlines, nextInline: Inlines | undefined): void => {
+		const current = joinEmoji(inline, previousInline, nextInline);
+		const previous = result[result.length - 1];
+
+		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+			previous.value += current.value;
+		} else {
+			result.push(current);
+		}
+
+		previousInline = inline;
+	};
+
+	for (let index = 0; index < flattenableValues.length; index++) {
+		const entry = flattenableValues[index];
+
+		if (Array.isArray(entry)) {
+			for (let nestedIndex = 0; nestedIndex < entry.length; nestedIndex++) {
+				const currentInline = entry[nestedIndex];
+
+				if (pendingInline === undefined) {
+					pendingInline = currentInline;
+					continue;
+				}
+
+				appendJoinedInline(pendingInline, currentInline);
+				pendingInline = currentInline;
+			}
+
+			continue;
+		}
+
+		if (pendingInline === undefined) {
+			pendingInline = entry;
+			continue;
+		}
+
+		appendJoinedInline(pendingInline, entry);
+		pendingInline = entry;
+	}
+
+	if (pendingInline !== undefined) {
+		appendJoinedInline(pendingInline, undefined);
+	}
+
+	return result;
+};
 export const lineBreak = (): LineBreak => ({
 	type: 'LINE_BREAK',
 	value: undefined,
@@ -251,13 +318,13 @@ export const timestampFromIsoTime = ({
 	milliseconds,
 	timezone,
 }: {
-	year: string[];
-	month: string[];
-	day: string[];
-	hours: string[];
-	minutes: string[];
-	seconds: string[];
-	milliseconds?: string[];
+	year: string;
+	month: string;
+	day: string;
+	hours: string;
+	minutes: string;
+	seconds: string;
+	milliseconds?: string;
 	timezone?: string;
 }) => {
 	const date =
@@ -265,12 +332,4 @@ export const timestampFromIsoTime = ({
 			1000) |
 		0;
 	return date.toString();
-};
-
-export const extractFirstResult = (value: Types[keyof Types]['value']): Types[keyof Types]['value'] => {
-	if (typeof value !== 'object' || !Array.isArray(value)) {
-		return value;
-	}
-
-	return value.filter((item) => item).shift() as Types[keyof Types]['value'];
 };

@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, bold, italic, strike } from '../src/utils';
+import { paragraph, plain, bold, italic, strike } from './helpers';
 
 test.each([
 	[
@@ -254,5 +254,5 @@ test.each([
 		],
 	],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

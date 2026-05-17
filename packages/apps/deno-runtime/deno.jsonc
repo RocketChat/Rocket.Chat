@@ -1,0 +1,32 @@
+{
+	"imports": {
+		"@msgpack/msgpack": "npm:@msgpack/msgpack@3.0.0-beta2",
+		"@rocket.chat/ui-kit": "npm:@rocket.chat/ui-kit@^0.31.22",
+		"@rocket.chat/apps-engine/": "../../../packages/apps-engine/",
+		"@rocket.chat/apps/": "../",
+		"@std/cli": "jsr:@std/cli@^1.0.9",
+		"@std/io": "jsr:@std/io@^0.225.3",
+		"@std/streams": "jsr:@std/streams@^1.0.16",
+		"acorn": "npm:acorn@8.10.0",
+		"acorn-walk": "npm:acorn-walk@8.2.0",
+		"astring": "npm:astring@1.8.6",
+		"jsonrpc-lite": "npm:jsonrpc-lite@2.2.0",
+		"stack-trace": "npm:stack-trace@0.0.10",
+		"uuid": "npm:uuid@8.3.2"
+	},
+	"unstable": ["detect-cjs","sloppy-imports"],
+	"tasks": {
+		"test": "deno test --no-check --allow-read=../../../,/tmp --allow-write=/tmp"
+	},
+	"fmt": {
+		"lineWidth": 160,
+		"useTabs": true,
+		"indentWidth": 4,
+		"singleQuote": true
+	},
+	"lint": {
+		"rules": {
+			"exclude": ["no-sloppy-imports"]
+		}
+	}
+}

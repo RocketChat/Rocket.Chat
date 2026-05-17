@@ -21,7 +21,7 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
-			if (Array.isArray(value)) action({ target: { value } });
+			if (Array.isArray(value)) void action({ target: { value } });
 		},
 		[action],
 	);

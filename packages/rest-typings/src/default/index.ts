@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajvQuery } from '../v1/Ajv';
 
 type OpenAPIJSONEndpoint = { withUndocumented?: boolean };
 
@@ -18,7 +14,7 @@ const OpenAPIJSONEndpointSchema = {
 	additionalProperties: false,
 };
 
-export const isOpenAPIJSONEndpoint = ajv.compile<OpenAPIJSONEndpoint>(OpenAPIJSONEndpointSchema);
+export const isOpenAPIJSONEndpoint = ajvQuery.compile<OpenAPIJSONEndpoint>(OpenAPIJSONEndpointSchema);
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface DefaultEndpoints {

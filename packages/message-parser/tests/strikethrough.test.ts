@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { emoji, emojiUnicode, link, mentionChannel, mentionUser, paragraph, plain, strike } from '../src/utils';
+import { emoji, emojiUnicode, link, mentionChannel, mentionUser, paragraph, plain, strike } from './helpers';
 
 test.each([
 	['~:smile:~', [paragraph([strike([emoji('smile')])])]],
@@ -44,5 +44,5 @@ test.each([
 	['Rocket cat says ~~Hello~~', [paragraph([plain(`Rocket cat says `), strike([plain('Hello')])])]],
 	['He said ~~Hello~~ to her', [paragraph([plain(`He said `), strike([plain('Hello')]), plain(` to her`)])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

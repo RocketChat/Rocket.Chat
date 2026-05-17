@@ -44,8 +44,8 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 				try {
 					url = await store.getStore().getRedirectURL(file, false);
 					expiryTimespan = await store.getStore().getUrlExpiryTimeSpan();
-				} catch (e) {
-					SystemLogger.debug(e);
+				} catch (err) {
+					SystemLogger.debug({ err });
 				}
 				return FileUpload.respondWithRedirectUrlInfo(url, file, req, res, expiryTimespan);
 			}

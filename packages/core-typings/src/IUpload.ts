@@ -29,6 +29,7 @@ export interface IUpload {
 	token?: string;
 	uploadedAt?: Date;
 	modifiedAt?: Date;
+	expiresAt?: Date;
 	url?: string;
 	originalStore?: string;
 	originalId?: string;
@@ -72,5 +73,7 @@ export interface IUploadWithUser extends IUpload {
 export interface IE2EEUpload extends IUpload {
 	content: EncryptedContent;
 }
+
+export type IUploadToConfirm = Pick<IUpload, '_id' | 'name' | 'content'>;
 
 export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext && upload?.content?.algorithm);

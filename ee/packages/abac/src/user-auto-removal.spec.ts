@@ -4,22 +4,31 @@ import type { Collection, Db } from 'mongodb';
 
 import { Audit } from './audit';
 import { AbacService } from './index';
+import { logger } from './logger';
 import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
+	ServiceClass: class {
+		onSettingChanged = jest.fn();
+	},
 	Room: {
 		// Mimic the DB side-effects of removing a user from a room (no apps/system messages)
 		removeUserFromRoom: async (roomId: string, user: any) => {
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
+	api: {
+		broadcast: jest.fn(),
+	},
+	MeteorError: class extends Error {},
+	isMeteorError: () => false,
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
 	let sharedMongo: SharedMongoConnection;
 	let db: Db;
 	const service = new AbacService();
+	service.setPdpStrategy('local');
 
 	let roomsCol: Collection<IRoom>;
 	let usersCol: Collection<IUser>;
@@ -211,7 +220,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		sharedMongo = await acquireSharedInMemoryMongo(SHARED_ABAC_TEST_DB);
 		db = sharedMongo.db;
 
-		debugSpy = jest.spyOn((service as any).logger, 'debug').mockImplementation(() => undefined);
+		debugSpy = jest.spyOn(logger, 'debug').mockImplementation(() => undefined);
 		auditSpy = jest.spyOn(Audit, 'actionPerformed').mockResolvedValue();
 
 		roomsCol = db.collection<IRoom>('rocketchat_room');

@@ -3,7 +3,6 @@ import { api } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
-	FederationServers,
 	LivechatVisitors,
 	LivechatDepartmentAgents,
 	Messages,
@@ -11,6 +10,7 @@ import {
 	Subscriptions,
 	Users,
 	ReadReceipts,
+	ReadReceiptsArchive,
 	LivechatUnitMonitors,
 	ModerationReports,
 } from '@rocket.chat/models';
@@ -88,6 +88,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 				await Messages.removeByUserId(userId);
 				await ReadReceipts.removeByUserId(userId);
+				await ReadReceiptsArchive.removeByUserId(userId);
 
 				await ModerationReports.hideMessageReportsByUserId(
 					userId,
@@ -176,9 +177,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// update name and fname of group direct messages
 	await updateGroupDMsName(user);
-
-	// Refresh the servers list
-	await FederationServers.refreshServers();
 
 	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 

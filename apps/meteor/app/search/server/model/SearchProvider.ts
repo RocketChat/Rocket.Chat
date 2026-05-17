@@ -18,7 +18,10 @@ export abstract class SearchProvider<TPayload = any> {
 			throw new Error(`cannot instantiate provider: ${key} does not match key-pattern`);
 		}
 
-		SearchLogger.info(`create search provider ${key}`);
+		SearchLogger.info({
+			msg: 'create search provider',
+			providerKey: key,
+		});
 
 		this._key = key;
 		this._settings = new Settings(key);

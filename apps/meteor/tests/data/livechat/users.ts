@@ -42,7 +42,7 @@ export const removeAgent = async (userId: string): Promise<void> => {
 		.expect(200);
 };
 
-export const createAnOnlineAgent = async (): Promise<{
+export const createAgentAndReLogin = async (): Promise<{
 	credentials: Credentials;
 	user: IUser & { username: string };
 }> => {
@@ -52,6 +52,18 @@ export const createAnOnlineAgent = async (): Promise<{
 	const agent = body.user;
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
+
+	return {
+		credentials: createdUserCredentials,
+		user: agent,
+	};
+};
+
+export const createAnOnlineAgent = async (): Promise<{
+	credentials: Credentials;
+	user: IUser & { username: string };
+}> => {
+	const { credentials: createdUserCredentials, user: agent } = await createAgentAndReLogin();
 	await makeAgentAvailable(createdUserCredentials);
 
 	return {

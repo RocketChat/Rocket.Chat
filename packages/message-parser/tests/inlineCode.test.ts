@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { inlineCode, paragraph, plain } from '../src/utils';
+import { inlineCode, paragraph, plain } from './helpers';
 
 test.each([
 	['`[asd](https://localhost)`', [paragraph([inlineCode(plain('[asd](https://localhost)'))])]],
@@ -8,5 +8,5 @@ test.each([
 	['`@rocket.chat`', [paragraph([inlineCode(plain('@rocket.chat'))])]],
 	['`@rocket.chat/message-parser`', [paragraph([inlineCode(plain('@rocket.chat/message-parser'))])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

@@ -20,7 +20,9 @@ import {
 	Subscriptions,
 	Users,
 	ReadReceipts,
+	ReadReceiptsArchive,
 } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -254,8 +256,8 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 	try {
 		await saveTransferHistory(room, transferData);
 		await RoutingManager.unassignAgent(inquiry, departmentId);
-	} catch (e) {
-		livechatLogger.error(e);
+	} catch (err) {
+		livechatLogger.error({ err });
 		throw new Meteor.Error('error-returning-inquiry');
 	}
 
@@ -292,6 +294,7 @@ export async function removeOmnichannelRoom(rid: string) {
 		}),
 		LivechatInquiry.removeByRoomId(rid),
 		LivechatRooms.removeById(rid),
+		ReadReceiptsArchive.removeByRoomId(rid),
 	]);
 
 	if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {

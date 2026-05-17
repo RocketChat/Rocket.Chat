@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelSlaPolicies } from '../page-objects/omnichannel-sla-policies';
+import { OmnichannelSlaPolicies } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 const ERROR = {
@@ -38,7 +38,7 @@ test.describe('Omnichannel SLA Policies', () => {
 		poOmnichannelSlaPolicies = new OmnichannelSlaPolicies(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelSlaPolicies.sidenav.linkSlaPolicies.click();
+		await poOmnichannelSlaPolicies.sidebar.linkSlaPolicies.click();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -48,35 +48,31 @@ test.describe('Omnichannel SLA Policies', () => {
 
 	test('Manage SLAs', async () => {
 		await test.step('Add new SLA', async () => {
-			await poOmnichannelSlaPolicies.headingButtonNew('Create SLA policy').click();
+			await poOmnichannelSlaPolicies.createNew();
 
-			await test.step('field name is required', async () => {
-				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill('any_text');
-				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill('');
+			await test.step('should not submit form with empty required fields: name and estimated wait time', async () => {
+				await poOmnichannelSlaPolicies.manageSlaPolicy.btnSave.click();
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.nameRequired)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.estimatedWaitTimeRequired)).toBeVisible();
 			});
 
 			await test.step('input a valid name', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill(INITIAL_SLA.name);
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.nameRequired)).not.toBeVisible();
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
 			});
 
 			await test.step('input a valid description', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputDescription.fill(INITIAL_SLA.description);
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
 			});
 
 			await test.step('only allow numbers on estimated wait time field', async () => {
-				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.type('a');
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime).toHaveValue('');
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
+				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.pressSequentially('a');
+				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime).toHaveValue('0');
 			});
 
 			await test.step('not allow 0 on estimated wait time field', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.fill('0');
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.estimatedWaitTimeRequired)).toBeVisible();
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
 			});
 
 			await test.step('input a valid estimated wait time', async () => {
@@ -89,22 +85,22 @@ test.describe('Omnichannel SLA Policies', () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.btnSave.click();
 
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputName).not.toBeVisible();
-				await expect(poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).toBeVisible();
 			});
 		});
 
 		await test.step('Search SLA', async () => {
-			await poOmnichannelSlaPolicies.inputSearch.type('random_text_that_should_have_no_match');
-			await expect(poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name)).not.toBeVisible();
+			await poOmnichannelSlaPolicies.inputSearch.fill('random_text_that_should_have_no_match');
+			await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).not.toBeVisible();
 			await expect(poOmnichannelSlaPolicies.txtEmptyState).toBeVisible();
 			await poOmnichannelSlaPolicies.inputSearch.fill(INITIAL_SLA.name);
-			await expect(poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name)).toBeVisible();
+			await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).toBeVisible();
 			await expect(poOmnichannelSlaPolicies.txtEmptyState).not.toBeVisible();
 			await poOmnichannelSlaPolicies.inputSearch.fill('');
 		});
 
 		await test.step('Edit SLA', async () => {
-			await poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name).click();
+			await poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name).click();
 
 			await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputName).toHaveValue(INITIAL_SLA.name);
 			await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputDescription).toHaveValue(INITIAL_SLA.description);
@@ -129,15 +125,13 @@ test.describe('Omnichannel SLA Policies', () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.btnSave.click();
 
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputName).not.toBeVisible();
-				await expect(poOmnichannelSlaPolicies.findRowByName(EDITED_SLA.name)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.table.findRowByName(EDITED_SLA.name)).toBeVisible();
 			});
 		});
 
 		await test.step('Remove SLA', async () => {
-			await poOmnichannelSlaPolicies.btnRemove(EDITED_SLA.name).click();
-			await expect(poOmnichannelSlaPolicies.txtDeleteModalTitle).toBeVisible();
-			await poOmnichannelSlaPolicies.btnDelete.click();
-			await expect(poOmnichannelSlaPolicies.findRowByName(EDITED_SLA.name)).not.toBeVisible();
+			await poOmnichannelSlaPolicies.removeSLA(EDITED_SLA.name);
+			await expect(poOmnichannelSlaPolicies.table.findRowByName(EDITED_SLA.name)).not.toBeVisible();
 		});
 	});
 });

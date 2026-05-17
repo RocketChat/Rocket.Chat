@@ -106,6 +106,37 @@ describe('[OAuth Server]', () => {
 				});
 		});
 
+		it('should return bad request if payload has non string parameters in refresh_token grant', async () => {
+			await request
+				.post(`/oauth/token`)
+				.send({
+					grant_type: 'refresh_token',
+					client_id: { $ne: null },
+					client_secret: { $ne: null },
+					refresh_token: { $ne: null },
+				})
+				.expect((res: Response) => {
+					expect(res.status).to.be.equal(400);
+					expect(res.body).to.have.property('error').that.is.a('string').and.equal('invalid_request');
+				});
+		});
+
+		it('should return bad request if payload has non string parameters in authorization_code grant', async () => {
+			await request
+				.post(`/oauth/token`)
+				.send({
+					grant_type: 'authorization_code',
+					client_id: { $ne: null },
+					client_secret: { $ne: null },
+					code: { $ne: null },
+					redirect_uri: { $ne: null },
+				})
+				.expect((res: Response) => {
+					expect(res.status).to.be.equal(400);
+					expect(res.body).to.have.property('error').that.is.a('string').and.equal('invalid_request');
+				});
+		});
+
 		it('should be able to refresh the access_token', async () => {
 			await request
 				.post(`/oauth/token`)
@@ -173,6 +204,28 @@ describe('[OAuth Server]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user._id', 'rocketchat.internal.admin.test');
 				});
+		});
+
+		const malformedTokenPayloads = [
+			{ query: { 'access_token[$ne]': 'null' }, description: '$ne operator' },
+			{ query: { 'access_token[$exists]': 'true' }, description: '$exists operator' },
+			{ query: { 'access_token[$gt]': '' }, description: '$gt operator' },
+			{ query: { 'access_token[$regex]': '.*' }, description: '$regex operator' },
+			{ query: { access_token: 'invalid-token' }, description: 'invalid string token' },
+		];
+
+		malformedTokenPayloads.forEach(({ query, description }) => {
+			it(`should reject access_token with ${description}`, async () => {
+				await request
+					.get(api('me'))
+					.query(query)
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+					});
+			});
 		});
 	});
 });

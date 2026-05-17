@@ -1,3 +1,4 @@
+export * from './censorUrl';
 export * from './convertSubObjectsIntoPaths';
 export * from './convertPathsIntoSubObjects';
 export * from './getObjectKeys';
@@ -15,3 +16,5 @@ export * from './isRecord';
 export * from './validateEmail';
 export * from './truncateString';
 export * from './isTruthy';
+export * from './getHeader';
+export * from './isAbsoluteURL';

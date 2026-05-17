@@ -175,7 +175,7 @@ services:
     image: nats:2.6-alpine
 
   mongo:
-    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.2}-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     container_name: mongo
     restart: on-failure
     ports:
@@ -200,8 +200,20 @@ services:
   httpbin:
     image: kong/httpbin
 
+  mock-server:
+    image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
+    profiles:
+      - api
+    ports:
+      - 4000:8080
+    healthcheck:
+      test: ['CMD', '/mock-server', '-healthcheck']
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.6.6
     command:
       - --providers.docker=true
       - '--serverstransport.maxidleconnsperhost=-1'

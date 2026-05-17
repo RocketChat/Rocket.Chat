@@ -3,7 +3,8 @@ import type { Page } from 'playwright-core';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
@@ -264,8 +265,10 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		agent = await createAgent(api, 'user1');
+
+		await createAuxContext(browser, Users.user1, '/', true);
 	});
 
 	test.beforeEach(async ({ page, api }) => {

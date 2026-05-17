@@ -1,53 +1,57 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { isBusyState } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
+import type { VoipPushNotificationEventType } from '../../definition/IMediaCallServer';
+import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
-import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
+import { getInitialOfferSignal } from '../../server/signals/getInitialOfferSignal';
+import { getNewCallSignal } from '../../server/signals/getNewCallSignal';
+import { getStateNotification } from '../../server/signals/getStateNotification';
 
 export class UserActorAgent extends BaseMediaCallAgent {
-	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
+	public async processSignal(call: IMediaCall, signal: ClientMediaSignal, options?: SignalProcessingOptions): Promise<void> {
 		const channel = await this.getOrCreateChannel(call, signal.contractId);
 
 		const signalProcessor = new UserActorSignalProcessor(this, call, channel);
-		return signalProcessor.processSignal(signal);
+		return signalProcessor.processSignal(signal, options);
 	}
 
 	public async sendSignal(signal: ServerMediaSignal): Promise<void> {
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
-	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
-		await this.sendSignal({
-			callId,
-			type: 'notification',
-			notification: 'accepted',
-			signedContractId,
-		});
+	public async onCallAccepted(call: IMediaCall): Promise<void> {
+		const stateSignal = getStateNotification(call, this.role);
+		if (stateSignal?.notification !== 'accepted') {
+			return;
+		}
+
+		await this.sendSignal(stateSignal);
 
 		if (this.role !== 'callee') {
 			return;
 		}
 
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
-		if (!negotiation?.offer) {
+		this.sendPushNotification({ callId: call._id, event: 'answer' });
+
+		const initialOfferSignal = await getInitialOfferSignal(call, this.role);
+		if (!initialOfferSignal) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
 			return;
 		}
-
-		await this.sendSignal({
-			callId,
-			toContractId: signedContractId,
-			type: 'remote-sdp',
-			sdp: negotiation.offer,
-			negotiationId: negotiation._id,
-		});
+		await this.sendSignal(initialOfferSignal);
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
+		if (this.role === 'callee') {
+			this.sendPushNotification({ callId, event: 'end' });
+		}
+
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -69,7 +73,10 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(buildNewCallSignal(call, this.role));
+		await this.sendSignal(getNewCallSignal(call, this.role));
+		if (this.role === 'callee') {
+			this.sendPushNotification({ callId: call._id, event: 'new' });
+		}
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
@@ -112,6 +119,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 				type: 'remote-sdp',
 				sdp: negotiation.answer,
 				negotiationId,
+				streams: negotiation.answerStreams,
 			});
 			return;
 		}
@@ -126,6 +134,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId,
+			streams: negotiation.offerStreams,
 		});
 	}
 
@@ -147,11 +156,16 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			requestedService: call.service,
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
+			features: call.features as CallFeature[],
 		});
 	}
 
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
+	}
+
+	private sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
+		getMediaCallServer().sendPushNotification(params);
 	}
 }

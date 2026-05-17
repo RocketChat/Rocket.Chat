@@ -12,7 +12,16 @@ const NavBarItemOmnichannelQueue = (props: NavBarItemOmnichannelQueueProps) => {
 		return null;
 	}
 
-	return <NavBarItem {...props} icon={icon} title={title} onClick={handleGoToQueue} pressed={isPressed} />;
+	return (
+		<NavBarItem
+			{...props}
+			icon={icon}
+			title={title}
+			onClick={handleGoToQueue}
+			pressed={isPressed}
+			aria-current={isPressed ? 'page' : undefined}
+		/>
+	);
 };
 
 export default NavBarItemOmnichannelQueue;

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,13 +20,15 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 	userStatuses.invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const queryClient = useQueryClient();
+	const stream = useStream('notify-logged');
+	const listCustomUserStatus = useMethod('listCustomUserStatus');
 
 	useEffect(
 		() =>
-			userStatuses.watch(() => {
+			userStatuses.watch(stream, () => {
 				queryClient.setQueryData(['user-statuses'], Array.from(userStatuses));
 			}),
-		[queryClient],
+		[queryClient, stream],
 	);
 
 	const { t } = useTranslation();
@@ -46,7 +48,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 	const { data: statuses } = useQuery({
 		queryKey: ['user-statuses'],
 		queryFn: async () => {
-			await userStatuses.sync();
+			await userStatuses.sync(listCustomUserStatus);
 			return Array.from(userStatuses);
 		},
 		staleTime: Infinity,

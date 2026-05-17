@@ -22,7 +22,12 @@ export const MessageAvatars = memo(({ avatarResolver = () => undefined, username
 	return (
 		<div className={createClassName(styles, 'message-avatars', {}, [className])} style={style}>
 			{avatars.map((username) => (
-				<Avatar src={avatarResolver(username)} description={username} className={createClassName(styles, 'message-avatars__avatar')} />
+				<Avatar
+					key={username}
+					src={avatarResolver(username)}
+					description={username}
+					className={createClassName(styles, 'message-avatars__avatar')}
+				/>
 			))}
 		</div>
 	);

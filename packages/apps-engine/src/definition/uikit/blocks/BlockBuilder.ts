@@ -26,7 +26,6 @@ import type {
 import { BlockElementType } from './Elements';
 import type { ITextObject } from './Objects';
 import { TextObjectType } from './Objects';
-import type { Omit } from '../../../lib/utils';
 
 type BlockFunctionParameter<T extends IBlock> = Omit<T, 'type'>;
 type ElementFunctionParameter<T extends IBlockElement> = T extends IInteractiveElement

@@ -1,12 +1,13 @@
-import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
-import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { Streamer as StreamerModule } from '../streamer/streamer.module';
+import type { IStreamer, IStreamerConstructor } from '../streamer/types';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -62,7 +63,11 @@ export class NotificationsModule {
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
-		this.streamRoomMessage.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
+		this.streamRoomMessage.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
+			if (!StreamerModule.isPublicationActive(publication)) {
+				return;
+			}
+
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -98,7 +103,8 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return Authorization.canReadRoom(room, { _id: this.userId || '' }, extraData);
+			const user = this.userId ? { _id: this.userId } : undefined;
+			return Authorization.canReadRoom(room, user, extraData);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
@@ -201,7 +207,7 @@ export class NotificationsModule {
 				}
 
 				// TODO consider using something to cache settings
-				const key = (await Settings.getValueById('UI_Use_Real_Name')) ? 'name' : 'username';
+				const key = (await Settings.get('UI_Use_Real_Name')) ? 'name' : 'username';
 
 				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
 					projection: {
@@ -214,8 +220,8 @@ export class NotificationsModule {
 				}
 
 				return user[key] === username;
-			} catch (e) {
-				SystemLogger.error(e);
+			} catch (err) {
+				SystemLogger.error({ err });
 				return false;
 			}
 		}
@@ -235,8 +241,11 @@ export class NotificationsModule {
 		});
 
 		this.streamRoomUsers.allowRead('none');
-		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
-			const [roomId, e] = eventName.split('/');
+		this.streamRoomUsers.allowWrite(async function (
+			eventName: `${string}/video-conference` | `${string}/userData`,
+			...args: [{ action: string; params: { callId: string; uid: string; rid: string } }] | [IUserDataEvent]
+		) {
+			const [roomId, e] = eventName.split('/') as [string, 'video-conference' | 'userData'];
 			if (this.userId && (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
@@ -311,7 +320,7 @@ export class NotificationsModule {
 		this.streamCannedResponses.allowRead(async function () {
 			return (
 				!!this.userId &&
-				!!(await Settings.getValueById('Canned_Responses_Enable')) &&
+				!!(await Settings.get('Canned_Responses_Enable')) &&
 				Authorization.hasPermission(this.userId, 'view-canned-responses')
 			);
 		});
@@ -371,7 +380,14 @@ export class NotificationsModule {
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');
 
-		this.streamUser.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
+		this.streamUser.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
+			// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+			// we were just not counting on this, session is _session so we actually should not use it
+			// now after any await, the session can potentially be null, so we need to check for that
+			if (!StreamerModule.isPublicationActive(publication)) {
+				return;
+			}
+
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -385,8 +401,17 @@ export class NotificationsModule {
 						eventName: `${userId}/rooms-changed`,
 						args,
 					});
+					if (!payload) {
+						return;
+					}
 
-					payload && publication._session.socket?.send(payload);
+					// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+					// we were just not counting on this, session is _session so we actually should not use it
+					// now after any await, the session can potentially be null, so we need to check for that
+					if (!StreamerModule.isPublicationActive(publication)) {
+						return;
+					}
+					publication._session.socket.send(payload);
 				};
 
 				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(

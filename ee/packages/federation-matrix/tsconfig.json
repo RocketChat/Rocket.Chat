@@ -5,5 +5,5 @@
 		"strictPropertyInitialization": false,
 		"experimentalDecorators": true,
 	},
-	"files": ["./src/index.ts"]
+	"include": ["./src/**/*"],
 }

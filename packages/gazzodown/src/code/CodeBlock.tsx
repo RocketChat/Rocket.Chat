@@ -1,7 +1,11 @@
+import { css } from '@rocket.chat/css-in-js';
+import { IconButton, Box } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
 import type { ReactElement } from 'react';
-import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -10,11 +14,23 @@ type CodeBlockProps = {
 	lines: MessageParser.CodeLine[];
 };
 
+const onHoverStyle = css`
+	opacity: 0;
+	user-select: none;
+
+	[data-code-block-wrapper]:hover &,
+	[data-code-block-wrapper]:focus-within & {
+		opacity: 1;
+	}
+`;
+
 const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 	const ref = useRef<HTMLElement>(null);
 	const [copied, setCopied] = useState(false);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const code = useMemo(() => lines.map((line) => line.value.value).join('\n'), [lines]);
 
@@ -56,55 +72,39 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 		}
 	}, [language, content]);
 
-	const handleCopy = async () => {
+	const handleCopy = useCallback(async () => {
 		try {
 			await navigator.clipboard.writeText(code);
-			setCopied(true);
-			setTimeout(() => setCopied(false), 1500);
-		} catch (e) {
-			console.error('Copy failed', e);
+			dispatchToastMessage({ type: 'success', message: t('Copied') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : t('Failed_to_copy') });
 		}
-	};
+	}, [code, dispatchToastMessage, t]);
 
 	return (
-		<div
-			className='rc-code-block'
-			style={{ position: 'relative' }}
-		>
-			<button
-				onClick={handleCopy}
-				title='Copy code'
-				aria-label='Copy code block'
-				style={{
-					position: 'absolute',
-					top: 6,
-					right: 6,
-					fontSize: 12,
-					padding: '4px 6px',
-					cursor: 'pointer',
-					borderRadius: 4,
-					border: 'none',
-					background: '#2f343d',
-					color: '#fff',
-					opacity: 0.85,
+		<Box is='pre' position='relative' data-code-block-wrapper role='region'>
+			<IconButton
+				icon='copy'
+				small
+				className={onHoverStyle}
+				title={t('Copy')}
+				onClick={() => {
+					void handleCopy();
 				}}
-				className='rc-code-copy-button'
+				position='absolute'
+				insetInlineEnd={0}
+				margin={8}
+			/>
+			<span className='copyonly'>```</span>
+			<code
+				key={language + code}
+				ref={ref}
+				className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
 			>
-				{copied ? 'Copied' : 'Copy'}
-			</button>
-
-			<pre role='region'>
-				<span className='copyonly'>```</span>
-				<code
-					key={language + code}
-					ref={ref}
-					className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
-				>
-					{content}
-				</code>
-				<span className='copyonly'>```</span>
-			</pre>
-		</div>
+				{content}
+			</code>
+			<span className='copyonly'>```</span>
+		</Box>
 	);
 };
 

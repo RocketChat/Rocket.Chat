@@ -87,7 +87,7 @@ test.describe('OC - Manual Selection', () => {
 
 		await test.step('expect to be able return to queue', async () => {
 			await poOmnichannel.content.btnReturnToQueue.click();
-			await poOmnichannel.content.btnReturnToQueueConfirm.click();
+			await poOmnichannel.content.returnToQueueModal.confirm();
 			await expect(page).toHaveURL('/home');
 		});
 

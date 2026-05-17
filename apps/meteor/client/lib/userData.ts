@@ -64,7 +64,6 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	const result = sdk.stream('notify-user', [`${uid}/userData`], (data) => {
 		switch (data.type) {
 			case 'inserted': {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
 				Users.state.store(user.data);
 				break;
@@ -85,13 +84,40 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	cancel = result.stop;
 	await result.ready();
 
-	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
+	const { success: _success, ldap, lastLogin, services: rawServices, ...fromMe } = await sdk.rest.get('/v1/me');
 
-	if (userData) {
-		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
+	if (fromMe._id) {
+		const existingUser = Users.state.get(uid);
+		const { email: _meEmail, ...meFields } = fromMe;
+		const { email, cloud, resume, email2fa, emailCode, ...services } = (rawServices ?? {}) as NonNullable<IUser['services']>;
+
+		const mergedEmail2fa =
+			email2fa &&
+			(() => {
+				const { changedAt: apiChangedAt, ...email2faRest } = email2fa;
+				let changedAt: Date | undefined;
+				if (apiChangedAt != null) {
+					const parsed = new Date(apiChangedAt as string | number | Date);
+					if (!Number.isNaN(parsed.getTime())) {
+						changedAt = parsed;
+					}
+				}
+				if (changedAt == null && existingUser?.services?.email2fa?.changedAt != null) {
+					const prev = existingUser.services.email2fa.changedAt;
+					changedAt = prev instanceof Date ? prev : new Date(prev);
+				}
+				return {
+					...email2faRest,
+					...(changedAt != null ? { changedAt } : {}),
+				};
+			})();
 
 		updateUser({
-			...userData,
+			type: existingUser?.type ?? 'user',
+			active: existingUser?.active ?? true,
+			roles: existingUser?.roles ?? [],
+			...existingUser,
+			...meFields,
 			...(rawServices && {
 				services: {
 					...(services ? { ...services } : {}),
@@ -101,8 +127,8 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 									...(resume.loginTokens && {
 										loginTokens: resume.loginTokens.map((token) => ({
 											...token,
-											when: new Date('when' in token ? token.when : ''),
-											createdAt: ('createdAt' in token ? new Date(token.createdAt) : undefined) as Date,
+											when: new Date('when' in token && token.when ? token.when : 0),
+											createdAt: 'createdAt' in token && token.createdAt ? new Date(token.createdAt) : new Date(0),
 											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
 										})),
 									}),
@@ -118,7 +144,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 							}
 						: {}),
 					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
-					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
+					...(mergedEmail2fa ? { email2fa: mergedEmail2fa } : {}),
 					...(email?.verificationTokens && {
 						email: {
 							verificationTokens: email.verificationTokens.map((token) => ({
@@ -133,13 +159,13 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 				lastLogin: new Date(lastLogin),
 			}),
 			ldap: Boolean(ldap),
-			createdAt: new Date(userData.createdAt),
-			_updatedAt: new Date(userData._updatedAt),
-		});
+			createdAt: meFields.createdAt != null ? new Date(meFields.createdAt) : (existingUser?.createdAt ?? new Date()),
+			_updatedAt: new Date(meFields._updatedAt ?? existingUser?._updatedAt ?? Date.now()),
+		} as IUser);
 	}
 	useUserDataSyncReady.setState(true);
 
-	return userData;
+	return fromMe as unknown as RawUserData;
 };
 
 export const removeLocalUserData = () => {

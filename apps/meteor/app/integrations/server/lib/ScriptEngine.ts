@@ -296,7 +296,9 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			});
 
 			this.logger.debug({
-				msg: `Script method "${method}" result of the Integration "${integration.name}" is:`,
+				msg: 'Script method result of the Integration',
+				method,
+				integration: integration.name,
 				result,
 			});
 

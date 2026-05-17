@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Button, FieldError, FieldRow, MultiSelect, SelectFiltered } from '@rocket.chat/fuselage';
+import { Box, Button, FieldError, FieldRow, MultiSelectFiltered, SelectFiltered } from '@rocket.chat/fuselage';
 import { useCallback, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -83,7 +83,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 				</FieldError>
 			)}
 			<FieldRow>
-				<MultiSelect
+				<MultiSelectFiltered
 					required={required}
 					aria-required={required}
 					aria-labelledby={labelId}

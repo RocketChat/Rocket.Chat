@@ -84,10 +84,10 @@ async function main(mode: any): Promise<void> {
 
 	switch (mode) {
 		case ModeParam.MAIN:
-			runMain(config);
+			void runMain(config);
 			break;
 		case ModeParam.INSTANCE:
-			runInstance(config);
+			void runInstance(config);
 			break;
 	}
 }
@@ -95,4 +95,4 @@ async function main(mode: any): Promise<void> {
 // First two parameters are the executable and the path to this script
 const [, , mode] = process.argv;
 
-main(mode);
+void main(mode);

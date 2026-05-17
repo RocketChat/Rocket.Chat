@@ -1,5 +1,95 @@
 # @rocket.chat/apps-engine
 
+## 1.62.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#40125](https://github.com/RocketChat/Rocket.Chat/pull/40125)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#39883](https://github.com/RocketChat/Rocket.Chat/pull/39883)) Fixes the issue of the lacking MessageUpdater not being available to apps during runtime
+
+## 1.61.1
+
+### Patch Changes
+
+- ([#40130](https://github.com/RocketChat/Rocket.Chat/pull/40130) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+## 1.62.0-rc.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#40125](https://github.com/RocketChat/Rocket.Chat/pull/40125)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#39883](https://github.com/RocketChat/Rocket.Chat/pull/39883)) Fixes the issue of the lacking MessageUpdater not being available to apps during runtime
+
+## 1.61.0
+
+### Minor Changes
+
+- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 1.61.0-rc.0
+
+### Minor Changes
+
+- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 1.60.0
+
+### Minor Changes
+
+- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
+
+### Patch Changes
+
+- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
+
+- ([#38513](https://github.com/RocketChat/Rocket.Chat/pull/38513)) Fixes an issue where app-defined API endpoints with dynamic paths could fail to receive requests when using path parameters like `:param`.
+
+## 1.60.0-rc.0
+
+### Minor Changes
+
+- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
+
+### Patch Changes
+
+- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
+
+- ([#38513](https://github.com/RocketChat/Rocket.Chat/pull/38513)) Fixes an issue where app-defined API endpoints with dynamic paths could fail to receive requests when using path parameters like `:param`.
+
+## 1.59.1
+
+### Patch Changes
+
+- ([#38068](https://github.com/RocketChat/Rocket.Chat/pull/38068)) Fixes an issue that caused a spike in memory usage when apps handled the IPreFileUpload event
+
+## 1.59.1-rc.0
+
+### Patch Changes
+
+- ([#38068](https://github.com/RocketChat/Rocket.Chat/pull/38068)) Fixes an issue that caused a spike in memory usage when apps handled the IPreFileUpload event
+
 ## 1.59.0
 
 ### Minor Changes

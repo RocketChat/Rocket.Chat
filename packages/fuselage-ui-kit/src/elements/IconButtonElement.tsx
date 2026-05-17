@@ -14,7 +14,7 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps): ReactEle
 	const { icon: iconName, variant } = icon;
 
 	const handleClick: MouseEventHandler = (e) => {
-		action({ target: e.currentTarget });
+		void action({ target: e.currentTarget });
 	};
 
 	if (url) {

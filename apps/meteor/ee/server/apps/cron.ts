@@ -1,5 +1,5 @@
+import type { ProxiedApp } from '@rocket.chat/apps/dist/server/ProxiedApp';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { cronJobs } from '@rocket.chat/cron';
 import { Settings, Users } from '@rocket.chat/models';
 
@@ -81,19 +81,20 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const currentSeats = await Users.getActiveLocalUserCount();
 
 	const fullUrl = `v1/workspaces/${workspaceIdSetting}/apps`;
-	const options = {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-		params: {
-			seats: currentSeats,
-		},
-	};
 
 	let data = [];
 
 	try {
-		const response = await Apps.getMarketplaceClient().fetch(fullUrl, options);
+		const response = await Apps.getMarketplaceClient().fetch(fullUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			params: {
+				seats: currentSeats,
+			},
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
 
 		const result = await response.json();
 

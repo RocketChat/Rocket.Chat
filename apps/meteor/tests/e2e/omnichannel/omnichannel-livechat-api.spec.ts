@@ -5,7 +5,8 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
@@ -142,7 +143,7 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setLanguage('pt-BR'));
 
 				await expect(
-					page.frameLocator('#rocketchat-iframe').getByText('Por favor, nos passe algumas informações antes de iniciar o chat'),
+					page.frameLocator('#rocketchat-iframe').getByText('Por favor, conte-nos algumas informações para iniciarmos o chat'),
 				).toBeVisible();
 			});
 
@@ -489,7 +490,9 @@ test.describe('OC - Livechat API', () => {
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(registerGuestVisitor.email.toLowerCase());
+				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.infoContactEmail).toHaveText(
+					registerGuestVisitor.email.toLowerCase(),
+				);
 			});
 
 			await test.step('Expect registerGuest to log in an existing guest and load chat history', async () => {
@@ -623,7 +626,7 @@ test.describe('OC - Livechat API', () => {
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(
+				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.infoContactEmail).toHaveText(
 					`changed${registerGuestVisitor.email}`.toLowerCase(),
 				);
 			});

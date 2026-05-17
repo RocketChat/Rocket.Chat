@@ -211,3 +211,127 @@ test.describe('Feature Test', () => {
 - Avoid chaining big tests with `test.serial` - dependant steps make it harder to debug and/or make small changes
 > If you are changing something on the 34th step, you would have to run the whole test suite multiple times during development, instead of olny running the test step in question.
 
+## Performance patterns
+
+E2E tests are the most expensive tests we run. Two patterns, applied together, typically cut a suite's runtime by ~80% and remove the most common sources of flake. They are the standard for new suites and the target for migrating existing ones.
+
+### Pattern 1 — seed state through the API, not the UI
+
+Use the browser **only for what the test actually verifies**. Everything else — creating rooms, DMs, discussions, threads, sending setup messages — goes through REST.
+
+Why:
+- A REST call costs 30–150ms; the equivalent UI flow (menu → modal → input → submit → wait for nav) costs 2–8s per step.
+- API errors are deterministic and synchronous. UI errors manifest as timeouts on overloaded CI, which is a slow and ambiguous signal.
+- The test fails only when the feature under test breaks, not when an unrelated setup UI regresses. A broken "create discussion" modal should not take down every test that needs a discussion as fixture.
+- Removes the most flake-prone interactions: hover-revealed menus, modal animations, search debounces.
+
+Do **not** apply when the setup UI is the actual subject of the test (`create-direct.spec.ts`, `create-discussion.spec.ts`, `create-channel.spec.ts`, etc.). There, keep one test per creation flow going through the UI; unrelated tests rely on the API path.
+
+### Pattern 2 — share the browser context across a serial suite
+
+For suites already using `test.describe.serial`, move `browser.newContext()`, `page.goto()` and the initial room navigation from `beforeEach` to `beforeAll`.
+
+Why: bootstrapping a Playwright context plus hydrating the Meteor app costs ~1.5–2.5s per test. In a serial suite the isolation cost is already paid — collecting the speed benefit is free.
+
+Preconditions:
+- Suite is `test.describe.serial`.
+- All tests share the same user / storage state.
+- Each test leaves the page in a known "home position" (base room open, no modals, threads, or side panels lingering).
+
+Do **not** apply when:
+- Tests need different users or storage states.
+- Suite covers auth, 2FA, or session lifecycle — the browser state is the subject.
+- Suite has more than ~15 tests: the debug cost of shared state outgrows the speed win (see "Big test files should not be `.serial`" above).
+
+## API helpers for state seeding
+
+Prefer these helpers in `beforeAll` / `beforeEach` and in setup `test.step`s. All live under `apps/meteor/tests/e2e/utils/`.
+
+| Intent                               | Helper                                                    | REST endpoint             |
+| ------------------------------------ | --------------------------------------------------------- | ------------------------- |
+| Create public channel                | `createTargetChannel(api)`                                | `/channels.create`        |
+| Create public channel (full room)    | `createTargetChannelAndReturnFullRoom(api)`               | `/channels.create`        |
+| Create private channel               | `createTargetPrivateChannel(api)`                         | `/groups.create`          |
+| Create private group (full room)     | `createTargetGroupAndReturnFullRoom(api)`                 | `/groups.create`          |
+| Create team                          | `createTargetTeam(api)`                                   | `/teams.create`           |
+| Create discussion (fresh parent)     | `createTargetDiscussion(api)`                             | `/rooms.createDiscussion` |
+| Create discussion on existing msg    | `createDiscussion(api, parentRoomId, parentMsgId, name)`  | `/rooms.createDiscussion` |
+| Create DM room (get id back)         | `createDirectMessageRoom(api, username)`                  | `/im.create`              |
+| Send message to a room               | `sendMessage(api, roomId, msg)`                           | `/chat.sendMessage`       |
+| Send message inside a thread         | `sendMessage(api, roomId, msg, parentMsgId)`              | `/chat.sendMessage`       |
+| Send message as a specific user      | `sendMessageFromUser(request, user, rid, msg)`            | `/chat.postMessage`       |
+| Delete channel (by name)             | `deleteChannel(api, roomName)`                            | `/channels.delete`        |
+| Delete room (by id)                  | `deleteRoom(api, roomId)`                                 | `/rooms.delete`           |
+| Delete team                          | `deleteTeam(api, teamName)`                               | `/teams.delete`           |
+
+If the helper you need is missing, add it under `utils/` and re-export it from `utils/index.ts` rather than inlining the REST call in the spec.
+
+## Template: optimized `.serial` suite
+
+Copy-paste starting point for a new suite that applies both patterns.
+
+```ts
+import type { Page, BrowserContext } from 'playwright-core';
+
+import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
+import { createTargetChannel, sendMessage } from './utils';
+import { expect, test } from './utils/test';
+
+test.use({ storageState: Users.admin.state });
+
+test.describe.serial('Feature X', () => {
+    let poHomeChannel: HomeChannel;
+    let targetChannel: string;
+    let targetChannelId: string;
+    let page: Page;
+    let context: BrowserContext;
+
+    test.beforeAll(async ({ browser, api }) => {
+        targetChannel = await createTargetChannel(api);
+        const info = await (await api.get(`/channels.info?roomName=${targetChannel}`)).json();
+        targetChannelId = info.channel._id;
+
+        context = await browser.newContext();
+        page = await context.newPage();
+        poHomeChannel = new HomeChannel(page);
+
+        await page.goto('/home');
+        await poHomeChannel.navbar.openChat(targetChannel);
+    });
+
+    test.afterAll(async ({ api }) => {
+        await api.post('/channels.delete', { roomName: targetChannel });
+        await page.close();
+        await context.close();
+    });
+
+    test('exercises the feature', async ({ api }) => {
+        const messageText = 'seed';
+        await sendMessage(api, targetChannelId, messageText);
+        await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
+        // assertions for the feature under test
+    });
+});
+```
+
+## Migrating an existing suite
+
+Recipe for a single spec. Keep PRs to at most 5 files so reviews stay tractable.
+
+1. **Baseline**. Run the spec three times locally and record the median per-test time. Paste it in the PR body.
+2. **Map setup**. For every test, mark each `test.step` and every `beforeEach` call that only prepares state (creates rooms, messages, threads, opens menus). These are candidates for API seeding.
+3. **Apply Pattern 1**. Replace the marked UI setup with helpers from the table above. If a helper is missing, add it under `utils/` and export it from `utils/index.ts`.
+4. **Apply Pattern 2** — only if the suite is `.serial` and the preconditions hold. Move context, page, navigation to `beforeAll`. Close page and context in `afterAll`. Ensure every test returns the page to the home position.
+5. **Check coverage when consolidating**. If you merge tests (e.g. four formatting tests into one), confirm the merged test still asserts every behavior the originals covered. List the merges in the PR body.
+6. **Compare**. Run three times again, record the new median. If the improvement is under 30%, revisit — the coupling may not be worth it.
+7. **PR body must include**: before/after timings, the list of UI setups moved to API, and an explicit reason if you chose not to apply one of the patterns.
+
+## Anti-patterns to flag in review
+
+- `poHomeChannel.content.sendMessage(...)` used inside `beforeEach` or `beforeAll` — that is setup, should be `sendMessage(api, ...)`.
+- Opening meatball menus or modals purely to create a discussion, thread, or DM as a setup step.
+- `test.describe.serial` combined with `beforeEach(async ({ page }) => { await page.goto(...) })` — the context should be shared in `beforeAll`.
+- New non-serial suites whose tests still each carry >3s of UI setup.
+- Inline `api.post('/im.create', …)` / `api.post('/chat.sendMessage', …)` in a spec instead of extending the helpers in `utils/`.
+

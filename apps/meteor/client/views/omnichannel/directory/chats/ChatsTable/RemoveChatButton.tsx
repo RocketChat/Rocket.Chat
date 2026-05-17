@@ -31,15 +31,7 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 			setModal(null);
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				data-qa-id='current-chats-modal-remove'
-				onConfirm={onDeleteAgent}
-				onCancel={() => setModal(null)}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal(null)} confirmText={t('Delete')} />);
 	});
 
 	return <IconButton danger small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isPending} onClick={handleDelete} />;

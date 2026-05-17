@@ -8,7 +8,7 @@ export abstract class CreateNewModal extends Modal {
 
 	constructor(root: Locator, page: Page) {
 		super(root, page);
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputName(): Locator {
@@ -35,11 +35,15 @@ export abstract class CreateNewModal extends Modal {
 		return this.root.getByRole('button', { name: 'Create' });
 	}
 
+	get inputAddMembers(): Locator {
+		return this.root.getByRole('combobox', { name: 'Members' });
+	}
+
 	async addMember(memberName: string): Promise<void> {
-		await this.root.getByRole('textbox', { name: 'Add people' }).click();
-		await this.root.getByRole('textbox', { name: 'Add people' }).fill(memberName, { force: true });
+		await this.inputAddMembers.click();
+		await this.inputAddMembers.fill(memberName, { force: true });
 		await this.listbox.selectOption(memberName);
-		await this.root.getByRole('textbox', { name: 'Add people' }).click();
+		await this.inputAddMembers.click();
 	}
 }
 
@@ -52,13 +56,9 @@ export class CreateNewChannelModal extends CreateNewModal {
 		return this.root.getByRole('button', { name: 'Advanced settings', exact: true });
 	}
 
-	get autocompleteUser(): Locator {
-		return this.root.getByRole('textbox', { name: 'Add people' });
-	}
-
 	async inviteUserToChannel(username: string) {
-		await this.autocompleteUser.click();
-		await this.autocompleteUser.fill(username);
+		await this.inputAddMembers.click();
+		await this.inputAddMembers.fill(username);
 		await this.listbox.selectOption(username);
 	}
 }
@@ -68,18 +68,15 @@ export class CreateNewDMModal extends CreateNewModal {
 		super(page.getByRole('dialog', { name: 'New direct message' }), page);
 	}
 
-	get dmListbox(): Locator {
-		return this.root.getByRole('listbox');
-	}
-
 	get autocompleteUser(): Locator {
-		return this.root.getByRole('listbox').getByRole('textbox');
+		return this.root.getByRole('combobox', { name: 'Select one or more people to message', exact: true });
 	}
 
 	async inviteUserToDM(username: string) {
 		await this.autocompleteUser.click();
 		await this.autocompleteUser.fill(username);
-		await this.dmListbox.selectOption(username);
+		await this.listbox.selectOption(username);
+		await this.page?.keyboard.press('Tab');
 	}
 }
 
