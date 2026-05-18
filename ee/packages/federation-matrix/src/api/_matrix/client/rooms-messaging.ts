@@ -1,6 +1,7 @@
-import { FederationMatrix } from '@rocket.chat/core-services';
+import { api, FederationMatrix } from '@rocket.chat/core-services';
 import type { PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
+import { Rooms } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
@@ -255,6 +256,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				body: isTypingBodyProps,
 				response: {
 					200: isEmptyObjectResponseProps,
+					400: isMatrixErrorProps,
 					401: isMatrixErrorProps,
 					403: isMatrixErrorProps,
 					500: isMatrixErrorProps,
@@ -268,7 +270,34 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				const userId = c.req.param('userId');
 				const body = await c.req.json();
 
+				if (!userId) {
+					return {
+						statusCode: 400,
+						body: {
+							errcode: 'M_BAD_REQUEST',
+							error: 'Missing userId parameter',
+						},
+					};
+				}
+
 				try {
+					const matrixRoom = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
+					if (!matrixRoom) {
+						return {
+							statusCode: 404,
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Room not found',
+							},
+						};
+					}
+
+					void api.broadcast('user.activity', {
+						user: userId,
+						isTyping: body.typing,
+						roomId: matrixRoom._id,
+					});
+
 					await federationSDK.sendTypingNotification(roomId, userId, body.typing === true);
 					return {
 						statusCode: 200,
