@@ -28,6 +28,6 @@ export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 				throw error;
 			}
 		},
-		[getMessage, storeMessage],
+		[getMessage, shouldStoreMessage, storeMessage],
 	);
 };
