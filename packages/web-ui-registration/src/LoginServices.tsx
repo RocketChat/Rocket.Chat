@@ -47,7 +47,7 @@ const LoginServices = ({
 			)}
 			{isDesktopApp && (
 				<Button width='100%' primary onClick={handleLoginOnWeb}>
-					Login on web
+					{t('registration.component.login.onWeb')}
 				</Button>
 			)}
 		</>

@@ -6810,6 +6810,7 @@
   "registration.component.form.usernameAlreadyInUse": "Username already in use",
   "registration.component.form.usernameContainsInvalidChars": "Username contains invalid characters",
   "registration.component.login": "Login",
+  "registration.component.login.onWeb": "Login on web",
   "registration.component.login.incorrectPassword": "Incorrect password",
   "registration.component.login.userNotFound": "User not found",
   "registration.component.resetPassword": "Reset password",
