@@ -403,7 +403,7 @@ const createOnAnyStreamEvent = () => {
 				Meteor.connection._stream!.on('message', (rawMsg: string) => {
 					let msg: unknown;
 					try {
-						msg = DDPCommon.parseDDP(rawMsg);
+						msg = parseDDP(rawMsg);
 					} catch {
 						return;
 					}
