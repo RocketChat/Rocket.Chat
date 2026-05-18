@@ -18,6 +18,7 @@ import {
 	Keypad,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -72,6 +73,7 @@ const OngoingCall = () => {
 						<Divider width='100%' />
 					</Box>
 				) : null}
+				<AppActions />
 				<ButtonGroup large align='center'>
 					<ActionButton
 						disabled={connecting || reconnecting}
