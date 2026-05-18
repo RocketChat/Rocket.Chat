@@ -1,5 +1,4 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 import express from 'express';
 import flash from 'express-flash';
 import session from 'express-session';
@@ -13,28 +12,28 @@ import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 
 export const oAuthRouter = express();
 
-oAuthRouter.use(
-	session({
-		name: 'oauth',
-		secret: Random.secret(),
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			maxAge: 5 * 60 * 1000, // 5 minutes
-		},
-	}),
-);
-
 oAuthRouter.enable('trust proxy');
 oAuthRouter.set('trust proxy', true);
 
-oAuthRouter.use(passport.initialize());
-oAuthRouter.use(passport.session());
-oAuthRouter.use(flash());
-
 export const configurePassport = (settings: ICachedSettings) => {
+	oAuthRouter.use(
+		session({
+			name: 'oauth',
+			secret: settings.get<string>('Accounts_OAuth_Session_Secret'),
+			resave: false,
+			saveUninitialized: false,
+			cookie: {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === 'production',
+				maxAge: 5 * 60 * 1000, // 5 minutes
+			},
+		}),
+	);
+
+	oAuthRouter.use(passport.initialize());
+	oAuthRouter.use(passport.session());
+	oAuthRouter.use(flash());
+
 	passport.serializeUser((user: any, done) => {
 		done(null, user);
 	});
