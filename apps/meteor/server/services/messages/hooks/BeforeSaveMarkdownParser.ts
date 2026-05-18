@@ -26,6 +26,11 @@ export class BeforeSaveMarkdownParser {
 			return message;
 		}
 
+		const maxParseLength = process.env.MESSAGE_MAX_PARSE_LENGTH ? parseInt(process.env.MESSAGE_MAX_PARSE_LENGTH, 10) : 30_000;
+		if (maxParseLength > 0 && message.msg && message.msg.length > maxParseLength) {
+			return message;
+		}
+
 		try {
 			if (message.msg) {
 				message.md = parse(message.msg, config);
