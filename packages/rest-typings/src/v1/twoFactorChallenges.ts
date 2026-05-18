@@ -38,6 +38,6 @@ export type TwoFactorChallengesEndpoints = {
 		POST: (params: TwoFactorChallengesSendEmailCode) => void;
 	};
 	'/v1/twoFactorChallenges.verifyChallenge': {
-		POST: (params: TwoFactorChallengesVerifyChallenge) => { loginToken: string };
+		POST: (params: TwoFactorChallengesVerifyChallenge) => { loginToken: string; userId: string };
 	};
 };

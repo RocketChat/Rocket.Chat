@@ -38,7 +38,16 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 			return;
 		}
 		try {
-			const { loginToken } = await verifyChallenge({ challengeId, code });
+			const { loginToken, userId } = await verifyChallenge({ challengeId, code });
+
+			const { loginClient } = router.getSearchParameters();
+
+			if (loginClient === 'mobile' || loginClient === 'desktop') {
+				setModal(null);
+				router.navigate({ name: 'home', search: { resumeToken: loginToken, userId, loginClient } }, { replace: true });
+				return;
+			}
+
 			await loginWithToken(loginToken);
 			navigateToHome();
 		} catch (error: any) {

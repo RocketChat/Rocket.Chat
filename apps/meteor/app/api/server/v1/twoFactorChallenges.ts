@@ -79,7 +79,6 @@ API.v1.addRoute(
 
 			const stampedToken = Accounts._generateStampedLoginToken();
 
-			// eslint-disable-next-line @typescript-eslint/await-thenable
 			await Accounts._insertLoginToken(user._id, stampedToken);
 
 			const hashedToken = Accounts._hashLoginToken(stampedToken.token);
@@ -94,6 +93,7 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				loginToken: stampedToken.token,
+				userId: user._id,
 			});
 		},
 	},
