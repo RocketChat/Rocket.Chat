@@ -1,6 +1,7 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import passport from 'passport';
 import _ from 'underscore';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
@@ -17,7 +18,11 @@ const config: Partial<OAuthConfiguration> = {
 	accessTokenParam: 'access_token',
 };
 
+const serviceKey = 'wordpress';
+
 const fillSettings = _.debounce(async (): Promise<void> => {
+	passport.unuse(serviceKey);
+
 	config.serverURL = settings.get('API_Wordpress_URL');
 	if (!config.serverURL) {
 		if (config.serverURL === undefined) {
@@ -61,13 +66,13 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 	}
 
-	addPassportCustomOAuth('wordpress', config);
+	addPassportCustomOAuth(serviceKey, config);
 
 	const enabled = settings.get('Accounts_OAuth_Wordpress');
 	if (enabled) {
 		await ServiceConfiguration.configurations.upsertAsync(
 			{
-				service: 'wordpress',
+				service: serviceKey,
 			},
 			{
 				$set: config,
@@ -75,7 +80,7 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 		);
 	} else {
 		await ServiceConfiguration.configurations.removeAsync({
-			service: 'wordpress',
+			service: serviceKey,
 		});
 	}
 }, 1000);
