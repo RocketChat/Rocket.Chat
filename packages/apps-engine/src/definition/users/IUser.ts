@@ -21,5 +21,6 @@ export interface IUser {
 	lastLoginAt: Date;
 	settings?: IUserSettings;
 	appId?: string;
+	freeSwitchExtension?: string;
 	customFields?: { [key: string]: any };
 }

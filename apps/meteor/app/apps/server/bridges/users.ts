@@ -41,7 +41,15 @@ export class AppUserBridge extends UserBridge {
 			return;
 		}
 
-		const user = await Users.findOneByAppId(appId, {});
+		const user = await Users.findOneByAppId(appId);
+
+		return this.orch.getConverters()?.get('users').convertToApp(user);
+	}
+
+	protected async getByFreeSwitchExtension(extension: string, appId: string): Promise<IUser | undefined> {
+		this.orch.debugLog(`The App ${appId} is getting the user with FreeSwitch extension: "${extension}"`);
+
+		const user = await Users.findOneByFreeSwitchExtension(extension);
 
 		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}
