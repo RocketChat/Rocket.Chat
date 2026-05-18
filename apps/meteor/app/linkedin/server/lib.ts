@@ -1,9 +1,14 @@
 import { Meteor } from 'meteor/meteor';
+import passport from 'passport';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings/server';
 
+const serviceKey = 'linkedin';
+
 const configureLinkedInOAuth = (): void => {
+	passport.unuse(serviceKey);
+
 	const enabled = settings.get<boolean>('Accounts_OAuth_Linkedin');
 	if (!enabled) {
 		return;
@@ -16,7 +21,7 @@ const configureLinkedInOAuth = (): void => {
 		return;
 	}
 
-	addPassportCustomOAuth('linkedin', {
+	addPassportCustomOAuth(serviceKey, {
 		serverURL: 'https://www.linkedin.com',
 		authorizePath: '/oauth/v2/authorization',
 		tokenPath: '/oauth/v2/accessToken',
