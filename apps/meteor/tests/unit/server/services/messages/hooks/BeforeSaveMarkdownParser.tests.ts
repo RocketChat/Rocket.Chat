@@ -16,7 +16,7 @@ const createMessage = (msg?: string, extra: any = {}) => ({
 	...extra,
 });
 
-describe('Markdown parser', () => {
+describe.only('Markdown parser', () => {
 	beforeEach(() => {
 		delete process.env.MESSAGE_MAX_PARSE_LENGTH;
 	});
@@ -72,6 +72,18 @@ describe('Markdown parser', () => {
 
 	it('should parse normally when msg is within MESSAGE_MAX_PARSE_LENGTH', async () => {
 		process.env.MESSAGE_MAX_PARSE_LENGTH = '100';
+		const markdownParser = new BeforeSaveMarkdownParser(true);
+
+		const message = await markdownParser.parseMarkdown({
+			message: createMessage('short msg'),
+			config: {},
+		});
+
+		expect(message).to.have.property('md');
+	});
+
+	it('should parse normally when MESSAGE_MAX_PARSE_LENGTH is 0', async () => {
+		process.env.MESSAGE_MAX_PARSE_LENGTH = '0';
 		const markdownParser = new BeforeSaveMarkdownParser(true);
 
 		const message = await markdownParser.parseMarkdown({
