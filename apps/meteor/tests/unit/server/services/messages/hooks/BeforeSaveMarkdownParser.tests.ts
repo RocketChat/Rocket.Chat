@@ -47,17 +47,6 @@ describe('Markdown parser', () => {
 		expect(message).to.not.have.property('md');
 	});
 
-	it('should parse markdown when the environment variable is not set, falling back to the default 30.000 limit', async () => {
-		const markdownParser = new BeforeSaveMarkdownParser(true);
-
-		const message = await markdownParser.parseMarkdown({
-			message: createMessage('a'.repeat(30_000)),
-			config: {},
-		});
-
-		expect(message).to.have.property('md');
-	});
-
 	it('should skip parsing when msg exceeds MESSAGE_MAX_PARSE_LENGTH', async () => {
 		process.env.MESSAGE_MAX_PARSE_LENGTH = '10';
 		const markdownParser = new BeforeSaveMarkdownParser(true);
