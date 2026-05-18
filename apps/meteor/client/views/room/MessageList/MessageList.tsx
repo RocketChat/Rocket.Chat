@@ -79,7 +79,7 @@ export const MessageList = function MessageList({
 
 	const messages = useMessages({ rid });
 
-	const keepMountedMessages = useKeepMountedMessages(messages);
+	const keepMountedMessages = useKeepMountedMessages(messages, canPreview);
 
 	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages });
 
@@ -274,9 +274,6 @@ export const MessageList = function MessageList({
 						const showUnreadDivider = firstUnreadMessageId === message._id;
 						const system = MessageTypes.isSystemMessage(message);
 						const visible = !isThreadMessage(message) && !system;
-						// if (message.attachments?.length && message.attachments.length > 0) {
-						// 	setKeepMountedList((prev) => [...prev, index]);
-						// }
 
 						if (showUnreadDivider) {
 							unreadMarkIndex.current = index;
