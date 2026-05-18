@@ -6,6 +6,7 @@ import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { getMarkdownParserLimit } from '../lib/getMarkdownParserLimit';
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
@@ -145,7 +146,7 @@ dompurify.addHook('afterSanitizeAttributes', (node) => {
 	}
 });
 
-const MarkdownText = ({
+const MarkdownTextInner = ({
 	content,
 	variant = 'document',
 	withTruncatedText = false,
@@ -207,6 +208,17 @@ const MarkdownText = ({
 			{...props}
 		/>
 	) : null;
+};
+
+const MarkdownText = ({ content, withTruncatedText = false, ...props }: MarkdownTextProps) => {
+	if (content && content.length > getMarkdownParserLimit()) {
+		return (
+			<Box withTruncatedText={withTruncatedText} {...props}>
+				{content}
+			</Box>
+		);
+	}
+	return <MarkdownTextInner content={content} withTruncatedText={withTruncatedText} {...props} />;
 };
 
 export default MarkdownText;

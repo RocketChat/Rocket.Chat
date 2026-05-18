@@ -5,6 +5,7 @@ import { parse } from '@rocket.chat/message-parser';
 
 import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
 import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
+import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
@@ -113,6 +114,11 @@ const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): R
 	if (isParsedMessage(textOrRoot)) {
 		return textOrRoot;
 	}
+
+	if (textOrRoot.length > getMarkdownParserLimit()) {
+		return [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: textOrRoot }] }];
+	}
+
 	const parsedMessage = parse(textOrRoot, parseOptions);
 
 	const parsedMessageCleaned = parsedMessage[0].type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);
