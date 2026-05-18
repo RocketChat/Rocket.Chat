@@ -3,8 +3,8 @@ import * as os from 'os';
 import * as path from 'path';
 
 import { registerOrchestrator } from '@rocket.chat/apps';
+import { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';

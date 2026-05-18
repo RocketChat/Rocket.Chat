@@ -13,6 +13,7 @@ type VideoAttachmentProps = {
 };
 const VideoAttachment = ({ url, className, t, ...messageBubbleProps }: VideoAttachmentProps) => (
 	<MessageBubble nude className={createClassName(styles, 'video-attachment', {}, [className])} {...messageBubbleProps}>
+		{/* eslint-disable-next-line jsx-a11y/media-has-caption */}
 		<video src={url} controls className={createClassName(styles, 'video-attachment__inner')}>
 			{t('you_browser_doesn_t_support_video_element')}
 		</video>

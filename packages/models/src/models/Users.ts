@@ -2950,15 +2950,29 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			roles: role,
 		};
 
-		const update = {
+		const update: UpdateFilter<IUser> = {
 			$set: {
 				active,
 				...(!active && { inactiveReason: 'idle_too_long' as const }),
+				...(!active && { 'services.resume.loginTokens': [] }),
 			},
 			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	findActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role: IRole['_id'] = 'user', options: FindOptions<IUser> = {}) {
+		const neverActive = { lastLogin: { $exists: false }, createdAt: { $lte: latestLastLoginDate } };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+
+		const query = {
+			$or: [neverActive, idleTooLong],
+			active: true,
+			roles: role,
+		};
+
+		return this.find(query, options);
 	}
 
 	unsetRequirePasswordChange(_id: IUser['_id']) {

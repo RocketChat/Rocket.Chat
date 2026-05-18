@@ -1,7 +1,7 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps/dist/server/bridges/HttpBridge';
+import { HttpBridge } from '@rocket.chat/apps/dist/server/bridges/HttpBridge';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
-import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { censorUrl } from '@rocket.chat/tools';
 
