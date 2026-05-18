@@ -5,7 +5,7 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings/server';
 
-const config: Partial<OAuthConfiguration & { clientSecret?: string }> = {
+const config: Partial<OAuthConfiguration> = {
 		serverURL: 'https://www.meteor.com',
 		authorizePath: '/oauth2/authorize',
 		tokenPath: '/oauth2/token',
@@ -35,10 +35,7 @@ const configureMeteorDeveloperOAuth = (): void => {
 		return;
 	}
 
-	config.clientId = clientId;
-	config.clientSecret = clientSecret;
-
-	addPassportCustomOAuth(serviceKey, config);
+	addPassportCustomOAuth(serviceKey, { ...config, clientId, clientSecret });
 };
 
 Meteor.startup(() => {
