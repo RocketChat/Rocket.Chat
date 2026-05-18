@@ -16,7 +16,6 @@ oAuthRouter.enable('trust proxy');
 oAuthRouter.set('trust proxy', true);
 
 export const configurePassport = (settings: ICachedSettings) => {
-	console.log('Configuring Passport for OAuth services', settings.get<string>('Accounts_OAuth_Session_Secret'));
 	oAuthRouter.use(
 		session({
 			name: 'oauth',
