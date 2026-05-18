@@ -1,7 +1,7 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
@@ -51,28 +51,23 @@ settings.watchMultiple(
 
 		passport.unuse('apple');
 
-		const callbackURL = `${settings.get<string>('Site_Url')}/oauth/apple/callback`;
-		console.log('CALLBACK URL -> ', callbackURL);
 		passport.use(
 			'apple',
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 			new AppleStrategy(
 				{
 					clientID: settings.get<string>('Accounts_OAuth_Apple_id'),
 					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
 					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
 					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
-					callbackURL,
+					callbackURL: `${settings.get<string>('Site_Url')}/oauth/apple/callback`,
 					scope: ['name', 'email'],
 					passReqToCallback: false,
 					state: false,
 				},
 				async (accessToken: string, refreshToken: string, idToken: string, profile: Profile, done) => {
-					console.log('profile', profile);
-					console.log('idToken', idToken);
-
 					try {
 						const serviceData = await handleIdentityToken(idToken);
-						console.log('serviceData', serviceData);
 						if (profile?.name) {
 							serviceData.name = `${profile.name.firstName}${profile.name.middleName ? ` ${profile.name.middleName}` : ''}${
 								profile.name.lastName ? ` ${profile.name.lastName}` : ''
@@ -83,7 +78,6 @@ settings.watchMultiple(
 							serviceData.email = profile.email;
 						}
 
-						// eslint-disable-next-line @typescript-eslint/await-thenable
 						const user = await Accounts.updateOrCreateUserFromExternalService(
 							'apple',
 							{
@@ -116,62 +110,14 @@ settings.watchMultiple(
 			),
 		);
 
-		// const callbackHandler = [
-		// 	(req: Request, _res: Response, next: NextFunction) => {
-		// 		console.log('2nd callback url');
-		// 		console.log('query -> ', req.query);
-		// 		console.log('req in 2nd callback ->', req.session);
-		// 		console.log('CALLBACK HOST', req.hostname);
-		// 		console.log('CALLBACK URL', req.originalUrl);
-		// 		console.log('CALLBACK COOKIE', req.headers.cookie);
-		// 		console.log('CALLBACK HEADERS', req.headers);
-		// 		next();
-		// 	},
-		// 	passport.authenticate('apple', { failureRedirect: '/login', failureFlash: true, failWithError: true }),
-		// 	async (req: Request, res: Response) => {
-		// 		console.log('req -> user', req.user);
-		// 		const oAuthUser = req.user as IUser;
-
-		// 		if (!oAuthUser) {
-		// 			return res.redirect('/noOauthUser');
-		// 		}
-
-		// 		const stampedToken = Accounts._generateStampedLoginToken();
-		// 		await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
-
-		// 		res.redirect(`/home?resumeToken=${stampedToken.token}`);
-
-		// 		req.session.destroy((err) => {
-		// 			if (err) {
-		// 				console.error('Error destroying session', err);
-		// 			}
-		// 		});
-		// 	},
-		// ];
-
 		const callbackHandler = [
 			express.urlencoded({ extended: true }),
-			(req: Request, _res: Response, next: NextFunction) => {
-				console.log('CALLBACK HIT');
-				console.log('METHOD', req.method);
-
-				console.log('BODY', req.body);
-				console.log('QUERY', req.query);
-
-				console.log('SESSION', req.session);
-
-				console.log('COOKIE', req.headers.cookie);
-
-				next();
-			},
 			passport.authenticate('apple', { failWithError: true, session: true, keepSessionInfo: true }),
 			async (req: Request, res: Response) => {
-				console.log('SUCCESS USER', req.user);
-
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
-					return res.status(500).send('No user');
+					return res.redirect('/login');
 				}
 
 				const stampedToken = Accounts._generateStampedLoginToken();
@@ -180,42 +126,10 @@ settings.watchMultiple(
 
 				res.redirect(`/home?resumeToken=${stampedToken.token}`);
 			},
-
-			// (err: any, _req: Request, res: Response, _next: NextFunction) => {
-			// 	console.error('FINAL ERROR', err);
-
-			// 	res.status(500).json({
-			// 		message: err?.message,
-			// 		name: err?.name,
-			// 		code: err?.code,
-			// 		stack: err?.stack,
-			// 		info: err,
-			// 	});
-			// },
 		];
 
 		oAuthRouter.get(
 			'/oauth/apple',
-
-			(req: Request, _res: Response, next: NextFunction) => {
-				console.log('LOGIN START');
-
-				console.log('SESSION BEFORE', req.session);
-
-				//@ts-ignore
-				req.session.appleOAuthInit = true;
-
-				req.session.save((err) => {
-					if (err) {
-						return next(err);
-					}
-
-					console.log('SESSION SAVED');
-
-					next();
-				});
-			},
-
 			passport.authenticate('apple', {
 				scope: ['name', 'email'],
 			}),
@@ -225,52 +139,5 @@ settings.watchMultiple(
 			.route('/oauth/apple/callback')
 			.post(...callbackHandler)
 			.get(...callbackHandler);
-
-		// Apple is different in that they POST back to the callback.
-		// Because of SameSite policies in browsers don't allow cookies to be included in external POST requests
-		// we wouldn't be able to access our express session here, and thereby not authenticate the session.
-		// Therefore we redirect the POST request to GET (with query parameters).
-		// https://github.com/ananay/passport-apple/issues/51#issuecomment-2312651378
-		// oAuthRouter.post('/oauth/apple/callback', express.urlencoded({ extended: true }), (req, res) => {
-		// 	console.log('POST CALLBACK');
-		// 	console.log('CALLBACK HOST', req.hostname);
-		// 	console.log('CALLBACK SESSION', req.session);
-		// 	console.log('CALLBACK URL', req.originalUrl);
-		// 	console.log('CALLBACK COOKIE', req.headers.cookie);
-		// 	console.log('CALLBACK HEADERS', req.headers);
-		// 	const { body } = req;
-		// 	const sp = new URLSearchParams();
-		// 	Object.entries(body).forEach(([key, value]) => sp.set(key, String(value)));
-		// 	console.log('apple callback search params - ', sp.toString());
-		// 	res.redirect(`/oauth/apple/callback?${sp.toString()}`);
-		// });
-
-		// Here we handle the GET request after the redirect from the POST callback above
-		// oAuthRouter.get(
-		// 	'/oauth/apple/callback',
-		// 	passport.authenticate('apple', {
-		// 		successReturnToOrRedirect: '/success',
-		// 		failureRedirect: '/login',
-		// 	}),
-		// 	async (err, _req, res, _next) => {
-		// 		// for some reason, `failureRedirect` doesn't receive certain errors, so we need an error handler here.
-		// 		if (err instanceof Error && (err.name === 'AuthorizationError' || err.name === 'TokenError')) {
-		// 			// Common errors:
-		// 			// - AuthorizationError { code: 'user_cancelled_authorize' } - When the user cancels the operation
-		// 			// - TokenError { code: 'invalid_grant' } - The code has already been used
-		// 			console.log('ERROR - ', err);
-		// 			const sp = new URLSearchParams({ error: err.name });
-		// 			if ('code' in err && typeof err.code === 'string') {
-		// 				sp.set('code', err.code);
-		// 			}
-		// 			res.redirect(`${'/login'}${sp.toString()}`);
-		// 			return;
-		// 		}
-
-		// 		// unknown err object
-		// 		res.redirect('/login');
-		// 	},
-		// );
-		// oAuthRouter.get('/oauth/apple/callback', ...callbackHandler);
 	},
 );
