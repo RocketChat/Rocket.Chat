@@ -1,6 +1,7 @@
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+
 import { MESSAGE_MAX_PARSE_LENGTH_DEFAULT } from '../../../../lib/constants';
 
 type ParserConfig = {
@@ -27,7 +28,9 @@ export class BeforeSaveMarkdownParser {
 			return message;
 		}
 
-		const maxParseLength = process.env.MESSAGE_MAX_PARSE_LENGTH ? parseInt(process.env.MESSAGE_MAX_PARSE_LENGTH, 10) : MESSAGE_MAX_PARSE_LENGTH_DEFAULT;
+		const parsedEnvValue = Number.parseInt(process.env.MESSAGE_MAX_PARSE_LENGTH ?? '', 10);
+		const maxParseLength = Number.isFinite(parsedEnvValue) ? parsedEnvValue : MESSAGE_MAX_PARSE_LENGTH_DEFAULT;
+
 		if (maxParseLength > 0 && message.msg && message.msg.length > maxParseLength) {
 			return message;
 		}

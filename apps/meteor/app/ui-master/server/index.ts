@@ -6,12 +6,12 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
 
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
+import { MESSAGE_MAX_PARSE_LENGTH_DEFAULT } from '../../../lib/constants';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings/server';
 import { getURL } from '../../utils/server/getURL';
 
 import './scripts';
-import { MESSAGE_MAX_PARSE_LENGTH_DEFAULT } from '../../../lib/constants';
 
 export * from './inject';
 
@@ -128,8 +128,12 @@ Meteor.startup(() => {
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
 
-	const messageMaxParseLength = process.env.MESSAGE_MAX_PARSE_LENGTH ?? MESSAGE_MAX_PARSE_LENGTH_DEFAULT;
-	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${messageMaxParseLength}" />`);
+	const parsedMessageMaxParseLength = Number.parseInt(process.env.MESSAGE_MAX_PARSE_LENGTH ?? '', 10);
+	const messageMaxParseLength = Number.isFinite(parsedMessageMaxParseLength)
+		? parsedMessageMaxParseLength
+		: MESSAGE_MAX_PARSE_LENGTH_DEFAULT;
+	const escapedMessageMaxParseLength = escapeHTML(String(messageMaxParseLength));
+	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${escapedMessageMaxParseLength}" />`);
 });
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
