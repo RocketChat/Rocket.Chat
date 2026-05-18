@@ -27,7 +27,6 @@ oAuthRouter.use(
 		cookie: {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
-			// secure: true,
 			maxAge: 5 * 60 * 1000, // 5 minutes
 			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 		},
