@@ -43,6 +43,8 @@ declare module 'meteor/accounts-base' {
 			options: Record<string, unknown>,
 		): Promise<Record<string, unknown> | undefined>;
 
+		function addAutopublishFields(options: Record<string, unknown>): void;
+
 		function _clearAllLoginTokens(userId: string | null): void;
 
 		function config(options: { clientStorage: 'session' | 'local' }): void;

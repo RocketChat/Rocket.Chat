@@ -34,6 +34,10 @@ export type OAuthConfiguration = {
 	mergeRoles: boolean;
 	rolesToSync: string;
 	showButton: boolean;
+	addAutopublishFields?: {
+		forLoggedInUser: string[];
+		forOtherUsers: string[];
+	};
 };
 
 export type FacebookOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
