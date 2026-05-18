@@ -32,10 +32,8 @@ export const useShareSessionWithOtherClients = () => {
 		const loginURL = buildDeepLinkURL(loginToken, userId);
 		window.location.href = loginURL;
 
-		const timeout = setTimeout(() => {
+		queueMicrotask(() => {
 			router.navigate('/home', { replace: true });
-		}, 0);
-
-		return () => clearTimeout(timeout);
+		});
 	}, [router, userId]);
 };
