@@ -1,12 +1,12 @@
-import type { OauthConfig } from '@rocket.chat/core-typings';
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings/server';
 
-const config: OauthConfig = {
+const config: Partial<OAuthConfiguration> = {
 	serverURL: '',
 	identityPath: '/oauth/me',
 
@@ -17,8 +17,6 @@ const config: OauthConfig = {
 	accessTokenParam: 'access_token',
 };
 
-const WordPress = new CustomOAuth('wordpress', config);
-
 const fillSettings = _.debounce(async (): Promise<void> => {
 	config.serverURL = settings.get('API_Wordpress_URL');
 	if (!config.serverURL) {
@@ -27,12 +25,6 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 		}
 		return;
 	}
-
-	delete config.identityPath;
-	delete config.identityTokenSentVia;
-	delete config.authorizePath;
-	delete config.tokenPath;
-	delete config.scope;
 
 	const serverType = settings.get('Accounts_OAuth_Wordpress_server_type');
 	switch (serverType) {
@@ -59,7 +51,7 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 		case 'wordpress-com':
 			config.identityPath = 'https://public-api.wordpress.com/rest/v1/me';
-			config.identityTokenSentVia = 'header';
+			config.identityTokenSentVia = 'header' as OAuthConfiguration['identityTokenSentVia'];
 			config.authorizePath = 'https://public-api.wordpress.com/oauth2/authorize';
 			config.tokenPath = 'https://public-api.wordpress.com/oauth2/token';
 			config.scope = 'auth';
@@ -69,7 +61,8 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 	}
 
-	const result = WordPress.configure(config);
+	addPassportCustomOAuth('wordpress', config);
+
 	const enabled = settings.get('Accounts_OAuth_Wordpress');
 	if (enabled) {
 		await ServiceConfiguration.configurations.upsertAsync(
@@ -85,8 +78,6 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			service: 'wordpress',
 		});
 	}
-
-	return result;
 }, 1000);
 
 Meteor.startup(() => {
