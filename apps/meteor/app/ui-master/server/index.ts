@@ -129,7 +129,7 @@ Meteor.startup(() => {
 	injectIntoHead('base', `<base href="${baseUrl}">`);
 
 	const messageMaxParseLength = process.env.MESSAGE_MAX_PARSE_LENGTH ?? MESSAGE_MAX_PARSE_LENGTH_DEFAULT;
-	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-markdown-max-length" content="${messageMaxParseLength}" />`);
+	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${messageMaxParseLength}" />`);
 });
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
