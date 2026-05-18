@@ -16,10 +16,10 @@ export const createOAuthServiceConfig = (settings: ICachedSettings, services: st
 	return services.map((service) => {
 		return {
 			provider: service,
-			strategy: OAuthConfigs[service].strategy,
 			clientId: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`),
 			clientSecret: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_secret`),
 			scope: OAuthConfigs[service]?.scope,
+			...OAuthConfigs[service],
 		};
 	});
 };
