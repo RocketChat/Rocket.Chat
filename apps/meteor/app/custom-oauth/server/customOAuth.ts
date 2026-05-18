@@ -65,7 +65,7 @@ export class CustomOAuthStrategy extends Strategy {
 			clientSecret: config.clientSecret,
 			callbackURL: `${settings.get<string>('Site_Url')}/oauth/${name}/callback`,
 			state: true,
-			pkce: true,
+			pkce: config.pkce ?? true,
 			scope: config.scope,
 		};
 

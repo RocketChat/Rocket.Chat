@@ -38,6 +38,7 @@ export type OAuthConfiguration = {
 		forLoggedInUser: string[];
 		forOtherUsers: string[];
 	};
+	pkce?: boolean;
 };
 
 export type FacebookOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
