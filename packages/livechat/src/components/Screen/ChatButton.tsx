@@ -5,7 +5,7 @@ import { Button } from '../Button';
 type ChatButtonProps = {
 	text: string;
 	minimized: boolean;
-	badge: number;
+	badge: number | undefined;
 	onClick: () => void;
 	triggered?: boolean;
 	className?: string;

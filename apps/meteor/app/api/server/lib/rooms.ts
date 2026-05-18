@@ -4,6 +4,7 @@ import type { FindOptions, Sort } from 'mongodb';
 
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
 
 export async function findAdminRooms({
 	uid,
@@ -39,7 +40,13 @@ export async function findAdminRooms({
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
+	const [rooms, total] = await Promise.all([
+		cursor
+			.sort(sort || { default: -1, name: 1 })
+			.map(stripABACManagedFieldsForAdmin)
+			.toArray(),
+		totalCount,
+	]);
 
 	return {
 		rooms,
@@ -54,7 +61,11 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 		throw new Error('error-not-authorized');
 	}
 
-	return Rooms.findOneById(rid, { projection: adminFields });
+	const room = await Rooms.findOneById(rid, { projection: adminFields });
+	if (!room) {
+		return null;
+	}
+	return stripABACManagedFieldsForAdmin(room);
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{

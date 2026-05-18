@@ -4,6 +4,7 @@ import type {
 	ServerMethodParameters,
 	ServerMethodReturn,
 	StreamerCallbackArgs,
+	StreamerEvents,
 	StreamNames,
 	StreamKeys,
 } from '@rocket.chat/ddp-client';
@@ -11,13 +12,11 @@ import type { Method, PathFor, OperationParams, OperationResult, UrlParams, Path
 import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { compile } from 'path-to-regexp';
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Info as info } from '../../app/utils/rocketchat.info';
-import { useReactiveValue } from '../hooks/useReactiveValue';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
@@ -75,6 +74,11 @@ const getStream =
 	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
 		sdk.stream(streamName, [eventName], callback).stop;
 
+const getStreamAll =
+	<N extends StreamNames>(streamName: N) =>
+	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>
+		sdk.onAnyStreamEvent(streamName, callback as (eventName: string, args: unknown[]) => void).stop;
+
 const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, streamKey: K, ...args: StreamerCallbackArgs<N, K>) =>
 	sdk.publish(streamName, [streamKey, ...args]);
 
@@ -99,16 +103,6 @@ const reconnect = sdkTransportEnabled
 		}
 	: () => Meteor.reconnect();
 
-// With SDK transport on, combine Meteor's DDP status with DDPSDK's so the
-// ConnectionStatusBar / idle-connection hooks reflect the worst-case of both
-// transports. With the flag off, route status straight through Meteor —
-// Meteor.status() is already Tracker-reactive, so adding a second dependency
-// via the meteor-backed proxy's emitter would just double-fire the autorun.
-const ddpSdkStatusDep = sdkTransportEnabled ? new Tracker.Dependency() : undefined;
-if (sdkTransportEnabled) {
-	getDdpSdk().connection.on('connection', () => ddpSdkStatusDep!.changed());
-}
-
 type CombinedStatus = ReturnType<typeof Meteor.status>;
 
 const sdkStatusToMeteor = (sdkStatus: string, meteor: CombinedStatus): CombinedStatus => {
@@ -132,21 +126,48 @@ const sdkStatusToMeteor = (sdkStatus: string, meteor: CombinedStatus): CombinedS
 	}
 };
 
-const getStatus = sdkTransportEnabled
-	? () => {
-			ddpSdkStatusDep!.depend();
-			return sdkStatusToMeteor(getDdpSdk().connection.status, Meteor.status());
-		}
-	: // useReactiveValue stores the snapshot in useSyncExternalStore, which
-		// compares by identity. Meteor.status() reuses the same internal object
-		// (mutated in place), so without spreading the snapshot reference never
-		// changes and ConnectionStatusBar stops re-rendering on connect/drop.
-		() => ({ ...Meteor.status() });
+// With SDK transport on, combine Meteor's DDP status with DDPSDK's so the
+// ConnectionStatusBar / idle-connection hooks reflect the worst-case of both
+// transports. With the flag off, route status straight through Meteor —
+// `meteorBackedSdk` already bridges Meteor's `_stream` events into
+// `sdk.connection.on('connection')`, so the same subscription works in both
+// modes.
+const computeStatus: () => CombinedStatus = sdkTransportEnabled
+	? () => sdkStatusToMeteor(getDdpSdk().connection.status, Meteor.status())
+	: () => ({ ...Meteor.status() });
+
+const isStatusEqual = (a: CombinedStatus, b: CombinedStatus): boolean =>
+	a.status === b.status && a.connected === b.connected && a.retryCount === b.retryCount && a.retryTime === b.retryTime;
+
+let cachedStatus: CombinedStatus = computeStatus();
+const statusListeners = new Set<() => void>();
+let statusBridgeStarted = false;
+
+const ensureStatusBridge = (): void => {
+	if (statusBridgeStarted) return;
+	statusBridgeStarted = true;
+	getDdpSdk().connection.on('connection', () => {
+		const next = computeStatus();
+		if (isStatusEqual(cachedStatus, next)) return;
+		cachedStatus = next;
+		statusListeners.forEach((cb) => cb());
+	});
+};
+
+const subscribeStatus = (cb: () => void): (() => void) => {
+	ensureStatusBridge();
+	statusListeners.add(cb);
+	return () => {
+		statusListeners.delete(cb);
+	};
+};
+
+const getStatusSnapshot = (): CombinedStatus => cachedStatus;
 
 type ServerProviderProps = { children?: ReactNode };
 
 const ServerProvider = ({ children }: ServerProviderProps) => {
-	const { connected, status, retryCount, retryTime } = useReactiveValue(getStatus);
+	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
 
 	const value = useMemo(
 		(): ServerContextValue => ({
@@ -160,6 +181,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			callEndpoint,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll,
 			writeStream,
 			disconnect,
 			reconnect,

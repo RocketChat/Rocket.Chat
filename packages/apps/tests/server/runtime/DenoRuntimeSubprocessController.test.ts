@@ -2,7 +2,7 @@
 
 import * as fs from 'fs/promises';
 import * as assert from 'node:assert';
-import { describe, it, beforeEach, afterEach, mock, before, after } from 'node:test';
+import { describe, it, afterEach, mock, before, after } from 'node:test';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -25,42 +25,46 @@ describe('DenoRuntimeSubprocessController', () => {
 	let appPackage: IParseAppPackageResult;
 	let appStorageItem: IAppStorageItem;
 
-	before(async () => {
-		const infrastructure = new TestInfastructureSetup();
-		manager = infrastructure.getMockManager();
+	before(
+		async () => {
+			const infrastructure = new TestInfastructureSetup();
+			manager = infrastructure.getMockManager();
 
-		const accessors = new AppAccessorManager(manager);
-		manager.getAccessorManager = () => accessors;
+			const accessors = new AppAccessorManager(manager);
+			manager.getAccessorManager = () => accessors;
 
-		const api = new AppApiManager(manager);
-		manager.getApiManager = () => api;
+			const api = new AppApiManager(manager);
+			manager.getApiManager = () => api;
 
-		const appPackageBuffer = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
-		appPackage = await manager.getParser().unpackageApp(appPackageBuffer);
+			const appPackageBuffer = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
+			appPackage = await manager.getParser().unpackageApp(appPackageBuffer);
 
-		appStorageItem = {
-			id: 'hello-world-test',
-			status: AppStatus.MANUALLY_ENABLED,
-		} as IAppStorageItem;
-	});
+			appStorageItem = {
+				id: 'hello-world-test',
+				status: AppStatus.MANUALLY_ENABLED,
+			} as IAppStorageItem;
 
-	beforeEach(async () => {
-		controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
-		await controller.setupApp();
-	});
+			controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+			await controller.setupApp();
+		},
+		{ timeout: 60_000 },
+	);
 
-	afterEach(async () => {
-		await controller?.stopApp();
+	afterEach(() => {
 		mock.restoreAll();
 	});
 
-	after(async () => {
-		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
-			console.warn('Failed to delete temporary Deno runtime symlink', reason);
-		});
-	});
+	after(
+		async () => {
+			await controller?.stopApp();
+			await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
+				console.warn('Failed to delete temporary Deno runtime symlink', reason);
+			});
+		},
+		{ timeout: 30_000 },
+	);
 
-	it('correctly identifies a call to the HTTP accessor', async () => {
+	it('correctly identifies a call to the HTTP accessor', { timeout: 15_000 }, async () => {
 		const httpBridge = manager.getBridges().getHttpBridge();
 		const doCallSpy = mock.method(httpBridge, 'doCall');
 
@@ -100,7 +104,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		);
 	});
 
-	it('correctly identifies a call to the IRead accessor', async () => {
+	it('correctly identifies a call to the IRead accessor', { timeout: 15_000 }, async () => {
 		const userBridge = manager.getBridges().getUserBridge();
 		const doGetByUsernameSpy = mock.method(userBridge, 'doGetByUsername', () =>
 			Promise.resolve({
@@ -139,7 +143,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		assert.partialDeepStrictEqual(result, { username: 'rocket.cat' });
 	});
 
-	it('correctly identifies a call to the IEnvironmentReader accessor via IRead', async () => {
+	it('correctly identifies a call to the IEnvironmentReader accessor via IRead', { timeout: 15_000 }, async () => {
 		const { id, result } = await controller['handleAccessorMessage']({
 			type: rpcTypeRequest,
 			payload: {
@@ -155,7 +159,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		assert.partialDeepStrictEqual(result, { id: 'setting test id' });
 	});
 
-	it('correctly identifies a call to create a visitor via the LivechatCreator', async () => {
+	it('correctly identifies a call to create a visitor via the LivechatCreator', { timeout: 15_000 }, async () => {
 		const livechatBridge = manager.getBridges().getLivechatBridge();
 		const doCreateVisitorSpy = mock.method(livechatBridge, 'doCreateVisitor', () => Promise.resolve('random id'));
 
@@ -192,7 +196,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		assert.strictEqual(result, 'random id');
 	});
 
-	it('correctly identifies a call to the message bridge', async () => {
+	it('correctly identifies a call to the message bridge', { timeout: 15_000 }, async () => {
 		const messageBridge = manager.getBridges().getMessageBridge();
 		const doCreateSpy = mock.method(messageBridge, 'doCreate', () => Promise.resolve('random-message-id'));
 
