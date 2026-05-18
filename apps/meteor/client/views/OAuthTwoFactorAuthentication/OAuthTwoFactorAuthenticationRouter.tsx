@@ -5,6 +5,10 @@ import { useEffect } from 'react';
 
 import TwoFactorModal from '../../components/TwoFactorModal/TwoFactorModal';
 
+const throwErrorOnInvalidMethod = (method: never): never => {
+	throw new Error(`Invalid Two Factor method: ${method}`);
+};
+
 const OAuthTwoFactorAuthenticationRouter = () => {
 	const method = useRouteParameter('method') as 'totp' | 'email' | undefined;
 	const challengeId = useRouteParameter('challengeId');
@@ -59,7 +63,7 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 			return;
 		}
 
-		throw new Error('Invalid Two Factor method');
+		throwErrorOnInvalidMethod(method);
 	}, [method, challengeId, router, setModal, onConfirm, resendEmail, navigateToHome]);
 
 	return <Page />;
