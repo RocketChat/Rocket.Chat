@@ -34,6 +34,13 @@ export const createE2ESettings = () =>
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
 
+		await this.add('E2E_PDF_Preview_Size_Limit', 10, {
+			type: 'int',
+			public: true,
+			i18nLabel: 'E2E_PDF_Preview_Size_Limit',
+			i18nDescription: 'E2E_PDF_Preview_Size_Limit_Description',
+		});
+
 		await this.add('E2E_Enabled_Mentions', true, {
 			type: 'boolean',
 			public: true,

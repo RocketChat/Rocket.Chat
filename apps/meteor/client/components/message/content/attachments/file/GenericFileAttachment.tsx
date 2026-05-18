@@ -6,14 +6,13 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
-import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useMediaUrl, useSetting } from '@rocket.chat/ui-contexts';
 import { useId, useEffect, useRef } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
-import { MAX_FILE_SIZE_PREVIEW } from '../../../../../lib/constants';
 import MessageCollapsible from '../../../MessageCollapsible';
 import AttachmentSize from '../structure/AttachmentSize';
 
@@ -30,6 +29,8 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
+	const pdfPreviewSizeLimitMb = useSetting('E2E_PDF_Preview_Size_Limit', 10);
+	const pdfPreviewSizeLimit = Number(pdfPreviewSizeLimitMb) * 1024 * 1024;
 	const uid = useId();
 	const { t } = useTranslation();
 
@@ -59,7 +60,7 @@ const GenericFileAttachment = ({
 			event.preventDefault();
 
 			if (isEncrypted) {
-				if (size && size > MAX_FILE_SIZE_PREVIEW) {
+				if (size && size > pdfPreviewSizeLimit) {
 					registerDownloadForUid(uid, t, title);
 					forAttachmentDownload(uid, link);
 					return;
