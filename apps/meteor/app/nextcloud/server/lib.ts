@@ -10,6 +10,10 @@ const NEXTCLOUD_PATHS = {
 	authorizePath: '/index.php/apps/oauth2/authorize',
 	identityPath: '/ocs/v2.php/cloud/user?format=json',
 	scope: 'openid',
+	addAutopublishFields: {
+		forLoggedInUser: ['services.nextcloud'],
+		forOtherUsers: ['services.nextcloud.name'],
+	},
 };
 
 function configureNextcloudOAuth(): void {
