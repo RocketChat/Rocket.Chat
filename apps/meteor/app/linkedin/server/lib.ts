@@ -18,6 +18,7 @@ const config: Partial<OAuthConfiguration> = {
 	},
 	pkce: false,
 	emailField: 'email',
+	avatarField: 'picture',
 };
 
 const serviceKey = 'linkedin';
