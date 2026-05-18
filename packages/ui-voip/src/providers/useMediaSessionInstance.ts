@@ -132,7 +132,6 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			this.sessionInstance = null;
 		}
 
-		// New signaling session → fresh screen-share retry budget (NotAllowedError soft retries).
 		this.failedScreenShareAttempts = 0;
 
 		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
