@@ -1,8 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings/server';
+
+const config: Partial<OAuthConfiguration & { clientSecret?: string }> = {
+		serverURL: 'https://www.meteor.com',
+		authorizePath: '/oauth2/authorize',
+		tokenPath: '/oauth2/token',
+		identityPath: '/api/v1/identity',
+		scope: 'email',
+		tokenSentVia: 'header',
+		addAutopublishFields: {
+			forLoggedInUser: ['services.meteor-developer'],
+			forOtherUsers: ['services.meteor-developer.username'],
+		},
+	}
 
 const serviceKey = 'meteor-developer';
 
@@ -21,20 +35,10 @@ const configureMeteorDeveloperOAuth = (): void => {
 		return;
 	}
 
-	addPassportCustomOAuth(serviceKey, {
-		serverURL: 'https://www.meteor.com',
-		authorizePath: '/oauth2/authorize',
-		tokenPath: '/oauth2/token',
-		identityPath: '/api/v1/identity',
-		scope: 'email',
-		tokenSentVia: 'header',
-		clientSecret,
-		clientId,
-		addAutopublishFields: {
-			forLoggedInUser: ['services.meteor-developer'],
-			forOtherUsers: ['services.meteor-developer.username'],
-		},
-	});
+	config.clientId = clientId;
+	config.clientSecret = clientSecret;
+
+	addPassportCustomOAuth(serviceKey, config);
 };
 
 Meteor.startup(() => {
