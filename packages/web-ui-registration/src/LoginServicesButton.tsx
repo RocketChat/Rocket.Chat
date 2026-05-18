@@ -36,13 +36,13 @@ const LoginServicesButton = <T extends LoginService>({
 			const queryParams = url.searchParams;
 			const loginClient = queryParams.get('loginClient');
 
-			let redirectUrl = `/oauth/${service}`;
+			const redirectUrl = new URL(`/oauth/${service}`, window.location.origin);
 
 			if (loginClient) {
-				redirectUrl += `?loginClient=${loginClient}`;
+				redirectUrl.searchParams.set('loginClient', loginClient);
 			}
 
-			window.location.href = redirectUrl;
+			window.location.href = redirectUrl.toString();
 			return;
 		}
 

@@ -90,13 +90,16 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				const stampedToken = Accounts._generateStampedLoginToken();
 				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
 
-				let redirectUrl = `/home?resumeToken=${stampedToken.token}&userId=${oAuthUser._id}`;
+				const redirectUrl = new URL(`/home`, siteUrl);
+
+				redirectUrl.searchParams.set('resumeToken', stampedToken.token);
+				redirectUrl.searchParams.set('userId', oAuthUser._id);
 
 				if (loginClient) {
-					redirectUrl += `&loginClient=${loginClient}`;
+					redirectUrl.searchParams.set('loginClient', loginClient);
 				}
 
-				res.redirect(redirectUrl);
+				res.redirect(redirectUrl.toString());
 
 				req.session.destroy((err) => {
 					if (err) {
