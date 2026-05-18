@@ -1,10 +1,17 @@
 import { getPageMeta } from './getPageMeta';
-
-const DEFAULT_MARKDOWN_PARSER_LIMIT = 30_000;
+import { MESSAGE_MAX_PARSE_LENGTH_DEFAULT } from '../../lib/constants';
 
 export const getMarkdownParserLimit = (): number => {
-	const value = getPageMeta('rc-markdown-max-length');
-	if (value === null) return DEFAULT_MARKDOWN_PARSER_LIMIT;
+	const value = getPageMeta('rc-message-parser-max-length');
+
+	const defaultValue = MESSAGE_MAX_PARSE_LENGTH_DEFAULT > 0 ? MESSAGE_MAX_PARSE_LENGTH_DEFAULT : Infinity;
+	if (value === null) return defaultValue;
+
 	const parsed = parseInt(value, 10);
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_MARKDOWN_PARSER_LIMIT;
+
+	if (!Number.isFinite(parsed)) {
+		return defaultValue;
+	}
+
+	return parsed > 0 ? parsed : Infinity;
 };
