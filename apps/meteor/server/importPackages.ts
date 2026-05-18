@@ -34,6 +34,7 @@ import '../app/integrations/server';
 import '../app/irc/server';
 import '../app/lib/server';
 import '../app/meteor-developer/server';
+import '../app/linkedin/server';
 import '../app/token-login/server';
 import '../app/mailer/server/api';
 import '../app/markdown/server';

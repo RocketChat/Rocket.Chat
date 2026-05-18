@@ -9,10 +9,6 @@ import type { OAuthServiceConfig } from './createOAuthServiceConfig';
 import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
-interface IOAuthRequest extends Request {
-	user?: IUser;
-}
-
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
 		const Strategy = config.strategy;
@@ -36,7 +32,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
-					// eslint-disable-next-line @typescript-eslint/await-thenable
 					const user = await Accounts.updateOrCreateUserFromExternalService(
 						config.provider,
 						{
@@ -67,23 +62,44 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 		oAuthRouter.get(
 			`/oauth/${config.provider}`,
-			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
+			(req, _res, next) => {
+				const { loginClient } = req.query;
+				if (loginClient === 'mobile' || loginClient === 'desktop') {
+					req.session.loginClient = loginClient;
+					req.session.save(() => {
+						next();
+					});
+				} else {
+					next();
+				}
+			},
+			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login', keepSessionInfo: true }),
 		);
 		oAuthRouter.get(
 			`/oauth/${config.provider}/callback`,
-			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
-			async (req: IOAuthRequest, res: Response) => {
+			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
+			async (req: Request, res: Response) => {
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
-					// return res.redirect('/login');
-					return res.redirect('/noOauthUser');
+					return res.redirect('/login');
 				}
+
+				const { loginClient } = req.session;
 
 				const stampedToken = Accounts._generateStampedLoginToken();
 				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
 
-				res.redirect(`/home?resumeToken=${stampedToken.token}`);
+				const redirectUrl = new URL(`/home`, siteUrl);
+
+				redirectUrl.searchParams.set('resumeToken', stampedToken.token);
+				redirectUrl.searchParams.set('userId', oAuthUser._id);
+
+				if (loginClient) {
+					redirectUrl.searchParams.set('loginClient', loginClient);
+				}
+
+				res.redirect(redirectUrl.toString());
 
 				req.session.destroy((err) => {
 					if (err) {
