@@ -410,7 +410,6 @@ export const createOauthSettings = () =>
 		await this.add('Accounts_OAuth_Session_Secret', Random.secret(), {
 			type: 'string',
 			secret: true,
-			private: true,
 			hidden: true,
 		});
 		return this.section('Proxy', async function () {
