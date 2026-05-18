@@ -1,4 +1,4 @@
-import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,16 @@ const LoginServices = ({
 		return null;
 	}
 
+	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser;
+
+	const handleLoginOnWeb = () => {
+		if (!isDesktopApp) {
+			return;
+		}
+
+		window.RocketChatDesktop?.openInBrowser(`${window.location.href}?loginClient=desktop`);
+	};
+
 	return (
 		<>
 			{showFormLogin && (
@@ -28,11 +38,18 @@ const LoginServices = ({
 					{t('registration.component.form.divider')}
 				</Divider>
 			)}
-			<ButtonGroup vertical stretch small>
-				{services.map((service) => (
-					<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
-				))}
-			</ButtonGroup>
+			{!isDesktopApp && (
+				<ButtonGroup vertical stretch small>
+					{services.map((service) => (
+						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
+					))}
+				</ButtonGroup>
+			)}
+			{isDesktopApp && (
+				<Button width='100%' primary onClick={handleLoginOnWeb}>
+					{t('registration.component.login.onWeb')}
+				</Button>
+			)}
 		</>
 	);
 };
