@@ -24,6 +24,7 @@ import RoomForeword from '../body/RoomForeword/RoomForeword';
 import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
+import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
@@ -77,6 +78,8 @@ export const MessageList = function MessageList({
 	const lastScrollSizeRef = useRef(0);
 
 	const messages = useMessages({ rid });
+
+	const keepMountedMessages = useKeepMountedMessages(messages);
 
 	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages });
 
@@ -163,14 +166,24 @@ export const MessageList = function MessageList({
 				align: 'center',
 			});
 		}
-		// If new messages arrive and is at bottom, scroll to keep at bottom
-		if (isAtBottom.current && lastScrollSizeRef.current !== handle?.scrollSize) {
+		// If new messages arrive and is at bottom, scroll to keep at bottom.
+		if (isAtBottom.current && lastScrollSizeRef.current !== handle?.scrollSize && !isLoadingMoreMessages) {
 			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
 			handle?.scrollToIndex(lastItemIndex + 1, {
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, messageJumpParam, rid, firstUnreadMessageId, setShouldJumpToBottom]);
+	}, [
+		isAtBottom,
+		messages,
+		shouldJumpToBottom,
+		isJumpingToMessage,
+		isLoadingMoreMessages,
+		messageJumpParam,
+		rid,
+		firstUnreadMessageId,
+		setShouldJumpToBottom,
+	]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 
@@ -231,6 +244,7 @@ export const MessageList = function MessageList({
 					aria-busy={isLoadingMoreMessages}
 					role='list'
 					className='messages-list'
+					keepMounted={keepMountedMessages}
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();
@@ -260,6 +274,9 @@ export const MessageList = function MessageList({
 						const showUnreadDivider = firstUnreadMessageId === message._id;
 						const system = MessageTypes.isSystemMessage(message);
 						const visible = !isThreadMessage(message) && !system;
+						// if (message.attachments?.length && message.attachments.length > 0) {
+						// 	setKeepMountedList((prev) => [...prev, index]);
+						// }
 
 						if (showUnreadDivider) {
 							unreadMarkIndex.current = index;
