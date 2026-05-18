@@ -88,6 +88,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 			uidsExclude?: ISubscription['u']['_id'][];
 			uidsInclude?: ISubscription['u']['_id'][];
 			onlyRead: boolean;
+			includeSubscriptionsWithDefaultDesktopNotification?: boolean;
+			includeSubscriptionsWithDefaultMobileNotification?: boolean;
 		},
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
@@ -113,6 +115,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): Promise<SpotlightUser[]>;
 
 	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
+
+	incUnreadForIds(ids: ISubscription['_id'][], inc: number): Promise<UpdateResult | Document>;
 
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 

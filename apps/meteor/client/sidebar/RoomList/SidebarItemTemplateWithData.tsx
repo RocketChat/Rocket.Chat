@@ -150,6 +150,14 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
+function safeArrayNotEqualCheck(a: string[] | undefined, b: string[] | undefined): boolean {
+	if (!a || !b) {
+		return a !== b;
+	}
+
+	return a.length !== b.length || a.some((item, index) => item !== b[index]);
+}
+
 const keys: (keyof RoomListRowProps)[] = [
 	'id',
 	'style',
@@ -185,6 +193,27 @@ export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+	if (prevProps.room.unread !== nextProps.room.unread) {
+		return false;
+	}
+	if (prevProps.room.userMentions !== nextProps.room.userMentions) {
+		return false;
+	}
+	if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
+		return false;
+	}
+	if (safeArrayNotEqualCheck(prevProps.room.tunread, nextProps.room.tunread)) {
+		return false;
+	}
+	if (safeArrayNotEqualCheck(prevProps.room.tunreadUser, nextProps.room.tunreadUser)) {
+		return false;
+	}
+	if (prevProps.room.hideUnreadStatus !== nextProps.room.hideUnreadStatus) {
+		return false;
+	}
+	if (prevProps.room.hideMentionStatus !== nextProps.room.hideMentionStatus) {
 		return false;
 	}
 	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {

@@ -358,11 +358,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			uidsExclude,
 			uidsInclude,
 			onlyRead,
+			includeSubscriptionsWithDefaultDesktopNotification,
+			includeSubscriptionsWithDefaultMobileNotification,
 		}: {
 			roomId: ISubscription['rid'];
 			uidsExclude?: ISubscription['u']['_id'][];
 			uidsInclude?: ISubscription['u']['_id'][];
 			onlyRead: boolean;
+			includeSubscriptionsWithDefaultDesktopNotification?: boolean;
+			includeSubscriptionsWithDefaultMobileNotification?: boolean;
 		},
 		options?: FindOptions<ISubscription>,
 	) {
@@ -372,7 +376,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				'u._id': { $nin: uidsExclude },
 			}),
 			...(onlyRead && {
-				$or: [...(uidsInclude?.length ? [{ 'u._id': { $in: uidsInclude } }] : []), { alert: { $ne: true } }, { open: { $ne: true } }],
+				$or: [
+					...(uidsInclude?.length ? [{ 'u._id': { $in: uidsInclude } }] : []),
+					{ unreadAlert: 'all' as const },
+					{ desktopNotifications: 'all' as const },
+					{ mobilePushNotifications: 'all' as const },
+					...(includeSubscriptionsWithDefaultDesktopNotification ? [{ desktopNotifications: { $exists: false } }] : []),
+					...(includeSubscriptionsWithDefaultMobileNotification ? [{ mobilePushNotifications: { $exists: false } }] : []),
+					{ alert: { $ne: true } },
+					{ open: { $ne: true } },
+				],
 			}),
 		};
 
@@ -542,6 +555,26 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'rid': roomId,
 			'u._id': {
 				$nin: userIds,
+			},
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: inc,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	incUnreadForIds(ids: ISubscription['_id'][], inc = 1): Promise<UpdateResult | Document> {
+		const query = {
+			_id: {
+				$in: ids,
 			},
 		};
 
