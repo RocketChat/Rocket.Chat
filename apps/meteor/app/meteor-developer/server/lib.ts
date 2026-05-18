@@ -1,9 +1,14 @@
 import { Meteor } from 'meteor/meteor';
+import passport from 'passport';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings/server';
 
+const serviceKey = 'meteor-developer';
+
 const configureMeteorDeveloperOAuth = (): void => {
+	passport.unuse(serviceKey);
+
 	const enabled = settings.get<boolean>('Accounts_OAuth_Meteor');
 	if (!enabled) {
 		return;
@@ -16,7 +21,7 @@ const configureMeteorDeveloperOAuth = (): void => {
 		return;
 	}
 
-	addPassportCustomOAuth('meteor-developer', {
+	addPassportCustomOAuth(serviceKey, {
 		serverURL: 'https://www.meteor.com',
 		authorizePath: '/oauth2/authorize',
 		tokenPath: '/oauth2/token',
