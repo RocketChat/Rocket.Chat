@@ -88,7 +88,7 @@ export const metrics = {
 	rocketchatRestApiResponseSizeBytes: new client.Histogram({
 		name: 'rocketchat_rest_api_response_size_bytes',
 		help: 'histogram of rocketchat rest api response sizes in bytes',
-		labelNames: ['method', 'entrypoint', 'status'],
+		labelNames: ['method', 'entrypoint', 'status', 'version'],
 		buckets: [0, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000],
 	}),
 	rocketchatRestApiActiveRequests: new client.Gauge({
