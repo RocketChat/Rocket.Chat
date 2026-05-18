@@ -52,7 +52,6 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail }: TwoFactorEmail
 		try {
 			await onConfirm(code, Method.EMAIL);
 		} catch (error) {
-			console.log('Error validating 2FA code', error);
 			setError('code', {
 				type: 'manual',
 				message: t('Invalid_two_factor_code'),
