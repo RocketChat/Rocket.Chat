@@ -1,9 +1,9 @@
 import { SHA256 } from '@rocket.chat/sha256';
 import { imperativeModal } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 import { lazy } from 'react';
 
 import type { LoginCallback } from './overrideLoginMethod';
+import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
 import { getUser } from '../user';
 
@@ -16,8 +16,8 @@ type TwoFactorMethod = (typeof twoFactorMethods)[number];
 const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 
 const hasRequiredTwoFactorMethod = (
-	error: Meteor.Error,
-): error is Meteor.Error & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
+	error: MeteorErrorLike,
+): error is MeteorErrorLike & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
 	const details = error.details as unknown;
 
 	return (
@@ -61,7 +61,7 @@ export async function process2faReturn({
 	onCode,
 	emailOrUsername,
 }: {
-	error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined;
+	error: MeteorErrorLike | undefined;
 	result: unknown;
 	originalCallback: LoginCallback | undefined;
 	onCode: (code: string, method: string) => void | Promise<void>;
@@ -158,7 +158,7 @@ export const invokeTwoFactorModal = async (
 								message: t('Two-factor_authentication_cancelled'),
 							});
 						});
-						reject(new Meteor.Error('totp-canceled'));
+						reject(new Error('totp-canceled'));
 					}
 				},
 			},
