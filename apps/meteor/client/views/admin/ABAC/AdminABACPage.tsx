@@ -1,7 +1,7 @@
-import { Box, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
 import AttributesContextualBar from './ABACAttributesTab/AttributesContextualBar';
@@ -15,6 +15,7 @@ import SettingsPage from './ABACSettingTab/SettingsPage';
 import AdminABACTabs from './AdminABACTabs';
 import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useLdapSync } from '../../../hooks/useLdapSync';
 import { links } from '../../../lib/links';
 
 type AdminABACPageProps = {
@@ -29,6 +30,10 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const context = useRouteParameter('context');
 	const learnMore = useExternalLink();
 	const isABACAvailable = useIsABACAvailable();
+	const ldapEnabled = useSetting('LDAP_Enable');
+	const abacEnabled = useSetting('ABAC_Enabled');
+	const handleSyncNow = useLdapSync();
+	const isSyncDisabled = !ldapEnabled || !abacEnabled;
 
 	const handleCloseContextualbar = useEffectEvent((): void => {
 		if (!context) {
@@ -48,9 +53,18 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('ABAC')}>
-					<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
-						{t('ABAC_Learn_More')}
-					</Button>
+					<ButtonGroup>
+						<Button
+							disabled={isSyncDisabled}
+							title={isSyncDisabled ? t('Enable_ABAC_and_LDAP_to_sync') : undefined}
+							onClick={handleSyncNow}
+						>
+							{t('LDAP_Sync_Now')}
+						</Button>
+						<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
+							{t('ABAC_Learn_More')}
+						</Button>
+					</ButtonGroup>
 				</PageHeader>
 				{shouldShowWarning && (
 					<Box mi={24} mb={16}>

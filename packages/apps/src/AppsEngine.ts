@@ -20,6 +20,6 @@ export type {
 	IVideoConference as IAppsVideoConference,
 	VideoConference as AppsVideoConference,
 } from '@rocket.chat/apps-engine/definition/videoConferences';
-export { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-export { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
-export { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
+export { AppManager } from './server/AppManager';
+export { AppBridges } from './server/bridges';
+export { AppMetadataStorage } from './server/storage';

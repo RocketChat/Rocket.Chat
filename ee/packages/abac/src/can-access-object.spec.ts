@@ -33,6 +33,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Settings: {
 		get: (...args: any[]) => mockSettingsGetValueById(...args),
 	},
+	MeteorError: class extends Error {},
+	isMeteorError: () => false,
 }));
 
 describe('AbacService.canAccessObject (unit)', () => {
@@ -54,6 +56,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 
 	beforeEach(() => {
 		service = new AbacService();
+		service.setPdpStrategy('local');
 		jest.clearAllMocks();
 		// Default behaviors
 		mockSettingsGetValueById.mockResolvedValue(300); // 5 minute cache

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/favicon",
-	"version": "0.0.5-rc.0",
+	"version": "0.0.5",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -14,7 +14,7 @@
 		"lint:fix": "eslint --fix ."
 	},
 	"devDependencies": {
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

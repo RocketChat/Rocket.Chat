@@ -1,5 +1,5 @@
 import { AccordionItem } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldLabel, FieldRow, ToggleSwitch, NumberInput } from '@rocket.chat/fuselage-forms';
+import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, ToggleSwitch, NumberInput } from '@rocket.chat/fuselage-forms';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -19,6 +19,7 @@ const PreferencesUserPresenceSection = () => {
 							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
+					<FieldHint>{t('Enable_Auto_Away_Description')}</FieldHint>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Idle_Time_Limit')}</FieldLabel>
@@ -29,6 +30,7 @@ const PreferencesUserPresenceSection = () => {
 							render={({ field: { value, ...field } }) => <NumberInput {...field} value={value} />}
 						/>
 					</FieldRow>
+					<FieldHint>{t('Idle_Time_Limit_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
 		</AccordionItem>

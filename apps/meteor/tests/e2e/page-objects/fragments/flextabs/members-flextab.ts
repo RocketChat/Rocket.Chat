@@ -35,7 +35,7 @@ class AddUsersFlexTab extends FlexTab {
 	}
 
 	async addUser(username: string) {
-		await this.root.getByRole('textbox', { name: 'Choose users' }).pressSequentially(username);
+		await this.root.getByRole('combobox', { name: 'Choose users' }).pressSequentially(username);
 		await this.listbox.selectOption(username);
 		await this.btnAddUsers().click();
 		await this.waitForDismissal();

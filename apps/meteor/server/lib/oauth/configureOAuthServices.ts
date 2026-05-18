@@ -1,5 +1,6 @@
 import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
@@ -8,6 +9,10 @@ import type { OAuthServiceConfig } from './createOAuthServiceConfig';
 import { doesUserRequire2FA } from './twoFactorAuth';
 import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
+
+interface IOAuthRequest extends Request {
+	user?: IUser;
+}
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
@@ -22,7 +27,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				{
 					clientID: config.clientId,
 					clientSecret: config.clientSecret,
-					callbackURL: `${siteUrl}oauth/${config.provider}/callback`,
+					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
 					state: true,
 					pkce: true,
 					scope: config.scope,
@@ -67,8 +72,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		);
 		oAuthRouter.get(
 			`/oauth/${config.provider}/callback`,
-			passport.authenticate(config.provider, { failureRedirect: '/login' }),
-			async (req, res) => {
+			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
+			async (req: IOAuthRequest, res: Response) => {
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
@@ -84,7 +89,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				}
 
 				const stampedToken = Accounts._generateStampedLoginToken();
-				Accounts._insertLoginToken(oAuthUser._id, stampedToken);
+				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
 
 				res.redirect(`/home?resumeToken=${stampedToken.token}`);
 

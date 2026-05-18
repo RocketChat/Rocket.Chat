@@ -1,7 +1,7 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page } from '@rocket.chat/ui-client';
 import { useEndpoint, useLoginWithToken, useRouteParameter, useRouter, useSetModal } from '@rocket.chat/ui-contexts';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import TwoFactorModal from '../../components/TwoFactorModal/TwoFactorModal';
 
@@ -9,8 +9,6 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 	const method = useRouteParameter('method') as 'totp' | 'email' | undefined;
 	const challengeId = useRouteParameter('challengeId');
 	const router = useRouter();
-
-	const [invalidAttempt, setInvalidAttempt] = useState<boolean>(false);
 
 	const setModal = useSetModal();
 	const loginWithToken = useLoginWithToken();
@@ -41,9 +39,7 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 			navigateToHome();
 		} catch (error: any) {
 			console.error('Failed to verify challenge', error);
-			if (typeof error.error === 'string' && error.error === 'error-invalid-code') {
-				setInvalidAttempt(true);
-			}
+			throw error;
 		}
 	});
 
@@ -54,25 +50,17 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 		}
 
 		if (method === 'email') {
-			setModal(
-				<TwoFactorModal
-					method={method}
-					onConfirm={onConfirm}
-					invalidAttempt={invalidAttempt}
-					resendEmail={resendEmail}
-					onClose={navigateToHome}
-				/>,
-			);
+			setModal(<TwoFactorModal method={method} onConfirm={onConfirm} resendEmail={resendEmail} onClose={navigateToHome} />);
 			return;
 		}
 
 		if (method === 'totp') {
-			setModal(<TwoFactorModal method={method} onConfirm={onConfirm} invalidAttempt={invalidAttempt} onClose={navigateToHome} />);
+			setModal(<TwoFactorModal method={method} onConfirm={onConfirm} onClose={navigateToHome} />);
 			return;
 		}
 
 		throw new Error('Invalid Two Factor method');
-	}, [method, challengeId, router, setModal, onConfirm, resendEmail, invalidAttempt, navigateToHome]);
+	}, [method, challengeId, router, setModal, onConfirm, resendEmail, navigateToHome]);
 
 	return <Page />;
 };

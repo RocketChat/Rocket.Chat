@@ -22,7 +22,11 @@ import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoo
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChanged,
+	notifyOnSubscriptionChangedById,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
+} from '../../../app/lib/server/lib/notifyListener';
 import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
@@ -146,6 +150,16 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
 		return performAcceptRoomInvite(room, subscription, user);
+	}
+
+	async revokeInvite(room: IRoom, user: IUser): Promise<void> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (subscription?.status !== 'INVITED') {
+			return;
+		}
+
+		await Subscriptions.removeById(subscription._id);
+		void notifyOnSubscriptionChanged(subscription, 'removed');
 	}
 
 	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {
@@ -360,5 +374,21 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			room,
 			tmid,
 		});
+	}
+
+	async unbanAndInviteUser(
+		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void> {
+		await Subscriptions.unbanToInvitedById(subscription._id, inviterUser);
+
+		void notifyOnSubscriptionChangedById(subscription._id, 'updated');
+
+		if (inviteeUser?.username) {
+			await Message.saveSystemMessage('ui', subscription.rid, inviteeUser.username, inviteeUser, {
+				u: { _id: inviterUser._id, username: inviterUser.username },
+			});
+		}
 	}
 }

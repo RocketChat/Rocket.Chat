@@ -1,6 +1,7 @@
-import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import express from 'express';
+import flash from 'express-flash';
 import session from 'express-session';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
@@ -26,16 +27,20 @@ oAuthRouter.use(
 	}),
 );
 
+oAuthRouter.enable('trust proxy');
+oAuthRouter.set('trust proxy', true);
+
 oAuthRouter.use(passport.initialize());
 oAuthRouter.use(passport.session());
+oAuthRouter.use(flash());
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
-		done(null, user._id);
+		done(null, user);
 	});
 
-	passport.deserializeUser(async (id, done) => {
-		const user = await Users.findOneById(id as string);
+	passport.deserializeUser(async (user: IUser, done) => {
+		// const user = await Users.findOneById(id as string);
 		// we don’t actually use this user later
 		done(null, user);
 	});

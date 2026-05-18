@@ -68,7 +68,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel id={messageTimeFormatLabelId}>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldLink aria-describedby={messageTimeFormatLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={messageTimeFormatLabelId} href='/account/accessibility-and-appearance#clockMode'>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
@@ -124,13 +124,13 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel id={hideUsernamesLabelId}>{t('Hide_usernames')}</FieldLabel>
-					<FieldLink aria-describedby={hideUsernamesLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={hideUsernamesLabelId} href='/account/accessibility-and-appearance#hideUsernames'>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
 				<Field>
 					<FieldLabel id={hideRolesLabelId}>{t('Hide_roles')}</FieldLabel>
-					<FieldLink aria-describedby={hideRolesLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={hideRolesLabelId} href='/account/accessibility-and-appearance#hideRoles'>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>

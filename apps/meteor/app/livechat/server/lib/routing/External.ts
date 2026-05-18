@@ -61,6 +61,7 @@ class ExternalQueue implements IRoutingMethod {
 					result.username,
 					{},
 					settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+					settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 				);
 
 				if (!agent?.username) {
