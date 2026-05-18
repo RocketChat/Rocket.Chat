@@ -11,6 +11,7 @@ import { settings } from '../../settings/server';
 import { getURL } from '../../utils/server/getURL';
 
 import './scripts';
+import { MESSAGE_MAX_PARSE_LENGTH_DEFAULT } from '../../../lib/constants';
 
 export * from './inject';
 
@@ -127,7 +128,7 @@ Meteor.startup(() => {
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
 
-	const messageMaxParseLength = process.env.MESSAGE_MAX_PARSE_LENGTH;
+	const messageMaxParseLength = process.env.MESSAGE_MAX_PARSE_LENGTH ?? MESSAGE_MAX_PARSE_LENGTH_DEFAULT;
 	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-markdown-max-length" content="${messageMaxParseLength}" />`);
 });
 
