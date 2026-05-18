@@ -51,7 +51,7 @@ const useTryToJumpToThreadMessage = (): void => {
 			});
 
 			if (message.tcount) {
-				await RoomHistoryManager.getSurroundingChannelMessages(message);
+				await RoomHistoryManager.getSurroundingMessages(message);
 			} else if (!RoomHistoryManager.isLoaded(message.rid)) {
 				await RoomHistoryManager.getMore(message.rid);
 			}

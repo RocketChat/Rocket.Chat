@@ -62,7 +62,6 @@ export const useHasNewMessages = (
 		clientCallbacks.add(
 			'afterSaveMessage',
 			(msg: IMessage) => {
-				console.log('bingus', msg, msg.u._id, uid);
 				if (msg.tmid) {
 					return;
 				}

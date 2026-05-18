@@ -50,9 +50,11 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 
 type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
+	shouldJumpToBottom: boolean;
+	setShouldJumpToBottom: (shouldJumpToBottom: boolean) => void;
 };
 
-const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
+const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBottom }: ThreadMessageListProps): ReactElement => {
 	const { t } = useTranslation();
 	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
@@ -96,13 +98,15 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 		if (!handle) return;
 		if (loading) return;
 		// `msg` deep link: jump effect runs below; do not force scroll to bottom
-		if (msgJumpParam && threadMsgTargetIndex >= 0) {
+		if (msgJumpParam) {
+			setShouldJumpToBottom(false);
 			return;
 		}
-		if (isAtBottom.current) {
+		if (shouldJumpToBottom) {
 			handle.scrollToIndex(items.length, { align: 'end' });
+			setShouldJumpToBottom(false);
 		}
-	}, [loading, items.length, msgJumpParam, threadMsgTargetIndex]);
+	}, [loading, items.length, msgJumpParam, threadMsgTargetIndex, shouldJumpToBottom, setShouldJumpToBottom]);
 
 	useEffect(() => {
 		if (threadMsgTargetIndex < 0 || !msgJumpParam) {
@@ -117,19 +121,16 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 			return;
 		}
 		lastThreadJumpKeyRef.current = jumpKey;
-		isAtBottom.current = false;
+		setShouldJumpToBottom(false);
 		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
 		setHighlightMessage(msgJumpParam);
-		const t1 = setTimeout(() => {
+		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 		if (msgJumpParam !== mainMessage._id) {
 			setMessageJumpQueryStringParameter(null);
 		}
-		return () => {
-			clearTimeout(t1);
-		};
-	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id]);
+	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
 
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
@@ -140,7 +141,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 					return;
 				}
 				if (msg.u._id === uid) {
-					isAtBottom.current = true;
+					setShouldJumpToBottom(true);
 				}
 			},
 			clientCallbacks.priority.MEDIUM,
@@ -150,7 +151,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 		return () => {
 			clientCallbacks.remove('afterSaveMessage', handlerId);
 		};
-	}, [room._id, uid, mainMessage._id]);
+	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom]);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
