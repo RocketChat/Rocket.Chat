@@ -40,7 +40,6 @@ oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
-		// done(null, user);
 		done(null, user._id);
 	});
 
