@@ -329,6 +329,7 @@ class RoomHistoryManagerClass extends Emitter {
 		this.clear(message.rid);
 
 		if (!result) {
+			this.updateRoom(message.rid, { isLoading: false });
 			return;
 		}
 		const { messages = [] } = result;

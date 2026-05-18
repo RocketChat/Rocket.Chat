@@ -126,7 +126,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (this.subscription?.unread && this.subscription.unread > 0 && this.isUnreadMarkVisible() === false) {
+		if (this.firstUnreadRecordId && this.isUnreadMarkVisible() === false) {
 			return;
 		}
 		// if there are unloaded unread messages, don't mark as read
