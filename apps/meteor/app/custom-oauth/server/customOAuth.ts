@@ -110,6 +110,10 @@ export class CustomOAuthStrategy extends Strategy {
 			this._oauth2.setAccessTokenName(config.accessTokenParam);
 		}
 
+		if (config.addAutopublishFields && typeof config.addAutopublishFields === 'object') {
+			Accounts.addAutopublishFields(config.addAutopublishFields);
+		}
+
 		this.name = name;
 		this.options = options;
 		this.config = config;
