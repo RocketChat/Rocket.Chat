@@ -1,9 +1,15 @@
-import { Decoder as _Decoder, Encoder as _Encoder, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
+
+import { hasSecureFields } from '../../../lib/SecureFields';
 
 const extensionCodec = new ExtensionCodec();
 
+const FUNCTION_DISABLER_EXT = 0;
+const BUFFER_HANDLER_EXT = 1;
+const SECURE_FIELDS_HANDLER_EXT = 2;
+
 extensionCodec.register({
-	type: 0,
+	type: FUNCTION_DISABLER_EXT,
 	encode: (object: unknown) => {
 		// We don't care about functions, but also don't want to throw an error
 		if (typeof object === 'function') {
@@ -16,7 +22,7 @@ extensionCodec.register({
 
 // We need to handle Buffers because Deno needs its own decoding
 extensionCodec.register({
-	type: 1,
+	type: BUFFER_HANDLER_EXT,
 	encode: (object: unknown) => {
 		if (object instanceof Buffer) {
 			return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
@@ -25,6 +31,33 @@ extensionCodec.register({
 
 	// msgpack will reuse the Uint8Array instance, so WE NEED to copy it instead of simply creating a view
 	decode: (data: Uint8Array) => Buffer.from(data),
+});
+
+extensionCodec.register({
+	type: SECURE_FIELDS_HANDLER_EXT,
+	/**
+	 * This extension doesn't really change the encoding process, but by
+	 * not returning null or undefined, msgpack attributes the decoding of this
+	 * object to this extension, allowing us to handle secure field logic on the
+	 * subprocess side, without having to iterate through all objects in search
+	 * of the field.
+	 */
+	encode: (object: unknown, context: { ignoreRoot?: boolean } = {}) => {
+		// Ignoring the root object allows msgpack to take care of encoding the object's properties,
+		// while we mark the root object itself as an extension type.
+		if (context?.ignoreRoot) {
+			context.ignoreRoot = false;
+
+			return null;
+		}
+
+		if (hasSecureFields(object)) {
+			return encode(object, { extensionCodec, context: { ignoreRoot: true } });
+		}
+	},
+
+	// We don't really need to handle decoding here, as the subprocess will never send a message with secure fields
+	decode: (_data: Uint8Array) => undefined,
 });
 
 /**

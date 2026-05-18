@@ -1,10 +1,10 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
+import { parseDDP } from '../../../../client/lib/sdk/ddpProtocol';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../../../client/lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../../../client/lib/sdk/sdkTransportEnabled';
 
@@ -198,7 +198,7 @@ const createNewDdpSdkStream = (
 				if (data?.msg !== 'changed') return;
 				if (data.collection !== `stream-${streamName}`) return;
 				if (data.fields?.eventName !== key) return;
-				streamProxy.emit(`stream-${streamName}/${key}` as keyof EventMap, data.fields.args);
+				streamProxy.emit(`stream-${streamName}/${key}`, data.fields.args);
 			});
 		});
 
@@ -266,8 +266,8 @@ const createStreamManager = () => {
 		// per-stream callbacks fire. With SDK transport on, the frames arrive on
 		// the SDK socket and createNewDdpSdkStream registers its own onCollection
 		// listener instead.
-		Meteor.connection._stream.on('message', (rawMsg: string) => {
-			const msg = DDPCommon.parseDDP(rawMsg);
+		Meteor.connection._stream!.on('message', (rawMsg: string) => {
+			const msg = parseDDP(rawMsg);
 			if (!isChangedCollectionPayload(msg)) {
 				return;
 			}
@@ -299,8 +299,8 @@ const createStreamManager = () => {
 		const stream =
 			streams.get(eventLiteral) ||
 			(sdkTransportEnabled
-				? createNewDdpSdkStream(streamProxy, name as StreamNames, key as StreamKeys<StreamNames>, args)
-				: createNewMeteorStream(name as StreamNames, key as StreamKeys<StreamNames>, args));
+				? createNewDdpSdkStream(streamProxy, name, key as StreamKeys<StreamNames>, args)
+				: createNewMeteorStream(name, key as StreamKeys<StreamNames>, args));
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);

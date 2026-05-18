@@ -1,14 +1,16 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
-
 export type UserStatusDescriptor = {
 	id: string;
 	name: string;
 	statusType: UserStatus;
 	localizeName: boolean;
 };
+
+export type UserStatusStreamCallback = (data: { userStatusData: ICustomUserStatus }) => void;
+export type UserStatusStreamer = (event: 'updateCustomUserStatus' | 'deleteCustomUserStatus', cb: UserStatusStreamCallback) => () => void;
+export type UserStatusLister = () => Promise<ICustomUserStatus[] | null | undefined>;
 
 export class UserStatuses implements Iterable<UserStatusDescriptor> {
 	public invisibleAllowed = true;
@@ -58,8 +60,8 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 		}
 	}
 
-	public async sync() {
-		const result = await sdk.call('listCustomUserStatus');
+	public async sync(listCustomUserStatus: UserStatusLister) {
+		const result = await listCustomUserStatus();
 		if (!result) {
 			return;
 		}
@@ -69,20 +71,20 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 		}
 	}
 
-	public watch(cb?: () => void) {
-		const updateSubscription = sdk.stream('notify-logged', ['updateCustomUserStatus'], (data) => {
+	public watch(stream: UserStatusStreamer, cb?: () => void) {
+		const unsubscribeUpdate = stream('updateCustomUserStatus', (data) => {
 			this.put(this.createFromCustom(data.userStatusData));
 			cb?.();
 		});
 
-		const deleteSubscription = sdk.stream('notify-logged', ['deleteCustomUserStatus'], (data) => {
+		const unsubscribeDelete = stream('deleteCustomUserStatus', (data) => {
 			this.delete(data.userStatusData._id);
 			cb?.();
 		});
 
 		return () => {
-			updateSubscription.stop();
-			deleteSubscription.stop();
+			unsubscribeUpdate();
+			unsubscribeDelete();
 		};
 	}
 }
