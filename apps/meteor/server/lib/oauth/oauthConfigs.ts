@@ -6,7 +6,7 @@ import { Strategy as TwitterStrategy } from 'passport-twitter';
 
 export type OAuthConfig = {
 	strategy: new (...args: any[]) => Strategy;
-	scope: string[];
+	scope?: string[];
 	includeEmail?: boolean;
 };
 
@@ -25,7 +25,6 @@ export const OAuthConfigs: Record<string, OAuthConfig> = {
 	},
 	twitter: {
 		strategy: TwitterStrategy,
-		scope: ['email', 'profile'],
 		includeEmail: true,
 	},
 } as const;
