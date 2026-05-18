@@ -38,9 +38,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
-					console.log('profile - ', profile);
-
-					// eslint-disable-next-line @typescript-eslint/await-thenable
 					const user = await Accounts.updateOrCreateUserFromExternalService(
 						config.provider,
 						{
