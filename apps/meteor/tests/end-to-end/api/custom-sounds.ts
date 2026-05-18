@@ -427,7 +427,7 @@ describe('[CustomSounds]', () => {
 				.post(api('custom-sounds.delete'))
 				.set(credentials)
 				.send({ _id: 'invalid-non-existent-id' })
-				.expect(404)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.equal('Custom Sound not found.');
