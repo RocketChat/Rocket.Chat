@@ -42,7 +42,7 @@ declare module '@rocket.chat/ui-contexts' {
 		};
 		'2fa': {
 			pathname: `/2fa/${string}/${string}`;
-			pattern: '/2fa/:method?/:challengeId?';
+			pattern: '/2fa/:method/:challengeId';
 		};
 		'home': {
 			pathname: '/home';
@@ -137,7 +137,7 @@ router.defineRoutes([
 		}),
 	},
 	{
-		path: '/2fa/:method?/:challengeId?',
+		path: '/2fa/:method/:challengeId',
 		id: '2fa',
 		element: appLayout.wrap(<OAuthTwoFactorAuthenticationRouter />),
 	},
