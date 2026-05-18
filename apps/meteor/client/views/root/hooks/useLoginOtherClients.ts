@@ -20,8 +20,10 @@ export const useLoginOtherClients = () => {
 		const loginURL = buildDeepLinkURL(resumeToken, userId);
 		window.location.href = loginURL;
 
-		queueMicrotask(() => {
+		const timeout = setTimeout(() => {
 			router.navigate('/home', { replace: true });
-		});
+		}, 0);
+
+		return () => clearTimeout(timeout);
 	}, [router]);
 };
