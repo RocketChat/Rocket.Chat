@@ -7,7 +7,7 @@ import type * as https from 'node:https';
 import stream from 'node:stream';
 import { finished } from 'node:stream/promises';
 import URL from 'node:url';
-import { isArrayBufferView } from 'util/types';
+import { isArrayBufferView } from 'node:util/types';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
