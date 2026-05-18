@@ -145,6 +145,6 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 	public async maxFaildedAttemtpsReached(user: IUser) {
 		const maxAttempts = settings.get<number>('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts');
-		return await Users.maxInvalidEmailCodeAttemptsReached(user._id, maxAttempts);
+		return Users.maxInvalidEmailCodeAttemptsReached(user._id, maxAttempts);
 	}
 }
