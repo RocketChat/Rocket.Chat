@@ -117,9 +117,9 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						</MessageHeaderTemplate>
 					)}
 					{!!quotes?.length && <Attachments attachments={quotes} />}
-					{!message.blocks && message.md && (
+					{!message.blocks && (
 						<MessageBody data-qa-type='message-body' dir='auto'>
-							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
+							{message.md ? <MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} /> : message.msg}
 						</MessageBody>
 					)}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
