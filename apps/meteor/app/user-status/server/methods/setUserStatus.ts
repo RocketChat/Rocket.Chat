@@ -20,6 +20,12 @@ export const setUserStatusMethod = async (
 	statusType: IUser['status'],
 	statusText: IUser['statusText'],
 ): Promise<void> => {
+	if (statusText != null && !settings.get('Accounts_AllowUserStatusMessageChange')) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'setUserStatus',
+		});
+	}
+
 	if (statusType) {
 		if (statusType === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 			throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
@@ -41,12 +47,6 @@ export const setUserStatusMethod = async (
 
 	if (statusText || statusText === '') {
 		check(statusText, String);
-
-		if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'setUserStatus',
-			});
-		}
 
 		await setStatusText(user, statusText);
 	}
