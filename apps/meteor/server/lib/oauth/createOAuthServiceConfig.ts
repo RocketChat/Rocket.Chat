@@ -9,7 +9,7 @@ export type OAuthServiceConfig = {
 	strategy: new (...args: any[]) => Strategy;
 	clientId: string;
 	clientSecret: string;
-	scope: string[];
+	scope?: string[];
 };
 
 export const createOAuthServiceConfig = (settings: ICachedSettings, services: string[]): OAuthServiceConfig[] => {
@@ -19,7 +19,7 @@ export const createOAuthServiceConfig = (settings: ICachedSettings, services: st
 			strategy: OAuthConfigs[service].strategy,
 			clientId: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`),
 			clientSecret: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_secret`),
-			scope: OAuthConfigs[service].scope,
+			scope: OAuthConfigs[service]?.scope,
 		};
 	});
 };
