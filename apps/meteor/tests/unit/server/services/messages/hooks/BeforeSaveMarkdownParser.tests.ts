@@ -16,7 +16,7 @@ const createMessage = (msg?: string, extra: any = {}) => ({
 	...extra,
 });
 
-describe.only('Markdown parser', () => {
+describe('Markdown parser', () => {
 	beforeEach(() => {
 		delete process.env.MESSAGE_MAX_PARSE_LENGTH;
 	});
