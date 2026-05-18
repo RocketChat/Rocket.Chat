@@ -236,6 +236,8 @@ export class CustomOAuthStrategy extends Strategy {
 			try {
 				const result = JSON.parse(typeof body === 'string' ? body : body.toString());
 				const normalizedIdentity = this.normalizeIdentity(result);
+				//Nextcloud URL needed on addWebdavServer
+				normalizedIdentity.serverURL = this.serverURL;
 				return done(null, normalizedIdentity);
 			} catch (e) {
 				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
