@@ -4,9 +4,9 @@ import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
+import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import GazzodownText from '../components/GazzodownText';
-import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 
 const tryParseWithLimit = (text: string): Root | undefined => {
 	if (text.length > getMarkdownParserLimit()) {
@@ -20,7 +20,7 @@ const tryParseWithLimit = (text: string): Root | undefined => {
 	} catch {
 		return undefined;
 	}
-}
+};
 
 export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>): ReactElement | null {
 	if (message.msg) {

@@ -3,9 +3,9 @@ import { isE2EEMessage, isQuoteAttachment, isTranslatedAttachment, isTranslatedM
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
+import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
 import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
-import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];

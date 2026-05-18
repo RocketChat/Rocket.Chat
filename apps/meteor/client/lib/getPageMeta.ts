@@ -1,4 +1,3 @@
-
 const MetaCache = new Map<string, string | null>();
 export const getPageMeta = (name: string): string | null => {
 	if (typeof window === 'undefined') return null;
