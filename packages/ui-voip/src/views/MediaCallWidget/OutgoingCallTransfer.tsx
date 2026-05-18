@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 
 const OutgoingCallTransfer = () => {
 	const { t } = useTranslation();
@@ -29,6 +30,7 @@ const OutgoingCallTransfer = () => {
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
+				<AppActions />
 				<ButtonGroup stretch>
 					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
 						{t('Cancel')}
