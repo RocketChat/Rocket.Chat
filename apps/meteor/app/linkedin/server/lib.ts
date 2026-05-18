@@ -5,7 +5,7 @@ import passport from 'passport';
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings/server';
 
-const config: Partial<OAuthConfiguration & { clientSecret?: string }> = {
+const config: Partial<OAuthConfiguration> = {
 	serverURL: 'https://www.linkedin.com',
 	authorizePath: '/oauth/v2/authorization',
 	tokenPath: '/oauth/v2/accessToken',
@@ -37,10 +37,7 @@ const configureLinkedInOAuth = (): void => {
 		return;
 	}
 
-	config.clientId = clientId;
-	config.clientSecret = clientSecret;
-
-	addPassportCustomOAuth(serviceKey, config);
+	addPassportCustomOAuth(serviceKey, { ...config, clientId, clientSecret });
 };
 
 Meteor.startup(() => {
