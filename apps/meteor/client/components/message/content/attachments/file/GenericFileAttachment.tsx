@@ -6,8 +6,8 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
-import { useMediaUrl, useSetting } from '@rocket.chat/ui-contexts';
-import { useId, useEffect, useRef } from 'react';
+import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +15,7 @@ import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
 import MessageCollapsible from '../../../MessageCollapsible';
 import AttachmentSize from '../structure/AttachmentSize';
+import { useOpenEncryptedPdf } from './hooks/useOpenEncryptedPdf';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
@@ -29,24 +30,9 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
-	const pdfPreviewSizeLimit = useSetting('E2E_PDF_Preview_Size_Limit', 10485760);
 	const uid = useId();
 	const { t } = useTranslation();
-
-	const blobUrlRef = useRef<string | undefined>(undefined);
-	const abortControllerRef = useRef<AbortController | null>(null);
-
-	useEffect(() => {
-		return () => {
-			if (abortControllerRef.current) {
-				abortControllerRef.current.abort();
-			}
-			if (blobUrlRef.current) {
-				URL.revokeObjectURL(blobUrlRef.current);
-				blobUrlRef.current = undefined;
-			}
-		};
-	}, []);
+	const openEncryptedPdf = useOpenEncryptedPdf();
 
 	const handleTitleClick = async (event: UIEvent): Promise<void> => {
 		if (!link) {
@@ -59,42 +45,7 @@ const GenericFileAttachment = ({
 			event.preventDefault();
 
 			if (isEncrypted) {
-				if (size && size > pdfPreviewSizeLimit) {
-					registerDownloadForUid(uid, t, title);
-					forAttachmentDownload(uid, link);
-					return;
-				}
-
-				if (blobUrlRef.current) {
-					URL.revokeObjectURL(blobUrlRef.current);
-					blobUrlRef.current = undefined;
-				}
-
-				if (abortControllerRef.current) {
-					abortControllerRef.current.abort();
-				}
-				const abortController = new AbortController();
-				abortControllerRef.current = abortController;
-
-				try {
-					const response = await fetch(getURL(link), {
-						signal: abortController.signal,
-					});
-					if (!response.ok) {
-						throw new Error(`Failed to fetch encrypted PDF: ${response.status}`);
-					}
-					const blob = await response.blob();
-					if (abortController.signal.aborted || abortControllerRef.current !== abortController) {
-						return;
-					}
-					const blobUrl = URL.createObjectURL(blob);
-					blobUrlRef.current = blobUrl;
-					openDocumentViewer(blobUrl, format, title ?? '');
-				} catch (error: any) {
-					if (error.name !== 'AbortError') {
-						console.error('Error opening preview of encrypted PDF', error);
-					}
-				}
+				openEncryptedPdf(link, title, size, format, openDocumentViewer);
 				return;
 			}
 
