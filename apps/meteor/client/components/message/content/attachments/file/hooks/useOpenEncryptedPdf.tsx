@@ -7,6 +7,7 @@ import { forAttachmentDownload, registerDownloadForUid } from '../../../../../..
 export const useOpenEncryptedPdf = () => {
 	const getURL = useMediaUrl();
 	const pdfPreviewSizeLimit = window.RocketChatDesktop?.getE2ePdfPreviewSizeLimit?.() ?? 10;
+	const pdfPreviewSizeLimitInBytes = pdfPreviewSizeLimit * 1024 * 1024;
 	const uid = useId();
 	const { t } = useTranslation();
 
@@ -32,7 +33,7 @@ export const useOpenEncryptedPdf = () => {
 		format: string,
 		openDocumentViewer: (url: string, format: string, options: any) => void,
 	) => {
-		if (size && size > pdfPreviewSizeLimit) {
+		if (size && size > pdfPreviewSizeLimitInBytes) {
 			registerDownloadForUid(uid, t, title);
 			forAttachmentDownload(uid, link);
 			return;
