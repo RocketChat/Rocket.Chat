@@ -15,7 +15,13 @@ export const useDecryptedMessage = (message: IMessage): string => {
 			return;
 		}
 
+		let ignore = false;
+
 		e2e.decryptMessage(message).then((decryptedMsg) => {
+			if (ignore) {
+				return;
+			}
+
 			if (decryptedMsg.msg) {
 				setDecryptedMessage(decryptedMsg.msg);
 				return;
@@ -25,6 +31,10 @@ export const useDecryptedMessage = (message: IMessage): string => {
 				setDecryptedMessage(t('Message_with_attachment'));
 			}
 		});
+
+		return () => {
+			ignore = true;
+		};
 	}, [message, t, setDecryptedMessage]);
 
 	return isE2EEMessage(message) ? decryptedMessage : message.msg;

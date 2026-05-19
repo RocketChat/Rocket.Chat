@@ -85,4 +85,34 @@ describe('useDecryptedMessage', () => {
 
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
+
+	it('should ignore a stale decryption when the message prop changes mid-flight', async () => {
+		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(true);
+
+		let resolveFirst: (value: unknown) => void = () => undefined;
+		const firstDecryption = new Promise((resolve) => {
+			resolveFirst = resolve;
+		});
+
+		(e2e.decryptMessage as jest.Mock)
+			.mockReturnValueOnce(firstDecryption)
+			.mockResolvedValueOnce({ msg: 'Second decrypted' });
+
+		const messageA = { msg: 'A' };
+		const messageB = { msg: 'B' };
+
+		const { result, rerender } = renderHook((msg: any) => useDecryptedMessage(msg), { initialProps: messageA });
+
+		rerender(messageB);
+
+		await waitFor(() => {
+			expect(result.current).toBe('Second decrypted');
+		});
+
+		resolveFirst({ msg: 'First decrypted (stale)' });
+
+		await new Promise((r) => setTimeout(r, 0));
+
+		expect(result.current).toBe('Second decrypted');
+	});
 });
