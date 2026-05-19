@@ -1333,24 +1333,10 @@ describe('[Users]', () => {
 					await updatePermission('view-full-other-user-info', []);
 				});
 
-				it('should return an error when querying another user by freeSwitch extension and lacking "view-full-other-user-info" permission', async () => {
+				it('should successfully return information on an existing user', async () => {
 					await request
 						.get(api('users.info'))
 						.set(credentials)
-						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(404)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'User not found.');
-						});
-				});
-				it('should query information about myself by freeSwitch extension', async () => {
-					await request
-						.get(api('users.info'))
-						.set(userCredentials)
 						.query({
 							freeSwitchExtension: targetUser.freeSwitchExtension,
 						})

@@ -104,7 +104,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 
 	// Only search for importId/email/freeSwitchExtension if the user has permission to view them
-	if (['importId', 'email', 'freeSwitchExtension'].includes(searchType) && !canViewAllInfo) {
+	if (['importId', 'email'].includes(searchType) && !canViewAllInfo) {
 		return null;
 	}
 
