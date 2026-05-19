@@ -21,6 +21,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not_authorized');
 		}
 		check(_id, String);
-		return deleteCustomSound(_id);
+		await deleteCustomSound(_id);
+		return true;
 	},
 });

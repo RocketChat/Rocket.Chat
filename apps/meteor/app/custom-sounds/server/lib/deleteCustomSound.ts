@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
-export const deleteCustomSound = async (_id: string): Promise<boolean> => {
+export const deleteCustomSound = async (_id: string): Promise<void> => {
 	const sound = await CustomSounds.findOneById(_id);
 
 	if (!sound) {
@@ -17,6 +17,4 @@ export const deleteCustomSound = async (_id: string): Promise<boolean> => {
 	await CustomSounds.removeById(_id);
 
 	void api.broadcast('notify.deleteCustomSound', { soundData: sound });
-
-	return true;
 };
