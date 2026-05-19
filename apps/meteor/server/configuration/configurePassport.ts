@@ -1,8 +1,11 @@
 import { Users } from '@rocket.chat/models';
 import bodyParser from 'body-parser';
+import MongoStore from 'connect-mongo';
 import express from 'express';
 import flash from 'express-flash';
+import rateLimit from 'express-rate-limit';
 import session from 'express-session';
+import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
@@ -13,10 +16,11 @@ import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 
 export const oAuthRouter = express();
 
-oAuthRouter.enable('trust proxy');
 oAuthRouter.set('trust proxy', true);
 
 export const configurePassport = (settings: ICachedSettings) => {
+	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
 	oAuthRouter.use(
 		session({
 			name: 'oauth',
@@ -24,6 +28,12 @@ export const configurePassport = (settings: ICachedSettings) => {
 			resave: false,
 			saveUninitialized: false,
 			proxy: true,
+			store: MongoStore.create({
+				client,
+				collectionName: 'rocketchat_oauth_sessions',
+				ttl: 5 * 60,
+				autoRemove: 'native',
+			}),
 			cookie: {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
@@ -37,6 +47,22 @@ export const configurePassport = (settings: ICachedSettings) => {
 	oAuthRouter.use(passport.session());
 	oAuthRouter.use(flash());
 	oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
+
+	const oauthRateLimiter = rateLimit({
+		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
+		max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+		skip: () =>
+			settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
+			(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
+		handler: (_req, res) => {
+			res.status(429).json({
+				success: false,
+				error: 'Too many requests. Please try again later.',
+			});
+		},
+	});
+
+	oAuthRouter.use(oauthRateLimiter);
 
 	passport.serializeUser((user: any, done) => {
 		done(null, user._id);

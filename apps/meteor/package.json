@@ -183,6 +183,7 @@
 		"colorette": "^2.0.20",
 		"colors": "^1.4.0",
 		"connect": "^3.7.0",
+		"connect-mongo": "5.1.0",
 		"cookie": "^0.7.2",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.6",
