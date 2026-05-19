@@ -156,28 +156,37 @@ describe('VirtruAttributeStore.scopeRoomsPage', () => {
 });
 
 describe('VirtruAttributeStore.assertCanModifyRoom', () => {
-	it('PERMIT resolves; DENY throws; no current attrs resolves; unreachable throws', async () => {
-		const permit = jest
+	it("resolves when PDP PERMITs the room's current attributes", async () => {
+		const apiCall = jest
 			.fn()
 			.mockResolvedValue({ decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r', decision: 'DECISION_PERMIT' }] }] });
 		await expect(
-			new VirtruAttributeStore(mkClient({ apiCall: permit })).assertCanModifyRoom(
+			new VirtruAttributeStore(mkClient({ apiCall })).assertCanModifyRoom(
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
 				actor,
 			),
 		).resolves.toBeUndefined();
-		const deny = jest
+	});
+
+	it('rejects when PDP DENYs', async () => {
+		const apiCall = jest
 			.fn()
 			.mockResolvedValue({ decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r', decision: 'DECISION_DENY' }] }] });
 		await expect(
-			new VirtruAttributeStore(mkClient({ apiCall: deny })).assertCanModifyRoom(
+			new VirtruAttributeStore(mkClient({ apiCall })).assertCanModifyRoom(
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
 				actor,
 			),
 		).rejects.toBeDefined();
+	});
+
+	it('resolves when the room has no current attributes', async () => {
 		await expect(
 			new VirtruAttributeStore(mkClient()).assertCanModifyRoom({ _id: 'r', abacAttributes: [] }, actor),
 		).resolves.toBeUndefined();
+	});
+
+	it('rejects (fail-closed) when Virtru is unreachable', async () => {
 		await expect(
 			new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false) })).assertCanModifyRoom(
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
