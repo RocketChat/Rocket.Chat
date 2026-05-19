@@ -29,8 +29,7 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
-	const pdfPreviewSizeLimitMb = useSetting('E2E_PDF_Preview_Size_Limit', 10);
-	const pdfPreviewSizeLimit = Number(pdfPreviewSizeLimitMb) * 1024 * 1024;
+	const pdfPreviewSizeLimit = useSetting('E2E_PDF_Preview_Size_Limit', 10485760);
 	const uid = useId();
 	const { t } = useTranslation();
 
