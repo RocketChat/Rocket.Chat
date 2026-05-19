@@ -2,6 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 
+import { doesUserRequire2FA } from './twoFactorAuth';
+
 export const passportOAuthCallback = (siteUrl: string) => async (req: Request, res: Response) => {
 	const oAuthUser = req.user as IUser;
 
@@ -10,6 +12,19 @@ export const passportOAuthCallback = (siteUrl: string) => async (req: Request, r
 	}
 
 	const { loginClient } = req.session;
+
+	const secondFactorMethod = doesUserRequire2FA(oAuthUser);
+
+	if (secondFactorMethod) {
+		const challengeId = await secondFactorMethod.sendTwoFactorChallenge(oAuthUser);
+		const twoFARedirectUrl = new URL(`/2fa/${secondFactorMethod.method}/${challengeId}`, siteUrl);
+
+		if (loginClient) {
+			twoFARedirectUrl.searchParams.set('loginClient', loginClient);
+		}
+
+		return res.redirect(twoFARedirectUrl.toString());
+	}
 
 	const stampedToken = Accounts._generateStampedLoginToken();
 	await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
@@ -23,7 +38,7 @@ export const passportOAuthCallback = (siteUrl: string) => async (req: Request, r
 		redirectUrl.searchParams.set('loginClient', loginClient);
 	}
 
-	res.redirect(redirectUrl.toString());
+	setImmediate(() => res.redirect(redirectUrl.toString()));
 
 	req.session.destroy((err) => {
 		if (err) {

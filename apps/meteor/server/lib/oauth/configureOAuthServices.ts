@@ -40,9 +40,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 							accessToken,
 							refreshToken,
 							name: profile.displayName,
-							email: profile?.emails?.[0]?.value,
 							...restProfile,
 							..._json,
+							email: profile?.emails?.[0]?.value,
 						},
 						{},
 					);
@@ -72,6 +72,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 						next();
 					});
 				} else {
+					//delete stale value from previous sessions if any
+					delete req.session.loginClient;
 					next();
 				}
 			},
