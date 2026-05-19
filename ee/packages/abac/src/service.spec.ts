@@ -1536,6 +1536,61 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('scopeRoomsForAdmin', () => {
+		const actor = { _id: 'admin-1', username: 'admin', name: 'Admin' };
+
+		const roomA = { _id: 'rA', abacAttributes: [{ key: 'dept', values: ['eng'] }] } as any;
+		const roomB = { _id: 'rB', abacAttributes: [{ key: 'dept', values: ['sales'] }] } as any;
+
+		const asVirtru = (svc: AbacService) => {
+			mockHasModule.mockReturnValue(true);
+			Object.assign(svc as any, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
+		};
+
+		it('local mode: returns rooms identical without touching the attribute store', async () => {
+			const fakeStore = { scopeRoomsPage: jest.fn() };
+			(service as any).attributeStore = fakeStore;
+
+			const input = [roomA, roomB];
+			const result = await service.scopeRoomsForAdmin(input, actor);
+
+			expect(result).toBe(input);
+			expect(result[0]).toBe(roomA);
+			expect(result[1]).toBe(roomB);
+			expect(fakeStore.scopeRoomsPage).not.toHaveBeenCalled();
+		});
+
+		it('virtru mode: delegates to attributeStore.scopeRoomsPage', async () => {
+			asVirtru(service);
+			const fakeStore = { scopeRoomsPage: jest.fn().mockResolvedValue([roomA, roomB]) };
+			(service as any).attributeStore = fakeStore;
+
+			const result = await service.scopeRoomsForAdmin([roomA, roomB], actor);
+
+			expect(fakeStore.scopeRoomsPage).toHaveBeenCalledWith([roomA, roomB], actor);
+			expect(result).toEqual([roomA, roomB]);
+		});
+
+		it('virtru mode: denied room is redacted, permitted room unchanged', async () => {
+			asVirtru(service);
+			const fakeStore = {
+				scopeRoomsPage: jest
+					.fn()
+					.mockImplementation(async (rooms: any[]) =>
+						rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
+					),
+			};
+			(service as any).attributeStore = fakeStore;
+
+			const [permitted, denied] = await service.scopeRoomsForAdmin([roomA, roomB], actor);
+
+			expect(permitted).toEqual(roomA);
+			expect((permitted as any).abacAttributesRedacted).toBeUndefined();
+			expect(denied.abacAttributes).toEqual([]);
+			expect((denied as any).abacAttributesRedacted).toBe(true);
+		});
+	});
+
 	describe('attribute store selection', () => {
 		const buildSettings = (overrides: Record<string, any>) =>
 			({

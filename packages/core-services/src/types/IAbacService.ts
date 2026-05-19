@@ -30,6 +30,10 @@ export interface IAbacService {
 		},
 		actor?: AbacActor,
 	): Promise<{ rooms: IRoom[]; offset: number; count: number; total: number }>;
+	scopeRoomsForAdmin<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
+		rooms: T[],
+		actor: AbacActor,
+	): Promise<Array<T & { abacAttributesRedacted?: boolean }>>;
 	updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor | undefined): Promise<void>;
 	deleteAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<void>;
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;

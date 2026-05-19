@@ -2,6 +2,7 @@ import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocke
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
+import { scopeAdminRoomForAbac } from './scopeAdminRoomForAbac';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
@@ -65,7 +66,8 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 	if (!room) {
 		return null;
 	}
-	return stripABACManagedFieldsForAdmin(room);
+	const stripped = stripABACManagedFieldsForAdmin(room);
+	return scopeAdminRoomForAbac(stripped, uid);
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{

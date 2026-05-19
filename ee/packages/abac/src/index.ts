@@ -456,6 +456,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
+	async scopeRoomsForAdmin<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
+		rooms: T[],
+		actor: AbacActor,
+	): Promise<Array<T & { abacAttributesRedacted?: boolean }>> {
+		if (this.effectiveStore() !== 'virtru') {
+			return rooms;
+		}
+		return this.attributeStore.scopeRoomsPage(rooms, actor);
+	}
+
 	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor): Promise<void> {
 		if (!update.key && !update.values) {
 			return;
