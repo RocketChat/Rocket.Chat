@@ -28,12 +28,12 @@
   },
   "totals_after_carve_outs": {
     "E1": 11, "E2": 2, "E3": 7, "E4": 14, "E5": 0,
-    "E6": 0, "E7": 3, "E8": 5, "E9": 1, "E10": 0, "E11": 15, "E12": 1
+    "E6": 0, "E7": 3, "E8": 5, "E9": 0, "E10": 0, "E11": 15, "E12": 0
   },
-  "total_findings": 56,
+  "total_findings": 54,
   "findings": [
-    {"file":"apps/meteor/client/hooks/useDecryptedMessage.ts","line":13,"code":"E12","severity":"bug","confidence":5,"manual_reviewed":true,"snippet":"e2e.decryptMessage(message).then(setDecryptedMessage)","note":"No ignore flag. useSafely covers unmount, not stale-message overwrite.","fix_hint":"let ignore=false; check before set; cleanup ignore=true"},
-    {"file":"apps/meteor/client/components/UserStatusMenu.tsx","line":77,"code":"E9","severity":"bug","confidence":5,"manual_reviewed":true,"snippet":"useEffect(() => onChange(status), [status, onChange])","note":"status only mutated in handleSelection; notify parent in same handler.","fix_hint":"Move onChange into handleSelection"},
+    {"file":"apps/meteor/client/hooks/useDecryptedMessage.ts","line":13,"code":"E12","severity":"resolved","confidence":5,"manual_reviewed":true,"snippet":"e2e.decryptMessage(message).then(setDecryptedMessage)","note":"Resolved by adding ignore flag + cleanup in the Effect.","fix_hint":"resolved"},
+    {"file":"apps/meteor/client/components/UserStatusMenu.tsx","line":77,"code":"E9","severity":"resolved","confidence":5,"manual_reviewed":true,"snippet":"useEffect(() => onChange(status), [status, onChange])","note":"Resolved by calling onChange inside both selection handlers.","fix_hint":"resolved"},
     {"file":"apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx","line":120,"code":"E1","severity":"bug","confidence":5,"manual_reviewed":true,"snippet":"useEffect(() => { if (federated) { setValue('encrypted', false); setValue('broadcast', false); setValue('readOnly', false); } }, [federated, setValue])","note":"Form derivation via Effect — 3 setValue calls per federated toggle. Combine with :129 and :135 = 3 chained Effects driven by sibling form fields.","fix_hint":"Use react-hook-form rules/watch transforms or derive disabled-state in render"},
     {"file":"apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx","line":129,"code":"E1","severity":"bug","confidence":5,"manual_reviewed":true,"snippet":"useEffect(() => { if (!isPrivate) setValue('encrypted', false) }, [isPrivate, setValue])","note":"Sibling form-field derivation chain.","fix_hint":"Derive encrypted from isPrivate via watch/getValues at submit, or render-time disabled"},
     {"file":"apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx","line":135,"code":"E1","severity":"bug","confidence":5,"manual_reviewed":true,"snippet":"useEffect(() => setValue('readOnly', broadcast), [broadcast, setValue])","note":"readOnly fully derived from broadcast.","fix_hint":"Remove field; derive at submit or render"},
