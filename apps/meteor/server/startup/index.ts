@@ -1,6 +1,7 @@
 import './appcache';
 import './callbacks';
 import { startCronJobs } from './cron';
+import { ensureMessagesTextIndex } from './ensureMessagesTextIndex';
 import './initialData';
 import './serverRunning';
 import './coreApps';
@@ -18,6 +19,7 @@ export const startup = async () => {
 	await generateFederationKeys();
 
 	setImmediate(() => startCronJobs());
+	setImmediate(() => ensureMessagesTextIndex());
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
 		require('./localServices');
