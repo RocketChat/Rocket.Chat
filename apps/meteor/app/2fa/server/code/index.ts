@@ -131,7 +131,7 @@ export async function rememberAuthorizationByToken(token: string, userId: IUser[
 
 	const expires = getRememberDate();
 	if (!expires) {
-		throw new Meteor.Error('error-remember-date-not-found', 'remember date not found');
+		return;
 	}
 
 	await Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, token, getFingerprintFromConnection(connection), expires);

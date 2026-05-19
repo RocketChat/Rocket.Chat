@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 import type { IUser } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 
@@ -10,14 +12,16 @@ export class EmailCheckForOAuth extends EmailCheck {
 
 	public async sendTwoFactorChallenge(user: IUser): Promise<string> {
 		const now = new Date();
-		const challenge = await TwoFactorChallenges.insertOne({
+		const challengeId = randomBytes(32).toString('hex');
+		await TwoFactorChallenges.insertOne({
+			_id: challengeId,
 			userId: user._id,
 			method: 'email',
 			createdAt: now,
 			expireAt: new Date(now.getTime() + 1000 * 60 * 5),
 		});
 		await this.sendEmailCode(user);
-		return challenge.insertedId;
+		return challengeId;
 	}
 
 	public async verifyEmailTwoFactorChallenge(user: IUser, challengeId: string, code: string): Promise<boolean> {

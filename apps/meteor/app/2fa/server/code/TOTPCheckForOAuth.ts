@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 import type { IUser } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 
@@ -10,7 +12,9 @@ export class TOTPCheckForOAuth extends TOTPCheck {
 
 	public async sendTwoFactorChallenge(user: IUser): Promise<string> {
 		const now = new Date();
+		const challengeId = randomBytes(32).toString('hex');
 		const challenge = await TwoFactorChallenges.insertOne({
+			_id: challengeId,
 			userId: user._id,
 			method: 'totp',
 			createdAt: now,
