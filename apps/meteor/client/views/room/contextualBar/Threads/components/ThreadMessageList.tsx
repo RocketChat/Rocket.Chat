@@ -13,6 +13,7 @@ import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
 import { BubbleDate } from '../../../BubbleDate';
+import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
@@ -149,6 +150,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		};
 	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom]);
 
+	const keepMountedMessages = useKeepMountedMessages(items);
+
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
@@ -160,6 +163,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						aria-label={t('Thread_message_list')}
 						aria-busy={loading}
 						role='list'
+						keepMounted={keepMountedMessages}
 						onScroll={(offset: number) => {
 							const handle = virtualizerRef.current;
 							if (!handle) return;
