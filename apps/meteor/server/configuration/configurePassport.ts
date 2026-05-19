@@ -1,8 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import MongoStore from 'connect-mongo';
 import express from 'express';
 import flash from 'express-flash';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
+import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
@@ -13,8 +15,9 @@ import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 
 export const oAuthRouter = express();
 
-oAuthRouter.enable('trust proxy');
 oAuthRouter.set('trust proxy', true);
+
+const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export const configurePassport = (settings: ICachedSettings) => {
 	oAuthRouter.use(
@@ -23,6 +26,12 @@ export const configurePassport = (settings: ICachedSettings) => {
 			secret: settings.get<string>('Accounts_OAuth_Session_Secret'),
 			resave: false,
 			saveUninitialized: false,
+			store: MongoStore.create({
+				client,
+				collectionName: 'rocketchat_oauth_sessions',
+				ttl: 5 * 60,
+				autoRemove: 'native',
+			}),
 			cookie: {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
