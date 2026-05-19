@@ -425,6 +425,97 @@ describe('AbacService (unit)', () => {
 				total: 0,
 			});
 		});
+
+		describe('virtru mode', () => {
+			const actor = { _id: 'admin-1', username: 'admin', name: 'Admin' };
+
+			const setVirtruMode = (svc: AbacService) => {
+				mockHasModule.mockReturnValue(true);
+				Object.assign(svc as any, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
+			};
+
+			it('serves from store when in virtru mode and actor is present', async () => {
+				setVirtruMode(service);
+				const storeAttrs = [
+					{ key: 'clearance', values: ['topsecret', 'secret'] },
+					{ key: 'region', values: ['us'] },
+				];
+				const fakeStore = { list: jest.fn().mockResolvedValue({ attributes: storeAttrs, total: 2 }) };
+				(service as any).attributeStore = fakeStore;
+
+				const result = await service.listAbacAttributes({ key: 'cle', offset: 0, count: 10 }, actor);
+
+				expect(fakeStore.list).toHaveBeenCalledWith(actor, { filter: 'cle', offset: 0, count: 10 });
+				expect(mockAbacFindPaginated).not.toHaveBeenCalled();
+				expect(result).toEqual({
+					attributes: [
+						{ _id: 'clearance', key: 'clearance', values: ['topsecret', 'secret'] },
+						{ _id: 'region', key: 'region', values: ['us'] },
+					],
+					offset: 0,
+					count: 2,
+					total: 2,
+				});
+			});
+
+			it('uses filters.values as filter when filters.key is absent', async () => {
+				setVirtruMode(service);
+				const storeAttrs = [{ key: 'dept', values: ['eng'] }];
+				const fakeStore = { list: jest.fn().mockResolvedValue({ attributes: storeAttrs, total: 1 }) };
+				(service as any).attributeStore = fakeStore;
+
+				await service.listAbacAttributes({ values: 'eng', offset: 5, count: 2 }, actor);
+
+				expect(fakeStore.list).toHaveBeenCalledWith(actor, { filter: 'eng', offset: 5, count: 2 });
+			});
+
+			it('synthesizes _id from key and maps to IAbacAttribute shape', async () => {
+				setVirtruMode(service);
+				const fakeStore = {
+					list: jest.fn().mockResolvedValue({ attributes: [{ key: 'myattr', values: ['v1'] }], total: 1 }),
+				};
+				(service as any).attributeStore = fakeStore;
+
+				const result = await service.listAbacAttributes({}, actor);
+
+				expect(result.attributes[0]._id).toBe('myattr');
+				expect(result.attributes[0].key).toBe('myattr');
+				expect(result.attributes[0].values).toEqual(['v1']);
+			});
+
+			it('falls back to local path when in virtru mode but no actor is provided', async () => {
+				setVirtruMode(service);
+				const fakeStore = { list: jest.fn() };
+				(service as any).attributeStore = fakeStore;
+				mockAbacFindPaginated.mockReturnValueOnce({
+					cursor: { toArray: async () => [] },
+					totalCount: Promise.resolve(0),
+				});
+
+				const result = await service.listAbacAttributes({ key: 'test' });
+
+				expect(fakeStore.list).not.toHaveBeenCalled();
+				expect(mockAbacFindPaginated).toHaveBeenCalledTimes(1);
+				expect(result.attributes).toEqual([]);
+			});
+
+			it('local mode: AbacAttributes.findPaginated is used regardless of attributeStore', async () => {
+				mockHasModule.mockReturnValue(false);
+				const fakeStore = { list: jest.fn() };
+				(service as any).attributeStore = fakeStore;
+				const docs = [{ _id: 'x1', key: 'local-key', values: ['a'] }];
+				mockAbacFindPaginated.mockReturnValueOnce({
+					cursor: { toArray: async () => docs },
+					totalCount: Promise.resolve(1),
+				});
+
+				const result = await service.listAbacAttributes({ key: 'local-key' }, actor);
+
+				expect(fakeStore.list).not.toHaveBeenCalled();
+				expect(mockAbacFindPaginated).toHaveBeenCalledTimes(1);
+				expect(result.attributes).toEqual(docs);
+			});
+		});
 	});
 
 	describe('updateAbacAttributeById', () => {

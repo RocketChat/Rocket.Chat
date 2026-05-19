@@ -335,12 +335,30 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async listAbacAttributes(filters?: { key?: string; values?: string; offset?: number; count?: number }): Promise<{
+	async listAbacAttributes(
+		filters?: { key?: string; values?: string; offset?: number; count?: number },
+		actor?: AbacActor,
+	): Promise<{
 		attributes: IAbacAttribute[];
 		offset: number;
 		count: number;
 		total: number;
 	}> {
+		if (this.effectiveStore() === 'virtru' && actor) {
+			const { attributes, total } = await this.attributeStore.list(actor, {
+				filter: filters?.key ?? filters?.values,
+				offset: filters?.offset,
+				count: filters?.count,
+			});
+			const offset = filters?.offset ?? 0;
+			return {
+				attributes: attributes.map((a) => ({ _id: a.key, ...a })) as IAbacAttribute[],
+				offset,
+				count: attributes.length,
+				total,
+			};
+		}
+
 		const query: Document[] = [];
 		if (filters?.key) {
 			query.push({ key: new RegExp(escapeRegExp(filters.key), 'i') });
