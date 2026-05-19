@@ -1,4 +1,4 @@
-import { useMediaUrl, useSetting } from '@rocket.chat/ui-contexts';
+import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -6,7 +6,7 @@ import { forAttachmentDownload, registerDownloadForUid } from '../../../../../..
 
 export const useOpenEncryptedPdf = () => {
 	const getURL = useMediaUrl();
-	const pdfPreviewSizeLimit = useSetting('E2E_PDF_Preview_Size_Limit', 10485760);
+	const pdfPreviewSizeLimit = window.RocketChatDesktop?.getE2ePdfPreviewSizeLimit?.() ?? 10;
 	const uid = useId();
 	const { t } = useTranslation();
 
