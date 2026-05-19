@@ -24,6 +24,8 @@ Meteor.startup(async () => {
 
 			await import('../hooks/abac');
 
+			await Abac.reevaluateAttributeStore();
+
 			stopWatcher = settings.watch('ABAC_Enabled', async (value) => {
 				if (value && settings.get<string>('ABAC_PDP_Type') !== 'virtru') {
 					await LDAPEE.syncUsersAbacAttributes(Users.findLDAPUsers());

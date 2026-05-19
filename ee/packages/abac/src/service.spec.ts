@@ -1244,4 +1244,104 @@ describe('AbacService (unit)', () => {
 			expect(VirtruClient).toHaveBeenCalledTimes(1);
 		});
 	});
+
+	describe('attribute store transition detection', () => {
+		const buildSettings = (overrides: Record<string, any>) =>
+			({
+				Abac_Cache_Decision_Time_Seconds: 60,
+				ABAC_Enabled: true,
+				ABAC_PDP_Type: 'virtru',
+				ABAC_Attribute_Store: 'virtru',
+				ABAC_Virtru_Base_URL: '',
+				ABAC_Virtru_Client_ID: '',
+				ABAC_Virtru_Client_Secret: '',
+				ABAC_Virtru_OIDC_Endpoint: '',
+				ABAC_Virtru_Default_Entity_Key: 'emailAddress',
+				ABAC_Virtru_Attribute_Namespace: 'example.com',
+				...overrides,
+			}) as Record<string, any>;
+
+		let transitionSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			(LocalAttributeStore as jest.Mock).mockClear();
+			(VirtruAttributeStore as jest.Mock).mockClear();
+			(VirtruClient as jest.Mock).mockClear();
+			mockHasModule.mockReset();
+			mockSettingsGet.mockReset();
+			transitionSpy = jest.spyOn(AbacService.prototype as any, 'onTransitionedToVirtruStore').mockResolvedValue(undefined);
+		});
+
+		afterEach(() => {
+			transitionSpy.mockRestore();
+		});
+
+		const bootWith = async (settings: Record<string, any>) => {
+			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
+			const svc = new AbacService();
+			await svc.started();
+			return svc;
+		};
+
+		it('does not treat boot into virtru as a transition', async () => {
+			mockHasModule.mockReturnValue(true);
+			await bootWith(buildSettings({}));
+			expect(transitionSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not fire on a steady-state (no-op) re-evaluation', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({}));
+			await svc.reevaluateAttributeStore();
+			expect(transitionSpy).not.toHaveBeenCalled();
+		});
+
+		it('fires exactly once when ABAC_Attribute_Store flips local->virtru while the other conditions hold', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+			expect(transitionSpy).not.toHaveBeenCalled();
+
+			(svc as any).attributeStoreSetting = 'virtru';
+			await svc.reevaluateAttributeStore();
+
+			expect(transitionSpy).toHaveBeenCalledTimes(1);
+			expect(transitionSpy).toHaveBeenCalledWith('local');
+			expect(VirtruAttributeStore).toHaveBeenCalled();
+		});
+
+		it('fires when ABAC_Enabled flips false->true while pdp + store are already virtru', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({ ABAC_Enabled: false }));
+			expect(transitionSpy).not.toHaveBeenCalled();
+
+			(svc as any).abacEnabled = true;
+			await svc.reevaluateAttributeStore();
+
+			expect(transitionSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not fire when ABAC_Enabled becomes true but not all conditions hold', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({ ABAC_Enabled: false, ABAC_PDP_Type: 'local' }));
+
+			(svc as any).abacEnabled = true;
+			await svc.reevaluateAttributeStore();
+
+			expect(transitionSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not fire on virtru->local then back is the only virtru-entering transition', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({}));
+			expect(transitionSpy).not.toHaveBeenCalled();
+
+			(svc as any).attributeStoreSetting = 'local';
+			await svc.reevaluateAttributeStore();
+			expect(transitionSpy).not.toHaveBeenCalled();
+
+			(svc as any).attributeStoreSetting = 'virtru';
+			await svc.reevaluateAttributeStore();
+			expect(transitionSpy).toHaveBeenCalledTimes(1);
+		});
+	});
 });

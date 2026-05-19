@@ -91,7 +91,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
-			this.syncAttributeStore();
+			void this.onAttributeStoreInputsChanged();
+		});
+
+		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
+			this.abacEnabled = setting.value as boolean;
+			void this.onAttributeStoreInputsChanged();
+		});
+
+		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
+			this.attributeStoreSetting = setting.value as string;
+			void this.onAttributeStoreInputsChanged();
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -179,11 +189,29 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return this.attributeStore;
 	}
 
-	async reevaluateAttributeStore(): Promise<void> {
-		if (this.effectiveStore() === this.lastEffectiveStore) {
+	private async onAttributeStoreInputsChanged(): Promise<void> {
+		const previous = this.lastEffectiveStore;
+		const next = this.effectiveStore();
+		if (previous === next) {
+			this.syncAttributeStore();
 			return;
 		}
+
 		this.syncAttributeStore();
+
+		if (previous !== 'virtru' && next === 'virtru') {
+			void this.onTransitionedToVirtruStore(previous).catch((err) =>
+				logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
+			);
+		}
+	}
+
+	async reevaluateAttributeStore(): Promise<void> {
+		await this.onAttributeStoreInputsChanged();
+	}
+
+	private async onTransitionedToVirtruStore(_from: 'local' | 'virtru'): Promise<void> {
+		// Task 3.2 implements the destructive wipe + audit here. Intentionally a no-op for now.
 	}
 
 	setPdpStrategy(strategy: 'local' | 'virtru'): void {
