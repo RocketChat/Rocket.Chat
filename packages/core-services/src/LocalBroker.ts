@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus } from '@rocket.chat/models';

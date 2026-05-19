@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-import util from 'util';
+import util from 'node:util';
 
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
