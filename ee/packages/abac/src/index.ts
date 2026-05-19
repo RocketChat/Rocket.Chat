@@ -72,7 +72,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private attributeStore: IAttributeStore = new LocalAttributeStore();
 
-	private lastEffectiveStore?: 'local' | 'virtru';
+	private lastEffectiveStore: 'local' | 'virtru' = 'local';
 
 	decisionCacheTimeout = 60; // seconds
 
@@ -229,8 +229,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		// Boot-ordering invariant (spec §3.5): the service-owned virtruClient must hold current config
-		// before any store/PDP serves; setPdpStrategy/syncAttributeStore depend on it.
+		// virtruPdpConfig must be loaded and pushed into virtruClient before either
+		// setPdpStrategy or syncAttributeStore runs; both read from the live client instance.
 		await this.loadVirtruPdpConfig();
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		this.setPdpStrategy('virtru');
