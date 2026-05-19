@@ -3,7 +3,7 @@ import type { OptionType } from '@rocket.chat/fuselage';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import { useRef, useCallback, useState, useMemo, useEffect } from 'react';
+import { useRef, useCallback, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from './UserStatus';
@@ -52,6 +52,7 @@ const UserStatusMenu = ({
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
 		setStatus(selected);
+		onChange(selected as UserStatusType);
 		reset();
 		hide();
 	});
@@ -68,15 +69,12 @@ const UserStatusMenu = ({
 	const handleSelection = useCallback(
 		([selected]: OptionType) => {
 			setStatus(selected as UserStatusType);
+			onChange(selected as UserStatusType);
 			reset();
 			hide();
 		},
-		[hide, reset],
+		[hide, reset, onChange],
 	);
-
-	useEffect(() => {
-		onChange(status);
-	}, [status, onChange]);
 
 	return (
 		<>
