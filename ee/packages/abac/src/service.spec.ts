@@ -1,4 +1,29 @@
 import { AbacService } from './index';
+import { LocalAttributeStore, VirtruAttributeStore } from './store';
+import { VirtruClient } from './virtru/VirtruClient';
+
+const mockSettingsGet = jest.fn();
+const mockHasModule = jest.fn();
+
+jest.mock('@rocket.chat/license', () => ({
+	License: {
+		hasModule: (...args: any[]) => mockHasModule(...args),
+	},
+}));
+
+jest.mock('./store', () => ({
+	LocalAttributeStore: jest.fn(),
+	VirtruAttributeStore: jest.fn(),
+}));
+
+jest.mock('./virtru/VirtruClient', () => ({
+	VirtruClient: jest.fn().mockImplementation(() => ({
+		updateConfig: jest.fn(),
+		getConfig: jest.fn(() => ({})),
+		isAvailable: jest.fn(),
+		apiCall: jest.fn(),
+	})),
+}));
 
 const fakeActor = { _id: 'test-user', username: 'testuser', type: 'user' };
 
@@ -71,6 +96,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		api: {
 			broadcast: jest.fn(),
+		},
+		Settings: {
+			get: (...args: any[]) => mockSettingsGet(...args),
 		},
 	};
 });
@@ -1137,6 +1165,83 @@ describe('AbacService (unit)', () => {
 			});
 
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('attribute store selection', () => {
+		const buildSettings = (overrides: Record<string, any>) =>
+			({
+				Abac_Cache_Decision_Time_Seconds: 60,
+				ABAC_Enabled: true,
+				ABAC_PDP_Type: 'virtru',
+				ABAC_Attribute_Store: 'virtru',
+				ABAC_Virtru_Base_URL: '',
+				ABAC_Virtru_Client_ID: '',
+				ABAC_Virtru_Client_Secret: '',
+				ABAC_Virtru_OIDC_Endpoint: '',
+				ABAC_Virtru_Default_Entity_Key: 'emailAddress',
+				ABAC_Virtru_Attribute_Namespace: 'example.com',
+				...overrides,
+			}) as Record<string, any>;
+
+		const drive = async (settings: Record<string, any>) => {
+			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
+			const svc = new AbacService();
+			await svc.started();
+			return svc;
+		};
+
+		beforeEach(() => {
+			(LocalAttributeStore as jest.Mock).mockClear();
+			(VirtruAttributeStore as jest.Mock).mockClear();
+			(VirtruClient as jest.Mock).mockClear();
+			mockHasModule.mockReset();
+			mockSettingsGet.mockReset();
+		});
+
+		it('selects VirtruAttributeStore when license + all three settings are virtru/enabled', async () => {
+			mockHasModule.mockReturnValue(true);
+			await drive(buildSettings({}));
+			expect(VirtruAttributeStore).toHaveBeenCalledTimes(1);
+		});
+
+		it('falls back to LocalAttributeStore when license module is absent', async () => {
+			mockHasModule.mockReturnValue(false);
+			await drive(buildSettings({}));
+			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+		});
+
+		it('falls back to LocalAttributeStore when ABAC_Enabled is false', async () => {
+			mockHasModule.mockReturnValue(true);
+			await drive(buildSettings({ ABAC_Enabled: false }));
+			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+		});
+
+		it('falls back to LocalAttributeStore when ABAC_PDP_Type is not virtru', async () => {
+			mockHasModule.mockReturnValue(true);
+			await drive(buildSettings({ ABAC_PDP_Type: 'local' }));
+			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+		});
+
+		it('falls back to LocalAttributeStore when ABAC_Attribute_Store is not virtru', async () => {
+			mockHasModule.mockReturnValue(true);
+			await drive(buildSettings({ ABAC_Attribute_Store: 'local' }));
+			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+		});
+
+		it('reuses the same long-lived VirtruClient across local->virtru->local PDP flips', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockSettingsGet.mockImplementation(async (key: string) => buildSettings({ ABAC_PDP_Type: 'local' })[key]);
+			const svc = new AbacService();
+			await svc.started();
+
+			expect(VirtruClient).toHaveBeenCalledTimes(1);
+
+			svc.setPdpStrategy('virtru');
+			svc.setPdpStrategy('local');
+			svc.setPdpStrategy('virtru');
+
+			expect(VirtruClient).toHaveBeenCalledTimes(1);
 		});
 	});
 });

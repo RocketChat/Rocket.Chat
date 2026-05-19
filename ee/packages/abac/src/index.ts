@@ -10,6 +10,7 @@ import type {
 	ILDAPEntry,
 	AbacAuditReason,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isTruthy } from '@rocket.chat/tools';
@@ -39,6 +40,7 @@ import {
 import { logger } from './logger';
 import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
+import { LocalAttributeStore, VirtruAttributeStore, type IAttributeStore } from './store';
 import { VirtruClient } from './virtru/VirtruClient';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
@@ -62,6 +64,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private virtruClient = new VirtruClient(this.virtruPdpConfig);
 
+	private abacEnabled?: boolean;
+
+	private pdpTypeSetting?: string;
+
+	private attributeStoreSetting?: string;
+
+	private attributeStore: IAttributeStore = new LocalAttributeStore();
+
+	private lastEffectiveStore?: 'local' | 'virtru';
+
 	decisionCacheTimeout = 60; // seconds
 
 	constructor() {
@@ -77,7 +89,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 				await this.loadVirtruPdpConfig();
 			}
 
+			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
+			this.syncAttributeStore();
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -140,9 +154,36 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private syncVirtruPdpConfig(): void {
-		if (this.pdp instanceof VirtruPDP) {
-			this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
+		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
+	}
+
+	private effectiveStore(): 'local' | 'virtru' {
+		if (
+			License.hasModule('abac') &&
+			this.abacEnabled === true &&
+			this.pdpTypeSetting === 'virtru' &&
+			this.attributeStoreSetting === 'virtru'
+		) {
+			return 'virtru';
 		}
+		return 'local';
+	}
+
+	private syncAttributeStore(): void {
+		const next = this.effectiveStore();
+		this.attributeStore = next === 'virtru' ? new VirtruAttributeStore(this.virtruClient) : new LocalAttributeStore();
+		this.lastEffectiveStore = next;
+	}
+
+	protected getAttributeStore(): IAttributeStore {
+		return this.attributeStore;
+	}
+
+	async reevaluateAttributeStore(): Promise<void> {
+		if (this.effectiveStore() === this.lastEffectiveStore) {
+			return;
+		}
+		this.syncAttributeStore();
 	}
 
 	setPdpStrategy(strategy: 'local' | 'virtru'): void {
@@ -172,14 +213,28 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
+		const [abacEnabled, pdpType, attributeStore] = await Promise.all([
+			Settings.get<boolean>('ABAC_Enabled'),
+			Settings.get<string>('ABAC_PDP_Type'),
+			Settings.get<string>('ABAC_Attribute_Store'),
+		]);
+
+		this.abacEnabled = abacEnabled;
+		this.pdpTypeSetting = pdpType;
+		this.attributeStoreSetting = attributeStore;
+
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');
+			this.syncAttributeStore();
 			return;
 		}
 
+		// Boot-ordering invariant (spec §3.5): the service-owned virtruClient must hold current config
+		// before any store/PDP serves; setPdpStrategy/syncAttributeStore depend on it.
 		await this.loadVirtruPdpConfig();
+		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		this.setPdpStrategy('virtru');
+		this.syncAttributeStore();
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
