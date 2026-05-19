@@ -4,7 +4,7 @@ import { AccordionItem, Button } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +25,9 @@ const PreferencesNotificationsSection = () => {
 	const { t, i18n } = useTranslation();
 	const user = useUser();
 
-	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission>();
+	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission | undefined>(() =>
+		typeof window !== 'undefined' && window.Notification ? Notification.permission : undefined,
+	);
 
 	const defaultDesktopNotifications = useSetting(
 		'Accounts_Default_User_Preferences_desktopNotifications',
@@ -44,8 +46,6 @@ const PreferencesNotificationsSection = () => {
 	const notify = useNotification();
 
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
-
-	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
 	const onSendNotification = useCallback(() => {
 		notify({
