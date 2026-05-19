@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getMessageMaxParseLength } from '../../../lib/getMessageMaxParseLength';
 
-describe.only('getMessageMaxParseLength', () => {
+describe('getMessageMaxParseLength', () => {
 	afterEach(() => {
 		delete process.env.MESSAGE_MAX_PARSE_LENGTH;
 	});
