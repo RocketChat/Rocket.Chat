@@ -74,6 +74,11 @@ API.v1.addRoute(
 			const isCodeValid = await twoFAMethod.verifyEmailTwoFactorChallenge(user, challengeId, code);
 
 			if (!isCodeValid) {
+				const tooManyAttempts = await twoFAMethod.maxFaildedAttemtpsReached(user);
+				if (tooManyAttempts) {
+					await TwoFactorChallenges.removeByPendingChallengeId(challengeId);
+					throw new Meteor.Error('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached');
+				}
 				return API.v1.failure('error-invalid-code', 'Invalid code');
 			}
 

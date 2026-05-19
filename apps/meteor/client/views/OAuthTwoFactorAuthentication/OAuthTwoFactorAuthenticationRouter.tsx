@@ -1,7 +1,15 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page } from '@rocket.chat/ui-client';
-import { useEndpoint, useLoginWithToken, useRouteParameter, useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import {
+	useEndpoint,
+	useLoginWithToken,
+	useRouteParameter,
+	useRouter,
+	useSetModal,
+	useToastMessageDispatch,
+} from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TwoFactorModal from '../../components/TwoFactorModal/TwoFactorModal';
 
@@ -13,10 +21,10 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 	const method = useRouteParameter('method') as 'totp' | 'email' | undefined;
 	const challengeId = useRouteParameter('challengeId');
 	const router = useRouter();
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const loginWithToken = useLoginWithToken();
-
+	const { t } = useTranslation();
 	const verifyChallenge = useEndpoint('POST', '/v1/twoFactorChallenges.verifyChallenge');
 	const sendEmailCode = useEndpoint('POST', '/v1/twoFactorChallenges.sendEmailCode');
 
@@ -52,6 +60,18 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 			navigateToHome();
 		} catch (error: any) {
 			console.error('Failed to verify challenge', error);
+			if (error.errorType === 'totp-max-attempts') {
+				setModal(null);
+				dispatchToastMessage({ type: 'error', message: t('Maximum_number_of_attempts_reached_please_try_again_later') });
+				router.navigate('/login', { replace: true });
+				return;
+			}
+			if (error.errorType === 'error-challenge-expired' || error.errorType === 'error-challenge-not-found') {
+				setModal(null);
+				dispatchToastMessage({ type: 'error', message: t('Challenge_expired_please_try_again_later') });
+				router.navigate('/login', { replace: true });
+				return;
+			}
 			throw error;
 		}
 	});
