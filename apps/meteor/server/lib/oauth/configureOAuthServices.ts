@@ -15,7 +15,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		const siteUrl = settings.get<string>('Site_Url');
 
 		passport.unuse(config.provider);
-		console.log('CONFIG - ', config);
+
 		passport.use(
 			config.provider,
 			new Strategy(
@@ -32,8 +32,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					profileFields: ['id', 'displayName', 'emails'],
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
-					console.log('twitterOAuth - ', { accessToken, refreshToken, profile });
-					console.log('PROFILE - ', profile);
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
