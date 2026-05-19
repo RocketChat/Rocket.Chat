@@ -66,7 +66,7 @@ EXPOSE 3000
 
 CMD ["node", "main.js"]
 
-FROM rocketchat/dhi-node:22.22.2-alpine3.23-fips AS release-fips
+FROM rocketchat/dhi-node:22.22.3-alpine3.23-fips AS release-fips
 
 LABEL maintainer="buildmaster@rocket.chat"
 
