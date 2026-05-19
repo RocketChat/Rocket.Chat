@@ -1018,7 +1018,7 @@ describe('[Users]', () => {
 					username: 'invalid-username',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(404)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
@@ -1238,7 +1238,7 @@ describe('[Users]', () => {
 							email: 'this_is_a_fake_email_that_does_not_exist@invalid.com',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(404)
+						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'User not found.');
@@ -1259,7 +1259,7 @@ describe('[Users]', () => {
 							email: targetUser.emails[0].address,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(404)
+						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'User not found.');
@@ -1328,7 +1328,7 @@ describe('[Users]', () => {
 							freeSwitchExtension: 'this_is_a_fake_extension_that_does_not_exist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(404)
+						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'User not found.');

@@ -27,7 +27,6 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
-	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
@@ -579,7 +578,6 @@ API.v1.get(
 			200: userObjectResponse,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
@@ -598,7 +596,7 @@ API.v1.get(
 		const user = await getFullUserDataByUniqueSearchTerm(this.userId, ...searchTerms);
 
 		if (!user) {
-			return API.v1.notFound('User not found.');
+			return API.v1.failure('User not found.');
 		}
 
 		const myself = user._id === this.userId;
