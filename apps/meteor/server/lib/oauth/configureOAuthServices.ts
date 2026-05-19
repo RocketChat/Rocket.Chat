@@ -28,7 +28,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					state: true,
 					pkce: true,
 					profileFields: ['id', 'displayName', 'emails'],
-					...config,
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };

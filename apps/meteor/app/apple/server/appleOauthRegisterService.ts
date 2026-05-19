@@ -52,7 +52,7 @@ settings.watchMultiple(
 
 		passport.use(
 			'apple',
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
 			new AppleStrategy(
 				{
 					clientID: settings.get<string>('Accounts_OAuth_Apple_id'),
@@ -117,6 +117,19 @@ settings.watchMultiple(
 
 		oAuthRouter.get(
 			'/oauth/apple',
+			(req, _res, next) => {
+				const { loginClient } = req.query;
+				if (loginClient === 'mobile' || loginClient === 'desktop') {
+					req.session.loginClient = loginClient;
+					req.session.save(() => {
+						next();
+					});
+				} else {
+					//delete stale value from previous sessions if any
+					delete req.session.loginClient;
+					next();
+				}
+			},
 			passport.authenticate('apple', {
 				scope: ['name', 'email'],
 			}),

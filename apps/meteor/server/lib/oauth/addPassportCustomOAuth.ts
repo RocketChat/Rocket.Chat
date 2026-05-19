@@ -33,6 +33,8 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 					next();
 				});
 			} else {
+				//delete stale value from previous sessions if any
+				delete req.session.loginClient;
 				next();
 			}
 		},
