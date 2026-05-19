@@ -178,13 +178,14 @@ export async function getEmailData({ message, receiver, sender, subscription, ro
 		)}${message.tmid || message._id}@${replyto.split('@')[1]}`;
 	}
 
-	metrics.notificationsSent.inc({ notification_type: 'email' });
 	return email;
 }
 
 export function sendEmailFromData(data) {
-	metrics.notificationsSent.inc({ notification_type: 'email' });
-	return Mailer.send(data);
+	return Mailer.send(data).then(() => {
+		metrics.notificationsSent.inc({ notification_type: 'email' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'email' });
+	});
 }
 
 export function shouldNotifyEmail({
