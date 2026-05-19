@@ -20,6 +20,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 			config.provider,
 			new Strategy(
 				{
+					...config,
 					clientID: config.clientId,
 					clientSecret: config.clientSecret,
 					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
