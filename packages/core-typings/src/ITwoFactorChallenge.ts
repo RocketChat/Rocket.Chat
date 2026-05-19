@@ -2,6 +2,6 @@ export interface ITwoFactorChallenge {
 	_id: string;
 	userId: string;
 	method: 'email' | 'totp';
-	expireAt?: Date;
+	expireAt: Date;
 	createdAt: Date;
 }
