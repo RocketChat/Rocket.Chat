@@ -368,12 +368,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
-	async listAbacRooms(filters?: {
-		offset?: number;
-		count?: number;
-		filter?: string;
-		filterType?: 'all' | 'roomName' | 'attribute' | 'value';
-	}): Promise<{
+	async listAbacRooms(
+		filters?: {
+			offset?: number;
+			count?: number;
+			filter?: string;
+			filterType?: 'all' | 'roomName' | 'attribute' | 'value';
+		},
+		actor?: AbacActor,
+	): Promise<{
 		rooms: IRoom[];
 		offset: number;
 		count: number;
@@ -422,11 +425,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		const rooms = await cursor.toArray();
+		const scoped = actor ? await this.attributeStore.scopeRoomsPage(rooms, actor) : rooms;
 
 		return {
-			rooms,
+			rooms: scoped,
 			offset,
-			count: rooms.length,
+			count: scoped.length,
 			total: await totalCount,
 		};
 	}

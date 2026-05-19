@@ -35,6 +35,7 @@ const mockAbacFindOne = jest.fn();
 const mockAbacUpdateOne = jest.fn();
 const mockAbacDeleteOne = jest.fn();
 const mockRoomsIsAbacAttributeInUse = jest.fn();
+const mockRoomsFindPaginated = jest.fn();
 const mockSetAbacAttributesById = jest.fn();
 const mockAbacFind = jest.fn();
 const mockUpdateSingleAbacAttributeValuesById = jest.fn();
@@ -53,6 +54,7 @@ jest.mock('@rocket.chat/models', () => ({
 		findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
 		updateAbacConfigurationById: (...args: any[]) => mockUpdateAbacConfigurationById(...args),
 		isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
+		findPaginated: (...args: any[]) => mockRoomsFindPaginated(...args),
 		setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
 		updateSingleAbacAttributeValuesById: (...args: any[]) => mockUpdateSingleAbacAttributeValuesById(...args),
 		updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
@@ -1165,6 +1167,159 @@ describe('AbacService (unit)', () => {
 			});
 
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('listAbacRooms', () => {
+		const actor = { _id: 'admin-1', username: 'admin', name: 'Admin' };
+
+		const roomA = { _id: 'rA', t: 'p', name: 'alpha', abacAttributes: [{ key: 'dept', values: ['eng'] }] } as any;
+		const roomB = { _id: 'rB', t: 'p', name: 'beta', abacAttributes: [{ key: 'dept', values: ['sales'] }] } as any;
+		const roomC = { _id: 'rC', t: 'p', name: 'gamma', abacAttributes: [{ key: 'dept', values: ['hr'] }] } as any;
+
+		const localStore = { scopeRoomsPage: async (rooms: any[]) => rooms };
+
+		beforeEach(() => {
+			mockRoomsFindPaginated.mockReset();
+			(service as any).attributeStore = localStore;
+		});
+
+		it('calls Rooms.findPaginated with the base query and pagination, ignoring actor', async () => {
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA] },
+				totalCount: Promise.resolve(1),
+			});
+
+			await service.listAbacRooms({ offset: 0, count: 10 }, actor);
+
+			expect(mockRoomsFindPaginated).toHaveBeenCalledWith(
+				{ t: 'p', abacAttributes: { $exists: true, $ne: [] } },
+				{ skip: 0, limit: 10, sort: { name: 1 } },
+			);
+		});
+
+		it('calls Rooms.findPaginated with the same base query when actor is absent', async () => {
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA] },
+				totalCount: Promise.resolve(1),
+			});
+
+			await service.listAbacRooms({ offset: 0, count: 10 });
+
+			expect(mockRoomsFindPaginated).toHaveBeenCalledWith(
+				{ t: 'p', abacAttributes: { $exists: true, $ne: [] } },
+				{ skip: 0, limit: 10, sort: { name: 1 } },
+			);
+		});
+
+		it('local mode: returns rooms byte-identical to the Mongo page (identity pass-through)', async () => {
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA, roomB] },
+				totalCount: Promise.resolve(2),
+			});
+
+			const result = await service.listAbacRooms({ offset: 0, count: 25 }, actor);
+
+			expect(result).toEqual({ rooms: [roomA, roomB], offset: 0, count: 2, total: 2 });
+			expect(result.rooms[0]).toBe(roomA);
+			expect(result.rooms[1]).toBe(roomB);
+		});
+
+		it('local mode: no redaction flags on any room', async () => {
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA, roomB, roomC] },
+				totalCount: Promise.resolve(3),
+			});
+
+			const result = await service.listAbacRooms({ offset: 0, count: 25 }, actor);
+
+			for (const r of result.rooms) {
+				expect((r as any).abacAttributesRedacted).toBeUndefined();
+			}
+		});
+
+		it('local mode: no actor → rooms returned as-is', async () => {
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA] },
+				totalCount: Promise.resolve(1),
+			});
+
+			const result = await service.listAbacRooms({ offset: 0, count: 25 });
+
+			expect(result.rooms).toEqual([roomA]);
+			expect(result.total).toBe(1);
+			expect(result.offset).toBe(0);
+		});
+
+		it('virtru mode: permitted rooms are unchanged, denied rooms are redacted', async () => {
+			const fakeStore = {
+				scopeRoomsPage: jest
+					.fn()
+					.mockImplementation(async (rooms: any[]) =>
+						rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
+					),
+			};
+			(service as any).attributeStore = fakeStore;
+
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA, roomB, roomC] },
+				totalCount: Promise.resolve(10),
+			});
+
+			const result = await service.listAbacRooms({ offset: 5, count: 3 }, actor);
+
+			expect(result.rooms).toHaveLength(3);
+			expect(result.total).toBe(10);
+			expect(result.offset).toBe(5);
+			expect(result.count).toBe(3);
+
+			const permitted = result.rooms.find((r) => r._id === 'rA');
+			expect(permitted).toEqual(roomA);
+			expect((permitted as any).abacAttributesRedacted).toBeUndefined();
+
+			const denied = result.rooms.find((r) => r._id === 'rB');
+			expect(denied?.abacAttributes).toEqual([]);
+			expect((denied as any).abacAttributesRedacted).toBe(true);
+
+			const alsoPermitted = result.rooms.find((r) => r._id === 'rC');
+			expect(alsoPermitted).toEqual(roomC);
+		});
+
+		it('virtru mode: order of rooms is preserved after scoping', async () => {
+			const ordered = [roomC, roomA, roomB];
+			const fakeStore = {
+				scopeRoomsPage: jest
+					.fn()
+					.mockResolvedValue(ordered.map((r) => (r._id === 'rA' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r))),
+			};
+			(service as any).attributeStore = fakeStore;
+
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => ordered },
+				totalCount: Promise.resolve(3),
+			});
+
+			const result = await service.listAbacRooms({ offset: 0, count: 25 }, actor);
+
+			expect(result.rooms.map((r) => r._id)).toEqual(['rC', 'rA', 'rB']);
+		});
+
+		it('virtru mode: total and offset are not changed by scoping', async () => {
+			const fakeStore = {
+				scopeRoomsPage: jest.fn().mockResolvedValue([{ ...roomA, abacAttributes: [], abacAttributesRedacted: true }]),
+			};
+			(service as any).attributeStore = fakeStore;
+
+			mockRoomsFindPaginated.mockReturnValue({
+				cursor: { toArray: async () => [roomA] },
+				totalCount: Promise.resolve(99),
+			});
+
+			const result = await service.listAbacRooms({ offset: 20, count: 1 }, actor);
+
+			expect(result.total).toBe(99);
+			expect(result.offset).toBe(20);
+			expect(result.count).toBe(1);
 		});
 	});
 
