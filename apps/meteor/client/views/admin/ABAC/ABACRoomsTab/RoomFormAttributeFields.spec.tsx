@@ -43,7 +43,9 @@ const appRoot = mockAppRoot()
 		ABAC_Search_Attribute: 'Search attribute',
 		ABAC_Select_Attribute_Values: 'Select attribute values',
 		Remove: 'Remove',
+		ABAC_Picker_Virtru_Helper: 'Attributes are provided by Virtru and limited to those you possess.',
 	})
+	.withSetting('ABAC_Attribute_Store', 'local')
 	.build();
 
 const FormProviderWrapper = ({ children, defaultValues }: { children: ReactNode; defaultValues?: Partial<RoomFormData> }) => {
@@ -132,5 +134,32 @@ describe('RoomFormAttributeFields', () => {
 		expect(screen.getByText('Security-Level')).toBeInTheDocument();
 		expect(screen.getByText('Public')).toBeInTheDocument();
 		expect(screen.getByText('Internal')).toBeInTheDocument();
+	});
+
+	it('should render fields with disabled inputs when disabled prop is true', () => {
+		const fields = [{ id: 'field-1' }, { id: 'field-2' }];
+
+		render(
+			<FormProviderWrapper>
+				<RoomFormAttributeFields fields={fields} remove={mockRemove} disabled />
+			</FormProviderWrapper>,
+			{ wrapper: appRoot },
+		);
+
+		const attributeLabels = screen.getAllByText('Attribute');
+		expect(attributeLabels).toHaveLength(2);
+	});
+
+	it('should render fields without disabled state when disabled prop is false', () => {
+		const fields = [{ id: 'field-1' }];
+
+		render(
+			<FormProviderWrapper>
+				<RoomFormAttributeFields fields={fields} remove={mockRemove} disabled={false} />
+			</FormProviderWrapper>,
+			{ wrapper: appRoot },
+		);
+
+		expect(screen.getAllByText('Attribute')).toHaveLength(1);
 	});
 });

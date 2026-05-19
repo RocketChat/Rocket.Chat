@@ -7,9 +7,10 @@ import { useAttributeList } from '../hooks/useAttributeList';
 type RoomFormAttributeFieldsProps = {
 	fields: { id: string }[];
 	remove: (index: number) => void;
+	disabled?: boolean;
 };
 
-const RoomFormAttributeFields = ({ fields, remove }: RoomFormAttributeFieldsProps) => {
+const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormAttributeFieldsProps) => {
 	const { t } = useTranslation();
 
 	const { data: attributeList, isLoading } = useAttributeList();
@@ -31,6 +32,7 @@ const RoomFormAttributeFields = ({ fields, remove }: RoomFormAttributeFieldsProp
 					remove(index);
 				}}
 				index={index}
+				disabled={disabled}
 			/>
 		</Field>
 	));
