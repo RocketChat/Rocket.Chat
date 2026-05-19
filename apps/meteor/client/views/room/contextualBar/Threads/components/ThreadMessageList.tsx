@@ -12,7 +12,6 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
-import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
@@ -127,9 +126,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
-		if (msgJumpParam !== mainMessage._id) {
-			setMessageJumpQueryStringParameter(null);
-		}
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
 
 	useEffect(() => {
