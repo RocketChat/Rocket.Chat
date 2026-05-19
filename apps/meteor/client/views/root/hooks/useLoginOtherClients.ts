@@ -1,14 +1,15 @@
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { buildDeepLinkURL } from '../../../lib/buildAuthDeeplinkURL';
 
 export const useLoginOtherClients = () => {
 	const router = useRouter();
+	const resumeToken = useSearchParameter('resumeToken');
+	const loginClient = useSearchParameter('loginClient');
+	const userId = useSearchParameter('userId');
 
 	useEffect(() => {
-		const { resumeToken, loginClient, userId } = router.getSearchParameters();
-
 		if (!resumeToken || !userId) {
 			return;
 		}
@@ -25,5 +26,5 @@ export const useLoginOtherClients = () => {
 		}, 0);
 
 		return () => clearTimeout(timeout);
-	}, [router]);
+	}, [resumeToken, userId, loginClient, router]);
 };

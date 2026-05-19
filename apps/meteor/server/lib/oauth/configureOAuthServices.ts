@@ -6,6 +6,7 @@ import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
+import { doesUserRequire2FA } from './twoFactorAuth';
 import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
@@ -41,9 +42,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 							accessToken,
 							refreshToken,
 							name: profile.displayName,
-							email: profile?.emails?.[0]?.value,
 							...restProfile,
 							..._json,
+							email: profile?.emails?.[0]?.value,
 						},
 						{},
 					);
@@ -73,6 +74,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 						next();
 					});
 				} else {
+					//delete stale value from previous sessions if any
+					delete req.session.loginClient;
 					next();
 				}
 			},
@@ -87,8 +90,20 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				if (!oAuthUser) {
 					return res.redirect('/login');
 				}
-
 				const { loginClient } = req.session;
+
+				const secondFactorMethod = doesUserRequire2FA(oAuthUser);
+
+				if (secondFactorMethod) {
+					const challengeId = await secondFactorMethod.sendTwoFactorChallenge(oAuthUser);
+					const twoFARedirectUrl = new URL(`/2fa/${secondFactorMethod.method}/${challengeId}`, siteUrl);
+
+					if (loginClient) {
+						twoFARedirectUrl.searchParams.set('loginClient', loginClient);
+					}
+
+					return res.redirect(twoFARedirectUrl.toString());
+				}
 
 				const stampedToken = Accounts._generateStampedLoginToken();
 				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
@@ -102,7 +117,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					redirectUrl.searchParams.set('loginClient', loginClient);
 				}
 
-				res.redirect(redirectUrl.toString());
+				setImmediate(() => res.redirect(redirectUrl.toString()));
 
 				req.session.destroy((err) => {
 					if (err) {

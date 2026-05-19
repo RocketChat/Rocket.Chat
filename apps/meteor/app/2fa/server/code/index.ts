@@ -63,8 +63,8 @@ function getFingerprintFromConnection(connection: IMethodConnection): string {
 	return crypto.createHash('md5').update(data).digest('hex');
 }
 
-function getRememberDate(from: Date = new Date()): Date | undefined {
-	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
+export function getRememberDate(from: Date = new Date()): Date | undefined {
+	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor'), 10);
 
 	if (rememberFor <= 0) {
 		return;
@@ -118,6 +118,25 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 	return true;
 }
 
+export async function rememberAuthorizationByToken(token: string, userId: IUser['_id'], connection: IMethodConnection): Promise<void> {
+	const user = await Users.findOneByIdAndLoginHashedToken(userId, token, { projection: { _id: 1, services: 1 } });
+	if (!user) {
+		throw new Meteor.Error('error-user-not-found', 'user not found');
+	}
+
+	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === token);
+	if (!tokenObject) {
+		throw new Meteor.Error('error-token-not-found', 'token not found');
+	}
+
+	const expires = getRememberDate();
+	if (!expires) {
+		return;
+	}
+
+	await Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, token, getFingerprintFromConnection(connection), expires);
+}
+
 async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
 	const currentToken = Accounts._getLoginToken(connection.id);
 
@@ -146,7 +165,7 @@ interface ICheckCodeForUser {
 	connection?: IMethodConnection;
 }
 
-const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+export const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
 	// try first getting one of the available methods or the one that was already provided
 	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 	if (selectedMethod) {
@@ -174,7 +193,6 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	}
 
 	let existingUser: IUser | null;
-
 	if (typeof user === 'string') {
 		existingUser = await getUserForCheck(user);
 	} else {

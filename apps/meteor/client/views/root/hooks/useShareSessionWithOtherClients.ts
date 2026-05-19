@@ -1,4 +1,4 @@
-import { useRouter, useUserId } from '@rocket.chat/ui-contexts';
+import { useRouter, useSearchParameter, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { buildDeepLinkURL } from '../../../lib/buildAuthDeeplinkURL';
@@ -7,6 +7,8 @@ import { readStoredLoginToken } from '../../../lib/sdk/ddpSdk';
 export const useShareSessionWithOtherClients = () => {
 	const router = useRouter();
 	const userId = useUserId();
+	const resumeToken = useSearchParameter('resumeToken');
+	const loginClient = useSearchParameter('loginClient');
 
 	useEffect(() => {
 		if (!userId) {
@@ -18,8 +20,6 @@ export const useShareSessionWithOtherClients = () => {
 		if (!loginToken) {
 			return;
 		}
-
-		const { resumeToken, loginClient } = router.getSearchParameters();
 
 		if (resumeToken) {
 			return;
@@ -37,5 +37,5 @@ export const useShareSessionWithOtherClients = () => {
 		}, 100);
 
 		return () => clearTimeout(timeout);
-	}, [router, userId]);
+	}, [resumeToken, loginClient, router, userId]);
 };

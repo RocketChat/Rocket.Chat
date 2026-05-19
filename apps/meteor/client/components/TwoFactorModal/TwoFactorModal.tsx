@@ -21,7 +21,7 @@ type TwoFactorModalProps = {
 	  }
 	| {
 			method: 'email';
-			emailOrUsername: string;
+			resendEmail?: () => Promise<null>;
 	  }
 );
 
@@ -31,9 +31,9 @@ const TwoFactorModal = ({ onConfirm, onClose, ...props }: TwoFactorModalProps): 
 	}
 
 	if (props.method === Method.EMAIL) {
-		const { emailOrUsername } = props;
+		const { resendEmail } = props;
 
-		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} emailOrUsername={emailOrUsername} />;
+		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} resendEmail={resendEmail} />;
 	}
 
 	if (props.method === Method.PASSWORD) {
