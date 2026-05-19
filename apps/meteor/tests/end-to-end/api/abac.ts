@@ -14,6 +14,7 @@ import {
 	seedBulkDecisionByEntity,
 	seedDefaultMocks,
 	seedGetDecisionBulk,
+	seedGetEntitlements,
 } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -3516,6 +3517,732 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('user');
 			expect(res.body.user).to.not.have.property('abacAttributes');
+		});
+	});
+
+	// Multi-node fan-out and "wipe-on-reboot transition-only" guarantee are integration / manual
+	// concerns: a single in-process e2e cannot emulate cross-node setting propagation or boot
+	// ordering without restarting the server. Per spec §8.1, both are explicitly OUT OF SCOPE for
+	// this block. Single-node listener wipe IS covered below; license veto is covered only as a
+	// documentation skip (see "license veto" sub-describe).
+	(IS_EE ? describe : describe.skip)('[ABAC] virtru-attribute-store (mock-server)', function () {
+		this.retries(0);
+
+		const v1 = '/api/v1';
+		const NS = 'example.com';
+		const fqn = (key: string, value: string) => `https://${NS}/attr/${key}/value/${value}`;
+		const adminPassword = password;
+		let storeConnection: MongoClient;
+
+		const makeAdmin = async (slug: string) => {
+			const u = await createUser({ roles: ['admin'], username: `vstore-${slug}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` });
+			const creds = await login(u.username, adminPassword);
+			return { user: u, creds };
+		};
+
+		before((done) => getCredentials(done));
+
+		before(async function () {
+			this.timeout(20000);
+
+			const healthy = await mockServerHealthy();
+			expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
+
+			storeConnection = await MongoClient.connect(URL_MONGODB);
+
+			await Promise.all([
+				updatePermission('abac-management', ['admin']),
+				updatePermission('manage-abac-admin-settings', ['admin']),
+				updatePermission('manage-abac-admin-room-attributes', ['admin']),
+				updatePermission('manage-abac-admin-rooms', ['admin']),
+				updatePermission('view-abac-admin-audit', ['admin']),
+			]);
+
+			await Promise.all([
+				updateSetting('ABAC_Virtru_Base_URL', 'http://mock-server:8080'),
+				updateSetting('ABAC_Virtru_OIDC_Endpoint', 'http://mock-server:8080/auth/realms/mock'),
+				updateSetting('ABAC_Virtru_Client_ID', 'mock-client'),
+				updateSetting('ABAC_Virtru_Client_Secret', 'mock-secret'),
+				updateSetting('ABAC_Virtru_Default_Entity_Key', 'emailAddress'),
+				updateSetting('ABAC_Virtru_Attribute_Namespace', NS),
+				updateSetting('Abac_Cache_Decision_Time_Seconds', 0),
+			]);
+
+			await updateSetting('ABAC_Enabled', true);
+			await updateSetting('ABAC_PDP_Type', 'virtru');
+			await updateSetting('ABAC_Attribute_Store', 'virtru');
+		});
+
+		after(async function () {
+			this.timeout(15000);
+
+			await mockServerReset();
+			await updateSetting('ABAC_Attribute_Store', 'local');
+			await updateSetting('ABAC_PDP_Type', 'local');
+			await updateSetting('ABAC_Enabled', false);
+			await storeConnection.close();
+		});
+
+		describe('redactor / single-room (spec §5.0/§5.0a)', () => {
+			let room: IRoom;
+			let adminA: { user: IUser; creds: Credentials };
+			let adminB: { user: IUser; creds: Credentials };
+
+			before(async function () {
+				this.timeout(20000);
+
+				adminA = await makeAdmin('redA');
+				adminB = await makeAdmin('redB');
+
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] }]);
+
+				room = (await createRoom({ type: 'p', name: `vstore-red-${Date.now()}` })).body.group;
+
+				await storeConnection
+					.db()
+					.collection('rocketchat_room')
+					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await deleteRoom({ type: 'p', roomId: room._id });
+				await deleteUser(adminA.user);
+				await deleteUser(adminB.user);
+			});
+
+			it('admin A (PERMIT): /abac/rooms returns room with abacAttributes populated, no redacted flag', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
+				const res = await request.get(`${v1}/abac/rooms`).set(adminA.creds).expect(200);
+				const found = (res.body.rooms as IRoom[]).find((r) => r._id === room._id);
+				expect(found, 'room must be in list for permit admin').to.exist;
+				expect(found?.abacAttributes).to.deep.equal([{ key: 'clearance', values: ['secret'] }]);
+				expect(found).to.not.have.property('abacAttributesRedacted');
+			});
+
+			it('admin A (PERMIT): rooms.adminRooms.getRoom returns room with abacAttributes populated, no flag', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
+				const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(adminA.creds).query({ rid: room._id }).expect(200);
+				expect(res.body.abacAttributes).to.deep.equal([{ key: 'clearance', values: ['secret'] }]);
+				expect(res.body).to.not.have.property('abacAttributesRedacted');
+			});
+
+			it('admin A can POST a value they possess and gets 200', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
+
+				await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminA.creds)
+					.send({ values: ['secret'] })
+					.expect(200);
+			});
+
+			it('admin B (DENY): list contains the room redacted + flagged, same pagination shape as A', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('other', 'value')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
+
+				const resB = await request.get(`${v1}/abac/rooms`).set(adminB.creds).expect(200);
+
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
+				const resA = await request.get(`${v1}/abac/rooms`).set(adminA.creds).expect(200);
+
+				expect(resB.body.total).to.equal(resA.body.total);
+				expect(resB.body.offset).to.equal(resA.body.offset);
+
+				const denied = (resB.body.rooms as IRoom[]).find((r) => r._id === room._id);
+				expect(denied, 'room must still appear in deny admin list').to.exist;
+				expect(denied?.abacAttributes).to.deep.equal([]);
+				expect(denied).to.have.property('abacAttributesRedacted', true);
+
+				for (const r of resB.body.rooms as Array<IRoom & { restricted?: unknown }>) {
+					expect(r).to.not.have.property('restricted');
+				}
+				expect(resB.body).to.not.have.property('restricted');
+			});
+
+			it('admin B (DENY): rooms.adminRooms.getRoom returns room redacted + flagged', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('other', 'value')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
+
+				const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(adminB.creds).query({ rid: room._id }).expect(200);
+				expect(res.body.abacAttributes).to.deep.equal([]);
+				expect(res.body).to.have.property('abacAttributesRedacted', true);
+			});
+
+			it('admin B (DENY): DELETE /abac/rooms/:rid/attributes (empty-set clear) → 400 error-pdp-unavailable', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('other', 'value')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
+
+				const res = await request.delete(`${v1}/abac/rooms/${room._id}/attributes`).set(adminB.creds).expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+			});
+
+			it('admin B (DENY): non-empty POST → 400 error-pdp-unavailable', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
+
+				const res = await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminB.creds)
+					.send({ values: ['secret'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+			});
+
+			it('Virtru unreachable on list → 200 with rooms attribute-redacted+flagged (not 4xx/5xx)', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await request.get(`${v1}/abac/rooms`).set(adminA.creds).expect(200);
+				const found = (res.body.rooms as IRoom[]).find((r) => r._id === room._id);
+				expect(found, 'room remains in list when PDP is unreachable').to.exist;
+				expect(found?.abacAttributes).to.deep.equal([]);
+				expect(found).to.have.property('abacAttributesRedacted', true);
+			});
+		});
+
+		describe('write guard / validateAssignable (spec §4.1)', () => {
+			let room: IRoom;
+			let adminWG: { user: IUser; creds: Credentials };
+
+			before(async function () {
+				this.timeout(15000);
+				adminWG = await makeAdmin('wg');
+				room = (await createRoom({ type: 'p', name: `vstore-wg-${Date.now()}` })).body.group;
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await deleteRoom({ type: 'p', roomId: room._id });
+				await deleteUser(adminWG.user);
+			});
+
+			it('assigning a key the admin lacks → 400 error-invalid-attribute-values', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
+
+				const res = await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/team`)
+					.set(adminWG.creds)
+					.send({ values: ['blue'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-invalid-attribute-values');
+			});
+
+			it('assigning a value of a key they have but not that specific value → 400 error-invalid-attribute-values', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
+
+				const res = await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminWG.creds)
+					.send({ values: ['topsecret'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-invalid-attribute-values');
+			});
+		});
+
+		describe('hierarchy expansion (spec §3.3)', () => {
+			let room: IRoom;
+			let adminH: { user: IUser; creds: Credentials };
+
+			before(async function () {
+				this.timeout(15000);
+				adminH = await makeAdmin('hier');
+				room = (await createRoom({ type: 'p', name: `vstore-hier-${Date.now()}` })).body.group;
+
+				await storeConnection
+					.db()
+					.collection('rocketchat_room')
+					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await deleteRoom({ type: 'p', roomId: room._id });
+				await deleteUser(adminH.user);
+			});
+
+			it('picker returns hierarchy-expanded set (secret + topsecret) when entitled to topsecret', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({
+					[fqn('clearance', 'secret')]: {},
+					[fqn('clearance', 'topsecret')]: {},
+				});
+
+				const res = await request.get(`${v1}/abac/attributes`).set(adminH.creds).expect(200);
+				const clearance = (res.body.attributes as Array<{ key: string; values: string[] }>).find((a) => a.key === 'clearance');
+				expect(clearance, 'clearance attribute should be present').to.exist;
+				expect(clearance?.values).to.include.members(['secret', 'topsecret']);
+			});
+
+			it('a room using a lower-rank value (secret) is in-scope for an actor entitled to the higher rank', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({
+					[fqn('clearance', 'secret')]: {},
+					[fqn('clearance', 'topsecret')]: {},
+				});
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
+
+				const res = await request.get(`${v1}/abac/rooms`).set(adminH.creds).expect(200);
+				const found = (res.body.rooms as IRoom[]).find((r) => r._id === room._id);
+				expect(found, 'lower-rank room must be in scope when entitled to higher rank').to.exist;
+				expect(found?.abacAttributes).to.deep.equal([{ key: 'clearance', values: ['secret'] }]);
+				expect(found).to.not.have.property('abacAttributesRedacted');
+
+				await request
+					.put(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminH.creds)
+					.send({ values: ['secret'] })
+					.expect(200);
+			});
+		});
+
+		describe('catalog-400 in virtru store (spec §5.1, corrected to 400)', () => {
+			let adminC: { user: IUser; creds: Credentials };
+
+			before(async function () {
+				this.timeout(15000);
+				adminC = await makeAdmin('cat');
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await deleteUser(adminC.user);
+			});
+
+			it('POST /abac/attributes → 400 error-abac-attribute-store-external', async () => {
+				const res = await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: `vstore_cat_${Date.now()}`, values: ['v1'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-abac-attribute-store-external');
+			});
+
+			it('PUT /abac/attributes/:_id → 400 error-abac-attribute-store-external', async () => {
+				const res = await request
+					.put(`${v1}/abac/attributes/__nonexistent__`)
+					.set(credentials)
+					.send({ values: ['v1'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-abac-attribute-store-external');
+			});
+
+			it('DELETE /abac/attributes/:_id → 400 error-abac-attribute-store-external', async () => {
+				const res = await request.delete(`${v1}/abac/attributes/__nonexistent__`).set(credentials).expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-abac-attribute-store-external');
+			});
+
+			it('GET /abac/attributes/:_id → 400 error-abac-attribute-store-external', async () => {
+				const res = await request.get(`${v1}/abac/attributes/__nonexistent__`).set(credentials).expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-abac-attribute-store-external');
+			});
+
+			it('GET /abac/attributes/:key/is-in-use → 400 error-abac-attribute-store-external', async () => {
+				const res = await request.get(`${v1}/abac/attributes/clearance/is-in-use`).set(credentials).expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-abac-attribute-store-external');
+			});
+
+			it('GET /abac/attributes (picker) → 200 served from store.list(actor)', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await request.get(`${v1}/abac/attributes`).set(adminC.creds).expect(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('attributes').that.is.an('array');
+				const clearance = (res.body.attributes as Array<{ key: string; values: string[] }>).find((a) => a.key === 'clearance');
+				expect(clearance?.values).to.deep.equal(['secret']);
+			});
+
+			it('POST /abac/users/sync is NOT blocked by external attribute store (no error-abac-attribute-store-external)', async () => {
+				const res = await request
+					.post(`${v1}/abac/users/sync`)
+					.set(credentials)
+					.send({ usernames: ['no-such-user-vstore'] });
+				expect(res.body?.error).to.not.equal('error-abac-attribute-store-external');
+			});
+		});
+
+		describe('picker / validateAssignable unreachable', () => {
+			let room: IRoom;
+			let adminU: { user: IUser; creds: Credentials };
+
+			before(async function () {
+				this.timeout(15000);
+				adminU = await makeAdmin('unr');
+				room = (await createRoom({ type: 'p', name: `vstore-unr-${Date.now()}` })).body.group;
+
+				await storeConnection
+					.db()
+					.collection('rocketchat_room')
+					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await deleteRoom({ type: 'p', roomId: room._id });
+				await deleteUser(adminU.user);
+			});
+
+			it('Virtru unreachable: picker GET /abac/attributes → 400 error-pdp-unavailable', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await request.get(`${v1}/abac/attributes`).set(adminU.creds).expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+			});
+
+			it('Virtru unreachable: write POST /abac/rooms/:rid/attributes/:key → 400 error-pdp-unavailable', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminU.creds)
+					.send({ values: ['secret'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+			});
+
+			it('decision unreachable on list → 200 rooms attribute-redacted+flagged (fail-closed by redaction)', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await request.get(`${v1}/abac/rooms`).set(adminU.creds).expect(200);
+				const found = (res.body.rooms as IRoom[]).find((r) => r._id === room._id);
+				expect(found, 'room remains in list when decision unreachable').to.exist;
+				expect(found?.abacAttributes).to.deep.equal([]);
+				expect(found).to.have.property('abacAttributesRedacted', true);
+			});
+
+			it('decision unreachable on rooms.adminRooms.getRoom → 200 with abacAttributes redacted+flagged', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(adminU.creds).query({ rid: room._id }).expect(200);
+				expect(res.body.abacAttributes).to.deep.equal([]);
+				expect(res.body).to.have.property('abacAttributesRedacted', true);
+			});
+
+			it('write assertCanModifyRoom unreachable → 400 error-pdp-unavailable', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await mockServerSet('POST', '/authorization.v2.AuthorizationService/GetDecisionBulk', { error: 'pdp-down' }, 503);
+
+				const res = await request
+					.put(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminU.creds)
+					.send({ values: ['secret'] })
+					.expect(400);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+			});
+		});
+
+		describe('wipe on transition local → virtru (spec §0.2)', () => {
+			let wipeRoom1: IRoom;
+			let wipeRoom2: IRoom;
+			let memberUser: IUser;
+
+			before(async function () {
+				this.timeout(20000);
+
+				await updateSetting('ABAC_Attribute_Store', 'local');
+
+				wipeRoom1 = (await createRoom({ type: 'p', name: `vstore-wipe-1-${Date.now()}` })).body.group;
+				wipeRoom2 = (await createRoom({ type: 'p', name: `vstore-wipe-2-${Date.now()}` })).body.group;
+
+				memberUser = await createUser();
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({ roomId: wipeRoom1._id, usernames: [memberUser.username] })
+					.expect(200);
+
+				const wipeAttrKey = `vstore_wipe_attr_${Date.now()}`;
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: wipeAttrKey, values: ['v1'] })
+					.expect(200);
+
+				await request
+					.post(`${v1}/abac/rooms/${wipeRoom1._id}/attributes/${wipeAttrKey}`)
+					.set(credentials)
+					.send({ values: ['v1'] })
+					.expect(200);
+				await request
+					.post(`${v1}/abac/rooms/${wipeRoom2._id}/attributes/${wipeAttrKey}`)
+					.set(credentials)
+					.send({ values: ['v1'] })
+					.expect(200);
+
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn(wipeAttrKey, 'v1')]: {} });
+			});
+
+			after(async () => {
+				await updateSetting('ABAC_Attribute_Store', 'virtru');
+				await deleteRoom({ type: 'p', roomId: wipeRoom1._id });
+				await deleteRoom({ type: 'p', roomId: wipeRoom2._id });
+				await deleteUser(memberUser);
+			});
+
+			it('switching ABAC_Attribute_Store local → virtru wipes abacAttributes from existing rooms', async function () {
+				this.timeout(20000);
+
+				await updateSetting('ABAC_Attribute_Store', 'virtru');
+
+				const rooms = storeConnection.db().collection('rocketchat_room');
+				let r1: any = null;
+				let r2: any = null;
+				for (let i = 0; i < 30; i++) {
+					r1 = await rooms.findOne({ _id: wipeRoom1._id as any });
+					r2 = await rooms.findOne({ _id: wipeRoom2._id as any });
+					if (!r1?.abacAttributes && !r2?.abacAttributes) {
+						break;
+					}
+					await sleep(200);
+				}
+				expect(r1?.abacAttributes, 'room1 abacAttributes must be unset after transition').to.be.undefined;
+				expect(r2?.abacAttributes, 'room2 abacAttributes must be unset after transition').to.be.undefined;
+			});
+
+			it('emits at-least-one abac.attribute_store.switched audit event with from=local, to=virtru, roomsAffected>=1', async function () {
+				this.timeout(15000);
+
+				let switched: Array<{ data: Array<{ key: string; value: unknown }> }> = [];
+				for (let i = 0; i < 30; i++) {
+					const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
+					switched = (res.body.events as Array<{ t: string; data: Array<{ key: string; value: unknown }> }>).filter(
+						(e) => e.t === 'abac.attribute_store.switched',
+					);
+					if (switched.length) {
+						break;
+					}
+					await sleep(200);
+				}
+				expect(switched.length, 'at least one switched audit event').to.be.at.least(1);
+				const ev = switched[0];
+				const pick = (k: string) => ev.data.find((d) => d.key === k)?.value;
+				expect(pick('from')).to.equal('local');
+				expect(pick('to')).to.equal('virtru');
+				expect(pick('roomsAffected')).to.be.a('number').and.to.be.at.least(1);
+			});
+
+			it('members of pre-existing ABAC rooms are NOT evicted by the wipe', async () => {
+				const res = await request.get(`${v1}/groups.members`).set(credentials).query({ roomId: wipeRoom1._id }).expect(200);
+				const usernames = res.body.members.map((m: IUser) => m.username);
+				expect(usernames).to.include(memberUser.username);
+			});
+		});
+
+		describe('license veto (spec §0.2)', () => {
+			// requires runtime license toggle — no in-process License.hasModule('abac') mocking
+			// utility is exposed by the e2e harness. The fail-closed paths in
+			// onTransitionedToVirtruStore (no wipe / no audit when unlicensed; later license-up
+			// retriggers the wipe) are covered by the package-level unit tests in
+			// ee/packages/abac/src/service.spec.ts. Kept here as integration/manual coverage only.
+			it.skip('local→virtru with license absent preserves abacAttributes and emits no switched audit event — requires runtime license toggle', () =>
+				undefined);
+			it.skip('flipping license active while already virtru retriggers the wipe — requires runtime license toggle', () => undefined);
+		});
+
+		describe('audit / logs (spec §5.2 — settled, NOT redacted)', () => {
+			let auditRoom: IRoom;
+			const auditAttrKey = `vstore_audit_${Date.now()}`;
+
+			before(async function () {
+				this.timeout(15000);
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn(auditAttrKey, 'v1')]: {} });
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] },
+				]);
+
+				auditRoom = (await createRoom({ type: 'p', name: `vstore-audit-${Date.now()}` })).body.group;
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await deleteRoom({ type: 'p', roomId: auditRoom._id });
+			});
+
+			it('GET /abac/audit returns events with attribute key/value payloads visible (not redacted) and includes abac.attribute_store.switched', async () => {
+				const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
+
+				const events = res.body.events as Array<{ t: string; data: Array<{ key: string; value: unknown }> }>;
+				expect(events).to.be.an('array').that.is.not.empty;
+
+				const types = new Set(events.map((e) => e.t));
+				expect(types.has('abac.attribute_store.switched'), 'attribute_store.switched event included by endpoint').to.be.true;
+
+				const switched = events.find((e) => e.t === 'abac.attribute_store.switched');
+				expect(switched, 'switched event must exist').to.exist;
+				expect(switched?.data.find((d) => d.key === 'from')?.value, 'from value visible').to.be.a('string');
+				expect(switched?.data.find((d) => d.key === 'to')?.value, 'to value visible').to.be.a('string');
+				expect(switched?.data.find((d) => d.key === 'roomsAffected')?.value, 'roomsAffected visible').to.be.a('number');
+			});
+		});
+
+		describe('local-mode regression (ABAC_Attribute_Store=local)', () => {
+			const localKey = `vstore_local_${Date.now()}`;
+			let localRoom: IRoom;
+			let localAttrId: string;
+
+			before(async function () {
+				this.timeout(20000);
+
+				await updateSetting('ABAC_Attribute_Store', 'local');
+
+				const createRes = await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: localKey, values: ['v1', 'v2'] })
+					.expect(200);
+				expect(createRes.body).to.have.property('success', true);
+
+				const listRes = await request.get(`${v1}/abac/attributes`).query({ key: localKey }).set(credentials).expect(200);
+				const attr = (listRes.body.attributes as Array<{ _id: string; key: string }>).find((a) => a.key === localKey);
+				expect(attr, 'created local attribute should be retrievable via picker').to.exist;
+				if (!attr) {
+					throw new Error('local attribute not found');
+				}
+				localAttrId = attr._id;
+
+				localRoom = (await createRoom({ type: 'p', name: `vstore-local-${Date.now()}` })).body.group;
+				await request
+					.post(`${v1}/abac/rooms/${localRoom._id}/attributes/${localKey}`)
+					.set(credentials)
+					.send({ values: ['v1'] })
+					.expect(200);
+			});
+
+			after(async () => {
+				await request.delete(`${v1}/abac/rooms/${localRoom._id}/attributes`).set(credentials).expect(200);
+				await deleteRoom({ type: 'p', roomId: localRoom._id });
+				await request.delete(`${v1}/abac/attributes/${localAttrId}`).set(credentials).expect(200);
+				await updateSetting('ABAC_Attribute_Store', 'virtru');
+			});
+
+			it('catalog CRUD works (PUT 200)', async () => {
+				await request
+					.put(`${v1}/abac/attributes/${localAttrId}`)
+					.set(credentials)
+					.send({ values: ['v1', 'v2', 'v3'] })
+					.expect(200);
+			});
+
+			it('GET /abac/attributes/:_id returns 200 (no virtru block)', async () => {
+				const res = await request.get(`${v1}/abac/attributes/${localAttrId}`).set(credentials).expect(200);
+				expect(res.body).to.have.property('success', true);
+			});
+
+			it('GET /abac/attributes/:key/is-in-use returns 200 in local mode', async () => {
+				const res = await request.get(`${v1}/abac/attributes/${localKey}/is-in-use`).set(credentials).expect(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('inUse').that.is.a('boolean');
+			});
+
+			it('list /abac/rooms returns rooms with full attributes, no abacAttributesRedacted flags', async () => {
+				const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+				const found = (res.body.rooms as IRoom[]).find((r) => r._id === localRoom._id);
+				expect(found, 'local-mode room must be in list').to.exist;
+				expect(found?.abacAttributes).to.deep.equal([{ key: localKey, values: ['v1'] }]);
+				for (const r of res.body.rooms as IRoom[]) {
+					expect(r).to.not.have.property('abacAttributesRedacted');
+				}
+			});
+
+			it('write guard is permissive in local mode (admin without entitlements still succeeds)', async () => {
+				await request
+					.put(`${v1}/abac/rooms/${localRoom._id}/attributes/${localKey}`)
+					.set(credentials)
+					.send({ values: ['v2'] })
+					.expect(200);
+			});
+
+			it('local→local no-op setting write does NOT run the wipe (no new switched audit event)', async function () {
+				this.timeout(10000);
+
+				const before = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
+				const beforeCount = (before.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute_store.switched').length;
+
+				await updateSetting('ABAC_Attribute_Store', 'local');
+
+				const after = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
+				const afterCount = (after.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute_store.switched').length;
+
+				expect(afterCount).to.equal(beforeCount);
+
+				const roomRes = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+				const stillThere = (roomRes.body.rooms as IRoom[]).find((r) => r._id === localRoom._id);
+				expect(stillThere?.abacAttributes, 'no-op local→local must not wipe').to.deep.equal([{ key: localKey, values: ['v2'] }]);
+			});
 		});
 	});
 });
