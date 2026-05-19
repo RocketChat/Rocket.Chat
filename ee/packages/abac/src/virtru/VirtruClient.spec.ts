@@ -18,7 +18,7 @@ beforeEach(() => serverFetchMock.mockReset());
 
 describe('VirtruClient', () => {
 	it('caches the OIDC token across apiCalls (one token fetch serves many calls)', async () => {
-		serverFetchMock.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 })).mockResolvedValue(okJson({ ok: 1 }));
+		serverFetchMock.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 })).mockResolvedValue(okJson({}));
 		const c = new VirtruClient(cfg);
 		await c.apiCall('/x', {});
 		await c.apiCall('/y', {});
@@ -47,7 +47,7 @@ describe('VirtruClient', () => {
 	});
 
 	it('apiCall sends Bearer token', async () => {
-		serverFetchMock.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 })).mockResolvedValueOnce(okJson({ ok: 1 }));
+		serverFetchMock.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 })).mockResolvedValueOnce(okJson({}));
 		const c = new VirtruClient(cfg);
 		await c.apiCall('/x', {});
 		const apiCallArgs = serverFetchMock.mock.calls.find(([url]) => String(url) === 'http://pdp/x');
@@ -57,7 +57,7 @@ describe('VirtruClient', () => {
 	it('getClientTokenForHealthCheck resets the cache then returns a freshly fetched token', async () => {
 		serverFetchMock
 			.mockResolvedValueOnce(okJson({ access_token: 'tok1', expires_in: 3600 }))
-			.mockResolvedValueOnce(okJson({ ok: 1 }))
+			.mockResolvedValueOnce(okJson({}))
 			.mockResolvedValueOnce(okJson({ access_token: 'tok2', expires_in: 3600 }));
 		const c = new VirtruClient(cfg);
 		await c.apiCall('/x', {});

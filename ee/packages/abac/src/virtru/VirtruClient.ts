@@ -79,12 +79,8 @@ export class VirtruClient {
 		return data.access_token;
 	}
 
-	resetToken(): void {
-		this.tokenCache = null;
-	}
-
 	async getClientTokenForHealthCheck(): Promise<string> {
-		this.resetToken();
+		this.tokenCache = null;
 		return this.getClientToken();
 	}
 
