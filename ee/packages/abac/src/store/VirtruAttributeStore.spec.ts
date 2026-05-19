@@ -109,3 +109,80 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		await expect(store.list(actor)).rejects.toMatchObject({ code: 'error-virtru-entity-resolution-failed' });
 	});
 });
+
+describe('VirtruAttributeStore.scopeRoomsPage', () => {
+	const rooms = [
+		{ _id: 'rPermit', abacAttributes: [{ key: 'clearance', values: ['secret'] }] },
+		{ _id: 'rDeny', abacAttributes: [{ key: 'clearance', values: ['topsecret'] }] },
+		{ _id: 'rNone', abacAttributes: [] },
+	];
+	it('PERMIT unchanged, DENY redacted+flagged, no-attr passes through, ONE round-trip, order kept', async () => {
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [
+				{
+					resourceDecisions: [
+						{ ephemeralResourceId: 'rPermit', decision: 'DECISION_PERMIT' },
+						{ ephemeralResourceId: 'rDeny', decision: 'DECISION_DENY' },
+					],
+				},
+			],
+		});
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+		const out = await store.scopeRoomsPage(rooms, actor);
+		expect(out.map((r) => r._id)).toEqual(['rPermit', 'rDeny', 'rNone']);
+		expect(out[0].abacAttributes).toEqual([{ key: 'clearance', values: ['secret'] }]);
+		expect(out[0]).not.toHaveProperty('abacAttributesRedacted');
+		expect(out[1].abacAttributes).toEqual([]);
+		expect(out[1].abacAttributesRedacted).toBe(true);
+		expect(out[2]).not.toHaveProperty('abacAttributesRedacted');
+		expect(apiCall).toHaveBeenCalledTimes(1);
+	});
+	it('isAvailable false => every attr-room redacted, no throw, no apiCall', async () => {
+		const apiCall = jest.fn();
+		const store = new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false), apiCall }));
+		const out = await store.scopeRoomsPage(rooms, actor);
+		expect(out[0].abacAttributesRedacted).toBe(true);
+		expect(out[1].abacAttributesRedacted).toBe(true);
+		expect(out[2]).not.toHaveProperty('abacAttributesRedacted');
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+	it('decision call throws => fail-closed redact all, no throw', async () => {
+		const apiCall = jest.fn().mockRejectedValue(new Error('boom'));
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+		const out = await store.scopeRoomsPage(rooms, actor);
+		expect(out[0].abacAttributesRedacted).toBe(true);
+		expect(out[1].abacAttributesRedacted).toBe(true);
+	});
+});
+
+describe('VirtruAttributeStore.assertCanModifyRoom', () => {
+	it('PERMIT resolves; DENY throws; no current attrs resolves; unreachable throws', async () => {
+		const permit = jest
+			.fn()
+			.mockResolvedValue({ decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r', decision: 'DECISION_PERMIT' }] }] });
+		await expect(
+			new VirtruAttributeStore(mkClient({ apiCall: permit })).assertCanModifyRoom(
+				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
+				actor,
+			),
+		).resolves.toBeUndefined();
+		const deny = jest
+			.fn()
+			.mockResolvedValue({ decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r', decision: 'DECISION_DENY' }] }] });
+		await expect(
+			new VirtruAttributeStore(mkClient({ apiCall: deny })).assertCanModifyRoom(
+				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
+				actor,
+			),
+		).rejects.toBeDefined();
+		await expect(
+			new VirtruAttributeStore(mkClient()).assertCanModifyRoom({ _id: 'r', abacAttributes: [] }, actor),
+		).resolves.toBeUndefined();
+		await expect(
+			new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false) })).assertCanModifyRoom(
+				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
+				actor,
+			),
+		).rejects.toBeDefined();
+	});
+});

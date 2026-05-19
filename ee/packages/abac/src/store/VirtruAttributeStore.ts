@@ -5,9 +5,9 @@ import mem from 'mem';
 
 import { AbacEntityResolutionFailedError, AbacInvalidAttributeValuesError, PdpUnavailableError } from '../errors';
 import type { AttributeEntitlements, IAttributeStore } from './types';
-import type { IGetEntitlementsResponse } from '../pdp/types';
+import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsResponse } from '../pdp/types';
 import type { VirtruClient } from '../virtru/VirtruClient';
-import { buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../virtru/identity';
+import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../virtru/identity';
 
 const ENTITLEMENTS_CACHE_MS = 15_000;
 
@@ -95,13 +95,63 @@ export class VirtruAttributeStore implements IAttributeStore {
 	}
 
 	async scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
-		_rooms: T[],
-		_actor: AbacActor,
+		rooms: T[],
+		actor: AbacActor,
 	): Promise<Array<T & { abacAttributesRedacted?: boolean }>> {
-		throw new Error('not implemented - Task 2.1');
+		const withAttrs = rooms.filter((r) => (r.abacAttributes?.length ?? 0) > 0);
+		if (!withAttrs.length) {
+			return rooms;
+		}
+		const permitted = await this.decideRooms(withAttrs, actor).catch(() => new Set<string>());
+		return rooms.map((r) => {
+			if (!(r.abacAttributes?.length ?? 0) || permitted.has(r._id)) {
+				return r;
+			}
+			return { ...r, abacAttributes: [], abacAttributesRedacted: true };
+		});
 	}
 
-	async assertCanModifyRoom(_room: Pick<IRoom, '_id' | 'abacAttributes'>, _actor: AbacActor): Promise<void> {
-		throw new Error('not implemented - Task 2.1');
+	async assertCanModifyRoom(room: Pick<IRoom, '_id' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!(room.abacAttributes?.length ?? 0)) {
+			return;
+		}
+		const permitted = await this.decideRooms([room], actor).catch(() => new Set<string>());
+		if (!permitted.has(room._id)) {
+			throw new PdpUnavailableError();
+		}
+	}
+
+	private async decideRooms(rooms: Array<Pick<IRoom, '_id' | 'abacAttributes'>>, actor: AbacActor): Promise<Set<string>> {
+		if (!(await this.client.isAvailable())) {
+			throw new PdpUnavailableError();
+		}
+		const cfg = this.client.getConfig();
+		const entityId = await this.resolveEntityId(actor);
+		const requests: IGetDecisionBulkRequest[] = rooms.map((room) => ({
+			entityIdentifier: {
+				entityChain: {
+					entities: [buildEntityIdentifier(cfg.defaultEntityKey, entityId)],
+				},
+			},
+			action: { name: 'read' },
+			resources: [
+				{
+					ephemeralId: room._id,
+					attributeValues: { fqns: buildAttributeFqns(cfg.attributeNamespace, room.abacAttributes ?? []) },
+				},
+			],
+		}));
+		const res = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+			decisionRequests: requests,
+		});
+		const permitted = new Set<string>();
+		for (const dr of res.decisionResponses ?? []) {
+			for (const rd of dr.resourceDecisions ?? []) {
+				if (rd.decision === 'DECISION_PERMIT' && rd.ephemeralResourceId) {
+					permitted.add(rd.ephemeralResourceId);
+				}
+			}
+		}
+		return permitted;
 	}
 }
