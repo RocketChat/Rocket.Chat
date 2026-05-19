@@ -82,13 +82,30 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		const store = new VirtruAttributeStore(mkClient({ apiCall }));
 		await expect(store.validateAssignable([{ key: 'clearance', values: ['secret'] }], actor)).resolves.toBeUndefined();
 		await expect(store.validateAssignable([{ key: 'clearance', values: ['topsecret'] }], actor)).rejects.toMatchObject({
-			code: expect.stringContaining('error-'),
+			code: 'error-invalid-attribute-values',
 		});
+		expect(apiCall).toHaveBeenCalledTimes(1);
+	});
+
+	it('failed fetch is NOT cached: second call after PDP recovery succeeds', async () => {
+		const isAvailable = jest.fn().mockResolvedValue(false);
+		const apiCall = jest.fn().mockResolvedValue({
+			entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }],
+		});
+		const store = new VirtruAttributeStore(mkClient({ isAvailable, apiCall }));
+
+		await expect(store.entitlementsOf(actor)).rejects.toMatchObject({ code: 'error-pdp-unavailable' });
+
+		isAvailable.mockResolvedValue(true);
+
+		const result = await store.entitlementsOf(actor);
+		expect(result.get('clearance')).toEqual(new Set(['secret']));
+		expect(apiCall).toHaveBeenCalledTimes(1);
 	});
 
 	it('unresolvable entity => entity-resolution error', async () => {
 		usersFindOneById.mockResolvedValue({ _id: 'u1', emails: [], username: 'bob' });
 		const store = new VirtruAttributeStore(mkClient());
-		await expect(store.list(actor)).rejects.toMatchObject({ message: expect.stringContaining('virtru-entity-resolution-failed') });
+		await expect(store.list(actor)).rejects.toMatchObject({ code: 'error-virtru-entity-resolution-failed' });
 	});
 });

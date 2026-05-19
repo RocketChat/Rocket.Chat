@@ -14,6 +14,7 @@ export enum AbacErrorCode {
 	OnlyCompliantCanBeAddedToRoom = 'error-only-compliant-users-can-be-added-to-abac-rooms',
 	PdpUnavailable = 'error-pdp-unavailable',
 	AttributeStoreExternal = 'error-abac-attribute-store-external',
+	EntityResolutionFailed = 'error-virtru-entity-resolution-failed',
 }
 
 export class AbacError extends Error {
@@ -105,6 +106,12 @@ export class PdpUnavailableError extends AbacError {
 export class AbacAttributeStoreExternalError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.AttributeStoreExternal, details);
+	}
+}
+
+export class AbacEntityResolutionFailedError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.EntityResolutionFailed, details);
 	}
 }
 

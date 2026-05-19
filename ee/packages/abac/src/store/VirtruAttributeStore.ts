@@ -3,7 +3,7 @@ import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings'
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
-import { AbacInvalidAttributeValuesError, PdpUnavailableError } from '../errors';
+import { AbacEntityResolutionFailedError, AbacInvalidAttributeValuesError, PdpUnavailableError } from '../errors';
 import type { AttributeEntitlements, IAttributeStore } from './types';
 import type { IGetEntitlementsResponse } from '../pdp/types';
 import type { VirtruClient } from '../virtru/VirtruClient';
@@ -18,10 +18,16 @@ export class VirtruAttributeStore implements IAttributeStore {
 
 	constructor(client: VirtruClient) {
 		this.client = client;
-		this._entitlementsForEntity = mem(this.fetchEntitlements.bind(this), {
-			maxAge: ENTITLEMENTS_CACHE_MS,
-			cacheKey: (args: [string]) => args[0],
-		});
+		this._entitlementsForEntity = mem(
+			(entityId: string) => {
+				const p = this.fetchEntitlements(entityId);
+				p.catch(() => {
+					mem.clear(this._entitlementsForEntity);
+				});
+				return p;
+			},
+			{ maxAge: ENTITLEMENTS_CACHE_MS, cacheKey: (args: [string]) => args[0] },
+		);
 	}
 
 	private async resolveEntityId(actor: AbacActor): Promise<string> {
@@ -29,7 +35,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 		const fullUser = await Users.findOneById(actor._id, { projection: { _id: 1, emails: 1, username: 1 } });
 		const entityKey = fullUser && getUserEntityKey(defaultEntityKey, fullUser);
 		if (!entityKey) {
-			throw new Error('error-virtru-entity-resolution-failed');
+			throw new AbacEntityResolutionFailedError();
 		}
 		return entityKey;
 	}
