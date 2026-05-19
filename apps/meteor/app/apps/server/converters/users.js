@@ -75,7 +75,7 @@ export class AppUsersConverter {
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,
 			appId: user.appId,
-			sipExtension: user.freeSwitchExtension,
+			freeSwitchExtension: user.sipExtension,
 		});
 	}
 
