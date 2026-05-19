@@ -1,7 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request, Response } from 'express';
 import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
@@ -11,6 +9,7 @@ import type { Profile } from 'passport-apple';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { oAuthRouter } from '../../../server/configuration/configurePassport';
+import { passportOAuthCallback } from '../../../server/lib/oauth/passportOAuthCallback';
 import { settings } from '../../settings/server';
 import { config } from '../lib/config';
 import { handleIdentityToken } from '../lib/handleIdentityToken';
@@ -113,19 +112,7 @@ settings.watchMultiple(
 		const callbackHandler = [
 			express.urlencoded({ extended: true }),
 			passport.authenticate('apple', { failWithError: true, session: true, keepSessionInfo: true }),
-			async (req: Request, res: Response) => {
-				const oAuthUser = req.user as IUser;
-
-				if (!oAuthUser) {
-					return res.redirect('/login');
-				}
-
-				const stampedToken = Accounts._generateStampedLoginToken();
-
-				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
-
-				res.redirect(`/home?resumeToken=${stampedToken.token}`);
-			},
+			passportOAuthCallback(settings.get<string>('Site_Url')),
 		];
 
 		oAuthRouter.get(

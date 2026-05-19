@@ -1,11 +1,10 @@
-import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
+import { passportOAuthCallback } from './passportOAuthCallback';
 import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
@@ -78,35 +77,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		oAuthRouter.get(
 			`/oauth/${config.provider}/callback`,
 			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
-			async (req: Request, res: Response) => {
-				const oAuthUser = req.user as IUser;
-
-				if (!oAuthUser) {
-					return res.redirect('/login');
-				}
-
-				const { loginClient } = req.session;
-
-				const stampedToken = Accounts._generateStampedLoginToken();
-				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
-
-				const redirectUrl = new URL(`/home`, siteUrl);
-
-				redirectUrl.searchParams.set('resumeToken', stampedToken.token);
-				redirectUrl.searchParams.set('userId', oAuthUser._id);
-
-				if (loginClient) {
-					redirectUrl.searchParams.set('loginClient', loginClient);
-				}
-
-				res.redirect(redirectUrl.toString());
-
-				req.session.destroy((err) => {
-					if (err) {
-						console.error('Error destroying session', err);
-					}
-				});
-			},
+			passportOAuthCallback(siteUrl),
 		);
 	});
 };
