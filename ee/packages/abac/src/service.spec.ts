@@ -1638,34 +1638,34 @@ describe('AbacService (unit)', () => {
 			Object.assign(svc as any, fields);
 		};
 
-		it('returns true when license + all conditions point to virtru', () => {
+		it('returns true when license + all conditions point to virtru', async () => {
 			mockHasModule.mockReturnValue(true);
 			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-			expect(service.isExternalAttributeStore()).toBe(true);
+			expect(await service.isExternalAttributeStore()).toBe(true);
 		});
 
-		it('returns false when license module is absent', () => {
+		it('returns false when license module is absent', async () => {
 			mockHasModule.mockReturnValue(false);
 			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-			expect(service.isExternalAttributeStore()).toBe(false);
+			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 
-		it('returns false when ABAC_Enabled is false', () => {
+		it('returns false when ABAC_Enabled is false', async () => {
 			mockHasModule.mockReturnValue(true);
 			setPrivate(service, { abacEnabled: false, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-			expect(service.isExternalAttributeStore()).toBe(false);
+			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 
-		it('returns false when ABAC_PDP_Type is not virtru', () => {
+		it('returns false when ABAC_PDP_Type is not virtru', async () => {
 			mockHasModule.mockReturnValue(true);
 			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'local', attributeStoreSetting: 'virtru' });
-			expect(service.isExternalAttributeStore()).toBe(false);
+			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 
-		it('returns false when ABAC_Attribute_Store is not virtru', () => {
+		it('returns false when ABAC_Attribute_Store is not virtru', async () => {
 			mockHasModule.mockReturnValue(true);
 			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'local' });
-			expect(service.isExternalAttributeStore()).toBe(false);
+			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 	});
 });

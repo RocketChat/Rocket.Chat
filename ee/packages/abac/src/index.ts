@@ -213,7 +213,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onAttributeStoreInputsChanged();
 	}
 
-	isExternalAttributeStore(): boolean {
+	async isExternalAttributeStore(): Promise<boolean> {
 		return this.effectiveStore() === 'virtru';
 	}
 
