@@ -21,8 +21,6 @@ const config: Partial<OAuthConfiguration> = {
 const serviceKey = 'wordpress';
 
 const fillSettings = _.debounce(async (): Promise<void> => {
-	passport.unuse(serviceKey);
-
 	config.serverURL = settings.get('API_Wordpress_URL');
 	if (!config.serverURL) {
 		if (config.serverURL === undefined) {
@@ -30,6 +28,8 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 		}
 		return;
 	}
+
+	passport.unuse(serviceKey);
 
 	const serverType = settings.get('Accounts_OAuth_Wordpress_server_type');
 	switch (serverType) {
