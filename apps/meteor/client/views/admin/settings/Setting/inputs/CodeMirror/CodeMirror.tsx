@@ -44,6 +44,11 @@ function CodeMirror({
 	...props
 }: CodeMirrorProps): ReactElement {
 	const [value, setValue] = useState(valueProp || defaultValue);
+	const [prevValueProp, setPrevValueProp] = useState(valueProp);
+	if (valueProp !== prevValueProp) {
+		setPrevValueProp(valueProp);
+		setValue(valueProp);
+	}
 	const handleChange = useEffectEvent(onChange);
 
 	const editorRef = useRef<EditorFromTextArea | null>(null);
@@ -107,10 +112,6 @@ function CodeMirror({
 			showTrailingSpace,
 		],
 	);
-
-	useEffect(() => {
-		setValue(valueProp);
-	}, [valueProp]);
 
 	useEffect(() => {
 		if (!editorRef.current) {
