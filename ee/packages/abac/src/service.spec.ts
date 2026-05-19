@@ -16,7 +16,7 @@ jest.mock('./store', () => {
 	return {
 		LocalAttributeStore: jest.fn().mockImplementation(() => ({
 			assertCanModifyRoom: jest.fn().mockResolvedValue(undefined),
-			validateAssignable: (attrs: any[]) => ensureAttributeDefinitionsExist(attrs),
+			validateAssignable: (attrs: any[], _actor: any) => ensureAttributeDefinitionsExist(attrs),
 			scopeRoomsPage: (rooms: any[]) => Promise.resolve(rooms),
 		})),
 		VirtruAttributeStore: jest.fn(),
