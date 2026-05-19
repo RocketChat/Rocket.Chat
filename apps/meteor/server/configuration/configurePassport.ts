@@ -58,7 +58,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 		},
 	});
 
-	oAuthRouter.use(oauthRateLimiter);
+	oAuthRouter.use('/oauth', oauthRateLimiter);
 
 	passport.serializeUser((user: any, done) => {
 		done(null, user);
