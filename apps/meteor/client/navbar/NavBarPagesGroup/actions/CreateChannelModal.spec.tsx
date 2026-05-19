@@ -263,5 +263,69 @@ describe('CreateChannelModal', () => {
 			expect(federated).not.toBeDisabled();
 			expect(federated).toHaveAccessibleDescription('Federation_Matrix_Federated_Description');
 		});
+
+		it('toggling Federated ON forces Encrypted, Broadcast and Read_only OFF', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withSetting('E2E_Enable', true)
+					.withSetting('E2E_Enabled_Default_PrivateRooms', true)
+					.withSetting('Federation_Matrix_enabled', true)
+					.withPermission('access-federation')
+					.withPermission('set-readonly')
+					.withEndpoint(
+						'GET',
+						'/v1/licenses.info',
+						jest.fn().mockImplementation(() => ({
+							license: createFakeLicenseInfo({ activeModules: ['federation'] }),
+						})),
+					)
+					.build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const federated = screen.getByLabelText('Federation_Matrix_Federated') as HTMLInputElement;
+			const encrypted = screen.getByLabelText('Encrypted') as HTMLInputElement;
+			const broadcast = screen.getByLabelText('Broadcast') as HTMLInputElement;
+			const readOnly = screen.getByLabelText('Read_only') as HTMLInputElement;
+
+			// Pre-state: encrypted is on by default (private + E2E default); set broadcast on so readOnly also becomes on.
+			expect(encrypted).toBeChecked();
+			await userEvent.click(broadcast);
+			expect(broadcast).toBeChecked();
+			expect(readOnly).toBeChecked();
+
+			// Toggle federated ON → cascades all three off.
+			await userEvent.click(federated);
+			expect(federated).toBeChecked();
+			expect(encrypted).not.toBeChecked();
+			expect(broadcast).not.toBeChecked();
+			expect(readOnly).not.toBeChecked();
+		});
+	});
+
+	describe('Broadcast → Read_only mirror', () => {
+		it('toggling Broadcast mirrors Read_only', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot().withPermission('set-readonly').build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const broadcast = screen.getByLabelText('Broadcast') as HTMLInputElement;
+			const readOnly = screen.getByLabelText('Read_only') as HTMLInputElement;
+
+			expect(broadcast).not.toBeChecked();
+			expect(readOnly).not.toBeChecked();
+
+			await userEvent.click(broadcast);
+			expect(broadcast).toBeChecked();
+			expect(readOnly).toBeChecked();
+
+			await userEvent.click(broadcast);
+			expect(broadcast).not.toBeChecked();
+			expect(readOnly).not.toBeChecked();
+		});
 	});
 });

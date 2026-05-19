@@ -22,7 +22,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import { useId, memo, useEffect, useMemo } from 'react';
+import { useId, memo, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
@@ -100,14 +100,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	});
 
 	const { isPrivate, broadcast, readOnly, encrypted } = watch();
-
-	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		}
-
-		setValue('readOnly', broadcast);
-	}, [watch, setValue, broadcast, isPrivate]);
 
 	const readOnlyDisabled = broadcast || !canSetReadOnly;
 	const canChangeEncrypted = isPrivate && e2eEnabled;
@@ -216,7 +208,12 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }) => (
 									<ToggleSwitch
-										onChange={onChange}
+										onChange={(event) => {
+											onChange(event);
+											if (!event.currentTarget.checked) {
+												setValue('encrypted', false);
+											}
+										}}
 										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
 										ref={ref}
@@ -267,7 +264,16 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 									<Controller
 										control={control}
 										name='broadcast'
-										render={({ field: { onChange, value, ref } }) => <ToggleSwitch onChange={onChange} checked={value} ref={ref} />}
+										render={({ field: { onChange, value, ref } }) => (
+											<ToggleSwitch
+												onChange={(event) => {
+													onChange(event);
+													setValue('readOnly', event.currentTarget.checked);
+												}}
+												checked={value}
+												ref={ref}
+											/>
+										)}
 									/>
 								</FieldRow>
 								{broadcast && <FieldHint>{t('Teams_New_Broadcast_Description')}</FieldHint>}

@@ -24,7 +24,7 @@ import {
 	usePermission,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import { useId, useEffect, useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
@@ -116,25 +116,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	});
 
 	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
-
-	useEffect(() => {
-		if (federated) {
-			// if room is federated, it cannot be encrypted or broadcast or readOnly
-			setValue('encrypted', false);
-			setValue('broadcast', false);
-			setValue('readOnly', false);
-		}
-	}, [federated, setValue]);
-
-	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		}
-	}, [isPrivate, setValue]);
-
-	useEffect(() => {
-		setValue('readOnly', broadcast);
-	}, [broadcast, setValue]);
 
 	const validateChannelName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -251,11 +232,17 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 							<Controller
 								control={control}
 								name='isPrivate'
-								render={({ field: { value, ...field } }) => (
+								render={({ field: { value, onChange, ...field } }) => (
 									<ToggleSwitch
 										{...field}
 										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
+										onChange={(event) => {
+											onChange(event);
+											if (!event.currentTarget.checked) {
+												setValue('encrypted', false);
+											}
+										}}
 									/>
 								)}
 							/>
@@ -275,7 +262,21 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<Controller
 										control={control}
 										name='federated'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
+										render={({ field: { value, onChange, ...field } }) => (
+											<ToggleSwitch
+												{...field}
+												checked={value}
+												disabled={!canUseFederation}
+												onChange={(event) => {
+													onChange(event);
+													if (event.currentTarget.checked) {
+														setValue('encrypted', false);
+														setValue('broadcast', false);
+														setValue('readOnly', false);
+													}
+												}}
+											/>
+										)}
 									/>
 								</FieldRow>
 								<FieldHint>{t(federationFieldHint)}</FieldHint>
@@ -312,7 +313,17 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<Controller
 										control={control}
 										name='broadcast'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
+										render={({ field: { value, onChange, ...field } }) => (
+											<ToggleSwitch
+												{...field}
+												checked={value}
+												disabled={!!federated}
+												onChange={(event) => {
+													onChange(event);
+													setValue('readOnly', event.currentTarget.checked);
+												}}
+											/>
+										)}
 									/>
 								</FieldRow>
 								{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
