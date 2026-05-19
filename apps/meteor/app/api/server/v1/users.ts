@@ -598,7 +598,7 @@ API.v1.get(
 		const user = await getFullUserDataByUniqueSearchTerm(this.userId, ...searchTerms);
 
 		if (!user) {
-			return API.v1.notFound('User not found');
+			return API.v1.notFound('User not found.');
 		}
 
 		const myself = user._id === this.userId;
