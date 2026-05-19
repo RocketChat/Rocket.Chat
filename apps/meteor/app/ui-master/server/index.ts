@@ -128,8 +128,7 @@ Meteor.startup(() => {
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
 
-	const messageMaxParseLength = getMessageMaxParseLength();
-	const escapedMessageMaxParseLength = escapeHTML(String(messageMaxParseLength));
+	const escapedMessageMaxParseLength = escapeHTML(String(getMessageMaxParseLength()));
 	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${escapedMessageMaxParseLength}" />`);
 });
 
