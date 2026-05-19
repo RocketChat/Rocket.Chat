@@ -54,6 +54,19 @@ describe('VirtruClient', () => {
 		expect((apiCallArgs?.[1] as any).headers.Authorization).toBe('Bearer tok');
 	});
 
+	it('getClientTokenForHealthCheck resets the cache then returns a freshly fetched token', async () => {
+		serverFetchMock
+			.mockResolvedValueOnce(okJson({ access_token: 'tok1', expires_in: 3600 }))
+			.mockResolvedValueOnce(okJson({ ok: 1 }))
+			.mockResolvedValueOnce(okJson({ access_token: 'tok2', expires_in: 3600 }));
+		const c = new VirtruClient(cfg);
+		await c.apiCall('/x', {});
+		const token = await c.getClientTokenForHealthCheck();
+		expect(token).toBe('tok2');
+		const tokenCalls = serverFetchMock.mock.calls.filter(([url]) => String(url).includes('openid-connect/token'));
+		expect(tokenCalls).toHaveLength(2);
+	});
+
 	it('apiCall throws on non-ok response', async () => {
 		serverFetchMock
 			.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 }))

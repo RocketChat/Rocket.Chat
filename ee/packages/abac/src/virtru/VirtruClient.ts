@@ -83,6 +83,11 @@ export class VirtruClient {
 		this.tokenCache = null;
 	}
 
+	async getClientTokenForHealthCheck(): Promise<string> {
+		this.resetToken();
+		return this.getClientToken();
+	}
+
 	async apiCall<T>(endpoint: string, body: unknown): Promise<T> {
 		const token = await this.getClientToken();
 

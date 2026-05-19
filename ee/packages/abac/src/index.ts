@@ -39,6 +39,7 @@ import {
 import { logger } from './logger';
 import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
+import { VirtruClient } from './virtru/VirtruClient';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -58,6 +59,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		defaultEntityKey: 'emailAddress',
 		attributeNamespace: 'example.com',
 	};
+
+	private virtruClient = new VirtruClient(this.virtruPdpConfig);
 
 	decisionCacheTimeout = 60; // seconds
 
@@ -138,7 +141,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private syncVirtruPdpConfig(): void {
 		if (this.pdp instanceof VirtruPDP) {
-			this.pdp.updateConfig({ ...this.virtruPdpConfig });
+			this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		}
 	}
 
@@ -147,7 +150,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		switch (strategy) {
 			case 'virtru':
-				this.pdp = new VirtruPDP({ ...this.virtruPdpConfig });
+				this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
+				this.pdp = new VirtruPDP(this.virtruClient);
 				this.pdpType = 'virtru';
 				break;
 			case 'local':
