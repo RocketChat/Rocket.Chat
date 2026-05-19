@@ -93,6 +93,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	useDocumentTitle(t('registration.component.login'), false);
 
+	const loginFormRef = useRef<HTMLElement>(null);
+
 	const loginMutation = useMutation({
 		mutationFn: (formData: { usernameOrEmail: string; password: string }) => {
 			return login(formData.usernameOrEmail, formData.password);
@@ -113,19 +115,17 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 			if ('error' in error && error.error !== 403) {
 				setErrorOnSubmit([error.error, error.reason]);
+				loginFormRef.current?.focus();
 			}
 		},
 	});
 
 	const usernameId = useId();
 	const passwordId = useId();
-	const loginFormRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
-		if (loginFormRef.current) {
-			loginFormRef.current.focus();
-		}
-	}, [errorOnSubmit]);
+		loginFormRef.current?.focus();
+	}, []);
 
 	const renderErrorOnSubmit = ([error, message]: Exclude<LoginErrorState, undefined>) => {
 		if (error in LOGIN_SUBMIT_ERRORS) {
