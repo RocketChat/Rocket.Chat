@@ -9858,6 +9858,7 @@ __metadata:
     "@types/object-path": "npm:^0.11.4"
     "@types/parseurl": "npm:^1.3.3"
     "@types/passport": "npm:^1.0.17"
+    "@types/passport-apple": "npm:^2"
     "@types/passport-facebook": "npm:^3.0.4"
     "@types/passport-github2": "npm:^1.2.9"
     "@types/passport-google-oauth20": "npm:^2"
@@ -10005,6 +10006,7 @@ __metadata:
     overlayscrollbars: "npm:~2.11.5"
     overlayscrollbars-react: "npm:^0.5.6"
     passport: "npm:^0.7.0"
+    passport-apple: "npm:^2.0.2"
     passport-facebook: "npm:^3.0.0"
     passport-facebook2: "npm:^1.0.3"
     passport-github2: "npm:^0.1.12"
@@ -14754,6 +14756,16 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/2ea8d3b9615850fce3dd208f980aaca2c82c6cb20e033ee5705adbc773ea167fc57ee72045ba521fef0f6ad292fddaf91e398dad9edec10b9829621a8556446f
+  languageName: node
+  linkType: hard
+
+"@types/passport-apple@npm:^2":
+  version: 2.0.3
+  resolution: "@types/passport-apple@npm:2.0.3"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/passport-oauth2": "npm:*"
+  checksum: 10/5aa6b98913e803a66728ba313bb16f7aed74ba67151748b0b20ac6b492639e240be69e80939474f6bde0e0855856f0d13411b3853249301a8708cb6ea63c2260
   languageName: node
   linkType: hard
 
@@ -30055,6 +30067,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-apple@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "passport-apple@npm:2.0.2"
+  dependencies:
+    jsonwebtoken: "npm:^9.0.0"
+    passport-oauth2: "npm:^1.6.1"
+  checksum: 10/fa061292deb885c09a9edcb027790d14e66112848828f803fd52d96a81adbb60fd8ac8e0ef8a8cf43e029dc048bf971513c60e1b520b020c902d466fe66902e8
+  languageName: node
+  linkType: hard
+
 "passport-facebook2@npm:^1.0.3":
   version: 1.0.3
   resolution: "passport-facebook2@npm:1.0.3"
@@ -30102,7 +30124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.8.0":
+"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.6.1, passport-oauth2@npm:^1.8.0":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
   dependencies:

@@ -1,4 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import bodyParser from 'body-parser';
 import MongoStore from 'connect-mongo';
 import express from 'express';
 import flash from 'express-flash';
@@ -13,19 +14,23 @@ import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 
-export const oAuthRouter = express();
+const { Router: router } = express;
 
-oAuthRouter.set('trust proxy', true);
+export const oAuthRouter = router();
 
-const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+const oAuthApp = express();
+oAuthApp.set('trust proxy', true);
 
 export const configurePassport = (settings: ICachedSettings) => {
-	oAuthRouter.use(
+	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+	oAuthApp.use(
 		session({
 			name: 'oauth',
 			secret: settings.get<string>('Accounts_OAuth_Session_Secret'),
 			resave: false,
 			saveUninitialized: false,
+			proxy: true,
 			store: MongoStore.create({
 				client,
 				collectionName: 'rocketchat_oauth_sessions',
@@ -36,13 +41,15 @@ export const configurePassport = (settings: ICachedSettings) => {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				maxAge: 5 * 60 * 1000, // 5 minutes
+				sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 			},
 		}),
 	);
 
-	oAuthRouter.use(passport.initialize());
-	oAuthRouter.use(passport.session());
-	oAuthRouter.use(flash());
+	oAuthApp.use(passport.initialize());
+	oAuthApp.use(passport.session());
+	oAuthApp.use(flash());
+	oAuthApp.use(bodyParser.urlencoded({ extended: true }));
 
 	const oauthRateLimiter = rateLimit({
 		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -60,12 +67,15 @@ export const configurePassport = (settings: ICachedSettings) => {
 
 	oAuthRouter.use('/oauth', oauthRateLimiter);
 
+	// Register OAuth Routes
+	oAuthApp.use(oAuthRouter);
+
 	passport.serializeUser((user: any, done) => {
-		done(null, user);
+		done(null, user._id);
 	});
 
-	passport.deserializeUser(async (user: IUser, done) => {
-		// const user = await Users.findOneById(id as string);
+	passport.deserializeUser(async (id, done) => {
+		const user = await Users.findOneById(id as string);
 		// we don’t actually use this user later
 		done(null, user);
 	});
@@ -76,5 +86,5 @@ export const configurePassport = (settings: ICachedSettings) => {
 		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
-	WebApp.rawConnectHandlers.use(oAuthRouter);
+	WebApp.rawConnectHandlers.use(oAuthApp);
 };
