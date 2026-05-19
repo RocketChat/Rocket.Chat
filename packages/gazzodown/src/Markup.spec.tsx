@@ -230,7 +230,7 @@ it('renders a code block', async () => {
 		</Suspense>,
 	);
 
-	expect(await screen.findByRole('region')).toBeInTheDocument();
+	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 });
@@ -250,7 +250,7 @@ it('renders a code block with language', async () => {
 		</Suspense>,
 	);
 
-	expect(await screen.findByRole('region')).toBeInTheDocument();
+	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
