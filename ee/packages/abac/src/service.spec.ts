@@ -1283,26 +1283,33 @@ describe('AbacService (unit)', () => {
 			return svc;
 		};
 
+		type SettingCb = (arg: { setting: { value: unknown } }) => Promise<void>;
+		const fireSettingChanged = async (svc: AbacService, settingName: string, value: unknown): Promise<void> => {
+			const { calls }: { calls: [string, SettingCb][] } = (svc as any).onSettingChanged.mock;
+			const entry = calls.find(([name]) => name === settingName);
+			if (!entry) throw new Error(`No listener registered for ${settingName}`);
+			await entry[1]({ setting: { value } });
+		};
+
 		it('does not treat boot into virtru as a transition', async () => {
 			mockHasModule.mockReturnValue(true);
 			await bootWith(buildSettings({}));
 			expect(transitionSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not fire on a steady-state (no-op) re-evaluation', async () => {
+		it('does not fire on a steady-state re-evaluation via the real ABAC_Attribute_Store listener', async () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({}));
-			await svc.reevaluateAttributeStore();
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			expect(transitionSpy).not.toHaveBeenCalled();
 		});
 
-		it('fires exactly once when ABAC_Attribute_Store flips local->virtru while the other conditions hold', async () => {
+		it('fires exactly once when ABAC_Attribute_Store flips local->virtru via the real listener while the other conditions hold', async () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 			expect(transitionSpy).not.toHaveBeenCalled();
 
-			(svc as any).attributeStoreSetting = 'virtru';
-			await svc.reevaluateAttributeStore();
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 
 			expect(transitionSpy).toHaveBeenCalledTimes(1);
 			expect(transitionSpy).toHaveBeenCalledWith('local');
@@ -1330,7 +1337,7 @@ describe('AbacService (unit)', () => {
 			expect(transitionSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not fire on virtru->local then back is the only virtru-entering transition', async () => {
+		it('fires exactly once when toggling virtru->local->virtru, treating only the re-entry as a transition', async () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({}));
 			expect(transitionSpy).not.toHaveBeenCalled();

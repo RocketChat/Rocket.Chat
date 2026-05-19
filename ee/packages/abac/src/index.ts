@@ -100,7 +100,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
-			this.attributeStoreSetting = setting.value as string;
+			const { value } = setting;
+			if (value !== 'local' && value !== 'virtru') {
+				return;
+			}
+
+			this.attributeStoreSetting = value;
 			void this.onAttributeStoreInputsChanged();
 		});
 
@@ -193,7 +198,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const previous = this.lastEffectiveStore;
 		const next = this.effectiveStore();
 		if (previous === next) {
-			this.syncAttributeStore();
 			return;
 		}
 
@@ -210,9 +214,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onAttributeStoreInputsChanged();
 	}
 
-	private async onTransitionedToVirtruStore(_from: 'local' | 'virtru'): Promise<void> {
-		// Task 3.2 implements the destructive wipe + audit here. Intentionally a no-op for now.
-	}
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	private async onTransitionedToVirtruStore(_from: 'local' | 'virtru'): Promise<void> {}
 
 	setPdpStrategy(strategy: 'local' | 'virtru'): void {
 		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';
