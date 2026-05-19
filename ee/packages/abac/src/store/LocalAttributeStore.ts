@@ -13,7 +13,8 @@ export class LocalAttributeStore implements IAttributeStore {
 	): Promise<{ attributes: IAbacAttributeDefinition[]; total: number }> {
 		const offset = opts?.offset ?? 0;
 		const limit = opts?.count ?? 25;
-		const query = opts?.filter?.trim().length ? { key: new RegExp(escapeRegExp(opts.filter.trim()), 'i') } : {};
+		const filter = opts?.filter?.trim();
+		const query = filter ? { key: new RegExp(escapeRegExp(filter), 'i') } : {};
 		const { cursor, totalCount } = AbacAttributes.findPaginated(query, {
 			projection: { key: 1, values: 1 },
 			skip: offset,
@@ -38,6 +39,7 @@ export class LocalAttributeStore implements IAttributeStore {
 		return rooms;
 	}
 
+	// No-op: local mode imposes no per-room write restrictions; authorization is enforced only by VirtruAttributeStore.
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	async assertCanModifyRoom(_room: Pick<IRoom, '_id' | 'abacAttributes'>, _actor: AbacActor): Promise<void> {}
 }
