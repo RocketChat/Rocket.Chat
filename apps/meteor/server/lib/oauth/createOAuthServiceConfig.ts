@@ -1,5 +1,4 @@
 import { capitalize } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
 import type { Strategy } from 'passport';
 
 import { OAuthConfigs } from './oauthConfigs';
@@ -14,15 +13,26 @@ export type OAuthServiceConfig = {
 };
 
 export const createOAuthServiceConfig = (settings: ICachedSettings, services: string[]): OAuthServiceConfig[] => {
-	return services
-		.map((service) => {
+	return services.map((service) => {
+		if (service === 'github_enterprise') {
 			return {
 				provider: service,
-				strategy: OAuthConfigs[service].strategy,
-				clientId: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`),
-				clientSecret: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_secret`),
-				scope: OAuthConfigs[service].scope,
+				clientId: settings.get<string>('Accounts_OAuth_GitHub_Enterprise_id'),
+				clientSecret: settings.get<string>('Accounts_OAuth_GitHub_Enterprise_secret'),
+				authorizationURL: `${settings.get<string>('API_GitHub_Enterprise_URL')}/login/oauth/authorize`,
+				tokenURL: `${settings.get<string>('API_GitHub_Enterprise_URL')}/login/oauth/access_token`,
+				userProfileURL: `${settings.get<string>('API_GitHub_Enterprise_URL')}/api/v3/user`,
+				strategy: OAuthConfigs.github_enterprise.strategy,
+				scope: OAuthConfigs.github_enterprise.scope,
 			};
-		})
-		.filter(isTruthy);
+		}
+
+		return {
+			provider: service,
+			strategy: OAuthConfigs[service].strategy,
+			clientId: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`),
+			clientSecret: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_secret`),
+			scope: OAuthConfigs[service].scope,
+		};
+	});
 };

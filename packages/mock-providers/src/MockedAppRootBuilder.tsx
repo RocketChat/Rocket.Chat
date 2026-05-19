@@ -116,6 +116,7 @@ export class MockedAppRootBuilder {
 			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
 		getStream: () => () => () => undefined,
+		getStreamAll: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => {
@@ -250,13 +251,16 @@ export class MockedAppRootBuilder {
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
+		loginWithCustomOauth: () => undefined,
 		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
 		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
 		queryLoginServices: {
 			getCurrentValue: () => this.authServices,
 			subscribe: () => () => undefined,
 		},
-		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
+		getLoginToken: () => null,
+		unstoreLoginToken: () => () => undefined,
+		wipeLocalAuth: () => undefined,
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();

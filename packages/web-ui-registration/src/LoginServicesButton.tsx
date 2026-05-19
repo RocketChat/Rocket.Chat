@@ -32,7 +32,17 @@ const LoginServicesButton = <T extends LoginService>({
 
 	const handleOnClick = useCallback(() => {
 		if (!isLegacyOAuthEnabled) {
-			window.location.href = `/oauth/${service}`;
+			const url = new URL(window.location.href);
+			const queryParams = url.searchParams;
+			const loginClient = queryParams.get('loginClient');
+
+			const redirectUrl = new URL(`/oauth/${service}`, window.location.origin);
+
+			if (loginClient) {
+				redirectUrl.searchParams.set('loginClient', loginClient);
+			}
+
+			window.location.href = redirectUrl.toString();
 			return;
 		}
 

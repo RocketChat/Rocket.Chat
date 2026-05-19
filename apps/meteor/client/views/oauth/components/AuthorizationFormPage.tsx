@@ -1,9 +1,8 @@
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Form } from '@rocket.chat/layout';
-import { useLogout, useRoute } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useLoginToken, useLogout, useRoute } from '@rocket.chat/ui-contexts';
+import { useEffect, useId, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
@@ -16,7 +15,7 @@ type AuthorizationFormPageProps = {
 };
 
 const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFormPageProps) => {
-	const token = useMemo(() => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? undefined, []);
+	const token = useLoginToken() ?? undefined;
 
 	const formLabelId = useId();
 

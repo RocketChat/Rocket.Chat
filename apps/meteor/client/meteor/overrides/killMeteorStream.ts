@@ -1,6 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 import { userIdStore } from '../../lib/user';
 
@@ -29,13 +30,7 @@ import { userIdStore } from '../../lib/user';
  * ddpOverREST intercepts and routes to REST (or DDPSDK for `login`).
  */
 if (isSdkTransportEnabled()) {
-	const conn = Meteor.connection as unknown as {
-		_subsBeingRevived: Record<string, unknown>;
-		_methodsBlockingQuiescence: Record<string, unknown>;
-		_messagesBufferedUntilQuiescence: unknown[];
-		_outstandingMethodBlocks: unknown[];
-		_methodInvokers: Record<string, unknown>;
-	};
+	const conn = Meteor.connection;
 
 	conn._subsBeingRevived = Object.create(null);
 	conn._methodsBlockingQuiescence = Object.create(null);
@@ -50,7 +45,7 @@ if (isSdkTransportEnabled()) {
 		}
 	});
 
-	Accounts.onLogout(() => {
+	getDdpSdk().account.onLogout(() => {
 		conn._outstandingMethodBlocks = [];
 		conn._methodInvokers = Object.create(null);
 		conn._methodsBlockingQuiescence = Object.create(null);

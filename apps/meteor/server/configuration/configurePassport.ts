@@ -1,5 +1,4 @@
 import { Users } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 import bodyParser from 'body-parser';
 import express from 'express';
 import flash from 'express-flash';
@@ -17,28 +16,28 @@ export const oAuthRouter = express();
 oAuthRouter.enable('trust proxy');
 oAuthRouter.set('trust proxy', true);
 
-oAuthRouter.use(
-	session({
-		name: 'oauth',
-		secret: Random.secret(),
-		resave: false,
-		saveUninitialized: true,
-		proxy: true,
-		cookie: {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			maxAge: 5 * 60 * 1000, // 5 minutes
-			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-		},
-	}),
-);
-
-oAuthRouter.use(passport.initialize());
-oAuthRouter.use(passport.session());
-oAuthRouter.use(flash());
-oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
-
 export const configurePassport = (settings: ICachedSettings) => {
+	oAuthRouter.use(
+		session({
+			name: 'oauth',
+			secret: settings.get<string>('Accounts_OAuth_Session_Secret'),
+			resave: false,
+			saveUninitialized: false,
+			proxy: true,
+			cookie: {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === 'production',
+				maxAge: 5 * 60 * 1000, // 5 minutes
+				sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+			},
+		}),
+	);
+
+	oAuthRouter.use(passport.initialize());
+	oAuthRouter.use(passport.session());
+	oAuthRouter.use(flash());
+	oAuthRouter.use(bodyParser.urlencoded({ extended: true }));
+
 	passport.serializeUser((user: any, done) => {
 		done(null, user._id);
 	});

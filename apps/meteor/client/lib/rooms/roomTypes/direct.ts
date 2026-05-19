@@ -35,7 +35,7 @@ roomCoordinator.add(
 				case RoomSettingsEnum.JOIN_CODE:
 					return false;
 				case RoomSettingsEnum.E2E:
-					return settings.watch('E2E_Enable') === true;
+					return settings.peek('E2E_Enable') === true;
 				default:
 					return true;
 			}
@@ -73,7 +73,7 @@ roomCoordinator.add(
 				return;
 			}
 
-			if (settings.watch('UI_Use_Real_Name') && subscription.fname) {
+			if (settings.peek('UI_Use_Real_Name') && subscription.fname) {
 				return subscription.fname;
 			}
 
