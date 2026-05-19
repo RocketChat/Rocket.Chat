@@ -114,7 +114,7 @@ EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
 
-FROM rocketchat/dhi-node:22.22.2-alpine3.23-fips AS release-fips
+FROM rocketchat/dhi-node:22.22.3-alpine3.23-fips AS release-fips
 ARG SERVICE
 ENV NODE_ENV=production \
     PORT=3000
