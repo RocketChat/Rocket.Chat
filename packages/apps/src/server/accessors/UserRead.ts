@@ -18,6 +18,10 @@ export class UserRead implements IUserRead {
 	}
 
 	public getBySipExtension(extension: string): Promise<IUser | undefined> {
+		if (!extension) {
+			return Promise.resolve(undefined);
+		}
+
 		return this.userBridge.doGetBySipExtension(extension, this.appId);
 	}
 
