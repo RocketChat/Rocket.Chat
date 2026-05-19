@@ -4,7 +4,7 @@ import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
@@ -61,16 +61,19 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const { t, i18n } = useTranslation();
 
 	const [value, setValue] = useState(setting.value);
-	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
-
-	useEffect(() => {
+	const [prevSettingValue, setPrevSettingValue] = useState(setting.value);
+	if (setting.value !== prevSettingValue) {
+		setPrevSettingValue(setting.value);
 		setValue(setting.value);
-	}, [setting.value]);
+	}
 
-	useEffect(() => {
-		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [(setting as ISettingColor).editor]);
+	const settingEditor = isSettingColor(setting) ? setting.editor : undefined;
+	const [editor, setEditor] = useState(settingEditor);
+	const [prevSettingEditor, setPrevSettingEditor] = useState(settingEditor);
+	if (settingEditor !== prevSettingEditor) {
+		setPrevSettingEditor(settingEditor);
+		setEditor(settingEditor);
+	}
 
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
