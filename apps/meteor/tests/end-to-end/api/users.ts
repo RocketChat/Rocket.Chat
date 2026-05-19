@@ -183,7 +183,7 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 };
 
 describe('[Users]', () => {
-	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[] };
+	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[]; freeSwitchExtension: string };
 	let userCredentials: Credentials;
 
 	before((done) => getCredentials(done));
@@ -192,6 +192,7 @@ describe('[Users]', () => {
 		const user = await createUser({
 			active: true,
 			roles: ['user'],
+			freeSwitchExtension: '9998',
 			joinDefaultChannels: true,
 			verified: true,
 		});
@@ -199,6 +200,8 @@ describe('[Users]', () => {
 			_id: user._id,
 			username: user.username,
 			emails: user.emails,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the property is assigned above
+			freeSwitchExtension: user.freeSwitchExtension!,
 		};
 		userCredentials = await login(user.username, password);
 	});
@@ -1278,6 +1281,85 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
 							expect(res.body).to.have.nested.property('user.emails[0].address', targetUser.emails[0].address);
+						});
+				});
+			});
+		});
+
+		describe('querying by freeSwitch extension', () => {
+			after(async () => {
+				await restorePermissionToRoles('view-full-other-user-info');
+			});
+
+			describe("with 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', ['admin']);
+				});
+
+				it('should successfully return information on an existing user', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							freeSwitchExtension: targetUser.freeSwitchExtension,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user._id', targetUser._id);
+							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+						});
+				});
+				it('should return an error when user does not exist', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							freeSwitchExtension: 'this_is_a_fake_extension_that_does_not_exist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(404)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+			});
+
+			describe("without 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', []);
+				});
+
+				it('should return an error when querying another user by freeSwitch extension and lacking "view-full-other-user-info" permission', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							freeSwitchExtension: targetUser.freeSwitchExtension,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(404)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+				it('should query information about myself by freeSwitch extension', async () => {
+					await request
+						.get(api('users.info'))
+						.set(userCredentials)
+						.query({
+							freeSwitchExtension: targetUser.freeSwitchExtension,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
 						});
 				});
 			});
