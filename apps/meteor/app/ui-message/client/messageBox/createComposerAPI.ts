@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Tracker } from 'meteor/tracker';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
@@ -8,6 +7,7 @@ import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
+import { settings } from '../../../../client/lib/settings';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
@@ -195,26 +195,31 @@ export const createComposerAPI = (
 		setEditing(editing);
 	};
 
-	const [formatters, stopFormatterTracker] = (() => {
+	const [formatters, stopFormatterSubscription] = (() => {
 		let actions: FormattingButton[] = [];
 
-		const c = Tracker.autorun(() => {
+		const recompute = (): void => {
 			actions = formattingButtons.filter(({ condition }) => !condition || condition());
 			emitter.emit('formatting');
-		});
+		};
+		recompute();
+		// Coarse-grained: fires on every setting change, but the only condition()
+		// today is Katex_Enabled and the recompute is a cheap zustand read, so the
+		// extra work per unrelated setting change is negligible.
+		const stop = settings.observe('*', recompute);
 
 		return [
 			{
 				get: () => actions,
 				subscribe: (callback: () => void) => emitter.on('formatting', callback),
 			},
-			c,
+			stop,
 		];
 	})();
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
-		stopFormatterTracker.stop();
+		stopFormatterSubscription();
 	};
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {

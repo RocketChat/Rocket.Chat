@@ -203,21 +203,20 @@ export class AppUIKitInteractionApi {
 	constructor(orch: IAppServerOrchestrator) {
 		this.orch = orch;
 
-		router.post('/:id', this.routeHandler);
+		router.post('/:id', this.routeHandler.bind(this));
 	}
 
-	private routeHandler = async (
+	private async routeHandler(
 		req: UiKitUserInteractionRequest,
 		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
-	): Promise<void> => {
+	): Promise<void> {
 		const { orch } = this;
 		const { id: appId } = req.params;
 
 		switch (req.body.type) {
 			case 'blockAction': {
-				const { type, actionId, triggerId, payload, container } = req.body;
+				const { type, actionId, triggerId, payload, container, rid } = req.body;
 				const mid = 'mid' in req.body ? req.body.mid : undefined;
-				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const { visitor } = req.body;
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
@@ -253,15 +252,18 @@ export class AppUIKitInteractionApi {
 			case 'viewClosed': {
 				const {
 					type,
+					rid,
 					payload: { view, isCleared },
 				} = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
 					appId,
 					user,
+					room,
 					payload: {
 						view,
 						isCleared,
@@ -280,9 +282,10 @@ export class AppUIKitInteractionApi {
 			}
 
 			case 'viewSubmit': {
-				const { type, actionId, triggerId, payload } = req.body;
+				const { type, actionId, triggerId, payload, rid } = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
@@ -291,6 +294,7 @@ export class AppUIKitInteractionApi {
 					triggerId,
 					payload,
 					user,
+					room,
 				};
 
 				try {
@@ -351,5 +355,5 @@ export class AppUIKitInteractionApi {
 		}
 
 		// TODO: validate payloads per type
-	};
+	}
 }

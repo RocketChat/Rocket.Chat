@@ -65,7 +65,7 @@ export class CustomOAuthStrategy extends Strategy {
 			clientSecret: config.clientSecret,
 			callbackURL: `${settings.get<string>('Site_Url')}/oauth/${name}/callback`,
 			state: true,
-			pkce: true,
+			pkce: config.pkce ?? true,
 			scope: config.scope,
 		};
 
@@ -108,6 +108,10 @@ export class CustomOAuthStrategy extends Strategy {
 
 		if (config.accessTokenParam && config.accessTokenParam !== 'access_token') {
 			this._oauth2.setAccessTokenName(config.accessTokenParam);
+		}
+
+		if (config.addAutopublishFields && typeof config.addAutopublishFields === 'object') {
+			Accounts.addAutopublishFields(config.addAutopublishFields);
 		}
 
 		this.name = name;
@@ -232,6 +236,8 @@ export class CustomOAuthStrategy extends Strategy {
 			try {
 				const result = JSON.parse(typeof body === 'string' ? body : body.toString());
 				const normalizedIdentity = this.normalizeIdentity(result);
+				//Nextcloud URL needed on addWebdavServer
+				normalizedIdentity.serverURL = this.serverURL;
 				return done(null, normalizedIdentity);
 			} catch (e) {
 				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
