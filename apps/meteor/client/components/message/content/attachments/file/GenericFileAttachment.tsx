@@ -73,17 +73,18 @@ const GenericFileAttachment = ({
 				if (abortControllerRef.current) {
 					abortControllerRef.current.abort();
 				}
-				abortControllerRef.current = new AbortController();
+				const abortController = new AbortController();
+				abortControllerRef.current = abortController;
 
 				try {
 					const response = await fetch(getURL(link), {
-						signal: abortControllerRef.current.signal,
+						signal: abortController.signal,
 					});
 					if (!response.ok) {
 						throw new Error(`Failed to fetch encrypted PDF: ${response.status}`);
 					}
 					const blob = await response.blob();
-					if (abortControllerRef.current.signal.aborted) {
+					if (abortController.signal.aborted || abortControllerRef.current !== abortController) {
 						return;
 					}
 					const blobUrl = URL.createObjectURL(blob);
