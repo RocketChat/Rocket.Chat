@@ -5,28 +5,35 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useLayoutEffect } from 'react';
 
 import { DragContext } from './WidgetDraggableContext';
+import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 import { useDraggable } from '../../hooks';
 import { type LastKnownPosition } from '../../providers/useWidgetPositionTracker';
 
 // TODO: Initial position from the draggable api instead of style props
 // TODO: A11Y
-const WidgetBase = styled('article')`
-	position: fixed;
-	right: 2em;
-	top: 11em;
+const WidgetBase = styled('article', ({ inline: _inline, ...props }: { inline?: boolean }) => props)`
 	display: flex;
 	flex-direction: column;
 	width: 248px;
 	min-height: 128px;
 	border-radius: 4px;
-	border: 1px solid ${Palette.stroke['stroke-dark'].toString()};
-	box-shadow:
-		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
-		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
 	background-color: ${Palette.surface['surface-tint'].toString()};
 	color: ${Palette.text['font-default'].toString()};
-	z-index: 100;
 	overflow: hidden;
+
+	${({ inline }) =>
+		inline
+			? ''
+			: `
+		position: fixed;
+		right: 2em;
+		top: 11em;
+		border: 1px solid ${Palette.stroke['stroke-dark'].toString()};
+		box-shadow:
+			0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
+			0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
+		z-index: 100;
+	`}
 `;
 
 type WidgetProps = {
@@ -36,16 +43,25 @@ type WidgetProps = {
 } & ComponentProps<typeof WidgetBase>;
 
 const Widget = ({ children, onChangePosition, restorePosition, ...props }: WidgetProps) => {
+	const { inline } = useMediaCallWidgetSlot();
 	const [draggableRef, boundingRef, handleRef] = useDraggable({ onChangePosition, restorePosition });
 
 	useLayoutEffect(() => {
+		if (inline) {
+			return;
+		}
 		boundingRef(document.body);
-	}, [boundingRef]);
+	}, [boundingRef, inline]);
 
 	return (
 		<DragContext.Provider value={{ draggableRef, boundingRef, handleRef }}>
 			<FocusScope autoFocus>
-				<WidgetBase {...props} ref={draggableRef} aria-labelledby='rcx-media-call-widget-title rcx-media-call-widget-caller-info'>
+				<WidgetBase
+					{...props}
+					inline={inline}
+					ref={inline ? undefined : draggableRef}
+					aria-labelledby='rcx-media-call-widget-title rcx-media-call-widget-caller-info'
+				>
 					{children}
 				</WidgetBase>
 			</FocusScope>

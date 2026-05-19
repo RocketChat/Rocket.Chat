@@ -11,9 +11,11 @@ import {
 	WidgetContent,
 	DevicePicker,
 	ActionButton,
+	Keypad,
 } from '../../components';
 import { usePeerAutocomplete } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 import { useWidgetExternalControls } from '../../context/useWidgetExternalControls';
 
 const NewCall = () => {
@@ -22,6 +24,7 @@ const NewCall = () => {
 	const { sessionState, onCall, onSelectPeer } = useMediaCallView();
 	const { peerInfo } = sessionState;
 	const { toggleWidget } = useWidgetExternalControls();
+	const { inline } = useMediaCallWidgetSlot();
 
 	const autocomplete = usePeerAutocomplete(onSelectPeer, peerInfo);
 
@@ -29,13 +32,18 @@ const NewCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={t('New_call')}>
-				<ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />
+				{!inline && <ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />}
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
 				{peerInfo && (
 					<Box mb={8}>
 						<PeerInfo {...peerInfo} />
+					</Box>
+				)}
+				{inline && (
+					<Box display='flex' justifyContent='center' mbs={12}>
+						<Keypad onKeyPress={autocomplete.onKeypadPress} />
 					</Box>
 				)}
 			</WidgetContent>

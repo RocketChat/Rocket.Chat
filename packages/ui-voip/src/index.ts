@@ -2,6 +2,7 @@ export { default as MediaCallProvider } from './providers/MediaCallProvider';
 
 export {
 	MediaCallInstanceContext,
+	useMediaCallView,
 	useWidgetExternalControls,
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
@@ -10,6 +11,7 @@ export {
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
+export { MediaCallWidgetSlot } from './components';
 
 export { CallHistoryContextualBar, MediaCallRoomActivity } from './views';
 export type { InternalCallHistoryContact, ExternalCallHistoryContact, CallHistoryData } from './views';
