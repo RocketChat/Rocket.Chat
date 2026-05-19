@@ -9,6 +9,7 @@ import { PresenceReaper } from './lib/PresenceReaper';
 import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
 
 const MAX_CONNECTIONS = 200;
+const EXPIRATION_JOB_NAME = 'presence-status-expiration';
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
@@ -99,10 +100,7 @@ export class Presence extends ServiceClass implements IPresence {
 			// ignore
 		}
 
-		// TODO: Agenda default lockLifetime is 10 min. This job executes in ms and runs every 1 min.
-		// If an instance crashes mid-execution, expired statuses stay locked for up to 10 min.
-		// Reduce lockLifetime to 60s once @rocket.chat/agenda exposes the option in its typed API.
-		await cronJobs.add('presence-status-expiration', '* * * * *', () => this.processExpiredStatuses());
+		await this.handleExpirationJob();
 	}
 
 	private async processExpiredStatuses(batchSize = 100): Promise<void> {
@@ -112,12 +110,32 @@ export class Presence extends ServiceClass implements IPresence {
 			return;
 		}
 
-		const results = await Promise.allSettled(expiredUsers.map(({ _id }) => this.endActiveState(_id)));
+		// Use updateUserPresence directly instead of updatePresenceAndReschedule to avoid rescheduling per user;
+		// the caller (setupNextExpiration) handles rescheduling after the full batch is processed.
+		const results = await Promise.allSettled(expiredUsers.map(({ _id }) => this.updateUserPresence(_id, { type: 'endActive' })));
 		const successful = results.filter((result) => result.status === 'fulfilled').length;
 
 		if (expiredUsers.length === batchSize && successful > 0) {
 			return this.processExpiredStatuses();
 		}
+	}
+
+	private async setupNextExpiration(): Promise<void> {
+		if (await cronJobs.has(EXPIRATION_JOB_NAME)) {
+			await cronJobs.remove(EXPIRATION_JOB_NAME);
+		}
+
+		const next = await Users.findNextStatusExpiration();
+		if (!next?.statusExpiresAt) {
+			return;
+		}
+
+		await cronJobs.addAtTimestamp(EXPIRATION_JOB_NAME, next.statusExpiresAt, () => this.handleExpirationJob());
+	}
+
+	private async handleExpirationJob(): Promise<void> {
+		await this.processExpiredStatuses();
+		await this.setupNextExpiration();
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
@@ -139,6 +157,9 @@ export class Presence extends ServiceClass implements IPresence {
 
 	override async stopped(): Promise<void> {
 		this.reaper.stop();
+		if (await cronJobs.has(EXPIRATION_JOB_NAME)) {
+			await cronJobs.remove(EXPIRATION_JOB_NAME);
+		}
 		if (!this.lostConTimeout) {
 			return;
 		}
@@ -252,14 +273,24 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	/**
+	 * Updates presence and reschedules the expiration job.
+	 * All public methods should use this instead of calling updateUserPresence directly.
+	 */
+	private async updatePresenceAndReschedule(uid: string, claimUpdate: ClaimUpdate): Promise<boolean> {
+		const result = await this.updateUserPresence(uid, claimUpdate);
+		await this.setupNextExpiration();
+		return result;
+	}
+
+	/**
 	 * @deprecated Use setActiveState, endActiveState, or clearActiveState instead.
 	 */
 	async setStatus(userId: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
 		if (statusDefault === UserStatus.ONLINE && !statusText) {
-			return this.updateUserPresence(userId, { type: 'clearActive' });
+			return this.updatePresenceAndReschedule(userId, { type: 'clearActive' });
 		}
 
-		return this.updateUserPresence(userId, {
+		return this.updatePresenceAndReschedule(userId, {
 			type: 'setActive',
 			newState: {
 				statusDefault,
@@ -276,7 +307,7 @@ export class Presence extends ServiceClass implements IPresence {
 		userId: string,
 		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
 	): Promise<void> {
-		await this.updateUserPresence(userId, { type: 'setActive', newState });
+		await this.updatePresenceAndReschedule(userId, { type: 'setActive', newState });
 	}
 
 	/**
@@ -284,14 +315,14 @@ export class Presence extends ServiceClass implements IPresence {
 	 * falls back to system-managed.
 	 */
 	async endActiveState(userId: string): Promise<void> {
-		await this.updateUserPresence(userId, { type: 'endActive' });
+		await this.updatePresenceAndReschedule(userId, { type: 'endActive' });
 	}
 
 	/**
 	 * Removes all presence claims and resets to "Online" with no text.
 	 */
 	async clearActiveState(userId: string): Promise<void> {
-		await this.updateUserPresence(userId, { type: 'clearActive' });
+		await this.updatePresenceAndReschedule(userId, { type: 'clearActive' });
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
@@ -302,6 +333,10 @@ export class Presence extends ServiceClass implements IPresence {
 		return !!result.modifiedCount;
 	}
 
+	/**
+	 * Low-level presence update. Does not reschedule the expiration job.
+	 * Prefer {@link updatePresenceAndReschedule} for public-facing methods.
+	 */
 	private async updateUserPresence(uid: string, claimUpdate?: ClaimUpdate): Promise<boolean> {
 		const user = await Users.findOneById<
 			Pick<

@@ -174,6 +174,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findExpiredStatuses(limit: number): FindCursor<Pick<IUser, '_id'>>;
 
+	findNextStatusExpiration(): Promise<Pick<IUser, '_id' | 'statusExpiresAt'> | null>;
+
 	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[]): Promise<IUser | null>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;

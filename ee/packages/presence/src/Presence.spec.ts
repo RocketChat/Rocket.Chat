@@ -12,6 +12,7 @@ registerModel('IUsersModel', {
 	findOneById: findUserMock,
 	updatePresenceAndStatus: updatePresenceMock,
 	findExpiredStatuses: jest.fn(),
+	findNextStatusExpiration: jest.fn().mockResolvedValue(null),
 } as any);
 
 registerModel('IUsersSessionsModel', {

@@ -1104,6 +1104,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	findNextStatusExpiration() {
+		return this.findOne<Pick<IUser, '_id' | 'statusExpiresAt'>>(
+			{ statusExpiresAt: { $gte: new Date() } },
+			{ projection: { _id: 1, statusExpiresAt: 1 }, sort: { statusExpiresAt: 1 } },
+		);
+	}
+
 	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[]) {
 		const $unset = clear?.length ? Object.fromEntries(clear.map((field) => [field, '' as const])) : undefined;
 
