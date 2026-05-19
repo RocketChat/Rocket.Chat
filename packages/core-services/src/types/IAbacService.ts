@@ -49,4 +49,5 @@ export interface IAbacService {
 	evaluateRoomMembership(): Promise<void>;
 	getPDPHealth(): Promise<void>;
 	reevaluateAttributeStore(): Promise<void>;
+	isExternalAttributeStore(): Promise<boolean>;
 }

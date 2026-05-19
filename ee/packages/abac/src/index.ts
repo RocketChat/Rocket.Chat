@@ -213,6 +213,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onAttributeStoreInputsChanged();
 	}
 
+	isExternalAttributeStore(): boolean {
+		return this.effectiveStore() === 'virtru';
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	private async onTransitionedToVirtruStore(_from: 'local' | 'virtru'): Promise<void> {}
 

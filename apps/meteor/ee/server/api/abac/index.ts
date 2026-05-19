@@ -244,6 +244,10 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			if (await Abac.isExternalAttributeStore()) {
+				throw new Error('error-abac-attribute-store-external');
+			}
+
 			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -269,6 +273,10 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			if (await Abac.isExternalAttributeStore()) {
+				throw new Error('error-abac-attribute-store-external');
+			}
+
 			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -288,6 +296,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+
+			if (await Abac.isExternalAttributeStore()) {
+				throw new Error('error-abac-attribute-store-external');
+			}
+
 			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success(result);
 		},
@@ -307,6 +320,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+
+			if (await Abac.isExternalAttributeStore()) {
+				throw new Error('error-abac-attribute-store-external');
+			}
+
 			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -326,6 +344,11 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { key } = this.urlParams;
+
+			if (await Abac.isExternalAttributeStore()) {
+				throw new Error('error-abac-attribute-store-external');
+			}
+
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });
 		},
