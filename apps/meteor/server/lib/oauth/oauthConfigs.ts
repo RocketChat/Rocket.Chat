@@ -27,6 +27,10 @@ export const OAuthConfigs: Record<string, OAuthConfig> = {
 		strategy: TwitterStrategy,
 		includeEmail: true,
 	},
+	github_enterprise: {
+		strategy: GitHubStrategy,
+		scope: ['user:email'],
+	},
 } as const;
 
 export type Provider = keyof typeof OAuthConfigs;

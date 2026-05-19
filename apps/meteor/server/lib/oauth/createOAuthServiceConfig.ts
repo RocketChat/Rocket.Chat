@@ -19,6 +19,20 @@ export const createOAuthServiceConfig = (settings: ICachedSettings, services: st
 			if (!OAuthConfigs[service]) {
 				return;
 			}
+
+			if (service === 'github_enterprise') {
+				return {
+					provider: service,
+					clientId: settings.get<string>('Accounts_OAuth_GitHub_Enterprise_id'),
+					clientSecret: settings.get<string>('Accounts_OAuth_GitHub_Enterprise_secret'),
+					authorizationURL: `${settings.get<string>('API_GitHub_Enterprise_URL')}/login/oauth/authorize`,
+					tokenURL: `${settings.get<string>('API_GitHub_Enterprise_URL')}/login/oauth/access_token`,
+					userProfileURL: `${settings.get<string>('API_GitHub_Enterprise_URL')}/api/v3/user`,
+					strategy: OAuthConfigs.github_enterprise.strategy,
+					scope: OAuthConfigs.github_enterprise.scope,
+				};
+			}
+
 			return {
 				provider: service,
 				clientId: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`),
