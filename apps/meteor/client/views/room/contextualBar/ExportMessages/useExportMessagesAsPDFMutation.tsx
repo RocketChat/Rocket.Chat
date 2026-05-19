@@ -78,7 +78,7 @@ export const useExportMessagesAsPDFMutation = () => {
 				fonts: [{ src: absoluteUrl(font.fontSrc) }],
 			});
 		}
-	}, []);
+	}, [absoluteUrl]);
 
 	return useMutation({
 		mutationFn: async (messageIds: IMessage['_id'][]) => {
