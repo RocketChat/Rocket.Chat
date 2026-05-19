@@ -13,7 +13,7 @@ import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait,
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
-import { updatePermission, updateSetting, restorePermissionToRoles } from '../../data/permissions.helper';
+import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -183,7 +183,7 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 };
 
 describe('[Users]', () => {
-	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[]; freeSwitchExtension: string };
+	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[] };
 	let userCredentials: Credentials;
 
 	before((done) => getCredentials(done));
@@ -192,7 +192,6 @@ describe('[Users]', () => {
 		const user = await createUser({
 			active: true,
 			roles: ['user'],
-			freeSwitchExtension: '9998',
 			joinDefaultChannels: true,
 			verified: true,
 		});
@@ -200,8 +199,6 @@ describe('[Users]', () => {
 			_id: user._id,
 			username: user.username,
 			emails: user.emails,
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the property is assigned above
-			freeSwitchExtension: user.freeSwitchExtension!,
 		};
 		userCredentials = await login(user.username, password);
 	});
@@ -1286,9 +1283,20 @@ describe('[Users]', () => {
 			});
 		});
 
-		describe('querying by freeSwitch extension', () => {
+		(IS_EE ? describe : describe.skip)('querying by freeSwitch extension', () => {
+			let previousVoipSetting: boolean;
+			let targetUser: IUser;
+
+			before(async () => {
+				previousVoipSetting = (await getSettingValueById('VoIP_TeamCollab_SIP_Integration_Enabled')) as boolean;
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
+				targetUser = await createUser({ freeSwitchExtension: '123123' });
+			});
+
 			after(async () => {
 				await restorePermissionToRoles('view-full-other-user-info');
+				await deleteUser(targetUser);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', previousVoipSetting);
 			});
 
 			describe("with 'view-full-other-user-info' permission", () => {
