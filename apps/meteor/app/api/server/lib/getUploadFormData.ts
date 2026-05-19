@@ -1,5 +1,5 @@
-import { Readable } from 'stream';
-import { ReadableStream } from 'stream/web';
+import { Readable } from 'node:stream';
+import { ReadableStream } from 'node:stream/web';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';

@@ -1,2 +1,2 @@
-export type * from './definition';
 export * from './makeFunction';
+export * from './midleware';

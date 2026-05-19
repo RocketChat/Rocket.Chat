@@ -1,13 +1,13 @@
-import { Buffer } from 'buffer';
-import type { WriteStream } from 'fs';
-import fs from 'fs';
-import { unlink, rename, writeFile } from 'fs/promises';
-import type * as http from 'http';
-import type * as https from 'https';
-import stream from 'stream';
-import { finished } from 'stream/promises';
-import URL from 'url';
-import { isArrayBufferView } from 'util/types';
+import { Buffer } from 'node:buffer';
+import type { WriteStream } from 'node:fs';
+import fs from 'node:fs';
+import { unlink, rename, writeFile } from 'node:fs/promises';
+import type * as http from 'node:http';
+import type * as https from 'node:https';
+import stream from 'node:stream';
+import { finished } from 'node:stream/promises';
+import URL from 'node:url';
+import { isArrayBufferView } from 'node:util/types';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
