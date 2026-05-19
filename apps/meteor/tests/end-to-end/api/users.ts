@@ -1018,7 +1018,7 @@ describe('[Users]', () => {
 					username: 'invalid-username',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(404)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
@@ -1080,7 +1080,7 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
+		it('should return the rooms when the user requests their own rooms but they do NOT have the necessary permission', (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
 					.get(api('users.info'))
@@ -1100,7 +1100,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it("should NOT return the rooms when the user request another user's rooms and he does NOT have the necessary permission", (done) => {
+		it("should NOT return the rooms when the user requests another user's rooms WITHOUT having the necessary permission", (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
 					.get(api('users.info'))
@@ -1118,7 +1118,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it("should NOT return any services fields when request to another user's info even if the user has the necessary permission", (done) => {
+		it("should NOT return any services fields when requesting another user's info, even if the user has the necessary permission", (done) => {
 			void updatePermission('view-full-other-user-info', ['admin']).then(() => {
 				void request
 					.get(api('users.info'))
@@ -1238,7 +1238,7 @@ describe('[Users]', () => {
 							email: 'this_is_a_fake_email_that_does_not_exist@invalid.com',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
+						.expect(404)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'User not found.');
@@ -1259,7 +1259,7 @@ describe('[Users]', () => {
 							email: targetUser.emails[0].address,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
+						.expect(404)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'User not found.');
