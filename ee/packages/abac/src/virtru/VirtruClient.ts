@@ -23,7 +23,7 @@ export class VirtruClient {
 	}
 
 	getConfig(): IVirtruPDPConfig {
-		return this.config;
+		return { ...this.config };
 	}
 
 	async isAvailable(): Promise<boolean> {

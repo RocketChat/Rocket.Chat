@@ -46,7 +46,15 @@ describe('VirtruClient', () => {
 		expect(await c.isAvailable()).toBe(false);
 	});
 
-	it('apiCall sends Bearer token and throws on non-ok', async () => {
+	it('apiCall sends Bearer token', async () => {
+		serverFetchMock.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 })).mockResolvedValueOnce(okJson({ ok: 1 }));
+		const c = new VirtruClient(cfg);
+		await c.apiCall('/x', {});
+		const apiCallArgs = serverFetchMock.mock.calls.find(([url]) => String(url) === 'http://pdp/x');
+		expect((apiCallArgs?.[1] as any).headers.Authorization).toBe('Bearer tok');
+	});
+
+	it('apiCall throws on non-ok response', async () => {
 		serverFetchMock
 			.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 }))
 			.mockResolvedValueOnce({ ok: false, status: 500, text: async () => 'boom' });
