@@ -1,4 +1,12 @@
-import { usePermission, useSetModal, useCurrentModal, useRouter, useRouteParameter, useSettingStructure } from '@rocket.chat/ui-contexts';
+import {
+	usePermission,
+	useSetModal,
+	useCurrentModal,
+	useRouter,
+	useRouteParameter,
+	useSetting,
+	useSettingStructure,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,8 +30,14 @@ const AdminABACRoute = (): ReactElement => {
 	const tab = useRouteParameter('tab');
 	const router = useRouter();
 	const tabPermissions = useABACTabPermissions();
-	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t]);
-	const isAllowedTab = (ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') && tabPermissions[tab as ABACTab];
+	const pdpType = useSetting('ABAC_PDP_Type', 'local');
+	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
+	const isExternalStore = pdpType === 'virtru' && attributeStore === 'virtru';
+	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t] && !(t === 'room-attributes' && isExternalStore));
+	const isAllowedTab =
+		(ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') &&
+		tabPermissions[tab as ABACTab] &&
+		!(tab === 'room-attributes' && isExternalStore);
 
 	const ABACEnabledSetting = useSettingStructure('ABAC_Enabled');
 

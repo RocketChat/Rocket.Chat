@@ -1,5 +1,5 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useABACTabPermissions } from './hooks/useABACTabPermissions';
@@ -9,6 +9,9 @@ const AdminABACTabs = () => {
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
 	const tabPermissions = useABACTabPermissions();
+	const pdpType = useSetting('ABAC_PDP_Type', 'local');
+	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
+	const isExternalStore = pdpType === 'virtru' && attributeStore === 'virtru';
 	const handleTabClick = (tab: string) => {
 		router.navigate({
 			name: 'admin-ABAC',
@@ -22,7 +25,7 @@ const AdminABACTabs = () => {
 					{t('Settings')}
 				</TabsItem>
 			)}
-			{tabPermissions['room-attributes'] && (
+			{tabPermissions['room-attributes'] && !isExternalStore && (
 				<TabsItem selected={tab === 'room-attributes'} onClick={() => handleTabClick('room-attributes')}>
 					{t('ABAC_Room_Attributes')}
 				</TabsItem>
