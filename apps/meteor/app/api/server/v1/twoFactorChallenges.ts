@@ -10,7 +10,7 @@ import { API } from '../api';
 
 API.v1.addRoute(
 	'twoFactorChallenges.sendEmailCode',
-	{ validateParams: isTwoFactorChallengesSendEmailCodeParamsPOST },
+	{ validateParams: isTwoFactorChallengesSendEmailCodeParamsPOST, rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 5 } },
 	{
 		async post() {
 			const { challengeId } = this.bodyParams;
@@ -46,7 +46,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'twoFactorChallenges.verifyChallenge',
-	{ validateParams: isTwoFactorChallengesVerifyChallengeParamsPOST },
+	{
+		validateParams: isTwoFactorChallengesVerifyChallengeParamsPOST,
+		rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 5 },
+	},
 	{
 		async post() {
 			const { challengeId, code } = this.bodyParams;
