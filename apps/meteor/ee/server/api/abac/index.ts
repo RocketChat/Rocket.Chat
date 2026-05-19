@@ -437,7 +437,13 @@ const abacEndpoints = API.v1
 						$lte: end ? new Date(end) : new Date(),
 					},
 					t: {
-						$in: ['abac.attribute.changed', 'abac.object.attribute.changed', 'abac.object.attributes.removed', 'abac.action.performed'],
+						$in: [
+							'abac.attribute.changed',
+							'abac.object.attribute.changed',
+							'abac.object.attributes.removed',
+							'abac.action.performed',
+							'abac.attribute_store.switched',
+						],
 					},
 				},
 				{
@@ -456,6 +462,7 @@ const abacEndpoints = API.v1
 					| IServerEvents['abac.attribute.changed']
 					| IServerEvents['abac.object.attribute.changed']
 					| IServerEvents['abac.object.attributes.removed']
+					| IServerEvents['abac.attribute_store.switched']
 				)[],
 				count: events.length,
 				offset,
