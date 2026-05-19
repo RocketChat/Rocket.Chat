@@ -4,6 +4,7 @@ import type {
 	ServerMethodParameters,
 	ServerMethodReturn,
 	StreamerCallbackArgs,
+	StreamerEvents,
 	StreamNames,
 	StreamKeys,
 } from '@rocket.chat/ddp-client';
@@ -72,6 +73,11 @@ const getStream =
 	) =>
 	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
 		sdk.stream(streamName, [eventName], callback).stop;
+
+const getStreamAll =
+	<N extends StreamNames>(streamName: N) =>
+	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>
+		sdk.onAnyStreamEvent(streamName, callback as (eventName: string, args: unknown[]) => void).stop;
 
 const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, streamKey: K, ...args: StreamerCallbackArgs<N, K>) =>
 	sdk.publish(streamName, [streamKey, ...args]);
@@ -175,6 +181,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			callEndpoint,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll,
 			writeStream,
 			disconnect,
 			reconnect,

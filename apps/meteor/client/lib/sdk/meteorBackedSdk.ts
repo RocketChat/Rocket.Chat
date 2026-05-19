@@ -1,8 +1,9 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
+
+import { parseDDP } from './ddpProtocol';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -100,7 +101,7 @@ const createMeteorBackedClient = () => {
 		const handler = (rawMsg: string): void => {
 			let msg: unknown;
 			try {
-				msg = DDPCommon.parseDDP(rawMsg);
+				msg = parseDDP(rawMsg);
 			} catch {
 				return;
 			}
@@ -115,13 +116,13 @@ const createMeteorBackedClient = () => {
 		return noopUnsubscribe;
 	};
 
-	// Some consumers (`streamerAdapter`) reach into `client.ddp.onMessage` to
-	// register listeners on the SDK's underlying socket. With the proxy,
-	// Meteor.connection already gets the same frames AND has its own streamer
-	// wiring (e.g. `app/notifications/client/lib/Presence.ts:18`), so attaching
-	// a second listener here would deliver every Meteor frame twice into
-	// streamerCentral. Make this a no-op — meteor-side wiring covers the
-	// streams the SDK adapter would otherwise have handled.
+	// `ddp.onMessage` is reached by code that wants raw DDP frames off the SDK
+	// socket. In Meteor-backed mode there is no separate SDK socket; the same
+	// frames are already delivered through `onCollection` above (which listens
+	// on `Meteor.connection._stream`). Registering a second listener here
+	// would double-deliver. The Meteor-backed `onCollection` is also the
+	// temporary bridge used by `sdk.onAnyStreamEvent` until SDK transport
+	// rollout completes and the Meteor fallback can be removed.
 	const ddp = {
 		onMessage: (_cb: (payload: unknown) => void): (() => void) => noopUnsubscribe,
 	};
