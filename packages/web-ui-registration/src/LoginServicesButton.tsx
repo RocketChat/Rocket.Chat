@@ -1,5 +1,4 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService } from '@rocket.chat/ui-contexts';
@@ -8,6 +7,8 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { LoginErrorState, LoginErrors } from './LoginForm';
+
+const servicesSupportedByMeteor = ['saml', 'cas', 'ldap'];
 
 const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
@@ -28,10 +29,8 @@ const LoginServicesButton = <T extends LoginService>({
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
-	const [isLegacyOAuthEnabled] = useLocalStorage<boolean>('useLegacyOAuth', false);
-
 	const handleOnClick = useCallback(() => {
-		if (!isLegacyOAuthEnabled) {
+		if (!servicesSupportedByMeteor.includes(service)) {
 			const url = new URL(window.location.href);
 			const queryParams = url.searchParams;
 			const loginClient = queryParams.get('loginClient');
@@ -52,7 +51,7 @@ const LoginServicesButton = <T extends LoginService>({
 			}
 			setError?.([e.error, e.reason]);
 		});
-	}, [handler, setError, isLegacyOAuthEnabled, service]);
+	}, [handler, setError, service]);
 
 	return (
 		<Button
