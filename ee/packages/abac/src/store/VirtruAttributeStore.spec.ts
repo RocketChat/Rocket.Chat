@@ -177,7 +177,7 @@ describe('VirtruAttributeStore.assertCanModifyRoom', () => {
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
 				actor,
 			),
-		).rejects.toBeDefined();
+		).rejects.toMatchObject({ code: 'error-pdp-unavailable' });
 	});
 
 	it('resolves when the room has no current attributes', async () => {
@@ -192,6 +192,6 @@ describe('VirtruAttributeStore.assertCanModifyRoom', () => {
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
 				actor,
 			),
-		).rejects.toBeDefined();
+		).rejects.toMatchObject({ code: 'error-pdp-unavailable' });
 	});
 });

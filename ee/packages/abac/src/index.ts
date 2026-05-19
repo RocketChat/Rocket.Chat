@@ -34,7 +34,6 @@ import {
 	extractAttribute,
 	diffAttributeSets,
 	validateAndNormalizeAttributes,
-	ensureAttributeDefinitionsExist,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 } from './helper';
 import { logger } from './logger';
@@ -530,6 +529,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 
+		await this.attributeStore.assertCanModifyRoom(room, actor);
+
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
 			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
@@ -539,7 +540,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const normalized = validateAndNormalizeAttributes(attributes);
 
-		await ensureAttributeDefinitionsExist(normalized);
+		await this.attributeStore.validateAssignable(normalized, actor);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
@@ -558,6 +559,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 
+		await this.attributeStore.assertCanModifyRoom(room, actor);
+
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
 		const existingIndex = previous.findIndex((a) => a.key === key);
@@ -566,7 +569,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new AbacInvalidAttributeValuesError();
 		}
 
-		await ensureAttributeDefinitionsExist([{ key, values }]);
+		await this.attributeStore.validateAssignable([{ key, values }], actor);
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
@@ -639,9 +642,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
-		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await getAbacRoom(rid);
+
+		await this.attributeStore.assertCanModifyRoom(room, actor);
+
+		await this.attributeStore.validateAssignable([{ key, values }], actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
@@ -664,9 +670,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
-		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await getAbacRoom(rid);
+
+		await this.attributeStore.assertCanModifyRoom(room, actor);
+
+		await this.attributeStore.validateAssignable([{ key, values }], actor);
 
 		const exists = room?.abacAttributes?.find((a) => a.key === key);
 

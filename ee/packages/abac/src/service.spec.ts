@@ -11,10 +11,17 @@ jest.mock('@rocket.chat/license', () => ({
 	},
 }));
 
-jest.mock('./store', () => ({
-	LocalAttributeStore: jest.fn(),
-	VirtruAttributeStore: jest.fn(),
-}));
+jest.mock('./store', () => {
+	const { ensureAttributeDefinitionsExist } = jest.requireActual('./helper');
+	return {
+		LocalAttributeStore: jest.fn().mockImplementation(() => ({
+			assertCanModifyRoom: jest.fn().mockResolvedValue(undefined),
+			validateAssignable: (attrs: any[]) => ensureAttributeDefinitionsExist(attrs),
+			scopeRoomsPage: (rooms: any[]) => Promise.resolve(rooms),
+		})),
+		VirtruAttributeStore: jest.fn(),
+	};
+});
 
 jest.mock('./virtru/VirtruClient', () => ({
 	VirtruClient: jest.fn().mockImplementation(() => ({
@@ -42,6 +49,7 @@ const mockUpdateSingleAbacAttributeValuesById = jest.fn();
 const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
+const mockUnsetAbacAttributesById = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
@@ -60,6 +68,7 @@ jest.mock('@rocket.chat/models', () => ({
 		updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
 		removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
 		insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
+		unsetAbacAttributesById: (...args: any[]) => mockUnsetAbacAttributesById(...args),
 	},
 	AbacAttributes: {
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
@@ -880,6 +889,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('throws error-invalid-attribute-values when more than 10 values provided', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			const values = Array.from({ length: 11 }, (_, i) => `v${i}`);
 			await expect((service as any).replaceRoomAbacAttributeByKey('r1', 'dept', values, fakeActor)).rejects.toThrow(
 				'error-invalid-attribute-values',
@@ -1061,6 +1071,118 @@ describe('AbacService (unit)', () => {
 				'error-invalid-attribute-values',
 			);
 			expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('attribute-store write guard (assertCanModifyRoom + validateAssignable)', () => {
+		const room = { _id: 'r1', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+
+		const makeStore = () => ({
+			assertCanModifyRoom: jest.fn().mockResolvedValue(undefined),
+			validateAssignable: jest.fn().mockResolvedValue(undefined),
+		});
+
+		const noMutation = () => {
+			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
+			expect(mockUpdateSingleAbacAttributeValuesById).not.toHaveBeenCalled();
+			expect(mockUpdateAbacAttributeValuesArrayFilteredById).not.toHaveBeenCalled();
+			expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
+			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		};
+
+		beforeEach(() => {
+			mockFindOneByIdAndType.mockReset().mockResolvedValue(room);
+			mockSetAbacAttributesById.mockReset();
+			mockUnsetAbacAttributesById.mockReset();
+			mockUpdateSingleAbacAttributeValuesById.mockReset();
+			mockUpdateAbacAttributeValuesArrayFilteredById
+				.mockReset()
+				.mockResolvedValue({ abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockInsertAbacAttributeIfNotExistsById.mockReset().mockResolvedValue({
+				abacAttributes: [
+					{ key: 'dept', values: ['eng'] },
+					{ key: 'k2', values: ['v'] },
+				],
+			});
+			mockCreateAuditServerEvent.mockReset();
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
+			(service as any).attributeStore = makeStore();
+		});
+
+		const invoke = (method: string): Promise<unknown> => {
+			switch (method) {
+				case 'setRoomAbacAttributes':
+					return service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor);
+				case 'updateRoomAbacAttributeValues':
+					return service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales'], fakeActor);
+				case 'addRoomAbacAttributeByKey':
+					return service.addRoomAbacAttributeByKey('r1', 'k2', ['v'], fakeActor);
+				default:
+					return service.replaceRoomAbacAttributeByKey('r1', 'dept', ['eng', 'sales'], fakeActor);
+			}
+		};
+
+		describe.each([
+			['setRoomAbacAttributes'],
+			['updateRoomAbacAttributeValues'],
+			['addRoomAbacAttributeByKey'],
+			['replaceRoomAbacAttributeByKey'],
+		])('%s', (method) => {
+			it("invokes assertCanModifyRoom with the room's current attributes and propagates a rejection without mutating", async () => {
+				const store = makeStore();
+				store.assertCanModifyRoom.mockRejectedValueOnce(new Error('error-pdp-unavailable'));
+				(service as any).attributeStore = store;
+
+				await expect(invoke(method)).rejects.toThrow('error-pdp-unavailable');
+
+				expect(store.assertCanModifyRoom).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] }),
+					fakeActor,
+				);
+				expect(store.validateAssignable).not.toHaveBeenCalled();
+				noMutation();
+			});
+
+			it('propagates a validateAssignable rejection without mutating', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValueOnce(new Error('error-invalid-attribute-values'));
+				(service as any).attributeStore = store;
+
+				await expect(invoke(method)).rejects.toThrow('error-invalid-attribute-values');
+
+				expect(store.assertCanModifyRoom).toHaveBeenCalledTimes(1);
+				noMutation();
+			});
+
+			it('awaits assertCanModifyRoom before validateAssignable', async () => {
+				const order: string[] = [];
+				const store = {
+					assertCanModifyRoom: jest.fn().mockImplementation(async () => {
+						order.push('assert');
+					}),
+					validateAssignable: jest.fn().mockImplementation(async () => {
+						order.push('validate');
+					}),
+				};
+				(service as any).attributeStore = store;
+
+				await invoke(method);
+
+				expect(order).toEqual(['assert', 'validate']);
+			});
+		});
+
+		it('blocks the empty-clear path of setRoomAbacAttributes when assertCanModifyRoom rejects', async () => {
+			const store = makeStore();
+			store.assertCanModifyRoom.mockRejectedValueOnce(new Error('error-pdp-unavailable'));
+			(service as any).attributeStore = store;
+
+			await expect(service.setRoomAbacAttributes('r1', {}, fakeActor)).rejects.toThrow('error-pdp-unavailable');
+
+			expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
+			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
 		});
 	});
 
