@@ -1,9 +1,9 @@
 import { Abac } from '@rocket.chat/core-services';
-import { isABACManagedRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
 import { scopeAdminRoomForAbac } from '../../../../app/api/server/lib/scopeAdminRoomForAbac';
+import { isABACManagedRoom } from '../../../../app/authorization/server/lib/isABACManagedRoom';
 
 scopeAdminRoomForAbac.patch(async (next, room, uid) => {
 	if (!License.hasModule('abac') || !isABACManagedRoom(room)) {
