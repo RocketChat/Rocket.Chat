@@ -25,27 +25,42 @@ describe('Metrics middleware', () => {
 		const mockEndTimer = jest.fn();
 		summary.startTimer.mockReturnValue(mockEndTimer);
 
-		api.use(metricsMiddleware({ api: { version: 1 } as any, settings, summary: summary as any })).get(
-			'/test',
-			{
-				response: {
-					200: ajv.compile({
-						type: 'object',
-						properties: {
-							message: { type: 'string' },
-						},
-					}),
-				},
-			},
-			async () => {
-				return {
-					statusCode: 200,
-					body: {
-						message: 'Metrics test successful',
+		const histogram = { startTimer: jest.fn().mockReturnValue(jest.fn()) };
+		const responseSizeHistogram = { observe: jest.fn() };
+		const activeRequestsGauge = { inc: jest.fn(), dec: jest.fn() };
+
+		api
+			.use(
+				metricsMiddleware({
+					api: { version: 1 } as any,
+					settings,
+					endpointTimeSummary: summary as any,
+					endpointTimeHistogram: histogram as any,
+					responseSizeHistogram: responseSizeHistogram as any,
+					activeRequestsGauge: activeRequestsGauge as any,
+				}),
+			)
+			.get(
+				'/test',
+				{
+					response: {
+						200: ajv.compile({
+							type: 'object',
+							properties: {
+								message: { type: 'string' },
+							},
+						}),
 					},
-				};
-			},
-		);
+				},
+				async () => {
+					return {
+						statusCode: 200,
+						body: {
+							message: 'Metrics test successful',
+						},
+					};
+				},
+			);
 		app.use(api.router);
 		const response = await request(app).get('/api/test').set('user-agent', 'test');
 		expect(response.statusCode).toBe(200);
@@ -73,8 +88,22 @@ describe('Metrics middleware', () => {
 		const mockEndTimer = jest.fn();
 		summary.startTimer.mockReturnValue(mockEndTimer);
 
+		const histogram = { startTimer: jest.fn().mockReturnValue(jest.fn()) };
+		const responseSizeHistogram = { observe: jest.fn() };
+		const activeRequestsGauge = { inc: jest.fn(), dec: jest.fn() };
+
 		api
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\//), api: { version: 1 } as any, settings, summary: summary as any }))
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\//),
+					api: { version: 1 } as any,
+					settings,
+					endpointTimeSummary: summary as any,
+					endpointTimeHistogram: histogram as any,
+					responseSizeHistogram: responseSizeHistogram as any,
+					activeRequestsGauge: activeRequestsGauge as any,
+				}),
+			)
 			.get(
 				'/test',
 				{
@@ -120,8 +149,22 @@ describe('Metrics middleware', () => {
 		const mockEndTimer = jest.fn();
 		summary.startTimer.mockReturnValue(mockEndTimer);
 
+		const histogram = { startTimer: jest.fn().mockReturnValue(jest.fn()) };
+		const responseSizeHistogram = { observe: jest.fn() };
+		const activeRequestsGauge = { inc: jest.fn(), dec: jest.fn() };
+
 		api
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\//), api: { version: 1 } as any, settings, summary: summary as any }))
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\//),
+					api: { version: 1 } as any,
+					settings,
+					endpointTimeSummary: summary as any,
+					endpointTimeHistogram: histogram as any,
+					responseSizeHistogram: responseSizeHistogram as any,
+					activeRequestsGauge: activeRequestsGauge as any,
+				}),
+			)
 			.get(
 				'/method.call/:id',
 				{

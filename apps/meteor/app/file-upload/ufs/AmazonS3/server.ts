@@ -19,6 +19,7 @@ import _ from 'underscore';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
+import { getUrlExpiryTimeSpanWithFallback } from '../../server/lib/urlExpiry';
 
 export type S3Options = StoreOptions & {
 	connection: S3ClientConfig;
@@ -81,6 +82,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
+			const expiresIn = getUrlExpiryTimeSpanWithFallback(classOptions.URLExpiryTimeSpan);
 			return getSignedUrl(
 				s3,
 				new GetObjectCommand({
@@ -88,9 +90,7 @@ class AmazonS3Store extends UploadFS.Store {
 					ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 					Bucket: classOptions.params.Bucket,
 				}),
-				{
-					expiresIn: classOptions.URLExpiryTimeSpan, // seconds
-				},
+				{ expiresIn },
 			);
 		};
 
@@ -204,7 +204,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getUrlExpiryTimeSpan = async () => {
-			return classOptions.URLExpiryTimeSpan || null;
+			return getUrlExpiryTimeSpanWithFallback(classOptions.URLExpiryTimeSpan);
 		};
 	}
 }
