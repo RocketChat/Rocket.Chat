@@ -3,40 +3,53 @@ import { Users } from '@rocket.chat/models';
 
 import type { IPublication } from './types';
 
+type CachedUser = IUser; // Pick<IUser, '_id' | 'roles'>;
+
 type CacheEntry = {
-	user: IUser; // Pick<IUser, '_id' | 'roles'>
+	user: Promise<CachedUser | null>;
 	timeout: NodeJS.Timeout;
 };
 
 const CACHE_PROJECTION = { _id: 1, roles: 1 } as const;
 const CACHE_TIMEOUT = 1000 * 60;
-const cacheByPublication = new Map<string, CacheEntry>();
+const cacheByUserId = new Map<string, CacheEntry>();
 
-export async function getCachedUserForPublication(publication: IPublication): Promise<CacheEntry['user'] | null> {
-	const userId = publication.userId ?? publication._session?.userId ?? undefined;
-	if (userId == null || userId === '') {
-		return null;
+export function getCachedUserForPublication(publication: IPublication): Promise<CachedUser | null> {
+	const userId = publication.userId ?? publication._session?.userId;
+	if (!userId) {
+		return Promise.resolve(null);
 	}
 
-	const value = invalidate(userId);
-
-	const user = value ?? (await Users.findOneById<CacheEntry['user']>(userId, { projection: CACHE_PROJECTION }));
-
-	if (user) {
-		const timeout = setTimeout(() => {
-			invalidate(userId);
-		}, CACHE_TIMEOUT);
-
-		cacheByPublication.set(userId, { user, timeout });
+	const existing = cacheByUserId.get(userId);
+	if (existing) {
+		return existing.user;
 	}
-	return user;
+
+	const userPromise = Users.findOneById<CachedUser>(userId, { projection: CACHE_PROJECTION });
+
+	const timeout = setTimeout(() => {
+		invalidate(userId);
+	}, CACHE_TIMEOUT);
+
+	cacheByUserId.set(userId, { user: userPromise, timeout });
+
+	userPromise.then(
+		(user: CachedUser | null) => {
+			if (!user) {
+				invalidate(userId);
+			}
+		},
+		() => invalidate(userId),
+	);
+
+	return userPromise;
 }
 
-export function invalidate(userId: string): CacheEntry['user'] | null {
-	const entry = cacheByPublication.get(userId);
-	if (entry) {
-		clearTimeout(entry.timeout);
-		cacheByPublication.delete(userId);
+export function invalidate(userId: string): void {
+	const entry = cacheByUserId.get(userId);
+	if (!entry) {
+		return;
 	}
-	return entry?.user ?? null;
+	clearTimeout(entry.timeout);
+	cacheByUserId.delete(userId);
 }
