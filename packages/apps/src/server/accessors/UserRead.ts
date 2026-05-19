@@ -17,8 +17,8 @@ export class UserRead implements IUserRead {
 		return this.userBridge.doGetByUsername(username, this.appId);
 	}
 
-	public getByFreeSwitchExtension(extension: string): Promise<IUser | undefined> {
-		return this.userBridge.doGetByFreeSwitchExtension(extension, this.appId);
+	public getBySipExtension(extension: string): Promise<IUser | undefined> {
+		return this.userBridge.doGetBySipExtension(extension, this.appId);
 	}
 
 	public getAppUser(appId: string = this.appId): Promise<IUser | undefined> {
