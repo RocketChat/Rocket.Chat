@@ -1,4 +1,4 @@
-import url from 'url';
+import url from 'node:url';
 
 import jsdom from 'jsdom';
 import mem from 'mem';

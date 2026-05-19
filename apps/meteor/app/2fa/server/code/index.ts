@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
