@@ -217,8 +217,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return this.effectiveStore() === 'virtru';
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private async onTransitionedToVirtruStore(_from: 'local' | 'virtru'): Promise<void> {}
+	private async onTransitionedToVirtruStore(from: 'local' | 'virtru'): Promise<void> {
+		let licensed: boolean;
+		try {
+			licensed = License.hasModule('abac');
+		} catch {
+			licensed = false;
+		}
+		if (!licensed) {
+			return;
+		}
+		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+		void Audit.attributeStoreSwitched(from, 'virtru', modifiedCount);
+	}
 
 	setPdpStrategy(strategy: 'local' | 'virtru'): void {
 		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';

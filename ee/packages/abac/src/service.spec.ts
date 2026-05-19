@@ -1,3 +1,4 @@
+import { Audit } from './audit';
 import { AbacService } from './index';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 import { VirtruClient } from './virtru/VirtruClient';
@@ -50,6 +51,7 @@ const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUnsetAbacAttributesById = jest.fn();
+const mockRoomsUpdateMany = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
@@ -69,6 +71,7 @@ jest.mock('@rocket.chat/models', () => ({
 		removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
 		insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
 		unsetAbacAttributesById: (...args: any[]) => mockUnsetAbacAttributesById(...args),
+		updateMany: (...args: any[]) => mockRoomsUpdateMany(...args),
 	},
 	AbacAttributes: {
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
@@ -1772,6 +1775,178 @@ describe('AbacService (unit)', () => {
 			(svc as any).attributeStoreSetting = 'virtru';
 			await svc.reevaluateAttributeStore();
 			expect(transitionSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('attribute-store transition wipe (onTransitionedToVirtruStore)', () => {
+		const buildSettings = (overrides: Record<string, any>) =>
+			({
+				Abac_Cache_Decision_Time_Seconds: 60,
+				ABAC_Enabled: true,
+				ABAC_PDP_Type: 'virtru',
+				ABAC_Attribute_Store: 'virtru',
+				ABAC_Virtru_Base_URL: '',
+				ABAC_Virtru_Client_ID: '',
+				ABAC_Virtru_Client_Secret: '',
+				ABAC_Virtru_OIDC_Endpoint: '',
+				ABAC_Virtru_Default_Entity_Key: 'emailAddress',
+				ABAC_Virtru_Attribute_Namespace: 'example.com',
+				...overrides,
+			}) as Record<string, any>;
+
+		let auditSpy: jest.SpyInstance;
+		let evictionSpy: jest.SpyInstance;
+		let pdpRoomAttrsSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			(LocalAttributeStore as jest.Mock).mockClear();
+			(VirtruAttributeStore as jest.Mock).mockClear();
+			(VirtruClient as jest.Mock).mockClear();
+			mockHasModule.mockReset();
+			mockSettingsGet.mockReset();
+			mockRoomsUpdateMany.mockReset();
+			mockCreateAuditServerEvent.mockReset();
+			auditSpy = jest.spyOn(Audit, 'attributeStoreSwitched').mockResolvedValue(undefined);
+			evictionSpy = jest.spyOn(AbacService.prototype as any, 'onRoomAttributesChanged').mockResolvedValue(undefined);
+			pdpRoomAttrsSpy = jest.fn();
+		});
+
+		afterEach(() => {
+			auditSpy.mockRestore();
+			evictionSpy.mockRestore();
+		});
+
+		const bootWith = async (settings: Record<string, any>) => {
+			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
+			const svc = new AbacService();
+			(svc as any).pdp = { onRoomAttributesChanged: pdpRoomAttrsSpy, canAccessObject: jest.fn(), isAvailable: jest.fn() };
+			await svc.started();
+			return svc;
+		};
+
+		it('runs the exact updateMany and emits Audit.attributeStoreSwitched on a licensed local->virtru transition', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 7 });
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			(svc as any).attributeStoreSetting = 'virtru';
+			await svc.reevaluateAttributeStore();
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUpdateMany).toHaveBeenCalledWith({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+			expect(auditSpy).toHaveBeenCalledTimes(1);
+			expect(auditSpy).toHaveBeenCalledWith('local', 'virtru', 7);
+		});
+
+		it('skips updateMany and audit when License.hasModule returns false at transition time', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			mockHasModule.mockReturnValue(false);
+			(svc as any).attributeStoreSetting = 'virtru';
+			await svc.reevaluateAttributeStore();
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+		});
+
+		it('skips updateMany and audit when License.hasModule throws at transition time (fail-safe)', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			(svc as any).attributeStoreSetting = 'virtru';
+			mockHasModule
+				.mockReturnValueOnce(true)
+				.mockReturnValueOnce(true)
+				.mockImplementationOnce(() => {
+					throw new Error('license backend down');
+				});
+			await svc.reevaluateAttributeStore();
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not block the settings-save: the listener returns before updateMany resolves, audit fires after', async () => {
+			mockHasModule.mockReturnValue(true);
+			let resolveWipe: (value: { modifiedCount: number }) => void = () => undefined;
+			mockRoomsUpdateMany.mockReturnValue(
+				new Promise<{ modifiedCount: number }>((resolve) => {
+					resolveWipe = resolve;
+				}),
+			);
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			const { calls }: { calls: [string, (arg: { setting: { value: unknown } }) => Promise<void>][] } = (svc as any).onSettingChanged.mock;
+			const entry = calls.find(([name]) => name === 'ABAC_Attribute_Store');
+			if (!entry) throw new Error('No listener registered for ABAC_Attribute_Store');
+
+			await entry[1]({ setting: { value: 'virtru' } });
+
+			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
+			expect(auditSpy).not.toHaveBeenCalled();
+
+			resolveWipe({ modifiedCount: 4 });
+			await new Promise((r) => setImmediate(r));
+
+			expect(auditSpy).toHaveBeenCalledTimes(1);
+			expect(auditSpy).toHaveBeenCalledWith('local', 'virtru', 4);
+		});
+
+		it('never triggers eviction / PDP / per-room audit during the wipe', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 12 });
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			(svc as any).attributeStoreSetting = 'virtru';
+			await svc.reevaluateAttributeStore();
+			await new Promise((r) => setImmediate(r));
+
+			expect(evictionSpy).not.toHaveBeenCalled();
+			expect(pdpRoomAttrsSpy).not.toHaveBeenCalled();
+			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		});
+
+		it('is idempotent: re-running with the same args succeeds and emits a fresh audit each time', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 0 });
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+			(svc as any).attributeStoreSetting = 'virtru';
+			await svc.reevaluateAttributeStore();
+
+			await (svc as any).onTransitionedToVirtruStore('local');
+
+			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(2);
+			await new Promise((r) => setImmediate(r));
+			expect(auditSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('does not run the wipe on boot, on unrelated setting changes, or on a non-transition setting change', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({}));
+			await new Promise((r) => setImmediate(r));
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+
+			const { calls }: { calls: [string, (arg: { setting: { value: unknown } }) => Promise<void>][] } = (svc as any).onSettingChanged.mock;
+			const namespaceEntry = calls.find(([name]) => name === 'ABAC_Virtru_Attribute_Namespace');
+			if (!namespaceEntry) throw new Error('No listener registered for ABAC_Virtru_Attribute_Namespace');
+			await namespaceEntry[1]({ setting: { value: 'other.example' } });
+			await new Promise((r) => setImmediate(r));
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+
+			const localSvc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+			const localCalls: [string, (arg: { setting: { value: unknown } }) => Promise<void>][] = (localSvc as any).onSettingChanged.mock.calls;
+			const pdpEntry = localCalls.find(([name]) => name === 'ABAC_PDP_Type');
+			if (!pdpEntry) throw new Error('No listener registered for ABAC_PDP_Type');
+			await pdpEntry[1]({ setting: { value: 'virtru' } });
+			await new Promise((r) => setImmediate(r));
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
 		});
 	});
 
