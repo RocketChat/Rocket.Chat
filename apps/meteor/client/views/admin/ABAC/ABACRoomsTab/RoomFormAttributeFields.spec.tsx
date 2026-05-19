@@ -148,6 +148,10 @@ describe('RoomFormAttributeFields', () => {
 
 		const attributeLabels = screen.getAllByText('Attribute');
 		expect(attributeLabels).toHaveLength(2);
+
+		screen.getAllByPlaceholderText('Search attribute').forEach((input) => expect(input).toBeDisabled());
+		screen.getAllByRole('combobox').forEach((input) => expect(input).toBeDisabled());
+		expect(screen.getByRole('button', { name: 'Remove' })).toBeDisabled();
 	});
 
 	it('should render fields without disabled state when disabled prop is false', () => {
@@ -161,5 +165,7 @@ describe('RoomFormAttributeFields', () => {
 		);
 
 		expect(screen.getAllByText('Attribute')).toHaveLength(1);
+		screen.getAllByPlaceholderText('Search attribute').forEach((input) => expect(input).not.toBeDisabled());
+		screen.getAllByRole('combobox').forEach((input) => expect(input).not.toBeDisabled());
 	});
 });
