@@ -1,7 +1,7 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect, useId, useState } from 'react';
+import { useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,6 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 	const {
 		handleSubmit,
 		control,
-		setFocus,
 		setError,
 		formState: { errors },
 	} = useForm({
@@ -47,10 +46,6 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 	});
 
 	const passwordInputId = useId();
-
-	useEffect(() => {
-		setFocus('password');
-	}, [setFocus]);
 
 	if (confirmResetPassword) {
 		return (
@@ -90,6 +85,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 							render={({ field, fieldState: { error, invalid } }) => (
 								<PasswordInput
 									{...field}
+									autoFocus
 									error={error?.message}
 									aria-invalid={invalid ? 'true' : 'false'}
 									aria-required='true'

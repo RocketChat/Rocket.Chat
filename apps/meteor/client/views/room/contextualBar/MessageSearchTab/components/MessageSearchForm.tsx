@@ -18,7 +18,7 @@ type MessageSearchFormProps = {
 };
 
 const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: MessageSearchFormProps) => {
-	const { handleSubmit, register, setFocus, control } = useForm({
+	const { handleSubmit, register, control } = useForm({
 		defaultValues: {
 			searchText: '',
 			globalSearch: false,
@@ -26,10 +26,6 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	});
 
 	const room = useRoom();
-
-	useEffect(() => {
-		setFocus('searchText');
-	}, [setFocus]);
 
 	const debouncedOnSearch = useDebouncedCallback(useEffectEvent(onSearch), 300);
 
@@ -59,6 +55,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 					aria-label={t('Search_Messages')}
 					aria-controls={isSuccess ? searchListId : undefined}
 					autoComplete='off'
+					autoFocus
 					{...register('searchText')}
 				/>
 				{provider.description && (
