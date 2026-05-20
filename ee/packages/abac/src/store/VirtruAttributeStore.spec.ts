@@ -104,6 +104,47 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(apiCall).toHaveBeenCalledTimes(1);
 	});
 
+	it('cached entry is auto-evicted after TTL elapses', async () => {
+		jest.useFakeTimers();
+		try {
+			const apiCall = jest.fn().mockResolvedValue({
+				entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }],
+			});
+			const store = new VirtruAttributeStore(mkClient({ apiCall }));
+
+			await store.entitlementsOf(actor);
+			expect(apiCall).toHaveBeenCalledTimes(1);
+
+			await jest.advanceTimersByTimeAsync(15_001);
+
+			await store.entitlementsOf(actor);
+			expect(apiCall).toHaveBeenCalledTimes(2);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it("failing fetch for one entity does NOT evict another entity's cached entitlements", async () => {
+		const apiCall = jest.fn();
+		apiCall.mockResolvedValueOnce({
+			entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }],
+		});
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+
+		await store.entitlementsOf(actor);
+		expect(apiCall).toHaveBeenCalledTimes(1);
+
+		apiCall.mockRejectedValueOnce(new Error('pdp blip'));
+		usersFindOneById.mockResolvedValue({ _id: 'u2', emails: [{ address: 'alice@x.com' }], username: 'alice' });
+		await expect(store.entitlementsOf({ _id: 'u2', username: 'alice', name: 'A' })).rejects.toThrow('pdp blip');
+		expect(apiCall).toHaveBeenCalledTimes(2);
+
+		usersFindOneById.mockResolvedValue({ _id: 'u1', emails: [{ address: 'bob@x.com' }], username: 'bob' });
+		const result = await store.entitlementsOf(actor);
+		expect(result.get('clearance')).toEqual(new Set(['secret']));
+		expect(apiCall).toHaveBeenCalledTimes(2);
+	});
+
 	it('unresolvable entity => entity-resolution error', async () => {
 		usersFindOneById.mockResolvedValue({ _id: 'u1', emails: [], username: 'bob' });
 		const store = new VirtruAttributeStore(mkClient());

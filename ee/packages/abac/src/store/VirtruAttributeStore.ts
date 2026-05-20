@@ -19,6 +19,8 @@ const ENTITLEMENTS_CACHE_MS = 15_000;
 export class VirtruAttributeStore implements IAttributeStore {
 	private client: VirtruClient;
 
+	private readonly entitlementsCache = new Map<string, { data: Promise<IAbacAttributeDefinition[]>; maxAge: number }>();
+
 	private _entitlementsForEntity: (entityId: string) => Promise<IAbacAttributeDefinition[]>;
 
 	constructor(client: VirtruClient) {
@@ -27,11 +29,15 @@ export class VirtruAttributeStore implements IAttributeStore {
 			(entityId: string) => {
 				const p = this.fetchEntitlements(entityId);
 				p.catch(() => {
-					mem.clear(this._entitlementsForEntity);
+					this.entitlementsCache.delete(entityId);
 				});
 				return p;
 			},
-			{ maxAge: ENTITLEMENTS_CACHE_MS, cacheKey: (args: [string]) => args[0] },
+			{
+				maxAge: ENTITLEMENTS_CACHE_MS,
+				cacheKey: (args: [string]) => args[0],
+				cache: this.entitlementsCache,
+			},
 		);
 	}
 
