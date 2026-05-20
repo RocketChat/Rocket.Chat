@@ -110,6 +110,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				end: chat?.composer?.selection.start,
 			});
 		}
+		option.onSelect?.(item);
 		setOptionIndex(-1);
 		setFocused(undefined);
 	});
