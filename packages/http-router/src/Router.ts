@@ -154,7 +154,7 @@ export class Router<
 		};
 	}
 
-	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {
+	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<unknown> {
 		try {
 			const contentType = request.header('content-type') || '';
 

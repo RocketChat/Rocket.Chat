@@ -166,7 +166,7 @@ export class Agenda extends EventEmitter {
 	 * or use Agenda.mongo(). If your app already has a MongoDB connection then use that. ie. specify config.mongo in
 	 * the constructor or use Agenda.mongo().
 	 */
-	public async database(url: string, collection: string | undefined, options: MongoClientOptions = {}) {
+	public async database(url: string, collection: string | undefined, options: MongoClientOptions = {} as MongoClientOptions) {
 		if (!hasMongoProtocol(url)) {
 			url = `mongodb://${url}`;
 		}
