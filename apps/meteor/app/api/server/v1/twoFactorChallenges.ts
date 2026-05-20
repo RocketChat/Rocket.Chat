@@ -29,6 +29,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-challenge-expired', 'challenge expired');
 			}
 
+			if (challenge.method !== 'email') {
+				throw new Meteor.Error('error-invalid-challenge-method', 'invalid challenge method');
+			}
+
 			const { userId } = challenge;
 
 			const user = await getUserForCheck(userId);
