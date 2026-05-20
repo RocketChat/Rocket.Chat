@@ -19,6 +19,7 @@ export const verifyFunction = async (
 			refreshToken,
 			name: profile.displayName,
 			email: profile?.emails?.[0]?.value,
+			...profile,
 			...restProfile,
 			..._json,
 		},
