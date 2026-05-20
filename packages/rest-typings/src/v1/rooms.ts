@@ -1,6 +1,7 @@
 import type {
 	IMessage,
 	IRoom,
+	IRoomAbacRedaction,
 	IUser,
 	RoomAdminFieldsType,
 	IUpload,
@@ -905,7 +906,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.adminRooms.getRoom': {
-		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType>;
+		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction;
 	};
 
 	'/v1/rooms.saveRoomSettings': {

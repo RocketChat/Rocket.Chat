@@ -1,4 +1,11 @@
-import type { IAbacAttribute, IAbacAttributeDefinition, IAuditServerActor, IRoom, IServerEvents } from '@rocket.chat/core-typings';
+import type {
+	IAbacAttribute,
+	IAbacAttributeDefinition,
+	IAuditServerActor,
+	IRoom,
+	IRoomAbacRedaction,
+	IServerEvents,
+} from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -409,7 +416,7 @@ export const GETAbacRoomsResponseSchema = {
 };
 
 type GETAbacRoomsResponse = PaginatedResult<{
-	rooms: IRoom[];
+	rooms: Array<IRoom & IRoomAbacRedaction>;
 }>;
 
 export const GETAbacRoomsResponseValidator = ajv.compile<GETAbacRoomsResponse>(GETAbacRoomsResponseSchema);

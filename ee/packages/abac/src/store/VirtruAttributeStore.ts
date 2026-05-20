@@ -1,5 +1,5 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -101,7 +101,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 	async scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
 		rooms: T[],
 		actor: AbacActor,
-	): Promise<Array<T & { abacAttributesRedacted?: boolean }>> {
+	): Promise<Array<T & IRoomAbacRedaction>> {
 		const withAttrs = rooms.filter((r) => (r.abacAttributes?.length ?? 0) > 0);
 		if (!withAttrs.length) {
 			return rooms;

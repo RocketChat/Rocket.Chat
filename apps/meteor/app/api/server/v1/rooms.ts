@@ -1,6 +1,7 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import {
 	type IRoom,
+	type IRoomAbacRedaction,
 	type IUpload,
 	type RequiredField,
 	type RoomAdminFieldsType,
@@ -786,10 +787,17 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAdminRoomsGetRoomProps,
 		response: {
-			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType>>({
+			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>({
 				allOf: [
 					{ $ref: '#/components/schemas/IRoomAdmin' },
-					{ type: 'object', properties: { success: { type: 'boolean', enum: [true] } }, required: ['success'] },
+					{
+						type: 'object',
+						properties: {
+							success: { type: 'boolean', enum: [true] },
+							abacAttributesRedacted: { type: 'boolean' },
+						},
+						required: ['success'],
+					},
 				],
 			}),
 			400: validateBadRequestErrorResponse,
@@ -1448,7 +1456,7 @@ export const roomEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				403: validateUnauthorizedErrorResponse,
 				200: ajv.compile<{
-					rooms: IRoom[];
+					rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
 					count: number;
 					offset: number;
 					total: number;
@@ -1484,7 +1492,7 @@ export const roomEndpoints = API.v1
 			});
 
 			const [stripped, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
-			const rooms = (await scopeAdminRoomsForAbac(stripped, this.userId)) as IRoom[];
+			const rooms = await scopeAdminRoomsForAbac(stripped, this.userId);
 
 			return API.v1.success({
 				rooms,

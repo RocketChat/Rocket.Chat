@@ -1,5 +1,5 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 
 export type AttributeEntitlements = Map<string, Set<string>>;
 
@@ -13,10 +13,7 @@ export interface IAttributeStore {
 
 	entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements>;
 
-	scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
-		rooms: T[],
-		actor: AbacActor,
-	): Promise<Array<T & { abacAttributesRedacted?: boolean }>>;
+	scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(rooms: T[], actor: AbacActor): Promise<Array<T & IRoomAbacRedaction>>;
 
 	assertCanModifyRoom(room: Pick<IRoom, '_id' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 }

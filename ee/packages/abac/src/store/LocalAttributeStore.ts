@@ -1,5 +1,5 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { AbacAttributes } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -35,7 +35,7 @@ export class LocalAttributeStore implements IAttributeStore {
 	async scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
 		rooms: T[],
 		_actor: AbacActor,
-	): Promise<Array<T & { abacAttributesRedacted?: boolean }>> {
+	): Promise<Array<T & IRoomAbacRedaction>> {
 		return rooms;
 	}
 

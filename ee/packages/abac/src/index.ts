@@ -5,6 +5,7 @@ import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
 	IRoom,
+	IRoomAbacRedaction,
 	AtLeast,
 	IUser,
 	ILDAPEntry,
@@ -410,7 +411,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		},
 		actor?: AbacActor,
 	): Promise<{
-		rooms: IRoom[];
+		rooms: Array<IRoom & IRoomAbacRedaction>;
 		offset: number;
 		count: number;
 		total: number;
@@ -471,7 +472,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async scopeRoomsForAdmin<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
 		rooms: T[],
 		actor: AbacActor,
-	): Promise<Array<T & { abacAttributesRedacted?: boolean }>> {
+	): Promise<Array<T & IRoomAbacRedaction>> {
 		if (this.effectiveStore() !== 'virtru') {
 			return rooms;
 		}
