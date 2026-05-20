@@ -5,6 +5,7 @@
 		"target": "es2020",
 		"lib": ["es2023"],
 		"module": "commonjs",
+		"types": ["node", "jest"],
 		"sourceMap": true,
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"],

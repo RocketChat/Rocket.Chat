@@ -5,6 +5,7 @@
 		"target": "es2015",
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"module": "esnext",
+		"noUncheckedSideEffectImports": false,
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
