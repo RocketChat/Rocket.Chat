@@ -114,7 +114,7 @@ const LogsPage = () => {
 									.join(', ') ?? t('Empty'),
 							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
 						};
-					case 'abac.attribute_store.switched':
+					case 'abac.attribute.store.switched':
 						return {
 							...eventInfo,
 							element: t('ABAC_Attribute_Store'),

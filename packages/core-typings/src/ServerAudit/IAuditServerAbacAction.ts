@@ -86,7 +86,7 @@ export interface IServerEventAbacAttributeStoreSwitched
 		| { key: 'reason'; value: AbacAuditReason }
 		| { key: 'roomsAffected'; value: number }
 	> {
-	t: 'abac.attribute_store.switched';
+	t: 'abac.attribute.store.switched';
 }
 
 // Utility type to extract all ABAC-related server event names

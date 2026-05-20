@@ -149,6 +149,6 @@ export const Audit = {
 		);
 	},
 	attributeStoreSwitched: async (from: AbacPdpType, to: AbacPdpType, roomsAffected: number) => {
-		return audit('abac.attribute_store.switched', { from, to, reason: 'attribute-store-switch', roomsAffected }, { type: 'system' });
+		return audit('abac.attribute.store.switched', { from, to, reason: 'attribute-store-switch', roomsAffected }, { type: 'system' });
 	},
 };

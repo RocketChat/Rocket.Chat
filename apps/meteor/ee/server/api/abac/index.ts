@@ -442,7 +442,7 @@ const abacEndpoints = API.v1
 							'abac.object.attribute.changed',
 							'abac.object.attributes.removed',
 							'abac.action.performed',
-							'abac.attribute_store.switched',
+							'abac.attribute.store.switched',
 						],
 					},
 				},
@@ -462,7 +462,7 @@ const abacEndpoints = API.v1
 					| IServerEvents['abac.attribute.changed']
 					| IServerEvents['abac.object.attribute.changed']
 					| IServerEvents['abac.object.attributes.removed']
-					| IServerEvents['abac.attribute_store.switched']
+					| IServerEvents['abac.attribute.store.switched']
 				)[],
 				count: events.length,
 				offset,

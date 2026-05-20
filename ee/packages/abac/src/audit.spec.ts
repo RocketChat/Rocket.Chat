@@ -18,7 +18,7 @@ describe('Audit.attributeStoreSwitched', () => {
 
 		expect(mockCreateAuditServerEvent).toHaveBeenCalledTimes(1);
 		expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-			'abac.attribute_store.switched',
+			'abac.attribute.store.switched',
 			{ from: 'local', to: 'virtru', reason: 'attribute-store-switch', roomsAffected: 3 },
 			{ type: 'system' },
 		);

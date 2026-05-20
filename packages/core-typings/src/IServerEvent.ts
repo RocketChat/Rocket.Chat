@@ -73,7 +73,7 @@ export interface IServerEvents {
 	'abac.attribute.changed': IServerEventAbacAttributeChanged;
 	'abac.action.performed': IServerEventAbacActionPerformed;
 	'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
-	'abac.attribute_store.switched': IServerEventAbacAttributeStoreSwitched;
+	'abac.attribute.store.switched': IServerEventAbacAttributeStoreSwitched;
 	'settings.changed': IServerEventSettingsChanged;
 	'user.changed': IServerEventUserChanged;
 }

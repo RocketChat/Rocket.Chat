@@ -4070,14 +4070,14 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(r2?.abacAttributes, 'room2 abacAttributes must be unset after transition').to.be.undefined;
 			});
 
-			it('emits at-least-one abac.attribute_store.switched audit event with from=local, to=virtru, roomsAffected>=1', async function () {
+			it('emits at-least-one abac.attribute.store.switched audit event with from=local, to=virtru, roomsAffected>=1', async function () {
 				this.timeout(15000);
 
 				let switched: Array<{ data: Array<{ key: string; value: unknown }> }> = [];
 				for (let i = 0; i < 30; i++) {
 					const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
 					switched = (res.body.events as Array<{ t: string; data: Array<{ key: string; value: unknown }> }>).filter(
-						(e) => e.t === 'abac.attribute_store.switched',
+						(e) => e.t === 'abac.attribute.store.switched',
 					);
 					if (switched.length) {
 						break;
@@ -4132,16 +4132,16 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await deleteRoom({ type: 'p', roomId: auditRoom._id });
 			});
 
-			it('GET /abac/audit returns events with attribute key/value payloads visible (not redacted) and includes abac.attribute_store.switched', async () => {
+			it('GET /abac/audit returns events with attribute key/value payloads visible (not redacted) and includes abac.attribute.store.switched', async () => {
 				const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
 
 				const events = res.body.events as Array<{ t: string; data: Array<{ key: string; value: unknown }> }>;
 				expect(events).to.be.an('array').that.is.not.empty;
 
 				const types = new Set(events.map((e) => e.t));
-				expect(types.has('abac.attribute_store.switched'), 'attribute_store.switched event included by endpoint').to.be.true;
+				expect(types.has('abac.attribute.store.switched'), 'attribute_store.switched event included by endpoint').to.be.true;
 
-				const switched = events.find((e) => e.t === 'abac.attribute_store.switched');
+				const switched = events.find((e) => e.t === 'abac.attribute.store.switched');
 				expect(switched, 'switched event must exist').to.exist;
 				expect(switched?.data.find((d) => d.key === 'from')?.value, 'from value visible').to.be.a('string');
 				expect(switched?.data.find((d) => d.key === 'to')?.value, 'to value visible').to.be.a('string');
@@ -4230,12 +4230,12 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				this.timeout(10000);
 
 				const before = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
-				const beforeCount = (before.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute_store.switched').length;
+				const beforeCount = (before.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute.store.switched').length;
 
 				await updateSetting('ABAC_Attribute_Store', 'local');
 
 				const after = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
-				const afterCount = (after.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute_store.switched').length;
+				const afterCount = (after.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute.store.switched').length;
 
 				expect(afterCount).to.equal(beforeCount);
 
