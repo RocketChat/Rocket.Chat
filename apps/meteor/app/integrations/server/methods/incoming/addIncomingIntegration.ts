@@ -90,9 +90,14 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
+
 	const integrationData: IIncomingIntegration = {
 		...integration,
 		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
+		skipTranspile,
 		type: 'webhook-incoming',
 		channel: channels,
 		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
@@ -161,13 +166,14 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
 
-	if (insertedId) {
-		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');
+	const integrationStored = await Integrations.findOne({ _id: insertedId });
+
+	if (!integrationStored) {
+		throw new Error('Error inserting integration');
 	}
+	void notifyOnIntegrationChanged({ ...integrationStored, _id: insertedId }, 'inserted');
 
-	integrationData._id = insertedId;
-
-	return integrationData;
+	return integrationStored as IIncomingIntegration;
 };
 
 Meteor.methods<ServerMethods>({

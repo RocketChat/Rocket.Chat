@@ -74,6 +74,8 @@ export class ConnectionImpl
 
 	retryCount = 0;
 
+	private connectPromise?: Promise<boolean>;
+
 	public queue = new Set<string>();
 
 	constructor(
@@ -109,8 +111,23 @@ export class ConnectionImpl
 	}
 
 	reconnect(): Promise<boolean> {
-		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.reject(new Error('Connection in progress'));
+		// Idempotent — if another caller already started (or finished) a connection
+		// since this reconnect was scheduled, we don't need to do anything. The
+		// retry timer enqueued by `ws.onclose` runs with no awareness of any
+		// concurrent `connect()` (e.g. the consumer's own bootstrap or
+		// resume-on-userId-change path), so without this guard a late timer
+		// rejected with "Connection in progress" — and because the timer fires
+		// from `void this.reconnect()` the rejection became an unhandled
+		// rejection at the page level.
+		if (this.status === 'connected') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return Promise.resolve(true);
+		}
+		if (this.status === 'connecting') {
+			// Share the in-flight handshake promise so a `failed` payload
+			// later in the same attempt isn't masked by a synthesized success.
+			clearTimeout(this.retryOptions.retryTimer);
+			return this.connectPromise as Promise<boolean>;
 		}
 
 		clearTimeout(this.retryOptions.retryTimer);
@@ -123,19 +140,31 @@ export class ConnectionImpl
 	}
 
 	connect() {
-		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.reject(new Error('Connection in progress'));
+		// Same idempotency guard as `reconnect()` — multiple call sites
+		// (`reconnect()`, ws.onclose retry timer, external `startConnect`) can
+		// race; rejecting forced every caller to wrap in `.catch(() => {})`
+		// just to silence noise, and the internal timer's `void this.reconnect()`
+		// path didn't have a catch at all.
+		if (this.status === 'connected') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return Promise.resolve(true);
+		}
+		if (this.status === 'connecting') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return this.connectPromise as Promise<boolean>;
 		}
 
 		this.status = 'connecting';
-		this.emit('connecting');
-		this.emitStatus();
 
 		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
 
 		this.ws = ws;
 
-		return new Promise<boolean>((resolve, reject) => {
+		// Build the in-flight promise and publish it on `this.connectPromise`
+		// before emitting any status change, so a synchronous re-entrant
+		// caller (an event listener that calls `connect()`/`reconnect()`)
+		// hits the `'connecting'` guard and gets this same promise.
+		const connectPromise = new Promise<boolean>((resolve, reject) => {
 			ws.onopen = () => {
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
@@ -166,6 +195,15 @@ export class ConnectionImpl
 				this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
+						// Reset the retry budget on successful connection so a future
+						// disconnect can schedule reconnects again. Without this,
+						// long-lived connections that recover once would burn through
+						// `retryCount` permanently and stop reconnecting on subsequent
+						// drops — observed when a server-side ws.close (logout, force-
+						// logout) chained with a reconnect cycle saturated the
+						// budget; the next disconnect left frames stuck in the
+						// dispatcher queue forever because the socket never came back.
+						this.retryCount = 0;
 						this.emitStatus();
 						this.emit('connected', payload.session);
 						this.session = payload.session;
@@ -183,6 +221,15 @@ export class ConnectionImpl
 			};
 
 			ws.onclose = () => {
+				// If a newer ws has already taken over (this socket was closed
+				// after `connect()` opened a replacement), ignore the late
+				// onclose. Otherwise its handler would clobber `this.status` and
+				// `retryCount`, and could even schedule a redundant retry timer
+				// that fires while the new socket is healthy — observed as the
+				// "Connection in progress" pageError racing on every reconnect.
+				if (this.ws !== ws) {
+					return;
+				}
 				clearTimeout(this.retryOptions.retryTimer);
 				if (this.status === 'closed') {
 					return;
@@ -198,10 +245,27 @@ export class ConnectionImpl
 				this.retryCount += 1;
 
 				this.retryOptions.retryTimer = setTimeout(() => {
+					// Re-check the status when the timer actually fires. If the
+					// consumer bootstrapped a fresh `connect()` in the meantime
+					// (status flipped from 'disconnected' to 'connecting' or
+					// 'connected'), there's nothing for us to do. Without this
+					// the timer would call `this.reconnect()`, which (pre-this
+					// patch) rejected with "Connection in progress" and surfaced
+					// as an unhandled rejection.
+					if (this.status === 'connecting' || this.status === 'connected' || this.status === 'closed') {
+						return;
+					}
 					void this.reconnect();
 				}, this.retryOptions.retryTime * this.retryCount);
 			};
 		});
+
+		this.connectPromise = connectPromise;
+
+		this.emit('connecting');
+		this.emitStatus();
+
+		return connectPromise;
 	}
 
 	close() {

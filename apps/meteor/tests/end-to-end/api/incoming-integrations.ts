@@ -368,6 +368,29 @@ describe('[Incoming Integrations]', () => {
 			let withScript: IIntegration;
 			let withScriptDefaultContentType: IIntegration;
 
+			const strictModeScript =
+				'const buildMessage = (obj) => {\n' +
+				'  \n' +
+				'    const template = `[#VALUE](${ obj.test })`;\n' +
+				'  \n' +
+				'    return {\n' +
+				'      text: template\n' +
+				'    };\n' +
+				'  };\n' +
+				'  \n' +
+				'  class Script {\n' +
+				'    process_incoming_request({ request }) {\n' +
+				'      const msg = buildMessage(request.content);\n' +
+				'  \n' +
+				'      return {\n' +
+				'        content:{\n' +
+				'              text: msg.text\n' +
+				'        }\n' +
+				'      };\n' +
+				'    }\n' +
+				'  }\n' +
+				'					\n';
+
 			before(async () => {
 				await updatePermission('manage-incoming-integrations', ['admin']);
 
@@ -410,28 +433,7 @@ describe('[Incoming Integrations]', () => {
 						scriptEnabled: true,
 						overrideDestinationChannelEnabled: false,
 						channel: '#general',
-						script:
-							'const buildMessage = (obj) => {\n' +
-							'  \n' +
-							'    const template = `[#VALUE](${ obj.test })`;\n' +
-							'  \n' +
-							'    return {\n' +
-							'      text: template\n' +
-							'    };\n' +
-							'  };\n' +
-							'  \n' +
-							'  class Script {\n' +
-							'    process_incoming_request({ request }) {\n' +
-							'      const msg = buildMessage(request.content);\n' +
-							'  \n' +
-							'      return {\n' +
-							'        content:{\n' +
-							'              text: msg.text\n' +
-							'        }\n' +
-							'      };\n' +
-							'    }\n' +
-							'  }\n' +
-							'					\n',
+						script: strictModeScript,
 					})
 					.expect(200);
 				withScriptDefaultContentType = res2.body.integration;

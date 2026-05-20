@@ -3,6 +3,7 @@ import { Visibility } from 'matrix-js-sdk';
 
 import type {} from '../../../../../apps/meteor/app/api/server/v1/rooms.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { sendMessage } from '../../../../../apps/meteor/tests/data/messages.helper';
 import { createRoom, acceptRoomInvite, getRoomMembers } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -309,6 +310,137 @@ import { SynapseClient } from '../helper/synapse-client';
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
+		});
+	});
+
+	describe('Ban from Synapse, re-invite and messaging after unban', () => {
+		let channelName: string;
+		let federatedChannelId: string;
+		let synapseRoomId: string;
+
+		it('should create room on Synapse and have RC user accept invite', async () => {
+			channelName = `fed-ban-reinvite-${Date.now()}`;
+			synapseRoomId = await hs1AdminApp.createRoom(channelName, Visibility.Private);
+
+			await hs1AdminApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
+
+			// Wait for the invite to reach RC and find the room
+			await retry(
+				'wait for invite to reach RC',
+				async () => {
+					const roomsResponse = await rc1User1RequestConfig.request
+						.get(api('rooms.get'))
+						.set(rc1User1RequestConfig.credentials)
+						.expect(200);
+
+					const rcRoom = roomsResponse.body.update.find(
+						(room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId,
+					) as IRoomNativeFederated | null;
+
+					expect(rcRoom).not.toBeNull();
+					federatedChannelId = rcRoom!._id;
+				},
+				{ retries: 5, delayMs: 1000 },
+			);
+
+			await acceptRoomInvite(federatedChannelId, rc1User1RequestConfig);
+
+			// Wait for Synapse to see the RC user as joined
+			await retry(
+				'wait for RC user join on Synapse',
+				async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					expect(member).not.toBeNull();
+					expect(member!.membership).toBe('join');
+				},
+				{ retries: 5, delayMs: 1000 },
+			);
+		}, 30000);
+
+		it('should ban the RC user from Synapse', async () => {
+			await hs1AdminApp.banUser(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId, 'ban before re-invite test');
+
+			// Wait for ban to propagate to RC — the banned user should no longer see the room
+			await retry(
+				'wait for ban on RC',
+				async () => {
+					const roomsResponse = await rc1User1RequestConfig.request
+						.get(api('rooms.get'))
+						.set(rc1User1RequestConfig.credentials)
+						.expect(200);
+
+					const rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId);
+
+					expect(rcRoom).toBeUndefined();
+				},
+				{ retries: 5, delayMs: 1000 },
+			);
+		});
+
+		it('should send a message from Synapse while RC user is banned', async () => {
+			const messageText = `message-while-banned-${Date.now()}`;
+			await hs1AdminApp.sendTextMessage(channelName, messageText);
+
+			const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+			expect(synapseMessage?.content.body).toBe(messageText);
+		});
+
+		it('should unban the RC user from Synapse', async () => {
+			await hs1AdminApp.unbanUser(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
+
+			// Verify unban on Synapse side — membership should no longer be 'ban'
+			await retry(
+				'wait for unban on Synapse',
+				async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					expect(member).not.toBeNull();
+					expect(member!.membership).not.toBe('ban');
+				},
+				{ retries: 5, delayMs: 1000 },
+			);
+		});
+
+		it('should re-invite the RC user from Synapse and have them accept', async () => {
+			await hs1AdminApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
+
+			// Wait for the re-invite to reach RC
+			await retry(
+				'wait for re-invite to reach RC',
+				async () => {
+					const response = await rc1User1RequestConfig.request
+						.get(api('subscriptions.getOne'))
+						.set(rc1User1RequestConfig.credentials)
+						.query({ roomId: federatedChannelId });
+
+					expect(response.body.subscription).not.toBeNull();
+				},
+				{ retries: 5, delayMs: 1000 },
+			);
+
+			await acceptRoomInvite(federatedChannelId, rc1User1RequestConfig);
+
+			// Wait for Synapse to see the RC user as joined again
+			await retry(
+				'wait for RC user re-join on Synapse',
+				async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					expect(member).not.toBeNull();
+					expect(member!.membership).toBe('join');
+				},
+				{ retries: 5, delayMs: 1000 },
+			);
+		}, 30000);
+
+		it('should allow the RC user to send a message after re-joining', async () => {
+			const messageText = `message-after-rejoin-${Date.now()}`;
+
+			const sendResponse = await sendMessage({ rid: federatedChannelId, msg: messageText, config: rc1User1RequestConfig });
+			expect(sendResponse.body).toHaveProperty('success', true);
+
+			// Validate message is received on Synapse
+			const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+			expect(synapseMessage).not.toBeNull();
+			expect(synapseMessage?.content.body).toBe(messageText);
 		});
 	});
 });

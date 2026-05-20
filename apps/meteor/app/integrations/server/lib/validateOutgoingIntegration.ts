@@ -170,7 +170,11 @@ export const validateOutgoingIntegration = async function (
 		delete integrationData.triggerWords;
 	}
 
-	// Only compile the script if it is enabled and using a sandbox that is not frozen
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
+	integrationData.skipTranspile = skipTranspile;
+
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
 		integration.scriptEnabled === true &&

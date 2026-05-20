@@ -1,12 +1,10 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { Tracker } from 'meteor/tracker';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager, useRoomHistoryState } from '../../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -19,7 +17,7 @@ interface IUnreadMessages {
 }
 
 const useUnreadMessages = (room: IRoom): readonly [data: IUnreadMessages | undefined, setUnreadCount: Dispatch<SetStateAction<number>>] => {
-	const notLoadedCount = useReactiveValue(useCallback(() => RoomHistoryManager.getRoom(room._id).unreadNotLoaded.get(), [room._id]));
+	const notLoadedCount = useRoomHistoryState(room._id, (state) => state.unreadNotLoaded);
 	const [loadedCount, setLoadedCount] = useState(0);
 
 	const count = useMemo(() => notLoadedCount + loadedCount, [notLoadedCount, loadedCount]);
@@ -64,7 +62,7 @@ export const useHandleUnread = (
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
 		const rid = room._id;
 		const { firstUnread } = RoomHistoryManager.getRoom(rid);
-		let message = firstUnread?.get();
+		let message = firstUnread;
 		if (!message) {
 			message = findFirstMessage(
 				(record) => record.rid === rid && record.ts.getTime() > (unread?.since.getTime() ?? -Infinity),
@@ -169,7 +167,7 @@ export const useHandleUnread = (
 			wrapper.addEventListener(
 				'scroll',
 				withThrottling({ wait: 300 })(() => {
-					Tracker.afterFlush(() => {
+					queueMicrotask(() => {
 						const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
 						if (!lastInvisibleMessageOnScreen) {

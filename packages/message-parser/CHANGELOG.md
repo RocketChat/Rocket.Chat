@@ -1,5 +1,29 @@
 # Change Log
 
+## 0.31.36
+
+### Patch Changes
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add property-based fuzz testing using `fast-check` to continuously evaluate memory limits, structural boundaries, and backtracking behavior against heavily randomized markdown arrays.
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) feat(message-parser): implement BlockSplitter PoC (Layer 1)
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for isNodeOfType guard bringing branch coverage to 100%
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for joinEmoji behavior through reducePlainTexts
+
+## 0.31.36-rc.0
+
+### Patch Changes
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add property-based fuzz testing using `fast-check` to continuously evaluate memory limits, structural boundaries, and backtracking behavior against heavily randomized markdown arrays.
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) feat(message-parser): implement BlockSplitter PoC (Layer 1)
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for isNodeOfType guard bringing branch coverage to 100%
+
+- ([#39853](https://github.com/RocketChat/Rocket.Chat/pull/39853)) Add test coverage for joinEmoji behavior through reducePlainTexts
+
 ## 0.31.35
 
 ### Patch Changes
