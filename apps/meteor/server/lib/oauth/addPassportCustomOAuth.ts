@@ -11,6 +11,10 @@ import { oAuthRouter } from '../../configuration/configurePassport';
 export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAuthConfiguration & { clientSecret: string }>) => {
 	passport.unuse(serviceName);
 
+	if (!config.clientId || !config.clientSecret || !config.serverURL) {
+		return;
+	}
+
 	passport.use(
 		serviceName,
 		new CustomOAuthStrategy(
