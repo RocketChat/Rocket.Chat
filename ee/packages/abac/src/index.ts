@@ -90,12 +90,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
-			void this.onAttributeStoreInputsChanged();
+			void this.detectAndApplyTransition({ fireReverse: false });
 		});
 
 		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
 			this.abacEnabled = setting.value as boolean;
-			void this.onAttributeStoreInputsChanged();
+			void this.detectAndApplyTransition({ fireReverse: false });
 		});
 
 		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
@@ -105,7 +105,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 
 			this.attributeStoreSetting = value;
-			void this.onAttributeStoreInputsChanged();
+			void this.detectAndApplyTransition({ fireReverse: true });
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -193,31 +193,35 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return this.attributeStore;
 	}
 
-	private async onAttributeStoreInputsChanged(): Promise<void> {
-		const previous = this.lastEffectiveStore;
+	private detectAndApplyTransition({ fireReverse }: { fireReverse: boolean }): void {
+		const prev = this.lastEffectiveStore;
 		const next = this.effectiveStore();
-		if (previous === next) {
+		if (prev === next) {
 			return;
 		}
-
 		this.syncAttributeStore();
-
-		if (previous !== 'virtru' && next === 'virtru') {
-			void this.onTransitionedToVirtruStore(previous).catch((err) =>
+		if (prev !== 'virtru' && next === 'virtru') {
+			void this.onAttributeStoreTransition(prev, 'virtru').catch((err) =>
+				logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
+			);
+			return;
+		}
+		if (fireReverse && prev === 'virtru' && next === 'local') {
+			void this.onAttributeStoreTransition('virtru', 'local').catch((err) =>
 				logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
 			);
 		}
 	}
 
 	async reevaluateAttributeStore(): Promise<void> {
-		await this.onAttributeStoreInputsChanged();
+		this.detectAndApplyTransition({ fireReverse: false });
 	}
 
 	async isExternalAttributeStore(): Promise<boolean> {
 		return this.effectiveStore() === 'virtru';
 	}
 
-	private async onTransitionedToVirtruStore(from: 'local' | 'virtru'): Promise<void> {
+	private async onAttributeStoreTransition(from: 'local' | 'virtru', to: 'local' | 'virtru'): Promise<void> {
 		let licensed: boolean;
 		try {
 			licensed = License.hasModule('abac');
@@ -228,7 +232,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
-		void Audit.attributeStoreSwitched(from, 'virtru', modifiedCount);
+		void Audit.attributeStoreSwitched(from, to, modifiedCount);
 	}
 
 	setPdpStrategy(strategy: 'local' | 'virtru'): void {
