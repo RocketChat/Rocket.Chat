@@ -240,7 +240,7 @@ describe('Invites', () => {
 		let room: IRoom;
 		let bannedUser: TestUser<IUser>;
 		let bannedUserCredentials: Credentials;
-		let inviteId: IInvite['_id'];
+		let banTestInviteToken: IInvite['inviteToken'];
 
 		before(async () => {
 			bannedUser = await createUser();
@@ -259,7 +259,7 @@ describe('Invites', () => {
 				.set(credentials)
 				.send({ rid: room._id, days: 1, maxUses: 10 })
 				.expect(200);
-			inviteId = invite.body._id;
+			banTestInviteToken = invite.body.inviteToken;
 		});
 
 		after(async () => {
@@ -271,7 +271,7 @@ describe('Invites', () => {
 			await request
 				.post(api('useInviteToken'))
 				.set(bannedUserCredentials)
-				.send({ token: inviteId })
+				.send({ token: banTestInviteToken })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -285,7 +285,7 @@ describe('Invites', () => {
 			await request
 				.post(api('useInviteToken'))
 				.set(bannedUserCredentials)
-				.send({ token: inviteId })
+				.send({ token: banTestInviteToken })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
