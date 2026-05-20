@@ -1,6 +1,6 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -431,6 +431,12 @@ API.v1.addRoute(
 				.toArray();
 
 			const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+			await Promise.all([
+				OAuthAccessTokens.deleteByUserIds(ids),
+				OAuthRefreshTokens.deleteByUserIds(ids),
+				OAuthAuthCodes.deleteByUserIds(ids),
+			]);
 
 			ids.forEach((_id) => {
 				void notifyOnUserChange({
