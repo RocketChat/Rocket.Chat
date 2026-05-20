@@ -2,7 +2,6 @@ import { Users } from '@rocket.chat/models';
 import bodyParser from 'body-parser';
 import MongoStore from 'connect-mongo';
 import express from 'express';
-import flash from 'express-flash';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
 import { MongoInternals } from 'meteor/mongo';
@@ -51,7 +50,6 @@ export const configurePassport = (settings: ICachedSettings) => {
 
 	oAuthApp.use(oAuthPaths, passport.initialize());
 	oAuthApp.use(oAuthPaths, passport.session());
-	oAuthApp.use(oAuthPaths, flash());
 	oAuthApp.use(oAuthPaths, bodyParser.urlencoded({ extended: true }));
 
 	const oauthRateLimiter = rateLimit({

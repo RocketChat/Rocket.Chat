@@ -1,8 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 
 import { doesUserRequire2FA } from './twoFactorAuth';
+
+const logger = new Logger('OAuth');
 
 export const passportOAuthCallback = (siteUrl: string) => async (req: Request, res: Response) => {
 	const oAuthUser = req.user as IUser;
@@ -42,7 +45,7 @@ export const passportOAuthCallback = (siteUrl: string) => async (req: Request, r
 
 	req.session.destroy((err) => {
 		if (err) {
-			console.error('Error destroying session', err);
+			logger.error({ msg: 'Error destroying OAuth session', err });
 		}
 	});
 };

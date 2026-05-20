@@ -64,7 +64,7 @@ function getFingerprintFromConnection(connection: IMethodConnection): string {
 }
 
 export function getRememberDate(from: Date = new Date()): Date | undefined {
-	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor'), 10);
+	const rememberFor = settings.get<number>('Accounts_TwoFactorAuthentication_RememberFor');
 
 	if (rememberFor <= 0) {
 		return;
