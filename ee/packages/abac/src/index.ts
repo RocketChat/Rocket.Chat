@@ -13,7 +13,6 @@ import type {
 	AbacAttributeStoreType,
 	AbacPdpType,
 } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings as SettingsModel } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isTruthy } from '@rocket.chat/tools';
@@ -75,6 +74,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	private pdpTypeSetting?: AbacPdpType;
 
 	private attributeStoreSetting?: AbacAttributeStoreType;
+
+	private hasAbacLicense = false;
 
 	private attributeStore: IAttributeStore = new LocalAttributeStore();
 
@@ -166,6 +167,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.virtruPdpConfig.attributeNamespace = setting.value as string;
 			this.syncVirtruPdpConfig();
 		});
+
+		this.onEvent('license.module', ({ module, valid }) => {
+			if (module !== 'abac' || valid === this.hasAbacLicense) {
+				return;
+			}
+			this.hasAbacLicense = valid;
+			this.syncStoreSelection();
+		});
 	}
 
 	private async loadVirtruPdpConfig(): Promise<void> {
@@ -196,12 +205,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private effectiveStore(): AbacAttributeStoreType {
-		if (
-			License.hasModule('abac') &&
-			this.abacEnabled === true &&
-			this.pdpTypeSetting === 'virtru' &&
-			this.attributeStoreSetting === 'virtru'
-		) {
+		if (this.hasAbacLicense && this.abacEnabled === true && this.pdpTypeSetting === 'virtru' && this.attributeStoreSetting === 'virtru') {
 			return 'virtru';
 		}
 		return 'local';
@@ -229,7 +233,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private async onAttributeStoreTransition(from: AbacAttributeStoreType, to: AbacAttributeStoreType): Promise<void> {
-		if (!License.hasModule('abac')) {
+		if (!this.hasAbacLicense) {
 			return;
 		}
 		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
