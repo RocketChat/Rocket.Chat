@@ -72,7 +72,7 @@ export const useThreadMainMessageQuery = (
 ): UseQueryResult<IThreadMainMessage, Error> => {
 	const room = useRoom();
 
-	const getMessage = useGetMessageByID();
+	const getMessage = useGetMessageByID(false);
 	const subscribeToMessage = useSubscribeToMessage();
 
 	const queryClient = useQueryClient();

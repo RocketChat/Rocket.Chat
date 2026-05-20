@@ -4,6 +4,7 @@ import type {
 	ServerMethodParameters,
 	ServerMethodReturn,
 	StreamerCallbackArgs,
+	StreamerEvents,
 	StreamNames,
 	StreamKeys,
 } from '@rocket.chat/ddp-client';
@@ -72,6 +73,11 @@ const getStream =
 	) =>
 	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
 		sdk.stream(streamName, [eventName], callback).stop;
+
+const getStreamAll =
+	<N extends StreamNames>(streamName: N) =>
+	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>
+		sdk.onAnyStreamEvent(streamName, callback as (eventName: string, args: unknown[]) => void).stop;
 
 const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, streamKey: K, ...args: StreamerCallbackArgs<N, K>) =>
 	sdk.publish(streamName, [streamKey, ...args]);
@@ -150,6 +156,16 @@ const ensureStatusBridge = (): void => {
 
 const subscribeStatus = (cb: () => void): (() => void) => {
 	ensureStatusBridge();
+	// Close the race between the cachedStatus computed at module load and the
+	// first event delivered through the bridge: status may have changed in
+	// between (e.g. the socket connected before <ServerProvider> mounted), and
+	// useSyncExternalStore would otherwise surface the stale snapshot until
+	// the next external transition.
+	const next = computeStatus();
+	if (!isStatusEqual(cachedStatus, next)) {
+		cachedStatus = next;
+		cb();
+	}
 	statusListeners.add(cb);
 	return () => {
 		statusListeners.delete(cb);
@@ -175,6 +191,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			callEndpoint,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll,
 			writeStream,
 			disconnect,
 			reconnect,

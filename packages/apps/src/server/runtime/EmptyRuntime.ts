@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
