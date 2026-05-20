@@ -25,6 +25,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 	oAuthApp.use(
+		'/oauth',
 		session({
 			name: 'oauth',
 			secret: settings.get<string>('Accounts_OAuth_Session_Secret'),
@@ -46,10 +47,10 @@ export const configurePassport = (settings: ICachedSettings) => {
 		}),
 	);
 
-	oAuthApp.use(passport.initialize());
-	oAuthApp.use(passport.session());
-	oAuthApp.use(flash());
-	oAuthApp.use(bodyParser.urlencoded({ extended: true }));
+	oAuthApp.use('/oauth', passport.initialize());
+	oAuthApp.use('/oauth', passport.session());
+	oAuthApp.use('/oauth', flash());
+	oAuthApp.use('/oauth', bodyParser.urlencoded({ extended: true }));
 
 	const oauthRateLimiter = rateLimit({
 		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
