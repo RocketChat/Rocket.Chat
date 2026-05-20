@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../app/settings/server';
 
-const AI_LICENSE_MODULE = 'rocket.chat-ai' as const;
+const AI_LICENSE_MODULE = 'chat.rocket.rc-ai' as const;
 
 export const createAISettings = () =>
 	settingsRegistry.addGroup('AI_Center', async function () {

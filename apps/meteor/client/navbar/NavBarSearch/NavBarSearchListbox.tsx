@@ -1,9 +1,10 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ type NavBarSearchListBoxProps = {
 
 const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const containerRef = useRef<HTMLElement>(null);
 
 	const handleKeyDown = useListboxNavigation(state);
@@ -35,6 +37,18 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const handleSelect = useEffectEvent(() => {
 		state.close();
 		resetField('filterText');
+	});
+
+	const handleOpenSearchPage = useEffectEvent(() => {
+		const searchParams = new URLSearchParams();
+		if (filterText.trim()) {
+			searchParams.set('q', filterText.trim());
+		}
+		router.navigate({
+			name: 'search',
+			search: Object.fromEntries(searchParams.entries()),
+		});
+		state.close();
 	});
 
 	const { data, isLoading } = useSearchItems(debouncedFilter);
@@ -102,6 +116,13 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 						))}
 				</div>
 			</CustomScrollbars>
+			{hasFilter && (
+				<Box borderBlockStart='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)' p={8}>
+					<Button small width='full' onClick={handleOpenSearchPage}>
+						{t('View_all_results')}
+					</Button>
+				</Box>
+			)}
 		</Tile>
 	);
 };

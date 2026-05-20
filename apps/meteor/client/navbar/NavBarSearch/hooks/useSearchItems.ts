@@ -89,7 +89,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchS
 	const globalSearchEnabled = useSetting('Search.defaultProvider.GlobalSearchEnabled', false);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('rocket.chat-ai');
+	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 
 	return useQuery({
 		queryKey: [

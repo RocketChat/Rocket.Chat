@@ -3,6 +3,8 @@ import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useEffectEvent, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import type { KeyboardEvent } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -13,22 +15,26 @@ import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
-import { useExternalLink } from '../../hooks/useExternalLink';
+import { getURL } from '../../../app/utils/client/getURL';
+import GenericUpsellModal from '../../components/GenericUpsellModal';
+import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import { links } from '../../lib/links';
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
-	const handleOpenLink = useExternalLink();
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('rocket.chat-ai');
+	const router = useRouter();
+	const setModal = useSetModal();
+	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const { handleTalkToSales } = useUpsellActions(hasIntelligentSearchLicense);
 
 	const placeholder = [t('Search_users_rooms_messages'), shortcut].filter(Boolean).join(' ');
 
 	const methods = useForm({ defaultValues: { filterText: '' } });
 	const {
 		formState: { isDirty },
+		getValues,
 		register,
 		resetField,
 		setFocus,
@@ -43,9 +49,40 @@ const NavBarSearch = () => {
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
 	delete triggerProps.onPress;
 
-	const handleKeyDown = useSearchInputNavigation(state);
+	const handleSearchKeyDown = useSearchInputNavigation(state);
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
+
+	const navigateToSearch = useCallback(
+		(filterText: string, tab?: string): void => {
+			const searchParams = new URLSearchParams();
+			if (filterText.trim()) {
+				searchParams.set('q', filterText.trim());
+			}
+			if (tab) {
+				searchParams.set('tab', tab);
+			}
+			router.navigate({
+				name: 'search',
+				search: Object.fromEntries(searchParams.entries()),
+			});
+			state.close();
+		},
+		[router, state],
+	);
+
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent<HTMLInputElement>): void => {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+				navigateToSearch(getValues('filterText'));
+				return;
+			}
+
+			handleSearchKeyDown(event);
+		},
+		[getValues, handleSearchKeyDown, navigateToSearch],
+	);
 
 	const handleEscSearch = useCallback(() => {
 		resetField('filterText');
@@ -59,10 +96,24 @@ const NavBarSearch = () => {
 
 	const handleIntelligentSearchClick = useEffectEvent(() => {
 		if (hasIntelligentSearchLicense) {
+			navigateToSearch(getValues('filterText'), 'intelligent');
 			return;
 		}
 
-		handleOpenLink(links.go.contactSales);
+		setModal(
+			<GenericUpsellModal
+				aria-label={t('Intelligent_Search')}
+				title={t('Intelligent_Search')}
+				img={getURL('images/abac-upsell-modal.svg')}
+				subtitle={t('Intelligent_Search_upsell_modal_subtitle')}
+				description={t('Intelligent_Search_upsell_modal_description')}
+				confirmText={t('Contact_sales')}
+				onClose={() => setModal(null)}
+				onConfirm={handleTalkToSales}
+				onCancel={() => setModal(null)}
+				imgHeight={256}
+			/>,
+		);
 	});
 
 	useEffect(() => {
@@ -111,7 +162,7 @@ const NavBarSearch = () => {
 							)}
 							<IconButton
 								mini
-								icon={hasIntelligentSearchLicense ? 'stars' : 'lock'}
+								icon='stars'
 								aria-label={hasIntelligentSearchLicense ? t('Intelligent_Search') : t('Intelligent_Search_locked')}
 								title={hasIntelligentSearchLicense ? t('Intelligent_Search') : t('Contact_sales_for_Intelligent_Search')}
 								onClick={handleIntelligentSearchClick}

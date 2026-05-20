@@ -109,8 +109,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/ABAC/:tab?/:context?/:id?';
 		};
 		'admin-ai-center': {
-			pathname: '/admin/ai-center';
-			pattern: '/admin/ai-center';
+			pathname: `/admin/ai-center${`/${string}` | ''}`;
+			pattern: '/admin/ai-center/:section?';
 		};
 	}
 }
@@ -196,7 +196,7 @@ registerAdminRoute('/rooms/:context?/:id?', {
 	component: lazy(() => import('./rooms/RoomsRoute')),
 });
 
-registerAdminRoute('/ai-center', {
+registerAdminRoute('/ai-center/:section?', {
 	name: 'admin-ai-center',
 	component: lazy(() => import('./aiCenter/AICenterRoute')),
 });
