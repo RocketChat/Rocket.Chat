@@ -3,6 +3,8 @@ import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 import { settings } from '../../../app/settings/server';
+import { sinceBoot } from '../../lib/logger/bootStart';
+import { SystemLogger } from '../../lib/logger/system';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
@@ -93,10 +95,15 @@ async function setPermissionsToNewRole() {
 export const performMigrationProcedure = async (): Promise<void> => {
 	await migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
 	// perform operations when the server is starting with a different version
+	let versionChanged = false;
 	await onServerVersionChange(async () => {
+		versionChanged = true;
 		await setPermissionsToNewRole();
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
 	});
+	if (!versionChanged) {
+		SystemLogger.startup({ msg: 'upsertPermissions skipped', reason: 'no version change', sinceBootMs: sinceBoot() });
+	}
 };

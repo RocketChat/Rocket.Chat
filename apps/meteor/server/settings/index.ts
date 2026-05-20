@@ -1,3 +1,5 @@
+import { performance } from 'universal-perf-hooks';
+
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -34,7 +36,12 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
+import { sinceBoot } from '../lib/logger/bootStart';
+import { SystemLogger } from '../lib/logger/system';
 import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
+
+SystemLogger.startup({ msg: 'Initializing settings (registration)', sinceBootMs: sinceBoot() });
+const settingsRegistrationStart = performance.now();
 
 await Promise.all([
 	createFederationServiceSettings(),
@@ -79,3 +86,9 @@ await Promise.all([
 	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 ]);
+
+SystemLogger.startup({
+	msg: 'Settings registration done',
+	elapsedMs: Math.round(performance.now() - settingsRegistrationStart),
+	sinceBootMs: sinceBoot(),
+});

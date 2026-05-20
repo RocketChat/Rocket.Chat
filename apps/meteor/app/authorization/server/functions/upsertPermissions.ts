@@ -1,16 +1,29 @@
 /* eslint no-multi-spaces: 0 */
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
+import { performance } from 'universal-perf-hooks';
 
+import { sinceBoot } from '../../../../server/lib/logger/bootStart';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
 import { permissions } from '../constant/permissions';
 
 export const upsertPermissions = async (): Promise<void> => {
+	SystemLogger.startup({ msg: 'Initializing permissions', sinceBootMs: sinceBoot() });
+	const totalStart = performance.now();
+
+	const basePermsStart = performance.now();
 	for (const permission of permissions) {
 		await Permissions.create(permission._id, permission.roles);
 	}
+	SystemLogger.startup({
+		msg: 'Base permissions upserted',
+		elapsedMs: Math.round(performance.now() - basePermsStart),
+		count: permissions.length,
+		sinceBootMs: sinceBoot(),
+	});
 
 	const defaultRoles = [
 		{ name: 'admin', scope: 'Users', description: 'Admin' },
@@ -27,9 +40,16 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'livechat-manager', scope: 'Users', description: 'Livechat Manager' },
 	] as const;
 
+	const rolesStart = performance.now();
 	for (const role of defaultRoles) {
 		await createOrUpdateProtectedRoleAsync(role.name, role);
 	}
+	SystemLogger.startup({
+		msg: 'Protected roles upserted',
+		elapsedMs: Math.round(performance.now() - rolesStart),
+		count: defaultRoles.length,
+		sinceBootMs: sinceBoot(),
+	});
 
 	const getPreviousPermissions = async function (settingId?: string): Promise<Record<string, IPermission>> {
 		const previousSettingPermissions: {
@@ -110,7 +130,13 @@ export const upsertPermissions = async (): Promise<void> => {
 	};
 
 	// for each setting which already exists, create a permission to allow changing just this one setting
+	const settingPermsStart = performance.now();
 	await createPermissionsForExistingSettings();
+	SystemLogger.startup({
+		msg: 'Setting-based permissions upserted',
+		elapsedMs: Math.round(performance.now() - settingPermsStart),
+		sinceBootMs: sinceBoot(),
+	});
 
 	// register a callback for settings for be create in higher-level-packages
 	settings.on('*', async ([settingId]) => {
@@ -119,5 +145,11 @@ export const upsertPermissions = async (): Promise<void> => {
 		if (setting && !setting.hidden) {
 			await createSettingPermission(setting, previousSettingPermissions);
 		}
+	});
+
+	SystemLogger.startup({
+		msg: 'Permissions initialized',
+		elapsedMs: Math.round(performance.now() - totalStart),
+		sinceBootMs: sinceBoot(),
 	});
 };
