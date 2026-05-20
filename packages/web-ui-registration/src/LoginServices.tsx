@@ -35,7 +35,10 @@ const LoginServices = ({
 			return;
 		}
 
-		window.RocketChatDesktop?.openInBrowser(`${window.location.href}?loginClient=desktop`);
+		const redirectUrl = new URL(window.location.href);
+		redirectUrl.searchParams.set('loginClient', 'desktop');
+
+		window.RocketChatDesktop?.openInBrowser(redirectUrl.toString());
 	};
 
 	return (
