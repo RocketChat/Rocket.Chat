@@ -6,7 +6,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { getRedirectUri } from './getRedirectUri';
-
+import { GrantType } from '/server/oauth2-server/model';
 export async function finishOAuthAuthorization(code: string, state: string) {
 	if (settings.get<string>('Cloud_Workspace_Registration_State') !== state) {
 		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', {
@@ -28,7 +28,7 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 			params: new URLSearchParams({
 				client_id: clientId,
 				client_secret: clientSecret,
-				grant_type: 'authorization_code',
+				grant_type: GrantType.AuthorizationCode,
 				scope,
 				code,
 				redirect_uri: getRedirectUri(),

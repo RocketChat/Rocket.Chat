@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { fetch } from 'meteor/fetch';
 import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-
+import { GrantType } from '/server/oauth2-server/model';
 export const Linkedin = {};
 
 // returns an object containing:
@@ -16,7 +16,7 @@ const getTokenResponse = async function (query) {
 	try {
 		// Request an access token
 		const body = new URLSearchParams({
-			grant_type: 'authorization_code',
+			grant_type: GrantType.AuthorizationCode,
 			client_id: config.clientId,
 			client_secret: OAuth.openSecret(config.secret),
 			code: query.code,
