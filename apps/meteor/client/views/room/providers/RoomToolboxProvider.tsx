@@ -62,7 +62,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 				tab: '',
 				context: '',
 			},
-			search: router.getSearchParameters(),
+			search: (({ msg: _, ...rest }) => rest)(router.getSearchParameters()),
 		});
 	});
 
