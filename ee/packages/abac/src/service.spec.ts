@@ -1,5 +1,6 @@
 import { Audit } from './audit';
 import { AbacService } from './index';
+import { logger } from './logger';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 import { VirtruClient } from './virtru/VirtruClient';
 
@@ -52,6 +53,7 @@ const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUnsetAbacAttributesById = jest.fn();
 const mockRoomsUpdateMany = jest.fn();
+const mockSettingsUpdateValueById = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
@@ -94,6 +96,9 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	ServerEvents: {
 		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
+	},
+	Settings: {
+		updateValueById: (...args: any[]) => mockSettingsUpdateValueById(...args),
 	},
 }));
 
@@ -2027,6 +2032,84 @@ describe('AbacService (unit)', () => {
 
 			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('ABAC_PDP_Type→local cascade to ABAC_Attribute_Store', () => {
+		const buildSettings = (overrides: Record<string, any>) =>
+			({
+				Abac_Cache_Decision_Time_Seconds: 60,
+				ABAC_Enabled: true,
+				ABAC_PDP_Type: 'virtru',
+				ABAC_Attribute_Store: 'virtru',
+				ABAC_Virtru_Base_URL: '',
+				ABAC_Virtru_Client_ID: '',
+				ABAC_Virtru_Client_Secret: '',
+				ABAC_Virtru_OIDC_Endpoint: '',
+				ABAC_Virtru_Default_Entity_Key: 'emailAddress',
+				ABAC_Virtru_Attribute_Namespace: 'example.com',
+				...overrides,
+			}) as Record<string, any>;
+
+		const bootWith = async (settings: Record<string, any>) => {
+			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
+			const svc = new AbacService();
+			await svc.started();
+			return svc;
+		};
+
+		type SettingCb = (arg: { setting: { value: unknown } }) => void | Promise<void>;
+		const fireSettingChanged = async (svc: AbacService, settingName: string, value: unknown): Promise<void> => {
+			const { calls }: { calls: [string, SettingCb][] } = (svc as any).onSettingChanged.mock;
+			const entry = calls.find(([name]) => name === settingName);
+			if (!entry) throw new Error(`No listener registered for ${settingName}`);
+			await entry[1]({ setting: { value } });
+		};
+
+		beforeEach(() => {
+			mockSettingsGet.mockReset();
+			mockSettingsUpdateValueById.mockReset().mockResolvedValue({ modifiedCount: 1 });
+		});
+
+		it('writes ABAC_Attribute_Store=local when PDP changes to local and Store was virtru', async () => {
+			const svc = await bootWith(buildSettings({}));
+
+			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
+
+			expect(mockSettingsUpdateValueById).toHaveBeenCalledTimes(1);
+			expect(mockSettingsUpdateValueById).toHaveBeenCalledWith('ABAC_Attribute_Store', 'local');
+		});
+
+		it('does NOT write ABAC_Attribute_Store when PDP changes to local and Store is already local (idempotent)', async () => {
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
+
+			expect(mockSettingsUpdateValueById).not.toHaveBeenCalled();
+		});
+
+		it('does NOT write ABAC_Attribute_Store when PDP changes to virtru (one-way cascade only)', async () => {
+			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local', ABAC_Attribute_Store: 'local' }));
+
+			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'virtru');
+
+			expect(mockSettingsUpdateValueById).not.toHaveBeenCalled();
+		});
+
+		it('logs error and resolves normally when the settings write fails', async () => {
+			const svc = await bootWith(buildSettings({}));
+			mockSettingsUpdateValueById.mockRejectedValueOnce(new Error('db-write-failure'));
+			const errorSpy = jest.spyOn(logger, 'error');
+			const pdpStrategySpy = jest.spyOn(svc as any, 'setPdpStrategy');
+
+			await expect(fireSettingChanged(svc, 'ABAC_PDP_Type', 'local')).resolves.toBeUndefined();
+
+			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
+			expect(errorSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ msg: 'Failed to cascade ABAC_Attribute_Store=local on PDP change to local' }),
+			);
+
+			errorSpy.mockRestore();
 		});
 	});
 

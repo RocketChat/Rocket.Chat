@@ -11,7 +11,7 @@ import type {
 	AbacAuditReason,
 } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
+import { Rooms, AbacAttributes, Users, Subscriptions, Settings as SettingsModel } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
@@ -89,6 +89,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
 			this.syncStoreSelection();
+
+			// Virtru attribute store is meaningless without the Virtru PDP; cascade the setting write
+			// so the ABAC_Attribute_Store listener handles the wipe and propagates across all nodes.
+			if (value === 'local' && this.attributeStoreSetting === 'virtru') {
+				try {
+					await SettingsModel.updateValueById('ABAC_Attribute_Store', 'local');
+				} catch (err) {
+					logger.error({ msg: 'Failed to cascade ABAC_Attribute_Store=local on PDP change to local', err });
+				}
+			}
 		});
 
 		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
