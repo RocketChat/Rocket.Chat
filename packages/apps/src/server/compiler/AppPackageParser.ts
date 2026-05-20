@@ -1,10 +1,10 @@
-import * as path from 'path';
+import { randomUUID } from 'node:crypto';
+import * as path from 'node:path';
 
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
 import { ENGINE_VERSION } from '@rocket.chat/apps-engine/definition/version';
 import AdmZip from 'adm-zip';
 import * as semver from 'semver';
-import { v4 as uuidv4 } from 'uuid';
 
 import { AppImplements } from '.';
 import type { IParseAppPackageResult } from './IParseAppPackageResult';
@@ -27,7 +27,7 @@ export class AppPackageParser {
 				info = JSON.parse(infoZip.getData().toString()) as IAppInfo;
 
 				if (!AppPackageParser.uuid4Regex.test(info.id)) {
-					info.id = uuidv4();
+					info.id = randomUUID();
 					console.warn(
 						'WARNING: We automatically generated a uuid v4 id for',
 						info.name,

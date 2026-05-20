@@ -156,6 +156,16 @@ const ensureStatusBridge = (): void => {
 
 const subscribeStatus = (cb: () => void): (() => void) => {
 	ensureStatusBridge();
+	// Close the race between the cachedStatus computed at module load and the
+	// first event delivered through the bridge: status may have changed in
+	// between (e.g. the socket connected before <ServerProvider> mounted), and
+	// useSyncExternalStore would otherwise surface the stale snapshot until
+	// the next external transition.
+	const next = computeStatus();
+	if (!isStatusEqual(cachedStatus, next)) {
+		cachedStatus = next;
+		cb();
+	}
 	statusListeners.add(cb);
 	return () => {
 		statusListeners.delete(cb);

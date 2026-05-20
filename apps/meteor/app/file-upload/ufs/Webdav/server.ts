@@ -1,4 +1,4 @@
-import stream from 'stream';
+import stream from 'node:stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';

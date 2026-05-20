@@ -1,4 +1,4 @@
-import http from 'http';
+import http from 'node:http';
 
 import { Statistics } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';

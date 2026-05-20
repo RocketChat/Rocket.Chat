@@ -1,5 +1,5 @@
-import * as timers from 'timers';
-import * as vm from 'vm';
+import * as timers from 'node:timers';
+import * as vm from 'node:vm';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 
