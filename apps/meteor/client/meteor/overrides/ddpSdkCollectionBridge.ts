@@ -1,6 +1,6 @@
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
+import { type DDPMessage, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 
@@ -80,9 +80,7 @@ export const installDdpSdkCollectionBridge = (): void => {
 		// rejections are contained — Meteor keeps draining the queue even when
 		// individual frames hit dead invokers.
 		try {
-			const result = Meteor.connection._streamHandlers.onMessage(
-				DDPCommon.stringifyDDP(frame as Parameters<typeof DDPCommon.stringifyDDP>[0]),
-			) as unknown;
+			const result = Meteor.connection._streamHandlers.onMessage(stringifyDDP(frame as DDPMessage)) as unknown;
 			if (result && typeof (result as Promise<unknown>).then === 'function') {
 				(result as Promise<unknown>).catch((err) => {
 					console.warn('[ddpSdk] bridge frame drop (async)', frame.msg, err);

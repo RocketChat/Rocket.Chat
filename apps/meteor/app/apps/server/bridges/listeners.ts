@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage } from '@rocket.chat/apps';
 import type { IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';

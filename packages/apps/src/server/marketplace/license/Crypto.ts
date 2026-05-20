@@ -1,4 +1,4 @@
-import { publicDecrypt } from 'crypto';
+import { publicDecrypt } from 'node:crypto';
 
 import type { IInternalBridge } from '../../bridges';
 

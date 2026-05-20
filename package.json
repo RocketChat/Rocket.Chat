@@ -172,11 +172,11 @@
 	},
 	"packageManager": "yarn@4.12.0",
 	"engines": {
-		"node": "22.22.2",
+		"node": "22.22.3",
 		"yarn": "4.12.0"
 	},
 	"volta": {
-		"node": "22.22.2",
+		"node": "22.22.3",
 		"yarn": "4.12.0"
 	},
 	"houston": {

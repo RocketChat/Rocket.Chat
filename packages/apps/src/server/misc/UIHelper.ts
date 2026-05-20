@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import { v4 as uuid } from 'uuid';
 
 export class UIHelper {
 	/**
@@ -15,12 +16,12 @@ export class UIHelper {
 				block.appId = appId;
 			}
 			if (!block.blockId) {
-				block.blockId = uuid();
+				block.blockId = randomUUID();
 			}
 			if (block.elements) {
 				block.elements.forEach((element) => {
 					if (!element.actionId) {
-						element.actionId = uuid();
+						element.actionId = randomUUID();
 					}
 				});
 			}

@@ -64,11 +64,11 @@ export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps
 			confirmDisabled={!isValid}
 		>
 			<Box display='flex' flexDirection='column'>
+				<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
 				<Controller name='date' control={control} render={({ field }) => <DatePicker {...field} />} />
 				<Controller name='date' control={control} render={({ field }) => <TimePicker {...field} />} />
 				<Controller name='format' control={control} render={({ field }) => <FormatSelector {...field} />} />
 				<Controller name='timezone' control={control} render={({ field }) => <TimezoneSelector {...field} />} />
-				<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
 			</Box>
 		</GenericModal>
 	);

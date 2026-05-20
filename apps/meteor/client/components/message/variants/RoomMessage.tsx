@@ -15,7 +15,6 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -88,7 +87,6 @@ const RoomMessage = ({
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
-	const messageRef = useJumpToMessage(message._id);
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		if (!selecting) return;
@@ -103,7 +101,6 @@ const RoomMessage = ({
 
 	return (
 		<Message
-			ref={messageRef}
 			id={message._id}
 			role='listitem'
 			tabIndex={0}

@@ -4,9 +4,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-import http from 'http';
-import https from 'https';
-import url from 'url';
+import http from 'node:http';
+import https from 'node:https';
+import url from 'node:url';
 
 import { Message } from '@rocket.chat/core-services';
 import { Messages, Rooms, Users } from '@rocket.chat/models';

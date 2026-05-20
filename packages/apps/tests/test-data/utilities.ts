@@ -1,4 +1,4 @@
-import * as os from 'os';
+import * as os from 'node:os';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
