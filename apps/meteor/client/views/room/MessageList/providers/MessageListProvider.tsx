@@ -1,6 +1,7 @@
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
@@ -68,12 +69,13 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		() => ({
 			showColors,
 			useUserHasReacted: username
-				? (message) =>
-						(reaction): boolean =>
+				? (message: IMessage) =>
+						(reaction: string): boolean =>
 							Boolean(message.reactions?.[reaction].usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
-				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
 			autoTranslate: {
@@ -82,7 +84,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				showAutoTranslate,
 			},
 			useShowStarred: hasSubscription
-				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(Array.isArray(message.starred) && message.starred.find((star: { _id: string }) => star._id === uid))
 				: (): boolean => false,
 			useMessageDateFormatter:
 				() =>
@@ -109,8 +112,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				})),
 
 			useOpenEmojiPicker: uid
-				? (message) =>
-						(e): void => {
+				? (message: IMessage) =>
+						(e: MouseEvent | KeyboardEvent): void => {
 							e.nativeEvent.stopImmediatePropagation();
 							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
 						}

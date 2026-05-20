@@ -4,6 +4,7 @@
 		"target": "es2018",
 		"module": "esNext",
 		"lib": ["esnext", "dom"],
+		"types": ["node", "meteor"],
 
 		"allowJs": true,
 		"checkJs": false,
