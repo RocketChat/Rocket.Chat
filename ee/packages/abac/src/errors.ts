@@ -15,6 +15,7 @@ export enum AbacErrorCode {
 	PdpUnavailable = 'error-pdp-unavailable',
 	AttributeStoreExternal = 'error-abac-attribute-store-external',
 	EntityResolutionFailed = 'error-virtru-entity-resolution-failed',
+	NotAuthorizedToModifyRoom = 'error-abac-not-authorized-to-modify-room',
 }
 
 export class AbacError extends Error {
@@ -112,6 +113,12 @@ export class AbacAttributeStoreExternalError extends AbacError {
 export class AbacEntityResolutionFailedError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.EntityResolutionFailed, details);
+	}
+}
+
+export class AbacNotAuthorizedToModifyRoomError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.NotAuthorizedToModifyRoom, details);
 	}
 }
 

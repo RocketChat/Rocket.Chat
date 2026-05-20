@@ -3,7 +3,12 @@ import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, IRoomAbacRedactio
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
-import { AbacEntityResolutionFailedError, AbacInvalidAttributeValuesError, PdpUnavailableError } from '../errors';
+import {
+	AbacEntityResolutionFailedError,
+	AbacInvalidAttributeValuesError,
+	AbacNotAuthorizedToModifyRoomError,
+	PdpUnavailableError,
+} from '../errors';
 import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
@@ -125,9 +130,9 @@ export class VirtruAttributeStore implements IAttributeStore {
 		if (!(room.abacAttributes?.length ?? 0)) {
 			return;
 		}
-		const permitted = await this.decideRooms([room], actor).catch(() => new Set<string>());
+		const permitted = await this.decideRooms([room], actor);
 		if (!permitted.has(room._id)) {
-			throw new PdpUnavailableError();
+			throw new AbacNotAuthorizedToModifyRoomError();
 		}
 	}
 

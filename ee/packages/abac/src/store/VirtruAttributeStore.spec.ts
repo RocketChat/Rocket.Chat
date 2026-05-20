@@ -169,7 +169,7 @@ describe('VirtruAttributeStore.assertCanModifyRoom', () => {
 		).resolves.toBeUndefined();
 	});
 
-	it('rejects when PDP DENYs', async () => {
+	it('rejects with not-authorized when PDP DENYs', async () => {
 		const apiCall = jest
 			.fn()
 			.mockResolvedValue({ decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r', decision: 'DECISION_DENY' }] }] });
@@ -178,7 +178,17 @@ describe('VirtruAttributeStore.assertCanModifyRoom', () => {
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
 				actor,
 			),
-		).rejects.toMatchObject({ code: 'error-pdp-unavailable' });
+		).rejects.toMatchObject({ code: 'error-abac-not-authorized-to-modify-room' });
+	});
+
+	it('propagates PdpUnavailable when the decision call itself fails with that error', async () => {
+		const apiCall = jest.fn().mockRejectedValue(new Error('network down'));
+		await expect(
+			new VirtruAttributeStore(mkClient({ apiCall })).assertCanModifyRoom(
+				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
+				actor,
+			),
+		).rejects.toThrow('network down');
 	});
 
 	it('resolves when the room has no current attributes', async () => {
