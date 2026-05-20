@@ -37,7 +37,7 @@
 		"typescript-eslint": "~8.56.1"
 	},
 	"devDependencies": {
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

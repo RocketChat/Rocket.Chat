@@ -24,7 +24,7 @@
 	"devDependencies": {
 		"@types/debug": "^4.1.13",
 		"eslint": "~9.39.4",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

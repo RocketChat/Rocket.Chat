@@ -21,7 +21,7 @@
 		"@types/chalk": "^2.2.4",
 		"@types/ejson": "^2.2.2",
 		"eslint": "~9.39.4",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

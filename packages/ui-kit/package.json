@@ -45,7 +45,7 @@
 		"rimraf": "~6.0.1",
 		"ts-jest": "~29.4.9",
 		"ts-patch": "^3.3.0",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"

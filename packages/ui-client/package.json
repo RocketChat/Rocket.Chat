@@ -59,7 +59,7 @@
 		"react-i18next": "~13.2.2",
 		"react-virtuoso": "~4.12.8",
 		"storybook": "^8.6.18",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
