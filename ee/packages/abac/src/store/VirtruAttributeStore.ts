@@ -9,10 +9,13 @@ import {
 	AbacNotAuthorizedToModifyRoomError,
 	PdpUnavailableError,
 } from '../errors';
+import { logger } from '../logger';
 import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
 import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsResponse } from '../pdp/types';
+
+const storeLogger = logger.section('VirtruAttributeStore');
 
 const ENTITLEMENTS_CACHE_MS = 15_000;
 
@@ -123,7 +126,10 @@ export class VirtruAttributeStore implements IAttributeStore {
 		if (!withAttrs.length) {
 			return rooms;
 		}
-		const permitted = await this.decideRooms(withAttrs, actor).catch(() => new Set<string>());
+		const permitted = await this.decideRooms(withAttrs, actor).catch((err) => {
+			storeLogger.warn({ msg: 'Virtru store: redacting all rooms after decision failure', err });
+			return new Set<string>();
+		});
 		return rooms.map((r) => {
 			if (!(r.abacAttributes?.length ?? 0) || permitted.has(r._id)) {
 				return r;
