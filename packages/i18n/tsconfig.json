@@ -8,6 +8,7 @@
 		"erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"esModuleInterop": true,
+		"types": ["node"],
 		"rootDirs": ["./src", "./"],
 		"outDir": "./dist",
 		"declaration": true,

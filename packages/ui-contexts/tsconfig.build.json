@@ -1,7 +1,8 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"removeComments": false
+		"removeComments": false,
+		"rootDir": "./src"
 	},
 	"exclude": ["./src/**/*.spec.ts", "./src/**/*.spec.tsx", "./jest.config.ts"]
 }

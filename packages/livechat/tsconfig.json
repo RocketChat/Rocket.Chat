@@ -12,6 +12,7 @@
 			"react-dom": ["../../node_modules/preact/compat/"],
 			"react-dom/*": ["../../node_modules/preact/compat/*"]
 		},
+		"types": ["node"],
 		"declaration": false,
 		"declarationMap": false
 	},

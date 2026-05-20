@@ -1,6 +1,7 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
+		"rootDir": "./src",
 		"declaration": true,
 	},
 	"exclude": ["./dist", "./src/**/*.spec.ts", "./src/**/*.fixtures.ts"],

@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"lib": ["es2023", "dom"],
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"declaration": true,

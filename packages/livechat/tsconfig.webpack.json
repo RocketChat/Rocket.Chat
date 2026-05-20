@@ -2,6 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"module": "commonjs",
+		"rootDir": "../..",
     "target": "es5",
     "esModuleInterop": true
 	},
