@@ -39,10 +39,11 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		const r = await store.list(actor);
 		expect(r.attributes).toEqual(
 			expect.arrayContaining([
-				{ key: 'clearance', values: expect.arrayContaining(['secret', 'topsecret']) },
-				{ key: 'team', values: ['blue'] },
+				{ _id: 'clearance', key: 'clearance', values: expect.arrayContaining(['secret', 'topsecret']) },
+				{ _id: 'team', key: 'team', values: ['blue'] },
 			]),
 		);
+		expect(r).toMatchObject({ offset: 0, total: 2 });
 	});
 
 	it('isAvailable() false => throws PdpUnavailable, no GetEntitlements', async () => {

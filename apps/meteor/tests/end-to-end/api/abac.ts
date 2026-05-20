@@ -3520,11 +3520,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	// Multi-node fan-out and "wipe-on-reboot transition-only" guarantee are integration / manual
-	// concerns: a single in-process e2e cannot emulate cross-node setting propagation or boot
-	// ordering without restarting the server. Per spec §8.1, both are explicitly OUT OF SCOPE for
-	// this block. Single-node listener wipe IS covered below; license veto is covered only as a
-	// documentation skip (see "license veto" sub-describe).
 	(IS_EE ? describe : describe.skip)('[ABAC] virtru-attribute-store (mock-server)', function () {
 		this.retries(0);
 
@@ -4100,11 +4095,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		describe('license veto (spec §0.2)', () => {
-			// requires runtime license toggle — no in-process License.hasModule('abac') mocking
-			// utility is exposed by the e2e harness. The fail-closed paths in
-			// onTransitionedToVirtruStore (no wipe / no audit when unlicensed; later license-up
-			// retriggers the wipe) are covered by the package-level unit tests in
-			// ee/packages/abac/src/service.spec.ts. Kept here as integration/manual coverage only.
 			it.skip('local→virtru with license absent preserves abacAttributes and emits no switched audit event — requires runtime license toggle', () =>
 				undefined);
 			it.skip('flipping license active while already virtru retriggers the wipe — requires runtime license toggle', () => undefined);

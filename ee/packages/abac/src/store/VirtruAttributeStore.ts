@@ -1,10 +1,10 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
 import { AbacEntityResolutionFailedError, AbacInvalidAttributeValuesError, PdpUnavailableError } from '../errors';
-import type { AttributeEntitlements, IAttributeStore } from './types';
+import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
 import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsResponse } from '../pdp/types';
@@ -61,12 +61,12 @@ export class VirtruAttributeStore implements IAttributeStore {
 		return this._entitlementsForEntity(entityId);
 	}
 
-	async list(
-		actor: AbacActor,
-		opts?: { filter?: string; offset?: number; count?: number },
-	): Promise<{ attributes: IAbacAttributeDefinition[]; total: number }> {
+	async list(actor: AbacActor | undefined, opts?: ListAttributesOptions): Promise<ListAttributesResult> {
+		if (!actor) {
+			throw new AbacEntityResolutionFailedError();
+		}
 		let attributes = await this.getEntitlements(actor);
-		const filter = opts?.filter?.trim().toLowerCase();
+		const filter = (opts?.key ?? opts?.values)?.trim().toLowerCase();
 		if (filter) {
 			attributes = attributes
 				.map((a) => ({ key: a.key, values: a.values.filter((v) => v.toLowerCase().includes(filter)) }))
@@ -75,7 +75,13 @@ export class VirtruAttributeStore implements IAttributeStore {
 		const total = attributes.length;
 		const offset = opts?.offset ?? 0;
 		const count = opts?.count ?? total;
-		return { attributes: attributes.slice(offset, offset + count), total };
+		const slice = attributes.slice(offset, offset + count);
+		return {
+			attributes: slice.map((a) => ({ _id: a.key, ...a })) as IAbacAttribute[],
+			offset,
+			count: slice.length,
+			total,
+		};
 	}
 
 	async entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements> {

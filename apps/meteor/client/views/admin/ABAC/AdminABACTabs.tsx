@@ -11,7 +11,7 @@ const AdminABACTabs = () => {
 	const tabPermissions = useABACTabPermissions();
 	const pdpType = useSetting('ABAC_PDP_Type', 'local');
 	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
-	const isExternalStore = pdpType === 'virtru' && attributeStore === 'virtru';
+	const isExternalStore = pdpType !== 'local' && attributeStore !== 'local';
 	const handleTabClick = (tab: string) => {
 		router.navigate({
 			name: 'admin-ABAC',

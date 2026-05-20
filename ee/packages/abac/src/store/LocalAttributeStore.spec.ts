@@ -35,10 +35,26 @@ describe('LocalAttributeStore', () => {
 		expect(e.size).toBe(0);
 	});
 
-	it('list queries AbacAttributes paginated', async () => {
-		findPaginated.mockReturnValue({ cursor: { toArray: async () => [{ key: 'k', values: ['v'] }] }, totalCount: Promise.resolve(1) });
+	it('list queries AbacAttributes paginated (no filters)', async () => {
+		const docs = [{ _id: 'id1', key: 'k', values: ['v'] }];
+		findPaginated.mockReturnValue({ cursor: { toArray: async () => docs }, totalCount: Promise.resolve(1) });
 		const r = await new LocalAttributeStore().list(actor, { offset: 0, count: 25 });
-		expect(r.total).toBe(1);
-		expect(r.attributes).toEqual([{ key: 'k', values: ['v'] }]);
+		expect(findPaginated).toHaveBeenCalledWith({}, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
+		expect(r).toEqual({ attributes: docs, offset: 0, count: 1, total: 1 });
+	});
+
+	it('list builds $or query when key and values filters provided', async () => {
+		findPaginated.mockReturnValue({ cursor: { toArray: async () => [] }, totalCount: Promise.resolve(0) });
+		await new LocalAttributeStore().list(actor, { key: 'foo', values: 'bar', offset: 5, count: 10 });
+		expect(findPaginated).toHaveBeenCalledWith(
+			{ $or: [{ key: /foo/i }, { values: /bar/i }] },
+			{ projection: { key: 1, values: 1 }, skip: 5, limit: 10 },
+		);
+	});
+
+	it('list applies default pagination when no opts', async () => {
+		findPaginated.mockReturnValue({ cursor: { toArray: async () => [] }, totalCount: Promise.resolve(0) });
+		await new LocalAttributeStore().list(actor);
+		expect(findPaginated).toHaveBeenCalledWith({}, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
 	});
 });

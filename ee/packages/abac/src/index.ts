@@ -10,6 +10,7 @@ import type {
 	IUser,
 	ILDAPEntry,
 	AbacAuditReason,
+	AbacPdpType,
 } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings as SettingsModel } from '@rocket.chat/models';
@@ -48,6 +49,8 @@ const limit = pLimit(20);
 
 const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
 
+const isAbacPdpType = (value: unknown): value is AbacPdpType => value === 'local' || value === 'virtru';
+
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
@@ -66,9 +69,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private abacEnabled?: boolean;
 
-	private pdpTypeSetting?: string;
+	private pdpTypeSetting?: AbacPdpType;
 
-	private attributeStoreSetting?: string;
+	private attributeStoreSetting?: AbacPdpType;
 
 	private attributeStore: IAttributeStore = new LocalAttributeStore();
 
@@ -79,7 +82,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (value !== 'local' && value !== 'virtru') {
+			if (!isAbacPdpType(value)) {
 				return;
 			}
 
@@ -109,7 +112,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (value !== 'local' && value !== 'virtru') {
+			if (!isAbacPdpType(value)) {
 				return;
 			}
 
@@ -117,7 +120,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.attributeStoreSetting = value;
 			this.syncStoreSelection();
 			if (prev !== undefined && prev !== value) {
-				void this.onAttributeStoreTransition(prev as 'local' | 'virtru', value).catch((err) =>
+				void this.onAttributeStoreTransition(prev, value).catch((err) =>
 					logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
 				);
 			}
@@ -186,7 +189,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 	}
 
-	private effectiveStore(): 'local' | 'virtru' {
+	private effectiveStore(): AbacPdpType {
 		if (
 			License.hasModule('abac') &&
 			this.abacEnabled === true &&
@@ -216,24 +219,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async isExternalAttributeStore(): Promise<boolean> {
-		return this.effectiveStore() === 'virtru';
+		return this.effectiveStore() !== 'local';
 	}
 
-	private async onAttributeStoreTransition(from: 'local' | 'virtru', to: 'local' | 'virtru'): Promise<void> {
-		let licensed: boolean;
-		try {
-			licensed = License.hasModule('abac');
-		} catch {
-			licensed = false;
-		}
-		if (!licensed) {
+	private async onAttributeStoreTransition(from: AbacPdpType, to: AbacPdpType): Promise<void> {
+		if (!License.hasModule('abac')) {
 			return;
 		}
 		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
 		void Audit.attributeStoreSwitched(from, to, modifiedCount);
 	}
 
-	setPdpStrategy(strategy: 'local' | 'virtru'): void {
+	setPdpStrategy(strategy: AbacPdpType): void {
 		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';
 
 		switch (strategy) {
@@ -267,8 +264,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		]);
 
 		this.abacEnabled = abacEnabled;
-		this.pdpTypeSetting = pdpType;
-		this.attributeStoreSetting = attributeStore;
+		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
+		this.attributeStoreSetting = isAbacPdpType(attributeStore) ? attributeStore : undefined;
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');
@@ -276,8 +273,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		// virtruPdpConfig must be loaded and pushed into virtruClient before either
-		// setPdpStrategy or syncAttributeStore runs; both read from the live client instance.
 		await this.loadVirtruPdpConfig();
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		this.setPdpStrategy('virtru');
@@ -357,49 +352,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		count: number;
 		total: number;
 	}> {
-		if (this.effectiveStore() === 'virtru' && actor) {
-			const { attributes, total } = await this.attributeStore.list(actor, {
-				filter: filters?.key ?? filters?.values,
-				offset: filters?.offset,
-				count: filters?.count,
-			});
-			const offset = filters?.offset ?? 0;
-			return {
-				attributes: attributes.map((a) => ({ _id: a.key, ...a })) as IAbacAttribute[],
-				offset,
-				count: attributes.length,
-				total,
-			};
-		}
-
-		const query: Document[] = [];
-		if (filters?.key) {
-			query.push({ key: new RegExp(escapeRegExp(filters.key), 'i') });
-		}
-		if (filters?.values?.length) {
-			query.push({ values: new RegExp(escapeRegExp(filters.values), 'i') });
-		}
-
-		const offset = filters?.offset ?? 0;
-		const limit = filters?.count ?? 25;
-
-		const { cursor, totalCount } = AbacAttributes.findPaginated(
-			{ ...(query.length && { $or: query }) },
-			{
-				projection: { key: 1, values: 1 },
-				skip: offset,
-				limit,
-			},
-		);
-
-		const attributes = await cursor.toArray();
-
-		return {
-			attributes,
-			offset,
-			count: attributes.length,
-			total: await totalCount,
-		};
+		return this.attributeStore.list(actor, filters);
 	}
 
 	async listAbacRooms(
@@ -473,9 +426,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		rooms: T[],
 		actor: AbacActor,
 	): Promise<Array<T & IRoomAbacRedaction>> {
-		if (this.effectiveStore() !== 'virtru') {
-			return rooms;
-		}
 		return this.attributeStore.scopeRoomsPage(rooms, actor);
 	}
 
@@ -836,7 +786,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
-	private pdpType: 'local' | 'virtru' = 'local';
+	private pdpType: AbacPdpType = 'local';
 
 	private async ensurePdpAvailable(): Promise<void> {
 		if (!(await this.pdp?.isAvailable())) {

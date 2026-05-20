@@ -1,13 +1,14 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 
 export type AttributeEntitlements = Map<string, Set<string>>;
 
+export type ListAttributesOptions = { key?: string; values?: string; offset?: number; count?: number };
+
+export type ListAttributesResult = { attributes: IAbacAttribute[]; offset: number; count: number; total: number };
+
 export interface IAttributeStore {
-	list(
-		actor: AbacActor,
-		opts?: { filter?: string; offset?: number; count?: number },
-	): Promise<{ attributes: IAbacAttributeDefinition[]; total: number }>;
+	list(actor: AbacActor | undefined, opts?: ListAttributesOptions): Promise<ListAttributesResult>;
 
 	validateAssignable(attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void>;
 
