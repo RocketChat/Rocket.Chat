@@ -1,4 +1,4 @@
-import { getPdpHealthErrorCode } from '@rocket.chat/abac';
+import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
@@ -245,7 +245,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (await Abac.isExternalAttributeStore()) {
-				throw new Error('error-abac-attribute-store-external');
+				throw new AbacAttributeStoreExternalError();
 			}
 
 			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
@@ -274,7 +274,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (await Abac.isExternalAttributeStore()) {
-				throw new Error('error-abac-attribute-store-external');
+				throw new AbacAttributeStoreExternalError();
 			}
 
 			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
@@ -298,7 +298,7 @@ const abacEndpoints = API.v1
 			const { _id } = this.urlParams;
 
 			if (await Abac.isExternalAttributeStore()) {
-				throw new Error('error-abac-attribute-store-external');
+				throw new AbacAttributeStoreExternalError();
 			}
 
 			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
@@ -322,7 +322,7 @@ const abacEndpoints = API.v1
 			const { _id } = this.urlParams;
 
 			if (await Abac.isExternalAttributeStore()) {
-				throw new Error('error-abac-attribute-store-external');
+				throw new AbacAttributeStoreExternalError();
 			}
 
 			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
@@ -346,7 +346,7 @@ const abacEndpoints = API.v1
 			const { key } = this.urlParams;
 
 			if (await Abac.isExternalAttributeStore()) {
-				throw new Error('error-abac-attribute-store-external');
+				throw new AbacAttributeStoreExternalError();
 			}
 
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);

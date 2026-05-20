@@ -29,11 +29,13 @@ export function buildAttributeFqns(attributeNamespace: string, attributes: IAbac
 
 const FQN_RE = /^https:\/\/[^/]+\/attr\/([^/]+)\/value\/(.+)$/;
 
-export function parseAttributeFqns(fqns: string[]): IAbacAttributeDefinition[] {
+export function parseAttributeFqns(fqns: string[]): { attributes: IAbacAttributeDefinition[]; malformed: string[] } {
 	const grouped = new Map<string, Set<string>>();
+	const malformed: string[] = [];
 	for (const fqn of fqns) {
 		const m = FQN_RE.exec(fqn);
 		if (!m) {
+			malformed.push(fqn);
 			continue;
 		}
 		const [, key, value] = m;
@@ -41,5 +43,6 @@ export function parseAttributeFqns(fqns: string[]): IAbacAttributeDefinition[] {
 		bucket.add(value);
 		grouped.set(key, bucket);
 	}
-	return [...grouped.entries()].map(([key, values]) => ({ key, values: [...values] }));
+	const attributes = [...grouped.entries()].map(([key, values]) => ({ key, values: [...values] }));
+	return { attributes, malformed };
 }

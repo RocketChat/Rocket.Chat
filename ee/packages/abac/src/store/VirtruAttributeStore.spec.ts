@@ -54,6 +54,27 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(r).toMatchObject({ offset: 0, total: 2 });
 	});
 
+	it('malformed FQNs from PDP are skipped, valid ones returned, warn logged once', async () => {
+		mockStoreLoggerWarn.mockClear();
+		const apiCall = jest.fn().mockResolvedValue({
+			entitlements: [
+				{
+					actionsPerAttributeValueFqn: {
+						'https://example.com/attr/clearance/value/secret': {},
+						'not-a-fqn': {},
+					},
+				},
+			],
+		});
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+		const r = await store.list(actor);
+		expect(r.attributes).toEqual([{ _id: 'clearance', key: 'clearance', values: ['secret'] }]);
+		expect(mockStoreLoggerWarn).toHaveBeenCalledTimes(1);
+		expect(mockStoreLoggerWarn).toHaveBeenCalledWith(
+			expect.objectContaining({ msg: 'Virtru store: ignoring malformed attribute FQNs', malformed: ['not-a-fqn'] }),
+		);
+	});
+
 	it('isAvailable() false => throws PdpUnavailable, no GetEntitlements', async () => {
 		const apiCall = jest.fn();
 		const store = new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false), apiCall }));

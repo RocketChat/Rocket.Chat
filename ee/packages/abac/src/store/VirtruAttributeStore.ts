@@ -67,7 +67,11 @@ export class VirtruAttributeStore implements IAttributeStore {
 			},
 			withComprehensiveHierarchy: true,
 		});
-		return parseAttributeFqns(Object.keys(res.entitlements?.[0]?.actionsPerAttributeValueFqn ?? {}));
+		const { attributes, malformed } = parseAttributeFqns(Object.keys(res.entitlements?.[0]?.actionsPerAttributeValueFqn ?? {}));
+		if (malformed.length) {
+			storeLogger.warn({ msg: 'Virtru store: ignoring malformed attribute FQNs', malformed });
+		}
+		return attributes;
 	}
 
 	private async getEntitlements(actor: AbacActor): Promise<IAbacAttributeDefinition[]> {

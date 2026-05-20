@@ -67,6 +67,19 @@ describe('VirtruClient', () => {
 		expect(tokenCalls).toHaveLength(2);
 	});
 
+	it('getConfig exposes only baseUrl, defaultEntityKey and attributeNamespace', () => {
+		const c = new VirtruClient(cfg);
+		const pub = c.getConfig();
+		expect(pub).toEqual({
+			baseUrl: cfg.baseUrl,
+			defaultEntityKey: cfg.defaultEntityKey,
+			attributeNamespace: cfg.attributeNamespace,
+		});
+		expect(pub).not.toHaveProperty('clientId');
+		expect(pub).not.toHaveProperty('clientSecret');
+		expect(pub).not.toHaveProperty('oidcEndpoint');
+	});
+
 	it('apiCall throws on non-ok response', async () => {
 		serverFetchMock
 			.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 }))
