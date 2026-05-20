@@ -168,7 +168,7 @@
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"ts-node": "^10.9.2",
 		"turbo": "2.8.21",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"packageManager": "yarn@4.12.0",
 	"engines": {
