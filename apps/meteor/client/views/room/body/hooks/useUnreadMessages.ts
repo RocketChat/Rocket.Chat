@@ -1,10 +1,11 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { RoomHistoryManager, useRoomHistoryState } from '../../../../../app/ui-utils/client/lib/RoomHistoryManager';
-import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { useRoomHistoryState } from '../../../../../app/ui-utils/client/lib/RoomHistoryManager';
+import { withDebouncing } from '../../../../../lib/utils/highOrderFunctions';
 import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -37,14 +38,13 @@ export const useHandleUnread = (
 	room: IRoom,
 	subscription?: ISubscription,
 ): {
-	innerRef: (wrapper: HTMLDivElement | null) => void;
-	wrapperRef: MutableRefObject<HTMLDivElement | null>;
 	handleUnreadBarJumpToButtonClick: () => void;
 	handleMarkAsReadButtonClick: () => void;
 	counter: readonly [number, Date | undefined];
+	setUnreadCount: Dispatch<SetStateAction<number>>;
+	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
+	debouncedMessageRead: () => void;
 } => {
-	const messagesBoxRef = useRef<HTMLDivElement>(null);
-
 	const subscribed = Boolean(subscription);
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
@@ -52,7 +52,6 @@ export const useHandleUnread = (
 
 	const chat = useChat();
 
-	const getMessage = Messages.use((state) => state.get);
 	const findFirstMessage = Messages.use((state) => state.findFirst);
 	const filterMessages = Messages.use((state) => state.filter);
 
@@ -101,7 +100,7 @@ export const useHandleUnread = (
 
 	const router = useRouter();
 
-	const debouncedReadMessageRead = useMemo(
+	const debouncedMessageRead = useMemo(
 		() =>
 			withDebouncing({ wait: 500 })(() => {
 				if (subscribed) {
@@ -119,81 +118,29 @@ export const useHandleUnread = (
 					return;
 				}
 
-				debouncedReadMessageRead();
+				debouncedMessageRead();
 			}),
-		[debouncedReadMessageRead, router],
+		[debouncedMessageRead, router],
 	);
 
 	useEffect(() => {
 		if (subscription?.alert || subscription?.unread || subscribed) {
-			debouncedReadMessageRead();
+			debouncedMessageRead();
 		}
-	}, [debouncedReadMessageRead, subscription?.alert, subscription?.unread, subscribed]);
+	}, [debouncedMessageRead, subscription?.alert, subscription?.unread, subscribed]);
 
 	useEffect(() => {
 		if (!unread?.count) {
-			return debouncedReadMessageRead();
+			return debouncedMessageRead();
 		}
-	}, [debouncedReadMessageRead, room._id, unread?.count]);
-
-	const ref = useCallback(
-		(wrapper: HTMLDivElement | null) => {
-			if (!wrapper) {
-				return;
-			}
-
-			const getElementFromPoint = (topOffset = 0): Element | undefined => {
-				const messagesBox = messagesBoxRef.current;
-
-				if (!messagesBox) {
-					return;
-				}
-
-				const messagesBoxLeft = messagesBox.getBoundingClientRect().left + window.pageXOffset;
-				const messagesBoxTop = messagesBox.getBoundingClientRect().top + window.pageYOffset;
-				const messagesBoxWidth = parseFloat(getComputedStyle(messagesBox).width);
-
-				let element;
-				if (document.dir === 'rtl') {
-					element = document.elementFromPoint(messagesBoxLeft + messagesBoxWidth - 2, messagesBoxTop + topOffset + 2);
-				} else {
-					element = document.elementFromPoint(messagesBoxLeft + 2, messagesBoxTop + topOffset + 2);
-				}
-
-				if (element?.classList.contains('rcx-message') || element?.classList.contains('rcx-message--sequential')) {
-					return element;
-				}
-			};
-			wrapper.addEventListener(
-				'scroll',
-				withThrottling({ wait: 300 })(() => {
-					queueMicrotask(() => {
-						const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
-
-						if (!lastInvisibleMessageOnScreen) {
-							setUnreadCount(0);
-							return;
-						}
-
-						const lastMessage = getMessage(lastInvisibleMessageOnScreen.id);
-						if (!lastMessage) {
-							setUnreadCount(0);
-							return;
-						}
-
-						setLastMessageDate(lastMessage.ts);
-					});
-				}),
-			);
-		},
-		[getMessage, setUnreadCount],
-	);
+	}, [debouncedMessageRead, room._id, unread?.count]);
 
 	return {
-		innerRef: ref,
-		wrapperRef: messagesBoxRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
 		counter: [unread?.count ?? 0, unread?.since] as const,
+		setUnreadCount,
+		setLastMessageDate,
+		debouncedMessageRead,
 	};
 };

@@ -67,7 +67,7 @@
 		"webpack-cli": "~5.1.4"
 	},
 	"engines": {
-		"node": "22.22.2"
+		"node": "22.22.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

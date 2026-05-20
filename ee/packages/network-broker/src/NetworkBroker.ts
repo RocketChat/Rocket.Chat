@@ -1,4 +1,4 @@
-import Stream from 'stream';
+import Stream from 'node:stream';
 
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';

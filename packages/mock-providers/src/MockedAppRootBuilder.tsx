@@ -116,6 +116,7 @@ export class MockedAppRootBuilder {
 			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
 		getStream: () => () => () => undefined,
+		getStreamAll: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => {

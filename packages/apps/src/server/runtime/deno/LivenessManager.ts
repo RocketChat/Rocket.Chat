@@ -1,5 +1,5 @@
-import type { ChildProcess } from 'child_process';
-import { EventEmitter } from 'stream';
+import type { ChildProcess } from 'node:child_process';
+import { EventEmitter } from 'node:stream';
 
 import type { DenoRuntimeSubprocessController } from './AppsEngineDenoRuntime';
 import type { ProcessMessenger } from './ProcessMessenger';

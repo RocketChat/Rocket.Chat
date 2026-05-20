@@ -1,10 +1,10 @@
 /* eslint-disable dot-notation -- we avoid the dot notation here when testing private methods */
 
-import * as fs from 'fs/promises';
 import * as assert from 'node:assert';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { describe, it, afterEach, mock, before, after } from 'node:test';
-import * as os from 'os';
-import * as path from 'path';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';

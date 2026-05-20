@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType, IExportOperation } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';

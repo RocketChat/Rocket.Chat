@@ -78,24 +78,29 @@ const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 const findTargetUser = (type: string, value: string, opts: any) => {
 	if (type === 'importId') return Users.findOneByImportId(value, opts);
 	if (type === 'email') return Users.findOneByEmailAddress(value, opts);
+	if (type === 'freeSwitchExtension') return Users.findOneByFreeSwitchExtension(value, opts);
 	return Users.findOneByIdOrUsername(value, opts);
 };
 
-export async function getFullUserDataByIdOrUsernameOrImportIdOrEmail(
+export async function getFullUserDataByUniqueSearchTerm(
 	userId: string,
 	searchValue: string,
-	searchType: 'id' | 'username' | 'importId' | 'email',
+	searchType: 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension',
 ): Promise<IUser | null> {
-	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1 } });
+	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1, freeSwitchExtension: 1 } });
+
 	if (!caller) {
 		return null;
 	}
+
 	const myself =
 		(searchType === 'id' && searchValue === userId) ||
 		(searchType === 'username' && searchValue === caller.username) ||
 		(searchType === 'importId' && caller.importIds?.includes(searchValue)) ||
+		(searchType === 'freeSwitchExtension' && caller.freeSwitchExtension === searchValue) ||
 		(searchType === 'email' &&
 			caller.emails?.some((email: IUserEmail) => email.address.trim().toLowerCase() === searchValue.trim().toLowerCase()));
+
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 
 	// Only search for importId/email if the user has permission to view them

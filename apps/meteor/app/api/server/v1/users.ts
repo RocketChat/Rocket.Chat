@@ -59,7 +59,7 @@ import {
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByIdOrUsernameOrImportIdOrEmail, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
@@ -581,22 +581,26 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email'] | false =
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension'] | false =
 			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
 			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
-			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']);
+			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']) ||
+			('freeSwitchExtension' in this.queryParams &&
+				!!this.queryParams.freeSwitchExtension && [this.queryParams.freeSwitchExtension, 'freeSwitchExtension']);
 
 		if (!searchTerms) {
 			return API.v1.failure('Invalid search query.');
 		}
 
-		const user = await getFullUserDataByIdOrUsernameOrImportIdOrEmail(this.userId, ...searchTerms);
+		const user = await getFullUserDataByUniqueSearchTerm(this.userId, ...searchTerms);
 
 		if (!user) {
 			return API.v1.failure('User not found.');
 		}
+
 		const myself = user._id === this.userId;
+
 		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 			return API.v1.success({
 				user: {
