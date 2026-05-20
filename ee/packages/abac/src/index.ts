@@ -18,6 +18,7 @@ import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
+import { VirtruClient } from './clients/virtru/VirtruClient';
 import {
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
@@ -40,7 +41,6 @@ import { logger } from './logger';
 import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore, type IAttributeStore } from './store';
-import { VirtruClient } from './virtru/VirtruClient';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);

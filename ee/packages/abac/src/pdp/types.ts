@@ -70,7 +70,11 @@ export interface ITokenCache {
 }
 
 export interface IGetEntitlementsRequest {
-	entityIdentifier: IEntityIdentifier;
+	entityIdentifier: {
+		entityChain: {
+			entities: IEntityIdentifier[];
+		};
+	};
 	withComprehensiveHierarchy: boolean;
 }
 

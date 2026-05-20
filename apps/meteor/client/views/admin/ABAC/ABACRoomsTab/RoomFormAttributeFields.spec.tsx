@@ -43,7 +43,7 @@ const appRoot = mockAppRoot()
 		ABAC_Search_Attribute: 'Search attribute',
 		ABAC_Select_Attribute_Values: 'Select attribute values',
 		Remove: 'Remove',
-		ABAC_Picker_Virtru_Helper: 'Attributes are provided by Virtru and limited to those you possess.',
+		ABAC_Picker_External_Store_Helper: 'Available attributes are limited to those you possess.',
 	})
 	.withSetting('ABAC_Attribute_Store', 'local')
 	.build();

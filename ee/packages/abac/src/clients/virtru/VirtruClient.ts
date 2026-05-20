@@ -1,7 +1,7 @@
 import { serverFetch } from '@rocket.chat/server-fetch';
 
-import { logger } from '../logger';
-import type { IVirtruPDPConfig, ITokenCache } from '../pdp/types';
+import { logger } from '../../logger';
+import type { IVirtruPDPConfig, ITokenCache } from '../../pdp/types';
 
 const virtruClientLogger = logger.section('VirtruClient');
 
@@ -87,6 +87,8 @@ export class VirtruClient {
 	async apiCall<T>(endpoint: string, body: unknown): Promise<T> {
 		const token = await this.getClientToken();
 
+		virtruClientLogger.debug({ msg: 'Virtru PDP API call request', endpoint, body });
+
 		const response = await serverFetch(`${this.config.baseUrl}${endpoint}`, {
 			method: 'POST',
 			timeout: REQUEST_TIMEOUT,
@@ -104,6 +106,8 @@ export class VirtruClient {
 			throw new Error('Virtru PDP call failed');
 		}
 
-		return response.json() as Promise<T>;
+		const data = (await response.json()) as T;
+		virtruClientLogger.debug({ msg: 'Virtru PDP API call response', endpoint, response: data });
+		return data;
 	}
 }

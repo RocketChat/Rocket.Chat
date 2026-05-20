@@ -1,6 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Button, FieldError, FieldRow, MultiSelectFiltered, SelectFiltered } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +24,6 @@ const RoomFormAttributeField = ({
 	disabled = false,
 }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
-	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
 
@@ -88,11 +86,6 @@ const RoomFormAttributeField = ({
 					}}
 				/>
 			</FieldRow>
-			{attributeStore === 'virtru' && (
-				<Box mbe={4} color='annotation' fontSize='p2'>
-					{t('ABAC_Picker_Virtru_Helper')}
-				</Box>
-			)}
 			{keyFieldState.error && (
 				<FieldError id={`${keyField.name}-error`} role='alert'>
 					{keyFieldState.error.message}

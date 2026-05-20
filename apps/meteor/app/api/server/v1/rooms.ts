@@ -89,6 +89,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
+import { scopeAdminRoomsForAbac } from '../lib/scopeAdminRoomsForAbac';
 
 export async function findRoomByIdOrName({
 	params,
@@ -1482,7 +1483,8 @@ export const roomEndpoints = API.v1
 				projection: adminFields,
 			});
 
-			const [rooms, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
+			const [stripped, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
+			const rooms = (await scopeAdminRoomsForAbac(stripped, this.userId)) as IRoom[];
 
 			return API.v1.success({
 				rooms,

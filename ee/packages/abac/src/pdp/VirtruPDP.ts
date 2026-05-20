@@ -6,8 +6,8 @@ import pLimit from 'p-limit';
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { logger } from '../logger';
 import type { IPolicyDecisionPoint, IGetDecisionBulkRequest, IGetDecisionBulkResponse, IResourceDecision } from './types';
-import type { VirtruClient } from '../virtru/VirtruClient';
-import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../virtru/identity';
+import type { VirtruClient } from '../clients/virtru/VirtruClient';
+import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
 
 const pdpLogger = logger.section('VirtruPDP');
 

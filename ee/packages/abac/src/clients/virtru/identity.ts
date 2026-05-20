@@ -1,6 +1,6 @@
 import type { IAbacAttributeDefinition, IUser } from '@rocket.chat/core-typings';
 
-import type { IEntityIdentifier } from '../pdp/types';
+import type { IEntityIdentifier } from '../../pdp/types';
 
 export type EntityKeyType = 'emailAddress' | 'oidcIdentifier';
 

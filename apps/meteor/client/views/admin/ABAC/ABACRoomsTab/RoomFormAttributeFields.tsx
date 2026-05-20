@@ -1,4 +1,5 @@
-import { Field, FieldLabel, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RoomFormAttributeField from './RoomFormAttributeField';
@@ -12,6 +13,7 @@ type RoomFormAttributeFieldsProps = {
 
 const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormAttributeFieldsProps) => {
 	const { t } = useTranslation();
+	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
 
 	const { data: attributeList, isLoading } = useAttributeList();
 
@@ -19,23 +21,32 @@ const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormA
 		return <InputBoxSkeleton />;
 	}
 
-	return fields.map((field, index) => (
-		<Field key={field.id}>
-			<FieldLabel id={field.id} required={index === 0}>
-				{t('Attribute')}
-			</FieldLabel>
-			<RoomFormAttributeField
-				labelId={field.id}
-				attributeList={attributeList.attributes}
-				required={index === 0}
-				onRemove={() => {
-					remove(index);
-				}}
-				index={index}
-				disabled={disabled}
-			/>
-		</Field>
-	));
+	return (
+		<>
+			{attributeStore !== 'local' && (
+				<Box mbe={8} color='annotation' fontSize='p2'>
+					{t('ABAC_Picker_External_Store_Helper')}
+				</Box>
+			)}
+			{fields.map((field, index) => (
+				<Field key={field.id}>
+					<FieldLabel id={field.id} required={index === 0}>
+						{t('Attribute')}
+					</FieldLabel>
+					<RoomFormAttributeField
+						labelId={field.id}
+						attributeList={attributeList.attributes}
+						required={index === 0}
+						onRemove={() => {
+							remove(index);
+						}}
+						index={index}
+						disabled={disabled}
+					/>
+				</Field>
+			))}
+		</>
+	);
 };
 
 export default RoomFormAttributeFields;

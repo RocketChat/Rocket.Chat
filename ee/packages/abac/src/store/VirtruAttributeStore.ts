@@ -5,9 +5,9 @@ import mem from 'mem';
 
 import { AbacEntityResolutionFailedError, AbacInvalidAttributeValuesError, PdpUnavailableError } from '../errors';
 import type { AttributeEntitlements, IAttributeStore } from './types';
+import type { VirtruClient } from '../clients/virtru/VirtruClient';
+import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
 import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsResponse } from '../pdp/types';
-import type { VirtruClient } from '../virtru/VirtruClient';
-import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../virtru/identity';
 
 const ENTITLEMENTS_CACHE_MS = 15_000;
 
@@ -46,7 +46,11 @@ export class VirtruAttributeStore implements IAttributeStore {
 		}
 		const { defaultEntityKey } = this.client.getConfig();
 		const res = await this.client.apiCall<IGetEntitlementsResponse>('/authorization.v2.AuthorizationService/GetEntitlements', {
-			entityIdentifier: buildEntityIdentifier(defaultEntityKey, entityId),
+			entityIdentifier: {
+				entityChain: {
+					entities: [buildEntityIdentifier(defaultEntityKey, entityId)],
+				},
+			},
 			withComprehensiveHierarchy: true,
 		});
 		return parseAttributeFqns(Object.keys(res.entitlements?.[0]?.actionsPerAttributeValueFqn ?? {}));

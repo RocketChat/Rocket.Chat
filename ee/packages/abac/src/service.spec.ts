@@ -1,8 +1,8 @@
 import { Audit } from './audit';
+import { VirtruClient } from './clients/virtru/VirtruClient';
 import { AbacService } from './index';
 import { logger } from './logger';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
-import { VirtruClient } from './virtru/VirtruClient';
 
 const mockSettingsGet = jest.fn();
 const mockHasModule = jest.fn();
@@ -25,7 +25,7 @@ jest.mock('./store', () => {
 	};
 });
 
-jest.mock('./virtru/VirtruClient', () => ({
+jest.mock('./clients/virtru/VirtruClient', () => ({
 	VirtruClient: jest.fn().mockImplementation(() => ({
 		updateConfig: jest.fn(),
 		getConfig: jest.fn(() => ({})),

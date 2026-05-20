@@ -116,10 +116,14 @@ const RoomsPage = () => {
 									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
 									<GenericTableCell withTruncatedText>
-										{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
+										{room.abacAttributesRedacted
+											? t('ABAC_Redacted_Placeholder')
+											: room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>
-										{room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}
+										{room.abacAttributesRedacted
+											? t('ABAC_Redacted_Placeholder')
+											: room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}
 									</GenericTableCell>
 									<GenericTableCell>
 										<RoomMenu room={{ rid: room._id, name: room.fname || room.name || room._id }} />
