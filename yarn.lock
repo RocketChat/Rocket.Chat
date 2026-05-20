@@ -10006,7 +10006,6 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-apple: "npm:^2.0.2"
     passport-facebook: "npm:^3.0.0"
-    passport-facebook2: "npm:^1.0.3"
     passport-github2: "npm:^0.1.12"
     passport-google-oauth20: "npm:^2.0.0"
     passport-oauth2: "npm:^1.8.0"
@@ -30048,15 +30047,6 @@ __metadata:
     jsonwebtoken: "npm:^9.0.0"
     passport-oauth2: "npm:^1.6.1"
   checksum: 10/fa061292deb885c09a9edcb027790d14e66112848828f803fd52d96a81adbb60fd8ac8e0ef8a8cf43e029dc048bf971513c60e1b520b020c902d466fe66902e8
-  languageName: node
-  linkType: hard
-
-"passport-facebook2@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "passport-facebook2@npm:1.0.3"
-  dependencies:
-    passport-oauth2: "npm:1.x.x"
-  checksum: 10/0dfc697d4db5bd55c0523f77bc4683568ffb6a5037e9d3d07275dff5007b76d1def83c9bff5f2d8414cd59ea26b3d619abae8d5dcd8bd784d6110d9ce770530d
   languageName: node
   linkType: hard
 

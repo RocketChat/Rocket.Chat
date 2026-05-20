@@ -266,7 +266,6 @@
 		"passport": "^0.7.0",
 		"passport-apple": "^2.0.2",
 		"passport-facebook": "^3.0.0",
-		"passport-facebook2": "^1.0.3",
 		"passport-github2": "^0.1.12",
 		"passport-google-oauth20": "^2.0.0",
 		"passport-oauth2": "^1.8.0",
