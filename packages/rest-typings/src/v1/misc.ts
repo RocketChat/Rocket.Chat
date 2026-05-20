@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -52,6 +52,59 @@ const SpotlightSchema = {
 };
 
 export const isSpotlightProps = ajvQuery.compile<Spotlight>(SpotlightSchema);
+
+type UnifiedSearch = PaginatedRequest<{
+	query: string;
+	includeMessages?: boolean;
+	includeIntelligent?: boolean;
+}>;
+
+const UnifiedSearchSchema = {
+	type: 'object',
+	properties: {
+		query: {
+			type: 'string',
+			minLength: 1,
+		},
+		includeMessages: {
+			type: 'boolean',
+			nullable: true,
+		},
+		includeIntelligent: {
+			type: 'boolean',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['query'],
+	additionalProperties: false,
+};
+
+export const isUnifiedSearchProps = ajvQuery.compile<UnifiedSearch>(UnifiedSearchSchema);
+
+export type UnifiedSearchMessageResult = Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u'> & {
+	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
+};
+
+export type UnifiedSearchIntelligentResult = {
+	_id: string;
+	rid?: string;
+	msgId?: string;
+	text: string;
+	score?: number;
+	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
+};
 
 type Directory = PaginatedRequest<{
 	text: string;
@@ -187,6 +240,20 @@ export type MiscEndpoints = {
 		GET: (params: Spotlight) => {
 			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>)[];
 			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
+		};
+	};
+
+	'/v1/search.unified': {
+		GET: (params: UnifiedSearch) => {
+			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>)[];
+			rooms: Pick<Required<IRoom>, 't' | 'name' | '_id'>[];
+			messages: UnifiedSearchMessageResult[];
+			intelligent: UnifiedSearchIntelligentResult[];
+			meta: {
+				globalMessagesEnabled: boolean;
+				intelligentSearchEnabled: boolean;
+				intelligentSearchConfigured: boolean;
+			};
 		};
 	};
 

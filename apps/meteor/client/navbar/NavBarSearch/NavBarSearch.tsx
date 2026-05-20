@@ -13,13 +13,18 @@ import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
+import { useExternalLink } from '../../hooks/useExternalLink';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { links } from '../../lib/links';
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
+	const handleOpenLink = useExternalLink();
+	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('rocket.chat-ai');
 
-	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
+	const placeholder = [t('Search_users_rooms_messages'), shortcut].filter(Boolean).join(' ');
 
 	const methods = useForm({ defaultValues: { filterText: '' } });
 	const {
@@ -50,6 +55,14 @@ const NavBarSearch = () => {
 	const handleClearText = useEffectEvent(() => {
 		resetField('filterText');
 		setFocus('filterText');
+	});
+
+	const handleIntelligentSearchClick = useEffectEvent(() => {
+		if (hasIntelligentSearchLicense) {
+			return;
+		}
+
+		handleOpenLink(links.go.contactSales);
 	});
 
 	useEffect(() => {
@@ -90,11 +103,20 @@ const NavBarSearch = () => {
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
 					addon={
-						isDirty ? (
-							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
-						) : (
-							<Icon name='magnifier' size='x16' aria-label={t('Search')} />
-						)
+						<Box display='flex' alignItems='center'>
+							{isDirty ? (
+								<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
+							) : (
+								<Icon name='magnifier' size='x16' aria-label={t('Search')} />
+							)}
+							<IconButton
+								mini
+								icon={hasIntelligentSearchLicense ? 'stars' : 'lock'}
+								aria-label={hasIntelligentSearchLicense ? t('Intelligent_Search') : t('Intelligent_Search_locked')}
+								title={hasIntelligentSearchLicense ? t('Intelligent_Search') : t('Contact_sales_for_Intelligent_Search')}
+								onClick={handleIntelligentSearchClick}
+							/>
+						</Box>
 					}
 				/>
 				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}

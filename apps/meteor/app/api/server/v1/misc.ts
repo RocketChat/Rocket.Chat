@@ -1,11 +1,12 @@
 import crypto from 'node:crypto';
 
-import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
+import type { IDirectoryChannelResult, IDirectoryUserResult, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Settings, Subscriptions, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
 	isShieldSvgProps,
 	isSpotlightProps,
+	isUnifiedSearchProps,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
@@ -13,7 +14,8 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
-import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
+import type { MeApiSuccessResponse, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
@@ -23,6 +25,7 @@ import { Meteor } from 'meteor/meteor';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
+import { messageSearch } from '../../../../server/methods/messageSearch';
 import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { passwordPolicy } from '../../../lib/server';
@@ -31,6 +34,7 @@ import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -337,42 +341,47 @@ API.v1.get(
 	},
 );
 
+const spotlightUsersSchema = {
+	type: 'array',
+	items: {
+		type: 'object',
+		properties: {
+			_id: { type: 'string' },
+			name: { type: 'string' },
+			username: { type: 'string' },
+			status: { type: 'string' },
+			statusText: { type: 'string' },
+			avatarETag: { type: 'string' },
+		},
+		required: ['_id', 'name', 'username', 'status'],
+		additionalProperties: true,
+	},
+} as const;
+
+const spotlightRoomsSchema = {
+	type: 'array',
+	items: {
+		type: 'object',
+		properties: {
+			_id: { type: 'string' },
+			t: { type: 'string' },
+			name: { type: 'string' },
+			fname: { type: 'string' },
+			lastMessage: { $ref: '#/components/schemas/IMessage' },
+		},
+		required: ['_id', 't'],
+		additionalProperties: true,
+	},
+} as const;
+
 const spotlightResponseSchema = ajv.compile<{
 	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
-	rooms: Pick<IRoom, 't' | 'name' | 'lastMessage' | '_id'>[];
+	rooms: Pick<IRoom, 't' | 'name' | 'fname' | 'lastMessage' | '_id'>[];
 }>({
 	type: 'object',
 	properties: {
-		users: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					_id: { type: 'string' },
-					name: { type: 'string' },
-					username: { type: 'string' },
-					status: { type: 'string' },
-					statusText: { type: 'string' },
-					avatarETag: { type: 'string' },
-				},
-				required: ['_id', 'name', 'username', 'status'],
-				additionalProperties: true,
-			},
-		},
-		rooms: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					_id: { type: 'string' },
-					t: { type: 'string' },
-					name: { type: 'string' },
-					lastMessage: { $ref: '#/components/schemas/IMessage' },
-				},
-				required: ['_id', 't', 'name'],
-				additionalProperties: true,
-			},
-		},
+		users: spotlightUsersSchema,
+		rooms: spotlightRoomsSchema,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['users', 'rooms', 'success'],
@@ -396,6 +405,307 @@ API.v1.get(
 		const result = await spotlightMethod({ text: query, userId: this.userId });
 
 		return API.v1.success(result);
+	},
+);
+
+const MAX_UNIFIED_SEARCH_RESULTS = 10;
+const AI_SEARCH_PAGE_SIZE = 5;
+
+const unifiedSearchResponseSchema = ajv.compile<{
+	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+	rooms: Pick<IRoom, 't' | 'name' | 'fname' | '_id'>[];
+	messages: UnifiedSearchMessageResult[];
+	intelligent: UnifiedSearchIntelligentResult[];
+	meta: {
+		globalMessagesEnabled: boolean;
+		intelligentSearchEnabled: boolean;
+		intelligentSearchConfigured: boolean;
+	};
+}>({
+	type: 'object',
+	properties: {
+		users: spotlightUsersSchema,
+		rooms: spotlightRoomsSchema,
+		messages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					rid: { type: 'string' },
+					msg: { type: 'string', nullable: true },
+					u: { type: 'object', nullable: true },
+					room: {
+						type: 'object',
+						nullable: true,
+						properties: {
+							_id: { type: 'string' },
+							t: { type: 'string' },
+							name: { type: 'string', nullable: true },
+							fname: { type: 'string', nullable: true },
+						},
+						required: ['_id', 't'],
+						additionalProperties: true,
+					},
+				},
+				required: ['_id', 'rid'],
+				additionalProperties: true,
+			},
+		},
+		intelligent: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					rid: { type: 'string', nullable: true },
+					msgId: { type: 'string', nullable: true },
+					text: { type: 'string' },
+					score: { type: 'number', nullable: true },
+					room: {
+						type: 'object',
+						nullable: true,
+						properties: {
+							_id: { type: 'string' },
+							t: { type: 'string' },
+							name: { type: 'string', nullable: true },
+							fname: { type: 'string', nullable: true },
+						},
+						required: ['_id', 't'],
+						additionalProperties: true,
+					},
+				},
+				required: ['_id', 'text'],
+				additionalProperties: true,
+			},
+		},
+		meta: {
+			type: 'object',
+			properties: {
+				globalMessagesEnabled: { type: 'boolean' },
+				intelligentSearchEnabled: { type: 'boolean' },
+				intelligentSearchConfigured: { type: 'boolean' },
+			},
+			required: ['globalMessagesEnabled', 'intelligentSearchEnabled', 'intelligentSearchConfigured'],
+			additionalProperties: false,
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['users', 'rooms', 'messages', 'intelligent', 'meta', 'success'],
+	additionalProperties: false,
+});
+
+const normalizeSimilarityPercent = (value: unknown): number => {
+	const numeric = Number(value);
+
+	if (!Number.isFinite(numeric)) {
+		return 0;
+	}
+
+	return Math.min(100, Math.max(0, Math.floor(numeric)));
+};
+
+const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number => Number((1 - minimumSimilarityPercent / 100).toFixed(4));
+
+const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
+	if (!roomIds.length) {
+		return new Map();
+	}
+
+	const uniqueRoomIds = [...new Set(roomIds)];
+	const rooms = await Rooms.findByIds(uniqueRoomIds, {
+		projection: { _id: 1, t: 1, name: 1, fname: 1 },
+	}).toArray();
+
+	return new Map(rooms.map((room) => [room._id, room]));
+};
+
+const getUserRoomIds = async (userId: string): Promise<string[]> =>
+	(
+		await Subscriptions.findByUserId(userId, {
+			projection: { rid: 1 },
+		}).toArray()
+	).map((subscription) => subscription.rid);
+
+const extractIntelligentResultIds = (result: any): { rid?: string; msgId?: string } => {
+	const metadata = result?.metadata ?? {};
+	let rid = metadata.room_id || metadata.rid || result?.room_id || result?.rid;
+	let msgId = metadata.msg_id || metadata.message_id || result?.msg_id || result?.message_id || result?.id;
+	const externalIdentifier = typeof result?.external_identifier === 'string' ? result.external_identifier : '';
+
+	if ((!rid || !msgId) && externalIdentifier) {
+		const separator = externalIdentifier.indexOf(':');
+		if (separator > 0 && separator < externalIdentifier.length - 1) {
+			rid = rid || externalIdentifier.slice(0, separator);
+			msgId = msgId || externalIdentifier.slice(separator + 1);
+		} else {
+			msgId = msgId || externalIdentifier;
+		}
+	}
+
+	return { rid, msgId };
+};
+
+const normalizeIntelligentResults = async (rawSearchResults: any, userRoomIds: string[]): Promise<UnifiedSearchIntelligentResult[]> => {
+	let rawResults: any[] = [];
+
+	if (Array.isArray(rawSearchResults)) {
+		rawResults = rawSearchResults;
+	} else if (Array.isArray(rawSearchResults?.results)) {
+		rawResults = rawSearchResults.results;
+	} else if (Array.isArray(rawSearchResults?.context)) {
+		rawResults = rawSearchResults.context;
+	} else if (Array.isArray(rawSearchResults?.documents)) {
+		rawResults = rawSearchResults.documents;
+	}
+
+	const userRoomIdSet = new Set(userRoomIds);
+	const candidates = rawResults
+		.map((result: any, index: number) => {
+			const { rid, msgId } = extractIntelligentResultIds(result);
+			const metadata = result?.metadata ?? {};
+			const text = String(result?.text || result?.content || result?.document || result?.page_content || metadata.text || '');
+			const score = Number(result?.score ?? result?.distance ?? result?.similarity ?? metadata.score);
+
+			return {
+				_id: `${rid || 'intelligent'}-${msgId || index}`,
+				rid,
+				msgId,
+				text,
+				...(Number.isFinite(score) && { score }),
+			};
+		})
+		.filter((result: UnifiedSearchIntelligentResult) => result.text && (!result.rid || userRoomIdSet.has(result.rid)))
+		.slice(0, AI_SEARCH_PAGE_SIZE);
+
+	const rooms = await getRoomMap(candidates.map(({ rid }) => rid).filter(Boolean) as string[]);
+
+	return candidates.map((result) => ({
+		...result,
+		...(result.rid && rooms.has(result.rid) && { room: rooms.get(result.rid) }),
+	}));
+};
+
+const searchIntelligent = async (query: string, userRoomIds: string[]): Promise<UnifiedSearchIntelligentResult[]> => {
+	const baseUrl = String(settings.get('AI_Intelligent_Search_Pipeline_Base_URL') || '').replace(/\/+$/, '');
+	const pipelineId = String(settings.get('AI_Intelligent_Search_Pipeline_ID') || '');
+	const apiKey = String(settings.get('AI_Intelligent_Search_API_Key') || '');
+	const apiKeySecret = String(settings.get('AI_Intelligent_Search_API_Key_Secret') || '');
+
+	if (!baseUrl || !pipelineId || !apiKey || !apiKeySecret || !userRoomIds.length) {
+		return [];
+	}
+
+	const minimumSimilarity = normalizeSimilarityPercent(settings.get('AI_Intelligent_Search_Min_Similarity_Percent'));
+	const response = await fetch(`${baseUrl}/pipelines/${encodeURIComponent(pipelineId)}/search`, {
+		method: 'POST',
+		timeout: 10000,
+		ignoreSsrfValidation: false,
+		allowList: [],
+		headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json',
+			'X-API-KEY': apiKey,
+			'X-API-KEY-SECRET': apiKeySecret,
+		},
+		body: JSON.stringify({
+			query,
+			type: 'similarity',
+			classification: {
+				classifications: [],
+				search_type: 2,
+			},
+			filters: {
+				room_id: {
+					$in: userRoomIds,
+				},
+			},
+			params: {
+				k: AI_SEARCH_PAGE_SIZE,
+				threshold: getSemanticDistanceThreshold(minimumSimilarity),
+			},
+		}),
+	});
+
+	if (!response.ok) {
+		return [];
+	}
+
+	return normalizeIntelligentResults(await response.json(), userRoomIds);
+};
+
+API.v1.get(
+	'search.unified',
+	{
+		authRequired: true,
+		query: isUnifiedSearchProps,
+		response: {
+			200: unifiedSearchResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const query = this.queryParams.query.trim();
+		const { count } = await getPaginationItems(this.queryParams);
+		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
+
+		const [spotlight, userRoomIds] = await Promise.all([
+			spotlightMethod({
+				text: query,
+				userId: this.userId,
+				type: { users: true, rooms: true, includeFederatedRooms: true },
+			}),
+			getUserRoomIds(this.userId),
+		]);
+
+		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
+		const intelligentSearchEnabled = settings.get('AI_Intelligent_Search_Enabled') === true;
+		const intelligentSearchConfigured = Boolean(
+			settings.get('AI_Intelligent_Search_Pipeline_Base_URL') &&
+				settings.get('AI_Intelligent_Search_Pipeline_ID') &&
+				settings.get('AI_Intelligent_Search_API_Key') &&
+				settings.get('AI_Intelligent_Search_API_Key_Secret'),
+		);
+
+		let messages: UnifiedSearchMessageResult[] = [];
+		if (this.queryParams.includeMessages && globalMessagesEnabled) {
+			const searchResult = await messageSearch(this.userId, query, undefined, limit, 0);
+			const docs = searchResult && searchResult.message ? await normalizeMessagesForUser(searchResult.message.docs, this.userId) : [];
+			const rooms = await getRoomMap(docs.map((message: IMessage) => message.rid));
+			messages = docs.map((message: IMessage) => ({
+				_id: message._id,
+				rid: message.rid,
+				msg: message.msg,
+				ts: message.ts,
+				u: message.u,
+				...(rooms.has(message.rid) && { room: rooms.get(message.rid) }),
+			}));
+		}
+
+		let intelligent: UnifiedSearchIntelligentResult[] = [];
+		if (this.queryParams.includeIntelligent && intelligentSearchEnabled && intelligentSearchConfigured) {
+			try {
+				intelligent = await searchIntelligent(query, userRoomIds);
+			} catch (error) {
+				SystemLogger.warn({
+					msg: 'Intelligent search request failed',
+					err: error,
+				});
+			}
+		}
+
+		return API.v1.success({
+			users: spotlight.users,
+			rooms: spotlight.rooms,
+			messages,
+			intelligent,
+			meta: {
+				globalMessagesEnabled,
+				intelligentSearchEnabled,
+				intelligentSearchConfigured,
+			},
+		});
 	},
 );
 
