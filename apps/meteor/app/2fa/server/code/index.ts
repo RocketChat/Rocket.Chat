@@ -124,11 +124,6 @@ export async function rememberAuthorizationByToken(token: string, userId: IUser[
 		throw new Meteor.Error('error-user-not-found', 'user not found');
 	}
 
-	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === token);
-	if (!tokenObject) {
-		throw new Meteor.Error('error-token-not-found', 'token not found');
-	}
-
 	const expires = getRememberDate();
 	if (!expires) {
 		return;
