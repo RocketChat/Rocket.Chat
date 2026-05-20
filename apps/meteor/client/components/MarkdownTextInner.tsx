@@ -151,7 +151,7 @@ const MarkdownTextInner = ({
 	withTruncatedText = false,
 	preserveHtml = false,
 	parseEmoji = false,
-	...props
+	...boxProps
 }: MarkdownTextInnerProps) => {
 	const sanitizer = dompurify.sanitize;
 	const { t } = useTranslation();
@@ -204,7 +204,7 @@ const MarkdownTextInner = ({
 			dangerouslySetInnerHTML={{ __html }}
 			withTruncatedText={withTruncatedText}
 			withRichContent={variant === 'inlineWithoutBreaks' ? 'inlineWithoutBreaks' : true}
-			{...props}
+			{...boxProps}
 		/>
 	) : null;
 };
