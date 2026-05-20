@@ -12,7 +12,7 @@
 			"react-dom": ["../../node_modules/preact/compat/"],
 			"react-dom/*": ["../../node_modules/preact/compat/*"]
 		},
-		"types": ["node"],
+		"types": ["node", "webpack-env"],
 		"declaration": false,
 		"declarationMap": false
 	},
