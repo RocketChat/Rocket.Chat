@@ -1,7 +1,12 @@
 import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 
+import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { parseMessageAttachments, parseMessageTextToAstMarkdown } from './parseMessageTextToAstMarkdown';
+
+jest.mock('./getMarkdownParserLimit');
+
+const mockedGetMarkdownParserLimit = jest.mocked(getMarkdownParserLimit);
 
 describe('parseMessageTextToAstMarkdown', () => {
 	const date = new Date('2021-10-27T00:00:00.000Z');
@@ -449,5 +454,90 @@ describe('parseMessageAttachments', () => {
 				expect(parseMessageAttachments(textAttachment, parseOptions, enabledAutoTranslatedOptions)[0]).toStrictEqual(textAttachmentParsed);
 			});
 		});
+	});
+});
+
+describe('parser limit handling', () => {
+	const parseOptions: Options = {
+		colors: true,
+		emoticons: true,
+		katex: {
+			dollarSyntax: true,
+			parenthesisSyntax: true,
+		},
+	};
+
+	const date = new Date('2021-10-27T00:00:00.000Z');
+
+	const baseMessage: IMessage = {
+		ts: date,
+		u: {
+			_id: 'userId',
+			name: 'userName',
+			username: 'userName',
+		},
+		msg: 'message **bold** _italic_ and ~strike~',
+		rid: 'roomId',
+		_id: 'messageId',
+		_updatedAt: date,
+		urls: [],
+	};
+
+	const autoTranslateOptions = {
+		autoTranslateEnabled: false,
+		showAutoTranslate: () => false,
+	};
+
+	beforeEach(() => {
+		mockedGetMarkdownParserLimit.mockReturnValue(Infinity);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	it('should return plain text AST when message exceeds parser limit', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(10);
+
+		const result = parseMessageTextToAstMarkdown(baseMessage, parseOptions, autoTranslateOptions);
+
+		expect(result.md).toStrictEqual([{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: baseMessage.msg }] }]);
+	});
+
+	it('should return plain text AST for attachment text exceeding parser limit', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(10);
+
+		const messageWithAttachment = {
+			...baseMessage,
+			msg: 'short',
+			attachments: [{ text: 'this attachment text is definitely longer than the limit' }],
+		};
+
+		const result = parseMessageTextToAstMarkdown(messageWithAttachment, parseOptions, autoTranslateOptions);
+
+		expect(result.attachments?.[0].md).toStrictEqual([
+			{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'this attachment text is definitely longer than the limit' }] },
+		]);
+	});
+
+	it('should parse normally when message is within the limit', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(Infinity);
+
+		const result = parseMessageTextToAstMarkdown(baseMessage, parseOptions, autoTranslateOptions);
+
+		// Parsed result has BOLD, ITALIC, STRIKE — not just PLAIN_TEXT
+		expect(result.md).not.toStrictEqual([{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: baseMessage.msg }] }]);
+		expect(result.md[0].type).toBe('PARAGRAPH');
+	});
+
+	it('should return existing md when message already has md and is not translated', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(10);
+
+		const existingMd: Root = [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'pre-parsed' }] }];
+		const messageWithMd = { ...baseMessage, md: existingMd };
+
+		const result = parseMessageTextToAstMarkdown(messageWithMd, parseOptions, autoTranslateOptions);
+
+		expect(result.md).toBe(existingMd);
 	});
 });

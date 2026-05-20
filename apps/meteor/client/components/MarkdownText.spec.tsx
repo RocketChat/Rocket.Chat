@@ -3,8 +3,12 @@ import { render, screen } from '@testing-library/react';
 import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
-
 import '@testing-library/jest-dom';
+import { getMarkdownParserLimit } from '../lib/getMarkdownParserLimit';
+
+jest.mock('../lib/getMarkdownParserLimit');
+
+const getMarkdownParserLimitMock = jest.mocked(getMarkdownParserLimit);
 
 const MOCKED_BASE_URI = 'http://localhost/';
 
@@ -497,5 +501,51 @@ describe('DOMPurify hook registration', () => {
 		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
 		addHookSpy.mockRestore();
+	});
+});
+
+describe('parser limit handling', () => {
+	beforeEach(() => {
+		getMarkdownParserLimitMock.mockClear();
+	});
+
+	it('should render plain text without parsing when content exceeds the limit', () => {
+		getMarkdownParserLimitMock.mockReturnValue(5);
+
+		const longContent = '**this should not be bold** because it exceeds the limit';
+		render(<MarkdownText content={longContent} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const element = screen.getByText(longContent);
+		expect(element).toBeInTheDocument();
+		expect(element.tagName).not.toBe('STRONG');
+	});
+
+	it('should render parsed markdown when content is within the limit', () => {
+		getMarkdownParserLimitMock.mockReturnValue(Infinity);
+
+		const content = '**bold text**';
+		render(<MarkdownText content={content} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const boldText = screen.getByText('bold text');
+		expect(boldText).toBeInTheDocument();
+		expect(boldText.tagName).toBe('STRONG');
+	});
+
+	it('should render parsed markdown when content length equals the limit', () => {
+		const content = '**hi**';
+
+		getMarkdownParserLimitMock.mockReturnValue(content.length);
+
+		render(<MarkdownText content={content} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const parsedText = screen.getByText('hi');
+		expect(parsedText).toBeInTheDocument();
+		expect(parsedText.tagName).toBe('STRONG');
 	});
 });
