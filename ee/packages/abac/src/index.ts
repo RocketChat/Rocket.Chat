@@ -71,8 +71,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private attributeStore: IAttributeStore = new LocalAttributeStore();
 
-	private lastEffectiveStore: 'local' | 'virtru' = 'local';
-
 	decisionCacheTimeout = 60; // seconds
 
 	constructor() {
@@ -90,12 +88,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
-			void this.detectAndApplyTransition({ fireReverse: false });
+			this.syncStoreSelection();
 		});
 
 		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
 			this.abacEnabled = setting.value as boolean;
-			void this.detectAndApplyTransition({ fireReverse: false });
+			this.syncStoreSelection();
 		});
 
 		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
@@ -104,8 +102,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return;
 			}
 
+			const prev = this.attributeStoreSetting;
 			this.attributeStoreSetting = value;
-			void this.detectAndApplyTransition({ fireReverse: true });
+			this.syncStoreSelection();
+			if (prev !== undefined && prev !== value) {
+				void this.onAttributeStoreTransition(prev as 'local' | 'virtru', value).catch((err) =>
+					logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
+				);
+			}
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -186,35 +190,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 	private syncAttributeStore(): void {
 		const next = this.effectiveStore();
 		this.attributeStore = next === 'virtru' ? new VirtruAttributeStore(this.virtruClient) : new LocalAttributeStore();
-		this.lastEffectiveStore = next;
 	}
 
 	protected getAttributeStore(): IAttributeStore {
 		return this.attributeStore;
 	}
 
-	private detectAndApplyTransition({ fireReverse }: { fireReverse: boolean }): void {
-		const prev = this.lastEffectiveStore;
-		const next = this.effectiveStore();
-		if (prev === next) {
-			return;
-		}
+	private syncStoreSelection(): void {
 		this.syncAttributeStore();
-		if (prev !== 'virtru' && next === 'virtru') {
-			void this.onAttributeStoreTransition(prev, 'virtru').catch((err) =>
-				logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
-			);
-			return;
-		}
-		if (fireReverse && prev === 'virtru' && next === 'local') {
-			void this.onAttributeStoreTransition('virtru', 'local').catch((err) =>
-				logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
-			);
-		}
 	}
 
 	async reevaluateAttributeStore(): Promise<void> {
-		this.detectAndApplyTransition({ fireReverse: false });
+		this.syncStoreSelection();
 	}
 
 	async isExternalAttributeStore(): Promise<boolean> {
