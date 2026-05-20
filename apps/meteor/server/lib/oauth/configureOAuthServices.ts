@@ -24,7 +24,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					clientSecret: config.clientSecret,
 					consumerKey: config.clientId,
 					consumerSecret: config.clientSecret,
-					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
+					callbackURL: `${siteUrl}/_oauth/${config.provider}`,
 					state: true,
 					pkce: true,
 					profileFields: ['id', 'displayName', 'emails'],
@@ -79,7 +79,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login', keepSessionInfo: true }),
 		);
 		oAuthRouter.get(
-			`/oauth/${config.provider}/callback`,
+			`/_oauth/${config.provider}`,
 			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
 			passportOAuthCallback(siteUrl),
 		);

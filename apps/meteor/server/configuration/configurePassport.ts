@@ -14,6 +14,8 @@ import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 
+const oAuthPaths = ['/oauth', '/_oauth'];
+
 const { Router: router } = express;
 
 export const oAuthRouter = router();
@@ -25,7 +27,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 	oAuthApp.use(
-		'/oauth',
+		oAuthPaths,
 		session({
 			name: 'oauth',
 			secret: settings.get<string>('Accounts_OAuth_Session_Secret'),
@@ -47,10 +49,10 @@ export const configurePassport = (settings: ICachedSettings) => {
 		}),
 	);
 
-	oAuthApp.use('/oauth', passport.initialize());
-	oAuthApp.use('/oauth', passport.session());
-	oAuthApp.use('/oauth', flash());
-	oAuthApp.use('/oauth', bodyParser.urlencoded({ extended: true }));
+	oAuthApp.use(oAuthPaths, passport.initialize());
+	oAuthApp.use(oAuthPaths, passport.session());
+	oAuthApp.use(oAuthPaths, flash());
+	oAuthApp.use(oAuthPaths, bodyParser.urlencoded({ extended: true }));
 
 	const oauthRateLimiter = rateLimit({
 		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -66,7 +68,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 		},
 	});
 
-	oAuthRouter.use('/oauth', oauthRateLimiter);
+	oAuthRouter.use(oAuthPaths, oauthRateLimiter);
 
 	// Register OAuth Routes
 	oAuthApp.use(oAuthRouter);

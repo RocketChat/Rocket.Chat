@@ -59,7 +59,7 @@ settings.watchMultiple(
 					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
 					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
 					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
-					callbackURL: `${settings.get<string>('Site_Url')}/oauth/apple/callback`,
+					callbackURL: `${settings.get<string>('Site_Url')}/_oauth/apple`,
 					scope: ['name', 'email'],
 					passReqToCallback: false,
 					state: false,
@@ -136,7 +136,7 @@ settings.watchMultiple(
 		);
 
 		oAuthRouter
-			.route('/oauth/apple/callback')
+			.route('/_oauth/apple')
 			.post(...callbackHandler)
 			.get(...callbackHandler);
 	},
