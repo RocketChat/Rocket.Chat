@@ -52,7 +52,7 @@ export class LocalAttributeStore implements IAttributeStore {
 		return rooms;
 	}
 
-	// No-op: local mode imposes no per-room write restrictions; authorization is enforced only by VirtruAttributeStore.
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	async assertCanModifyRoom(_room: Pick<IRoom, '_id' | 'abacAttributes'>, _actor: AbacActor): Promise<void> {}
+	assertCanModifyRoom(_room: Pick<IRoom, '_id' | 'abacAttributes'>, _actor: AbacActor): Promise<void> {
+		return Promise.resolve();
+	}
 }

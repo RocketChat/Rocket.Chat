@@ -10,6 +10,7 @@ import type {
 	IUser,
 	ILDAPEntry,
 	AbacAuditReason,
+	AbacAttributeStoreType,
 	AbacPdpType,
 } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
@@ -51,6 +52,8 @@ const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, ''
 
 const isAbacPdpType = (value: unknown): value is AbacPdpType => value === 'local' || value === 'virtru';
 
+const isAbacAttributeStoreType = (value: unknown): value is AbacAttributeStoreType => value === 'local' || value === 'virtru';
+
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
@@ -71,7 +74,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private pdpTypeSetting?: AbacPdpType;
 
-	private attributeStoreSetting?: AbacPdpType;
+	private attributeStoreSetting?: AbacAttributeStoreType;
 
 	private attributeStore: IAttributeStore = new LocalAttributeStore();
 
@@ -112,7 +115,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (!isAbacPdpType(value)) {
+			if (!isAbacAttributeStoreType(value)) {
 				return;
 			}
 
@@ -187,9 +190,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private syncVirtruPdpConfig(): void {
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
+		if (this.attributeStore instanceof VirtruAttributeStore) {
+			this.attributeStore.clearCaches();
+		}
 	}
 
-	private effectiveStore(): AbacPdpType {
+	private effectiveStore(): AbacAttributeStoreType {
 		if (
 			License.hasModule('abac') &&
 			this.abacEnabled === true &&
@@ -222,7 +228,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return this.effectiveStore() !== 'local';
 	}
 
-	private async onAttributeStoreTransition(from: AbacPdpType, to: AbacPdpType): Promise<void> {
+	private async onAttributeStoreTransition(from: AbacAttributeStoreType, to: AbacAttributeStoreType): Promise<void> {
 		if (!License.hasModule('abac')) {
 			return;
 		}
@@ -267,7 +273,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.abacEnabled = abacEnabled;
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
-		this.attributeStoreSetting = isAbacPdpType(attributeStore) ? attributeStore : undefined;
+		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');

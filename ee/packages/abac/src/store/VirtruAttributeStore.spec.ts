@@ -174,6 +174,22 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(apiCall).toHaveBeenCalledTimes(2);
 	});
 
+	it('clearCaches() forces the next entitlementsOf to re-hit the PDP', async () => {
+		const apiCall = jest.fn().mockResolvedValue({
+			entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }],
+		});
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+
+		await store.entitlementsOf(actor);
+		await store.entitlementsOf(actor);
+		expect(apiCall).toHaveBeenCalledTimes(1);
+
+		store.clearCaches();
+
+		await store.entitlementsOf(actor);
+		expect(apiCall).toHaveBeenCalledTimes(2);
+	});
+
 	it('unresolvable entity => entity-resolution error', async () => {
 		usersFindOneById.mockResolvedValue({ _id: 'u1', emails: [], username: 'bob' });
 		const store = new VirtruAttributeStore(mkClient());

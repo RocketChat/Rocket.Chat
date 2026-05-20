@@ -21,7 +21,9 @@ jest.mock('./store', () => {
 			validateAssignable: (attrs: any[], _actor: any) => ensureAttributeDefinitionsExist(attrs),
 			scopeRoomsPage: (rooms: any[]) => Promise.resolve(rooms),
 		})),
-		VirtruAttributeStore: jest.fn(),
+		VirtruAttributeStore: jest.fn().mockImplementation(() => ({
+			clearCaches: jest.fn(),
+		})),
 	};
 });
 

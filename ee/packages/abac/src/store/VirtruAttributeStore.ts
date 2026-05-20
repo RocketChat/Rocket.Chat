@@ -107,6 +107,10 @@ export class VirtruAttributeStore implements IAttributeStore {
 		return new Map(defs.map((d) => [d.key, new Set(d.values)]));
 	}
 
+	clearCaches(): void {
+		this.entitlementsCache.clear();
+	}
+
 	async validateAssignable(attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
 		const owned = await this.entitlementsOf(actor);
 		for (const a of attrs) {

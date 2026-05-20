@@ -14,6 +14,8 @@ export type AbacAuditReason =
 
 export type AbacPdpType = 'local' | 'virtru';
 
+export type AbacAttributeStoreType = 'local' | 'virtru';
+
 export type AbacActionPerformed = 'revoked-object-access' | 'granted-object-access';
 
 export type AbacAttributeDefinitionChangeType =
@@ -81,8 +83,8 @@ export interface IServerEventAbacObjectAttributesRemoved
 
 export interface IServerEventAbacAttributeStoreSwitched
 	extends IAuditServerEventType<
-		| { key: 'from'; value: AbacPdpType }
-		| { key: 'to'; value: AbacPdpType }
+		| { key: 'from'; value: AbacAttributeStoreType }
+		| { key: 'to'; value: AbacAttributeStoreType }
 		| { key: 'reason'; value: AbacAuditReason }
 		| { key: 'roomsAffected'; value: number }
 	> {

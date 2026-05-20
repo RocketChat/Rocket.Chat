@@ -65,6 +65,8 @@ Meteor.startup(async () => {
 			if (await cronJobs.has(VIRTRU_PDP_SYNC_JOB)) {
 				await cronJobs.remove(VIRTRU_PDP_SYNC_JOB);
 			}
+
+			await Abac.reevaluateAttributeStore();
 		},
 	});
 });
