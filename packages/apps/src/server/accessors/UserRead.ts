@@ -17,6 +17,14 @@ export class UserRead implements IUserRead {
 		return this.userBridge.doGetByUsername(username, this.appId);
 	}
 
+	public getBySipExtension(extension: string): Promise<IUser | undefined> {
+		if (!extension) {
+			return Promise.resolve(undefined);
+		}
+
+		return this.userBridge.doGetBySipExtension(extension, this.appId);
+	}
+
 	public getAppUser(appId: string = this.appId): Promise<IUser | undefined> {
 		return this.userBridge.doGetAppUser(appId);
 	}

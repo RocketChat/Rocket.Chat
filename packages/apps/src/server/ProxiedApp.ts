@@ -1,4 +1,4 @@
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';

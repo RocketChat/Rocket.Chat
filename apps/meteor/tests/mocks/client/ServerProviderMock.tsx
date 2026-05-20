@@ -56,6 +56,7 @@ const uploadToEndpoint = async () => {
 	throw new Error('not implemented');
 }; // to be implemented
 const getStream = () => () => () => undefined; // to be implemented
+const getStreamAll = () => () => () => undefined; // to be implemented
 const callEndpoint = () => {
 	throw new Error('not implemented');
 }; // to be implemented
@@ -71,6 +72,7 @@ const contextValue: ServerContextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
+	getStreamAll,
 	reconnect: () => undefined,
 	disconnect: () => undefined,
 	writeStream,

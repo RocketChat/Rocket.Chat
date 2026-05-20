@@ -12,10 +12,25 @@ import { AppPermissions } from '../permissions/AppPermissions';
 export { GetMessagesSortableFields };
 export type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };
 
+const READ_ONLY_ROOM_FIELDS = ['abacAttributes'] as const;
+
+const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
+	for (const field of READ_ONLY_ROOM_FIELDS) {
+		delete room[field];
+
+		// This prevents the field being added when a room gets created
+		// since on room creation `isPartial=false` and so these props are spread on the final room object
+		// If we need to allow abac room creation from apps, we would need to remove this.
+		delete (room as any)._unmappedProperties_?.[field];
+	}
+
+	return room;
+};
+
 export abstract class RoomBridge extends BaseBridge {
 	public async doCreate(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		if (this.hasWritePermission(appId)) {
-			return this.create(room, members, appId);
+			return this.create(stripReadOnlyRoomFields(room), members, appId);
 		}
 	}
 
@@ -67,7 +82,7 @@ export abstract class RoomBridge extends BaseBridge {
 
 	public async doUpdate(room: IRoom, members: Array<string>, appId: string): Promise<void> {
 		if (this.hasWritePermission(appId)) {
-			return this.update(room, members, appId);
+			return this.update(stripReadOnlyRoomFields(room), members, appId);
 		}
 	}
 
@@ -79,7 +94,7 @@ export abstract class RoomBridge extends BaseBridge {
 		appId: string,
 	): Promise<string> {
 		if (this.hasWritePermission(appId)) {
-			return this.createDiscussion(room, parentMessage, reply, members, appId);
+			return this.createDiscussion(stripReadOnlyRoomFields(room), parentMessage, reply, members, appId);
 		}
 	}
 

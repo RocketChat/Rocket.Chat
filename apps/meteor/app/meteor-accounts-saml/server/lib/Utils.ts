@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import zlib from 'zlib';
+import { EventEmitter } from 'node:events';
+import zlib from 'node:zlib';
 
 import type { Logger } from '@rocket.chat/logger';
 

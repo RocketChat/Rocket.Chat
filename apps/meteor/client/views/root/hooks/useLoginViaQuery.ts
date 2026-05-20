@@ -7,9 +7,14 @@ export const useLoginViaQuery = () => {
 
 	useEffect(() => {
 		const handleLogin = async () => {
-			const { resumeToken } = router.getSearchParameters();
+			const { resumeToken, loginClient } = router.getSearchParameters();
 
 			if (!resumeToken) {
+				return;
+			}
+
+			//Case handled by useLoginOtherClients, we don't want to login here.
+			if (loginClient) {
 				return;
 			}
 

@@ -69,6 +69,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		Room: {
 			removeUserFromRoom: jest.fn(),
 		},
+		api: {
+			broadcast: jest.fn(),
+		},
 	};
 });
 

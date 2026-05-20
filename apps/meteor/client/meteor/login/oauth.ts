@@ -2,16 +2,17 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
+import { LoginCancelledError } from './LoginCancelledError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
-	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
+	error instanceof Meteor.Error && error.error === LoginCancelledError.numericError;
 
-export const convertError = <T>(error: T): Accounts.LoginCancelledError | T => {
+export const convertError = <T>(error: T): LoginCancelledError | T => {
 	if (isLoginCancelledError(error)) {
-		return new Accounts.LoginCancelledError(error.reason);
+		return new LoginCancelledError(error.reason);
 	}
 
 	return error;

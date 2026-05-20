@@ -1,5 +1,5 @@
-import http from 'http';
-import https from 'https';
+import http from 'node:http';
+import https from 'node:https';
 
 import _ from 'underscore';
 
@@ -68,7 +68,7 @@ const configure = _.debounce(() => {
 	const projectId = settings.get('FileUpload_GoogleStorage_ProjectId');
 	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');
 	const secret = settings.get('FileUpload_GoogleStorage_Secret');
-	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan');
+	const URLExpiryTimeSpan = settings.get<number>('FileUpload_GoogleStorage_URLExpiryTimeSpan');
 
 	if (!bucket || !accessId || !secret) {
 		return;
