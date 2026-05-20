@@ -227,7 +227,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
-		void Audit.attributeStoreSwitched(from, to, modifiedCount);
+		if (modifiedCount > 0) {
+			void Audit.attributeStoreSwitched(from, to, modifiedCount);
+		}
 	}
 
 	setPdpStrategy(strategy: AbacPdpType): void {

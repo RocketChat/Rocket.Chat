@@ -1795,7 +1795,7 @@ describe('AbacService (unit)', () => {
 
 		it('is idempotent: calling onAttributeStoreTransition directly twice succeeds and emits a fresh audit each time', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 0 });
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 2 });
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
 			await (svc as any).onAttributeStoreTransition('local', 'virtru');
@@ -1804,6 +1804,18 @@ describe('AbacService (unit)', () => {
 			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(2);
 			await new Promise((r) => setImmediate(r));
 			expect(auditSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('does not emit an audit when updateMany reports modifiedCount: 0 (loser node in multi-node fan-out)', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 0 });
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
+			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
 		it('does not run the wipe on boot or on unrelated setting changes', async () => {
