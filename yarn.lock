@@ -10524,6 +10524,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/passport-x@workspace:packages/passport-x":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/passport-x@workspace:packages/passport-x"
+  dependencies:
+    "@types/express": "npm:^4.17.25"
+    "@types/passport": "npm:~1.0.17"
+    eslint: "npm:~9.39.4"
+    jest: "npm:~30.2.0"
+    passport-oauth1: "npm:~1.3.0"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/password-policies@workspace:^, @rocket.chat/password-policies@workspace:packages/password-policies":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/password-policies@workspace:packages/password-policies"
@@ -14995,7 +15008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport@npm:*, @types/passport@npm:^1.0.17":
+"@types/passport@npm:*, @types/passport@npm:^1.0.17, @types/passport@npm:~1.0.17":
   version: 1.0.17
   resolution: "@types/passport@npm:1.0.17"
   dependencies:
@@ -30342,7 +30355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth1@npm:1.x.x":
+"passport-oauth1@npm:1.x.x, passport-oauth1@npm:~1.3.0":
   version: 1.3.0
   resolution: "passport-oauth1@npm:1.3.0"
   dependencies:
