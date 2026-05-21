@@ -608,7 +608,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
+
 		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
+
+		await store.assertCanModifyRoom(room, actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const exists = previous.some((a) => a.key === key);
