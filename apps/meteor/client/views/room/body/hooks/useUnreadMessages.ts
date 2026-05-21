@@ -65,10 +65,8 @@ export const useHandleUnread = (
 		if (!message) {
 			message = findFirstMessage(
 				(record) =>
-					record.rid === rid &&
-					record.ts.getTime() > (unread?.since.getTime() ?? -Infinity) &&
-					(!record.tmid || record.tshow === true), 
-					(a, b) => a.ts.getTime() - b.ts.getTime(),
+					record.rid === rid && record.ts.getTime() > (unread?.since.getTime() ?? -Infinity) && (!record.tmid || record.tshow === true),
+				(a, b) => a.ts.getTime() - b.ts.getTime(),
 			);
 		}
 		if (!message) {
