@@ -1,8 +1,8 @@
-import type { IMessage } from '../messages';
-import type { IRoom } from '../rooms';
-import type { IUser } from '../users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-interface IUIKitIncomingInteractionActionButtonBase {
+export interface IUIKitIncomingInteractionActionButtonBase {
 	triggerId: string;
 	type: 'actionButton';
 
@@ -13,7 +13,7 @@ interface IUIKitIncomingInteractionActionButtonBase {
 	payload: Record<string, any>;
 }
 
-interface IUIKitIncomingInteractionActionButtonMessageBox {
+export interface IUIKitIncomingInteractionActionButtonMessageBox {
 	triggerId: string;
 
 	type: 'actionButton';
