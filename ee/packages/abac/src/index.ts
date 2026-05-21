@@ -75,8 +75,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private attributeStoreSetting?: AbacAttributeStoreType;
 
-	private hasAbacLicense = false;
-
 	private attributeStore: IAttributeStore = new LocalAttributeStore();
 
 	decisionCacheTimeout = 60; // seconds
@@ -96,7 +94,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
-			this.syncStoreSelection();
 
 			// Virtru attribute store is meaningless without the Virtru PDP; cascade the setting write
 			// so the ABAC_Attribute_Store listener handles the wipe and propagates across all nodes.
@@ -111,7 +108,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
 			this.abacEnabled = setting.value as boolean;
-			this.syncStoreSelection();
 		});
 
 		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
@@ -122,7 +118,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			const prev = this.attributeStoreSetting;
 			this.attributeStoreSetting = value;
-			this.syncStoreSelection();
 			if (prev !== undefined && prev !== value) {
 				void this.onAttributeStoreTransition(prev, value).catch((err) =>
 					logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
@@ -167,14 +162,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.virtruPdpConfig.attributeNamespace = setting.value as string;
 			this.syncVirtruPdpConfig();
 		});
-
-		this.onEvent('license.module', ({ module, valid }) => {
-			if (module !== 'abac' || valid === this.hasAbacLicense) {
-				return;
-			}
-			this.hasAbacLicense = valid;
-			this.syncStoreSelection();
-		});
 	}
 
 	private async loadVirtruPdpConfig(): Promise<void> {
@@ -204,37 +191,35 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	private effectiveStore(): AbacAttributeStoreType {
-		if (this.hasAbacLicense && this.abacEnabled === true && this.pdpTypeSetting === 'virtru' && this.attributeStoreSetting === 'virtru') {
+	private async effectiveStore(): Promise<AbacAttributeStoreType> {
+		if (
+			this.abacEnabled === true &&
+			this.pdpTypeSetting === 'virtru' &&
+			this.attributeStoreSetting === 'virtru' &&
+			(await License.hasModule('abac'))
+		) {
 			return 'virtru';
 		}
 		return 'local';
 	}
 
-	private syncAttributeStore(): void {
-		const next = this.effectiveStore();
-		this.attributeStore = next === 'virtru' ? new VirtruAttributeStore(this.virtruClient) : new LocalAttributeStore();
-	}
-
-	protected getAttributeStore(): IAttributeStore {
+	private async resolveAttributeStore(): Promise<IAttributeStore> {
+		const next = await this.effectiveStore();
+		const isVirtru = this.attributeStore instanceof VirtruAttributeStore;
+		if (next === 'virtru' && !isVirtru) {
+			this.attributeStore = new VirtruAttributeStore(this.virtruClient);
+		} else if (next === 'local' && isVirtru) {
+			this.attributeStore = new LocalAttributeStore();
+		}
 		return this.attributeStore;
 	}
 
-	private syncStoreSelection(): void {
-		this.syncAttributeStore();
-	}
-
-	async reevaluateAttributeStore(): Promise<void> {
-		this.hasAbacLicense = await License.hasModule('abac');
-		this.syncStoreSelection();
-	}
-
 	async isExternalAttributeStore(): Promise<boolean> {
-		return this.effectiveStore() !== 'local';
+		return (await this.effectiveStore()) !== 'local';
 	}
 
 	private async onAttributeStoreTransition(from: AbacAttributeStoreType, to: AbacAttributeStoreType): Promise<void> {
-		if (!this.hasAbacLicense) {
+		if (!(await License.hasModule('abac'))) {
 			return;
 		}
 		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
@@ -270,28 +255,24 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const [abacEnabled, pdpType, attributeStore, hasAbacLicense] = await Promise.all([
+		const [abacEnabled, pdpType, attributeStore] = await Promise.all([
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
-			License.hasModule('abac'),
 		]);
 
 		this.abacEnabled = abacEnabled;
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
-		this.hasAbacLicense = hasAbacLicense;
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');
-			this.syncAttributeStore();
 			return;
 		}
 
 		await this.loadVirtruPdpConfig();
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		this.setPdpStrategy('virtru');
-		this.syncAttributeStore();
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -367,7 +348,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		count: number;
 		total: number;
 	}> {
-		return this.attributeStore.list(actor, filters);
+		return (await this.resolveAttributeStore()).list(actor, filters);
 	}
 
 	async listAbacRooms(
@@ -427,7 +408,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		const rooms = await cursor.toArray();
-		const scoped = actor ? await this.attributeStore.scopeRoomsPage(rooms, actor) : rooms;
+		const scoped = actor ? await (await this.resolveAttributeStore()).scopeRoomsPage(rooms, actor) : rooms;
 
 		return {
 			rooms: scoped,
@@ -441,7 +422,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		rooms: T[],
 		actor: AbacActor,
 	): Promise<Array<T & IRoomAbacRedaction>> {
-		return this.attributeStore.scopeRoomsPage(rooms, actor);
+		return (await this.resolveAttributeStore()).scopeRoomsPage(rooms, actor);
 	}
 
 	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor): Promise<void> {
@@ -538,8 +519,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
 
-		await this.attributeStore.assertCanModifyRoom(room, actor);
+		await store.assertCanModifyRoom(room, actor);
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
@@ -550,7 +532,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const normalized = validateAndNormalizeAttributes(attributes);
 
-		await this.attributeStore.validateAssignable(normalized, actor);
+		await store.validateAssignable(normalized, actor);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
@@ -568,8 +550,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
 
-		await this.attributeStore.assertCanModifyRoom(room, actor);
+		await store.assertCanModifyRoom(room, actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
@@ -579,7 +562,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new AbacInvalidAttributeValuesError();
 		}
 
-		await this.attributeStore.validateAssignable([{ key, values }], actor);
+		await store.validateAssignable([{ key, values }], actor);
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
@@ -654,10 +637,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 
 		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
 
-		await this.attributeStore.assertCanModifyRoom(room, actor);
+		await store.assertCanModifyRoom(room, actor);
 
-		await this.attributeStore.validateAssignable([{ key, values }], actor);
+		await store.validateAssignable([{ key, values }], actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
@@ -682,10 +666,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 
 		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
 
-		await this.attributeStore.assertCanModifyRoom(room, actor);
+		await store.assertCanModifyRoom(room, actor);
 
-		await this.attributeStore.validateAssignable([{ key, values }], actor);
+		await store.validateAssignable([{ key, values }], actor);
 
 		const exists = room?.abacAttributes?.find((a) => a.key === key);
 

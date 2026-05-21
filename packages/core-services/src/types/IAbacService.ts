@@ -50,6 +50,5 @@ export interface IAbacService {
 	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>, actor: AbacActor | undefined): Promise<void>;
 	evaluateRoomMembership(): Promise<void>;
 	getPDPHealth(): Promise<void>;
-	reevaluateAttributeStore(): Promise<void>;
 	isExternalAttributeStore(): Promise<boolean>;
 }

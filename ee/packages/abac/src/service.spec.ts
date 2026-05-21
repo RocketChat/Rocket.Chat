@@ -1403,27 +1403,25 @@ describe('AbacService (unit)', () => {
 			expect(result).toEqual([roomA, roomB]);
 		});
 
-		it('virtru mode: delegates to attributeStore.scopeRoomsPage', async () => {
+		it('virtru mode: delegates to the virtru store scopeRoomsPage', async () => {
 			asVirtru(service);
-			const fakeStore = { scopeRoomsPage: jest.fn().mockResolvedValue([roomA, roomB]) };
-			(service as any).attributeStore = fakeStore;
+			const scopeRoomsPage = jest.fn().mockResolvedValue([roomA, roomB]);
+			(VirtruAttributeStore as jest.Mock).mockImplementationOnce(() => ({ scopeRoomsPage, clearCaches: jest.fn() }));
 
 			const result = await service.scopeRoomsForAdmin([roomA, roomB], actor);
 
-			expect(fakeStore.scopeRoomsPage).toHaveBeenCalledWith([roomA, roomB], actor);
+			expect(scopeRoomsPage).toHaveBeenCalledWith([roomA, roomB], actor);
 			expect(result).toEqual([roomA, roomB]);
 		});
 
 		it('virtru mode: denied room is redacted, permitted room unchanged', async () => {
 			asVirtru(service);
-			const fakeStore = {
-				scopeRoomsPage: jest
-					.fn()
-					.mockImplementation(async (rooms: any[]) =>
-						rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
-					),
-			};
-			(service as any).attributeStore = fakeStore;
+			const scopeRoomsPage = jest
+				.fn()
+				.mockImplementation(async (rooms: any[]) =>
+					rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
+				);
+			(VirtruAttributeStore as jest.Mock).mockImplementationOnce(() => ({ scopeRoomsPage, clearCaches: jest.fn() }));
 
 			const [permitted, denied] = await service.scopeRoomsForAdmin([roomA, roomB], actor);
 
@@ -1465,34 +1463,34 @@ describe('AbacService (unit)', () => {
 			mockSettingsGet.mockReset();
 		});
 
-		it('selects VirtruAttributeStore when license + all three settings are virtru/enabled', async () => {
+		it('selects the virtru store when license + all three settings are virtru/enabled', async () => {
 			mockHasModule.mockReturnValue(true);
-			await drive(buildSettings({}));
-			expect(VirtruAttributeStore).toHaveBeenCalledTimes(1);
+			const svc = await drive(buildSettings({}));
+			expect(await svc.isExternalAttributeStore()).toBe(true);
 		});
 
-		it('falls back to LocalAttributeStore when license module is absent', async () => {
+		it('falls back to the local store when the license module is absent', async () => {
 			mockHasModule.mockReturnValue(false);
-			await drive(buildSettings({}));
-			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+			const svc = await drive(buildSettings({}));
+			expect(await svc.isExternalAttributeStore()).toBe(false);
 		});
 
-		it('falls back to LocalAttributeStore when ABAC_Enabled is false', async () => {
+		it('falls back to the local store when ABAC_Enabled is false', async () => {
 			mockHasModule.mockReturnValue(true);
-			await drive(buildSettings({ ABAC_Enabled: false }));
-			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+			const svc = await drive(buildSettings({ ABAC_Enabled: false }));
+			expect(await svc.isExternalAttributeStore()).toBe(false);
 		});
 
-		it('falls back to LocalAttributeStore when ABAC_PDP_Type is not virtru', async () => {
+		it('falls back to the local store when ABAC_PDP_Type is not virtru', async () => {
 			mockHasModule.mockReturnValue(true);
-			await drive(buildSettings({ ABAC_PDP_Type: 'local' }));
-			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+			const svc = await drive(buildSettings({ ABAC_PDP_Type: 'local' }));
+			expect(await svc.isExternalAttributeStore()).toBe(false);
 		});
 
-		it('falls back to LocalAttributeStore when ABAC_Attribute_Store is not virtru', async () => {
+		it('falls back to the local store when ABAC_Attribute_Store is not virtru', async () => {
 			mockHasModule.mockReturnValue(true);
-			await drive(buildSettings({ ABAC_Attribute_Store: 'local' }));
-			expect(VirtruAttributeStore).not.toHaveBeenCalled();
+			const svc = await drive(buildSettings({ ABAC_Attribute_Store: 'local' }));
+			expect(await svc.isExternalAttributeStore()).toBe(false);
 		});
 
 		it('reuses the same long-lived VirtruClient across local->virtru->local PDP flips', async () => {
@@ -1579,7 +1577,6 @@ describe('AbacService (unit)', () => {
 
 			expect(transitionSpy).toHaveBeenCalledTimes(1);
 			expect(transitionSpy).toHaveBeenCalledWith('local', 'virtru');
-			expect(VirtruAttributeStore).toHaveBeenCalled();
 		});
 
 		it('fires exactly once when ABAC_Attribute_Store flips virtru->local via the real listener', async () => {
@@ -1609,16 +1606,6 @@ describe('AbacService (unit)', () => {
 			expect(transitionSpy).not.toHaveBeenCalled();
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'virtru');
-
-			expect(transitionSpy).not.toHaveBeenCalled();
-		});
-
-		it('does NOT fire when reevaluateAttributeStore is called regardless of effective store', async () => {
-			mockHasModule.mockReturnValue(true);
-			const svc = await bootWith(buildSettings({ ABAC_Enabled: false }));
-
-			(svc as any).abacEnabled = true;
-			await svc.reevaluateAttributeStore();
 
 			expect(transitionSpy).not.toHaveBeenCalled();
 		});
@@ -1666,7 +1653,6 @@ describe('AbacService (unit)', () => {
 			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
 			const svc = new AbacService();
 			(svc as any).pdp = { onRoomAttributesChanged: pdpRoomAttrsSpy, canAccessObject: jest.fn(), isAvailable: jest.fn() };
-			(svc as any).hasAbacLicense = Boolean(mockHasModule());
 			await svc.started();
 			return svc;
 		};
@@ -1715,11 +1701,11 @@ describe('AbacService (unit)', () => {
 			expect(auditSpy).toHaveBeenCalledWith('virtru', 'local', 5);
 		});
 
-		it('skips updateMany and audit when hasAbacLicense is false at Store-setting change time', async () => {
+		it('skips updateMany and audit when the abac license is absent at Store-setting change time', async () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
-			(svc as any).hasAbacLicense = false;
+			mockHasModule.mockReturnValue(false);
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			await new Promise((r) => setImmediate(r));
 
@@ -1742,6 +1728,7 @@ describe('AbacService (unit)', () => {
 			if (!entry) throw new Error('No listener registered for ABAC_Attribute_Store');
 
 			entry[1]({ setting: { value: 'virtru' } });
+			await new Promise((r) => setImmediate(r));
 
 			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
 			expect(auditSpy).not.toHaveBeenCalled();
@@ -1841,31 +1828,6 @@ describe('AbacService (unit)', () => {
 			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
-
-		it('does NOT wipe or audit on license-up via reevaluateAttributeStore when Store setting is already virtru (spec §3.4 override)', async () => {
-			mockHasModule.mockReturnValue(false);
-			const svc = await bootWith(buildSettings({}));
-
-			mockHasModule.mockReturnValue(true);
-			await svc.reevaluateAttributeStore();
-			await new Promise((r) => setImmediate(r));
-
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
-			expect(auditSpy).not.toHaveBeenCalled();
-		});
-
-		it('does NOT wipe or audit when license goes inactive and reevaluateAttributeStore is called', async () => {
-			mockHasModule.mockReturnValue(true);
-			const svc = await bootWith(buildSettings({}));
-			setVirtruMode(svc);
-
-			mockHasModule.mockReturnValue(false);
-			await svc.reevaluateAttributeStore();
-			await new Promise((r) => setImmediate(r));
-
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
-			expect(auditSpy).not.toHaveBeenCalled();
-		});
 	});
 
 	describe('ABAC_PDP_Type→local cascade to ABAC_Attribute_Store', () => {
@@ -1952,27 +1914,32 @@ describe('AbacService (unit)', () => {
 		};
 
 		it('returns true when license + all conditions point to virtru', async () => {
-			setPrivate(service, { hasAbacLicense: true, abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
+			mockHasModule.mockReturnValue(true);
+			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
 			expect(await service.isExternalAttributeStore()).toBe(true);
 		});
 
 		it('returns false when license module is absent', async () => {
-			setPrivate(service, { hasAbacLicense: false, abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
+			mockHasModule.mockReturnValue(false);
+			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
 			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 
 		it('returns false when ABAC_Enabled is false', async () => {
-			setPrivate(service, { hasAbacLicense: true, abacEnabled: false, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
+			mockHasModule.mockReturnValue(true);
+			setPrivate(service, { abacEnabled: false, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
 			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 
 		it('returns false when ABAC_PDP_Type is not virtru', async () => {
-			setPrivate(service, { hasAbacLicense: true, abacEnabled: true, pdpTypeSetting: 'local', attributeStoreSetting: 'virtru' });
+			mockHasModule.mockReturnValue(true);
+			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'local', attributeStoreSetting: 'virtru' });
 			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 
 		it('returns false when ABAC_Attribute_Store is not virtru', async () => {
-			setPrivate(service, { hasAbacLicense: true, abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'local' });
+			mockHasModule.mockReturnValue(true);
+			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'local' });
 			expect(await service.isExternalAttributeStore()).toBe(false);
 		});
 	});
