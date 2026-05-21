@@ -370,6 +370,9 @@ describe('[OAuth Server]', () => {
 
 		before(async () => {
 			idleUser = await createUser();
+
+			await request.post(api('roles.addUserToRole')).set(credentials).send({ roleId: 'guest', username: idleUser.username }).expect(200);
+
 			idleUserCredentials = await login(idleUser.username, password);
 
 			const appRes = await request
@@ -389,12 +392,8 @@ describe('[OAuth Server]', () => {
 			// Verify tokens work before deactivation
 			await request.get(api('me')).auth(idleAccessToken, { type: 'bearer' }).expect(200);
 
-			// Deactivate via deactivateIdle using daysIdle=0 to catch all users with no recent login
-			await request
-				.post(api('users.deactivateIdle'))
-				.set(credentials)
-				.send({ daysIdle: 0, role: idleUser.roles?.[0] ?? 'user' })
-				.expect(200);
+			// Deactivate via deactivateIdle — use 'guest' role to avoid mass-deactivating all 'user'-role accounts
+			await request.post(api('users.deactivateIdle')).set(credentials).send({ daysIdle: 0, role: 'guest' }).expect(200);
 		});
 
 		after(async () => {
