@@ -1,17 +1,16 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useABACTabPermissions } from './hooks/useABACTabPermissions';
+import { useIsExternalAttributeStore } from './hooks/useIsExternalAttributeStore';
 
 const AdminABACTabs = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
 	const tabPermissions = useABACTabPermissions();
-	const pdpType = useSetting('ABAC_PDP_Type', 'local');
-	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
-	const isExternalStore = pdpType !== 'local' && attributeStore !== 'local';
+	const isExternalStore = useIsExternalAttributeStore();
 	const handleTabClick = (tab: string) => {
 		router.navigate({
 			name: 'admin-ABAC',

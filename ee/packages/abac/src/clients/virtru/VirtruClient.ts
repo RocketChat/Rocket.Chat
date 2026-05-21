@@ -5,7 +5,7 @@ import type { IVirtruPDPConfig, ITokenCache } from '../../pdp/types';
 
 const virtruClientLogger = logger.section('VirtruClient');
 
-const HEALTH_CHECK_TIMEOUT = 5000;
+export const HEALTH_CHECK_TIMEOUT = 5000;
 const REQUEST_TIMEOUT = 10000;
 
 type PublicVirtruConfig = Pick<IVirtruPDPConfig, 'baseUrl' | 'defaultEntityKey' | 'attributeNamespace'>;

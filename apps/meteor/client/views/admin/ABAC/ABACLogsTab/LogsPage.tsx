@@ -119,8 +119,8 @@ const LogsPage = () => {
 							...eventInfo,
 							element: t('ABAC_Attribute_Store'),
 							action: t('ABAC_Attribute_Store_Switched'),
-							name: `${event.data?.find((i) => i.key === 'from')?.value} -> ${event.data?.find((i) => i.key === 'to')?.value}`,
-							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((i) => i.key === 'roomsAffected')?.value ?? 0) }),
+							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
 						};
 					default:
 						return null;

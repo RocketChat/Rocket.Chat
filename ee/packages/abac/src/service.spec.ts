@@ -1629,7 +1629,7 @@ describe('AbacService (unit)', () => {
 
 		let auditSpy: jest.SpyInstance;
 		let evictionSpy: jest.SpyInstance;
-		let pdpRoomAttrsSpy: jest.SpyInstance;
+		let pdpRoomAttrsSpy: jest.Mock;
 
 		beforeEach(() => {
 			(LocalAttributeStore as jest.Mock).mockClear();

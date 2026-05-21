@@ -13,7 +13,7 @@ import { logger } from '../logger';
 import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
-import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsResponse } from '../pdp/types';
+import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsRequest, IGetEntitlementsResponse } from '../pdp/types';
 
 const storeLogger = logger.section('VirtruAttributeStore');
 
@@ -59,14 +59,15 @@ export class VirtruAttributeStore implements IAttributeStore {
 			throw new PdpUnavailableError();
 		}
 		const { defaultEntityKey } = this.client.getConfig();
-		const res = await this.client.apiCall<IGetEntitlementsResponse>('/authorization.v2.AuthorizationService/GetEntitlements', {
+		const request: IGetEntitlementsRequest = {
 			entityIdentifier: {
 				entityChain: {
 					entities: [buildEntityIdentifier(defaultEntityKey, entityId)],
 				},
 			},
 			withComprehensiveHierarchy: true,
-		});
+		};
+		const res = await this.client.apiCall<IGetEntitlementsResponse>('/authorization.v2.AuthorizationService/GetEntitlements', request);
 		const { attributes, malformed } = parseAttributeFqns(Object.keys(res.entitlements?.[0]?.actionsPerAttributeValueFqn ?? {}));
 		if (malformed.length) {
 			storeLogger.warn({ msg: 'Virtru store: ignoring malformed attribute FQNs', malformed });
@@ -115,13 +116,8 @@ export class VirtruAttributeStore implements IAttributeStore {
 		const owned = await this.entitlementsOf(actor);
 		for (const a of attrs) {
 			const allowed = owned.get(a.key);
-			if (!allowed) {
+			if (!allowed || !a.values.every((v) => allowed.has(v))) {
 				throw new AbacInvalidAttributeValuesError();
-			}
-			for (const v of a.values) {
-				if (!allowed.has(v)) {
-					throw new AbacInvalidAttributeValuesError();
-				}
 			}
 		}
 	}
@@ -130,7 +126,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 		rooms: T[],
 		actor: AbacActor,
 	): Promise<Array<T & IRoomAbacRedaction>> {
-		const withAttrs = rooms.filter((r) => (r.abacAttributes?.length ?? 0) > 0);
+		const withAttrs = rooms.filter((r) => r.abacAttributes?.length);
 		if (!withAttrs.length) {
 			return rooms;
 		}
@@ -139,7 +135,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 			return new Set<string>();
 		});
 		return rooms.map((r) => {
-			if (!(r.abacAttributes?.length ?? 0) || permitted.has(r._id)) {
+			if (!r.abacAttributes?.length || permitted.has(r._id)) {
 				return r;
 			}
 			return { ...r, abacAttributes: [], abacAttributesRedacted: true };
@@ -147,7 +143,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 	}
 
 	async assertCanModifyRoom(room: Pick<IRoom, '_id' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
-		if (!(room.abacAttributes?.length ?? 0)) {
+		if (!room.abacAttributes?.length) {
 			return;
 		}
 		const permitted = await this.decideRooms([room], actor);

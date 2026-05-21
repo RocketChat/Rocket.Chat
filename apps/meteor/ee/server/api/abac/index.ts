@@ -41,6 +41,12 @@ const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 			}
 		: undefined;
 
+const assertLocalAttributeStore = async (): Promise<void> => {
+	if (await Abac.isExternalAttributeStore()) {
+		throw new AbacAttributeStoreExternalError();
+	}
+};
+
 const abacEndpoints = API.v1
 	.post(
 		'abac/rooms/:rid/attributes',
@@ -244,9 +250,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			if (await Abac.isExternalAttributeStore()) {
-				throw new AbacAttributeStoreExternalError();
-			}
+			await assertLocalAttributeStore();
 
 			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
@@ -273,9 +277,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			if (await Abac.isExternalAttributeStore()) {
-				throw new AbacAttributeStoreExternalError();
-			}
+			await assertLocalAttributeStore();
 
 			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
@@ -297,9 +299,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { _id } = this.urlParams;
 
-			if (await Abac.isExternalAttributeStore()) {
-				throw new AbacAttributeStoreExternalError();
-			}
+			await assertLocalAttributeStore();
 
 			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success(result);
@@ -321,9 +321,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { _id } = this.urlParams;
 
-			if (await Abac.isExternalAttributeStore()) {
-				throw new AbacAttributeStoreExternalError();
-			}
+			await assertLocalAttributeStore();
 
 			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success();
@@ -345,9 +343,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { key } = this.urlParams;
 
-			if (await Abac.isExternalAttributeStore()) {
-				throw new AbacAttributeStoreExternalError();
-			}
+			await assertLocalAttributeStore();
 
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });

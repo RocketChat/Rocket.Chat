@@ -17,6 +17,6 @@ scopeAdminRoomsForAbac.patch(async (next, rooms, uid) => {
 	}
 
 	const scoped = await Abac.scopeRoomsForAdmin(managed, { _id: user._id, username: user.username, name: user.name });
-	let i = 0;
-	return rooms.map((r) => (isABACManagedRoom(r) ? scoped[i++] : r));
+	const scopedById = new Map(scoped.map((room) => [room._id, room]));
+	return rooms.map((room) => scopedById.get(room._id) ?? room);
 });
