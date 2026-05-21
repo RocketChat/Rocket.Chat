@@ -1,4 +1,3 @@
-
 import { Box, Button } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
