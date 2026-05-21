@@ -59,6 +59,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - LOG_LEVEL=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -79,6 +80,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - LOG_LEVEL=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -99,6 +101,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - LOG_LEVEL=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -119,6 +122,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - LOG_LEVEL=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -145,6 +149,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - LOG_LEVEL=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -166,6 +171,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
+      - LOG_LEVEL=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
