@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -12,13 +12,14 @@ type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	onDismiss?: () => void;
+	invalidAttempt?: boolean;
 };
 
 type TwoFactorTotpFormData = {
 	code: string;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss }: TwoFactorTotpModalProps): ReactElement => {
+const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const {
@@ -26,10 +27,20 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss }: TwoFactorTotpModa
 		handleSubmit,
 		setError,
 		setValue,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm<TwoFactorTotpFormData>({
 		defaultValues: { code: '' },
 	});
+
+	useEffect(() => {
+		if (invalidAttempt) {
+			setError('code', {
+				type: 'manual',
+				message: t('Invalid_two_factor_code'),
+			});
+		}
+	}, [invalidAttempt, setError, t]);
 
 	const onSubmit = handleSubmit(async ({ code }) => {
 		try {
@@ -64,9 +75,13 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss }: TwoFactorTotpModa
 							name='code'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Code') }) }}
-							render={({ field }) => (
+							render={({ field: { onChange, ...fieldProps } }) => (
 								<TextInput
-									{...field}
+									{...fieldProps}
+									onChange={(e) => {
+										clearErrors('code');
+										onChange(e);
+									}}
 									placeholder={t('Enter_code_here')}
 									autoComplete='one-time-code'
 									inputMode='numeric'
