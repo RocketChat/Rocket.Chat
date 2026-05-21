@@ -225,6 +225,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async reevaluateAttributeStore(): Promise<void> {
+		this.hasAbacLicense = await License.hasModule('abac');
 		this.syncStoreSelection();
 	}
 
