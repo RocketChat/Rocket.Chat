@@ -1,7 +1,7 @@
 import { Federation, FederationEE, License } from '@rocket.chat/core-services';
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Users, Subscriptions, MatrixBridgedUser } from '@rocket.chat/models';
+import { Rooms, Users, Subscriptions, MatrixBridgedUser, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -138,6 +138,11 @@ export async function setUserActiveStatus(
 
 	if (active === false) {
 		await Users.unsetLoginTokens(userId);
+		await Promise.all([
+			OAuthAccessTokens.deleteByUserId(userId),
+			OAuthRefreshTokens.deleteByUserId(userId),
+			OAuthAuthCodes.deleteByUserId(userId),
+		]);
 		await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
 
 		void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], active } });
