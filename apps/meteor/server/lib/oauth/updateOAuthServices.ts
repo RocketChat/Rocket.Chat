@@ -7,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 
+import { addPassportCustomOAuth } from './addPassportCustomOAuth';
 import { logger } from './logger';
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import {
@@ -68,7 +69,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.rolesToSync = settings.get(`${key}-roles_to_sync`);
 				data.showButton = settings.get(`${key}-show_button`);
 
-				new CustomOAuth(serviceKey, {
+				const config = {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
 					identityPath: data.identityPath,
@@ -93,7 +94,12 @@ export async function updateOAuthServices(): Promise<void> {
 					rolesToSync: data.rolesToSync,
 					accessTokenParam: data.accessTokenParam,
 					showButton: data.showButton,
-				});
+					clientSecret: data.secret,
+					clientId: data.clientId,
+				};
+
+				new CustomOAuth(serviceKey, config);
+				addPassportCustomOAuth(serviceKey, config);
 			}
 			if (serviceName === 'Facebook') {
 				(data as FacebookOAuthConfiguration).appId = data.clientId as string;

@@ -28,10 +28,10 @@ export const useHasNewMessages = (
 		chat.composer?.focus();
 	}, [setShouldJumpToBottom, chat.composer]);
 
-	const handleJumpToRecentButtonClick = useCallback(() => {
-		setShouldJumpToBottom(true);
+	const handleJumpToRecentButtonClick = useCallback(async () => {
 		RoomHistoryManager.clear(rid);
-		RoomHistoryManager.getMoreIfIsEmpty(rid);
+		await RoomHistoryManager.getMoreIfIsEmpty(rid);
+		setShouldJumpToBottom(true);
 	}, [setShouldJumpToBottom, rid]);
 
 	const handleComposerResize = useCallback((): void => {

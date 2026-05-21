@@ -18,6 +18,12 @@ export abstract class UserBridge extends BaseBridge {
 		}
 	}
 
+	public async doGetBySipExtension(extension: string, appId: string): Promise<IUser | undefined> {
+		if (this.hasReadPermission(appId)) {
+			return this.getBySipExtension(extension, appId);
+		}
+	}
+
 	public async doGetAppUser(appId?: string): Promise<IUser | undefined> {
 		return this.getAppUser(appId);
 	}
@@ -67,6 +73,8 @@ export abstract class UserBridge extends BaseBridge {
 	protected abstract getById(id: string, appId: string): Promise<IUser>;
 
 	protected abstract getByUsername(username: string, appId: string): Promise<IUser>;
+
+	protected abstract getBySipExtension(extension: string, appId: string): Promise<IUser | undefined>;
 
 	protected abstract getAppUser(appId?: string): Promise<IUser | undefined>;
 
