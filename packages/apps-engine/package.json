@@ -36,7 +36,8 @@
 		}
 	],
 	"files": [
-		"definition/**"
+		"definition/**",
+		"experimental/**"
 	],
 	"scripts": {
 		"build": "run-s build:clean build:default",
