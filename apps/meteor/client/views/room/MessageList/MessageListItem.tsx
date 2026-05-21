@@ -78,17 +78,15 @@ export const MessageListItem = ({
 				/>
 			)}
 			{isThreadMessage(message) && (
-				<li>
-					<ThreadMessagePreview
-						data-mid={message._id}
-						data-tmid={message.tmid}
-						data-unread={showUnreadDivider}
-						data-sequential={sequential}
-						sequential={shouldShowAsSequential}
-						message={message}
-						showUserAvatar={showUserAvatar}
-					/>
-				</li>
+				<ThreadMessagePreview
+					data-mid={message._id}
+					data-tmid={message.tmid}
+					data-unread={showUnreadDivider}
+					data-sequential={sequential}
+					sequential={shouldShowAsSequential}
+					message={message}
+					showUserAvatar={showUserAvatar}
+				/>
 			)}
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 		</>
