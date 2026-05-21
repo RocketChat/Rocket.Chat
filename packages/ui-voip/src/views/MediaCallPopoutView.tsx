@@ -8,6 +8,8 @@ import { Timer, DevicePicker, useShouldWrapCards, ActionStrip } from '../compone
 import MediaCallCardList from './MediaCallCardList';
 import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
+import AppActions from '../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isExternalPeer } from '../utils/isExternalPeer';
 
 export type MediaCallPopoutViewProps = {
@@ -42,6 +44,10 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	const appActions = useVisibleAppActions();
+
+	const showHeaderActions = appActions.length > 0;
+
 	if (!peerInfo || isExternalPeer(peerInfo)) {
 		return null;
 	}
@@ -59,6 +65,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 			flexDirection='column'
 			ref={ref}
 		>
+			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
 			<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
 			<ActionStrip
 				leftSlot={
