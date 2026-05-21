@@ -24,6 +24,7 @@ import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId'
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
@@ -73,6 +74,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const isAtBottom = useRef(true);
+	const lastScrollSizeRef = useRef(0);
 
 	const items = loading ? [] : [mainMessage, ...messages];
 
@@ -102,6 +104,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			setShouldJumpToBottom(false);
 			return;
 		}
+		if (isAtBottom.current && lastScrollSizeRef.current !== handle?.scrollSize) {
+			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
+			setShouldJumpToBottom(true);
+		}
 		if (shouldJumpToBottom) {
 			handle.scrollToIndex(items.length, { align: 'end' });
 			setShouldJumpToBottom(false);
@@ -124,6 +130,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		setShouldJumpToBottom(false);
 		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
 		setHighlightMessage(msgJumpParam);
+		setMessageJumpQueryStringParameter(null);
 		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
