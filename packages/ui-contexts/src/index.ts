@@ -22,7 +22,7 @@ export { UserContext, type UserContextValue, type Fields, type FindOptions } fro
 export { UserCardContext, type UserCardContextValue } from './UserCardContext';
 export { UserPresenceContext, type UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, type Device, type DeviceContextValue } from './DeviceContext';
-export { ActionManagerContext, type IActionManager } from './ActionManagerContext';
+export { ActionManagerContext, type IActionManager, type ActionButtonUpdatePayload } from './ActionManagerContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
