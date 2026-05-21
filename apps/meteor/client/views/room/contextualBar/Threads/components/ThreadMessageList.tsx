@@ -12,6 +12,7 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
@@ -24,7 +25,6 @@ import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId'
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
-import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
