@@ -146,7 +146,7 @@ export class Strategy {
 					if (oauthErr.data) {
 						try {
 							json = JSON.parse(oauthErr.data);
-						} catch (_) {
+						} catch {
 							// ignore parse error
 						}
 					}
@@ -161,7 +161,7 @@ export class Strategy {
 				let json: Record<string, unknown>;
 				try {
 					json = JSON.parse(body!);
-				} catch (_) {
+				} catch {
 					return done(new Error('Failed to parse user profile'));
 				}
 
@@ -204,11 +204,14 @@ export class Strategy {
 	 */
 	parseErrorResponse(body: string, _status: number): Error | undefined {
 		try {
-			const json: { errors?: { message: string }[] } = JSON.parse(body);
-			if (Array.isArray(json?.errors) && json.errors.length > 0) {
-				return new Error(json.errors[0].message);
+			const json: unknown = JSON.parse(body);
+			if (typeof json === 'object' && json !== null && 'errors' in json && Array.isArray(json.errors) && json.errors.length > 0) {
+				const first: unknown = json.errors[0];
+				if (typeof first === 'object' && first !== null && 'message' in first && typeof first.message === 'string') {
+					return new Error(first.message);
+				}
 			}
-		} catch (_) {
+		} catch {
 			// Not JSON — try XML
 			const match = /<error>(.*?)<\/error>/.exec(body);
 			if (match) {
