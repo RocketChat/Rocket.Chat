@@ -1,5 +1,20 @@
 # Change Log
 
+## 31.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, 2a927fa1362c9d4bb04bb8e26f23a6e3753d9cea, ae9f740d6af20557eac61b4af902c868b4132b49, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, f392d5cc8d956c199f557dcd6beb52094232499d, 2198d9ea565b06f92e3dec29891890086f62f9df, 12897e25d0dc25b7373f5264d38f38a5a7444257, 0b7a76367d650793c271160e01798ebbb5fe0d26, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0-rc.0
+  - @rocket.chat/apps-engine@1.63.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  - @rocket.chat/gazzodown@31.0.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  - @rocket.chat/ui-avatar@27.0.0-rc.0
+  - @rocket.chat/ui-video-conf@31.0.0-rc.0
+  </details>
+
 ## 30.0.0
 
 ### Patch Changes
