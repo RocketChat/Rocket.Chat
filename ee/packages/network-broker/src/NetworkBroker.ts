@@ -191,8 +191,8 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async start(): Promise<void> {
-		await this.broker.start();
-
 		this.started = Promise.resolve(true);
+
+		await this.broker.start();
 	}
 }
