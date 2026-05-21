@@ -3634,16 +3634,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('admin A can POST a value they possess and gets 200', async () => {
+				const postRoom = (await createRoom({ type: 'p', name: `vstore-red-post-${Date.now()}` })).body.group;
+
 				await mockServerReset();
 				await seedDefaultMocks();
 				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
 				await seedGetDecisionBulk([
-					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: postRoom._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: postRoom._id }] },
 				]);
 
 				await request
-					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.post(`${v1}/abac/rooms/${postRoom._id}/attributes/clearance`)
 					.set(adminA.creds)
 					.send({ values: ['secret'] })
 					.expect(200);
@@ -3689,7 +3691,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(res.body).to.have.property('abacAttributesRedacted', true);
 			});
 
-			it('admin B (DENY): DELETE /abac/rooms/:rid/attributes (empty-set clear) → 400 error-pdp-unavailable', async () => {
+			it('admin B (DENY): DELETE /abac/rooms/:rid/attributes (empty-set clear) → 400 error-abac-not-authorized-to-modify-room', async () => {
 				await mockServerReset();
 				await seedDefaultMocks();
 				await seedGetEntitlements({ [fqn('other', 'value')]: {} });
@@ -3697,10 +3699,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				const res = await request.delete(`${v1}/abac/rooms/${room._id}/attributes`).set(adminB.creds).expect(400);
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+				expect(res.body).to.have.property('error', 'error-abac-not-authorized-to-modify-room');
 			});
 
-			it('admin B (DENY): non-empty POST → 400 error-pdp-unavailable', async () => {
+			it('admin B (DENY): non-empty POST → 400 error-abac-not-authorized-to-modify-room', async () => {
 				await mockServerReset();
 				await seedDefaultMocks();
 				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
@@ -3712,7 +3714,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ values: ['secret'] })
 					.expect(400);
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+				expect(res.body).to.have.property('error', 'error-abac-not-authorized-to-modify-room');
 			});
 
 			it('Virtru unreachable on list → 200 with rooms attribute-redacted+flagged (not 4xx/5xx)', async () => {
@@ -4005,6 +4007,12 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				await updateSetting('ABAC_Attribute_Store', 'local');
 
+				const wipeAttrKey = `vstore_wipe_attr_${Date.now()}`;
+
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn(wipeAttrKey, 'v1')]: {} });
+
 				wipeRoom1 = (await createRoom({ type: 'p', name: `vstore-wipe-1-${Date.now()}` })).body.group;
 				wipeRoom2 = (await createRoom({ type: 'p', name: `vstore-wipe-2-${Date.now()}` })).body.group;
 
@@ -4015,7 +4023,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ roomId: wipeRoom1._id, usernames: [memberUser.username] })
 					.expect(200);
 
-				const wipeAttrKey = `vstore_wipe_attr_${Date.now()}`;
 				await request
 					.post(`${v1}/abac/attributes`)
 					.set(credentials)
@@ -4032,10 +4039,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.set(credentials)
 					.send({ values: ['v1'] })
 					.expect(200);
-
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedGetEntitlements({ [fqn(wipeAttrKey, 'v1')]: {} });
 			});
 
 			after(async () => {
@@ -4148,6 +4151,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				this.timeout(20000);
 
 				await updateSetting('ABAC_Attribute_Store', 'local');
+
+				await mockServerReset();
+				await seedDefaultMocks();
 
 				const createRes = await request
 					.post(`${v1}/abac/attributes`)

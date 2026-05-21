@@ -246,9 +246,8 @@ describe('VirtruAttributeStore.scopeRoomsPage', () => {
 		const apiCall = jest.fn().mockRejectedValue(err);
 		const store = new VirtruAttributeStore(mkClient({ apiCall }));
 		await store.scopeRoomsPage(rooms, actor);
-		expect(mockStoreLoggerWarn).toHaveBeenCalledTimes(1);
 		expect(mockStoreLoggerWarn).toHaveBeenCalledWith(
-			expect.objectContaining({ msg: 'Virtru store: redacting all rooms after decision failure', err }),
+			expect.objectContaining({ msg: 'Virtru store: GetDecisionBulk call failed, treating PDP as unavailable', err }),
 		);
 	});
 });
@@ -278,14 +277,14 @@ describe('VirtruAttributeStore.assertCanModifyRoom', () => {
 		).rejects.toMatchObject({ code: 'error-abac-not-authorized-to-modify-room' });
 	});
 
-	it('propagates PdpUnavailable when the decision call itself fails with that error', async () => {
+	it('rejects with PdpUnavailable when the decision call itself fails', async () => {
 		const apiCall = jest.fn().mockRejectedValue(new Error('network down'));
 		await expect(
 			new VirtruAttributeStore(mkClient({ apiCall })).assertCanModifyRoom(
 				{ _id: 'r', abacAttributes: [{ key: 'k', values: ['v'] }] },
 				actor,
 			),
-		).rejects.toThrow('network down');
+		).rejects.toMatchObject({ code: 'error-pdp-unavailable' });
 	});
 
 	it('resolves when the room has no current attributes', async () => {

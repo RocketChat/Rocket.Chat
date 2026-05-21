@@ -176,9 +176,15 @@ export class VirtruAttributeStore implements IAttributeStore {
 				},
 			],
 		}));
-		const res = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-			decisionRequests: requests,
-		});
+		let res: IGetDecisionBulkResponse;
+		try {
+			res = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+				decisionRequests: requests,
+			});
+		} catch (err) {
+			storeLogger.warn({ msg: 'Virtru store: GetDecisionBulk call failed, treating PDP as unavailable', err });
+			throw new PdpUnavailableError();
+		}
 		const permitted = new Set<string>();
 		for (const dr of res.decisionResponses ?? []) {
 			for (const rd of dr.resourceDecisions ?? []) {
