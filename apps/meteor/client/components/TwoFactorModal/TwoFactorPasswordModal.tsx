@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -11,13 +11,14 @@ import { Method } from './TwoFactorModal';
 type TwoFactorPasswordModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	invalidAttempt?: boolean;
 };
 
 type TwoFactorPasswordFormData = {
 	password: string;
 };
 
-const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalProps): ReactElement => {
+const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorPasswordModalProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const {
@@ -25,10 +26,20 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 		handleSubmit,
 		setError,
 		setValue,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm<TwoFactorPasswordFormData>({
 		defaultValues: { password: '' },
 	});
+
+	useEffect(() => {
+		if (invalidAttempt) {
+			setError('password', {
+				type: 'manual',
+				message: t('Invalid_password'),
+			});
+		}
+	}, [invalidAttempt, setError, t]);
 
 	const onSubmit = handleSubmit(async ({ password }) => {
 		try {
@@ -61,8 +72,17 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 							name='password'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Password') }) }}
-							render={({ field }) => (
-								<PasswordInput {...field} placeholder={t('Password')} disabled={isSubmitting} error={errors.password?.message} />
+							render={({ field: { onChange, ...fieldProps } }) => (
+								<PasswordInput
+									{...fieldProps}
+									onChange={(e) => {
+										clearErrors('password');
+										onChange(e);
+									}}
+									placeholder={t('Password')}
+									disabled={isSubmitting}
+									error={errors.password?.message}
+								/>
 							)}
 						/>
 					</FieldRow>

@@ -127,6 +127,7 @@ export const invokeTwoFactorModal = async (
 	props: {
 		method: 'totp' | 'email' | 'password';
 		emailOrUsername?: string | undefined;
+		invalidAttempt?: boolean;
 	},
 	validateCode?: (code: string, method: string) => Promise<void>,
 ) => {
@@ -168,6 +169,7 @@ export const invokeTwoFactorModal = async (
 					props.emailOrUsername && {
 						resendEmail: (): Promise<null> => sdk.rest.post('/v1/users.2fa.sendEmailCode', { emailOrUsername: props.emailOrUsername }),
 					}),
+				...(props.invalidAttempt && { invalidAttempt: props.invalidAttempt }),
 			},
 		});
 	});

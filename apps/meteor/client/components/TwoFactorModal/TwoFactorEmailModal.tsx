@@ -1,8 +1,9 @@
+
 import { Box, Button } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,13 +14,14 @@ type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	resendEmail?: () => Promise<null>;
+	invalidAttempt?: boolean;
 };
 
 type TwoFactorEmailFormData = {
 	code: string;
 };
 
-const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail }: TwoFactorEmailModalProps): ReactElement => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail, invalidAttempt }: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
@@ -28,10 +30,20 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail }: TwoFactorEmail
 		handleSubmit,
 		setError,
 		setValue,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm<TwoFactorEmailFormData>({
 		defaultValues: { code: '' },
 	});
+
+	useEffect(() => {
+		if (invalidAttempt) {
+			setError('code', {
+				type: 'manual',
+				message: t('code'),
+			});
+		}
+	}, [invalidAttempt, setError, t]);
 
 	const onClickResendCode = async (): Promise<void> => {
 		try {
@@ -80,9 +92,13 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail }: TwoFactorEmail
 							name='code'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Code') }) }}
-							render={({ field }) => (
+							render={({ field: { onChange, ...fieldProps } }) => (
 								<TextInput
-									{...field}
+									{...fieldProps}
+									onChange={(e) => {
+										clearErrors('code');
+										onChange(e);
+									}}
 									placeholder={t('Enter_code_here')}
 									autoComplete='one-time-code'
 									inputMode='numeric'
