@@ -4,7 +4,7 @@
 	"private": true,
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/index.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix src"
 	},
@@ -22,6 +22,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "~22.19.17",
+		"esbuild": "~0.25.10",
 		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
