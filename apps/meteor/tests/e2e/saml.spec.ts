@@ -208,9 +208,6 @@ test.describe('SAML', () => {
 		poRegistration = new Registration(page);
 
 		await page.goto('/home');
-		// Wait out the 2s debounce on loadSamlServiceProviders (apps/meteor/app/meteor-accounts-saml/server/startup.ts)
-		// so the previous test's SAML setting writes are guaranteed to be applied before this one runs.
-		await page.waitForTimeout(2500);
 	});
 
 	test('Login', async ({ page, api }) => {
@@ -277,6 +274,9 @@ test.describe('SAML', () => {
 
 	const doLoginStep = async (page: Page, username: string, redirectUrl: string | null = '/home') => {
 		await test.step('expect successful login', async () => {
+			// Wait out the 2s debounce on loadSamlServiceProviders (apps/meteor/app/meteor-accounts-saml/server/startup.ts)
+			// so any SAML setting changes (from this test or the previous one) are guaranteed to be applied before clicking.
+			await page.waitForTimeout(2500);
 			await poRegistration.btnLoginWithSaml.click();
 			// Redirect to Idp
 			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
@@ -296,6 +296,9 @@ test.describe('SAML', () => {
 
 	const doLoginStepWithUsernameSelection = async (page: Page, username: string) => {
 		await test.step('expect successful login without username to show username selection screen', async () => {
+			// Wait out the 2s debounce on loadSamlServiceProviders (apps/meteor/app/meteor-accounts-saml/server/startup.ts)
+			// so any SAML setting changes (from this test or the previous one) are guaranteed to be applied before clicking.
+			await page.waitForTimeout(2500);
 			await poRegistration.btnLoginWithSaml.click();
 			// Redirect to Idp
 			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
