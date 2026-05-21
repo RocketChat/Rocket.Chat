@@ -1,4 +1,4 @@
-import { api, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { api, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type {
@@ -269,15 +269,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const [abacEnabled, pdpType, attributeStore] = await Promise.all([
+		const [abacEnabled, pdpType, attributeStore, hasAbacLicense] = await Promise.all([
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
+			License.hasModule('abac'),
 		]);
 
 		this.abacEnabled = abacEnabled;
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
+		this.hasAbacLicense = hasAbacLicense;
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');

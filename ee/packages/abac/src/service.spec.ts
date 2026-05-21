@@ -5,7 +5,6 @@ import { logger } from './logger';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 
 const mockSettingsGet = jest.fn();
-// Seeds the `hasAbacLicense` flag on each booted AbacService — the service no longer reads License directly.
 const mockHasModule = jest.fn();
 
 jest.mock('./store', () => {
@@ -117,6 +116,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		Settings: {
 			get: (...args: any[]) => mockSettingsGet(...args),
+		},
+		License: {
+			hasModule: (...args: any[]) => mockHasModule(...args),
 		},
 	};
 });
@@ -1451,7 +1453,6 @@ describe('AbacService (unit)', () => {
 		const drive = async (settings: Record<string, any>) => {
 			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
 			const svc = new AbacService();
-			(svc as any).hasAbacLicense = Boolean(mockHasModule());
 			await svc.started();
 			return svc;
 		};
@@ -1544,7 +1545,6 @@ describe('AbacService (unit)', () => {
 		const bootWith = async (settings: Record<string, any>) => {
 			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
 			const svc = new AbacService();
-			(svc as any).hasAbacLicense = Boolean(mockHasModule());
 			await svc.started();
 			return svc;
 		};
@@ -1887,7 +1887,6 @@ describe('AbacService (unit)', () => {
 		const bootWith = async (settings: Record<string, any>) => {
 			mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
 			const svc = new AbacService();
-			(svc as any).hasAbacLicense = Boolean(mockHasModule());
 			await svc.started();
 			return svc;
 		};
