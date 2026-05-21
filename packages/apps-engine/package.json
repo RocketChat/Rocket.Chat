@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.62.0",
+	"version": "1.63.0-rc.0",
 	"description": "The public API and type definitions for Rocket.Chat App development.",
 	"keywords": [
 		"rocket.chat",
