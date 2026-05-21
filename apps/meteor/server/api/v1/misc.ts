@@ -647,7 +647,7 @@ API.v1.post(
 		const connectionId =
 			this.token ||
 			crypto
-				.createHash('md5')
+				.createHash('sha256')
 				.update((this.requestIp ?? '') + this.user._id)
 				.digest('hex');
 
@@ -708,7 +708,7 @@ API.v1.post(
 		const connectionId =
 			this.token ||
 			crypto
-				.createHash('md5')
+				.createHash('sha256')
 				.update(this.requestIp ?? '')
 				.digest('hex');
 
