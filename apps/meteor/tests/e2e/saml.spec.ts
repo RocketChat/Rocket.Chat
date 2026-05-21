@@ -208,6 +208,9 @@ test.describe('SAML', () => {
 		poRegistration = new Registration(page);
 
 		await page.goto('/home');
+		// Wait out the 2s debounce on loadSamlServiceProviders (apps/meteor/app/meteor-accounts-saml/server/startup.ts)
+		// so the previous test's SAML setting writes are guaranteed to be applied before this one runs.
+		await page.waitForTimeout(2500);
 	});
 
 	test('Login', async ({ page, api }) => {
