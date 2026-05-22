@@ -1,10 +1,8 @@
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import type { ILivechatMessage } from '../../lib/omnichannel/localTypes';
 import { sendMessage } from '../../lib/omnichannel/messages';
 import { settings } from '../../settings';
@@ -79,10 +77,3 @@ export const sendMessageLivechat = async ({
 		},
 	});
 };
-
-Meteor.methods<ServerMethods>({
-	async sendMessageLivechat({ token, _id, rid, msg, file, files, attachments }: ILivechatMessage, agent: ILivechatMessageAgent) {
-		methodDeprecationLogger.method('sendMessageLivechat', '9.0.0', '/v1/livechat/message');
-		return sendMessageLivechat({ message: { token, _id, rid, msg, file, files, attachments }, agent });
-	},
-});

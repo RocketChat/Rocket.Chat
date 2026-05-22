@@ -1,7 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
@@ -271,24 +269,3 @@ export const getMessageHistory = async (
 
 	return handleCursorPagination(type, rid, count, next, previous);
 };
-
-Meteor.methods<ServerMethods>({
-	async 'messages/get'(
-		rid,
-		{ lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false, next, previous, type },
-	) {
-		check(rid, String);
-
-		const fromId = Meteor.userId();
-
-		if (!fromId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'messages/get' });
-		}
-
-		if (!rid) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'messages/get' });
-		}
-
-		return getMessageHistory(rid, fromId, { lastUpdate, latestDate, oldestDate, inclusive, count, unreads, next, previous, type });
-	},
-});

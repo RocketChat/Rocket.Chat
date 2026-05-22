@@ -140,14 +140,4 @@ Meteor.methods<ServerMethods>({
 		}
 		return true;
 	},
-
-	async addWebdavAccountByToken(data) {
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addWebdavAccount' });
-		}
-
-		return addWebdavAccountByToken(userId, data);
-	},
 });

@@ -1,9 +1,6 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 Accounts.registerLoginHandler('iframe', async (result) => {
 	if (!result.iframe) {
@@ -29,9 +26,3 @@ declare module '@rocket.chat/ddp-client' {
 		'OAuth.retrieveCredential'(credentialToken: string, credentialSecret: string): unknown;
 	}
 }
-
-Meteor.methods<ServerMethods>({
-	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {
-		return OAuth.retrieveCredential(credentialToken, credentialSecret);
-	},
-});

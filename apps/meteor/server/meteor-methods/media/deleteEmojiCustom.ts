@@ -1,6 +1,5 @@
 import { api } from '@rocket.chat/core-services';
 import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -33,14 +32,3 @@ export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDes
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async deleteEmojiCustom(emojiID) {
-		methodDeprecationLogger.method('deleteEmojiCustom', '9.0.0', '/v1/emoji-custom.delete');
-		if (!this.userId) {
-			throw new Meteor.Error('not_authorized');
-		}
-
-		return deleteEmojiCustom(this.userId, emojiID);
-	},
-});

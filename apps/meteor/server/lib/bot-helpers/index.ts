@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { Filter, FindCursor } from 'mongodb';
@@ -10,7 +9,6 @@ import { removeUserFromRole } from '../../meteor-methods/auth/removeUserFromRole
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
 import { settings } from '../../settings';
-import { hasRoleAsync } from '../authorization/hasRole';
 
 /**
  * BotHelpers helps bots
@@ -202,13 +200,3 @@ declare module '@rocket.chat/ddp-client' {
 		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => Promise<unknown>;
 	}
 }
-
-Meteor.methods<ServerMethods>({
-	async botRequest(...args) {
-		const userID = Meteor.userId();
-		if (userID && (await hasRoleAsync(userID, 'bot'))) {
-			return botHelpers.request(...args, userID);
-		}
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
-	},
-});

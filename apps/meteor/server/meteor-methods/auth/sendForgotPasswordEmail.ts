@@ -1,8 +1,5 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
@@ -36,11 +33,3 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 		SystemLogger.error({ err });
 	}
 };
-
-Meteor.methods<ServerMethods>({
-	async sendForgotPasswordEmail(to) {
-		check(to, String);
-
-		return sendForgotPasswordEmail(to);
-	},
-});
