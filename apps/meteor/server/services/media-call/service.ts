@@ -39,7 +39,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
-			if (setting._id.startsWith('VoIP_TeamCollab_')) {
+			if (setting._id.startsWith('VoIP_TeamCollab_') && !setting._id.includes('ExternalCallHistory')) {
 				setImmediate(() => this.configureMediaCallServer());
 			}
 		});
