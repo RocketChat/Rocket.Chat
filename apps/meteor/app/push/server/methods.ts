@@ -8,7 +8,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { logger } from './logger';
 import { _matchToken } from './push';
-import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 type PushUpdateOptions = {
 	id?: string;
@@ -28,7 +27,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'raix:push-update'(options) {
-		methodDeprecationLogger.method('raix:push-update', '9.0.0', []);
 		logger.debug({ msg: 'Got push token from app', options });
 
 		check(options, {

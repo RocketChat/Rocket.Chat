@@ -12,7 +12,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { settings } from '../../../settings/server';
 import { disableCustomScripts } from '../functions/disableCustomScripts';
 import { checkSettingValueBounds } from '../lib/checkSettingValueBonds';
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -51,7 +50,6 @@ Meteor.methods<ServerMethods>({
 			value: ISetting['value'];
 		}[] = [],
 	) {
-		methodDeprecationLogger.method('saveSettings', '9.0.0', []);
 		const uid = Meteor.userId();
 		const settingsNotAllowed: ISetting['_id'][] = [];
 		if (uid === null) {

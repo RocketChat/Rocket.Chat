@@ -5,7 +5,6 @@ import { WebdavAccounts } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
@@ -143,7 +142,6 @@ Meteor.methods<ServerMethods>({
 	},
 
 	async addWebdavAccountByToken(data) {
-		methodDeprecationLogger.method('addWebdavAccountByToken', '9.0.0', []);
 		const userId = Meteor.userId();
 
 		if (!userId) {

@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,7 +17,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async sendSMTPTestEmail() {
-		methodDeprecationLogger.method('sendSMTPTestEmail', '9.0.0', []);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendSMTPTestEmail',

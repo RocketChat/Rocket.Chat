@@ -1,7 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { insertOrUpdateEmoji } from '../lib/insertOrUpdateEmoji';
 
 declare module '@rocket.chat/ddp-client' {
@@ -21,7 +20,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async insertOrUpdateEmoji(emojiData) {
-		methodDeprecationLogger.method('insertOrUpdateEmoji', '9.0.0', []);
 		const emoji = await insertOrUpdateEmoji(this.userId, emojiData);
 
 		if (!emojiData._id) {

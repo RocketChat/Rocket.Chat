@@ -3,7 +3,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { openRoom } from '../lib/openRoom';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,7 +14,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async openRoom(rid) {
-		methodDeprecationLogger.method('openRoom', '9.0.0', []);
 		check(rid, String);
 
 		const uid = Meteor.userId();

@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import Bridge from '../irc-bridge';
@@ -18,7 +17,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async resetIrcConnection() {
-		methodDeprecationLogger.method('resetIrcConnection', '9.0.0', []);
 		const ircEnabled = Boolean(settings.get('IRC_Enabled'));
 		const uid = Meteor.userId();
 

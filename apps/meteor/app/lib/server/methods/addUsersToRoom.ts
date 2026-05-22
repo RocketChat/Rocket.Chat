@@ -9,7 +9,6 @@ import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAdd
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -123,7 +122,6 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 Meteor.methods<ServerMethods>({
 	async addUsersToRoom(data) {
-		methodDeprecationLogger.method('addUsersToRoom', '9.0.0', []);
 		const uid = Meteor.userId();
 		// Validate user and room
 		if (!uid) {

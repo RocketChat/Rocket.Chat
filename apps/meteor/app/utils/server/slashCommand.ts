@@ -10,8 +10,6 @@ import type {
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
-
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
 	callback?: SlashCommand<T>['callback'];
@@ -141,7 +139,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async slashCommand(command) {
-		methodDeprecationLogger.method('slashCommand', '9.0.0', []);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

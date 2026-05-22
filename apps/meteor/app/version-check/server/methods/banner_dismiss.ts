@@ -2,7 +2,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,7 +13,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'banner/dismiss'({ id }) {
-		methodDeprecationLogger.method('banner/dismiss', '9.0.0', []);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'banner/dismiss' });

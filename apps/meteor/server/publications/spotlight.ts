@@ -2,7 +2,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
 
 type SpotlightType = {
@@ -69,7 +68,6 @@ export const spotlightMethod = async ({
 
 Meteor.methods<ServerMethods>({
 	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
-		methodDeprecationLogger.method('spotlight', '9.0.0', []);
 		return spotlightMethod({ text, usernames, type, rid, userId: this.userId });
 	},
 });

@@ -1,7 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addSamlService } from '../lib/settings';
 
 declare module '@rocket.chat/ddp-client' {
@@ -13,7 +12,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	addSamlService(name) {
-		methodDeprecationLogger.method('addSamlService', '9.0.0', []);
 		addSamlService(name);
 	},
 });

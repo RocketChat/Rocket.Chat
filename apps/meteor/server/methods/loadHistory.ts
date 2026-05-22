@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { loadMessageHistory } from '../../app/lib/server/functions/loadMessageHistory';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -31,7 +30,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
-		methodDeprecationLogger.method('loadHistory', '9.0.0', []);
 		check(rid, String);
 		const fromUser = await Meteor.userAsync();
 

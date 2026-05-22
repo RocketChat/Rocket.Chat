@@ -4,7 +4,6 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import type { ILivechatMessage } from '../lib/localTypes';
 import { sendMessage } from '../lib/messages';
@@ -82,7 +81,6 @@ export const sendMessageLivechat = async ({
 
 Meteor.methods<ServerMethods>({
 	async sendMessageLivechat({ token, _id, rid, msg, file, files, attachments }: ILivechatMessage, agent: ILivechatMessageAgent) {
-		methodDeprecationLogger.method('sendMessageLivechat', '9.0.0', []);
 		return sendMessageLivechat({ message: { token, _id, rid, msg, file, files, attachments }, agent });
 	},
 });

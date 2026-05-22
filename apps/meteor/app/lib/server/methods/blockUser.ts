@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -17,7 +16,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async blockUser({ rid, blocked }) {
-		methodDeprecationLogger.method('blockUser', '9.0.0', []);
 		check(rid, String);
 		check(blocked, String);
 		const userId = Meteor.userId();

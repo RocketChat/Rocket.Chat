@@ -3,7 +3,6 @@ import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,7 +14,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async removeSlackBridgeChannelLinks() {
-		methodDeprecationLogger.method('removeSlackBridgeChannelLinks', '9.0.0', []);
 		const user = await Meteor.userAsync();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

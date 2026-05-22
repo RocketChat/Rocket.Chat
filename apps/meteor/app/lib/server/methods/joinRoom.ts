@@ -5,8 +5,6 @@ import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
-
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -16,7 +14,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async joinRoom(rid, code) {
-		methodDeprecationLogger.method('joinRoom', '9.0.0', []);
 		check(rid, String);
 
 		const user = await Meteor.userAsync();

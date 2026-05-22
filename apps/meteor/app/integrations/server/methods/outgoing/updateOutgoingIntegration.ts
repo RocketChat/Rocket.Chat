@@ -5,7 +5,6 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
@@ -120,7 +119,6 @@ export const updateOutgoingIntegration = async (
 
 Meteor.methods<ServerMethods>({
 	async updateOutgoingIntegration(integrationId, _integration) {
-		methodDeprecationLogger.method('updateOutgoingIntegration', '9.0.0', []);
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'updateOutgoingIntegration',

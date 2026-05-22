@@ -41,7 +41,6 @@ Meteor.methods<ServerMethods>({
 	 * Prefer using cloud.registrationStatus rest api.
 	 */
 	async 'cloud:checkRegisterStatus'() {
-		methodDeprecationLogger.method('cloud:checkRegisterStatus', '9.0.0', []);
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -76,7 +75,6 @@ Meteor.methods<ServerMethods>({
 		return Buffer.from(JSON.stringify(await buildWorkspaceRegistrationData(undefined))).toString('base64');
 	},
 	async 'cloud:registerWorkspace'() {
-		methodDeprecationLogger.method('cloud:registerWorkspace', '9.0.0', []);
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -140,7 +138,6 @@ Meteor.methods<ServerMethods>({
 	},
 	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	async 'cloud:getOAuthAuthorizationUrl'() {
-		methodDeprecationLogger.method('cloud:getOAuthAuthorizationUrl', '9.0.0', []);
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -157,7 +154,6 @@ Meteor.methods<ServerMethods>({
 		return getOAuthAuthorizationUrl();
 	},
 	async 'cloud:finishOAuthAuthorization'(code, state) {
-		methodDeprecationLogger.method('cloud:finishOAuthAuthorization', '9.0.0', []);
 		check(code, String);
 		check(state, String);
 
@@ -178,7 +174,6 @@ Meteor.methods<ServerMethods>({
 		return finishOAuthAuthorization(code, state);
 	},
 	async 'cloud:checkUserLoggedIn'() {
-		methodDeprecationLogger.method('cloud:checkUserLoggedIn', '9.0.0', []);
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -195,7 +190,6 @@ Meteor.methods<ServerMethods>({
 		return checkUserHasCloudLogin(uid);
 	},
 	async 'cloud:logout'() {
-		methodDeprecationLogger.method('cloud:logout', '9.0.0', []);
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

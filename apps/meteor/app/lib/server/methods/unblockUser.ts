@@ -3,7 +3,6 @@ import { Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,7 +14,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async unblockUser({ rid, blocked }) {
-		methodDeprecationLogger.method('unblockUser', '9.0.0', []);
 		check(rid, String);
 		check(blocked, String);
 		const userId = Meteor.userId();

@@ -2,7 +2,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { getMomentLocale } from '../lib/getMomentLocale';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,7 +13,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	loadLocale(locale) {
-		methodDeprecationLogger.method('loadLocale', '9.0.0', []);
 		check(locale, String);
 
 		try {

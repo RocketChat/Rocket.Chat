@@ -4,7 +4,6 @@ import { OAuthAccessTokens, OAuthApps, OAuthAuthCodes } from '@rocket.chat/model
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -35,7 +34,6 @@ export const deleteOAuthApp = async (userId: string, applicationId: IOAuthApps['
 
 Meteor.methods<ServerMethods>({
 	async deleteOAuthApp(applicationId) {
-		methodDeprecationLogger.method('deleteOAuthApp', '9.0.0', []);
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'deleteOAuthApp' });
 		}

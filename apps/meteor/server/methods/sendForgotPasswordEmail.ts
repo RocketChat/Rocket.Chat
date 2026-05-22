@@ -4,7 +4,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { SystemLogger } from '../lib/logger/system';
 
@@ -40,7 +39,6 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 
 Meteor.methods<ServerMethods>({
 	async sendForgotPasswordEmail(to) {
-		methodDeprecationLogger.method('sendForgotPasswordEmail', '9.0.0', []);
 		check(to, String);
 
 		return sendForgotPasswordEmail(to);

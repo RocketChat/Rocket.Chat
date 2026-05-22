@@ -6,7 +6,6 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
@@ -89,7 +88,6 @@ export const removeRoomLeader = async (fromUserId: IUser['_id'], rid: IRoom['_id
 
 Meteor.methods<ServerMethods>({
 	async removeRoomLeader(rid, userId) {
-		methodDeprecationLogger.method('removeRoomLeader', '9.0.0', []);
 		const uid = Meteor.userId();
 
 		if (!uid) {
