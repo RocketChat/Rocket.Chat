@@ -10190,6 +10190,7 @@ __metadata:
     passport-facebook: "npm:^3.0.0"
     passport-github2: "npm:^0.1.12"
     passport-google-oauth20: "npm:^2.0.0"
+    passport-oauth1: "npm:~1.3.0"
     passport-oauth2: "npm:^1.8.0"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
