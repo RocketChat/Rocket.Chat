@@ -1,0 +1,27 @@
+apps/meteor/app/settings/server/SettingsRegistry.ts
+  s_bbdf9be95c3431::t_c7ea87ca3d41df 251,277
+  s_bbdf9be95c3431::t_95850d571db542 5
+  s_bbdf9be95c3431::t_a017bc8ee6fde1 96,120-122,126-130,137-138,140-145
+  s_bbdf9be95c3431::t_75ee4f57a34d65 133-135
+  s_bbdf9be95c3431::t_11e06f24f7e9ec 94-95,102-119,123-125,131-132,136,139
+  s_bbdf9be95c3431::t_77ff5c8ef35ac1 219,232
+apps/meteor/server/settings/index.ts
+  s_bbdf9be95c3431::t_3248df8391efbe 39
+  s_bbdf9be95c3431::t_39dc15fbafb0eb 47-84,86-91,96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "ae21990ac510370fc26e351cc27fbfa547da7713",
+  "prompts": {},
+  "sessions": {
+    "s_bbdf9be95c3431": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "844b7fd0-37ef-4de3-befc-c977985db93e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
