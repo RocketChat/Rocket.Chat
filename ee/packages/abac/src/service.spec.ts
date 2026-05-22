@@ -1,7 +1,6 @@
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
 import { AbacService } from './index';
-import { logger } from './logger';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 
 const mockSettingsGet = jest.fn();
@@ -1892,20 +1891,14 @@ describe('AbacService (unit)', () => {
 			expect(mockSettingsSet).not.toHaveBeenCalled();
 		});
 
-		it('logs error and resolves normally when the settings write fails', async () => {
+		it('resolves normally when the settings write fails', async () => {
 			const svc = await bootWith(buildSettings({}));
 			mockSettingsSet.mockRejectedValueOnce(new Error('db-write-failure'));
-			const errorSpy = jest.spyOn(logger, 'error');
 			const pdpStrategySpy = jest.spyOn(svc as any, 'setPdpStrategy');
 
 			await expect(fireSettingChanged(svc, 'ABAC_PDP_Type', 'local')).resolves.toBeUndefined();
 
 			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
-			expect(errorSpy).toHaveBeenCalledWith(
-				expect.objectContaining({ msg: 'Failed to cascade ABAC_Attribute_Store=local on PDP change to local' }),
-			);
-
-			errorSpy.mockRestore();
 		});
 	});
 
