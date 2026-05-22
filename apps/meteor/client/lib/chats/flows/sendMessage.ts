@@ -47,7 +47,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 
 	chat.composer?.clear();
 	await runOptimisticSendMessage(message);
-	await sdk.call('sendMessage', message, previewUrls);
+	await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
 
 	// after the request is complete we can go ahead and mark as sent
 	Messages.state.update(

@@ -33,7 +33,7 @@ export const useNotification = () => {
 		} as any);
 
 		const n = new Notification(notification.title, {
-			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
+			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
 			body: stripTags(message?.msg),
 			tag: msgId,
 			canReply: true,
@@ -51,10 +51,12 @@ export const useNotification = () => {
 			n.addEventListener(
 				'reply',
 				({ response }) =>
-					void sdk.call('sendMessage', {
-						_id: Random.id(),
-						rid,
-						msg: response,
+					void sdk.rest.post('/v1/chat.sendMessage', {
+						message: {
+							_id: Random.id(),
+							rid,
+							msg: response,
+						},
 					}),
 			);
 		}
