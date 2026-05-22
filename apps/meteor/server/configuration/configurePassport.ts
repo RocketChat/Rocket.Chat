@@ -56,6 +56,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
 		max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 		skip: () =>
+			process.env.TEST_MODE === 'true' ||
 			settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
 			(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
 		handler: (_req, res) => {
