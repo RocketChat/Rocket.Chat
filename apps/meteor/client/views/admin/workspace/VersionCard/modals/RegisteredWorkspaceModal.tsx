@@ -11,7 +11,7 @@ import {
 	ModalTitle,
 } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,15 +29,15 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 	const bulletFeatures = useFeatureBullets();
 	const [isSyncing, setSyncing] = useSafely(useState(false));
 
-	const syncWorkspace = useMethod('cloud:syncWorkspace');
+	const syncWorkspace = useEndpoint('POST', '/v1/cloud.syncWorkspace');
 
 	const handleSyncAction = async () => {
 		setSyncing(true);
 
 		try {
-			const isSynced = await syncWorkspace();
+			const { success } = await syncWorkspace({});
 
-			if (!isSynced) {
+			if (!success) {
 				throw Error(t('RegisterWorkspace_Syncing_Error'));
 			}
 
