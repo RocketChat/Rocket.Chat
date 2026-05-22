@@ -8860,7 +8860,7 @@ __metadata:
     jest: "npm:~30.2.0"
     mem: "npm:^8.1.1"
     mongodb: "npm:6.10.0"
-    mongodb-memory-server: "npm:^10.1.4"
+    mongodb-memory-server: "npm:^10.2.3"
     p-limit: "npm:3.1.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -28920,33 +28920,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-memory-server-core@npm:10.2.3":
-  version: 10.2.3
-  resolution: "mongodb-memory-server-core@npm:10.2.3"
+"mongodb-memory-server-core@npm:10.4.3":
+  version: 10.4.3
+  resolution: "mongodb-memory-server-core@npm:10.4.3"
   dependencies:
     async-mutex: "npm:^0.5.0"
     camelcase: "npm:^6.3.0"
-    debug: "npm:^4.4.1"
+    debug: "npm:^4.4.3"
     find-cache-dir: "npm:^3.3.2"
-    follow-redirects: "npm:^1.15.9"
+    follow-redirects: "npm:^1.15.11"
     https-proxy-agent: "npm:^7.0.6"
     mongodb: "npm:^6.9.0"
     new-find-package-json: "npm:^2.0.0"
-    semver: "npm:^7.7.2"
+    semver: "npm:^7.7.3"
     tar-stream: "npm:^3.1.7"
     tslib: "npm:^2.8.1"
     yauzl: "npm:^3.2.0"
-  checksum: 10/eaf497167ed17fdbc464df5c26d8a9fa42e7acd3ca40c0646b6e0f27d92e31a37248191caadbefdc88c2b91ff7906465f11fd4c120e9e2c56805130723c00c24
+  checksum: 10/23f918435779bd042d25959bee52519b20d7b59063c9d2304864690b9bd595575e4ab1432411144fb6f3e919821699f264ae471aba545739d2e7bed4ababd530
   languageName: node
   linkType: hard
 
-"mongodb-memory-server@npm:^10.1.4":
-  version: 10.2.3
-  resolution: "mongodb-memory-server@npm:10.2.3"
+"mongodb-memory-server@npm:^10.2.3":
+  version: 10.4.3
+  resolution: "mongodb-memory-server@npm:10.4.3"
   dependencies:
-    mongodb-memory-server-core: "npm:10.2.3"
+    mongodb-memory-server-core: "npm:10.4.3"
     tslib: "npm:^2.8.1"
-  checksum: 10/72167e4ca7b9c188aeededa2f4920f7a92d9a18ff6dcc4f5549cefe6ec2eebccf045a72fc0ce3b0e529d055f2f6dc38cf59dca792c3d3a3c62c2ea1d81faf936
+  checksum: 10/6c21bc36485233fa9d0fcd0b8f083c8f379f298822de89fff35d5c5a556db07d9cf85bc095990ad4454eb2b60db1c701198cb64550b4a1f52f25a0e8c4d55203
   languageName: node
   linkType: hard
 
