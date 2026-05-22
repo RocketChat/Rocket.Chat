@@ -21,10 +21,6 @@ concurrency:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
-  DOCKER_BUILD_ARCHES_JSON: '["arm64","amd64"]'
-  DOCKER_BUILD_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service","omnichannel-transcript-service","rocketchat"]'
-  DOCKER_BUILD_EXTRA_COVERAGE_JSON: '[{"arch":"amd64","service":"rocketchat","type":"coverage"},{"arch":"arm64","service":"rocketchat","type":"coverage"}]'
-  DOCKER_BUILD_FIPS_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service","omnichannel-transcript-service","rocketchat"]'
 
 jobs:
   release-versions:
@@ -302,48 +298,9 @@ jobs:
           source-hash: ${{ needs.release-versions.outputs.packages-build-cache-key }}-${{ needs.release-versions.outputs.meteor-rc-cache-key }}
           type: ${{ matrix.type }}
 
-  build-gh-docker-matrix:
-    name: ⚙️ Build Docker Matrix
-    needs: [build]
-    runs-on: ubuntu-24.04-arm
-    outputs:
-      matrix: ${{ steps.generate.outputs.matrix }}
-    steps:
-      - id: generate
-        env:
-          DOCKER_BUILD_ARCHES_JSON: ${{ env.DOCKER_BUILD_ARCHES_JSON }}
-          DOCKER_BUILD_SERVICES_JSON: ${{ env.DOCKER_BUILD_SERVICES_JSON }}
-          DOCKER_BUILD_EXTRA_COVERAGE_JSON: ${{ env.DOCKER_BUILD_EXTRA_COVERAGE_JSON }}
-          DOCKER_BUILD_FIPS_SERVICES_JSON: ${{ env.DOCKER_BUILD_FIPS_SERVICES_JSON }}
-        run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-
-          const baseType = '${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}';
-          const arches = JSON.parse(process.env.DOCKER_BUILD_ARCHES_JSON);
-          const services = JSON.parse(process.env.DOCKER_BUILD_SERVICES_JSON);
-          const extraCoverageRows = JSON.parse(process.env.DOCKER_BUILD_EXTRA_COVERAGE_JSON);
-          const fipsServices = JSON.parse(process.env.DOCKER_BUILD_FIPS_SERVICES_JSON);
-
-          const include = [];
-          for (const arch of arches) {
-            for (const service of services) {
-              include.push({ arch, service, type: baseType });
-            }
-          }
-
-          if (baseType === 'production') {
-            include.push(...extraCoverageRows);
-          }
-
-          include.push(...fipsServices.map((service) => ({ arch: 'amd64', service, type: 'fips' })));
-
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify({ include })}\n`);
-          NODE
-
   build-gh-docker:
-    name: 🚢 Build Docker (${{ matrix.service }}-${{ matrix.arch }}-${{ matrix.type }})
-    needs: [build, build-gh-docker-matrix, release-versions]
+    name: 🚢 Build Docker
+    needs: [build, release-versions]
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
     env:
@@ -352,7 +309,47 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.build-gh-docker-matrix.outputs.matrix) }}
+      matrix:
+        arch: [arm64, amd64]
+        service:
+          [
+            [authorization-service, queue-worker-service, ddp-streamer-service],
+            [account-service, presence-service, omnichannel-transcript-service],
+            [rocketchat],
+          ]
+        type:
+          # if running in a PR build with coverage
+          - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+        include:
+          # if not, build with coverage for tests
+          - arch: amd64
+            service: [rocketchat]
+            type: coverage
+          - arch: arm64
+            service: [rocketchat]
+            type: coverage
+          # FIPS images: amd64 only, includes all microservices
+          - arch: amd64
+            service: [authorization-service]
+            type: fips
+          - arch: amd64
+            service: [queue-worker-service]
+            type: fips
+          - arch: amd64
+            service: [ddp-streamer-service]
+            type: fips
+          - arch: amd64
+            service: [account-service]
+            type: fips
+          - arch: amd64
+            service: [presence-service]
+            type: fips
+          - arch: amd64
+            service: [omnichannel-transcript-service]
+            type: fips
+          - arch: amd64
+            service: [rocketchat]
+            type: fips
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -360,7 +357,7 @@ jobs:
       - uses: ./.github/actions/restore-packages
 
       # we only build and publish the actual docker images if not a PR from a fork
-      - name: Image ${{ matrix.service }}
+      - name: Image ${{ matrix.service[0] }}
         uses: ./.github/actions/build-docker
         if: github.actor != 'dependabot[bot]'
         env:
@@ -373,9 +370,60 @@ jobs:
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
-          service: ${{ matrix.service }}
+          service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
           publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+
+      - name: Image ${{ matrix.service[1] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[1] && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[1] }}
+          type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          setup-docker: false
+
+      - name: Image ${{ matrix.service[2] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[2] && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[2] }}
+          type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          setup-docker: false
+
+      - name: Image ${{ matrix.service[3] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[3] && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[3] }}
+          type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          setup-docker: false
 
   build-gh-docker-publish:
     name: 🚢 Publish Docker Images (ghcr.io)
@@ -683,6 +731,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-api-livechat-fips:
     name: 🔨 Test API Livechat (FIPS)
@@ -702,6 +751,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-ui-fips:
     name: 🔨 Test UI (FIPS)
@@ -724,6 +774,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -1071,8 +1122,7 @@ jobs:
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
 
-            if [[ "$service" == 'rocketchat-cov' ]]; then
-              echo "Skipping $service for DockerHub publish"
+            if [ "$service" == "rocketchat-cov" ]; then
               continue
             fi
 
@@ -1084,10 +1134,8 @@ jobs:
               IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
             fi
 
-            # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
-            if [ "$service" == "rocketchat-cov" ]; then
-              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
-            elif [[ "$service" == *"-fips" ]]; then
+            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+            if [[ "$service" == *"-fips" ]]; then
               base_service="${service%-fips}"
               SRC=$(docker compose -f docker-compose-ci.yml -f docker-compose-ci.fips.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')
             else
