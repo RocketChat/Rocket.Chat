@@ -82,6 +82,38 @@ export function addSettings(): Promise<void> {
 						invalidValue: 5060,
 					});
 				});
+
+				await this.section('VoIP_TeamCollab_ExternalCallHistory', async function () {
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+					});
+
+					const enableQuery = { _id: 'VoIP_TeamCollab_ExternalCallHistory_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Host', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_User', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Password', '', {
+						type: 'password',
+						public: false,
+						secret: true,
+						invalidValue: '',
+						enableQuery,
+					});
+				});
 			},
 		);
 	});
