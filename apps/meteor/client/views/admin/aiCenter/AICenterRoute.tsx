@@ -21,22 +21,22 @@ type CapabilityCardProps = {
 };
 
 const CapabilityCard = ({ icon, title, description, status, actionLabel, disabled, onClick }: CapabilityCardProps): ReactElement => (
-	<Card height='full' role='region'>
-		<Box display='flex' flexDirection='column' height='full' p={24}>
-			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={24}>
-				<Box bg='surface-selected' borderRadius={4} size='x56' display='flex' alignItems='center' justifyContent='center'>
-					<Icon name={icon} size='x28' color='primary' />
+	<Card role='region'>
+		<Box display='flex' flexDirection='column' p={16}>
+			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={12}>
+				<Box bg='surface-selected' borderRadius={4} size='x40' display='flex' alignItems='center' justifyContent='center'>
+					<Icon name={icon} size='x24' color='primary' />
 				</Box>
 				{status}
 			</Box>
 			<CardTitle>{title}</CardTitle>
 			<CardBody flexDirection='column'>
-				<Box color='hint' fontScale='p1'>
+				<Box color='hint' fontScale='p2'>
 					{description}
 				</Box>
 			</CardBody>
 			<CardControls>
-				<Button disabled={disabled} onClick={onClick}>
+				<Button small disabled={disabled} onClick={onClick}>
 					{actionLabel}
 				</Button>
 			</CardControls>
@@ -78,7 +78,7 @@ const AICenterOverview = (): ReactElement => {
 							{t('Capabilities')}
 						</Box>
 					</Box>
-					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 4, lg: 4, xl: 4, p: 8 }}>
+					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 4, lg: 4, xl: 4 }}>
 						<CapabilityCard
 							icon='stars'
 							title={t('Intelligent_Search')}

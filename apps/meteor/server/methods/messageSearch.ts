@@ -1,4 +1,4 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -17,12 +17,19 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export type MessageSearchFilters = {
+	fromUsername?: string;
+	startDate?: Date;
+	endDate?: Date;
+};
+
 export const messageSearch = async function (
 	userId: string,
 	text: string,
 	rid?: string,
 	limit?: number,
 	offset?: number,
+	filters?: MessageSearchFilters,
 ): Promise<IRawSearchResult | false> {
 	check(text, String);
 	check(rid, Match.Maybe(String));
@@ -71,6 +78,26 @@ export const messageSearch = async function (
 	} else {
 		query.rid = {
 			$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
+		};
+	}
+
+	if (filters?.fromUsername) {
+		const username = filters.fromUsername.replace(/^@/, '');
+		const fromUser = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
+		if (!fromUser) {
+			return {
+				message: {
+					docs: [],
+				},
+			};
+		}
+		query['u._id'] = fromUser._id;
+	}
+
+	if (filters?.startDate || filters?.endDate) {
+		query.ts = {
+			...(filters.startDate && { $gte: filters.startDate }),
+			...(filters.endDate && { $lte: filters.endDate }),
 		};
 	}
 

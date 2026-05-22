@@ -1,7 +1,8 @@
 import crypto from 'node:crypto';
 
 import type { IDirectoryChannelResult, IDirectoryUserResult, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Rooms, Settings, Subscriptions, Users, WorkspaceCredentials } from '@rocket.chat/models';
+import { License } from '@rocket.chat/license';
+import { Rooms, Settings, Subscriptions, Users, WorkspaceCredentials, Messages } from '@rocket.chat/models';
 import {
 	ajv,
 	isShieldSvgProps,
@@ -527,11 +528,43 @@ const getUserRoomIds = async (userId: string): Promise<string[]> =>
 		}).toArray()
 	).map((subscription) => subscription.rid);
 
-const extractIntelligentResultIds = (result: any): { rid?: string; msgId?: string } => {
-	const metadata = result?.metadata ?? {};
-	let rid = metadata.room_id || metadata.rid || result?.room_id || result?.rid;
-	let msgId = metadata.msg_id || metadata.message_id || result?.msg_id || result?.message_id || result?.id;
-	const externalIdentifier = typeof result?.external_identifier === 'string' ? result.external_identifier : '';
+type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
+
+type IntelligentSearchCandidate = {
+	_id: string;
+	rid?: string;
+	msgId?: string;
+	pipelineText: string;
+	score?: number;
+};
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+	value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+
+const firstString = (...values: unknown[]): string | undefined => {
+	for (const value of values) {
+		if (typeof value === 'string' && value) {
+			return value;
+		}
+	}
+	return undefined;
+};
+
+const firstNumber = (...values: unknown[]): number | undefined => {
+	for (const value of values) {
+		const numberValue = Number(value);
+		if (Number.isFinite(numberValue)) {
+			return numberValue;
+		}
+	}
+	return undefined;
+};
+
+const extractIntelligentResultIds = (result: IntelligentSearchRawResult): { rid?: string; msgId?: string } => {
+	const metadata = asRecord(result.metadata);
+	let rid = firstString(metadata.room_id, metadata.rid, result.room_id, result.rid);
+	let msgId = firstString(metadata.msg_id, metadata.message_id, result.msg_id, result.message_id, result.id);
+	const externalIdentifier = firstString(result.external_identifier);
 
 	if ((!rid || !msgId) && externalIdentifier) {
 		const separator = externalIdentifier.indexOf(':');
@@ -546,92 +579,230 @@ const extractIntelligentResultIds = (result: any): { rid?: string; msgId?: strin
 	return { rid, msgId };
 };
 
-const normalizeIntelligentResults = async (rawSearchResults: any, userRoomIds: string[]): Promise<UnifiedSearchIntelligentResult[]> => {
-	let rawResults: any[] = [];
+const normalizeIntelligentResults = async (rawSearchResults: unknown, userRoomIds: string[]): Promise<UnifiedSearchIntelligentResult[]> => {
+	let rawResults: unknown[] = [];
+	const rawSearchResultsRecord = asRecord(rawSearchResults);
 
 	if (Array.isArray(rawSearchResults)) {
 		rawResults = rawSearchResults;
-	} else if (Array.isArray(rawSearchResults?.results)) {
-		rawResults = rawSearchResults.results;
-	} else if (Array.isArray(rawSearchResults?.context)) {
-		rawResults = rawSearchResults.context;
-	} else if (Array.isArray(rawSearchResults?.documents)) {
-		rawResults = rawSearchResults.documents;
+	} else if (Array.isArray(rawSearchResultsRecord.results)) {
+		rawResults = rawSearchResultsRecord.results;
+	} else if (Array.isArray(rawSearchResultsRecord.context)) {
+		rawResults = rawSearchResultsRecord.context;
+	} else if (Array.isArray(rawSearchResultsRecord.documents)) {
+		rawResults = rawSearchResultsRecord.documents;
+	} else if (Array.isArray(rawSearchResultsRecord.hits)) {
+		rawResults = rawSearchResultsRecord.hits;
+	} else if (Array.isArray(rawSearchResultsRecord.data)) {
+		rawResults = rawSearchResultsRecord.data;
 	}
 
+	SystemLogger.debug({
+		msg: 'Intelligent search normalizing results',
+		rawCount: rawResults.length,
+		rawKeys: Object.keys(rawSearchResultsRecord),
+	});
+
 	const userRoomIdSet = new Set(userRoomIds);
+
+	// Extract IDs and scores from pipeline response.
 	const candidates = rawResults
-		.map((result: any, index: number) => {
+		.map((rawResult: unknown, index: number): IntelligentSearchCandidate => {
+			const result = asRecord(rawResult) as IntelligentSearchRawResult;
+			const metadata = asRecord(result.metadata);
 			const { rid, msgId } = extractIntelligentResultIds(result);
-			const metadata = result?.metadata ?? {};
-			const text = String(result?.text || result?.content || result?.document || result?.page_content || metadata.text || '');
-			const score = Number(result?.score ?? result?.distance ?? result?.similarity ?? metadata.score);
+			// Pipeline typically doesn't return message text, so we'll fetch it from the DB.
+			// Still capture it as fallback if the pipeline does return it.
+			const pipelineText = firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '';
+			const score = firstNumber(result.score, result.distance, result.similarity, metadata.score);
 
 			return {
-				_id: `${rid || 'intelligent'}-${msgId || index}`,
+				_id: msgId || `intelligent-${index}`,
 				rid,
 				msgId,
-				text,
-				...(Number.isFinite(score) && { score }),
+				pipelineText,
+				...(typeof score === 'number' && { score }),
 			};
 		})
-		.filter((result: UnifiedSearchIntelligentResult) => result.text && (!result.rid || userRoomIdSet.has(result.rid)))
+		.filter((result) => {
+			// Must have at least a room or message ID to be useful.
+			if (!result.msgId && !result.rid) return false;
+			// Secondary security filter: if we have a room ID, verify user has access.
+			if (result.rid && !userRoomIdSet.has(result.rid)) {
+				SystemLogger.debug({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid: result.rid });
+				return false;
+			}
+			return true;
+		})
 		.slice(0, AI_SEARCH_PAGE_SIZE);
+
+	SystemLogger.debug({ msg: 'Intelligent search after filter', candidateCount: candidates.length });
+
+	// Fetch actual messages from DB to get text, sender, timestamp.
+	const msgIds = candidates.map(({ msgId }) => msgId).filter(Boolean) as string[];
+	const messageMap = new Map<string, IMessage>();
+	if (msgIds.length > 0) {
+		const msgs = await Messages.find({ _id: { $in: msgIds } }, { projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 } }).toArray();
+		for (const m of msgs) {
+			messageMap.set(String(m._id), m);
+		}
+		SystemLogger.debug({ msg: 'Intelligent search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
+	}
 
 	const rooms = await getRoomMap(candidates.map(({ rid }) => rid).filter(Boolean) as string[]);
 
-	return candidates.map((result) => ({
-		...result,
-		...(result.rid && rooms.has(result.rid) && { room: rooms.get(result.rid) }),
-	}));
+	return candidates.map((result) => {
+		const dbMsg = result.msgId ? messageMap.get(result.msgId) : undefined;
+		const rid = dbMsg?.rid || result.rid;
+		return {
+			_id: result.msgId || result._id,
+			rid,
+			msgId: result.msgId,
+			// Prefer DB message text; fall back to pipeline text
+			text: dbMsg?.msg || result.pipelineText || '',
+			ts: dbMsg?.ts,
+			u: dbMsg?.u ? { username: dbMsg.u.username, name: dbMsg.u.name } : undefined,
+			...(Number.isFinite(result.score) && { score: result.score }),
+			...(rid && rooms.has(rid) && { room: rooms.get(rid) }),
+		};
+	});
 };
 
-const searchIntelligent = async (query: string, userRoomIds: string[]): Promise<UnifiedSearchIntelligentResult[]> => {
+type IntelligentSearchFilters = {
+	rid?: string;
+	fromUsername?: string;
+	startDate?: Date;
+	endDate?: Date;
+};
+
+const getUserClassifications = async (userId: string): Promise<string[]> => {
+	const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
+	return Array.from(new Set(['user', ...(user?.roles || [])]));
+};
+
+const buildIntelligentSearchFilters = (
+	userRoomIds: string[],
+	{ rid, fromUsername, startDate, endDate }: IntelligentSearchFilters,
+): Record<string, unknown> | undefined => {
+	let accessibleRoomIds = userRoomIds;
+	if (rid) {
+		accessibleRoomIds = userRoomIds.includes(rid) ? [rid] : [];
+	}
+
+	if (!accessibleRoomIds.length) {
+		return undefined;
+	}
+
+	const filters: Record<string, unknown> = {
+		room_id: rid ? { $eq: rid } : { $in: accessibleRoomIds },
+	};
+
+	if (fromUsername) {
+		filters.username = { $eq: fromUsername.replace(/^@/, '') };
+	}
+
+	if (startDate || endDate) {
+		filters.timestamp = {
+			...(startDate && { $ge: startDate.toISOString() }),
+			...(endDate && { $le: endDate.toISOString() }),
+		};
+	}
+
+	return filters;
+};
+
+const searchIntelligent = async (
+	query: string,
+	userId: string,
+	userRoomIds: string[],
+	filters: IntelligentSearchFilters = {},
+): Promise<UnifiedSearchIntelligentResult[]> => {
 	const baseUrl = String(settings.get('AI_Intelligent_Search_Pipeline_Base_URL') || '').replace(/\/+$/, '');
 	const pipelineId = String(settings.get('AI_Intelligent_Search_Pipeline_ID') || '');
 	const apiKey = String(settings.get('AI_Intelligent_Search_API_Key') || '');
 	const apiKeySecret = String(settings.get('AI_Intelligent_Search_API_Key_Secret') || '');
 
-	if (!baseUrl || !pipelineId || !apiKey || !apiKeySecret || !userRoomIds.length) {
+	if (!baseUrl || !pipelineId || !apiKey || !apiKeySecret) {
+		SystemLogger.debug({
+			msg: 'Intelligent search skipped: missing configuration',
+			baseUrl: !!baseUrl,
+			pipelineId: !!pipelineId,
+			apiKey: !!apiKey,
+			apiKeySecret: !!apiKeySecret,
+		});
+		return [];
+	}
+
+	if (!userRoomIds.length) {
+		SystemLogger.debug({ msg: 'Intelligent search skipped: user has no room subscriptions' });
+		return [];
+	}
+
+	const pipelineFilters = buildIntelligentSearchFilters(userRoomIds, filters);
+	if (!pipelineFilters) {
+		SystemLogger.debug({ msg: 'Intelligent search skipped: no accessible rooms for filters', rid: filters.rid });
 		return [];
 	}
 
 	const minimumSimilarity = normalizeSimilarityPercent(settings.get('AI_Intelligent_Search_Min_Similarity_Percent'));
-	const response = await fetch(`${baseUrl}/pipelines/${encodeURIComponent(pipelineId)}/search`, {
-		method: 'POST',
-		timeout: 10000,
-		ignoreSsrfValidation: false,
-		allowList: [],
-		headers: {
-			'Content-Type': 'application/json',
-			'Accept': 'application/json',
-			'X-API-KEY': apiKey,
-			'X-API-KEY-SECRET': apiKeySecret,
-		},
-		body: JSON.stringify({
-			query,
-			type: 'similarity',
-			classification: {
-				classifications: [],
-				search_type: 2,
-			},
-			filters: {
-				room_id: {
-					$in: userRoomIds,
-				},
-			},
-			params: {
-				k: AI_SEARCH_PAGE_SIZE,
-				threshold: getSemanticDistanceThreshold(minimumSimilarity),
-			},
-		}),
+	const queryTemplate = String(settings.get('AI_Intelligent_Search_Query_Template') || '');
+	const classifications = await getUserClassifications(userId);
+	// Apply query template if configured (e.g. "task: search result | query: {query}")
+	const formattedQuery = queryTemplate ? queryTemplate.replace('{query}', query) : query;
+	const url = `${baseUrl}/pipelines/${encodeURIComponent(pipelineId)}/search`;
+
+	SystemLogger.debug({
+		msg: 'Intelligent search request',
+		url,
+		formattedQuery,
+		userRoomCount: userRoomIds.length,
+		filterKeys: Object.keys(pipelineFilters),
+		classificationCount: classifications.length,
+		threshold: getSemanticDistanceThreshold(minimumSimilarity),
 	});
 
+	let response: Awaited<ReturnType<typeof fetch>>;
+	try {
+		response = await fetch(url, {
+			method: 'POST',
+			timeout: 10000,
+			// Admin-configured URL: SSRF validation disabled; admin is responsible for the configured endpoint
+			ignoreSsrfValidation: true,
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'X-API-KEY': apiKey,
+				'X-API-KEY-SECRET': apiKeySecret,
+			},
+			body: JSON.stringify({
+				query: formattedQuery,
+				type: 'similarity',
+				classification: {
+					classifications,
+					search_type: 2,
+				},
+				filters: pipelineFilters,
+				params: {
+					k: AI_SEARCH_PAGE_SIZE,
+					threshold: getSemanticDistanceThreshold(minimumSimilarity),
+				},
+			}),
+		});
+	} catch (fetchError: unknown) {
+		SystemLogger.warn({ msg: 'Intelligent search fetch failed', url, err: fetchError });
+		throw fetchError;
+	}
+
 	if (!response.ok) {
+		const body = await response.text().catch(() => '');
+		SystemLogger.warn({ msg: 'Intelligent search pipeline returned error', url, status: response.status, body });
 		return [];
 	}
 
-	return normalizeIntelligentResults(await response.json(), userRoomIds);
+	const json = await response.json();
+	SystemLogger.debug({ msg: 'Intelligent search raw response received', resultKeys: Object.keys(json ?? {}) });
+
+	return normalizeIntelligentResults(json, userRoomIds);
 };
 
 API.v1.get(
@@ -649,18 +820,29 @@ API.v1.get(
 		const query = this.queryParams.query.trim();
 		const { count } = await getPaginationItems(this.queryParams);
 		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
+		const rid = this.queryParams.rid || undefined;
+		const fromUsername = this.queryParams.fromUsername || undefined;
+		const startDate = this.queryParams.startDate ? new Date(this.queryParams.startDate) : undefined;
+		const endDate = this.queryParams.endDate ? new Date(this.queryParams.endDate) : undefined;
+
+		const hasFilters = Boolean(rid || fromUsername || startDate || endDate);
+		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
 
 		const [spotlight, userRoomIds] = await Promise.all([
-			spotlightMethod({
-				text: query,
-				userId: this.userId,
-				type: { users: true, rooms: true, includeFederatedRooms: true },
-			}),
+			// Don't run spotlight when filtering to a specific room (not useful)
+			rid
+				? Promise.resolve({ users: [], rooms: [] })
+				: spotlightMethod({
+						text: query,
+						userId: this.userId,
+						type: { users: true, rooms: true, includeFederatedRooms: true },
+					}),
 			getUserRoomIds(this.userId),
 		]);
 
 		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
 		const intelligentSearchEnabled = settings.get('AI_Intelligent_Search_Enabled') === true;
+		const hasIntelligentSearchLicense = License.hasModule('chat.rocket.rc-ai');
 		const intelligentSearchConfigured = Boolean(
 			settings.get('AI_Intelligent_Search_Pipeline_Base_URL') &&
 				settings.get('AI_Intelligent_Search_Pipeline_ID') &&
@@ -669,8 +851,9 @@ API.v1.get(
 		);
 
 		let messages: UnifiedSearchMessageResult[] = [];
-		if (this.queryParams.includeMessages && globalMessagesEnabled) {
-			const searchResult = await messageSearch(this.userId, query, undefined, limit, 0);
+		// Room-specific search is always allowed; global search requires the setting
+		if (this.queryParams.includeMessages && (rid || globalMessagesEnabled)) {
+			const searchResult = await messageSearch(this.userId, query, rid, limit, 0, filters);
 			const docs = searchResult && searchResult.message ? await normalizeMessagesForUser(searchResult.message.docs, this.userId) : [];
 			const rooms = await getRoomMap(docs.map((message: IMessage) => message.rid));
 			messages = docs.map((message: IMessage) => ({
@@ -684,15 +867,28 @@ API.v1.get(
 		}
 
 		let intelligent: UnifiedSearchIntelligentResult[] = [];
-		if (this.queryParams.includeIntelligent && intelligentSearchEnabled && intelligentSearchConfigured) {
+		if (this.queryParams.includeIntelligent && hasIntelligentSearchLicense && intelligentSearchEnabled && intelligentSearchConfigured) {
 			try {
-				intelligent = await searchIntelligent(query, userRoomIds);
+				intelligent = await searchIntelligent(query, this.userId, userRoomIds, {
+					rid,
+					fromUsername,
+					startDate,
+					endDate,
+				});
 			} catch (error) {
 				SystemLogger.warn({
 					msg: 'Intelligent search request failed',
 					err: error,
 				});
 			}
+		} else {
+			SystemLogger.debug({
+				msg: 'Intelligent search skipped at endpoint',
+				includeIntelligent: this.queryParams.includeIntelligent,
+				hasIntelligentSearchLicense,
+				intelligentSearchEnabled,
+				intelligentSearchConfigured,
+			});
 		}
 
 		return API.v1.success({

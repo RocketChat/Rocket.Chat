@@ -50,9 +50,11 @@ const withAsyncTOTP = <T extends (name: string, ...args: any[]) => Promise<any>>
 		try {
 			return await callAsync(methodName, ...args);
 		} catch (error: unknown) {
+			// Use the original (unwrapped) callAsync here to prevent recursive 2FA modal opening
+			// when the server returns totp-invalid (e.g. wrong code entered).
 			return process2faAsyncReturn({
 				error,
-				onCode: (twoFactorCode, twoFactorMethod) => Meteor.callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
+				onCode: (twoFactorCode, twoFactorMethod) => callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
 				emailOrUsername: undefined,
 			});
 		}

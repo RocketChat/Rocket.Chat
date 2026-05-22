@@ -67,6 +67,14 @@ export const createAISettings = () =>
 				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
 				i18nDescription: 'AI_Intelligent_Search_Min_Similarity_Percent_Description',
 			});
+			await this.add('AI_Intelligent_Search_Query_Template', '', {
+				type: 'string',
+				enterprise: true,
+				modules: [AI_LICENSE_MODULE],
+				invalidValue: '',
+				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
+				i18nDescription: 'AI_Intelligent_Search_Query_Template_Description',
+			});
 		});
 
 		await this.section('AI_Thread_Summarization', async function () {

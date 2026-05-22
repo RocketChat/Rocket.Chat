@@ -57,6 +57,10 @@ type UnifiedSearch = PaginatedRequest<{
 	query: string;
 	includeMessages?: boolean;
 	includeIntelligent?: boolean;
+	rid?: string;
+	fromUsername?: string;
+	startDate?: string;
+	endDate?: string;
 }>;
 
 const UnifiedSearchSchema = {
@@ -72,6 +76,22 @@ const UnifiedSearchSchema = {
 		},
 		includeIntelligent: {
 			type: 'boolean',
+			nullable: true,
+		},
+		rid: {
+			type: 'string',
+			nullable: true,
+		},
+		fromUsername: {
+			type: 'string',
+			nullable: true,
+		},
+		startDate: {
+			type: 'string',
+			nullable: true,
+		},
+		endDate: {
+			type: 'string',
 			nullable: true,
 		},
 		count: {
@@ -103,6 +123,8 @@ export type UnifiedSearchIntelligentResult = {
 	msgId?: string;
 	text: string;
 	score?: number;
+	ts?: Date | string;
+	u?: { username: string; name?: string };
 	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
 };
 

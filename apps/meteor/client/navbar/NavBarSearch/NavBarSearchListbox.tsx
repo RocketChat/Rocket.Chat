@@ -1,12 +1,10 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Button, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useRouter } from '@rocket.chat/ui-contexts';
-import { useRef } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
@@ -19,37 +17,38 @@ import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
+	filterText: string;
+	onFilterTextChange: (text: string) => void;
+	onSelect: () => void;
+	onNavigateToSearch: () => void;
 };
 
-const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({
+	state,
+	overlayProps,
+	filterText,
+	onFilterTextChange,
+	onSelect,
+	onNavigateToSearch,
+}: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const containerRef = useRef<HTMLElement>(null);
 
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, watch } = useFormContext();
-	const { filterText } = watch();
-
 	const debouncedFilter = useDebouncedValue(filterText, 500);
 
-	const handleSelect = useEffectEvent(() => {
+	const handleSelect = useCallback(() => {
 		state.close();
-		resetField('filterText');
-	});
+		onFilterTextChange('');
+		onSelect();
+	}, [onFilterTextChange, onSelect, state]);
 
-	const handleOpenSearchPage = useEffectEvent(() => {
-		const searchParams = new URLSearchParams();
-		if (filterText.trim()) {
-			searchParams.set('q', filterText.trim());
-		}
-		router.navigate({
-			name: 'search',
-			search: Object.fromEntries(searchParams.entries()),
-		});
+	const handleOpenSearchPage = useCallback(() => {
+		onNavigateToSearch();
 		state.close();
-	});
+	}, [onNavigateToSearch, state]);
 
 	const { data, isLoading } = useSearchItems(debouncedFilter);
 	const items = data ?? {
@@ -93,7 +92,15 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
+				<div
+					{...overlayProps}
+					id='navbar-search-listbox'
+					role='listbox'
+					aria-label={t('Channels')}
+					aria-busy={isLoading}
+					tabIndex={-1}
+					onKeyDown={handleKeyDown}
+				>
 					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
 					{!hasFilter && items.recent.length > 0 && sectionLabel(t('Recent'))}
 					{!hasFilter && items.recent.map((item) => <NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />)}
