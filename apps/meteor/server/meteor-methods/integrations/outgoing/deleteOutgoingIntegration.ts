@@ -4,13 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		deleteOutgoingIntegration(integrationId: string): Promise<boolean>;
-	}
-}
-
 export const deleteOutgoingIntegration = async (integrationId: string, userId: string): Promise<void> => {
 	if (!userId) {
 		throw new Meteor.Error('not_authorized', 'Unauthorized', {

@@ -17,12 +17,6 @@ type CleanRoomHistoryParams = {
 	fromUsers?: string[];
 	ignoreThreads?: boolean;
 };
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		cleanRoomHistory(data: CleanRoomHistoryParams): number;
-	}
-}
 
 export const cleanRoomHistoryMethod = async (
 	userId: string,

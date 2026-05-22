@@ -279,13 +279,6 @@ type BrowseChannelsParams = {
 	limit?: number;
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		browseChannels: (params: BrowseChannelsParams) => Promise<unknown>;
-	}
-}
-
 export const browseChannelsMethod = async (
 	{
 		text = '',

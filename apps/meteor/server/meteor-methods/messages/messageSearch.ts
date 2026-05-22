@@ -10,14 +10,6 @@ import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 import { settings } from '../../settings';
 
 const logger = new Logger('MessageSearch');
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		messageSearch(text: string, rid?: string, limit?: number, offset?: number): IRawSearchResult | false;
-	}
-}
-
 export const messageSearch = async function (
 	userId: string,
 	text: string,

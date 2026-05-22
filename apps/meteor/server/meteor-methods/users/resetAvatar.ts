@@ -7,13 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		resetAvatar(userId: IUser['_id']): void;
-	}
-}
-
 export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']): Promise<void> => {
 	const canEditOtherUserAvatar = await hasPermissionAsync(fromUserId, 'edit-other-user-avatar');
 
