@@ -7,6 +7,7 @@ import type {
 	AbacAuditServerEventKey,
 	AbacAttributeDefinitionChangeType,
 	AbacAuditReason,
+	AbacPdpType,
 	MinimalRoom,
 	MinimalUser,
 	AbacActionPerformed,
@@ -122,6 +123,7 @@ export const Audit = {
 		object: MinimalRoom,
 		reason: AbacAuditReason = 'room-attributes-change',
 		actionPerformed: AbacActionPerformed = 'revoked-object-access',
+		pdp?: AbacPdpType,
 	) => {
 		return audit(
 			'abac.action.performed',
@@ -130,6 +132,7 @@ export const Audit = {
 				reason,
 				subject,
 				object,
+				pdp,
 			},
 			{ type: 'system' },
 		);

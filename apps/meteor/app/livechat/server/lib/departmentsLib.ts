@@ -295,6 +295,7 @@ export async function checkOnlineForDepartment(departmentId: string) {
 		depUsers.map((agent) => agent.username),
 		{ projection: { _id: 1 } },
 		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 	);
 
 	return !!onlineForDep;
@@ -304,5 +305,9 @@ export async function getOnlineForDepartment(departmentId: string) {
 	const agents = await LivechatDepartmentAgents.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
 	const usernames = agents.map(({ username }) => username);
 
-	return Users.findOnlineUserFromList<ILivechatAgent>([...new Set(usernames)], settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	return Users.findOnlineUserFromList<ILivechatAgent>(
+		[...new Set(usernames)],
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+	);
 }

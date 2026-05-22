@@ -8,6 +8,7 @@ import { Twitter } from 'meteor/twitter-oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { absoluteUrl } from '../../lib/absoluteUrl';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 const { loginWithTwitter } = Meteor;
@@ -45,7 +46,7 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 			});
 		}
 
-		const loginUrl = Meteor.absoluteUrl(loginPath);
+		const loginUrl = absoluteUrl(loginPath);
 
 		OAuth.launchLogin({
 			loginService: 'twitter',

@@ -27,7 +27,7 @@ export type * from './ICustomSound';
 export type * from './ICloud';
 export * from './IServerEvent';
 export type * from './IRocketChatAssets';
-export type * from './IPushToken';
+export * from './IPushToken';
 export type * from './IPushNotificationConfig';
 export type * from './SlashCommands';
 export * from './license';
@@ -36,6 +36,7 @@ export type * from './IUserDataFile';
 export type * from './IUserSession';
 export type * from './IUserStatus';
 export * from './IUser';
+export type * from './IMeApiUser';
 
 export type * from './ee/IAuditLog';
 export type * from './ee/IWorkspaceCredentials';
@@ -133,3 +134,5 @@ export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';
 
 export { schemas } from './Ajv';
+
+export type * from './ITwoFactorChallenge';

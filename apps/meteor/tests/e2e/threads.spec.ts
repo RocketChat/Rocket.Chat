@@ -7,13 +7,13 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('Threads', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel));
@@ -56,6 +56,7 @@ test.describe.serial('Threads', () => {
 				await expect(page).toHaveURL(/.*thread/);
 				await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
 			});
+			await expect(page).not.toHaveURL(/[?&]msg=/);
 
 			await poHomeChannel.content.lastUserMessage.click();
 			await expect(page).not.toHaveURL(/.*thread/);
@@ -92,8 +93,7 @@ test.describe.serial('Threads', () => {
 	test.describe('thread message actions', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			await page.goto('/home');
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.content.openReplyInThread();
 		});

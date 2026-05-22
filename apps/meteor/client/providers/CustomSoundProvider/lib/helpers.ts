@@ -25,7 +25,7 @@ export const soundTranslationKeys: Record<string, string> = {
 	'ringtone': 'Sound_Ringtone',
 };
 
-export const defaultSounds: ICustomSound[] = [
+export const defaultSounds: Omit<ICustomSound, '_updatedAt'>[] = [
 	{ _id: 'chime', name: 'Sound_Chime', extension: 'mp3', src: getAssetUrl('sounds/chime.mp3') },
 	{ _id: 'door', name: 'Sound_Door', extension: 'mp3', src: getAssetUrl('sounds/door.mp3') },
 	{ _id: 'beep', name: 'Sound_Beep', extension: 'mp3', src: getAssetUrl('sounds/beep.mp3') },

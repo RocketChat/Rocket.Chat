@@ -6,12 +6,11 @@ import {
 	type IRoom,
 	type ISubscription,
 } from '@rocket.chat/core-typings';
-import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useUser, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';
-import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
@@ -33,8 +32,10 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 	const isFederated = room && isRoomFederated(room);
 	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
 
-	const enabled = useReactiveValue(
-		useCallback(() => {
+	// depend on post-readonly so readOnly re-evaluates when the permission toggles at runtime.
+	const postReadOnly = usePermission('post-readonly', room._id);
+	const enabled = useMemo(
+		() => {
 			if (isFederationBlocked) {
 				return false;
 			}
@@ -48,7 +49,9 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 			}
 
 			return true;
-		}, [chat, room, subscription, message.private, user, isFederationBlocked]),
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[chat, room, subscription, message.private, user, isFederationBlocked, postReadOnly],
 	);
 
 	if (!enabled) {

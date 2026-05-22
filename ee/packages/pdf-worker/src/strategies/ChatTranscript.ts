@@ -41,6 +41,10 @@ export class ChatTranscript implements IStrategy {
 												ts: moment(requestData.visitor.lastAgent.ts).tz(timezone).format(timeAndDateFormat),
 											}
 										: undefined,
+									externalIds: requestData.visitor.externalIds?.map((ext) => ({
+										...ext,
+										metadata: ext.metadata ? Object.fromEntries(Object.entries(ext.metadata).map(([key]) => [key, null])) : undefined,
+									})),
 									livechatData: requestData.visitor.livechatData
 										? Object.fromEntries(Object.entries(requestData.visitor.livechatData).map(([key]) => [key, null]))
 										: undefined,

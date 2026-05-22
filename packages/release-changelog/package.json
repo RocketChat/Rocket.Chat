@@ -13,8 +13,8 @@
 	},
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
-		"@types/node": "~22.16.5",
-		"eslint": "~9.39.3",
+		"@types/node": "~22.19.17",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

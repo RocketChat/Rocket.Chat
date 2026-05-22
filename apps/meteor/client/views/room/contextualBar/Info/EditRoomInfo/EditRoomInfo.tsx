@@ -49,6 +49,7 @@ import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
@@ -81,6 +82,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = isRoomFederated(room);
+	const isAbacManaged = useIsABACManagedRoom(room);
 	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
@@ -170,8 +172,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					rid: room._id,
 					...data,
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
-					...((data.systemMessages || !hideSysMes) && {
-						systemMessages: hideSysMes && data.systemMessages,
+					...((dirtyFields.hideSysMes || dirtyFields.systemMessages) && {
+						systemMessages: hideSysMes ? (data.systemMessages ?? defaultValues.systemMessages) : [],
 					}),
 					retentionEnabled,
 					retentionOverrideGlobal,
@@ -284,7 +286,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									<Controller
 										name='roomTopic'
 										control={control}
-										render={({ field }) => <TextInput id={roomTopicField} aria-describedby={`${roomTopicField}-hint`} {...field} />}
+										render={({ field }) => (
+											<TextInput id={roomTopicField} aria-describedby={`${roomTopicField}-hint`} {...field} disabled={isAbacManaged} />
+										)}
 									/>
 								</FieldRow>
 								<FieldRow>
@@ -304,7 +308,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												id={roomAnnouncementField}
 												aria-describedby={`${roomAnnouncementField}-hint`}
 												{...field}
-												disabled={isFederated}
+												disabled={isFederated || isAbacManaged}
 											/>
 										)}
 									/>
@@ -321,7 +325,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									<Controller
 										name='roomDescription'
 										control={control}
-										render={({ field }) => <TextAreaInput id={roomDescriptionField} {...field} disabled={isFederated} rows={4} />}
+										render={({ field }) => (
+											<TextAreaInput id={roomDescriptionField} {...field} disabled={isFederated || isAbacManaged} rows={4} />
+										)}
 									/>
 								</FieldRow>
 							</Field>
@@ -483,6 +489,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																options={sysMesOptions}
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
+																aria-label={t('Select_messages_to_hide')}
 															/>
 														)}
 													/>

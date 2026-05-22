@@ -10,6 +10,7 @@ declare module '@rocket.chat/model-typings' {
 			departmentId: string,
 			customFilter: Filter<AvailableAgentsAggregation>,
 			enabledWhenIdle?: boolean,
+			enabledWhenOffline?: boolean,
 		): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	}
 }
@@ -23,6 +24,7 @@ export class UsersEE extends UsersRaw {
 		departmentId: string,
 		customFilter: Filter<AvailableAgentsAggregation>,
 		enabledWhenIdle = false,
+		enabledWhenOffline = false,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId
@@ -53,7 +55,7 @@ export class UsersEE extends UsersRaw {
 			.aggregate<AvailableAgentsAggregation>(
 				[
 					{
-						$match: queryStatusAgentOnline({}, enabledWhenIdle),
+						$match: queryStatusAgentOnline({}, enabledWhenIdle, enabledWhenOffline),
 					},
 					...departmentFilter,
 					{
