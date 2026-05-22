@@ -1,4 +1,3 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -31,16 +30,3 @@ export const executeSetUserActiveStatus = async (
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async setUserActiveStatus(userId, active, confirmRelinquish) {
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'setUserActiveStatus',
-			});
-		}
-
-		return executeSetUserActiveStatus(uid, userId, active, confirmRelinquish);
-	},
-});
