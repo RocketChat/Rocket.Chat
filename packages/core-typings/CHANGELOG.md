@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 8.2.4
+
 ## 8.2.3
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @rocket.chat/meteor
 
+## 8.2.4
+
+### Patch Changes
+
+- ([#40629](https://github.com/RocketChat/Rocket.Chat/pull/40629) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures OAuth tokens are cleaned up after user deactivation
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40564](https://github.com/RocketChat/Rocket.Chat/pull/40564) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures that deactivated users have their login tokens cleaned up in users.deactivateidle
+
+- ([#40541](https://github.com/RocketChat/Rocket.Chat/pull/40541) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the Meteor method for translateMessage validates access and types
+
+- ([#40579](https://github.com/RocketChat/Rocket.Chat/pull/40579) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the visitor token is not present in the visitors.info response
+
+- ([#40549](https://github.com/RocketChat/Rocket.Chat/pull/40549) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the autotranslate.translateMessage endpoint checks for room access
+
+- <details><summary>Updated dependencies [776d43cf33bab90c2d173d95b2f9a26e8a333dbe, e0f8b66d728498e26586ced3630f29ad8d855bc0]:</summary>
+
+  - @rocket.chat/model-typings@2.1.4
+  - @rocket.chat/models@2.1.4
+  - @rocket.chat/core-typings@8.2.4
+  - @rocket.chat/rest-typings@8.2.4
+  </details>
+
 ## 8.2.3
 
 ### Patch Changes
