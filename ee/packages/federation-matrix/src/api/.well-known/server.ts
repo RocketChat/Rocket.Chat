@@ -32,7 +32,7 @@ export const getWellKnownRoutes = () => {
 		async (c) => {
 			const responseData = federationSDK.getWellKnownHostData();
 
-			const etag = createHash('md5').update(JSON.stringify(responseData)).digest('hex');
+			const etag = createHash('sha256').update(JSON.stringify(responseData)).digest('hex');
 
 			c.header('ETag', etag);
 			c.header('Content-Type', 'application/json');
