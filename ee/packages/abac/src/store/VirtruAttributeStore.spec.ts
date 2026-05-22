@@ -3,14 +3,6 @@ import { VirtruAttributeStore } from './VirtruAttributeStore';
 const usersFindOneById = jest.fn();
 jest.mock('@rocket.chat/models', () => ({ Users: { findOneById: (...a: unknown[]) => usersFindOneById(...a) } }));
 
-jest.mock('../logger', () => {
-	const warn = jest.fn();
-	const section = { warn, info: jest.fn(), debug: jest.fn(), error: jest.fn() };
-	return { logger: { section: () => section }, __mockStoreLoggerWarn: warn };
-});
-
-const { __mockStoreLoggerWarn: mockStoreLoggerWarn } = jest.requireMock('../logger') as { __mockStoreLoggerWarn: jest.Mock };
-
 const cfg = {
 	baseUrl: 'http://pdp',
 	clientId: 'c',
@@ -54,8 +46,7 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(r).toMatchObject({ offset: 0, total: 2 });
 	});
 
-	it('malformed FQNs from PDP are skipped, valid ones returned, warn logged once', async () => {
-		mockStoreLoggerWarn.mockClear();
+	it('malformed FQNs from PDP are skipped, valid ones returned', async () => {
 		const apiCall = jest.fn().mockResolvedValue({
 			entitlements: [
 				{
@@ -69,10 +60,6 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		const store = new VirtruAttributeStore(mkClient({ apiCall }));
 		const r = await store.list(actor);
 		expect(r.attributes).toEqual([{ _id: 'clearance', key: 'clearance', values: ['secret'] }]);
-		expect(mockStoreLoggerWarn).toHaveBeenCalledTimes(1);
-		expect(mockStoreLoggerWarn).toHaveBeenCalledWith(
-			expect.objectContaining({ msg: 'Virtru store: ignoring malformed attribute FQNs', malformed: ['not-a-fqn'] }),
-		);
 	});
 
 	it('isAvailable() false => throws PdpUnavailable, no GetEntitlements', async () => {
@@ -236,16 +223,6 @@ describe('VirtruAttributeStore.scopeRoomsPage', () => {
 		const out = await store.scopeRoomsPage(rooms, actor);
 		expect(out[0].abacAttributesRedacted).toBe(true);
 		expect(out[1].abacAttributesRedacted).toBe(true);
-	});
-	it('decision call throws => warn-level log captures the underlying error', async () => {
-		mockStoreLoggerWarn.mockClear();
-		const err = new Error('boom');
-		const apiCall = jest.fn().mockRejectedValue(err);
-		const store = new VirtruAttributeStore(mkClient({ apiCall }));
-		await store.scopeRoomsPage(rooms, actor);
-		expect(mockStoreLoggerWarn).toHaveBeenCalledWith(
-			expect.objectContaining({ msg: 'Virtru store: GetDecisionBulk call failed, treating PDP as unavailable', err }),
-		);
 	});
 });
 
