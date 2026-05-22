@@ -25,7 +25,6 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 	const queryClient = useQueryClient();
 	const queryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
-	const readThread = useEndpoint('POST', '/v1/subscriptions.read');
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
@@ -107,10 +106,10 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
 
 			const { messages } = await getThreadMessages({ tmid });
-			// REST endpoint does not mark the thread as read; trigger it explicitly
-			// to preserve the read-marker side effect that DDP getThreadMessages had.
-			void readThread({ tmid });
-			const filtered = messages.filter(
+			// Note: DDP getThreadMessages had a side effect of marking the thread
+			// as read via readThread(uid, tmid). REST does not. No dedicated REST
+			// endpoint for per-thread read marker exists yet.
+			const filtered = (messages as unknown as IMessage[]).filter(
 				(msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true,
 			);
 

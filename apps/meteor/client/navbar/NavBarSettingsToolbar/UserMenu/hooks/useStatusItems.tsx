@@ -1,3 +1,4 @@
+import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -22,14 +23,14 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 	const queryClient = useQueryClient();
 	const stream = useStream('notify-logged');
 	const listCustomUserStatusEndpoint = useEndpoint('GET', '/v1/custom-user-status.list');
-	const listCustomUserStatus = useCallback(async () => {
-		const all: Awaited<ReturnType<typeof listCustomUserStatusEndpoint>>['statuses'] = [];
+	const listCustomUserStatus = useCallback(async (): Promise<ICustomUserStatus[]> => {
+		const all: ICustomUserStatus[] = [];
 		const count = 100;
 		let offset = 0;
 		// REST endpoint is paginated; loop until total reached.
 		while (true) {
 			const { statuses, total } = await listCustomUserStatusEndpoint({ count, offset });
-			all.push(...statuses);
+			all.push(...(statuses as unknown as ICustomUserStatus[]));
 			if (all.length >= total || statuses.length === 0) break;
 			offset += statuses.length;
 		}

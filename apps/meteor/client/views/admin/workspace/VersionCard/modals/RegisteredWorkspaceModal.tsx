@@ -35,7 +35,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 		setSyncing(true);
 
 		try {
-			const { success } = await syncWorkspace({});
+			const { success } = await syncWorkspace();
 
 			if (!success) {
 				throw Error(t('RegisterWorkspace_Syncing_Error'));
