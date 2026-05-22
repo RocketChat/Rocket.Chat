@@ -21,6 +21,7 @@ type NavBarSearchListBoxProps = {
 	onFilterTextChange: (text: string) => void;
 	onSelect: () => void;
 	onNavigateToSearch: () => void;
+	onApplyRoomFilter: (room: { _id: string; name?: string; fname?: string }) => void;
 };
 
 const NavBarSearchListBox = ({
@@ -30,6 +31,7 @@ const NavBarSearchListBox = ({
 	onFilterTextChange,
 	onSelect,
 	onNavigateToSearch,
+	onApplyRoomFilter,
 }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
@@ -69,6 +71,7 @@ const NavBarSearchListBox = ({
 	const itemCount = hasFilter
 		? items.users.length + items.rooms.length + items.messages.length + items.intelligent.length
 		: items.recent.length;
+	const roomFilterSuggestions = hasFilter ? items.rooms.slice(0, 5) : [];
 
 	const sectionLabel = (label: string) => (
 		<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} pbs={8} mbe={4} role='presentation' aria-hidden>
@@ -102,6 +105,22 @@ const NavBarSearchListBox = ({
 					onKeyDown={handleKeyDown}
 				>
 					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
+					{roomFilterSuggestions.length > 0 && sectionLabel(t('Search_filter_in_room'))}
+					{roomFilterSuggestions.map((item) => (
+						<Button
+							key={`filter-room-${item._id}`}
+							small
+							secondary
+							mis={12}
+							mie={4}
+							mbe={4}
+							onClick={() => {
+								onApplyRoomFilter(item);
+							}}
+						>
+							{t('Search_in', { room: `#${item.fname || item.name}` })}
+						</Button>
+					))}
 					{!hasFilter && items.recent.length > 0 && sectionLabel(t('Recent'))}
 					{!hasFilter && items.recent.map((item) => <NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />)}
 					{hasFilter && items.users.length > 0 && sectionLabel(t('Users'))}

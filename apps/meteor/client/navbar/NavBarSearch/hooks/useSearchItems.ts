@@ -65,6 +65,23 @@ const mapUserToRoom = (user: SearchUser): SubscriptionWithRoom =>
 		avatarETag: user.avatarETag,
 	}) as SubscriptionWithRoom;
 
+const mapSubscriptionToSearchRoom = ({ rid, _id, t, name, fname, teamMain }: SubscriptionWithRoom): SearchRoom => ({
+	_id: rid || _id,
+	t,
+	name,
+	fname,
+	teamMain,
+});
+
+const mapSubscriptionToSearchUser = ({ _id, name, fname, avatarETag }: SubscriptionWithRoom): SubscriptionWithRoom =>
+	({
+		_id,
+		t: 'd',
+		name,
+		fname,
+		avatarETag,
+	}) as SubscriptionWithRoom;
+
 export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchSections, Error> => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 	const query = useMemo(() => {
@@ -106,7 +123,13 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchS
 		],
 
 		queryFn: async () => {
-			const base = emptySections(localRooms, hasIntelligentSearchLicense, showIntelligentSearch);
+			const localUserResults = searchForChannels ? [] : localRooms.filter(({ t }) => t === 'd').map(mapSubscriptionToSearchUser);
+			const localRoomResults = searchForDMs ? [] : localRooms.filter(({ t }) => t !== 'd').map(mapSubscriptionToSearchRoom);
+			const base = {
+				...emptySections(name.trim() ? [] : localRooms, hasIntelligentSearchLicense, showIntelligentSearch),
+				users: localUserResults,
+				rooms: localRoomResults,
+			};
 
 			if (!name.trim() || localRooms.length === LIMIT) {
 				return base;
@@ -131,8 +154,10 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchS
 			const usersFilter = (user: { _id: string }): boolean =>
 				!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
 
-			const users = searchForChannels ? [] : result.users.filter(filterUsersUnique).filter(usersFilter).map(mapUserToRoom);
-			const rooms = searchForDMs ? [] : (result.rooms as SearchRoom[]).filter(roomFilter);
+			const users = searchForChannels
+				? []
+				: [...localUserResults, ...result.users.filter(filterUsersUnique).filter(usersFilter).map(mapUserToRoom)];
+			const rooms = searchForDMs ? [] : [...localRoomResults, ...(result.rooms as SearchRoom[]).filter(roomFilter)];
 
 			return {
 				recent: localRooms,

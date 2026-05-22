@@ -411,6 +411,7 @@ API.v1.get(
 
 const MAX_UNIFIED_SEARCH_RESULTS = 10;
 const AI_SEARCH_PAGE_SIZE = 5;
+const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
 
 const unifiedSearchResponseSchema = ajv.compile<{
 	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
@@ -579,7 +580,11 @@ const extractIntelligentResultIds = (result: IntelligentSearchRawResult): { rid?
 	return { rid, msgId };
 };
 
-const normalizeIntelligentResults = async (rawSearchResults: unknown, userRoomIds: string[]): Promise<UnifiedSearchIntelligentResult[]> => {
+const normalizeIntelligentResults = async (
+	rawSearchResults: unknown,
+	userRoomIds: string[],
+	limit = AI_SEARCH_PAGE_SIZE,
+): Promise<UnifiedSearchIntelligentResult[]> => {
 	let rawResults: unknown[] = [];
 	const rawSearchResultsRecord = asRecord(rawSearchResults);
 
@@ -634,7 +639,7 @@ const normalizeIntelligentResults = async (rawSearchResults: unknown, userRoomId
 			}
 			return true;
 		})
-		.slice(0, AI_SEARCH_PAGE_SIZE);
+		.slice(0, limit);
 
 	SystemLogger.debug({ msg: 'Intelligent search after filter', candidateCount: candidates.length });
 
@@ -716,6 +721,7 @@ const searchIntelligent = async (
 	userId: string,
 	userRoomIds: string[],
 	filters: IntelligentSearchFilters = {},
+	limit = AI_SEARCH_PAGE_SIZE,
 ): Promise<UnifiedSearchIntelligentResult[]> => {
 	const baseUrl = String(settings.get('AI_Intelligent_Search_Pipeline_Base_URL') || '').replace(/\/+$/, '');
 	const pipelineId = String(settings.get('AI_Intelligent_Search_Pipeline_ID') || '');
@@ -783,7 +789,7 @@ const searchIntelligent = async (
 				},
 				filters: pipelineFilters,
 				params: {
-					k: AI_SEARCH_PAGE_SIZE,
+					k: limit,
 					threshold: getSemanticDistanceThreshold(minimumSimilarity),
 				},
 			}),
@@ -802,7 +808,7 @@ const searchIntelligent = async (
 	const json = await response.json();
 	SystemLogger.debug({ msg: 'Intelligent search raw response received', resultKeys: Object.keys(json ?? {}) });
 
-	return normalizeIntelligentResults(json, userRoomIds);
+	return normalizeIntelligentResults(json, userRoomIds, limit);
 };
 
 API.v1.get(
@@ -820,6 +826,11 @@ API.v1.get(
 		const query = this.queryParams.query.trim();
 		const { count } = await getPaginationItems(this.queryParams);
 		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
+		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
+		const intelligentLimit = Math.min(
+			Math.max(Number.isFinite(requestedIntelligentCount) ? requestedIntelligentCount : AI_SEARCH_PAGE_SIZE, AI_SEARCH_PAGE_SIZE),
+			MAX_INTELLIGENT_SEARCH_RESULTS,
+		);
 		const rid = this.queryParams.rid || undefined;
 		const fromUsername = this.queryParams.fromUsername || undefined;
 		const startDate = this.queryParams.startDate ? new Date(this.queryParams.startDate) : undefined;
@@ -869,12 +880,18 @@ API.v1.get(
 		let intelligent: UnifiedSearchIntelligentResult[] = [];
 		if (this.queryParams.includeIntelligent && hasIntelligentSearchLicense && intelligentSearchEnabled && intelligentSearchConfigured) {
 			try {
-				intelligent = await searchIntelligent(query, this.userId, userRoomIds, {
-					rid,
-					fromUsername,
-					startDate,
-					endDate,
-				});
+				intelligent = await searchIntelligent(
+					query,
+					this.userId,
+					userRoomIds,
+					{
+						rid,
+						fromUsername,
+						startDate,
+						endDate,
+					},
+					intelligentLimit,
+				);
 			} catch (error) {
 				SystemLogger.warn({
 					msg: 'Intelligent search request failed',

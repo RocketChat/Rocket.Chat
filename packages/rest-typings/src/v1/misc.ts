@@ -57,6 +57,7 @@ type UnifiedSearch = PaginatedRequest<{
 	query: string;
 	includeMessages?: boolean;
 	includeIntelligent?: boolean;
+	intelligentCount?: number;
 	rid?: string;
 	fromUsername?: string;
 	startDate?: string;
@@ -76,6 +77,10 @@ const UnifiedSearchSchema = {
 		},
 		includeIntelligent: {
 			type: 'boolean',
+			nullable: true,
+		},
+		intelligentCount: {
+			type: 'number',
 			nullable: true,
 		},
 		rid: {

@@ -4864,6 +4864,7 @@
   "Search_filter_username_placeholder": "Filter by username...",
   "Search_filter_date_from": "Date from",
   "Search_filter_date_to": "Date to",
+  "Search_load_more_intelligent_results": "Load more AI results",
   "Search_clear_filters": "Clear filters",
   "Search_in": "in: {{room}}",
   "Search_from": "from: {{user}}",

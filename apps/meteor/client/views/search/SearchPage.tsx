@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Icon, Tag, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Icon, Tag, Tabs, TabsItem, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
@@ -8,14 +8,14 @@ import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
-import { useMemo } from 'react';
+import type { ChangeEvent, ReactElement, ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-type SearchTab = 'all' | 'messages' | 'users' | 'rooms' | 'intelligent';
+type SearchTab = 'all' | 'messages' | 'users' | 'rooms';
 
 type SearchUser = Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>;
 
@@ -33,7 +33,20 @@ type SearchMessageLike = {
 	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
 };
 
-const tabs: SearchTab[] = ['all', 'messages', 'users', 'rooms', 'intelligent'];
+type SearchFilterDraft = {
+	rid?: string;
+	roomName: string;
+	fromUser: string;
+	afterDate: string;
+	beforeDate: string;
+};
+
+type CombinedMessageResult = {
+	item: SearchMessageLike;
+	isIntelligent: boolean;
+};
+
+const tabs: SearchTab[] = ['all', 'messages', 'users', 'rooms'];
 const roomLookupOptions = { limit: 20, sort: { lm: -1, name: 1 } } as const;
 
 const getValidTab = (tab?: string | null): SearchTab => (tabs.includes(tab as SearchTab) ? (tab as SearchTab) : 'all');
@@ -51,6 +64,28 @@ const mergeRooms = (localRooms: SearchRoom[], remoteRooms: SearchRoom[]): Search
 		rooms.set(room._id, room);
 	}
 	return [...rooms.values()];
+};
+
+const getMessageIdentity = (item: SearchMessageLike): string => item.msgId || item._id;
+
+const mergeMessageResults = (
+	messages: SearchMessageLike[],
+	intelligent: SearchMessageLike[],
+	includeIntelligent: boolean,
+): CombinedMessageResult[] => {
+	const results = new Map<string, CombinedMessageResult>();
+	for (const item of messages) {
+		results.set(getMessageIdentity(item), { item, isIntelligent: false });
+	}
+	if (includeIntelligent) {
+		for (const item of intelligent) {
+			const identity = getMessageIdentity(item);
+			if (!results.has(identity)) {
+				results.set(identity, { item, isIntelligent: true });
+			}
+		}
+	}
+	return [...results.values()];
 };
 
 const getMessageRoom = (item: SearchMessageLike): Pick<IRoom, '_id' | 't' | 'name' | 'fname'> | undefined => item.room;
@@ -124,6 +159,7 @@ const MessageResultItem = ({
 	href?: string;
 	isIntelligent?: boolean;
 }): ReactElement => {
+	const { t } = useTranslation();
 	const username = item.u?.username;
 	const roomLabel = item.room?.fname || item.room?.name;
 	const text = ('text' in item ? item.text : undefined) || item.msg || '';
@@ -165,6 +201,7 @@ const MessageResultItem = ({
 						)}
 					</Box>
 					<Box display='flex' alignItems='center' flexShrink={0} style={{ gap: 6 }}>
+						<Tag>{isIntelligent ? t('Intelligent_Search') : t('Messages')}</Tag>
 						{isIntelligent && typeof item.score === 'number' && <Tag>{Math.round(item.score * 100)}%</Tag>}
 						{time && (
 							<Box color='hint' fontScale='c1' style={{ whiteSpace: 'nowrap' }}>
@@ -227,6 +264,128 @@ const Section = ({
 	);
 };
 
+const SearchFilterPanel = ({
+	draft,
+	roomSuggestions,
+	onDraftChange,
+	onSelectRoom,
+	onApply,
+	onClear,
+}: {
+	draft: SearchFilterDraft;
+	roomSuggestions: SearchRoom[];
+	onDraftChange: (nextDraft: SearchFilterDraft) => void;
+	onSelectRoom: (room: SearchRoom) => void;
+	onApply: () => void;
+	onClear: () => void;
+}): ReactElement => {
+	const { t } = useTranslation();
+	const updateDraft = (key: keyof SearchFilterDraft) => (event: ChangeEvent<HTMLInputElement>) => {
+		onDraftChange({
+			...draft,
+			[key]: event.currentTarget.value,
+			...(key === 'roomName' && { rid: undefined }),
+		});
+	};
+
+	return (
+		<Box
+			display='flex'
+			flexDirection='column'
+			p={16}
+			mbe={16}
+			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+			borderRadius={4}
+			bg='surface-light'
+			style={{ gap: 12 }}
+		>
+			<Box display='flex' alignItems='center' justifyContent='space-between' style={{ gap: 12 }}>
+				<Box display='flex' alignItems='center' fontScale='p2m' style={{ gap: 6 }}>
+					<Icon name='sort' size='x16' />
+					{t('Search_filters')}
+				</Box>
+				<ButtonGroup>
+					<Button small onClick={onClear}>
+						{t('Search_clear_filters')}
+					</Button>
+					<Button small primary onClick={onApply}>
+						{t('Apply')}
+					</Button>
+				</ButtonGroup>
+			</Box>
+			<Box display='grid' style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+				<Box>
+					<Box fontScale='c1' color='hint' mbe={4}>
+						{t('Search_filter_in_room')}
+					</Box>
+					<TextInput
+						value={draft.roomName}
+						placeholder={t('Search_filter_room_placeholder')}
+						onChange={updateDraft('roomName')}
+						addon={<Icon name='hash' size='x16' />}
+					/>
+				</Box>
+				<Box>
+					<Box fontScale='c1' color='hint' mbe={4}>
+						{t('Search_filter_from_user')}
+					</Box>
+					<TextInput
+						value={draft.fromUser}
+						placeholder={t('Search_filter_username_placeholder')}
+						onChange={updateDraft('fromUser')}
+						addon={<Icon name='at' size='x16' />}
+					/>
+				</Box>
+				<Box>
+					<Box fontScale='c1' color='hint' mbe={4}>
+						{t('Search_filter_date_from')}
+					</Box>
+					<Box
+						is='input'
+						type='date'
+						value={draft.afterDate}
+						onChange={updateDraft('afterDate')}
+						width='full'
+						height='x40'
+						pi={12}
+						border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-light)'
+						borderRadius={4}
+						bg='surface-light'
+						color='default'
+					/>
+				</Box>
+				<Box>
+					<Box fontScale='c1' color='hint' mbe={4}>
+						{t('Search_filter_date_to')}
+					</Box>
+					<Box
+						is='input'
+						type='date'
+						value={draft.beforeDate}
+						onChange={updateDraft('beforeDate')}
+						width='full'
+						height='x40'
+						pi={12}
+						border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-light)'
+						borderRadius={4}
+						bg='surface-light'
+						color='default'
+					/>
+				</Box>
+			</Box>
+			{roomSuggestions.length > 0 && (
+				<Box display='flex' flexWrap='wrap' style={{ gap: 6 }}>
+					{roomSuggestions.slice(0, 6).map((room) => (
+						<Button key={room._id} small secondary onClick={() => onSelectRoom(room)}>
+							{t('Search_in', { room: `#${room.fname || room.name}` })}
+						</Button>
+					))}
+				</Box>
+			)}
+		</Box>
+	);
+};
+
 // The page coordinates URL state, feature gates, and four result types; split helpers above keep the render branches localized.
 // eslint-disable-next-line complexity
 const SearchPage = (): ReactElement => {
@@ -240,6 +399,14 @@ const SearchPage = (): ReactElement => {
 	const afterDateParam = useSearchParameter('afterDate') ?? undefined;
 	const beforeDateParam = useSearchParameter('beforeDate') ?? undefined;
 	const activeTab = getValidTab(tabParam);
+	const [filterDraft, setFilterDraft] = useState<SearchFilterDraft>({
+		rid: ridParam,
+		roomName: ridNameParam || '',
+		fromUser: fromUserParam || '',
+		afterDate: afterDateParam || '',
+		beforeDate: beforeDateParam || '',
+	});
+	const [intelligentCount, setIntelligentCount] = useState(5);
 
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const globalMessagesEnabledSetting = useSetting('Search.defaultProvider.GlobalSearchEnabled', false);
@@ -247,13 +414,14 @@ const SearchPage = (): ReactElement => {
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 
 	const debouncedQueryParam = useDebouncedValue(queryParam.trim(), 300);
+	const debouncedRoomFilterText = useDebouncedValue(filterDraft.roomName.trim(), 300);
 	const localRoomsQuery = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(debouncedQueryParam), 'i');
+		const filterRegex = new RegExp(escapeRegExp(debouncedRoomFilterText || debouncedQueryParam), 'i');
 		return {
 			$or: [{ name: filterRegex }, { fname: filterRegex }],
 			t: { $ne: 'd' },
 		};
-	}, [debouncedQueryParam]);
+	}, [debouncedQueryParam, debouncedRoomFilterText]);
 	const localRooms = useUserSubscriptions(localRoomsQuery, roomLookupOptions);
 	const debouncedFilters = useDebouncedValue(
 		{
@@ -265,12 +433,31 @@ const SearchPage = (): ReactElement => {
 		200,
 	);
 
+	useEffect(() => {
+		setFilterDraft({
+			rid: ridParam,
+			roomName: ridNameParam || '',
+			fromUser: fromUserParam || '',
+			afterDate: afterDateParam || '',
+			beforeDate: beforeDateParam || '',
+		});
+		setIntelligentCount(5);
+	}, [afterDateParam, beforeDateParam, fromUserParam, queryParam, ridNameParam, ridParam]);
+
 	const result = useQuery({
-		queryKey: ['search/unified/page', debouncedQueryParam, hasIntelligentSearchLicense, intelligentSearchEnabled, debouncedFilters],
+		queryKey: [
+			'search/unified/page',
+			debouncedQueryParam,
+			hasIntelligentSearchLicense,
+			intelligentSearchEnabled,
+			intelligentCount,
+			debouncedFilters,
+		],
 		queryFn: () =>
 			unifiedSearch({
 				query: debouncedQueryParam,
 				count: 20,
+				intelligentCount,
 				includeMessages: true,
 				includeIntelligent: Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled),
 				...(debouncedFilters.rid && { rid: debouncedFilters.rid }),
@@ -285,26 +472,30 @@ const SearchPage = (): ReactElement => {
 
 	const globalMessagesEnabled = data?.meta?.globalMessagesEnabled ?? Boolean(globalMessagesEnabledSetting);
 	const hasRoomFilter = Boolean(ridParam);
-	const messagesEnabled = hasRoomFilter || globalMessagesEnabled;
 	const intelligentAvailable = Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled);
+	const messagesEnabled = hasRoomFilter || globalMessagesEnabled || intelligentAvailable;
 	const roomResults = useMemo(
 		() => (hasRoomFilter ? [] : mergeRooms(localRooms.map(mapSubscriptionToSearchRoom), (data?.rooms as SearchRoom[] | undefined) ?? [])),
 		[data?.rooms, hasRoomFilter, localRooms],
+	);
+	const combinedMessages = useMemo(
+		() =>
+			mergeMessageResults(
+				(data?.messages as SearchMessageLike[] | undefined) ?? [],
+				(data?.intelligent as SearchMessageLike[] | undefined) ?? [],
+				intelligentAvailable,
+			),
+		[data?.intelligent, data?.messages, intelligentAvailable],
 	);
 
 	const counts = useMemo(
 		() => ({
 			users: hasRoomFilter ? 0 : (data?.users.length ?? 0),
 			rooms: roomResults.length,
-			messages: data?.messages.length ?? 0,
-			intelligent: intelligentAvailable ? (data?.intelligent.length ?? 0) : 0,
-			all:
-				(hasRoomFilter ? 0 : (data?.users.length ?? 0)) +
-				roomResults.length +
-				(data?.messages.length ?? 0) +
-				(intelligentAvailable ? (data?.intelligent.length ?? 0) : 0),
+			messages: combinedMessages.length,
+			all: (hasRoomFilter ? 0 : (data?.users.length ?? 0)) + roomResults.length + combinedMessages.length,
 		}),
-		[data, hasRoomFilter, intelligentAvailable, roomResults.length],
+		[combinedMessages.length, data?.users.length, hasRoomFilter, roomResults.length],
 	);
 	const visibleTabs = useMemo(() => {
 		const visible: SearchTab[] = ['all'];
@@ -314,11 +505,8 @@ const SearchPage = (): ReactElement => {
 		if (!hasRoomFilter) {
 			visible.push('users', 'rooms');
 		}
-		if (intelligentAvailable) {
-			visible.push('intelligent');
-		}
 		return visible;
-	}, [hasRoomFilter, intelligentAvailable, messagesEnabled]);
+	}, [hasRoomFilter, messagesEnabled]);
 	const selectedTab = visibleTabs.includes(activeTab) ? activeTab : 'all';
 
 	const handleTabClick = (tab: SearchTab) => (): void => {
@@ -333,11 +521,50 @@ const SearchPage = (): ReactElement => {
 		router.navigate({ name: 'search', search: Object.fromEntries(searchParams.entries()) });
 	};
 
+	const navigateWithFilters = useCallback(
+		(nextFilters: SearchFilterDraft) => {
+			const searchParams = new URLSearchParams();
+			if (queryParam.trim()) searchParams.set('q', queryParam.trim());
+			if (selectedTab !== 'all') searchParams.set('tab', selectedTab);
+			if (nextFilters.rid) searchParams.set('rid', nextFilters.rid);
+			if (nextFilters.rid && nextFilters.roomName) searchParams.set('ridName', nextFilters.roomName);
+			if (nextFilters.fromUser.trim()) searchParams.set('fromUser', nextFilters.fromUser.trim().replace(/^@/, ''));
+			if (nextFilters.afterDate) searchParams.set('afterDate', nextFilters.afterDate);
+			if (nextFilters.beforeDate) searchParams.set('beforeDate', nextFilters.beforeDate);
+			router.navigate({ name: 'search', search: Object.fromEntries(searchParams.entries()) });
+		},
+		[queryParam, router, selectedTab],
+	);
+
+	const handleApplyFilters = useCallback(() => {
+		const exactRoom = localRooms.find(({ name, fname }) =>
+			[name, fname].some((roomName) => roomName?.toLowerCase() === filterDraft.roomName.toLowerCase()),
+		);
+		navigateWithFilters({
+			...filterDraft,
+			rid: filterDraft.rid || exactRoom?.rid || exactRoom?._id,
+			roomName: filterDraft.rid ? filterDraft.roomName : exactRoom?.fname || exactRoom?.name || '',
+		});
+	}, [filterDraft, localRooms, navigateWithFilters]);
+
+	const handleClearFilters = useCallback(() => {
+		setFilterDraft({ roomName: '', fromUser: '', afterDate: '', beforeDate: '' });
+		navigateWithFilters({ roomName: '', fromUser: '', afterDate: '', beforeDate: '' });
+	}, [navigateWithFilters]);
+
+	const handleSelectFilterRoom = useCallback((room: SearchRoom) => {
+		setFilterDraft((currentDraft) => ({
+			...currentDraft,
+			rid: room._id,
+			roomName: room.fname || room.name,
+		}));
+	}, []);
+
 	const showSectionHeaders = selectedTab === 'all';
 	const showUsers = !hasRoomFilter && (selectedTab === 'all' || selectedTab === 'users');
 	const showRooms = !hasRoomFilter && (selectedTab === 'all' || selectedTab === 'rooms');
 	const showMessages = selectedTab === 'all' || selectedTab === 'messages';
-	const showIntelligent = intelligentAvailable && (selectedTab === 'all' || selectedTab === 'intelligent');
+	const showIntelligentWarning = selectedTab === 'all' || selectedTab === 'messages';
 	const hasQuery = Boolean(debouncedQueryParam || ridParam || fromUserParam || afterDateParam || beforeDateParam);
 	const hasResults = counts[selectedTab] > 0;
 
@@ -358,13 +585,21 @@ const SearchPage = (): ReactElement => {
 			</Tabs>
 			<PageScrollableContentWithShadow p={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
+					<SearchFilterPanel
+						draft={filterDraft}
+						roomSuggestions={roomResults}
+						onDraftChange={setFilterDraft}
+						onSelectRoom={handleSelectFilterRoom}
+						onApply={handleApplyFilters}
+						onClear={handleClearFilters}
+					/>
 					{activeTab === 'messages' && !messagesEnabled && !result.isLoading && data && (
 						<Callout type='warning' icon='warning' title={t('Search_messages_disabled_title')} mbe={16}>
 							{t('Search_messages_disabled_description')}
 						</Callout>
 					)}
 
-					{!hasIntelligentSearchLicense && showIntelligent && (
+					{!hasIntelligentSearchLicense && showIntelligentWarning && (
 						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} mbe={16}>
 							<Box display='flex' alignItems='center' justifyContent='space-between'>
 								<Box mie={16}>{t('Intelligent_Search_upsell_description')}</Box>
@@ -374,7 +609,7 @@ const SearchPage = (): ReactElement => {
 							</Box>
 						</Callout>
 					)}
-					{hasIntelligentSearchLicense && !intelligentSearchEnabled && showIntelligent && (
+					{hasIntelligentSearchLicense && !intelligentSearchEnabled && showIntelligentWarning && (
 						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} mbe={16}>
 							<Box display='flex' alignItems='center' justifyContent='space-between'>
 								<Box mie={16}>{t('Intelligent_Search_disabled_description')}</Box>
@@ -384,16 +619,20 @@ const SearchPage = (): ReactElement => {
 							</Box>
 						</Callout>
 					)}
-					{hasIntelligentSearchLicense && intelligentSearchEnabled && data && !data.meta.intelligentSearchConfigured && showIntelligent && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} mbe={16}>
-							<Box display='flex' alignItems='center' justifyContent='space-between'>
-								<Box mie={16}>{t('Intelligent_Search_missing_configuration_description')}</Box>
-								<Button small onClick={() => router.navigate('/admin/ai-center/search')}>
-									{t('Configure')}
-								</Button>
-							</Box>
-						</Callout>
-					)}
+					{hasIntelligentSearchLicense &&
+						intelligentSearchEnabled &&
+						data &&
+						!data.meta.intelligentSearchConfigured &&
+						showIntelligentWarning && (
+							<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} mbe={16}>
+								<Box display='flex' alignItems='center' justifyContent='space-between'>
+									<Box mie={16}>{t('Intelligent_Search_missing_configuration_description')}</Box>
+									<Button small onClick={() => router.navigate('/admin/ai-center/search')}>
+										{t('Configure')}
+									</Button>
+								</Box>
+							</Callout>
+						)}
 
 					{!hasQuery && <EmptySearchState>{t('Search_page_empty_state')}</EmptySearchState>}
 					{result.isLoading && <EmptySearchState>{t('Loading')}</EmptySearchState>}
@@ -401,23 +640,23 @@ const SearchPage = (): ReactElement => {
 
 					{data && !result.isLoading && (
 						<>
-							{showIntelligent && (
-								<Section title={t('Intelligent_Search')} count={data.intelligent.length} showHeader={showSectionHeaders}>
-									{data.intelligent.map((item) => (
+							{showMessages && (
+								<Section title={t('Messages')} count={combinedMessages.length} showHeader={showSectionHeaders}>
+									{combinedMessages.map(({ item, isIntelligent }) => (
 										<MessageResultItem
-											key={`intelligent-${item._id}`}
-											item={item as SearchMessageLike}
+											key={`${isIntelligent ? 'intelligent' : 'message'}-${item._id}`}
+											item={item}
 											href={getMessageHref(item)}
-											isIntelligent
+											isIntelligent={isIntelligent}
 										/>
 									))}
-								</Section>
-							)}
-							{showMessages && (
-								<Section title={t('Messages')} count={data.messages.length} showHeader={showSectionHeaders}>
-									{data.messages.map((item) => (
-										<MessageResultItem key={`message-${item._id}`} item={item as SearchMessageLike} href={getMessageHref(item)} />
-									))}
+									{intelligentAvailable && data.intelligent.length >= intelligentCount && (
+										<Box p={8} borderBlockStart='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'>
+											<Button small width='full' onClick={() => setIntelligentCount((currentCount) => currentCount + 10)}>
+												{t('Search_load_more_intelligent_results')}
+											</Button>
+										</Box>
+									)}
 								</Section>
 							)}
 							{showUsers && (

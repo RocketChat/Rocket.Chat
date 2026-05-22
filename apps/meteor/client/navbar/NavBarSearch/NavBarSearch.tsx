@@ -253,9 +253,18 @@ const NavBarSearch = () => {
 		inputRef.current?.focus();
 	}, []);
 
+	const handleApplyRoomFilter = useCallback((room: { _id: string; name?: string; fname?: string }) => {
+		setFilters((currentFilters) => ({
+			...currentFilters,
+			rid: room._id,
+			ridName: room.fname || room.name || room._id,
+		}));
+		inputRef.current?.focus();
+	}, []);
+
 	const handleIntelligentSearchClick = useCallback(() => {
 		if (hasIntelligentSearchLicense) {
-			navigateToSearch(filterText, 'intelligent');
+			navigateToSearch(filterText, 'messages');
 			return;
 		}
 
@@ -399,6 +408,7 @@ const NavBarSearch = () => {
 					onFilterTextChange={setFilterText}
 					onSelect={state.close}
 					onNavigateToSearch={() => navigateToSearch(filterText)}
+					onApplyRoomFilter={handleApplyRoomFilter}
 				/>
 			)}
 		</Box>
