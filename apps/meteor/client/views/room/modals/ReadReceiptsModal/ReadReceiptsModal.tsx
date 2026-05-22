@@ -1,4 +1,4 @@
-import type { IMessage, IReadReceiptWithUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { GenericModal, GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReadReceiptRow from './ReadReceiptRow';
+import { mapReadReceiptFromApi } from '../../../../lib/utils/mapReadReceiptFromApi';
 
 type ReadReceiptsModalProps = {
 	messageId: IMessage['_id'];
@@ -21,7 +22,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 
 	const readReceiptsResult = useQuery({
 		queryKey: ['read-receipts', messageId],
-		queryFn: async () => (await getReadReceipts({ messageId })).receipts as unknown as IReadReceiptWithUser[],
+		queryFn: async () => (await getReadReceipts({ messageId })).receipts.map(mapReadReceiptFromApi),
 	});
 
 	useEffect(() => {

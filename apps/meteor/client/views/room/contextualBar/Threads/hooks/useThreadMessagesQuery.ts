@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import {
 	createDeleteCriteria,
@@ -109,9 +110,9 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			// Note: DDP getThreadMessages had a side effect of marking the thread
 			// as read via readThread(uid, tmid). REST does not. No dedicated REST
 			// endpoint for per-thread read marker exists yet.
-			const filtered = (messages as unknown as IMessage[]).filter(
-				(msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true,
-			);
+			const filtered = messages
+				.map((m) => mapMessageFromApi(m))
+				.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);
 
 			const sorted = mergeThreadMessages(cachedMessages, filtered);
 			if (unprocessedReadMessagesEvent.current) {

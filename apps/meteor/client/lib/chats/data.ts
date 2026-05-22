@@ -9,6 +9,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import { settings } from '../settings';
 import { getUserId } from '../user';
+import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 import { prependReplies } from '../utils/prependReplies';
 import { upsertThreadMessageInCache } from '../utils/threadMessageUtils';
 
@@ -35,7 +36,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
 		Messages.state.find((record) => record._id === mid && record._hidden !== true) ??
-		sdk.rest.get('/v1/chat.getMessage', { msgId: mid }).then((response) => response.message as unknown as IMessage);
+		sdk.rest.get('/v1/chat.getMessage', { msgId: mid }).then((response) => mapMessageFromApi(response.message));
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);

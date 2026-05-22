@@ -13,6 +13,7 @@ import { UserStatus } from '../../../../components/UserStatus';
 import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
+import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (): GenericMenuItemProps[] => {
@@ -30,7 +31,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 		// REST endpoint is paginated; loop until total reached.
 		while (true) {
 			const { statuses, total } = await listCustomUserStatusEndpoint({ count, offset });
-			all.push(...(statuses as unknown as ICustomUserStatus[]));
+			all.push(...statuses.map(mapCustomUserStatusFromApi));
 			if (all.length >= total || statuses.length === 0) break;
 			offset += statuses.length;
 		}
