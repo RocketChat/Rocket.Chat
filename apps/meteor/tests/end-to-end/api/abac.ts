@@ -4097,12 +4097,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 		});
 
-		describe('license veto (spec §0.2)', () => {
-			it.skip('local→virtru with license absent preserves abacAttributes and emits no switched audit event — requires runtime license toggle', () =>
-				undefined);
-			it.skip('flipping license active while already virtru retriggers the wipe — requires runtime license toggle', () => undefined);
-		});
-
 		describe('audit / logs (spec §5.2 — settled, NOT redacted)', () => {
 			let auditRoom: IRoom;
 			const auditAttrKey = `vstore_audit_${Date.now()}`;
