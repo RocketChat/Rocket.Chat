@@ -1,11 +1,9 @@
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
@@ -117,16 +115,3 @@ export const updateOutgoingIntegration = async (
 
 	return updatedIntegration;
 };
-
-Meteor.methods<ServerMethods>({
-	async updateOutgoingIntegration(integrationId, _integration) {
-		methodDeprecationLogger.method('updateOutgoingIntegration', '9.0.0', '/v1/integrations.update');
-		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
-			});
-		}
-
-		return updateOutgoingIntegration(this.userId, integrationId, _integration);
-	},
-});

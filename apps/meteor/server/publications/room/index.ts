@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -46,11 +46,7 @@ export const roomsGetMethod = async (userId?: string | null, updatedAt?: Date): 
 };
 
 Meteor.methods<ServerMethods>({
-	async 'rooms/get'(updatedAt) {
-		return roomsGetMethod(Meteor.userId(), updatedAt);
-	},
-
-	async 'getRoomByTypeAndName'(type, name) {
+	async getRoomByTypeAndName(type, name) {
 		if (!type || !name) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'getRoomByTypeAndName',
