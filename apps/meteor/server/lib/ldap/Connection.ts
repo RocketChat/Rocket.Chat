@@ -299,6 +299,27 @@ export class LDAPConnection {
 		return count;
 	}
 
+	public async fetchDomainLockoutDuration(): Promise<number | undefined> {
+		const searchOptions: ldapjs.SearchOptions = {
+			filter: '(objectClass=domainDNS)',
+			scope: 'sub',
+			attributes: ['lockoutDuration'],
+		};
+
+		searchLogger.info('Fetching lockoutDuration from domain object');
+		const results = await this.search(this.options.baseDN, searchOptions);
+		if (results.length > 0 && results[0].lockoutDuration) {
+			searchLogger.debug({ msg: 'Domain lockoutDuration', lockoutDuration: results[0].lockoutDuration });
+			const ld = Number(results[0].lockoutDuration);
+			if (isNaN(ld)) {
+				return undefined;
+			}
+			return ld;
+		}
+
+		return undefined;
+	}
+
 	public extractLdapAttribute(value: Buffer | Buffer[] | string): ILDAPExtractedValue {
 		if (Array.isArray(value)) {
 			return value.map((item) => this.extractLdapAttribute(item));

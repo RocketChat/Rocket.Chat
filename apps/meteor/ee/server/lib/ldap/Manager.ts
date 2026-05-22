@@ -342,7 +342,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = (await Roles.find(
+		const roles = await Roles.find(
 			{},
 			{
 				projection: {
@@ -350,7 +350,7 @@ export class LDAPEEManager extends LDAPManager {
 					name: 1,
 				},
 			},
-		).toArray()) as Array<IRole>;
+		).toArray();
 
 		if (!roles) {
 			return;
@@ -634,7 +634,7 @@ export class LDAPEEManager extends LDAPManager {
 			.flat();
 	}
 
-	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
+	private static isUserDeactivated(ldapUser: ILDAPEntry, options?: { lockoutDuration?: number }): boolean {
 		// Account locked by "Draft-behera-ldap-password-policy"
 		if (ldapUser.pwdAccountLockedTime) {
 			mapLogger.debug('User account is locked by password policy (attribute pwdAccountLockedTime)');
@@ -654,21 +654,32 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		// Active Directory - Account locked automatically by security policies
+		if (ldapUser['msDS-User-Account-Control-Computed'] !== undefined) {
+			const computedUAC = Number(ldapUser['msDS-User-Account-Control-Computed']);
+			if (!isNaN(computedUAC) && (computedUAC & 16) === 16) {
+				mapLogger.debug('User account locked temporarily by security policy (attribute msDS-User-Account-Control-Computed)');
+				return true;
+			}
+		}
+
 		if (ldapUser.lockoutTime && ldapUser.lockoutTime !== '0') {
 			const lockoutTimeValue = Number(ldapUser.lockoutTime);
 			if (lockoutTimeValue && !isNaN(lockoutTimeValue)) {
-				// Automatic unlock is disabled
-				if (!ldapUser.lockoutDuration) {
-					mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
-					return true;
-				}
+				const lockoutDuration = ldapUser.lockoutDuration !== undefined ? Number(ldapUser.lockoutDuration) : options?.lockoutDuration;
+				if (lockoutDuration !== undefined) {
+					if (lockoutDuration === 0) {
+						mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
+						return true;
+					}
 
-				const lockoutTime = new Date(lockoutTimeValue);
-				lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
-				// Account has not unlocked itself yet
-				if (lockoutTime.valueOf() > Date.now()) {
-					mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
-					return true;
+					// lockoutTime is in FILETIME format (100-ns intervals since 1601-01-01)
+					const lockoutTimeUnix = lockoutTimeValue / 10000 - 11644473600000;
+					const lockoutDurationMs = Math.abs(lockoutDuration) / 10000;
+
+					if (lockoutTimeUnix + lockoutDurationMs > Date.now()) {
+						mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
+						return true;
+					}
 				}
 			}
 		}
@@ -682,7 +693,7 @@ export class LDAPEEManager extends LDAPManager {
 		return false;
 	}
 
-	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
+	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser, options?: { lockoutDuration?: number }): void {
 		if (!ldapUser) {
 			return;
 		}
@@ -692,7 +703,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const deleted = this.isUserDeactivated(ldapUser);
+		const deleted = this.isUserDeactivated(ldapUser, options);
 		if (deleted === userData.deleted) {
 			return;
 		}
@@ -832,6 +843,7 @@ export class LDAPEEManager extends LDAPManager {
 
 	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
 		const users = await Users.findConnectedLDAPUsers().toArray();
+		const lockoutDuration = await ldap.fetchDomainLockoutDuration();
 
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
@@ -839,7 +851,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			if (this.isUserDeactivated(ldapUser)) {
+			if (this.isUserDeactivated(ldapUser, { lockoutDuration })) {
 				await Users.unsetLoginTokens(user._id);
 			}
 		}
