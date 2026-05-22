@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
 
@@ -19,6 +20,7 @@ const MAX_LIMIT = 100;
 
 Meteor.methods<ServerMethods>({
 	async getThreadMessages({ tmid, limit, skip }) {
+		methodDeprecationLogger.method('getThreadMessages', '9.0.0', '/v1/chat.getThreadMessages');
 		if ((limit ?? 0) > MAX_LIMIT) {
 			throw new Meteor.Error('error-not-allowed', `max limit: ${MAX_LIMIT}`, {
 				method: 'getThreadMessages',

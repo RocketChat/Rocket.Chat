@@ -18,6 +18,7 @@ import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 /**
  *
@@ -137,6 +138,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message, previewUrls) {
+		methodDeprecationLogger.method('sendMessage', '9.0.0', '/v1/chat.sendMessage');
 		check(message, {
 			_id: Match.Maybe(String),
 			rid: Match.Maybe(String),

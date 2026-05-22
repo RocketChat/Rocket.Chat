@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ddp-client' {
@@ -13,6 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:enable'() {
+		methodDeprecationLogger.method('2fa:enable', '9.0.0', '/v1/users.2fa.enableEmail');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('not-authorized');

@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
@@ -133,6 +134,7 @@ export const registerUser = async (
 
 Meteor.methods<ServerMethods>({
 	async registerUser(formData) {
+		methodDeprecationLogger.method('registerUser', '9.0.0', '/v1/users.register');
 		return registerUser(formData);
 	},
 });

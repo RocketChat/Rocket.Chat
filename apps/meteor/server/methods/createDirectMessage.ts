@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../lib/callbacks';
 
@@ -105,6 +106,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async createDirectMessage(...usernames) {
+		methodDeprecationLogger.method('createDirectMessage', '9.0.0', '/v1/im.create');
 		return createDirectMessage(usernames, Meteor.userId());
 	},
 });

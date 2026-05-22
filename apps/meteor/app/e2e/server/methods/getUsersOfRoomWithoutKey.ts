@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,6 +37,7 @@ export const getUsersOfRoomWithoutKeyMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.getUsersOfRoomWithoutKey'(rid) {
+		methodDeprecationLogger.method('e2e.getUsersOfRoomWithoutKey', '9.0.0', '/v1/e2e.getUsersOfRoomWithoutKey');
 		check(rid, String);
 
 		const userId = Meteor.userId();

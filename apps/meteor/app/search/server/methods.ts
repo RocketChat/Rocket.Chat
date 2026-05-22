@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { SearchLogger } from './logger/logger';
 import type { IRawSearchResult, ISearchResult } from './model/ISearchResult';
 import { searchProviderService, validationService } from './service';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,6 +25,7 @@ Meteor.methods<ServerMethods>({
 	 * Get the current provider with key, description, resultTemplate, suggestionItemTemplate and settings (as Map)
 	 */
 	'rocketchatSearch.getProvider'() {
+		methodDeprecationLogger.method('settings', '9.0.0', '/v1/settings');
 		const provider = searchProviderService.activeProvider;
 		if (!provider) {
 			return undefined;
@@ -47,6 +49,7 @@ Meteor.methods<ServerMethods>({
 	 * @param payload custom payload (e.g. for paging)
 	 */
 	async 'rocketchatSearch.search'(text, context, payload) {
+		methodDeprecationLogger.method('context', '9.0.0', []);
 		payload = payload !== null ? payload : undefined; // TODO is this cleanup necessary?
 
 		if (!searchProviderService.activeProvider) {
@@ -72,6 +75,7 @@ Meteor.methods<ServerMethods>({
 	},
 
 	async 'rocketchatSearch.suggest'(text, context, payload) {
+		methodDeprecationLogger.method('rocketchatSearch.suggest', '9.0.0', []);
 		payload ??= undefined; // TODO is this cleanup necessary?
 
 		if (!searchProviderService.activeProvider) {

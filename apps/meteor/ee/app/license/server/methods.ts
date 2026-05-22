@@ -4,6 +4,8 @@ import { License } from '@rocket.chat/license';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -16,6 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	'license:hasLicense'(feature: string) {
+		methodDeprecationLogger.method('license:hasLicense', '9.0.0', []);
 		check(feature, String);
 
 		return License.hasModule(feature as LicenseModule);
@@ -24,6 +27,7 @@ Meteor.methods<ServerMethods>({
 		return License.getModules();
 	},
 	'license:getTags'() {
+		methodDeprecationLogger.method('license:getTags', '9.0.0', []);
 		return License.getTags();
 	},
 	'license:isEnterprise'() {

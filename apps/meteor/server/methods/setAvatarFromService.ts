@@ -4,6 +4,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { setAvatarFromServiceWithValidation } from '../../app/lib/server/functions/setUserAvatar';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setAvatarFromService(dataURI, contentType, service, targetUserId) {
+		methodDeprecationLogger.method('setAvatarFromService', '9.0.0', '/v1/users.setAvatar');
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));

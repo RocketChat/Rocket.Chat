@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RateLimiter } from '../../../lib/server';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -44,6 +45,7 @@ export const setUserStatusMethod = async (
 
 Meteor.methods<ServerMethods>({
 	setUserStatus: async (statusType, statusText) => {
+		methodDeprecationLogger.method('setUserStatus', '9.0.0', '/v1/users.setStatus');
 		const user = (await Meteor.userAsync()) as IUser;
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });

@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { i18n } from './i18n';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { RateLimiter } from '../../app/lib/server/lib';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { Push } from '../../app/push/server';
 import { settings } from '../../app/settings/server';
 
@@ -38,6 +39,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async push_test() {
+		methodDeprecationLogger.method('push_test', '9.0.0', []);
 		const user = await Meteor.userAsync();
 
 		if (!user) {

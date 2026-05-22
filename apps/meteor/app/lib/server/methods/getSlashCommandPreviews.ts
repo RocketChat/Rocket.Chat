@@ -3,6 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../../utils/server/slashCommand';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,6 +40,7 @@ export const getSlashCommandPreviews = async (command: {
 
 Meteor.methods<ServerMethods>({
 	async getSlashCommandPreviews(command) {
+		methodDeprecationLogger.method('getSlashCommandPreviews', '9.0.0', '/v1/commands.preview');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

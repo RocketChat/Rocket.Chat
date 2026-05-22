@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -34,6 +35,7 @@ export const executeSetUserActiveStatus = async (
 
 Meteor.methods<ServerMethods>({
 	async setUserActiveStatus(userId, active, confirmRelinquish) {
+		methodDeprecationLogger.method('setUserActiveStatus', '9.0.0', '/v1/users.setActiveStatus');
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

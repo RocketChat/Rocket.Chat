@@ -10,6 +10,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 import { updateMessage } from '../functions/updateMessage';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions'];
 
@@ -100,6 +101,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async updateMessage(message: IEditedMessage, previewUrls?: string[]) {
+		methodDeprecationLogger.method('updateMessage', '9.0.0', '/v1/chat.update');
 		check(message, Match.ObjectIncluding({ _id: String }));
 		check(previewUrls, Match.Maybe([String]));
 

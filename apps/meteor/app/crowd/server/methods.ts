@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { CROWD } from './crowd';
 import { logger } from './logger';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -17,6 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async crowd_test_connection() {
+		methodDeprecationLogger.method('crowd_test_connection', '9.0.0', []);
 		const user = await Meteor.userAsync();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -51,6 +53,7 @@ Meteor.methods<ServerMethods>({
 		}
 	},
 	async crowd_sync_users() {
+		methodDeprecationLogger.method('crowd_sync_users', '9.0.0', []);
 		const user = await Meteor.userAsync();
 		if (settings.get('CROWD_Enable') !== true) {
 			throw new Meteor.Error('crowd_disabled');

@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -29,6 +30,7 @@ export const getSingleMessage = async (userId: string, mid: IMessage['_id']): Pr
 
 Meteor.methods<ServerMethods>({
 	async getSingleMessage(mid) {
+		methodDeprecationLogger.method('getSingleMessage', '9.0.0', '/v1/chat.getMessage');
 		check(mid, String);
 
 		const uid = Meteor.userId();

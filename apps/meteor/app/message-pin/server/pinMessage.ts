@@ -11,6 +11,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
@@ -198,6 +199,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 
 Meteor.methods<ServerMethods>({
 	async pinMessage(message, pinnedAt) {
+		methodDeprecationLogger.method('pinMessage', '9.0.0', '/v1/chat.pinMessage');
 		check(message._id, String);
 
 		const userId = Meteor.userId();
@@ -210,6 +212,7 @@ Meteor.methods<ServerMethods>({
 		return pinMessage(message, userId, pinnedAt);
 	},
 	async unpinMessage(message) {
+		methodDeprecationLogger.method('unpinMessage', '9.0.0', '/v1/chat.unPinMessage');
 		check(message._id, String);
 
 		const userId = Meteor.userId();

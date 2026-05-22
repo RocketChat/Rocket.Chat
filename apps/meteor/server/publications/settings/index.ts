@@ -6,6 +6,7 @@ import type { WithId } from 'mongodb';
 
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { SettingsEvents } from '../../../app/settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -22,6 +23,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'public-settings/get'(updatedAt) {
+		methodDeprecationLogger.method('public-settings/get', '9.0.0', []);
 		if (updatedAt instanceof Date) {
 			const records = await Settings.findNotHiddenPublicUpdatedAfter(updatedAt).toArray();
 			SettingsEvents.emit('fetch-settings', records);
@@ -52,6 +54,7 @@ Meteor.methods<ServerMethods>({
 		return publicSettings;
 	},
 	async 'private-settings/get'(updatedAfter) {
+		methodDeprecationLogger.method('private-settings/get', '9.0.0', []);
 		const uid = Meteor.userId();
 
 		if (!uid) {

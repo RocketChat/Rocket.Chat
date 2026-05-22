@@ -5,6 +5,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+
 Accounts.registerLoginHandler('iframe', async (result) => {
 	if (!result.iframe) {
 		return;
@@ -32,6 +34,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {
+		methodDeprecationLogger.method('OAuth.retrieveCredential', '9.0.0', []);
 		return OAuth.retrieveCredential(credentialToken, credentialSecret);
 	},
 });

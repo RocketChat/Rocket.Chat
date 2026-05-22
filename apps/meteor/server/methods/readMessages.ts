@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { readMessages } from '../lib/readMessages';
 
 declare module '@rocket.chat/ddp-client' {
@@ -16,6 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async readMessages(rid, readThreads = false) {
+		methodDeprecationLogger.method('readMessages', '9.0.0', '/v1/subscriptions.read');
 		check(rid, String);
 
 		const userId = Meteor.userId();

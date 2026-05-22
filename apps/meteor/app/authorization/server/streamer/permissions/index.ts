@@ -5,6 +5,8 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -31,6 +33,7 @@ export const permissionsGetMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async 'permissions/get'(updatedAt?: Date) {
+		methodDeprecationLogger.method('permissions/get', '9.0.0', []);
 		check(updatedAt, Match.Maybe(Date));
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection

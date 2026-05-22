@@ -11,6 +11,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { isABACManagedRoom } from '../../../authorization/server/lib/isABACManagedRoom';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
@@ -547,6 +548,7 @@ export async function saveRoomSettings(
 
 Meteor.methods<ServerMethods>({
 	saveRoomSettings: (...args) => {
+		methodDeprecationLogger.method('saveRoomSettings', '9.0.0', '/v1/rooms.saveRoomSettings');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

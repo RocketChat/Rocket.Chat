@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -38,6 +39,7 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.setRoomKeyID'(rid, keyID) {
+		methodDeprecationLogger.method('e2e.setRoomKeyID', '9.0.0', '/v1/e2e.setRoomKeyID');
 		check(rid, String);
 		check(keyID, String);
 

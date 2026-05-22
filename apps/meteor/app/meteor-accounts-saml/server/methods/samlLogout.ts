@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
 import { SAMLUtils } from '../lib/Utils';
@@ -34,6 +35,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async samlLogout(provider: string) {
+		methodDeprecationLogger.method('samlLogout', '9.0.0', []);
 		const userId = Meteor.userId();
 		// Make sure the user is logged in before we initiate SAML Logout
 		if (!userId) {

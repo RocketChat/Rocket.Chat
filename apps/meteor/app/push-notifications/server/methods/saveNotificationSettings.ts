@@ -4,6 +4,7 @@ import { Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 import { getUserNotificationPreference } from '../../../utils/server/getUserNotificationPreference';
 
@@ -132,6 +133,7 @@ export const saveNotificationSettingsMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async saveNotificationSettings(roomId, field, value) {
+		methodDeprecationLogger.method('saveNotificationSettings', '9.0.0', []);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -146,6 +148,7 @@ Meteor.methods<ServerMethods>({
 	},
 
 	async saveAudioNotificationValue(rid, value) {
+		methodDeprecationLogger.method('saveAudioNotificationValue', '9.0.0', []);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

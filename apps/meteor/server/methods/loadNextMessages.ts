@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ddp-client' {
@@ -16,6 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadNextMessages(rid, end, limit = 20) {
+		methodDeprecationLogger.method('loadNextMessages', '9.0.0', '/v1/chat.syncMessages');
 		check(rid, String);
 		check(limit, Number);
 
