@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getMessages(messages) {
-		methodDeprecationLogger.method('getMessages', '9.0.0', '/v1/chat.getMessage');
+		methodDeprecationLogger.method('getMessages', '9.0.0', []);
 		check(messages, [String]);
 		const uid = Meteor.userId();
 

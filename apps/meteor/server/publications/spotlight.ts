@@ -69,7 +69,7 @@ export const spotlightMethod = async ({
 
 Meteor.methods<ServerMethods>({
 	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
-		methodDeprecationLogger.method('spotlight', '9.0.0', '/v1/spotlight');
+		methodDeprecationLogger.method('spotlight', '9.0.0', []);
 		return spotlightMethod({ text, usernames, type, rid, userId: this.userId });
 	},
 });

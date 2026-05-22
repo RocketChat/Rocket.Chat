@@ -22,7 +22,11 @@ const SCAN_DIRS = [
 const EXT = /\.(ts|tsx|js|jsx|mjs|cjs)$/;
 const SKIP_DIR = /(^|\/)(node_modules|dist|build|\.next|coverage|\.turbo|public|\.meteor)(\/|$)/;
 
-const REST_DIRS = ['apps/meteor/app/api/server/v1', 'apps/meteor/ee/app/api/server'];
+const REST_DIRS = [
+	'apps/meteor/app/api/server/v1',
+	'apps/meteor/ee/app/api/server',
+	'apps/meteor/ee/server/api',
+];
 
 function walk(dir, out = []) {
 	let entries;
@@ -138,8 +142,21 @@ function* extractTopLevelKeys(body) {
 		}
 		// At depth 0, try to match a key at the start of a token
 		if (depth === 0) {
-			// Skip leading whitespace/commas
-			while (i < body.length && /[\s,]/.test(body[i])) i++;
+			// Skip leading whitespace, commas, and comments.
+			while (i < body.length) {
+				if (/[\s,]/.test(body[i])) { i++; continue; }
+				if (body[i] === '/' && body[i + 1] === '/') {
+					const nl = body.indexOf('\n', i);
+					i = nl === -1 ? body.length : nl;
+					continue;
+				}
+				if (body[i] === '/' && body[i + 1] === '*') {
+					const end = body.indexOf('*/', i + 2);
+					i = end === -1 ? body.length : end + 2;
+					continue;
+				}
+				break;
+			}
 			if (i >= body.length) break;
 			let name = null;
 			let nameStart = i;
@@ -310,9 +327,39 @@ function extractRestRoutes() {
 	return routes;
 }
 
+// DDP methods whose REST "equivalents" are misleading: the endpoint either
+// has materially different semantics, a different param shape, or simply
+// doesn't exist. These methods are forced to have no REST replacement so the
+// deprecation logger only reports the version, not a wrong URL.
+const REST_DENYLIST = new Set([
+	// WRONG endpoints (different feature or action)
+	'2fa:enable',                 // TOTP enable vs email-2fa-enable
+	'2fa:disable',                // TOTP disable vs sending an email code
+	'deleteFileMessage',          // single-message delete vs rooms.cleanHistory range purge
+	'getMessages',                // batched ids vs single getMessage
+	'loadNextMessages',           // forward fetch vs syncMessages delta
+	'loadSurroundingMessages',    // before+after vs syncMessages delta
+	'readThreads',                // tmid read-marker vs whole-room read
+	'getSetupWizardParameters',   // wizard-flagged subset vs settings.public
+	'banner/dismiss',             // user-doc set vs Banner.dismiss broadcast
+	// MISSING (no real endpoint at the heuristic-derived path)
+	'saveSettings',               // /v1/settings does not exist; only settings/:_id
+	// PARTIAL with silent-break risk (channels-only when DDP was room-agnostic,
+	// or shape so different that a caller cannot drop-in swap)
+	'loadHistory',
+	'loadMissedMessages',
+	'joinRoom',
+	'leaveRoom',
+	'addUsersToRoom',
+	'getRoomByTypeAndName',
+	'spotlight',
+	'slashCommand',
+]);
+
 // Heuristic mapping: DDP method name → candidate REST paths to check.
 // If any candidate exists in REST set, method is considered to have replacement.
 function candidateRoutes(method) {
+	if (REST_DENYLIST.has(method)) return [];
 	const out = new Set();
 	out.add(method); // exact match (e.g. spotlight, banners.dismiss)
 	// "verb:thing" -> "thing.verb"
@@ -321,30 +368,24 @@ function candidateRoutes(method) {
 		out.add(`${a}.${b}`);
 		out.add(`${b}.${a}`);
 	}
-	// "namespace.action" -> add as-is and reversed
+	// "namespace.action" with case insensitivity and `/` separator form.
 	if (method.includes('.')) {
 		out.add(method.replace('.', '/'));
+		out.add(method.toLowerCase());
 	}
-	// Special cases
+	if (method.includes('/')) {
+		out.add(method.replace('/', '.'));
+	}
+	// Special cases (verified mappings only).
 	const map = {
 		sendMessage: ['chat.sendMessage'],
 		updateMessage: ['chat.update'],
-		deleteFileMessage: ['rooms.cleanHistory', 'chat.delete'],
-		loadHistory: ['channels.history', 'groups.history', 'im.history'],
-		loadMissedMessages: ['chat.syncMessages'],
-		loadNextMessages: ['chat.syncMessages'],
-		loadSurroundingMessages: ['chat.syncMessages'],
 		getSingleMessage: ['chat.getMessage'],
-		getMessages: ['chat.getMessage'],
 		getThreadMessages: ['chat.getThreadMessages'],
-		readThreads: ['subscriptions.read'],
-		joinRoom: ['channels.join'],
-		leaveRoom: ['channels.leave', 'groups.leave'],
 		createChannel: ['channels.create'],
 		createPrivateGroup: ['groups.create'],
 		createDirectMessage: ['im.create', 'dm.create'],
 		createDiscussion: ['rooms.createDiscussion'],
-		addUsersToRoom: ['channels.invite', 'groups.invite'],
 		archiveRoom: ['channels.archive', 'groups.archive'],
 		unarchiveRoom: ['channels.unarchive', 'groups.unarchive'],
 		hideRoom: ['rooms.leave'],
@@ -353,17 +394,11 @@ function candidateRoutes(method) {
 		setUserStatus: ['users.setStatus'],
 		requestDataDownload: ['users.requestDataDownload'],
 		getRoomById: ['rooms.info'],
-		getRoomByTypeAndName: ['rooms.info'],
 		getRoomNameById: ['rooms.info'],
-		getSetupWizardParameters: ['settings.public'],
-		saveSettings: ['settings'],
 		saveSetting: ['settings/:_id'],
 		saveRoomSettings: ['rooms.saveRoomSettings'],
-		spotlight: ['spotlight'],
-		slashCommand: ['commands.run'],
 		executeSlashCommandPreview: ['commands.preview'],
 		getSlashCommandPreviews: ['commands.preview'],
-		'banner/dismiss': ['banners.dismiss'],
 		listCustomUserStatus: ['custom-user-status.list'],
 		pinMessage: ['chat.pinMessage'],
 		unpinMessage: ['chat.unPinMessage'],
@@ -379,8 +414,6 @@ function candidateRoutes(method) {
 		ignoreUser: ['chat.ignoreUser'],
 		'license:getModules': ['licenses.info', 'licenses.get'],
 		'license:isEnterprise': ['licenses.isEnterprise'],
-		'2fa:enable': ['users.2fa.enableEmail'],
-		'2fa:disable': ['users.2fa.sendEmailCode'],
 		'personalAccessTokens:generateToken': ['users.generatePersonalAccessToken'],
 		'personalAccessTokens:regenerateToken': ['users.regeneratePersonalAccessToken'],
 		'personalAccessTokens:removeToken': ['users.removePersonalAccessToken'],
@@ -398,6 +431,10 @@ function candidateRoutes(method) {
 		getChannelHistory: ['channels.history'],
 		getUserMentionsByChannel: ['channels.getAllUserMentionsByChannel'],
 		getStatistics: ['statistics'],
+		'autoTranslate.getSupportedLanguages': ['autotranslate.getSupportedLanguages'],
+		'autoTranslate.translateMessage': ['autotranslate.translateMessage'],
+		'subscriptions/get': ['subscriptions.get'],
+		getReadReceipts: ['chat.getMessageReadReceipts'],
 	};
 	if (map[method]) for (const r of map[method]) out.add(r);
 	return [...out];

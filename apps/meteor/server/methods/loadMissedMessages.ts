@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadMissedMessages(rid, start) {
-		methodDeprecationLogger.method('loadMissedMessages', '9.0.0', '/v1/chat.syncMessages');
+		methodDeprecationLogger.method('loadMissedMessages', '9.0.0', []);
 		check(rid, String);
 		check(start, Date);
 

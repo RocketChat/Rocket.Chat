@@ -17,7 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async deleteFileMessage(fileID) {
-		methodDeprecationLogger.method('deleteFileMessage', '9.0.0', '/v1/rooms.cleanHistory');
+		methodDeprecationLogger.method('deleteFileMessage', '9.0.0', []);
 		check(fileID, String);
 
 		const msg = await Messages.getMessageByFileId(fileID);

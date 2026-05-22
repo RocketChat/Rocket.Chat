@@ -28,7 +28,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadSurroundingMessages(message, limit = 50, showThreadMessages = true) {
-		methodDeprecationLogger.method('loadSurroundingMessages', '9.0.0', '/v1/chat.syncMessages');
+		methodDeprecationLogger.method('loadSurroundingMessages', '9.0.0', []);
 		check(message, Object);
 		check(limit, Number);
 		check(showThreadMessages, Boolean);

@@ -31,7 +31,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
-		methodDeprecationLogger.method('loadHistory', '9.0.0', '/v1/channels.history');
+		methodDeprecationLogger.method('loadHistory', '9.0.0', []);
 		check(rid, String);
 		const fromUser = await Meteor.userAsync();
 

@@ -19,7 +19,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async readThreads(tmid) {
-		methodDeprecationLogger.method('readThreads', '9.0.0', '/v1/subscriptions.read');
+		methodDeprecationLogger.method('readThreads', '9.0.0', []);
 		check(tmid, String);
 
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {

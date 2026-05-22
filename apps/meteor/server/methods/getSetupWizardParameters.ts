@@ -18,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getSetupWizardParameters() {
-		methodDeprecationLogger.method('getSetupWizardParameters', '9.0.0', '/v1/settings.public');
+		methodDeprecationLogger.method('getSetupWizardParameters', '9.0.0', []);
 		const setupWizardSettings = await Settings.findSetupWizardSettings().toArray();
 		const serverAlreadyRegistered = !!settings.get('Cloud_Workspace_Client_Id') || process.env.DEPLOY_PLATFORM === 'rocket-cloud';
 

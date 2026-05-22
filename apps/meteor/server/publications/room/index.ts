@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
-		methodDeprecationLogger.method('getRoomByTypeAndName', '9.0.0', '/v1/rooms.info');
+		methodDeprecationLogger.method('getRoomByTypeAndName', '9.0.0', []);
 		if (!type || !name) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'getRoomByTypeAndName',

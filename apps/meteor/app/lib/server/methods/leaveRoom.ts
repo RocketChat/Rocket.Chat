@@ -59,7 +59,7 @@ export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> =
 
 Meteor.methods<ServerMethods>({
 	async leaveRoom(rid) {
-		methodDeprecationLogger.method('leaveRoom', '9.0.0', '/v1/channels.leave');
+		methodDeprecationLogger.method('leaveRoom', '9.0.0', []);
 		check(rid, String);
 
 		if (!Meteor.userId()) {

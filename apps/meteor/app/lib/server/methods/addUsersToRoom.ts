@@ -123,7 +123,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 Meteor.methods<ServerMethods>({
 	async addUsersToRoom(data) {
-		methodDeprecationLogger.method('addUsersToRoom', '9.0.0', '/v1/channels.invite');
+		methodDeprecationLogger.method('addUsersToRoom', '9.0.0', []);
 		const uid = Meteor.userId();
 		// Validate user and room
 		if (!uid) {

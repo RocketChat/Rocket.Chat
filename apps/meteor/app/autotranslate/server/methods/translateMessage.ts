@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { translateMessage } from '../functions/translateMessage';
 
 declare module '@rocket.chat/ddp-client' {
@@ -16,6 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'autoTranslate.translateMessage'(message, targetLanguage) {
+		methodDeprecationLogger.method('autoTranslate.translateMessage', '9.0.0', '/v1/autotranslate.translateMessage');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

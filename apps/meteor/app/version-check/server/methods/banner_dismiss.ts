@@ -14,7 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'banner/dismiss'({ id }) {
-		methodDeprecationLogger.method('banner/dismiss', '9.0.0', '/v1/banners.dismiss');
+		methodDeprecationLogger.method('banner/dismiss', '9.0.0', []);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'banner/dismiss' });

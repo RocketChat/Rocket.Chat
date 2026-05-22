@@ -15,7 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:disable'(code) {
-		methodDeprecationLogger.method('2fa:disable', '9.0.0', '/v1/users.2fa.sendEmailCode');
+		methodDeprecationLogger.method('2fa:disable', '9.0.0', []);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('not-authorized');
