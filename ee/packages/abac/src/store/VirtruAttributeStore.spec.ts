@@ -174,7 +174,7 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(apiCall).toHaveBeenCalledTimes(2);
 	});
 
-	it('clearCaches() forces the next entitlementsOf to re-hit the PDP', async () => {
+	it('onStoreSelected() forces the next entitlementsOf to re-hit the PDP', async () => {
 		const apiCall = jest.fn().mockResolvedValue({
 			entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }],
 		});
@@ -184,7 +184,7 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		await store.entitlementsOf(actor);
 		expect(apiCall).toHaveBeenCalledTimes(1);
 
-		store.clearCaches();
+		store.onStoreSelected();
 
 		await store.entitlementsOf(actor);
 		expect(apiCall).toHaveBeenCalledTimes(2);

@@ -108,7 +108,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 		return new Map(defs.map((d) => [d.key, new Set(d.values)]));
 	}
 
-	clearCaches(): void {
+	onStoreSelected(): void {
 		this.entitlementsCache.clear();
 	}
 

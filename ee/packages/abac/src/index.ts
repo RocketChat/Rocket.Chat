@@ -43,7 +43,8 @@ import {
 import { logger } from './logger';
 import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
-import { LocalAttributeStore, VirtruAttributeStore, type IAttributeStore } from './store';
+import { LocalAttributeStore, VirtruAttributeStore } from './store';
+import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -70,7 +71,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private attributeStoreSetting?: AbacAttributeStoreType;
 
-	private attributeStore: IAttributeStore = new LocalAttributeStore();
+	private readonly attributeStores: Record<AbacAttributeStoreType, AttributeStoreDescriptor> = {
+		local: { store: new LocalAttributeStore(), isEligible: () => true },
+		virtru: {
+			store: new VirtruAttributeStore(this.virtruClient),
+			isEligible: (ctx) => ctx.abacEnabled && ctx.pdpType === 'virtru' && ctx.licensed,
+		},
+	};
+
+	private lastSelectedStore?: IAttributeStore;
 
 	decisionCacheTimeout = 60; // seconds
 
@@ -181,34 +190,28 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private syncVirtruPdpConfig(): void {
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
-		if (this.attributeStore instanceof VirtruAttributeStore) {
-			this.attributeStore.clearCaches();
-		}
-	}
-
-	private async effectiveStore(): Promise<AbacAttributeStoreType> {
-		if (
-			this.abacEnabled === true &&
-			this.pdpTypeSetting === 'virtru' &&
-			this.attributeStoreSetting === 'virtru' &&
-			(await License.hasModule('abac'))
-		) {
-			return 'virtru';
-		}
-		return 'local';
+		this.lastSelectedStore = undefined;
 	}
 
 	private async resolveAttributeStore(): Promise<IAttributeStore> {
-		const next = await this.effectiveStore();
-		const current = this.attributeStore instanceof VirtruAttributeStore ? 'virtru' : 'local';
-		if (next !== current) {
-			this.attributeStore = next === 'virtru' ? new VirtruAttributeStore(this.virtruClient) : new LocalAttributeStore();
+		const ctx: AttributeStoreSelectionContext = {
+			abacEnabled: this.abacEnabled === true,
+			pdpType: this.pdpTypeSetting,
+			licensed: await License.hasModule('abac'),
+		};
+
+		const selected = this.attributeStores[this.attributeStoreSetting ?? 'local'];
+		const store = selected.isEligible(ctx) ? selected.store : this.attributeStores.local.store;
+
+		if (store !== this.lastSelectedStore) {
+			this.lastSelectedStore = store;
+			store.onStoreSelected?.();
 		}
-		return this.attributeStore;
+		return store;
 	}
 
 	async isExternalAttributeStore(): Promise<boolean> {
-		return (await this.effectiveStore()) !== 'local';
+		return (await this.resolveAttributeStore()) !== this.attributeStores.local.store;
 	}
 
 	private async onAttributeStoreTransition(from: AbacAttributeStoreType, to: AbacAttributeStoreType): Promise<void> {

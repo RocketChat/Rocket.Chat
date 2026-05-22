@@ -16,7 +16,7 @@ jest.mock('./store', () => {
 			scopeRoomsPage: (rooms: any[]) => Promise.resolve(rooms),
 		})),
 		VirtruAttributeStore: jest.fn().mockImplementation(() => ({
-			clearCaches: jest.fn(),
+			onStoreSelected: jest.fn(),
 		})),
 	};
 });
@@ -342,7 +342,7 @@ describe('AbacService (unit)', () => {
 		it('delegates to attributeStore.list with the given filters and actor', async () => {
 			const result = { attributes: [{ _id: 'k', key: 'k', values: ['v'] }], offset: 0, count: 1, total: 1 };
 			const fakeStore = { list: jest.fn().mockResolvedValue(result) };
-			(service as any).attributeStore = fakeStore;
+			(service as any).attributeStores.local.store = fakeStore;
 
 			const filters = { key: 'k', values: 'v', offset: 0, count: 25 };
 			const returned = await service.listAbacAttributes(filters, actor);
@@ -355,7 +355,7 @@ describe('AbacService (unit)', () => {
 		it('passes undefined actor through to the store', async () => {
 			const result = { attributes: [], offset: 0, count: 0, total: 0 };
 			const fakeStore = { list: jest.fn().mockResolvedValue(result) };
-			(service as any).attributeStore = fakeStore;
+			(service as any).attributeStores.local.store = fakeStore;
 
 			await service.listAbacAttributes();
 
@@ -1044,7 +1044,7 @@ describe('AbacService (unit)', () => {
 			mockCreateAuditServerEvent.mockReset();
 			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
 			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
-			(service as any).attributeStore = makeStore();
+			(service as any).attributeStores.local.store = makeStore();
 		});
 
 		const invoke = (method: string): Promise<unknown> => {
@@ -1069,7 +1069,7 @@ describe('AbacService (unit)', () => {
 			it("invokes assertCanModifyRoom with the room's current attributes and propagates a rejection without mutating", async () => {
 				const store = makeStore();
 				store.assertCanModifyRoom.mockRejectedValueOnce(new Error('error-pdp-unavailable'));
-				(service as any).attributeStore = store;
+				(service as any).attributeStores.local.store = store;
 
 				await expect(invoke(method)).rejects.toThrow('error-pdp-unavailable');
 
@@ -1084,7 +1084,7 @@ describe('AbacService (unit)', () => {
 			it('propagates a validateAssignable rejection without mutating', async () => {
 				const store = makeStore();
 				store.validateAssignable.mockRejectedValueOnce(new Error('error-invalid-attribute-values'));
-				(service as any).attributeStore = store;
+				(service as any).attributeStores.local.store = store;
 
 				await expect(invoke(method)).rejects.toThrow('error-invalid-attribute-values');
 
@@ -1102,7 +1102,7 @@ describe('AbacService (unit)', () => {
 						order.push('validate');
 					}),
 				};
-				(service as any).attributeStore = store;
+				(service as any).attributeStores.local.store = store;
 
 				await invoke(method);
 
@@ -1113,7 +1113,7 @@ describe('AbacService (unit)', () => {
 		it('blocks the empty-clear path of setRoomAbacAttributes when assertCanModifyRoom rejects', async () => {
 			const store = makeStore();
 			store.assertCanModifyRoom.mockRejectedValueOnce(new Error('error-pdp-unavailable'));
-			(service as any).attributeStore = store;
+			(service as any).attributeStores.local.store = store;
 
 			await expect(service.setRoomAbacAttributes('r1', {}, fakeActor)).rejects.toThrow('error-pdp-unavailable');
 
@@ -1239,7 +1239,7 @@ describe('AbacService (unit)', () => {
 
 		beforeEach(() => {
 			mockRoomsFindPaginated.mockReset();
-			(service as any).attributeStore = localStore;
+			(service as any).attributeStores.local.store = localStore;
 		});
 
 		it('calls Rooms.findPaginated with the base query and pagination, ignoring actor', async () => {
@@ -1317,7 +1317,7 @@ describe('AbacService (unit)', () => {
 						rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
 					),
 			};
-			(service as any).attributeStore = fakeStore;
+			(service as any).attributeStores.local.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => [roomA, roomB, roomC] },
@@ -1350,7 +1350,7 @@ describe('AbacService (unit)', () => {
 					.fn()
 					.mockResolvedValue(ordered.map((r) => (r._id === 'rA' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r))),
 			};
-			(service as any).attributeStore = fakeStore;
+			(service as any).attributeStores.local.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => ordered },
@@ -1366,7 +1366,7 @@ describe('AbacService (unit)', () => {
 			const fakeStore = {
 				scopeRoomsPage: jest.fn().mockResolvedValue([{ ...roomA, abacAttributes: [], abacAttributesRedacted: true }]),
 			};
-			(service as any).attributeStore = fakeStore;
+			(service as any).attributeStores.local.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => [roomA] },
@@ -1394,7 +1394,7 @@ describe('AbacService (unit)', () => {
 
 		it('always delegates to attributeStore.scopeRoomsPage (local store is a no-op pass-through)', async () => {
 			const fakeStore = { scopeRoomsPage: jest.fn().mockImplementation(async (rooms: any[]) => rooms) };
-			(service as any).attributeStore = fakeStore;
+			(service as any).attributeStores.local.store = fakeStore;
 
 			const input = [roomA, roomB];
 			const result = await service.scopeRoomsForAdmin(input, actor);
@@ -1406,7 +1406,7 @@ describe('AbacService (unit)', () => {
 		it('virtru mode: delegates to the virtru store scopeRoomsPage', async () => {
 			asVirtru(service);
 			const scopeRoomsPage = jest.fn().mockResolvedValue([roomA, roomB]);
-			(VirtruAttributeStore as jest.Mock).mockImplementationOnce(() => ({ scopeRoomsPage, clearCaches: jest.fn() }));
+			(service as any).attributeStores.virtru.store = { scopeRoomsPage, onStoreSelected: jest.fn() };
 
 			const result = await service.scopeRoomsForAdmin([roomA, roomB], actor);
 
@@ -1421,7 +1421,7 @@ describe('AbacService (unit)', () => {
 				.mockImplementation(async (rooms: any[]) =>
 					rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
 				);
-			(VirtruAttributeStore as jest.Mock).mockImplementationOnce(() => ({ scopeRoomsPage, clearCaches: jest.fn() }));
+			(service as any).attributeStores.virtru.store = { scopeRoomsPage, onStoreSelected: jest.fn() };
 
 			const [permitted, denied] = await service.scopeRoomsForAdmin([roomA, roomB], actor);
 
