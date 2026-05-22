@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 7.13.8
+
 ## 7.13.7
 
 ### Patch Changes
