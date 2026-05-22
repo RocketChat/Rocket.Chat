@@ -12,13 +12,6 @@ import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;
-	}
-}
-
 export const addIncomingIntegration = async (userId: string, integration: INewIncomingIntegration): Promise<IIncomingIntegration> => {
 	check(
 		integration,

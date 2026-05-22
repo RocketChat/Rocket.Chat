@@ -193,10 +193,3 @@ const botHelpers = new BotHelpers();
 settings.watch<string>('BotHelpers_userFields', (value) => {
 	botHelpers.setupCursors(value);
 });
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => Promise<unknown>;
-	}
-}

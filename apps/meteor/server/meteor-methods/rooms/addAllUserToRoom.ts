@@ -12,13 +12,6 @@ import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addAllUserToRoom(rid: IRoom['_id'], activeUsersOnly?: boolean): Promise<true>;
-	}
-}
-
 export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], activeUsersOnly = false): Promise<true> => {
 	check(rid, String);
 	check(activeUsersOnly, Boolean);

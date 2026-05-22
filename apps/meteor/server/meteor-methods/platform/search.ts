@@ -1,3 +1,4 @@
+import type { IMessageSearchProvider, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,11 +11,6 @@ declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
 		'rocketchatSearch.getProvider'(): IMessageSearchProvider | undefined;
 		'rocketchatSearch.search'(text: string, context: { uid?: IUser['_id']; rid: IRoom['_id'] }, payload: unknown): Promise<ISearchResult>;
-		'rocketchatSearch.suggest'(
-			text: string,
-			context: { uid?: IUser['_id']; rid: IRoom['_id'] },
-			payload: unknown,
-		): Promise<IMessageSearchSuggestion[]>;
 	}
 }
 

@@ -1,0 +1,642 @@
+{
+  "files": 90,
+  "methodsRemoved": 94,
+  "blocksEmptied": 85,
+  "missing": [],
+  "perFile": [
+    {
+      "file": "apps/meteor/app/iframe-login/server/iframe_server.ts",
+      "removed": [
+        "OAuth.retrieveCredential"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/userPresence.ts",
+      "removed": [
+        "UserPresence:setDefaultStatus"
+      ],
+      "emptied": 0
+    },
+    {
+      "file": "apps/meteor/server/methods/addAllUserToRoom.ts",
+      "removed": [
+        "addAllUserToRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/integrations/server/methods/incoming/addIncomingIntegration.ts",
+      "removed": [
+        "addIncomingIntegration"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/integrations/server/methods/outgoing/addOutgoingIntegration.ts",
+      "removed": [
+        "addOutgoingIntegration"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/addRoomLeader.ts",
+      "removed": [
+        "addRoomLeader"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/addRoomModerator.ts",
+      "removed": [
+        "addRoomModerator"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/addRoomOwner.ts",
+      "removed": [
+        "addRoomOwner"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/meteor-accounts-saml/server/methods/addSamlService.ts",
+      "removed": [
+        "addSamlService"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/addUserToRoom.ts",
+      "removed": [
+        "addUserToRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/webdav/server/methods/addWebdavAccount.ts",
+      "removed": [
+        "addWebdavAccountByToken"
+      ],
+      "emptied": 0
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/archiveRoom.ts",
+      "removed": [
+        "archiveRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/autotranslate/server/methods/saveSettings.ts",
+      "removed": [
+        "autoTranslate.saveSettings"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/blockUser.ts",
+      "removed": [
+        "blockUser"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/bot-helpers/server/index.ts",
+      "removed": [
+        "botRequest"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/browseChannels.ts",
+      "removed": [
+        "browseChannels"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/channelsList.ts",
+      "removed": [
+        "channelsList"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/cleanRoomHistory.ts",
+      "removed": [
+        "cleanRoomHistory"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/createChannel.ts",
+      "removed": [
+        "createChannel"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/discussion/server/methods/createDiscussion.ts",
+      "removed": [
+        "createDiscussion"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/user-status/server/methods/deleteCustomUserStatus.ts",
+      "removed": [
+        "deleteCustomUserStatus"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/emoji-custom/server/methods/deleteEmojiCustom.ts",
+      "removed": [
+        "deleteEmojiCustom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/integrations/server/methods/incoming/deleteIncomingIntegration.ts",
+      "removed": [
+        "deleteIncomingIntegration"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/oauth2-server-config/server/admin/methods/deleteOAuthApp.ts",
+      "removed": [
+        "deleteOAuthApp"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/integrations/server/methods/outgoing/deleteOutgoingIntegration.ts",
+      "removed": [
+        "deleteOutgoingIntegration"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/deleteUser.ts",
+      "removed": [
+        "deleteUser"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/deleteUserOwnAccount.ts",
+      "removed": [
+        "deleteUserOwnAccount"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/importer/server/methods/downloadPublicImportFile.ts",
+      "removed": [
+        "downloadPublicImportFile"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/e2e/server/methods/fetchMyKeys.ts",
+      "removed": [
+        "e2e.fetchMyKeys"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/e2e/server/methods/setUserPublicAndPrivateKeys.ts",
+      "removed": [
+        "e2e.setUserPublicAndPrivateKeys"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/threads/server/methods/followMessage.ts",
+      "removed": [
+        "followMessage"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/getChannelHistory.ts",
+      "removed": [
+        "getChannelHistory"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/importer/server/methods/getImportFileData.ts",
+      "removed": [
+        "getImportFileData"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/importer/server/methods/getImportProgress.ts",
+      "removed": [
+        "getImportProgress"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/importer/server/methods/getLatestImportOperations.ts",
+      "removed": [
+        "getLatestImportOperations"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/getRoomIdByNameOrId.ts",
+      "removed": [
+        "getRoomIdByNameOrId"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/getRoomJoinCode.ts",
+      "removed": [
+        "getRoomJoinCode"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/getRoomNameById.ts",
+      "removed": [
+        "getRoomNameById"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/file-upload/server/methods/getS3FileUrl.ts",
+      "removed": [
+        "getS3FileUrl"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/statistics/server/methods/getStatistics.ts",
+      "removed": [
+        "getStatistics"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/threads/server/methods/getThreadsList.ts",
+      "removed": [
+        "getThreadsList"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/getTotalChannels.ts",
+      "removed": [
+        "getTotalChannels"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/mentions/server/methods/getUserMentionsByChannel.ts",
+      "removed": [
+        "getUserMentionsByChannel"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/user-status/server/methods/getUserStatusText.ts",
+      "removed": [
+        "getUserStatusText"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/getUsernameSuggestion.ts",
+      "removed": [
+        "getUsernameSuggestion"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/getUsersOfRoom.ts",
+      "removed": [
+        "getUsersOfRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/hideRoom.ts",
+      "removed": [
+        "hideRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/ignoreUser.ts",
+      "removed": [
+        "ignoreUser"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/emoji-custom/server/methods/insertOrUpdateEmoji.ts",
+      "removed": [
+        "insertOrUpdateEmoji"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/user-status/server/methods/insertOrUpdateUserStatus.ts",
+      "removed": [
+        "insertOrUpdateUserStatus"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/joinDefaultChannels.ts",
+      "removed": [
+        "joinDefaultChannels"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/ee/app/license/server/methods.ts",
+      "removed": [
+        "license:getTags",
+        "license:hasLicense"
+      ],
+      "emptied": 0
+    },
+    {
+      "file": "apps/meteor/server/methods/messageSearch.ts",
+      "removed": [
+        "messageSearch"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/publications/messages.ts",
+      "removed": [
+        "messages/get"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/openRoom.ts",
+      "removed": [
+        "openRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/authorization/server/streamer/permissions/index.ts",
+      "removed": [
+        "permissions/get"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/message-pin/server/pinMessage.ts",
+      "removed": [
+        "unpinMessage",
+        "pinMessage"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/publications/settings/index.ts",
+      "removed": [
+        "private-settings/get",
+        "public-settings/get"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/push/server/methods.ts",
+      "removed": [
+        "raix:push-update"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/readMessages.ts",
+      "removed": [
+        "readMessages"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/removeRoomLeader.ts",
+      "removed": [
+        "removeRoomLeader"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/removeRoomModerator.ts",
+      "removed": [
+        "removeRoomModerator"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/removeRoomOwner.ts",
+      "removed": [
+        "removeRoomOwner"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/removeUserFromRoom.ts",
+      "removed": [
+        "removeUserFromRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/resetAvatar.ts",
+      "removed": [
+        "resetAvatar"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/search/server/methods.ts",
+      "removed": [
+        "rocketchatSearch.suggest"
+      ],
+      "emptied": 0
+    },
+    {
+      "file": "apps/meteor/server/publications/room/index.ts",
+      "removed": [
+        "rooms/get"
+      ],
+      "emptied": 0
+    },
+    {
+      "file": "apps/meteor/app/meteor-accounts-saml/server/methods/samlLogout.ts",
+      "removed": [
+        "samlLogout"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/push-notifications/server/methods/saveNotificationSettings.ts",
+      "removed": [
+        "saveAudioNotificationValue",
+        "saveNotificationSettings"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/saveSetting.ts",
+      "removed": [
+        "saveSetting"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/saveUserPreferences.ts",
+      "removed": [
+        "saveUserPreferences"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/sendForgotPasswordEmail.ts",
+      "removed": [
+        "sendForgotPasswordEmail"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/livechat/server/methods/sendMessageLivechat.ts",
+      "removed": [
+        "sendMessageLivechat"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/sendSMTPTestEmail.ts",
+      "removed": [
+        "sendSMTPTestEmail"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/setEmail.ts",
+      "removed": [
+        "setEmail"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/setRealName.ts",
+      "removed": [
+        "setRealName"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/setUserActiveStatus.ts",
+      "removed": [
+        "setUserActiveStatus"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/message-star/server/starMessage.ts",
+      "removed": [
+        "starMessage"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/importer/server/methods/startImport.ts",
+      "removed": [
+        "startImport"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/server/methods/toggleFavorite.ts",
+      "removed": [
+        "toggleFavorite"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/unarchiveRoom.ts",
+      "removed": [
+        "unarchiveRoom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/unblockUser.ts",
+      "removed": [
+        "unblockUser"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/threads/server/methods/unfollowMessage.ts",
+      "removed": [
+        "unfollowMessage"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/message-mark-as-unread/server/unreadMessages.ts",
+      "removed": [
+        "unreadMessages"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/integrations/server/methods/incoming/updateIncomingIntegration.ts",
+      "removed": [
+        "updateIncomingIntegration"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/lib/server/methods/updateMessage.ts",
+      "removed": [
+        "updateMessage"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/oauth2-server-config/server/admin/methods/updateOAuthApp.ts",
+      "removed": [
+        "updateOAuthApp"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/integrations/server/methods/outgoing/updateOutgoingIntegration.ts",
+      "removed": [
+        "updateOutgoingIntegration"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/emoji-custom/server/methods/uploadEmojiCustom.ts",
+      "removed": [
+        "uploadEmojiCustom"
+      ],
+      "emptied": 1
+    },
+    {
+      "file": "apps/meteor/app/importer/server/methods/uploadImportFile.ts",
+      "removed": [
+        "uploadImportFile"
+      ],
+      "emptied": 1
+    }
+  ]
+}

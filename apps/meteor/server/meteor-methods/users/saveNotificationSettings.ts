@@ -18,13 +18,6 @@ export type NotificationFieldType =
 	| 'hideMentionStatus'
 	| 'muteGroupMentions'
 	| 'audioNotificationValue';
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveNotificationSettings(roomId: string, field: NotificationFieldType, value: string): boolean;
-		saveAudioNotificationValue(subId: string, value: string): boolean;
-	}
-}
 
 export const saveNotificationSettingsMethod = async (
 	userId: string,

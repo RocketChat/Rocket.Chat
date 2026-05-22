@@ -6,13 +6,6 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { setEmail } from '../../lib/users/setEmail';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		setEmail(email: string): string;
-	}
-}
-
 export const setEmailFunction = async (email: string, user: Meteor.User | IUser) => {
 	check(email, String);
 

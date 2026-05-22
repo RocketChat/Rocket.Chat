@@ -59,10 +59,3 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 
 	return instance.buildSelection();
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		getImportFileData(): IImporterSelection | { waiting: true };
-	}
-}

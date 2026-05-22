@@ -4,13 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'e2e.setUserPublicAndPrivateKeys'({ public_key, private_key }: { public_key: string; private_key: string; force?: boolean }): void;
-	}
-}
-
 const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
 	return result.private_key && result.public_key;
 };
