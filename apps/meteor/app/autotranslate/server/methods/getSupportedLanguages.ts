@@ -3,7 +3,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { getSupportedLanguages } from '../functions/getSupportedLanguages';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,7 +14,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'autoTranslate.getSupportedLanguages'(targetLanguage) {
-		methodDeprecationLogger.method('autoTranslate.getSupportedLanguages', '9.0.0', '/v1/autotranslate.getSupportedLanguages');
 		const userId = Meteor.userId();
 
 		if (!userId) {

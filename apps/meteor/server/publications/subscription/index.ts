@@ -3,7 +3,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { subscriptionFields } from '../../../lib/publishFields';
 
 declare module '@rocket.chat/ddp-client' {
@@ -46,7 +45,6 @@ export const getSubscriptions = async (
 
 Meteor.methods<ServerMethods>({
 	async 'subscriptions/get'(updatedAt) {
-		methodDeprecationLogger.method('subscriptions/get', '9.0.0', '/v1/subscriptions.get');
 		const uid = Meteor.userId();
 		if (!uid) {
 			return [];

@@ -12,7 +12,6 @@ import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { userLogout } from './functions/userLogout';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -92,7 +91,6 @@ Meteor.methods<ServerMethods>({
 		return startRegisterWorkspace();
 	},
 	async 'cloud:syncWorkspace'() {
-		methodDeprecationLogger.method('cloud:syncWorkspace', '9.0.0', '/v1/cloud.syncWorkspace');
 		const uid = Meteor.userId();
 
 		if (!uid) {
