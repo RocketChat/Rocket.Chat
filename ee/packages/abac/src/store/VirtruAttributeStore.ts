@@ -126,16 +126,15 @@ export class VirtruAttributeStore implements IAttributeStore {
 		rooms: T[],
 		actor: AbacActor,
 	): Promise<Array<T & IRoomAbacRedaction>> {
-		const withAttrs = rooms.filter((r) => r.abacAttributes?.length);
-		if (!withAttrs.length) {
+		if (!rooms.length) {
 			return rooms;
 		}
-		const permitted = await this.decideRooms(withAttrs, actor).catch((err) => {
+		const permitted = await this.decideRooms(rooms, actor).catch((err) => {
 			storeLogger.warn({ msg: 'Virtru store: redacting all rooms after decision failure', err });
 			return new Set<string>();
 		});
 		return rooms.map((r) => {
-			if (!r.abacAttributes?.length || permitted.has(r._id)) {
+			if (permitted.has(r._id)) {
 				return r;
 			}
 			return { ...r, abacAttributes: [], abacAttributesRedacted: true };

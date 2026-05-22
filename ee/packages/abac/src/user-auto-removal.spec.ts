@@ -20,6 +20,9 @@ jest.mock('@rocket.chat/core-services', () => ({
 	api: {
 		broadcast: jest.fn(),
 	},
+	License: {
+		hasModule: async () => true,
+	},
 	MeteorError: class extends Error {},
 	isMeteorError: () => false,
 }));

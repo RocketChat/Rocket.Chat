@@ -49,7 +49,7 @@ const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUnsetAbacAttributesById = jest.fn();
 const mockRoomsUpdateMany = jest.fn();
-const mockSettingsUpdateValueById = jest.fn();
+const mockSettingsSet = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
@@ -94,7 +94,7 @@ jest.mock('@rocket.chat/models', () => ({
 		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
 	},
 	Settings: {
-		updateValueById: (...args: any[]) => mockSettingsUpdateValueById(...args),
+		updateValueById: (...args: any[]) => mockSettingsSet(...args),
 	},
 }));
 
@@ -116,6 +116,7 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		Settings: {
 			get: (...args: any[]) => mockSettingsGet(...args),
+			set: (...args: any[]) => mockSettingsSet(...args),
 		},
 		License: {
 			hasModule: (...args: any[]) => mockHasModule(...args),
@@ -1863,7 +1864,7 @@ describe('AbacService (unit)', () => {
 
 		beforeEach(() => {
 			mockSettingsGet.mockReset();
-			mockSettingsUpdateValueById.mockReset().mockResolvedValue({ modifiedCount: 1 });
+			mockSettingsSet.mockReset().mockResolvedValue({ modifiedCount: 1 });
 		});
 
 		it('writes ABAC_Attribute_Store=local when PDP changes to local and Store was virtru', async () => {
@@ -1871,8 +1872,8 @@ describe('AbacService (unit)', () => {
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
 
-			expect(mockSettingsUpdateValueById).toHaveBeenCalledTimes(1);
-			expect(mockSettingsUpdateValueById).toHaveBeenCalledWith('ABAC_Attribute_Store', 'local');
+			expect(mockSettingsSet).toHaveBeenCalledTimes(1);
+			expect(mockSettingsSet).toHaveBeenCalledWith('ABAC_Attribute_Store', 'local');
 		});
 
 		it('does NOT write ABAC_Attribute_Store when PDP changes to local and Store is already local (idempotent)', async () => {
@@ -1880,7 +1881,7 @@ describe('AbacService (unit)', () => {
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
 
-			expect(mockSettingsUpdateValueById).not.toHaveBeenCalled();
+			expect(mockSettingsSet).not.toHaveBeenCalled();
 		});
 
 		it('does NOT write ABAC_Attribute_Store when PDP changes to virtru (one-way cascade only)', async () => {
@@ -1888,12 +1889,12 @@ describe('AbacService (unit)', () => {
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'virtru');
 
-			expect(mockSettingsUpdateValueById).not.toHaveBeenCalled();
+			expect(mockSettingsSet).not.toHaveBeenCalled();
 		});
 
 		it('logs error and resolves normally when the settings write fails', async () => {
 			const svc = await bootWith(buildSettings({}));
-			mockSettingsUpdateValueById.mockRejectedValueOnce(new Error('db-write-failure'));
+			mockSettingsSet.mockRejectedValueOnce(new Error('db-write-failure'));
 			const errorSpy = jest.spyOn(logger, 'error');
 			const pdpStrategySpy = jest.spyOn(svc as any, 'setPdpStrategy');
 

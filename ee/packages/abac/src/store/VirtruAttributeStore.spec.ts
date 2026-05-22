@@ -201,9 +201,8 @@ describe('VirtruAttributeStore.scopeRoomsPage', () => {
 	const rooms = [
 		{ _id: 'rPermit', abacAttributes: [{ key: 'clearance', values: ['secret'] }] },
 		{ _id: 'rDeny', abacAttributes: [{ key: 'clearance', values: ['topsecret'] }] },
-		{ _id: 'rNone', abacAttributes: [] },
 	];
-	it('PERMIT unchanged, DENY redacted+flagged, no-attr passes through, ONE round-trip, order kept', async () => {
+	it('PERMIT unchanged, DENY redacted+flagged, ONE round-trip, order kept', async () => {
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{
@@ -216,21 +215,19 @@ describe('VirtruAttributeStore.scopeRoomsPage', () => {
 		});
 		const store = new VirtruAttributeStore(mkClient({ apiCall }));
 		const out = await store.scopeRoomsPage(rooms, actor);
-		expect(out.map((r) => r._id)).toEqual(['rPermit', 'rDeny', 'rNone']);
+		expect(out.map((r) => r._id)).toEqual(['rPermit', 'rDeny']);
 		expect(out[0].abacAttributes).toEqual([{ key: 'clearance', values: ['secret'] }]);
 		expect(out[0]).not.toHaveProperty('abacAttributesRedacted');
 		expect(out[1].abacAttributes).toEqual([]);
 		expect(out[1].abacAttributesRedacted).toBe(true);
-		expect(out[2]).not.toHaveProperty('abacAttributesRedacted');
 		expect(apiCall).toHaveBeenCalledTimes(1);
 	});
-	it('isAvailable false => every attr-room redacted, no throw, no apiCall', async () => {
+	it('isAvailable false => every room redacted, no throw, no apiCall', async () => {
 		const apiCall = jest.fn();
 		const store = new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false), apiCall }));
 		const out = await store.scopeRoomsPage(rooms, actor);
 		expect(out[0].abacAttributesRedacted).toBe(true);
 		expect(out[1].abacAttributesRedacted).toBe(true);
-		expect(out[2]).not.toHaveProperty('abacAttributesRedacted');
 		expect(apiCall).not.toHaveBeenCalled();
 	});
 	it('decision call throws => fail-closed redact all, no throw', async () => {
