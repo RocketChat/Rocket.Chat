@@ -316,3 +316,5 @@ export function diffAttributeSets(
 
 	return { added, removed };
 }
+
+export const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');

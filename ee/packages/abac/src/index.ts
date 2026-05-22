@@ -1,6 +1,6 @@
 import { api, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
-import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
+import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
@@ -13,7 +13,7 @@ import type {
 	AbacAttributeStoreType,
 	AbacPdpType,
 } from '@rocket.chat/core-typings';
-import { Rooms, AbacAttributes, Users, Subscriptions, Settings as SettingsModel } from '@rocket.chat/models';
+import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
@@ -38,6 +38,7 @@ import {
 	diffAttributeSets,
 	validateAndNormalizeAttributes,
 	MAX_ABAC_ATTRIBUTE_KEYS,
+	stripTrailingSlashes,
 } from './helper';
 import { logger } from './logger';
 import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
@@ -46,12 +47,6 @@ import { LocalAttributeStore, VirtruAttributeStore, type IAttributeStore } from 
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
-
-const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
-
-const isAbacPdpType = (value: unknown): value is AbacPdpType => value === 'local' || value === 'virtru';
-
-const isAbacAttributeStoreType = (value: unknown): value is AbacAttributeStoreType => value === 'local' || value === 'virtru';
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -99,7 +94,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			// so the ABAC_Attribute_Store listener handles the wipe and propagates across all nodes.
 			if (value === 'local' && this.attributeStoreSetting === 'virtru') {
 				try {
-					await SettingsModel.updateValueById('ABAC_Attribute_Store', 'local');
+					await Settings.set('ABAC_Attribute_Store', 'local');
 				} catch (err) {
 					logger.error({ msg: 'Failed to cascade ABAC_Attribute_Store=local on PDP change to local', err });
 				}
@@ -205,11 +200,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private async resolveAttributeStore(): Promise<IAttributeStore> {
 		const next = await this.effectiveStore();
-		const isVirtru = this.attributeStore instanceof VirtruAttributeStore;
-		if (next === 'virtru' && !isVirtru) {
-			this.attributeStore = new VirtruAttributeStore(this.virtruClient);
-		} else if (next === 'local' && isVirtru) {
-			this.attributeStore = new LocalAttributeStore();
+		const current = this.attributeStore instanceof VirtruAttributeStore ? 'virtru' : 'local';
+		if (next !== current) {
+			this.attributeStore = next === 'virtru' ? new VirtruAttributeStore(this.virtruClient) : new LocalAttributeStore();
 		}
 		return this.attributeStore;
 	}

@@ -52,7 +52,7 @@ export class LocalAttributeStore implements IAttributeStore {
 		return rooms;
 	}
 
-	assertCanModifyRoom(_room: Pick<IRoom, '_id' | 'abacAttributes'>, _actor: AbacActor): Promise<void> {
-		return Promise.resolve();
+	async assertCanModifyRoom(_room: Pick<IRoom, '_id' | 'abacAttributes'>, _actor: AbacActor): Promise<void> {
+		// nop
 	}
 }

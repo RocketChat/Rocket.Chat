@@ -30,7 +30,7 @@
   "ABAC_Attribute_Store_Description": "Where assignable room attributes come from. With Virtru, attributes are managed externally and limited to those the acting admin possesses; the Room Attributes tab is hidden.",
   "ABAC_Attribute_Store_Local": "Local",
   "ABAC_Attribute_Store_Virtru": "Virtru",
-  "ABAC_Attribute_Store_Switch_Alert": "Switching the attribute store to Virtru permanently clears all existing room attribute assignments. This cannot be undone.",
+  "ABAC_Attribute_Store_Switch_Alert": "Switching the attribute store away from Local permanently clears all existing room attribute assignments. This cannot be undone. No users are removed from any room, and rooms remain private.",
   "ABAC_Attribute_Store_Switched": "Attribute store switched",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} room affected",

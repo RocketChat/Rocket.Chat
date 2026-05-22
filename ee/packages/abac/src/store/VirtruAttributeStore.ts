@@ -178,7 +178,6 @@ export class VirtruAttributeStore implements IAttributeStore {
 				decisionRequests: requests,
 			});
 		} catch (err) {
-			storeLogger.warn({ msg: 'Virtru store: GetDecisionBulk call failed, treating PDP as unavailable', err });
 			throw new PdpUnavailableError();
 		}
 		const permitted = new Set<string>();

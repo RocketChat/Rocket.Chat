@@ -72,8 +72,8 @@ export async function findAdminRoom({
 	if (!room) {
 		return null;
 	}
-	const stripped = stripABACManagedFieldsForAdmin(room);
-	return scopeAdminRoomForAbac(stripped, uid);
+
+	return scopeAdminRoomForAbac(stripABACManagedFieldsForAdmin(room), uid);
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{

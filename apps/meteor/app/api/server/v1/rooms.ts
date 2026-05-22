@@ -1491,11 +1491,10 @@ export const roomEndpoints = API.v1
 				projection: adminFields,
 			});
 
-			const [stripped, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
-			const rooms = await scopeAdminRoomsForAbac(stripped, this.userId);
+			const [rooms, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
 
 			return API.v1.success({
-				rooms,
+				rooms: await scopeAdminRoomsForAbac(rooms, this.userId),
 				count: rooms.length,
 				offset,
 				total,
