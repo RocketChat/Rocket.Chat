@@ -19,13 +19,6 @@ type InsertOrUpdateUserStatus = {
 	previousStatusType?: string;
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		insertOrUpdateUserStatus(userStatusData: InsertOrUpdateUserStatus): string | boolean;
-	}
-}
-
 export const insertOrUpdateUserStatus = async (userId: string, userStatusData: InsertOrUpdateUserStatus): Promise<string | boolean> => {
 	if (!(await hasPermissionAsync(userId, 'manage-user-status'))) {
 		throw new Meteor.Error('not_authorized');

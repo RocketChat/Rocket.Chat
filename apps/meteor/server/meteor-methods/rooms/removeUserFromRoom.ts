@@ -15,13 +15,6 @@ import { removeUserFromRolesAsync } from '../../lib/roles/removeUserFromRoles';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		removeUserFromRoom(data: { rid: string; username: string }): boolean;
-	}
-}
-
 export const removeUserFromRoomMethod = async (fromId: string, data: { rid: string; username: string }): Promise<boolean> => {
 	if (!(await hasPermissionAsync(fromId, 'remove-user', data.rid))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {

@@ -54,13 +54,6 @@ type UserPreferences = {
 	utcOffset?: number;
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
-	}
-}
-
 async function updateNotificationPreferences(
 	userId: ISubscription['u']['_id'],
 	setting: keyof ISubscription,

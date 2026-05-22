@@ -12,7 +12,6 @@ declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addWebdavAccount(formData: IWebdavAccountPayload): boolean;
-		addWebdavAccountByToken(data: IWebdavAccountPayload): boolean;
 	}
 }
 

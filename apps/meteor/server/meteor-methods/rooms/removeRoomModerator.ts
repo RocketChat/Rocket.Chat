@@ -11,13 +11,6 @@ import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRolePriority';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		removeRoomModerator(rid: IRoom['_id'], userId: IUser['_id']): boolean;
-	}
-}
-
 export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
 	check(rid, String);
 	check(userId, String);

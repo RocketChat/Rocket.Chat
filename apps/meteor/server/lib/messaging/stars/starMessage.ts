@@ -8,13 +8,6 @@ import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyListener';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		starMessage(message: Pick<IMessage, 'rid' | '_id'> & { starred: boolean }): boolean;
-	}
-}
-
 export const starMessage = async (user: IUser, message: Pick<IMessage, 'rid' | '_id'> & { starred: boolean }): Promise<boolean> => {
 	if (!settings.get('Message_AllowStarring')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {

@@ -4,13 +4,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendForgotPasswordEmail(to: string): boolean | undefined;
-	}
-}
-
 export const sendForgotPasswordEmail = async (to: string): Promise<boolean | undefined> => {
 	const email = to.trim().toLowerCase();
 

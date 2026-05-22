@@ -195,13 +195,6 @@ const create = async ({
 	return discussion;
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		createDiscussion: typeof create;
-	}
-}
-
 export const createDiscussion = async (
 	userId: string,
 	{ prid, pmid, t_name: discussionName, reply, users, encrypted, topic }: Omit<CreateDiscussionProperties, 'user'>,

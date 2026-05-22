@@ -64,7 +64,6 @@ import './platform/getProviderUiMetadata';
 import './platform/getSupportedLanguages';
 import './platform/getUsersOfRoomWithoutKey';
 import './platform/loadLocale';
-import './platform/push';
 import './platform/requestDataDownload';
 import './platform/requestSubscriptionKeys';
 import './platform/resetOwnE2EKey';

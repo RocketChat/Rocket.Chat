@@ -72,10 +72,3 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		copyLocalFile(fileUrl, writeStream);
 	}
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		downloadPublicImportFile(fileUrl: string, importerKey: string): void;
-	}
-}

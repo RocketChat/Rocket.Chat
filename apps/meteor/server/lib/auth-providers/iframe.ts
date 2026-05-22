@@ -19,10 +19,3 @@ Accounts.registerLoginHandler('iframe', async (result) => {
 		};
 	}
 });
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'OAuth.retrieveCredential'(credentialToken: string, credentialSecret: string): unknown;
-	}
-}
