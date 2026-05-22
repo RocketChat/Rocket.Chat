@@ -89,18 +89,6 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
-      - name: Set compose files
-        env:
-          INPUT_RELEASE: ${{ inputs.release }}
-        run: |
-          if [[ "$INPUT_RELEASE" == 'fips' ]]; then
-            echo 'COMPOSE_FILES=-f docker-compose-ci.yml -f docker-compose-ci.fips.yml' >> "$GITHUB_ENV"
-            echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml -f ../../docker-compose-ci.fips.yml' >> "$GITHUB_ENV"
-          else
-            echo 'COMPOSE_FILES=-f docker-compose-ci.yml' >> "$GITHUB_ENV"
-            echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml' >> "$GITHUB_ENV"
-          fi
-
       - name: Collect Workflow Telemetry
         if: inputs.type == 'perf'
         uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1 # v2.0.0
@@ -146,7 +134,7 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-*' || 'docker-image-*-amd64-coverage') }}
+          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-fips' || 'docker-image-*-amd64-coverage') }}
           path: /tmp/docker-images
           merge-multiple: true
 
@@ -176,8 +164,7 @@ jobs:
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api' || inputs.type == 'api-livechat'
         run: |
-          read -r -a compose_files <<< "$COMPOSE_FILES"
-          docker compose "${compose_files[@]}" up -d httpbin
+          docker compose -f docker-compose-ci.yml up -d httpbin
 
       - name: Prepare code coverage directory
         run: |
@@ -186,18 +173,11 @@ jobs:
           mkdir -p "$COVERAGE_DIR"
           chmod 777 "$COVERAGE_DIR"
 
-      - name: Pull EE/FIPS images
-        if: (inputs.release == 'ee' || inputs.release == 'fips') && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        run: |
-          read -r -a compose_files <<< "$COMPOSE_FILES"
-          docker compose "${compose_files[@]}" pull
-
       - name: Start containers for CE
         if: inputs.release == 'ce'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          read -r -a compose_files <<< "$COMPOSE_FILES"
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose "${compose_files[@]}" up -d rocketchat --wait
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
 
       - name: Start containers for EE
         if: inputs.release == 'ee' || inputs.release == 'fips'
@@ -205,9 +185,10 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
+          FIPS_OVERRIDE: ${{ inputs.release == 'fips' && '-f docker-compose-ci.fips.yml' || '' }}
         run: |
-          read -r -a compose_files <<< "$COMPOSE_FILES"
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose "${compose_files[@]}" up -d --wait --no-build
+          read -r -a fips_override <<< "$FIPS_OVERRIDE"
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml "${fips_override[@]}" up -d --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
@@ -215,103 +196,13 @@ jobs:
       - name: Wait services to start up
         if: inputs.release == 'ee' || inputs.release == 'fips'
         run: |
-          read -r -a compose_files <<< "$COMPOSE_FILES"
           docker ps
 
-          wait_for_mongo_primary() {
-            local retries=36
-            local delay=5
-
-            for attempt in $(seq 1 "$retries"); do
-              local is_primary
-              is_primary=$(docker compose "${compose_files[@]}" exec -T mongo mongosh --quiet --eval "try { const hello = db.hello(); print((hello.isWritablePrimary || hello.ismaster) ? '1' : '0'); } catch (e) { print('0'); }" 2>/dev/null | tail -n1 || true)
-
-              if [[ "$is_primary" == '1' ]]; then
-                echo "Mongo replica set primary is ready"
-                return 0
-              fi
-
-              echo "Waiting for Mongo primary (attempt ${attempt}/${retries})"
-              sleep "$delay"
-            done
-
-            echo "Mongo primary was not ready in time"
-            docker compose "${compose_files[@]}" logs mongo
-            return 1
-          }
-
-          wait_for_service() {
-            local service="$1"
-            local retries=18
-            local delay=10
-            local broker_service_name="${service%-service}"
-            local ready_pattern="NetworkBroker started successfully|ServiceBroker with [0-9]+ service\(s\) started successfully|Service '${broker_service_name}' started\."
-
-            for attempt in $(seq 1 "$retries"); do
-              local container_id
-              container_id=$(docker compose "${compose_files[@]}" ps -q "$service")
-
-              if [[ -z "$container_id" ]]; then
-                echo "Service '$service' has no container ID"
-                docker compose "${compose_files[@]}" ps
-                return 1
-              fi
-
-              local container_state
-              container_state=$(docker inspect -f '{{.State.Status}}' "$container_id" 2>/dev/null || echo "unknown")
-              local health_state
-              health_state=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container_id" 2>/dev/null || echo "unknown")
-
-              if [[ "$container_state" != 'running' ]]; then
-                echo "Service '$service' is not running (state=$container_state)"
-                docker compose "${compose_files[@]}" logs "$service"
-                return 1
-              fi
-
-              if [[ "$health_state" == 'unhealthy' ]]; then
-                echo "Service '$service' is unhealthy"
-                docker compose "${compose_files[@]}" logs "$service"
-                return 1
-              fi
-
-              if [[ "$health_state" == 'healthy' ]]; then
-                echo "Service '$service' is healthy"
-                return 0
-              fi
-
-              if docker compose "${compose_files[@]}" logs "$service" | grep -Eq "$ready_pattern"; then
-                echo "Service '$service' is ready"
-                return 0
-              fi
-
-              echo "Waiting '$service' to start up (attempt ${attempt}/${retries})"
-              sleep "$delay"
-            done
-
-            echo "Service '$service' did not become ready in time"
-            docker compose "${compose_files[@]}" logs "$service"
-            return 1
-          }
-
-          mapfile -t services_to_wait < <(
-            docker compose "${compose_files[@]}" ps --services --status running \
-              | grep -- '-service$' \
-              | sort
-          )
-
-          wait_for_mongo_primary
-
-          if (( ${#services_to_wait[@]} == 0 )); then
-            echo "No running -service containers found to wait for"
-            docker compose "${compose_files[@]}" ps
-            exit 1
-          fi
-
-          echo "Waiting for services: ${services_to_wait[*]}"
-
-          for service in "${services_to_wait[@]}"; do
-            wait_for_service "$service"
-          done
+          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'ddp-streamer' to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
+            sleep 10
+          done;
 
       - name: Remove unused Docker images
         run: docker system prune -af
@@ -324,11 +215,10 @@ jobs:
           IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
         run: |
           set -o xtrace
-          read -r -a compose_files_meteor <<< "$COMPOSE_FILES_METEOR"
 
           npm run testapi || s=$?
 
-          docker compose "${compose_files_meteor[@]}" stop
+          docker compose -f ../../docker-compose-ci.yml stop
 
           ls -la "$COVERAGE_DIR"
           exit "${s:-0}"
@@ -341,11 +231,10 @@ jobs:
           IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
         run: |
           set -o xtrace
-          read -r -a compose_files_meteor <<< "$COMPOSE_FILES_METEOR"
 
           npm run testapi:livechat || s=$?
 
-          docker compose "${compose_files_meteor[@]}" stop
+          docker compose -f ../../docker-compose-ci.yml stop
 
           ls -la "$COVERAGE_DIR"
           exit "${s:-0}"
@@ -396,15 +285,11 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure()
-        run: |
-          read -r -a compose_files <<< "$COMPOSE_FILES"
-          docker compose "${compose_files[@]}" logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
 
       - name: Show mongo logs if E2E test failed
         if: failure()
-        run: |
-          read -r -a compose_files <<< "$COMPOSE_FILES"
-          docker compose "${compose_files[@]}" logs mongo
+        run: docker compose -f docker-compose-ci.yml logs mongo
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version

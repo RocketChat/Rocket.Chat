@@ -10,10 +10,10 @@ inputs:
     description: 'GitHub Container Registry Personal Access Token'
   DOCKER_USER:
     required: false
-    description: 'DockerHub username for private base image pulls'
+    description: 'DockerHub username (required for FIPS builds to pull private base image)'
   DOCKER_PASS:
     required: false
-    description: 'DockerHub password/token for private base image pulls'
+    description: 'DockerHub password (required for FIPS builds to pull private base image)'
   deno-version:
     required: true
     description: 'Deno version'
@@ -49,8 +49,9 @@ runs:
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
 
-    - name: Login to DockerHub for FIPS base images
-      if: inputs.type == 'fips' && inputs.DOCKER_USER != '' && inputs.DOCKER_PASS != ''
+    - name: Login to DockerHub
+      # FIPS base image (rocketchat/dhi-node) lives in a private DockerHub repo and requires auth to pull.
+      if: inputs.type == 'fips' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         username: ${{ inputs.DOCKER_USER }}
@@ -88,23 +89,21 @@ runs:
     - name: Build Docker images
       shell: bash
       env:
-        INPUT_DENO_VERSION: ${{ inputs.deno-version }}
+        DENO_VERSION: ${{ inputs.deno-version }}
         INPUT_ARCH: ${{ inputs.arch }}
         INPUT_SERVICE: ${{ inputs.service }}
         INPUT_PUBLISH_IMAGE: ${{ inputs.publish-image }}
         INPUT_TYPE: ${{ inputs.type }}
-        GH_RUN_ID: ${{ github.run_id }}
-        GH_SERVER_URL: ${{ github.server_url }}
-        GH_REPOSITORY: ${{ github.repository }}
-        GH_EVENT_NAME: ${{ github.event_name }}
-        GH_REF: ${{ github.ref }}
-        SERVICE_SUFFIX_FROM_CONTEXT: ${{ (inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')) && '-cov' || (inputs.type == 'fips' && '-fips' || '') }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+        GITHUB_SERVER_URL: ${{ github.server_url }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_REF: ${{ github.ref }}
       run: |
         set -o xtrace
-        export DENO_VERSION="$INPUT_DENO_VERSION"
-        compose_files=(-f docker-compose-ci.yml)
+        compose_fips_override=''
         if [[ "$INPUT_TYPE" == 'fips' ]]; then
-          compose_files+=(-f docker-compose-ci.fips.yml)
+          compose_fips_override='-f docker-compose-ci.fips.yml'
         fi
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
@@ -129,51 +128,34 @@ runs:
           LOAD_OR_PUSH="--load"
         fi
 
-        export DOCKER_CLIENT_TIMEOUT=300
-        export COMPOSE_HTTP_TIMEOUT=300
+        # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
 
-        # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
-
-        BUILD_RUN_URL="${GH_SERVER_URL}/${GH_REPOSITORY}/actions/runs/${GH_RUN_ID}"
-        BUILD_SOURCE_URL="${GH_SERVER_URL}/${GH_REPOSITORY}"
-
-        buildx_bake_cmd=(
-          docker buildx bake
-          "${compose_files[@]}"
-          ${LOAD_OR_PUSH}
-          --allow=fs.read=/tmp/build
-          --set "*.tags+=${IMAGE}-gha-run-${GH_RUN_ID}"
-          --set "*.labels.org.opencontainers.image.description=Build run: ${BUILD_RUN_URL}"
-          --set "*.labels.org.opencontainers.image.source=${BUILD_SOURCE_URL}"
-          --set "*.platform=linux/${INPUT_ARCH}"
-          --set *.cache-from=type=gha
-          --set *.cache-to=type=gha,mode=max
-          --provenance=false
-          --sbom=false
-          --metadata-file "/tmp/meta.json"
+        docker buildx bake \
+          -f docker-compose-ci.yml $compose_fips_override \
+          ${LOAD_OR_PUSH} \
+          --allow=fs.read=/tmp/build \
+          --set "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}" \
+          --set "*.labels.org.opencontainers.image.description=Build run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+          --set "*.labels.org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+          --set "*.platform=linux/${INPUT_ARCH}" \
+          --set *.cache-from=type=gha \
+          --set *.cache-to=type=gha,mode=max \
+          --provenance=false \
+          --sbom=false \
+          --metadata-file "/tmp/meta.json" \
           "$INPUT_SERVICE"
-        )
-
-        attempts=1
-        max_attempts=3
-        until "${buildx_bake_cmd[@]}"; do
-          if [[ "$INPUT_PUBLISH_IMAGE" != 'true' || $attempts -ge $max_attempts ]]; then
-            echo "docker buildx bake failed after ${attempts} attempt(s)."
-            exit 1
-          fi
-
-          attempts=$((attempts + 1))
-          sleep_seconds=$((15 * attempts))
-          echo "docker buildx bake failed (likely transient push error). Retrying in ${sleep_seconds}s... (attempt ${attempts}/${max_attempts})"
-          sleep "${sleep_seconds}"
-        done
 
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
         if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then
-          SERVICE_SUFFIX="$SERVICE_SUFFIX_FROM_CONTEXT"
+          SERVICE_SUFFIX=''
+          if [[ "$INPUT_SERVICE" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
+            SERVICE_SUFFIX='-cov'
+          elif [[ "$INPUT_TYPE" == 'fips' ]]; then
+            SERVICE_SUFFIX='-fips'
+          fi
 
           mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
 
@@ -195,26 +177,26 @@ runs:
       if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
       shell: bash
       env:
-        INPUT_TYPE: ${{ inputs.type }}
-        INPUT_SERVICE: ${{ inputs.service }}
-        INPUT_ARCH: ${{ inputs.arch }}
+        SERVICE: ${{ inputs.service }}
+        ARCH: ${{ inputs.arch }}
+        TYPE: ${{ inputs.type }}
       run: |
         set -o xtrace
-        compose_files=(-f docker-compose-ci.yml)
-        if [[ "$INPUT_TYPE" == 'fips' ]]; then
-          compose_files+=(-f docker-compose-ci.fips.yml)
+        compose_fips_override=''
+        if [[ "$TYPE" == 'fips' ]]; then
+          compose_fips_override='-f docker-compose-ci.fips.yml'
         fi
 
-        # Get image name from compose config
-        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+        # Get image name from docker-compose-ci.yml
+        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images
 
         # Save the image to a tar file
-        docker save "${IMAGE}" -o "/tmp/docker-images/${INPUT_SERVICE}-${INPUT_ARCH}-${INPUT_TYPE}.tar"
+        docker save "${IMAGE}" -o "/tmp/docker-images/${SERVICE}-${ARCH}-${TYPE}.tar"
 
-        echo "Saved image to /tmp/docker-images/${INPUT_SERVICE}-${INPUT_ARCH}-${INPUT_TYPE}.tar"
+        echo "Saved image to /tmp/docker-images/${SERVICE}-${ARCH}-${TYPE}.tar"
         ls -lh /tmp/docker-images/
 
     - name: Upload Docker image artifact
