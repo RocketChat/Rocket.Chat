@@ -12,13 +12,6 @@ import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRole
 import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../../services/federation/utils';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addRoomOwner(rid: IRoom['_id'], userId: IUser['_id']): boolean;
-	}
-}
-
 export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
 	check(rid, String);
 	check(userId, String);

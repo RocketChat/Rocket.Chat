@@ -8,13 +8,6 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { archiveRoom } from '../../lib/rooms/archiveRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		archiveRoom(rid: string): Promise<void>;
-	}
-}
-
 export const executeArchiveRoom = async (userId: string, rid: string) => {
 	check(rid, String);
 

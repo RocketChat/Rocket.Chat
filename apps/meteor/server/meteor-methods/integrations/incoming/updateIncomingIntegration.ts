@@ -10,16 +10,6 @@ import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		updateIncomingIntegration(
-			integrationId: string,
-			integration: INewIncomingIntegration | IUpdateIncomingIntegration,
-		): IIntegration | null;
-	}
-}
-
 function validateChannels(channelString: string | undefined): string[] {
 	if (!channelString || typeof channelString.valueOf() !== 'string' || channelString.trim() === '') {
 		throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {

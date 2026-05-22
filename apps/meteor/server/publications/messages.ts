@@ -8,38 +8,6 @@ import { getChannelHistory } from '../meteor-methods/messages/getChannelHistory'
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'messages/get': (
-			rid: IRoom['_id'],
-			options: {
-				lastUpdate?: Date;
-				latestDate?: Date;
-				oldestDate?: Date;
-				inclusive?: boolean;
-				count?: number;
-				unreads?: boolean;
-				next?: string;
-				previous?: string;
-				type?: CursorPaginationType;
-			},
-		) => Promise<
-			| {
-					updated: IMessage[];
-					deleted: IMessage[];
-					cursor?: {
-						next: string | null;
-						previous: string | null;
-					};
-			  }
-			| boolean
-			| IMessage[]
-			| { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }
-		>;
-	}
-}
-
 export function extractTimestampFromCursor(cursor: string): Date {
 	const timestamp = parseInt(cursor, 10);
 

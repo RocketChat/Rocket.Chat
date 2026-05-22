@@ -4,13 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { deleteUser } from '../../lib/users/deleteUser';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		deleteUser(userId: IUser['_id'], confirmRelinquish?: boolean): boolean;
-	}
-}
-
 export const executeDeleteUser = async (fromUserId: IUser['_id'], userId: IUser['_id'], confirmRelinquish = false): Promise<boolean> => {
 	const user = await Users.findOneById(userId);
 	if (!user) {

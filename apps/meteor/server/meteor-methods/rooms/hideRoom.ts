@@ -4,13 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/notifyListener';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		hideRoom(rid: string): Promise<number>;
-	}
-}
-
 export const hideRoomMethod = async (userId: string, rid: string): Promise<number> => {
 	check(rid, String);
 

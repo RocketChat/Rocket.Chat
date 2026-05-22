@@ -3,13 +3,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		ignoreUser(params: { rid: string; userId: string; ignore?: boolean }): boolean;
-	}
-}
-
 export const ignoreUser = async (
 	fromUserId: string,
 	{ rid, userId: ignoredUser, ignore }: { rid: string; userId: string; ignore?: boolean },
