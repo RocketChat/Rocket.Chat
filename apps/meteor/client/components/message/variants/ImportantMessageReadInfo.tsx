@@ -3,8 +3,37 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMethod, useUserId, usePermission, useUserSubscription, useStream, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { memo, useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { memo, useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
+
+const LIST_GAP_PX = 4;
+const LIST_MAX_HEIGHT_PX = 300;
+const LIST_MIN_HEIGHT_PX = 80;
+const LIST_ESTIMATE_HEIGHT_PX = 120;
+
+const getComposerTop = (button: HTMLElement): number => {
+	const composer = button.closest('.messages-container-main')?.querySelector('footer.rc-message-box');
+	return composer?.getBoundingClientRect().top ?? window.innerHeight;
+};
+
+const getScrollViewport = (element: HTMLElement | null): HTMLElement | null => {
+	let node = element?.parentElement ?? null;
+
+	while (node) {
+		if (node.classList.contains('os-viewport')) {
+			return node;
+		}
+
+		const { overflowY } = getComputedStyle(node);
+
+		if (overflowY === 'auto' || overflowY === 'scroll') {
+			return node;
+		}
+
+		node = node.parentElement;
+	}
+
+	return null;
+};
 
 type ImportantMessageReadInfoProps = {
 	message: IMessage;
@@ -18,7 +47,8 @@ type User = {
 
 const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): ReactElement | null => {
 	const [showList, setShowList] = useState(false);
-	const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+	const [listPlacement, setListPlacement] = useState<'below' | 'above'>('below');
+	const [listMaxHeight, setListMaxHeight] = useState(LIST_MAX_HEIGHT_PX);
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const listRef = useRef<HTMLDivElement>(null);
 	const getUsersWhoRead = useMethod('getUsersWhoReadImportantMessage');
@@ -83,6 +113,30 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 		};
 	}, [showList]);
 
+	const updateListPlacement = useCallback(() => {
+		const button = buttonRef.current;
+
+		if (!button) {
+			return;
+		}
+
+		const buttonRect = button.getBoundingClientRect();
+		const composerTop = getComposerTop(button);
+		const spaceBelow = composerTop - buttonRect.bottom - LIST_GAP_PX;
+		const spaceAbove = buttonRect.top - LIST_GAP_PX;
+		const listHeight = listRef.current?.offsetHeight ?? LIST_ESTIMATE_HEIGHT_PX;
+		const openAbove = spaceBelow < listHeight && spaceAbove > spaceBelow;
+
+		if (openAbove) {
+			setListPlacement('above');
+			setListMaxHeight(Math.max(LIST_MIN_HEIGHT_PX, Math.min(LIST_MAX_HEIGHT_PX, spaceAbove)));
+			return;
+		}
+
+		setListPlacement('below');
+		setListMaxHeight(Math.max(LIST_MIN_HEIGHT_PX, Math.min(LIST_MAX_HEIGHT_PX, spaceBelow)));
+	}, []);
+
 	const { data: hasRoleFromQuery = false } = useQuery({
 		queryKey: ['user-room-role-info', userId, message.rid, 'important-message-marker'],
 		queryFn: async () => {
@@ -120,19 +174,35 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 
 	const readCount = readUsers.length;
 
+	useLayoutEffect(() => {
+		if (!showList) {
+			return;
+		}
+
+		updateListPlacement();
+
+		const frame = requestAnimationFrame(updateListPlacement);
+		const scrollViewport = getScrollViewport(buttonRef.current);
+		const handleReposition = (): void => {
+			updateListPlacement();
+		};
+
+		scrollViewport?.addEventListener('scroll', handleReposition, { passive: true });
+		window.addEventListener('resize', handleReposition);
+
+		return () => {
+			cancelAnimationFrame(frame);
+			scrollViewport?.removeEventListener('scroll', handleReposition);
+			window.removeEventListener('resize', handleReposition);
+		};
+	}, [showList, readUsers.length, isLoadingRead, updateListPlacement]);
+
 	if (!message.isImportant || !canMarkMessagesAsImportant) {
 		return null;
 	}
 
 	const handleClick = () => {
-		if (!showList && buttonRef.current) {
-			const rect = buttonRef.current.getBoundingClientRect();
-			setPosition({
-				top: rect.bottom + 4,
-				left: rect.left
-			});
-		}
-		setShowList(!showList);
+		setShowList((prev) => !prev);
 	};
 
 	const handleUserClick = useCallback((username: string) => () => {
@@ -141,45 +211,45 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	}, [openTab]);
 
 	return (
-		<>
-			<Box mis='x4'>
-				<Box
-					is='button'
-					ref={buttonRef}
-					onClick={handleClick}
-					title='Read by information'
-					data-important-message-info-button
-					style={{ 
-						background: 'none', 
-						border: 'none', 
-						cursor: 'pointer',
-						padding: '2px 4px',
-						display: 'inline-flex',
-						alignItems: 'center',
-						verticalAlign: 'middle'
-					}}
-				>
-					<Icon name='info-circled' size='x16' />
-				</Box>
+		<Box mis='x4' position='relative' display='inline-flex'>
+			<Box
+				is='button'
+				ref={buttonRef}
+				onClick={handleClick}
+				title='Read by information'
+				data-important-message-info-button
+				style={{
+					background: 'none',
+					border: 'none',
+					cursor: 'pointer',
+					padding: '2px 4px',
+					display: 'inline-flex',
+					alignItems: 'center',
+					verticalAlign: 'middle',
+				}}
+			>
+				<Icon name='info-circled' size='x16' />
 			</Box>
 
-			{showList && position && createPortal(
+			{showList && (
 				<Box
 					ref={listRef}
-					position='fixed'
+					position='absolute'
 					zIndex={9999}
 					style={{
-						top: `${position.top}px`,
-						left: `${position.left}px`,
+						...(listPlacement === 'above'
+							? { bottom: `calc(100% + ${LIST_GAP_PX}px)`, top: 'auto' }
+							: { top: `calc(100% + ${LIST_GAP_PX}px)`, bottom: 'auto' }),
+						left: 0,
 						width: '250px',
 						backgroundColor: 'var(--rcx-color-surface-tint, #f7f8fa)',
 						borderRadius: '4px',
 						boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.12), 0 0 1px 0 rgba(0, 0, 0, 0.08)',
 						border: '1px solid var(--rcx-color-stroke-extra-light, #ebecef)',
 						padding: '12px',
-						maxHeight: '300px',
+						maxHeight: `${listMaxHeight}px`,
 						overflowY: 'auto',
-						color: 'var(--rcx-color-font-default, #2f343d)'
+						color: 'var(--rcx-color-font-default, #2f343d)',
 					}}
 					data-important-message-list
 				>
@@ -192,16 +262,16 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 					) : readUsers.length > 0 ? (
 						<Box>
 							{readUsers.map((user) => (
-								<Box 
-									key={user._id} 
-									mbe='x4' 
+								<Box
+									key={user._id}
+									mbe='x4'
 									fontSize='p2'
 									onClick={handleUserClick(user.username)}
-									style={{ 
+									style={{
 										cursor: 'pointer',
 										padding: '4px',
 										borderRadius: '2px',
-										transition: 'background-color 0.2s'
+										transition: 'background-color 0.2s',
 									}}
 									onMouseEnter={(e) => {
 										e.currentTarget.style.backgroundColor = 'var(--rcx-color-surface-hover, #e8eaed)';
@@ -217,10 +287,9 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 					) : (
 						<Box fontSize='p2'>No one has read this message yet</Box>
 					)}
-				</Box>,
-				document.body
+				</Box>
 			)}
-		</>
+		</Box>
 	);
 };
 
