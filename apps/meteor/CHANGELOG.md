@@ -1,5 +1,56 @@
 # @rocket.chat/meteor
 
+## 8.0.6
+
+### Patch Changes
+
+- ([#40631](https://github.com/RocketChat/Rocket.Chat/pull/40631) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures OAuth tokens are cleaned up after user deactivation
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40566](https://github.com/RocketChat/Rocket.Chat/pull/40566) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures that deactivated users have their login tokens cleaned up in users.deactivateidle
+
+- ([#40544](https://github.com/RocketChat/Rocket.Chat/pull/40544) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the Meteor method for translateMessage validates access and types
+
+- ([#40581](https://github.com/RocketChat/Rocket.Chat/pull/40581) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the visitor token is not present in the visitors.info response
+
+- ([#40551](https://github.com/RocketChat/Rocket.Chat/pull/40551) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the autotranslate.translateMessage endpoint checks for room access
+
+- <details><summary>Updated dependencies [da8ed2ab24e887575cd3967d17328ff1ffa2f580, 77cf99ba19a8af626302d938f44e5940068b3d8c]:</summary>
+
+  - @rocket.chat/model-typings@2.0.6
+  - @rocket.chat/models@2.0.6
+  - @rocket.chat/omnichannel-services@0.3.50
+  - @rocket.chat/apps@0.6.6
+  - @rocket.chat/abac@0.1.6
+  - @rocket.chat/federation-matrix@0.0.15
+  - @rocket.chat/media-calls@0.2.6
+  - @rocket.chat/omni-core-ee@0.0.18
+  - @rocket.chat/presence@0.2.53
+  - @rocket.chat/core-services@0.12.6
+  - @rocket.chat/cron@0.1.53
+  - @rocket.chat/instance-status@0.1.53
+  - @rocket.chat/omni-core@0.0.18
+  - @rocket.chat/ui-client@26.0.6
+  - @rocket.chat/network-broker@0.2.32
+  - @rocket.chat/core-typings@8.0.6
+  - @rocket.chat/rest-typings@8.0.6
+  - @rocket.chat/license@1.1.13
+  - @rocket.chat/pdf-worker@0.3.32
+  - @rocket.chat/api-client@0.2.53
+  - @rocket.chat/fuselage-ui-kit@26.0.6
+  - @rocket.chat/gazzodown@26.0.6
+  - @rocket.chat/http-router@7.9.20
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/ui-avatar@22.0.6
+  - @rocket.chat/ui-contexts@26.0.6
+  - @rocket.chat/ui-voip@16.0.6
+  - @rocket.chat/web-ui-registration@26.0.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.6
+  </details>
+
 ## 8.0.5
 
 ### Patch Changes
