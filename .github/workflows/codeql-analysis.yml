@@ -12,6 +12,10 @@ jobs:
   CodeQL-Build:
     # CodeQL runs on ubuntu-latest and windows-latest
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout repository
