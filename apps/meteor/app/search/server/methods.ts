@@ -25,7 +25,6 @@ Meteor.methods<ServerMethods>({
 	 * Get the current provider with key, description, resultTemplate, suggestionItemTemplate and settings (as Map)
 	 */
 	'rocketchatSearch.getProvider'() {
-		methodDeprecationLogger.method('settings', '9.0.0', '/v1/settings');
 		const provider = searchProviderService.activeProvider;
 		if (!provider) {
 			return undefined;
@@ -49,7 +48,6 @@ Meteor.methods<ServerMethods>({
 	 * @param payload custom payload (e.g. for paging)
 	 */
 	async 'rocketchatSearch.search'(text, context, payload) {
-		methodDeprecationLogger.method('context', '9.0.0', []);
 		payload = payload !== null ? payload : undefined; // TODO is this cleanup necessary?
 
 		if (!searchProviderService.activeProvider) {
