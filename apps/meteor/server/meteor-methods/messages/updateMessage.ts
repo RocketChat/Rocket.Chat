@@ -1,13 +1,11 @@
-import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
+import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { settings } from '../../settings';
 
@@ -104,18 +102,3 @@ declare module '@rocket.chat/ddp-client' {
 		updateMessage(message: IEditedMessage, previewUrls?: string[]): void;
 	}
 }
-
-Meteor.methods<ServerMethods>({
-	async updateMessage(message: IEditedMessage, previewUrls?: string[]) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-		check(previewUrls, Match.Maybe([String]));
-
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
-		}
-
-		return applyAirGappedRestrictionsValidation(() => executeUpdateMessage(uid, message, previewUrls));
-	},
-});

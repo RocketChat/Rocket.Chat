@@ -1,16 +1,13 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IUser, AtLeast } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { settings } from '../../settings';
 
 const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {
@@ -343,13 +340,6 @@ export const browseChannelsMethod = async (
 		default:
 	}
 };
-
-Meteor.methods<ServerMethods>({
-	async browseChannels(params: BrowseChannelsParams) {
-		methodDeprecationLogger.method('browseChannels', '9.0.0', '/v1/directory');
-		return browseChannelsMethod(params, await Meteor.userAsync());
-	},
-});
 
 DDPRateLimiter.addRule(
 	{

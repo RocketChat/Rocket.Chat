@@ -1,12 +1,10 @@
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
 import { validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
@@ -73,15 +71,3 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 
 	return integrationStored as IOutgoingIntegration;
 };
-
-Meteor.methods<ServerMethods>({
-	async addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> {
-		methodDeprecationLogger.method('addOutgoingIntegration', '9.0.0', '/v1/integrations.create');
-		const { userId } = this;
-		if (!userId) {
-			throw new Meteor.Error('Invalid User');
-		}
-
-		return addOutgoingIntegration(userId, integration);
-	},
-});
