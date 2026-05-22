@@ -1,13 +1,10 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { unfollow } from '../../lib/messaging/threads/functions';
 import { notifyOnMessageChange } from '../../lib/notifyListener';
 import { settings } from '../../settings';
@@ -48,20 +45,6 @@ export const unfollowMessage = async (user: IUser, { mid }: { mid: IMessage['_id
 
 	return unfollowResult;
 };
-
-Meteor.methods<ServerMethods>({
-	async unfollowMessage({ mid }) {
-		methodDeprecationLogger.method('unfollowMessage', '9.0.0', '/v1/chat.unfollowMessage');
-		check(mid, String);
-
-		const user = (await Meteor.userAsync()) as IUser;
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unfollowMessage' });
-		}
-
-		return unfollowMessage(user, { mid });
-	},
-});
 
 RateLimiter.limitMethod('unfollowMessage', 5, 5000, {
 	userId() {
