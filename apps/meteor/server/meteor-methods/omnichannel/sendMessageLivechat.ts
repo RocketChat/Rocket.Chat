@@ -17,13 +17,6 @@ interface ISendMessageLivechat {
 	agent?: ILivechatMessageAgent;
 }
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendMessageLivechat(message: ILivechatMessage, agent: ILivechatMessageAgent): boolean;
-	}
-}
-
 export const sendMessageLivechat = async ({
 	message: { token, _id, rid, msg, file, files, attachments },
 	agent,

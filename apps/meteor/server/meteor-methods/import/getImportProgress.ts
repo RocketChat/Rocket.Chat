@@ -20,10 +20,3 @@ export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 
 	return instance.getProgress();
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		getImportProgress(): IImportProgress;
-	}
-}

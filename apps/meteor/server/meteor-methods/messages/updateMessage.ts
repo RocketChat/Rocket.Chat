@@ -95,10 +95,3 @@ export async function executeUpdateMessage(
 
 	return updateMessage(message, user, originalMessage, previewUrls);
 }
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		updateMessage(message: IEditedMessage, previewUrls?: string[]): void;
-	}
-}
