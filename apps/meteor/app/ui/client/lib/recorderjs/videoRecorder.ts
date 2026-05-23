@@ -1,13 +1,16 @@
-import { ReactiveVar } from 'meteor/reactive-var';
+import { Emitter } from '@rocket.chat/emitter';
+import { useCallback, useSyncExternalStore } from 'react';
 
-class VideoRecorder {
-	public cameraStarted = new ReactiveVar(false);
+type VideoRecorderEvents = {
+	cameraStartedChange: boolean;
+};
+
+class VideoRecorder extends Emitter<VideoRecorderEvents> {
+	private _cameraStarted = false;
 
 	private started = false;
 
-	private recording = new ReactiveVar(false);
-
-	private recordingAvailable = new ReactiveVar(false);
+	private recordingAvailable = false;
 
 	private videoel: HTMLVideoElement | undefined;
 
@@ -18,6 +21,18 @@ class VideoRecorder {
 	private mediaRecorder: MediaRecorder | undefined;
 
 	private sessionId = 0;
+
+	public get cameraStarted(): boolean {
+		return this._cameraStarted;
+	}
+
+	private setCameraStarted(value: boolean) {
+		if (this._cameraStarted === value) {
+			return;
+		}
+		this._cameraStarted = value;
+		this.emit('cameraStartedChange', value);
+	}
 
 	public getSupportedMimeTypes() {
 		if (window.MediaRecorder.isTypeSupported('video/webm')) {
@@ -71,12 +86,11 @@ class VideoRecorder {
 		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this.getSupportedMimeTypes() });
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
-			if (!this.recordingAvailable.get()) {
-				return this.recordingAvailable.set(true);
+			if (!this.recordingAvailable) {
+				this.recordingAvailable = true;
 			}
 		};
 		this.mediaRecorder.start();
-		return this.recording.set(true);
 	}
 
 	private stopStreamTracks(stream: MediaStream) {
@@ -109,7 +123,7 @@ class VideoRecorder {
 		}
 
 		this.started = true;
-		return this.cameraStarted.set(true);
+		this.setCameraStarted(true);
 	}
 
 	public stop(cb?: (blob: Blob) => void) {
@@ -128,8 +142,8 @@ class VideoRecorder {
 
 		const wasStarted = this.started;
 		this.started = false;
-		this.cameraStarted.set(false);
-		this.recordingAvailable.set(false);
+		this.setCameraStarted(false);
+		this.recordingAvailable = false;
 
 		if (cb && this.chunks && wasStarted) {
 			const blob = new Blob(this.chunks);
@@ -141,12 +155,11 @@ class VideoRecorder {
 	}
 
 	public stopRecording() {
-		if (!this.started || !this.recording || !this.mediaRecorder) {
+		if (!this.started || !this.mediaRecorder) {
 			return;
 		}
 
 		this.mediaRecorder.stop();
-		this.recording.set(false);
 		delete this.mediaRecorder;
 	}
 }
@@ -154,3 +167,9 @@ class VideoRecorder {
 const instance = new VideoRecorder();
 
 export { instance as VideoRecorder };
+
+export const useVideoRecorderCameraStarted = (): boolean =>
+	useSyncExternalStore(
+		useCallback((onStoreChange) => instance.on('cameraStartedChange', onStoreChange), []),
+		() => instance.cameraStarted,
+	);

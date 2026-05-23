@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import zlib from 'zlib';
+import { EventEmitter } from 'node:events';
+import zlib from 'node:zlib';
 
 import type { Logger } from '@rocket.chat/logger';
 
@@ -48,6 +48,10 @@ export class SAMLUtils {
 
 	public static set relayState(value: string | null) {
 		relayState = value;
+	}
+
+	public static get logger(): Logger | undefined {
+		return logger;
 	}
 
 	public static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
@@ -145,25 +149,19 @@ export class SAMLUtils {
 		}
 	}
 
-	public static async inflateXml(
-		base64Data: string,
-		successCallback: (xml: string) => Promise<void>,
-		errorCallback: (err: string | object | null) => Promise<void>,
-	): Promise<void> {
+	public static async inflateXml(deflatedXml: Buffer<ArrayBuffer>): Promise<Buffer<ArrayBuffer>> {
 		return new Promise((resolve, reject) => {
-			const buffer = Buffer.from(base64Data, 'base64');
-			zlib.inflateRaw(buffer, (err, decoded) => {
+			zlib.inflateRaw(deflatedXml, (err, inflatedXml) => {
 				if (err) {
 					this.log({ msg: 'Error while inflating.', err });
-					return reject(errorCallback(err));
+					return reject(err);
 				}
 
-				if (!decoded) {
-					return reject(errorCallback('Failed to extract request data'));
+				if (!inflatedXml) {
+					return reject(new Error('Failed to extract request data'));
 				}
 
-				const xmlString = this.convertArrayBufferToString(decoded);
-				return resolve(successCallback(xmlString));
+				resolve(Buffer.from(inflatedXml));
 			});
 		});
 	}
@@ -367,7 +365,7 @@ export class SAMLUtils {
 			}
 		}
 
-		if (mapping.regex && mainValue && mainValue.match) {
+		if (mapping.regex && mainValue?.match) {
 			let regexValue;
 			const match = mainValue.match(new RegExp(mapping.regex));
 			if (match?.length) {
@@ -391,10 +389,6 @@ export class SAMLUtils {
 		}
 
 		return mainValue;
-	}
-
-	public static convertArrayBufferToString(buffer: Buffer<ArrayBufferLike>, encoding: BufferEncoding = 'utf8'): string {
-		return Buffer.from(buffer).toString(encoding);
 	}
 
 	public static normalizeUsername(name: string): string {

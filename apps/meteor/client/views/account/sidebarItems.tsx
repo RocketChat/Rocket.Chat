@@ -14,7 +14,7 @@ export const {
 		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
-		permissionGranted: (): boolean => settings.watch('Accounts_AllowUserProfileChange') ?? true,
+		permissionGranted: (): boolean => settings.peek('Accounts_AllowUserProfileChange') ?? true,
 	},
 	{
 		href: '/account/preferences',
@@ -26,15 +26,15 @@ export const {
 		i18nLabel: 'Security',
 		icon: 'lock',
 		permissionGranted: (): boolean =>
-			(settings.watch('Accounts_TwoFactorAuthentication_Enabled') ?? true) ||
-			(settings.watch('E2E_Enable') ?? false) ||
-			(settings.watch('Accounts_AllowPasswordChange') ?? true),
+			(settings.peek('Accounts_TwoFactorAuthentication_Enabled') ?? true) ||
+			(settings.peek('E2E_Enable') ?? false) ||
+			(settings.peek('Accounts_AllowPasswordChange') ?? true),
 	},
 	{
 		href: '/account/integrations',
 		i18nLabel: 'Integrations',
 		icon: 'code',
-		permissionGranted: (): boolean => settings.watch('Webdav_Integration_Enabled') ?? false,
+		permissionGranted: (): boolean => settings.peek('Webdav_Integration_Enabled') ?? false,
 	},
 	{
 		href: '/account/tokens',
@@ -53,7 +53,7 @@ export const {
 		i18nLabel: 'Feature_preview',
 		icon: 'flask',
 		badge: () => <FeaturePreviewBadge />,
-		permissionGranted: () => settings.watch('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
+		permissionGranted: () => settings.peek('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/account/accessibility-and-appearance',

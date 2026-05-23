@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
-import React from 'react';
+import { useState } from 'react';
 
 import { useGetMore } from './useGetMore';
 import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
@@ -29,8 +29,8 @@ describe('useGetMore', () => {
 		const root = mockAppRoot();
 
 		const Test = () => {
-			const atBottomRef = React.useRef(false);
-			const { innerRef } = useGetMore('room-id', atBottomRef);
+			const [atBottom] = useState(false);
+			const { innerRef } = useGetMore('room-id', atBottom);
 			return (
 				<div ref={innerRef as any} style={{ height: '100px', overflowY: 'scroll' }} data-testid='scrollable-element'>
 					<div style={{ height: '800px' }}></div>
@@ -71,8 +71,8 @@ describe('useGetMore', () => {
 		(RoomHistoryManager.getMoreNext as jest.Mock).mockImplementation(mockGetMore);
 
 		const Test = () => {
-			const atBottomRef = React.useRef(false);
-			const { innerRef } = useGetMore('room-id', atBottomRef);
+			const [atBottom] = useState(false);
+			const { innerRef } = useGetMore('room-id', atBottom);
 			return (
 				<div ref={innerRef as any} style={{ height: '100px', overflowY: 'scroll' }} data-testid='scrollable-element'>
 					<div style={{ height: '800px' }}></div>
@@ -91,6 +91,6 @@ describe('useGetMore', () => {
 		scrollableElement.scrollTop = 700;
 		scrollableElement.dispatchEvent(new Event('scroll'));
 		expect(screen.getByTestId('scrollable-element')).toBeInTheDocument();
-		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id', expect.anything());
+		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id');
 	});
 });

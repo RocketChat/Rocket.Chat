@@ -1,11 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
 
+import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
 
-type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
-
-export type LoginCallback = (error: LoginError | undefined, result?: unknown) => void;
+export type LoginCallback = (error: MeteorErrorLike | undefined, result?: unknown) => void;
 
 export const overrideLoginMethod = <TArgs extends any[]>(
 	loginMethod: (...args: [...args: TArgs, cb: LoginCallback]) => void,
@@ -13,47 +11,51 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 	callback: LoginCallback | undefined,
 	loginMethodTOTP: (...args: [...args: TArgs, code: string, cb: LoginCallback]) => void,
 ) => {
-	loginMethod(...loginArgs, async (error: LoginError | undefined, result?: unknown) => {
+	loginMethod(...loginArgs, async (error: MeteorErrorLike | undefined, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
 			callback?.(error);
-			return;
+			return error;
 		}
 
 		const { process2faReturn } = await import('./process2faReturn');
 
-		await process2faReturn({
-			error,
-			result,
-			emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
-			originalCallback: callback,
-			onCode: (code: string) => {
-				loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
-					if (!error) {
-						callback?.(undefined, result);
-						return;
-					}
+		try {
+			await process2faReturn({
+				error,
+				result,
+				emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
+				originalCallback: callback,
+				onCode: (code: string) => {
+					return new Promise<void>((resolve, reject) => {
+						loginMethodTOTP(...loginArgs, code, (error: MeteorErrorLike | undefined, result?: unknown) => {
+							if (!error) {
+								callback?.(undefined, result);
+								resolve();
+								return;
+							}
 
-					if (isTotpInvalidError(error)) {
-						callback?.(error);
-						return;
-					}
+							if (isTotpInvalidError(error)) {
+								reject(error);
+								return;
+							}
 
-					Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
-						if (isTotpMaxAttemptsError(error)) {
-							dispatchToastMessage({
-								type: 'error',
-								message: t('totp-max-attempts'),
+							Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+								if (isTotpMaxAttemptsError(error)) {
+									dispatchToastMessage({ type: 'error', message: t('totp-max-attempts') });
+									reject(error);
+									return;
+								}
+
+								dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+								reject(error);
 							});
-							callback?.(undefined);
-							return;
-						}
-
-						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-						callback?.(undefined);
+						});
 					});
-				});
-			},
-		});
+				},
+			});
+		} catch (error) {
+			callback?.(error as MeteorErrorLike);
+		}
 	});
 };
 
@@ -66,7 +68,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 		const callback = args.slice(-1)[0] as LoginCallback | undefined;
 
 		return login(...loginArgs)
-			.catch(async (error: LoginError | undefined) => {
+			.catch(async (error: MeteorErrorLike | undefined) => {
 				if (!isTotpRequiredError(error)) {
 					return Promise.reject(error);
 				}
@@ -79,7 +81,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 				});
 			})
 			.then((result: unknown) => callback?.(undefined, result))
-			.catch((error: LoginError | undefined) => {
+			.catch((error: MeteorErrorLike | undefined) => {
 				if (!isTotpInvalidError(error)) {
 					callback?.(error);
 					return;

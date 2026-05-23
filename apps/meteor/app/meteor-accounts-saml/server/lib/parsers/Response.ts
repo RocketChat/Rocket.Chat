@@ -4,6 +4,7 @@ import xmlenc from 'xml-encryption';
 
 import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { SAMLPOSTEnvelope } from '../../definition/SAMLEnvelope';
 import type { IResponseValidateCallback } from '../../definition/callbacks';
 import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
@@ -17,7 +18,8 @@ export class ResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	public validate(xml: string, callback: IResponseValidateCallback): void {
+	public validate(envelope: SAMLPOSTEnvelope<'SAMLResponse'>, callback: IResponseValidateCallback): void {
+		const { decodedDocument: xml } = envelope;
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log({ msg: 'Validating SAML Response', xml });
 
@@ -208,7 +210,9 @@ export class ResponseParser {
 		let newXml = null;
 
 		if (typeof encAssertion !== 'undefined') {
-			const options = { key: this.serviceProviderOptions.privateKey };
+			// disallowDecryptionWithInsecureAlgorithm defaults to true in xml-encryption v4, but AES-CBC/3DES
+			// are still widely used by SAML IdPs in practice, so we keep the pre-v4 behaviour here.
+			const options = { key: this.serviceProviderOptions.privateKey, disallowDecryptionWithInsecureAlgorithm: false };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
 			xmlenc.decrypt(encData, options, (err, result) => {
 				if (err) {
@@ -240,16 +244,20 @@ export class ResponseParser {
 	}
 
 	private verifySignatures(response: Element, assertionData: ISAMLAssertion, xml: string): void {
-		if (!this.serviceProviderOptions.cert) {
-			return;
-		}
-
 		const signatureType = this.serviceProviderOptions.signatureValidationType;
 
 		const checkEither = signatureType === 'Either';
 		const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
 		const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
 		let anyValidSignature = false;
+
+		if (!this.serviceProviderOptions.cert) {
+			if (checkResponse || checkAssertion) {
+				SAMLUtils.log('Missing Signature validation params');
+				throw new Error('Unable to validate signature');
+			}
+			return;
+		}
 
 		if (checkResponse) {
 			SAMLUtils.log('Verify Document Signature');
@@ -350,7 +358,7 @@ export class ResponseParser {
 		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
 
 		if (typeof encSubject !== 'undefined') {
-			const options = { key: this.serviceProviderOptions.privateKey };
+			const options = { key: this.serviceProviderOptions.privateKey, disallowDecryptionWithInsecureAlgorithm: false };
 			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, (err, result) => {
 				if (err) {
 					SAMLUtils.error({ err });

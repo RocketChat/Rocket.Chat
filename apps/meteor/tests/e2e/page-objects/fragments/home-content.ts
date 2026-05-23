@@ -54,6 +54,14 @@ export class HomeContent {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
 	}
 
+	get mainMessageListScroller(): Locator {
+		return this.page.locator('[data-overlayscrollbars]', { has: this.mainMessageList });
+	}
+
+	get threadMessageListScroller(): Locator {
+		return this.page.locator('[data-overlayscrollbars]', { has: this.threadMessageList });
+	}
+
 	get systemMessageListItems(): Locator {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="system message"]');
 	}
@@ -117,23 +125,28 @@ export class HomeContent {
 		await expect(this.composer.inputMessage).toBeEnabled();
 		await this.composer.inputMessage.fill(text);
 
-		if (enforce) {
-			const responsePromise = this.page.waitForResponse(
-				(response) =>
-					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-			);
+		if (!enforce) {
+			await this.composer.btnSend.click();
+			return;
+		}
+
+		// Wait for the message to settle in the DOM. Transport-agnostic — the
+		// message may be sent via REST (`/api/v1/method.call/sendMessage`) or
+		// via DDP/WS depending on whether DDPSDK is the active dispatcher;
+		// either way Meteor's optimistic insert renders the new list item
+		// before the server confirms, and the `rcx-message--pending` class
+		// drops once the server result lands.
+		if ((await this.messageListItems.count()) > 0) {
+			const lastMessageBeforeSend = await this.messageListItems.last().getAttribute('id');
 
 			await this.composer.btnSend.click();
 
-			const response = await (await responsePromise).json();
-
-			const mid = JSON.parse(response.message).result._id;
-			const messageLocator = this.getMessageById(mid);
-
-			await expect(messageLocator).toBeVisible();
-			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+			await expect.poll(() => this.messageListItems.last().getAttribute('id'), { timeout: 10_000 }).not.toEqual(lastMessageBeforeSend);
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 		} else {
+			// No previous messages, nothing to compare
 			await this.composer.btnSend.click();
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 		}
 	}
 
@@ -277,7 +290,7 @@ export class HomeContent {
 	}
 
 	get lastThreadMessagePreviewText(): Locator {
-		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+		return this.page.locator('div.messages-box .messages-list [role=link]').last();
 	}
 
 	get lastThreadMessageFileDescription(): Locator {
@@ -311,6 +324,10 @@ export class HomeContent {
 
 	get btnOptionStarMessage(): Locator {
 		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
+	}
+
+	get btnOptionReplyInDm(): Locator {
+		return this.menuMore.getByRole('menuitem', { name: 'Reply in direct message', exact: true });
 	}
 
 	get btnVoiceCall(): Locator {
@@ -531,10 +548,29 @@ export class HomeContent {
 		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
 	}
 
+	async scrollToMessage(messageLocator: Locator, direction: 'up' | 'down' = 'up'): Promise<Locator> {
+		const scroller = this.mainMessageListScroller;
+		const delta = direction === 'up' ? -400 : 400;
+
+		await expect(async () => {
+			await scroller.evaluate((el, d) => el.scrollBy(0, d), delta);
+			await expect(messageLocator.first()).toBeVisible({ timeout: 500 });
+		}).toPass({ timeout: 30000, intervals: [100] });
+
+		return messageLocator;
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
 		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
+		await messageList.waitFor();
+
+		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+	}
+
+	async waitForThread(): Promise<void> {
+		const messageList = this.page.getByRole('list', { name: 'Thread message list', exact: true });
 		await messageList.waitFor();
 
 		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');

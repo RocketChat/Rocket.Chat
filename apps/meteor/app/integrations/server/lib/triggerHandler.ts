@@ -35,7 +35,7 @@ type ArgumentsObject = {
 	user?: IUser;
 };
 type IntegrationData = {
-	token: string;
+	token?: string;
 	bot: boolean;
 	trigger_word?: string;
 	channel_id?: string;

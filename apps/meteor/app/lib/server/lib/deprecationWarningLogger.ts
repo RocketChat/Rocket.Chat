@@ -40,6 +40,7 @@ export const apiDeprecationLogger = ((logger) => {
 			writeDeprecationHeader(res, 'endpoint-deprecation', message, version);
 
 			metrics.deprecations.inc({ type: 'deprecation', kind: 'endpoint', name: endpoint });
+			metrics.deprecationsTotal.inc({ type: 'deprecation', kind: 'endpoint', name: endpoint });
 
 			logger.warn({ msg: message, endpoint, version, info });
 		},
@@ -63,6 +64,7 @@ export const apiDeprecationLogger = ((logger) => {
 			}
 
 			metrics.deprecations.inc({ type: 'parameter-deprecation', kind: 'endpoint', name: endpoint, params: parameter });
+			metrics.deprecationsTotal.inc({ type: 'parameter-deprecation', kind: 'endpoint', name: endpoint, params: parameter });
 
 			writeDeprecationHeader(res, 'parameter-deprecation', message, version);
 
@@ -92,6 +94,7 @@ export const apiDeprecationLogger = ((logger) => {
 			compareVersions(version, message);
 
 			metrics.deprecations.inc({ type: 'invalid-usage', kind: 'endpoint', name: endpoint, params: parameter });
+			metrics.deprecationsTotal.inc({ type: 'invalid-usage', kind: 'endpoint', name: endpoint, params: parameter });
 
 			writeDeprecationHeader(res, 'invalid-usage', message, version);
 
@@ -100,20 +103,23 @@ export const apiDeprecationLogger = ((logger) => {
 	};
 })(deprecationLogger.section('API'));
 
+type DeprecationPath<T> = T extends `/${string}` ? (T extends PathPattern ? T : never) : string;
+
+type DeprecationInfo<T> = DeprecationPath<T> | Array<DeprecationPath<T>>;
+
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: <T extends string | PathPattern>(
-			method: string,
-			version: DeprecationLoggerNextPlannedVersion,
-			info: T extends `/${string}` ? (T extends PathPattern ? T : never) : string,
-		) => {
-			const replacement = typeof info === 'string' ? info : `Use the ${info} endpoint instead`;
+		method: <T extends string | PathPattern>(method: string, version: DeprecationLoggerNextPlannedVersion, info: DeprecationInfo<T>) => {
+			const infoArray = Array.isArray(info) ? info : [info];
+			const paths = infoArray.map((p) => (typeof p === 'string' && p.startsWith('/') ? `"${p}"` : p)).join(' or ');
+			const replacement = infoArray.length > 0 ? `Use the ${paths} endpoint${infoArray.length > 1 ? 's' : ''} instead` : '';
 			const message = `The method "${method}" is deprecated and will be removed on version ${version}${replacement ? ` (${replacement})` : ''}`;
 			if (process.env.TEST_MODE === 'true') {
 				throw new Error(message);
 			}
 			compareVersions(version, message);
 			metrics.deprecations.inc({ type: 'deprecation', name: method, kind: 'method' });
+			metrics.deprecationsTotal.inc({ type: 'deprecation', name: method, kind: 'method' });
 			logger.warn({ msg: message, method, version, replacement });
 		},
 		parameter: (method: string, parameter: string, version: DeprecationLoggerNextPlannedVersion) => {
@@ -123,6 +129,7 @@ export const methodDeprecationLogger = ((logger) => {
 			}
 
 			metrics.deprecations.inc({ type: 'parameter-deprecation', name: method, params: parameter });
+			metrics.deprecationsTotal.inc({ type: 'parameter-deprecation', name: method, params: parameter });
 
 			compareVersions(version, message);
 			logger.warn({ msg: message, method, parameter, version });
@@ -149,6 +156,7 @@ export const methodDeprecationLogger = ((logger) => {
 			compareVersions(version, message);
 
 			metrics.deprecations.inc({ type: 'invalid-usage', name: method, params: parameter, kind: 'method' });
+			metrics.deprecationsTotal.inc({ type: 'invalid-usage', name: method, params: parameter, kind: 'method' });
 
 			logger.warn({ msg: message, method, parameter, version });
 		},

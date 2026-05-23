@@ -38,7 +38,9 @@ const PreferencesNotificationsSection = () => {
 	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
-	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
+	const showVideoConfMobileRinging = useSetting('VideoConf_Mobile_Ringing');
+	const showVoipMobileRinging = useSetting('VoIP_TeamCollab_Mobile_Ringing_Enabled');
+	const showMobileRinging = showVideoConfMobileRinging || showVoipMobileRinging;
 	const notify = useNotification();
 
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;

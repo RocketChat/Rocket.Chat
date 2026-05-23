@@ -13,14 +13,22 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './TeamsAddMembersProps';
+export * from './TeamsAddRoomsProps';
+export * from './TeamsAutocompleteProps';
 export * from './TeamsConvertToChannelProps';
+export * from './TeamsCreateProps';
 export * from './TeamsDeleteProps';
+export * from './TeamsInfoProps';
 export * from './TeamsLeaveProps';
+export * from './TeamsListChildren';
+export * from './TeamsListRoomsOfUserProps';
+export * from './TeamsListRoomsProps';
+export * from './TeamsMembersProps';
 export * from './TeamsRemoveMemberProps';
 export * from './TeamsRemoveRoomProps';
 export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
-export * from './TeamsListChildren';
+export * from './TeamsUpdateRoomProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 

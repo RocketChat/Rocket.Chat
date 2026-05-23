@@ -50,7 +50,9 @@ function buildSubject(options?: {
 
 	const metrics = {
 		totalLivechatWebhooksSuccess: { inc: sinon.spy() },
+		totalLivechatWebhooksSuccessTotal: { inc: sinon.spy() },
 		totalLivechatWebhooksFailures: { inc: sinon.spy() },
+		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
 	};
 
 	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {

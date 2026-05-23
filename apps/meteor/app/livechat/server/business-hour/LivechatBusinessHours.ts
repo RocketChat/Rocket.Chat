@@ -3,7 +3,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 
-export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
+export const createDefaultBusinessHourRow = (): Omit<ILivechatBusinessHour, '_updatedAt'> => {
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	const closedDays = ['Saturday', 'Sunday'];
 	return {
