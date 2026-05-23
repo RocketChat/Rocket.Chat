@@ -69,6 +69,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		Room: {
 			removeUserFromRoom: jest.fn(),
 		},
+		api: {
+			broadcast: jest.fn(),
+		},
 	};
 });
 
@@ -81,6 +84,7 @@ describe('AbacService (unit)', () => {
 
 	beforeEach(() => {
 		service = new AbacService();
+		service.setPdpStrategy('local');
 		jest.clearAllMocks();
 	});
 

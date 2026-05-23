@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
+import { runOptimisticSendMessage } from '../../../../app/lib/client/methods/sendMessage';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
@@ -7,6 +8,7 @@ import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
+import { afterSendMessageCallback } from './afterSendMessageCallback';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
@@ -44,6 +46,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	chat.composer?.clear();
+	await runOptimisticSendMessage(message);
 	await sdk.call('sendMessage', message, previewUrls);
 
 	// after the request is complete we can go ahead and mark as sent
@@ -106,6 +109,7 @@ export const sendMessage = async (
 		try {
 			await process(chat, message, previewUrls, isSlashCommandAllowed);
 			chat.composer?.dismissAllQuotedMessages();
+			await afterSendMessageCallback(message, message.rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

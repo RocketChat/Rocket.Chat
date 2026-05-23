@@ -93,7 +93,7 @@ export const FilesDropTarget = ({
 			filteredFiles = filteredFiles.slice(0, 1);
 		}
 
-		filteredFiles.length && onUpload(filteredFiles);
+		if (filteredFiles.length) onUpload(filteredFiles);
 	};
 
 	return (

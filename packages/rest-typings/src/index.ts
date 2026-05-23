@@ -41,6 +41,7 @@ import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
+import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 
@@ -90,6 +91,7 @@ export interface Endpoints
 		AuthEndpoints,
 		ImportEndpoints,
 		ServerEventsEndpoints,
+		TwoFactorChallengesEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -214,6 +216,7 @@ export * from './v1/customSounds';
 export type * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
 export type * from './v1/mailer';
+export * from './v1/me/meSuccessResponse';
 export * from './v1/mailer/MailerParamsPOST';
 export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
@@ -223,6 +226,7 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
+export * from './v1/push';
 export type * from './helpers/IGetRoomRoles';
 export type * from './helpers/PaginatedRequest';
 export type * from './helpers/PaginatedResult';
@@ -238,8 +242,14 @@ export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+export * from './v1/users/UsersGetAvatarParamsGET';
+export * from './v1/users/UsersPresenceParamsGET';
+export * from './v1/users/UsersRequestDataDownloadParamsGET';
+export * from './v1/users/UsersGetPresenceParamsGET';
+export * from './v1/users/UsersGetStatusParamsGET';
 export * from './v1/moderation';
 export * from './v1/server-events';
+export * from './v1/statistics';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
@@ -256,6 +266,7 @@ export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
+export * from './v1/twoFactorChallenges';
 
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';

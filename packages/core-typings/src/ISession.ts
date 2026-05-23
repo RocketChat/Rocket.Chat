@@ -1,3 +1,4 @@
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { IUser } from './IUser';
 
@@ -12,8 +13,7 @@ export interface ISessionDevice {
 	version: string;
 }
 
-export interface ISession {
-	_id: string;
+export interface ISession extends IRocketChatRecord {
 	type: 'session' | 'computed-session' | 'user_daily';
 	mostImportantRole: IRole['_id'];
 	userId: string;
@@ -25,7 +25,6 @@ export interface ISession {
 	day: number;
 	instanceId: string;
 	sessionId: string;
-	_updatedAt: Date;
 	createdAt: Date;
 	host: string;
 	ip: string;

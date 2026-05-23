@@ -21,6 +21,7 @@ import './v1/integrations';
 import './v1/invites';
 import './v1/import';
 import './v1/ldap';
+import './v1/media-calls';
 import './v1/misc';
 import './v1/permissions';
 import './v1/presence';
@@ -44,7 +45,7 @@ import './v1/mailer';
 import './v1/teams';
 import './v1/moderation';
 import './v1/uploads';
-
+import './v1/twoFactorChallenges';
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';
 

@@ -124,22 +124,23 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('You must provide a command to run.');
+					expect(res.body.error).to.be.equal("must have required property 'command'");
 				})
 				.end(done);
 		});
-		it('should return an error when call the endpoint with the param "params" and it is not a string', (done) => {
+
+		it('should coerce non-string "params" to string via ajv coercion', (done) => {
 			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
+					roomId: 'GENERAL',
 					params: true,
 				})
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The parameters for the command must be a single string.');
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -154,11 +155,11 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The room's id where to execute this command must be provided and be a string.");
+					expect(res.body.error).to.be.equal("must have required property 'roomId'");
 				})
 				.end(done);
 		});
-		it('should return an error when call the endpoint with the param "tmid" and it is not a string', (done) => {
+		it('should coerce non-string "tmid" to string via ajv coercion and fail with invalid thread', (done) => {
 			void request
 				.post(api('commands.run'))
 				.set(credentials)
@@ -171,7 +172,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The tmid parameter when provided must be a string.');
+					expect(res.body.error).to.be.equal('Invalid thread.');
 				})
 				.end(done);
 		});
@@ -437,11 +438,6 @@ describe('[Commands]', () => {
 					roomId: channel._id,
 					command: 'invite-all-from',
 					params: `#${group.name}`,
-					msg: {
-						_id: Random.id(),
-						rid: channel._id,
-						msg: `invite-all-from #${group.name}`,
-					},
 					triggerId: Random.id(),
 				})
 				.expect(200)
@@ -468,11 +464,6 @@ describe('[Commands]', () => {
 					roomId: group1._id,
 					command: 'invite-all-from',
 					params: `#${group.name}`,
-					msg: {
-						_id: Random.id(),
-						rid: group1._id,
-						msg: `invite-all-from #${group.name}`,
-					},
 					triggerId: Random.id(),
 				})
 				.expect(403)
@@ -498,11 +489,6 @@ describe('[Commands]', () => {
 					roomId: channel._id,
 					command: 'invite-all-from',
 					params: `#${group.name}`,
-					msg: {
-						_id: Random.id(),
-						rid: channel._id,
-						msg: `invite-all-from #${group.name}`,
-					},
 					triggerId: Random.id(),
 				})
 				.expect(200)

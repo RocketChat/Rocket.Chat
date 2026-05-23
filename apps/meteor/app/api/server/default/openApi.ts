@@ -1,6 +1,6 @@
 import { schemas } from '@rocket.chat/core-typings';
 import type { Route } from '@rocket.chat/http-router';
-import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
+import { ajv, isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
 import swaggerUi from 'swagger-ui-express';
@@ -72,15 +72,34 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 	paths,
 });
 
-API.default.addRoute(
-	'docs/json',
-	{ authRequired: false, validateParams: isOpenAPIJSONEndpoint },
-	{
-		get() {
-			const { withUndocumented = false } = this.queryParams;
+const openApiResponseSchema = ajv.compile<Record<string, unknown>>({
+	type: 'object',
+	properties: {
+		openapi: { type: 'string' },
+		info: { type: 'object' },
+		servers: { type: 'array' },
+		components: { type: 'object' },
+		paths: { type: 'object' },
+		schemas: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['openapi', 'info', 'paths', 'success'],
+	additionalProperties: false,
+});
 
-			return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })));
+API.default.get(
+	'docs/json',
+	{
+		authRequired: false,
+		query: isOpenAPIJSONEndpoint,
+		response: {
+			200: openApiResponseSchema,
 		},
+	},
+	function action() {
+		const { withUndocumented = false } = this.queryParams;
+
+		return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })));
 	},
 );
 
