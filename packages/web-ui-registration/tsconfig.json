@@ -4,5 +4,5 @@
 		"rootDirs": ["./src","./.storybook"],
 		"outDir": "./dist"
 	},
-	"include": ["./src", "./.storybook"],
+	"include": ["./src", "./.storybook", "./global.d.ts"],
 }
