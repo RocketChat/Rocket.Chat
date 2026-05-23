@@ -1,5 +1,5 @@
 import type { Root } from './definitions';
-import * as grammar from './grammar.pegjs';
+import { parse as parseMarkdown } from './parser';
 
 export type * from './definitions';
 
@@ -15,7 +15,7 @@ export type Options = {
 	customDomains?: string[];
 };
 
-export const parse = (input: string, options?: Options): Root => grammar.parse(input, options);
+export const parse = (input: string, options?: Options): Root => parseMarkdown(input, options);
 
 export type { Root as MarkdownAST };
 export { parse as parser };
