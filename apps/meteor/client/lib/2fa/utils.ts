@@ -1,17 +1,6 @@
 import type { MeteorErrorLike } from './types';
 
-export const isTotpRequiredError = (
-	error: unknown,
-): error is MeteorErrorLike & ({ error: 'totp-required' } | { errorType: 'totp-required' }) =>
-	typeof error === 'object' &&
-	((error as { error?: unknown } | undefined)?.error === 'totp-required' ||
-		(error as { errorType?: unknown } | undefined)?.errorType === 'totp-required');
-
-export const isTotpInvalidError = (
-	error: unknown,
-): error is MeteorErrorLike & ({ error: 'totp-invalid' } | { errorType: 'totp-invalid' }) =>
-	(error as { error?: unknown } | undefined)?.error === 'totp-invalid' ||
-	(error as { errorType?: unknown } | undefined)?.errorType === 'totp-invalid';
+export { isTotpInvalidError, isTotpRequiredError } from '@rocket.chat/api-client';
 
 export const isTotpMaxAttemptsError = (
 	error: unknown,

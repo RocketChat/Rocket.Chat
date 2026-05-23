@@ -1,9 +1,11 @@
+import { isTotpMaxAttemptsError } from '@rocket.chat/api-client';
 import { Meteor } from 'meteor/meteor';
 
 import { t } from '../../../app/utils/lib/i18n';
+import { challenge2fa } from '../../lib/2fa/challenge2fa';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { process2faReturn, process2faAsyncReturn } from '../../lib/2fa/process2faReturn';
-import { isTotpInvalidError } from '../../lib/2fa/utils';
+import { isTotpInvalidError, isTotpRequiredError } from '../../lib/2fa/utils';
 
 const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	const callWithTotp =
@@ -28,6 +30,39 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 			methodName,
 			...args,
 			async (error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined, result: unknown): Promise<void> => {
+				// TODO fix this any
+				const retryCall = async (error: any, result: unknown): Promise<void> => {
+					if (!isTotpRequiredError(error) || !isTotpInvalidError(error) || !isTotpMaxAttemptsError(error)) {
+						callback(error, result);
+						return;
+					}
+
+					const challenge = challenge2fa({
+						error,
+						errorHandler: callback,
+					});
+
+					if (!challenge) {
+						throw new Error('Unable to challenge 2fa');
+					}
+
+					const [code, resolveChallenge] = challenge;
+					const resolvedCode = await code;
+
+					// TODO: fix this hack
+					// @ts-ignore
+					const twoFactorMethod = error.details?.method || 'password';
+
+					try {
+						callWithTotp(methodName, args, (error, result) => {
+							callback(error, result);
+							retryCall(error, result);
+						})(resolvedCode, twoFactorMethod);
+					} catch (error) {
+						resolveChallenge();
+					}
+				};
+
 				await process2faReturn({
 					error,
 					result,

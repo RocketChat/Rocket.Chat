@@ -1,3 +1,4 @@
+import { isTotpRequiredError } from '@rocket.chat/api-client';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
@@ -102,7 +103,7 @@ export const createOAuthTotpLoginMethod =
 Accounts.oauth.credentialRequestCompleteHandler = credentialRequestCompleteHandler;
 
 getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
-	if (loginAttempt?.error?.error !== 'totp-required') {
+	if (loginAttempt?.error && !isTotpRequiredError(loginAttempt.error)) {
 		return;
 	}
 
@@ -115,15 +116,27 @@ getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
 	const { credentialToken, credentialSecret } = oAuthArgs.oauth;
 	const cb = loginAttempt.userCallback;
 
-	const { process2faReturn } = await import('../../lib/2fa/process2faReturn');
+	const { challenge2fa } = await import('../../lib/2fa/challenge2fa');
 
-	await process2faReturn({
-		error: loginAttempt.error,
-		originalCallback: cb,
-		onCode: (code) => {
-			tryLoginAfterPopupClosed(credentialToken, cb, code, credentialSecret);
-		},
-		emailOrUsername: undefined,
-		result: undefined,
-	});
+	const retryLogin = async (error: any) => {
+		const challenge = challenge2fa({
+			error,
+			errorHandler: cb,
+		});
+
+		if (!challenge) {
+			throw new Error('Unable to challenge 2fa');
+		}
+
+		const [code, resolveChallenge] = challenge;
+		const resolvedCode = await code;
+
+		try {
+			tryLoginAfterPopupClosed(credentialToken, cb, resolvedCode, credentialSecret);
+		} catch (error) {
+			resolveChallenge();
+		}
+	};
+
+	await retryLogin(loginAttempt.error);
 });

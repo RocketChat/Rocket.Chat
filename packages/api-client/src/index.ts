@@ -11,9 +11,9 @@ import { stringify } from 'query-string';
 
 import type { Credentials } from './Credentials';
 import type { Middleware, RestClientInterface } from './RestClientInterface';
-import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';
 
 export type { RestClientInterface, Credentials };
+export * from './errors';
 
 const pipe =
 	<T extends (...args: any[]) => any>(fn: T) =>
@@ -51,11 +51,7 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 };
 
 export class RestClient implements RestClientInterface {
-	private twoFactorHandler?: (args: {
-		method: 'totp' | 'email' | 'password';
-		emailOrUsername?: string;
-		invalidAttempt?: boolean;
-	}) => Promise<string>;
+	private challenge2fa?: (args: { error: unknown }) => [code: Promise<string>, resolveChallenge: () => void] | undefined;
 
 	private readonly baseUrl: string;
 
@@ -223,28 +219,36 @@ export class RestClient implements RestClientInterface {
 
 			const error = await clone.json();
 
-			if ((isTotpRequiredError(error) || isTotpInvalidError(error)) && hasRequiredTwoFactorMethod(error) && this.twoFactorHandler) {
-				const method2fa = 'details' in error ? error.details.method : 'password';
+			const method2fa = 'details' in error ? error.details.method : 'password';
 
-				const code = await this.twoFactorHandler({
-					method: method2fa,
-					emailOrUsername: error.details.emailOrUsername,
-					invalidAttempt: isTotpInvalidError(error),
-				});
-
-				return this.send(endpoint, method, {
-					...options,
-					headers: {
-						...this.getCredentialsAsHeaders(),
-						...this.headers,
-						...headers,
-						'x-2fa-code': code,
-						'x-2fa-method': method2fa,
-					},
-				});
+			if (!this.challenge2fa) {
+				return Promise.reject(error);
 			}
 
-			return Promise.reject(response);
+			const challengeResult = this.challenge2fa({ error });
+
+			if (!challengeResult) {
+				return Promise.reject(error);
+			}
+
+			const [code, resolveChallenge] = challengeResult;
+
+			const resolvedCode = await code;
+
+			return this.send(endpoint, method, {
+				...options,
+				headers: {
+					...this.getCredentialsAsHeaders(),
+					...this.headers,
+					...headers,
+					'x-2fa-code': resolvedCode,
+					'x-2fa-method': method2fa,
+				},
+			}).then((response) => {
+				console.count('resolveChallenge');
+				resolveChallenge();
+				return response;
+			});
 		});
 	}
 
@@ -297,9 +301,7 @@ export class RestClient implements RestClientInterface {
 		} as RestClientInterface['send'];
 	}
 
-	handleTwoFactorChallenge(
-		cb: (args: { method: 'totp' | 'email' | 'password'; emailOrUsername?: string; invalidAttempt?: boolean }) => Promise<string>,
-	): void {
-		this.twoFactorHandler = cb;
+	handleTwoFactorChallenge(challenge2fa: (args: { error: unknown }) => [Promise<string>, () => void] | undefined): void {
+		this.challenge2fa = challenge2fa;
 	}
 }

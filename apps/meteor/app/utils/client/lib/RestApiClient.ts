@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { RestClient } from '@rocket.chat/api-client';
 
-import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
+import { challenge2fa } from '../../../../client/lib/2fa/challenge2fa';
 import { baseURI } from '../../../../client/lib/baseURI';
 import { STORAGE_KEYS, getStoredItem } from '../../../../client/lib/sdk/storage';
 
@@ -28,7 +28,7 @@ export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
 });
 
-APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
+APIClient.handleTwoFactorChallenge(challenge2fa);
 
 /**
  * The original rest api code throws the Response object, which is very useful
