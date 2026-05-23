@@ -2954,16 +2954,9 @@ describe('/teams.update', () => {
 
 		it('should update user prefs', async () => {
 			await request
-				.post(methodCall('saveUserPreferences'))
+				.post(api('users.setPreferences'))
 				.set(userCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'saveUserPreferences',
-						params: [{ emailNotificationMode: 'nothing' }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ data: { emailNotificationMode: 'nothing' } })
 				.expect(200);
 		});
 
