@@ -5,8 +5,6 @@ import type { FindOptions } from 'mongodb';
 import { settings } from '../../../settings/server/cached';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
-import { getMessageReadCount } from '../../../read-counter/server/getMessageReadCount';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function loadMessageHistory({
 	userId,
@@ -55,19 +53,6 @@ export async function loadMessageHistory({
 		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
 	const messages = await normalizeMessagesForUser(records, userId);
 
-	if (messages[0]?._id && userId) {
-		const readCountResult = await getMessageReadCount(messages[0]._id, userId);
-
-		if (readCountResult) {
-			SystemLogger.info({
-				msg: '[read-count demo] newest message readCount',
-				rid,
-				mid: messages[0]._id,
-				readCount: readCountResult.readCount,
-				uid: userId,
-			});
-		}
-	}
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
