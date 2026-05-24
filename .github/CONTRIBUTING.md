@@ -2,13 +2,18 @@
 
 **First off, thanks for taking the time to contribute! :tada::+1:**
 
-> There are many ways to contribute to Rocket.Chat even if you're not technical or a developer:
->
-> * Email us at marketing@rocket.chat to tell us how much you love the project
-> * Write about us in your blogs
-> * Fix some small typos in our [documentation](https://docs.rocket.chat/contributing)
-> * Become our [GitHub sponsor](https://github.com/sponsors/RocketChat)
-> * Tell others about us and help us spread the word
+There are many ways to contribute to Rocket.Chat, even if you're not a technical contributor or software developer:
+
+**Community and outreach:**
+- Write about Rocket.Chat in your blog or social media
+- Share the project and help spread awareness
+- Become a GitHub sponsor to support ongoing development
+
+**Documentation contributions:**
+- Fix small typos or improve clarity in documentation
+
+**General engagement:**
+- Contact us at marketing@rocket.chat to share feedback or appreciation
 >
 > Every bit of contribution is appreciated 🙂 thank you!
 
