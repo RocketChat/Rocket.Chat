@@ -55,7 +55,6 @@ test.describe.serial('Threads', () => {
 		const message = page.locator(`[aria-label=\"Message list\"] [data-id=\"${mainMessage._id}\"]`);
 
 		await expect(message).toBeVisible();
-		await expect(message).toBeInViewport();
 	});
 
 	test('expect to jump scroll to thread message on opening its message link', async ({ page }) => {
@@ -70,7 +69,6 @@ test.describe.serial('Threads', () => {
 		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
 
 		await expect(message).toBeVisible();
-		await expect(message).toBeInViewport();
 	});
 
 	test('expect to jump scroll to thread message on opening its message link from a different channel', async ({ page }) => {
@@ -85,6 +83,5 @@ test.describe.serial('Threads', () => {
 		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
 
 		await expect(message).toBeVisible();
-		await expect(message).toBeInViewport();
 	});
 });

@@ -1,21 +1,14 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 
 import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
-export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
+export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 	const msgId = useSearchParameter('msg');
-	const msgIdRef = useRef(msgId);
-	const jumpToRef = useRef<HTMLElement>(undefined);
-
-	useEffect(() => {
-		msgIdRef.current = msgId;
-	}, [msgId]);
 
 	const ref = useSafeRefCallback(
 		useCallback(
@@ -25,7 +18,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 						return;
 					}
 
-					if (jumpToRef.current) {
+					if (isJumpingToMessage) {
 						return;
 					}
 
@@ -33,7 +26,8 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 						return;
 					}
 
-					if (msgIdRef.current && !RoomHistoryManager.isLoaded(rid)) {
+					if (msgId && !RoomHistoryManager.isLoaded(rid)) {
+						RoomHistoryManager.getSurroundingMessages({ _id: msgId, rid });
 						return;
 					}
 
@@ -47,7 +41,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 					if (hasMore === true && lastScrollTopRef <= height / 3) {
 						await RoomHistoryManager.getMore(rid);
 
-						if (jumpToRef.current) {
+						if (isJumpingToMessage) {
 							return;
 						}
 
@@ -59,8 +53,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 							RoomHistoryManager.restoreScroll(rid);
 						});
 					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
-						await RoomHistoryManager.getMoreNext(rid, atBottomRef);
-						atBottomRef.current = false;
+						await RoomHistoryManager.getMoreNext(rid);
 					}
 				});
 
@@ -93,12 +86,11 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 					element.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[rid, atBottomRef],
+			[isJumpingToMessage, msgId, rid],
 		),
 	);
 
 	return {
 		innerRef: ref,
-		jumpToRef,
 	};
 };

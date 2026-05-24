@@ -252,6 +252,15 @@ export const createFileUploadSettings = () =>
 				secret: true,
 			});
 
+			await this.add('FileUpload_GoogleStorage_URLExpiryTimeSpan', 120, {
+				type: 'int',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'GoogleCloudStorage',
+				},
+				i18nDescription: 'FileUpload_GoogleStorage_URLExpiryTimeSpan_Description',
+			});
+
 			await this.add('FileUpload_GoogleStorage_Proxy_Avatars', false, {
 				type: 'boolean',
 				enableQuery: {

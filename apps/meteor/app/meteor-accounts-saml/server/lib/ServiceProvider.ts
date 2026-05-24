@@ -1,7 +1,7 @@
-import crypto from 'crypto';
-import querystring from 'querystring';
-import util from 'util';
-import zlib from 'zlib';
+import crypto from 'node:crypto';
+import querystring from 'node:querystring';
+import util from 'node:util';
+import zlib from 'node:zlib';
 
 import { Meteor } from 'meteor/meteor';
 

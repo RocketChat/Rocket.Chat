@@ -1,5 +1,5 @@
-import fs from 'fs';
-import type Stream from 'stream';
+import fs from 'node:fs';
+import type Stream from 'node:stream';
 
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';

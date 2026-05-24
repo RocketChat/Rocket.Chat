@@ -250,6 +250,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 		return {
 			_id: res.insertedId,
+			_updatedAt: new Date(), // TODO: this should be set by the BaseRaw, but we need to set it here to return a complete IRole object
 			...role,
 		};
 	}

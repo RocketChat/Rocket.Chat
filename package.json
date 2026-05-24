@@ -68,7 +68,7 @@
 		"markdown-it": "^14.1.1",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
-		"protobufjs": "7.5.6",
+		"protobufjs": "7.5.8",
 		"webdav/axios": "0.31.1",
 		"flatted@npm:^3.1.0": "3.4.2",
 		"flatted@npm:^3.2.9": "3.4.2",
@@ -172,11 +172,11 @@
 	},
 	"packageManager": "yarn@4.12.0",
 	"engines": {
-		"node": "22.22.2",
+		"node": "22.22.3",
 		"yarn": "4.12.0"
 	},
 	"volta": {
-		"node": "22.22.2",
+		"node": "22.22.3",
 		"yarn": "4.12.0"
 	},
 	"houston": {

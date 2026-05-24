@@ -16,7 +16,7 @@ export async function generateAccessToken(userId: string, secret: string) {
 	}
 
 	const token = Accounts._generateStampedLoginToken();
-	Accounts._insertLoginToken(userId, token);
+	await Accounts._insertLoginToken(userId, token);
 
 	await User.ensureLoginTokensLimit(userId);
 
