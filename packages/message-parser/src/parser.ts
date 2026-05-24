@@ -1,30 +1,41 @@
-import { Options, Root } from './index';
-import { lineBreak, paragraph, plain } from './utils';
+import type { Root } from './definitions';
+import type { Options } from './index';
+import { paragraph, plain, lineBreak, reducePlainTexts } from './utils';
+import { Scanner } from './scanner';
+import { isNewline } from './chars';
 
-export const parse = (input: string, options?: Options) => {
+export function parse(input: string, _options: Options = {}): Root {
 	const root: Root = [];
-	let i = 0;
+	const scanner = new Scanner(input);
 
-	while (i < input.length) {
-		const start = i;
-		while (i < input.length && input[i] !== '\n' && input[i] !== '\r') {
-			i++;
+	while (!scanner.isEnd()) {
+		const start = scanner.save();
+
+		// Scan to end of line
+		while (!scanner.isEnd() && !isNewline(scanner.char())) {
+			scanner.advance();
 		}
 
-		const text = input.slice(start, i);
-		const isLastPosition = i >= input.length;
+		const text = scanner.sliceFrom(start);
+		const isLastPosition = scanner.isEnd();
 
 		if (text === '') {
-			if (!isLastPosition) root.push(lineBreak());
+			if (!isLastPosition) {
+				root.push(lineBreak());
+			}
 		} else {
-			root.push(paragraph([plain(text)]));
+			root.push(paragraph(reducePlainTexts([plain(text)])));
 		}
 
-		if (i < input.length) {
-			if (input[i] === '\n' && input[i + 1] === '\r') i += 2;
-			else i += 1;
+		// Skip newline character(s)
+		if (!isLastPosition) {
+			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+				scanner.advance(2);
+			} else {
+				scanner.advance(1);
+			}
 		}
 	}
 
 	return root;
-};
+}
