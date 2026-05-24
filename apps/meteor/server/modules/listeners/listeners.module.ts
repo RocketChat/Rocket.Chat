@@ -214,6 +214,10 @@ export class ListenersModule {
 			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
 		});
 
+		service.onEvent('notify.readCountsChanged', ({ rid }: { rid: IRoom['_id'] }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'readCountsChanged', {});
+		});
+
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;

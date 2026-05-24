@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
+import { ReadCountBadge } from '../../ReadCountBadge';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
@@ -123,6 +124,8 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
+
+			<ReadCountBadge messageId={normalizedMessage._id} roomId={normalizedMessage.rid} senderId={normalizedMessage.u._id} />
 
 			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
