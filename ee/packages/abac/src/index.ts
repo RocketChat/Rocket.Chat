@@ -96,11 +96,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 				await this.loadVirtruPdpConfig();
 			}
 
+			const prevEffective = this.computeEffectiveStoreType();
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
-
-			// Virtru attribute store is meaningless without the Virtru PDP; cascade the setting write
-			// so the ABAC_Attribute_Store listener handles the wipe and propagates across all nodes.
+			this.fireEffectiveStoreTransitionIfChanged(prevEffective);
 			if (value === 'local' && this.attributeStoreSetting === 'virtru') {
 				try {
 					await Settings.set('ABAC_Attribute_Store', 'local');
@@ -120,12 +119,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return;
 			}
 
-			const prev = this.attributeStoreSetting;
+			const prevSetting = this.attributeStoreSetting;
+			const prevEffective = this.computeEffectiveStoreType();
 			this.attributeStoreSetting = value;
-			if (prev !== undefined && prev !== value) {
-				void this.onAttributeStoreTransition(prev, value).catch((err) =>
-					logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
-				);
+			if (prevSetting !== undefined) {
+				this.fireEffectiveStoreTransitionIfChanged(prevEffective);
 			}
 		});
 
@@ -191,6 +189,26 @@ export class AbacService extends ServiceClass implements IAbacService {
 	private syncVirtruPdpConfig(): void {
 		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		this.lastSelectedStore = undefined;
+	}
+
+	private computeEffectiveStoreType(): AbacAttributeStoreType {
+		const ctx: AttributeStoreSelectionContext = {
+			abacEnabled: this.abacEnabled === true,
+			pdpType: this.pdpTypeSetting,
+			licensed: true,
+		};
+		const selected = this.attributeStoreSetting ?? 'local';
+		return this.attributeStores[selected].isEligible(ctx) ? selected : 'local';
+	}
+
+	private fireEffectiveStoreTransitionIfChanged(prevEffective: AbacAttributeStoreType): void {
+		const nextEffective = this.computeEffectiveStoreType();
+		if (prevEffective === nextEffective) {
+			return;
+		}
+		void this.onAttributeStoreTransition(prevEffective, nextEffective).catch((err) =>
+			logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
+		);
 	}
 
 	private async resolveAttributeStore(): Promise<IAttributeStore> {

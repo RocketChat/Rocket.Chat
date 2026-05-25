@@ -1600,9 +1600,20 @@ describe('AbacService (unit)', () => {
 			expect(transitionSpy).not.toHaveBeenCalled();
 		});
 
-		it('does NOT fire when ABAC_PDP_Type flips local->virtru via the real listener (Store setting does not change)', async () => {
+		it('fires local->virtru when ABAC_PDP_Type flips local->virtru while Store=virtru (effective store transitions)', async () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local' }));
+			expect(transitionSpy).not.toHaveBeenCalled();
+
+			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'virtru');
+
+			expect(transitionSpy).toHaveBeenCalledTimes(1);
+			expect(transitionSpy).toHaveBeenCalledWith('local', 'virtru');
+		});
+
+		it('does NOT fire when ABAC_PDP_Type flips local->virtru while Store=local (effective store stays local)', async () => {
+			mockHasModule.mockReturnValue(true);
+			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local', ABAC_Attribute_Store: 'local' }));
 			expect(transitionSpy).not.toHaveBeenCalled();
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'virtru');
@@ -1805,10 +1816,25 @@ describe('AbacService (unit)', () => {
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
-		it('does NOT wipe or audit when ABAC_PDP_Type changes while Store stays virtru', async () => {
+		it('wipes virtru->local when ABAC_PDP_Type flips to local while Store=virtru (effective store transitions)', async () => {
 			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 4 });
 			const svc = await bootWith(buildSettings({}));
 			setVirtruMode(svc);
+
+			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUpdateMany).toHaveBeenCalledWith({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+			expect(auditSpy).toHaveBeenCalledTimes(1);
+			expect(auditSpy).toHaveBeenCalledWith('virtru', 'local', 4);
+		});
+
+		it('does NOT wipe when ABAC_PDP_Type flips to local while Store=local (effective store stays local)', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
 			await new Promise((r) => setImmediate(r));
@@ -1823,6 +1849,42 @@ describe('AbacService (unit)', () => {
 			setVirtruMode(svc);
 
 			await fireSettingChanged(svc, 'ABAC_Enabled', false);
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT wipe when ABAC_Attribute_Store flips local->virtru while ABAC_Enabled is false (effective store stays local)', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			const svc = await bootWith(buildSettings({ ABAC_Enabled: false, ABAC_Attribute_Store: 'local' }));
+
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT wipe when ABAC_Attribute_Store flips local->virtru while ABAC_PDP_Type is local (effective store stays local)', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local', ABAC_Attribute_Store: 'local' }));
+
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(auditSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT wipe when ABAC_Attribute_Store flips virtru->local while the virtru store was never effective (PDP=local)', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local', ABAC_Attribute_Store: 'virtru' }));
+
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'local');
 			await new Promise((r) => setImmediate(r));
 
 			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
