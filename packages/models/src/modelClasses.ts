@@ -66,6 +66,7 @@ export * from './models/WebdavAccounts';
 export * from './models/CredentialTokens';
 export * from './models/MessageReads';
 export * from './models/CronHistoryModel';
+export * from './models/CronJobsModel';
 export * from './models/Migrations';
 export * from './models/ModerationReports';
 export * from './models/MediaCalls';
