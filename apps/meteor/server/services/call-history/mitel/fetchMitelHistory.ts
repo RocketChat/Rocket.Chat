@@ -4,7 +4,8 @@ import type { MitelConfig } from './definition';
 import { logger } from '../logger';
 
 export async function fetchMitelHistory(directoryNumber: string, config: MitelConfig): Promise<string | null> {
-	const endpointUrl = `${config.host}/callHistory/${directoryNumber}`.replaceAll('//', '/');
+	const separator = config.host.endsWith('/') ? '' : '/';
+	const endpointUrl = `${config.host}${separator}callHistory/${directoryNumber}`;
 
 	let response: Awaited<ReturnType<typeof serverFetch>>;
 

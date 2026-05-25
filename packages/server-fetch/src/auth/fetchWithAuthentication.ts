@@ -39,6 +39,7 @@ export async function fetchWithAuthentication(
 		return response;
 	}
 
+	response.body?.resume();
 	logger.info({ msg: 'Repeating External Request with Authentication', url: urlString });
 	return fetch(urlString, { ...request, headers: { ...request.headers, Authorization: authResponse } });
 }

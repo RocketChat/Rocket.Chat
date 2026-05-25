@@ -119,7 +119,7 @@ async function doFetch(
 ): Promise<fetch.Response> {
 	const response = await fetch(url.toString(), init);
 
-	if (response?.status !== authRequiredStatus) {
+	if (response?.status !== authRequiredStatus || !auth) {
 		return response;
 	}
 

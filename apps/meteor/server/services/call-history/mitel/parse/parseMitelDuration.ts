@@ -6,7 +6,7 @@ export function parseMitelDuration(value: unknown): number {
 		return 0;
 	}
 
-	if (typeof value === 'number' && !Number.isNaN(value)) {
+	if (typeof value === 'number' && !Number.isNaN(value) && value >= 0 && Number.isFinite(value)) {
 		return value;
 	}
 

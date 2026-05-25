@@ -8,7 +8,7 @@ type DigestAuthHeader = {
 };
 
 export function parseDigestHeader(authHeader: string): DigestAuthHeader {
-	if (!authHeader?.toLowerCase().startsWith('digest')) {
+	if (!authHeader.startsWith('Digest ')) {
 		throw new Error('Unsupported Auth Schema');
 	}
 

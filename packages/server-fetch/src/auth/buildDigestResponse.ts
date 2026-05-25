@@ -27,6 +27,11 @@ export function buildDigestResponse({
 		throw new Error('Algorithm not supported');
 	}
 
+	if (qop && qop !== 'auth') {
+		logger.warn({ msg: 'Unsupported qop', qop });
+		throw new Error('Qop not supported');
+	}
+
 	// We don't do multiple auth attempts for the same request, so we don't need to keep track of cnonce usage
 	const nc = '00000001';
 	const cnonce = randomBytes(8).toString('hex');
