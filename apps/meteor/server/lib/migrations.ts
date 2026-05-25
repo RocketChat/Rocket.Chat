@@ -19,7 +19,7 @@ const migrations = new Set<IMigration>();
 
 // sets the control record
 function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IControl, 'version' | 'locked'> {
-	void Migrations.updateMany(
+	Migrations.updateMany(
 		{
 			_id: 'control',
 		},
@@ -32,7 +32,17 @@ function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IContro
 		{
 			upsert: true,
 		},
-	);
+	).catch((e) => {
+		// E11000 on a concurrent upsert of the same _id is safe to ignore — another
+		// caller won the race and inserted the document; the $set will apply on the
+		// next call. Without this catch, the rejected promise from the fire-and-forget
+		// updateMany becomes an unhandled rejection and crashes the process when
+		// EXIT_UNHANDLEDPROMISEREJECTION is set (CI).
+		if (e?.code === 11000) {
+			return;
+		}
+		log.error({ msg: 'Failed to set migration control', err: e });
+	});
 
 	return control;
 }

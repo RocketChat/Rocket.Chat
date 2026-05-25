@@ -1,5 +1,5 @@
 import type { RocketChatRecordDeleted, IUser, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
-import { queryStatusAgentOnline, UsersRaw } from '@rocket.chat/models';
+import { queryStatusAgentOnline, UsersRaw, getAllowDiskUse } from '@rocket.chat/models';
 import type { Db, Collection, Filter } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -32,17 +32,20 @@ export class UsersEE extends UsersRaw {
 					{
 						$lookup: {
 							from: 'rocketchat_livechat_department_agents',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', departmentId] }],
-										},
-									},
-								},
-							],
+							localField: '_id',
+							foreignField: 'agentId',
 							as: 'department',
+						},
+					},
+					{
+						$addFields: {
+							department: {
+								$filter: {
+									input: '$department',
+									as: 'dept',
+									cond: { $eq: ['$$dept.departmentId', departmentId] },
+								},
+							},
 						},
 					},
 					{
@@ -63,8 +66,20 @@ export class UsersEE extends UsersRaw {
 							from: 'rocketchat_subscription',
 							localField: '_id',
 							foreignField: 'u._id',
-							pipeline: [{ $match: { $and: [{ t: 'l' }, { open: true }, { onHold: { $ne: true } }] } }],
 							as: 'subs',
+						},
+					},
+					{
+						$addFields: {
+							subs: {
+								$filter: {
+									input: '$subs',
+									as: 'sub',
+									cond: {
+										$and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }],
+									},
+								},
+							},
 						},
 					},
 					{
@@ -95,7 +110,7 @@ export class UsersEE extends UsersRaw {
 					...(customFilter ? [customFilter] : []),
 					{ $project: { username: 1 } },
 				],
-				{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+				{ ...getAllowDiskUse(), readPreference: readSecondaryPreferred() },
 			)
 			.toArray();
 	}

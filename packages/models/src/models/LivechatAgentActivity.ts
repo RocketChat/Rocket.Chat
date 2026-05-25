@@ -4,6 +4,7 @@ import { parseISO, format } from 'date-fns';
 import type { AggregationCursor, Collection, Document, FindCursor, Db, WithId, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
@@ -133,7 +134,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		const project = {
 			$project: {
 				averageAvailableServiceTimeInSeconds: {
-					$trunc: {
+					$floor: {
 						$cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allAvailableTimeInSeconds', '$rooms'] }],
 					},
 				},
@@ -233,6 +234,6 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate<ILivechatAgentActivity>(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate<ILivechatAgentActivity>(params, { ...getAllowDiskUse(), readPreference: readSecondaryPreferred() });
 	}
 }

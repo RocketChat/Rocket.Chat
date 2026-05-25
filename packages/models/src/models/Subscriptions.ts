@@ -453,17 +453,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					{
 						$lookup: {
 							from: 'rocketchat_subscription',
+							localField: '_id',
+							foreignField: 'rid',
 							as: 'subscription',
-							let: {
-								rid: '$_id',
-							},
-							pipeline: [{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } }],
 						},
 					},
 					// Unwind the subscription so we have a separate document for each
 					{
 						$unwind: {
 							path: '$subscription',
+						},
+					},
+					// Filter out the requesting user's own subscriptions
+					{
+						$match: {
+							'subscription.u._id': { $ne: userId },
 						},
 					},
 					// Group the data by user id, keeping track of how many documents each user had
@@ -475,32 +479,34 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 							},
 						},
 					},
-					// Load the data for the subscription's user, ignoring those who don't match the search terms
+					// Load the data for the subscription's user
 					{
 						$lookup: {
 							from: 'users',
+							localField: '_id',
+							foreignField: '_id',
 							as: 'user',
-							let: { id: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: { $eq: ['$_id', '$$id'] },
-										...extraConditions,
-										active: true,
-										username: {
-											$exists: true,
-											...(exceptions.length > 0 && { $nin: exceptions }),
-										},
-										...(searchTerm && orStatement.length > 0 && { $or: orStatement }),
-									},
-								},
-							],
 						},
 					},
-					// Discard documents that didn't load any user data in the previous step:
+					// Discard documents that didn't load any user data
 					{
 						$unwind: {
 							path: '$user',
+						},
+					},
+					// Filter users by search terms and conditions
+					{
+						$match: {
+							...Object.fromEntries(Object.entries(extraConditions).map(([k, v]) => [`user.${k}`, v])),
+							'user.active': true,
+							'user.username': {
+								$exists: true,
+								...(exceptions.length > 0 && { $nin: exceptions }),
+							},
+							...(searchTerm &&
+								orStatement.length > 0 && {
+									$or: orStatement.map((cond) => Object.fromEntries(Object.entries(cond).map(([k, v]) => [`user.${k}`, v]))),
+								}),
 						},
 					},
 					// Use group to organize the data at the same time that we pick what to project to the end result

@@ -10,6 +10,7 @@ import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements IModerationReportsModel {
@@ -136,7 +137,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			},
 		];
 
-		return this.col.aggregate(params, { allowDiskUse: true });
+		return this.col.aggregate(params, getAllowDiskUse());
 	}
 
 	findUserReports(
@@ -193,7 +194,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			},
 		];
 
-		return this.col.aggregate(pipeline, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate(pipeline, { ...getAllowDiskUse(), readPreference: readSecondaryPreferred() });
 	}
 
 	async getTotalUniqueReportedUsers(latest: Date, oldest: Date, selector: string, isMessageReports?: boolean): Promise<number> {

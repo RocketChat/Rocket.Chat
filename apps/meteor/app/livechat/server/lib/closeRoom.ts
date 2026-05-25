@@ -9,7 +9,7 @@ import type { ClientSession } from 'mongodb';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { livechatLogger as logger } from './logger';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-import { client, shouldRetryTransaction } from '../../../../server/database/utils';
+import { client, shouldRetryTransaction, transactionOptions } from '../../../../server/database/utils';
 import { callbacks } from '../../../../server/lib/callbacks';
 import {
 	notifyOnLivechatInquiryChanged,
@@ -33,7 +33,7 @@ export async function closeRoom(params: CloseRoomParams, attempts = 2): Promise<
 
 	const session = client.startSession();
 	try {
-		session.startTransaction();
+		session.startTransaction(transactionOptions);
 		const { room, closedBy, removedInquiry } = await doCloseRoom(params, session);
 		await session.commitTransaction();
 

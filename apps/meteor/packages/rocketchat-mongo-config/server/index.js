@@ -3,6 +3,67 @@ import { PassThrough } from 'stream';
 
 import { Email } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
+import { MongoInternals } from 'meteor/mongo';
+
+// DocumentDB only supports one index build at a time per collection.
+// Serialize every index-creating call path so Meteor packages (accounts-base,
+// accounts-password, accounts-oauth) and Rocket.Chat models (BaseRaw) don't
+// race against each other on the same collection. This package loads before
+// accounts-base (position 53 vs 56 in .meteor/packages).
+//
+// We patch Collection.prototype.{createIndex,createIndexes} on Meteor's bundled
+// mongodb driver. Meteor's MongoConnection.createIndexAsync internally goes
+// through `this.rawCollection(name).createIndex(...)`, and BaseRaw reaches the
+// same Collection via `MongoInternals.defaultRemoteCollectionDriver().mongo.db
+// .collection(n)`, so a single Collection-level hook covers both entry points.
+//
+// @rocket.chat/models/src/patchIndex.ts does the equivalent patch on the app's
+// node_modules/mongodb (a separate module instance that Meteor does not share),
+// and both patches use the same queue via a globalThis-keyed Map so per-
+// collection builds serialize across every code path.
+//
+// Do NOT also wrap MongoConnection.createIndexAsync: doing so double-enqueues
+// — the outer wrapper awaits the inner enqueue, which is queued AFTER the
+// outer promise, producing a deadlock and an unhealthy container on startup.
+if (process.env.DOCUMENTDB === 'true') {
+	const QUEUE_KEY = Symbol.for('rocketchat.documentdb.index.queues');
+	// Must match the symbol used by @rocket.chat/models/src/patchIndex.ts so
+	// that if both modules resolve to the same Collection class (possible inside
+	// the Meteor bundle) only the first patch wraps createIndex; the second is
+	// a no-op. A mismatch causes double-wrapping → double-enqueue → deadlock.
+	const PATCHED_KEY = Symbol.for('rocketchat.documentdb.index.patch');
+	if (!globalThis[QUEUE_KEY]) {
+		globalThis[QUEUE_KEY] = new Map();
+	}
+	const queues = globalThis[QUEUE_KEY];
+
+	const enqueue = (collectionName, fn) => {
+		const prev = queues.get(collectionName) || Promise.resolve();
+		const next = prev.then(fn, fn);
+		queues.set(collectionName, next.catch(() => {}));
+		return next;
+	};
+
+	const mongo = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+	// Probe collection is the simplest way to reach the prototype — Meteor does
+	// not expose it directly. No IO: db.collection(name) is lazy.
+	const probeCollection = mongo.rawCollection('___documentdb_index_patch_probe___');
+	const CollectionProto = Object.getPrototypeOf(probeCollection);
+	if (CollectionProto && !CollectionProto[PATCHED_KEY]) {
+		CollectionProto[PATCHED_KEY] = true;
+
+		const originalProtoCreateIndex = CollectionProto.createIndex;
+		CollectionProto.createIndex = function (...args) {
+			return enqueue(this.collectionName, () => originalProtoCreateIndex.apply(this, args));
+		};
+
+		const originalProtoCreateIndexes = CollectionProto.createIndexes;
+		CollectionProto.createIndexes = function (...args) {
+			return enqueue(this.collectionName, () => originalProtoCreateIndexes.apply(this, args));
+		};
+	}
+}
 
 // we always want Meteor to disable oplog tailing
 Package['disable-oplog'] = {};

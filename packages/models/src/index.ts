@@ -1,3 +1,4 @@
+import './patchIndex';
 import type { ILivechatDepartmentAgents, ILivechatInquiryRecord, ISubscription, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	IAnalyticsModel,
@@ -124,6 +125,7 @@ export * from './helpers';
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
 export { readSecondaryPreferred } from './readSecondaryPreferred';
+export { getAllowDiskUse } from './allowDiskUse';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');

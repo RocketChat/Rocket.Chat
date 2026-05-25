@@ -1,5 +1,5 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
+import { Rooms, AuditLog, ServerEvents, getAllowDiskUse } from '@rocket.chat/models';
 import { isServerEventsAuditSettingsProps, ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -180,7 +180,7 @@ API.v1.get(
 				sort: _sort,
 				skip: offset,
 				limit: count,
-				allowDiskUse: true,
+				...getAllowDiskUse(),
 			},
 		);
 
