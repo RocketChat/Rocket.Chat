@@ -57,25 +57,18 @@ export interface IMitelCallHistoryItem extends ICallHistoryItem {
 	contactName?: string;
 	duration: number;
 
-	// TODO: Figure out how to map the transfer and diversion data
+	transferredFrom?: {
+		number?: string;
+		name?: string;
+	};
 
-	// transferredFrom?: {
-	// 	number?: string;
-	// 	name?: string;
-	// };
+	transferredTo?: {
+		number?: string;
+		name?: string;
+	};
 
-	// transferredTo?: {
-	// 	number?: string;
-	// 	name?: string;
-	// };
-
-	// transferred?: boolean;
-	// diverted?: boolean;
-
-	// divertedFrom?: {
-	// 	number?: string;
-	// 	name?: string;
-	// };
+	transferred?: boolean;
+	diverted?: boolean;
 }
 
 export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem | IMitelCallHistoryItem;
