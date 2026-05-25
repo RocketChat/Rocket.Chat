@@ -72,7 +72,7 @@ export const useHandleUnread = (
 		if (!message) {
 			return;
 		}
-		setMessageJumpQueryStringParameter(message?._id);
+		setMessageJumpQueryStringParameter(message?._id, 'jumpToUnread');
 		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
 	}, [room._id, setUnreadCount, findFirstMessage, unread?.since, chat.readStateManager]);
