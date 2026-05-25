@@ -9,6 +9,17 @@ import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
 
+const SAFE_MEDIA_SCHEMES = new Set(['http:', 'https:', 'data:', 'blob:']);
+
+const safeMediaSrc = (value: string): string | undefined => {
+	try {
+		const { protocol } = new URL(value, window.location.origin);
+		return SAFE_MEDIA_SCHEMES.has(protocol) ? value : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
 type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
 	title?: ReactNode;
 	rid: string;
@@ -119,40 +130,44 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 								.map((_, index) => <Skeleton variant='rect' h='100px' w='120px' m={2} key={index} />)}
 
 						{!isLoading &&
-							itemsFlat.map((item) => (
-								<Box
-									onClick={() => select(item)}
-									role='option'
-									className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
-									id={`popup-item-${item._id}`}
-									key={item._id}
-									bg={item === focused ? 'selected' : undefined}
-									borderColor={item === focused ? 'highlight' : 'transparent'}
-									tabIndex={item === focused ? 0 : -1}
-									aria-selected={item === focused}
-									m={2}
-									borderWidth='default'
-									borderRadius='x4'
-								>
-									{item.type === 'image' && <img src={item.value} alt={item._id} />}
-									{item.type === 'audio' && (
-										<audio controls>
-											<track kind='captions' />
-											<source src={item.value} />
-											Your browser does not support the audio element.
-										</audio>
-									)}
-									{item.type === 'video' && (
-										<video controls className='inline-video'>
-											<track kind='captions' />
-											<source src={item.value} />
-											Your browser does not support the video element.
-										</video>
-									)}
-									{item.type === 'text' && <Option>{item.value}</Option>}
-									{item.type === 'other' && <code>{item.value}</code>}
-								</Box>
-							))}
+							itemsFlat.map((item) => {
+								const mediaSrc =
+									item.type === 'image' || item.type === 'audio' || item.type === 'video' ? safeMediaSrc(item.value) : undefined;
+								return (
+									<Box
+										onClick={() => select(item)}
+										role='option'
+										className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
+										id={`popup-item-${item._id}`}
+										key={item._id}
+										bg={item === focused ? 'selected' : undefined}
+										borderColor={item === focused ? 'highlight' : 'transparent'}
+										tabIndex={item === focused ? 0 : -1}
+										aria-selected={item === focused}
+										m={2}
+										borderWidth='default'
+										borderRadius='x4'
+									>
+										{item.type === 'image' && mediaSrc && <img src={mediaSrc} alt={item._id} />}
+										{item.type === 'audio' && mediaSrc && (
+											<audio controls>
+												<track kind='captions' />
+												<source src={mediaSrc} />
+												Your browser does not support the audio element.
+											</audio>
+										)}
+										{item.type === 'video' && mediaSrc && (
+											<video controls className='inline-video'>
+												<track kind='captions' />
+												<source src={mediaSrc} />
+												Your browser does not support the video element.
+											</video>
+										)}
+										{item.type === 'text' && <Option>{item.value}</Option>}
+										{item.type === 'other' && <code>{item.value}</code>}
+									</Box>
+								);
+							})}
 					</Box>
 				</Box>
 			</Tile>
