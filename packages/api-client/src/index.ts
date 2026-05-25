@@ -245,7 +245,6 @@ export class RestClient implements RestClientInterface {
 					'x-2fa-method': method2fa,
 				},
 			}).then((response) => {
-				console.count('resolveChallenge');
 				resolveChallenge();
 				return response;
 			});
