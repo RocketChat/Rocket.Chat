@@ -1,4 +1,5 @@
 import { proxify } from './lib/proxify';
+
 import type {
 	IAISearchService,
 	AISearchAnswerMessage,
@@ -8,6 +9,7 @@ import type {
 	AISearchResult,
 	AISearchStatus,
 } from './types/IAISearchService';
+import type { ICronJobsService } from './types/ICronJobsService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
@@ -176,6 +178,7 @@ export type {
 	IImportService,
 	IOmnichannelAnalyticsService,
 	IUserService,
+	ICronJobsService,
 };
 export { proxify };
 
@@ -215,6 +218,7 @@ export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
+export const CronJobsSvc = proxify<ICronJobsService>('cron-jobs');
 export const User = proxify<IUserService>('user');
 export const Push = proxify<IPushService>('push');
 

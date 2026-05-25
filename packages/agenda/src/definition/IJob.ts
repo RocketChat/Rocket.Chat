@@ -1,5 +1,6 @@
 export interface IJob {
 	name: string;
+	status?: string;
 
 	nextRunAt?: Date | null;
 	type?: 'once' | 'single' | 'normal';

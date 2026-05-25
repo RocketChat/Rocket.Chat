@@ -2,6 +2,8 @@ import { type Job, Agenda } from '@rocket.chat/agenda';
 import { Logger } from '@rocket.chat/logger';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { CronJobs } from '@rocket.chat/models';
+
 import type { Db } from 'mongodb';
 
 const logger = new Logger('Cron');
@@ -43,15 +45,15 @@ type ReservedJob = {
 	name: string;
 	callback: () => any | Promise<any>;
 } & (
-	| {
+		| {
 			schedule: string;
 			timestamped: false;
-	  }
-	| {
+		}
+		| {
 			when: Date;
 			timestamped: true;
-	  }
-);
+		}
+	);
 
 export class AgendaCronJobs {
 	private reservedJobs: ReservedJob[] = [];
@@ -77,6 +79,10 @@ export class AgendaCronJobs {
 				jobName: job.attrs.name,
 				nextRunAt: job.attrs.nextRunAt,
 			});
+			void CronJobs.updateOne(
+				{ _id: job.attrs._id },
+				{ $set: { status: 'running' } },
+			);
 		});
 
 		this.scheduler.on('complete', (job: Job) => {
@@ -89,6 +95,10 @@ export class AgendaCronJobs {
 				duration:
 					job.attrs.lastFinishedAt && job.attrs.lastRunAt ? job.attrs.lastFinishedAt.getTime() - job.attrs.lastRunAt.getTime() : undefined,
 			});
+			void CronJobs.updateOne(
+				{ _id: job.attrs._id },
+				{ $set: { status: 'completed' } },
+			);
 		});
 
 		this.scheduler.on('success', (job: Job) => {
@@ -108,6 +118,10 @@ export class AgendaCronJobs {
 				failCount: job.attrs.failCount,
 				failReason: job.attrs.failReason,
 			});
+			void CronJobs.updateOne(
+				{ _id: job.attrs._id },
+				{ $set: { status: 'failed' } },
+			);
 		});
 
 		this.scheduler.on('error:database', (err: unknown) => {
