@@ -1,5 +1,5 @@
-import stream from 'stream';
-import type { Readable, Writable } from 'stream';
+import stream from 'node:stream';
+import type { Readable, Writable } from 'node:stream';
 
 import type { WebDAVClient, FileStat, ResponseDataDetailed, WebDAVClientOptions } from 'webdav';
 import { createClient } from 'webdav';

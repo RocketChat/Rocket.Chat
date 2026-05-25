@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 import {
 	ServiceClass,
@@ -466,7 +466,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					streamParam,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
+						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replaceAll('/', '-')}_${
 							data.visitor?.name || data.visitor?.username || 'Visitor'
 						}.pdf`,
 						type: 'application/pdf',

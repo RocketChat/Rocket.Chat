@@ -18,7 +18,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		let name = emojiName;
 
 		if (typeof emojiName === 'string') {
-			name = emojiName.replace(/:/g, '');
+			name = emojiName.replaceAll(':', '');
 		}
 
 		const query = {

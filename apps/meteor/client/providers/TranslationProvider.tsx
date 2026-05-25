@@ -24,6 +24,7 @@ import { i18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
+import { setDateFnsLocale } from '../lib/utils/setDateFnsLocale';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next);
 
@@ -211,6 +212,10 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 		],
 		[language, i18nextInstance],
 	);
+
+	useEffect(() => {
+		setDateFnsLocale(language);
+	}, [language]);
 
 	useEffect(
 		() =>

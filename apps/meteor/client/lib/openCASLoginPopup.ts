@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-
+import { absoluteUrl } from './absoluteUrl';
+import { getRootUrlPathPrefix } from './meteorRuntimeConfig';
 import { settings } from './settings';
 
 const CAS_LOGIN_POPUP_TIMEOUT_MS = 120_000;
@@ -41,7 +41,7 @@ const getPopupUrl = (credentialToken: string): string => {
 		throw new Error('CAS_login_url not set');
 	}
 
-	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	const appUrl = absoluteUrl().replace(/\/$/, '') + getRootUrlPathPrefix();
 	const serviceUrl = `${appUrl}/_cas/${credentialToken}`;
 	const url = new URL(loginUrl);
 	url.searchParams.set('service', serviceUrl);

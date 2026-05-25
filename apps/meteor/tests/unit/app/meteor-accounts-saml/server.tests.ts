@@ -28,6 +28,7 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
+import { makeLoginResponseEnvelope, makeLogoutRequestEnvelope, makeLogoutResponseEnvelope } from './helpers';
 import { SAMLUtils } from '../../../../app/meteor-accounts-saml/server/lib/Utils';
 import { AuthorizeRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/AuthorizeRequest';
 import { LogoutRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutRequest';
@@ -140,7 +141,7 @@ describe('SAML', () => {
 			it('should extract the idpSession and nameID from the request', () => {
 				const parser = new LogoutRequestParser(serviceProviderOptions);
 
-				void parser.validate(simpleLogoutRequest, async (err, data) => {
+				void parser.validate(makeLogoutRequestEnvelope(simpleLogoutRequest), async (err, data) => {
 					expect(err).to.be.null;
 					expect(data).to.be.an('object');
 					expect(data).to.have.property('idpSession');
@@ -154,7 +155,7 @@ describe('SAML', () => {
 
 			it('should fail to parse an invalid xml', () => {
 				const parser = new LogoutRequestParser(serviceProviderOptions);
-				void parser.validate(invalidXml, async (err, data) => {
+				void parser.validate(makeLogoutRequestEnvelope(invalidXml), async (err, data) => {
 					expect(err).to.exist;
 					expect(data).to.not.exist;
 				});
@@ -162,7 +163,7 @@ describe('SAML', () => {
 
 			it('should fail to parse a xml without any LogoutRequest tag', () => {
 				const parser = new LogoutRequestParser(serviceProviderOptions);
-				void parser.validate(randomXml, async (err, data) => {
+				void parser.validate(makeLogoutRequestEnvelope(randomXml), async (err, data) => {
 					expect(err).to.be.equal('No Request Found');
 					expect(data).to.not.exist;
 				});
@@ -171,7 +172,7 @@ describe('SAML', () => {
 			it('should fail to parse a request with no NameId', () => {
 				const parser = new LogoutRequestParser(serviceProviderOptions);
 
-				void parser.validate(invalidLogoutRequest, async (err, data) => {
+				void parser.validate(makeLogoutRequestEnvelope(invalidLogoutRequest), async (err, data) => {
 					expect(err).to.be.an('error').that.has.property('message').equal('SAML Logout Request: No NameID node found');
 					expect(data).to.not.exist;
 				});
@@ -212,7 +213,7 @@ describe('SAML', () => {
 				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
-				void parser.validate(logoutResponse, async (err, inResponseTo) => {
+				void parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.null;
 					expect(inResponseTo).to.be.equal('_id-6530db3fcd23dc42a31c');
 				});
@@ -222,7 +223,7 @@ describe('SAML', () => {
 				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'Anything');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
-				void parser.validate(logoutResponse, async (err, inResponseTo) => {
+				void parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
 					expect(inResponseTo).to.be.null;
 				});
@@ -230,7 +231,7 @@ describe('SAML', () => {
 
 			it('should fail to parse an invalid xml', () => {
 				const parser = new LogoutResponseParser(serviceProviderOptions);
-				void parser.validate(invalidXml, async (err, inResponseTo) => {
+				void parser.validate(makeLogoutResponseEnvelope(invalidXml), async (err, inResponseTo) => {
 					expect(err).to.exist;
 					expect(inResponseTo).to.not.exist;
 				});
@@ -238,7 +239,7 @@ describe('SAML', () => {
 
 			it('should fail to parse a xml without any LogoutResponse tag', () => {
 				const parser = new LogoutResponseParser(serviceProviderOptions);
-				void parser.validate(randomXml, async (err, inResponseTo) => {
+				void parser.validate(makeLogoutResponseEnvelope(randomXml), async (err, inResponseTo) => {
 					expect(err).to.be.equal('No Response Found');
 					expect(inResponseTo).to.not.exist;
 				});
@@ -252,7 +253,7 @@ describe('SAML', () => {
 					.replace('InResponseTo=', 'SomethingElse=');
 
 				const parser = new LogoutResponseParser(serviceProviderOptions);
-				void parser.validate(logoutResponse, async (err, inResponseTo) => {
+				void parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.equal('Unexpected Response from IDP');
 					expect(inResponseTo).to.not.exist;
 				});
@@ -261,7 +262,7 @@ describe('SAML', () => {
 			it('should reject a response with no status tag', () => {
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
-				void parser.validate(invalidLogoutResponse, async (err, inResponseTo) => {
+				void parser.validate(makeLogoutResponseEnvelope(invalidLogoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
 					expect(inResponseTo).to.be.null;
 				});
@@ -303,7 +304,7 @@ describe('SAML', () => {
 					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(response, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile, loggedOut) => {
 					expect(err).to.be.null;
 					expect(profile).to.be.an('object');
 					expect(profile).to.have.property('inResponseToId').equal('[INRESPONSETO]');
@@ -325,7 +326,7 @@ describe('SAML', () => {
 				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', new Date().toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(response, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(profile).to.be.null;
 					expect(loggedOut).to.be.false;
@@ -342,7 +343,7 @@ describe('SAML', () => {
 				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(response, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(profile).to.be.null;
 					expect(loggedOut).to.be.false;
@@ -351,7 +352,7 @@ describe('SAML', () => {
 
 			it('should fail to parse an invalid xml', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(invalidXml, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(invalidXml), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unknown SAML response message');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -360,7 +361,7 @@ describe('SAML', () => {
 
 			it('should fail to parse a xml without any Response tag', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(randomXml, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(randomXml), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unknown SAML response message');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -369,7 +370,7 @@ describe('SAML', () => {
 
 			it('should reject a xml with multiple responses', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(duplicatedSamlResponse, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(duplicatedSamlResponse), (err, data, loggedOut) => {
 					expect(err).to.be.an('error');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -378,7 +379,7 @@ describe('SAML', () => {
 
 			it('should fail to parse a reponse with no Status tag', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(samlResponseMissingStatus, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseMissingStatus), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing StatusCode');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -387,7 +388,7 @@ describe('SAML', () => {
 
 			it('should fail to parse a reponse with a failed status', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(samlResponseFailedStatus, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseFailedStatus), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Status is: Failed');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -396,7 +397,7 @@ describe('SAML', () => {
 
 			it('should reject a response with multiple assertions', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(samlResponseMultipleAssertions, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseMultipleAssertions), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many SAML assertions');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -405,7 +406,7 @@ describe('SAML', () => {
 
 			it('should reject a response with no assertions', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(samlResponseMissingAssertion, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseMissingAssertion), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing SAML assertion');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -430,7 +431,7 @@ describe('SAML', () => {
 					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(response, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('No valid SAML Signature found');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -439,7 +440,7 @@ describe('SAML', () => {
 
 			it('should reject a document with multiple issuers', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(samlResponseMultipleIssuers, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseMultipleIssuers), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many Issuers');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -454,7 +455,7 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(options);
-				parser.validate(encryptedResponse, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(encryptedResponse), (err, profile, loggedOut) => {
 					// No way to change the assertion conditions on an encrypted response ¯\_(ツ)_/¯
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
@@ -468,10 +469,11 @@ describe('SAML', () => {
 					privateCert: privateKeyCert,
 					signatureValidationType: 'All',
 					privateKey,
+					cert: certificate,
 				};
 
 				const parser = new ResponseParser(options);
-				parser.validate(encryptedResponse, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(encryptedResponse), (err, profile, loggedOut) => {
 					// No way to change the assertion conditions on an encrypted response ¯\_(ツ)_/¯
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
@@ -499,7 +501,7 @@ describe('SAML', () => {
 					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(response, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Assertion signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -524,7 +526,7 @@ describe('SAML', () => {
 					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(response, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -547,7 +549,7 @@ describe('SAML', () => {
 				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(response, (err, data, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(response), (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Assertion signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
@@ -562,9 +564,24 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidAssertionSignature), (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should reject an assertion with a valid signature if the certificate is not configured', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Assertion',
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidAssertionSignature), (err, profile, loggedOut) => {
+					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unable to validate signature');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -578,7 +595,7 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(samlResponseValidSignatures, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidSignatures), (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
@@ -594,7 +611,7 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidAssertionSignature), (err, profile, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
@@ -609,7 +626,7 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(samlResponseValidSignatures, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidSignatures), (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
@@ -625,7 +642,7 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidAssertionSignature), (err, profile, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
@@ -640,7 +657,7 @@ describe('SAML', () => {
 				};
 
 				const parser = new ResponseParser(providerOptions);
-				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+				parser.validate(makeLoginResponseEnvelope(samlResponseValidAssertionSignature), (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
@@ -952,7 +969,7 @@ describe('SAML', () => {
 				.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 			const parser = new ResponseParser(serviceProviderOptions);
-			parser.validate(response, (err, profile, loggedOut) => {
+			parser.validate(makeLoginResponseEnvelope(response), (err, profile, loggedOut) => {
 				expect(profile).to.be.an('object');
 				expect(err).to.be.null;
 				expect(loggedOut).to.be.false;

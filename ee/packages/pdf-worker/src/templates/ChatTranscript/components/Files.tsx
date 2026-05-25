@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';

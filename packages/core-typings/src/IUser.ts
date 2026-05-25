@@ -190,7 +190,6 @@ export interface IUser extends IRocketChatRecord {
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt: Date;
 	e2e?: {
 		private_key: string;
 		public_key: string;
@@ -234,7 +233,7 @@ export interface IUser extends IRocketChatRecord {
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
 	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
-
+	providerId?: string;
 	abacAttributes?: IAbacAttributeDefinition[];
 }
 

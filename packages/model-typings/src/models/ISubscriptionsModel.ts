@@ -153,6 +153,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult>;
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult>;
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult>;
+	updateDraftByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], draft: string | undefined): Promise<null | WithId<ISubscription>>;
 
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	findByToken(token: string, options?: FindOptions): FindCursor<ISubscription>;
@@ -346,6 +347,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findBannedByRoomId(roomId: ISubscription['rid']): FindCursor<ISubscription>;
 	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult>;
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
 	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T>;
 }

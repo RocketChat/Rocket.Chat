@@ -36,6 +36,7 @@ jobs:
       source-hash: ${{ steps.source.outputs.hash }}
       packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
       meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
+      github-actions-changed: ${{ steps.diff.outputs.actions-changed }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
@@ -132,6 +133,16 @@ jobs:
           DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> "$GITHUB_OUTPUT"
+
+      - id: diff
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PR_NUM: ${{ github.event.number }}
+        run: |
+          if gh pr diff --name-only --repo "${GITHUB_REPOSITORY}" "${GH_PR_NUM}" | grep -q -e .github/workflows -e .github/actions; then
+            echo "Workflow changes detected"
+            echo "actions-changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
@@ -235,7 +246,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
@@ -479,6 +490,32 @@ jobs:
           baseline-tag: develop
           size-thresholds: '{"rocketchat":{"mb":11}}'
 
+  actionlint:
+    name: 🔎 Code Check - Action Lint
+    needs: [release-versions]
+    if: needs.release-versions.outputs.github-actions-changed
+    runs-on: ubuntu-24.04-arm
+    env:
+      ACTIONLINT_VERSION: 1.7.12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Get actionlint
+        shell: bash
+        run: |
+          TAR_NAME="actionlint_${ACTIONLINT_VERSION}_$(echo "${RUNNER_OS}_${RUNNER_ARCH}" | tr '[:upper:]' '[:lower:]').tar.gz"
+          echo "Downloading ${TAR_NAME}..."
+          curl -fsSLO "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${TAR_NAME}"
+          curl -fsSLo checksums.txt "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_checksums.txt"
+          grep " ${TAR_NAME}$" "checksums.txt" | sha256sum -c -
+          tar -xzf "${TAR_NAME}" actionlint
+
+      - name: Run actionlint
+        shell: bash
+        run: |
+          ./actionlint -color
+
+
   checks:
     needs: [release-versions, packages-build]
 
@@ -658,7 +695,7 @@ jobs:
           cache-modules: true
           install: true
 
-      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
 
       - name: Restore turbo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -746,7 +783,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Use Node.js
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
@@ -772,7 +809,7 @@ jobs:
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
@@ -781,7 +818,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .

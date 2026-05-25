@@ -52,7 +52,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'editedBy._id': 1 }, sparse: true },
 			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
-			{ key: { msg: 'text' } },
+			// The text index on `msg` is managed at startup by `ensureMessagesTextIndex`
+			// because its shape is controlled by the `USE_ROOM_SEARCH_INDEX` env var
+			// (default `{ msg: 'text' }` vs. room-scoped `{ rid: 1, msg: 'text' }`).
 			{ key: { 'file._id': 1 }, sparse: true },
 			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
@@ -130,13 +132,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.findPaginated(query, options);
-	}
-
-	// TODO: do we need this? currently not used anywhere
-	findDiscussionsByRoom(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
-
-		return this.find(query, options);
 	}
 
 	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
@@ -351,16 +346,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		return this.find(
-			{
-				rid,
-				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
-			},
-			options,
-		);
-	}
-
 	findVisibleByRoomIdNotContainingTypesBeforeTs(
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
@@ -398,38 +383,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypesAndUsers(
-		roomId: IRoom['_id'],
-		types: IMessage['t'][],
-		users?: string[],
-		options?: FindOptions<IMessage>,
-		showThreadMessages = true,
-	): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			_hidden: {
-				$ne: true,
-			},
-			...(Array.isArray(users) && users.length > 0 && { 'u._id': { $nin: users } }),
-			rid: roomId,
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
 	findLivechatMessagesWithoutTypes(
 		rid: IRoom['_id'],
 		ignoredTypes: IMessage['t'][],
@@ -460,10 +413,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 		);
-	}
-
-	async addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
-		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
 	}
 
 	async countRoomsWithStarredMessages(options: AggregateOptions): Promise<number> {
@@ -530,16 +479,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	findPinned(options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			t: { $ne: 'rm' as MessageTypesValues },
-			_hidden: { $ne: true },
-			pinned: true,
-		};
-
-		return this.find(query, options);
-	}
-
 	countPinned(options?: CountDocumentsOptions): Promise<number> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' as MessageTypesValues },
@@ -559,15 +498,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.findPaginated(query, options);
-	}
-
-	findStarred(options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			'_hidden': { $ne: true },
-			'starred._id': { $exists: true },
-		};
-
-		return this.find(query, options);
 	}
 
 	countStarred(options?: CountDocumentsOptions): Promise<number> {
@@ -1379,6 +1309,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	setReceiptsArchivedById(ids: string[], archived: boolean): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				_id: { $in: ids },
+			},
+			{
+				$set: {
+					receiptsArchived: archived,
+				},
+			},
+		);
 	}
 
 	// INSERT

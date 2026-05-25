@@ -24,12 +24,6 @@ export class ReadStateManager extends Emitter {
 		return this.rid;
 	}
 
-	// TODO: Use ref to get unreadMark
-	// private unreadMark?: HTMLElement;
-	private get unreadMark() {
-		return document.querySelector<HTMLElement>('.rcx-message-divider--unread');
-	}
-
 	public onUnreadStateChange = (callback: () => void): (() => void) => {
 		return this.on('unread-state-change', callback);
 	};
@@ -115,12 +109,10 @@ export class ReadStateManager extends Emitter {
 		};
 	};
 
-	private isUnreadMarkVisible(): boolean {
-		if (!this.unreadMark) {
-			return false;
-		}
+	private isUnreadMarkVisible: () => boolean = () => false;
 
-		return this.unreadMark.offsetTop > (this.unreadMark.offsetParent?.scrollTop || 0);
+	public setIsUnreadMarkVisibleCallback(callback: () => boolean) {
+		this.isUnreadMarkVisible = callback;
 	}
 
 	// This will only mark as read if the unread mark is visible
@@ -134,11 +126,11 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (this.unreadMark && !this.isUnreadMarkVisible()) {
+		if (this.firstUnreadRecordId && this.isUnreadMarkVisible() === false) {
 			return;
 		}
 		// if there are unloaded unread messages, don't mark as read
-		if (RoomHistoryManager.getRoom(this.rid).unreadNotLoaded.get() > 0) {
+		if (RoomHistoryManager.getRoom(this.rid).unreadNotLoaded > 0) {
 			return;
 		}
 
@@ -160,7 +152,7 @@ export class ReadStateManager extends Emitter {
 		}
 
 		return sdk.rest.post('/v1/subscriptions.read', { rid: this.rid }).then(() => {
-			RoomHistoryManager.getRoom(this.rid).unreadNotLoaded.set(0);
+			RoomHistoryManager.updateRoom(this.rid, { unreadNotLoaded: 0 });
 		});
 	}
 }
