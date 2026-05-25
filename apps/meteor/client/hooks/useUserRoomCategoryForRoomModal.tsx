@@ -133,7 +133,7 @@ const UserRoomCategoryForRoomModal = ({ roomId, roomName, onClose }: UserRoomCat
 										{t('User_room_category_remove_from', { name: containingCategory.name })}
 									</Button>
 								)}
-								<Button secondary small onClick={openCreateCategoryModal}>
+								<Button secondary onClick={openCreateCategoryModal}>
 									{t('Create_user_room_category')}
 								</Button>
 							</Box>
