@@ -11,8 +11,11 @@ const mockSettings = {
 	get: sinon.stub(),
 };
 
+const mockHasRoleAsync = sinon.stub();
+
 const { conditionalLockAgent } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/conditionalLockAgent', {
 	'@rocket.chat/models': { Users: mockUsers },
+	'../../../authorization/server/functions/hasRole': { hasRoleAsync: mockHasRoleAsync },
 	'../../../settings/server': { settings: mockSettings },
 });
 
@@ -21,11 +24,13 @@ describe('conditionalLockAgent', () => {
 		mockUsers.acquireAgentLock.reset();
 		mockUsers.releaseAgentLock.reset();
 		mockSettings.get.reset();
+		mockHasRoleAsync.reset();
 	});
 
 	describe('when waiting_queue is enabled', () => {
 		beforeEach(() => {
 			mockSettings.get.withArgs('Livechat_waiting_queue').returns(true);
+			mockHasRoleAsync.resolves(false);
 		});
 
 		it('should return acquired: true when lock is successfully acquired', async () => {
@@ -59,6 +64,16 @@ describe('conditionalLockAgent', () => {
 			expect(mockUsers.releaseAgentLock.firstCall.args[0]).to.equal('agent1');
 			expect(mockUsers.releaseAgentLock.firstCall.args[1]).to.be.instanceOf(Date);
 		});
+
+		it('should skip lock acquisition for bot agents', async () => {
+			mockHasRoleAsync.resolves(true);
+
+			const result = await conditionalLockAgent('agent1');
+
+			expect(result.acquired).to.equal(false);
+			expect(result.required).to.equal(false);
+			expect(mockUsers.acquireAgentLock.called).to.equal(false);
+		});
 	});
 
 	describe('when waiting_queue is disabled', () => {
@@ -72,6 +87,7 @@ describe('conditionalLockAgent', () => {
 			expect(result.acquired).to.equal(false);
 			expect(result.required).to.equal(false);
 			expect(mockUsers.acquireAgentLock.called).to.equal(false);
+			expect(mockHasRoleAsync.called).to.equal(false);
 		});
 
 		it('should have a no-op unlock function', async () => {
