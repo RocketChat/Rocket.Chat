@@ -19,7 +19,9 @@ export function parseDigestHeader(authHeader: string): DigestAuthHeader {
 		throw new Error('Failed to parse Digest Header');
 	}
 
-	const qop = getValue(authHeader, 'qop')?.split(',');
+	const qop = getValue(authHeader, 'qop')
+		?.split(',')
+		.map((qop) => qop.trim());
 	const algorithm = authHeader.match(/algorithm="?([^",\s]+)"?/)?.[1];
 	const opaque = getValue(authHeader, 'opaque');
 
