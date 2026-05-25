@@ -4,6 +4,7 @@ import { useMethod, useUserId, usePermission, useUserSubscription, useStream, us
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { memo, useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LIST_GAP_PX = 4;
 const LIST_MAX_HEIGHT_PX = 300;
@@ -59,6 +60,7 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 	const { openTab } = useRoomToolbox();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		const unsubscribeMessages = subscribeToRoomMessages(message.rid, (msg) => {
@@ -153,7 +155,7 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	});
 
 	const hasPermission = usePermission('mark-message-as-important', message.rid);
-	const hasRole = subscription?.roles?.includes('important-message-marker') ?? hasRoleFromQuery;
+	const hasRole = (subscription?.roles?.includes('important-message-marker') ?? false) || hasRoleFromQuery;
 	const canMarkMessagesAsImportant = hasPermission || hasRole;
 
 	const { data: readUsers = [], isLoading: isLoadingRead } = useQuery<User[]>({
@@ -216,7 +218,8 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 				is='button'
 				ref={buttonRef}
 				onClick={handleClick}
-				title='Read by information'
+				aria-label={t('Read_by_information')}
+				title={t('Read_by_information')}
 				data-important-message-info-button
 				style={{
 					background: 'none',
@@ -254,11 +257,11 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 					data-important-message-list
 				>
 					<Box fontWeight='700' mbe='x8' fontSize='p2'>
-						Read by ({readCount})
+						{t('Read_by')} ({readCount})
 					</Box>
 
 					{isLoadingRead ? (
-						<Box>Loading...</Box>
+						<Box>{t('Loading...')}</Box>
 					) : readUsers.length > 0 ? (
 						<Box>
 							{readUsers.map((user) => (
@@ -285,7 +288,7 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 							))}
 						</Box>
 					) : (
-						<Box fontSize='p2'>No one has read this message yet</Box>
+						<Box fontSize='p2'>{t('No_one_has_read_this_important_message_yet')}</Box>
 					)}
 				</Box>
 			)}

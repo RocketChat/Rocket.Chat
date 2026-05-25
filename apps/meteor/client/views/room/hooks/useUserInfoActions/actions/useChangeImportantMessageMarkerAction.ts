@@ -6,7 +6,6 @@ import {
 	useUserSubscription,
 	useToastMessageDispatch,
 	useUserId,
-	useUser,
 	useMethod,
 	useStream,
 } from '@rocket.chat/ui-contexts';
@@ -23,10 +22,6 @@ export const useChangeImportantMessageMarkerAction = (
 	const room = useUserRoom(rid);
 	const { _id: uid, username } = user;
 	const currentUserId = useUserId();
-	const currentUser = useUser();
-	
-	const currentUserRoles = currentUser?.roles || [];
-	
 	const userSubscription = useUserSubscription(rid);
 	
 	const userCanSetImportantMessageMarker = usePermission('set-important-message-marker', rid);
@@ -35,16 +30,10 @@ export const useChangeImportantMessageMarkerAction = (
 	const queryClient = useQueryClient();
 	const subscribeToNotifyLogged = useStream('notify-logged');
 
-	if (!room) {
-		throw Error('Room not provided');
-	}
+	const roomCanSetImportantMessageMarker = room
+		? getRoomDirectives({ room, showingUserId: uid, userSubscription }).roomCanSetImportantMessageMarker
+		: false;
 
-	const { roomCanSetImportantMessageMarker } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
-	
-	const isCurrentUserPrivileged = currentUserRoles.some((role: string) => 
-		['admin', 'owner'].includes(role)
-	);
-	
 	useEffect(() => {
 		const unsubscribe = subscribeToNotifyLogged('roles-change', (role) => {
 			if (role.u?._id === uid && (role.scope === rid || !role.scope)) {
@@ -118,19 +107,18 @@ export const useChangeImportantMessageMarkerAction = (
 		} catch (error) {
 			console.error('[useChangeImportantMessageMarkerAction] Error changing role:', error);
 
-			const message =
-				error && typeof error === 'object' && 'message' in error
-					? (error as any).message
-					: String(error);
-
 			dispatchToastMessage({
 				type: 'error',
-				message: `Failed to change role: ${message}`,
+				message: error,
 			});
 		}
 	});
 
 	const changeRoleOption = useMemo(() => {
+		if (!room) {
+			return undefined;
+		}
+
 		if (uid === currentUserId) {
 			return undefined;
 		}
@@ -140,10 +128,6 @@ export const useChangeImportantMessageMarkerAction = (
 		}
 
 		if (!userCanSetImportantMessageMarker) {
-			return undefined;
-		}
-
-		if (!isCurrentUserPrivileged) {
 			return undefined;
 		}
 
@@ -160,14 +144,14 @@ export const useChangeImportantMessageMarkerAction = (
 			type: 'privileges' as UserInfoActionType,
 		};
 	}, [
-		hasRole, 
-		roomCanSetImportantMessageMarker, 
+		room,
+		hasRole,
+		roomCanSetImportantMessageMarker,
 		userCanSetImportantMessageMarker,
-		isCurrentUserPrivileged,
 		isTargetPrivileged,
-		changeRoleAction, 
-		uid, 
-		currentUserId
+		changeRoleAction,
+		uid,
+		currentUserId,
 	]);
 
 	return changeRoleOption;

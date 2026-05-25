@@ -160,11 +160,17 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (message.isImportant) {
-			console.log('[sendMessage] Received important message:', { 
-				messageId: message._id, 
-				userId: user._id, 
-				roomId: message.rid 
-			});
+			if (!message.rid) {
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+					method: 'sendMessage',
+				});
+			}
+
+			if (!(await hasPermissionAsync(user._id, 'mark-message-as-important', message.rid))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+					method: 'sendMessage',
+				});
+			}
 		}
 
 		if (MessageTypes.isSystemMessage(message)) {
@@ -172,15 +178,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			const result = await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
-			if (message.isImportant) {
-				console.log('[sendMessage] Important message saved successfully:', { messageId: result._id });
-			}
-			return result;
+			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
 		} catch (error: any) {
-			if (message.isImportant) {
-				console.error('[sendMessage] Error saving important message:', error);
-			}
 			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
 					method: 'sendMessage',

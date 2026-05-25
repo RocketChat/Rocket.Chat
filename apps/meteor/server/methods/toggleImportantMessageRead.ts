@@ -1,4 +1,4 @@
-import { Messages } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -32,6 +32,13 @@ Meteor.methods({
 		if (!message.isImportant) {
 			console.error('[toggleImportantMessageRead] Message not marked as important:', messageId);
 			throw new Meteor.Error('error-not-important-message', 'Message is not marked as important', {
+				method: 'toggleImportantMessageRead',
+			});
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(message.rid, userId);
+		if (!subscription) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'toggleImportantMessageRead',
 			});
 		}

@@ -4,6 +4,7 @@ import { useUserId, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-c
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { memo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ImportantMessageReadInfo from './ImportantMessageReadInfo';
 
@@ -16,6 +17,7 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 	const toggleImportantMessageRead = useMethod('toggleImportantMessageRead');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 	
 	const serverIsRead = message.importantReadBy?.includes(userId || '') ?? false;
 	const [isRead, setIsRead] = useState(serverIsRead);
@@ -37,16 +39,10 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 		try {
 			await toggleImportantMessageRead(message._id);
 			
-			await Promise.all([
-				queryClient.refetchQueries({ 
-					queryKey: ['important-message-readers', message._id],
-					type: 'active'
-				}),
-				queryClient.refetchQueries({ 
-					queryKey: ['important-message-non-readers', message._id],
-					type: 'active'
-				})
-			]);
+			await queryClient.refetchQueries({
+				queryKey: ['important-message-readers', message._id],
+				type: 'active',
+			});
 			
 			console.log('[ImportantMessageReadButton] Read status toggled successfully');
 		} catch (error) {
@@ -71,7 +67,7 @@ const ImportantMessageReadButton = ({ message }: ImportantMessageReadButtonProps
 				data-important-message-button
 				data-important-message-controls
 			>
-				{isRead ? 'Message read' : 'Mark as read'}
+				{isRead ? t('Important_message_read') : t('Important_message_mark_as_read')}
 			</Button>
 			<ImportantMessageReadInfo message={message} />
 		</Box>

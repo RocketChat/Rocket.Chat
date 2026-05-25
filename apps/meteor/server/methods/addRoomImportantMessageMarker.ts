@@ -77,12 +77,17 @@ export const addRoomImportantMessageMarker = async (
 	}
 
 	const fromUser = await Users.findOneById(fromUserId);
+	if (!fromUser) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'addRoomImportantMessageMarker',
+		});
+	}
 
 	await Message.saveSystemMessage(
 		'subscription-role-added',
 		rid,
 		user.username,
-		fromUser!,
+		fromUser,
 		{ role: 'important-message-marker' },
 	);
 

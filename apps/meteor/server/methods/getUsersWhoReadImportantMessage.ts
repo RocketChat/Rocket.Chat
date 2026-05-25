@@ -1,6 +1,8 @@
-import { Messages, Users, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+
+import { hasAtLeastOnePermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
@@ -32,6 +34,25 @@ Meteor.methods({
 		if (!message.isImportant) {
 			console.error('[getUsersWhoReadImportantMessage] Message not marked as important:', messageId);
 			throw new Meteor.Error('error-not-important-message', 'Message is not marked as important', {
+				method: 'getUsersWhoReadImportantMessage',
+			});
+		}
+
+		const callerSubscription = await Subscriptions.findOneByRoomIdAndUserId(message.rid, userId);
+		if (!callerSubscription) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'getUsersWhoReadImportantMessage',
+			});
+		}
+
+		const canViewReaders = await hasAtLeastOnePermissionAsync(
+			userId,
+			['mark-message-as-important', 'set-important-message-marker'],
+			message.rid,
+		);
+
+		if (!canViewReaders) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getUsersWhoReadImportantMessage',
 			});
 		}

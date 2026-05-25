@@ -80,7 +80,7 @@ const MessageBoxActionsToolbar = ({
 	});
 	
 	const hasPermission = usePermission('mark-message-as-important', rid);
-	const hasRole = subscription?.roles?.includes('important-message-marker') ?? hasRoleFromQuery;
+	const hasRole = (subscription?.roles?.includes('important-message-marker') ?? false) || hasRoleFromQuery;
 	const canMarkMessagesAsImportant = hasPermission || hasRole;
 
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
