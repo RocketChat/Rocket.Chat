@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -83,6 +85,42 @@ export class MatrixMediaService {
 		} catch (err) {
 			logger.error({ msg: 'Error retrieving local file', err });
 			return null;
+		}
+	}
+
+	static async uploadFromAppService(params: {
+		buffer: Buffer;
+		fileName: string;
+		mimeType: string;
+		userId: string;
+	}): Promise<{ mediaId: string; mxcUri: string }> {
+		try {
+			const serverName = federationSDK.getConfig('serverName');
+			const mediaId = crypto.randomUUID().replace(/-/g, ''); // TODO maybe change to @rocket.chat/random ?
+			const mxcUri = this.generateMXCUri(mediaId, serverName);
+
+			await Upload.uploadFile({
+				userId: params.userId,
+				buffer: params.buffer,
+				details: {
+					name: params.fileName,
+					size: params.buffer.length,
+					type: params.mimeType,
+					rid: '',
+					userId: params.userId,
+				},
+				federation: {
+					mxcUri,
+					mrid: '',
+					serverName,
+					mediaId,
+				},
+			});
+
+			return { mediaId, mxcUri };
+		} catch (err) {
+			logger.error({ msg: 'Error uploading file from app service', err });
+			throw err;
 		}
 	}
 

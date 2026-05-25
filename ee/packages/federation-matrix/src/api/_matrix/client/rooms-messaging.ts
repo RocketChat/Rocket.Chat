@@ -1,5 +1,5 @@
 import { api, FederationMatrix } from '@rocket.chat/core-services';
-import type { PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
+import type { FileMessageContent, FileMessageType, PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Rooms } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
@@ -170,8 +170,43 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 					};
 				}
 
+				const fileMsgtypes: FileMessageType[] = ['m.image', 'm.file', 'm.audio', 'm.video'];
+				const isFileMessage = fileMsgtypes.includes(body.msgtype);
+
+				if (isFileMessage && typeof body.url !== 'string') {
+					return {
+						statusCode: 400,
+						body: {
+							errcode: 'M_BAD_JSON',
+							error: `${body.msgtype} requires a string url field`,
+						},
+					};
+				}
+
 				// TODO: deduplicate by txnId to handle bridge retries
 				try {
+					if (isFileMessage) {
+						const fileContent: FileMessageContent = {
+							body: body.body,
+							msgtype: body.msgtype,
+							url: body.url,
+							info: body.info,
+						};
+						const event = await federationSDK.sendFileMessage(roomId, fileContent, senderId);
+
+						await FederationMatrix.saveFederationMessage({
+							event: event.event as PduForType<'m.room.message'>,
+							event_id: event.eventId,
+						});
+
+						return {
+							statusCode: 200,
+							body: {
+								event_id: event.eventId,
+							},
+						};
+					}
+
 					const event = await federationSDK.sendMessage(roomId, body.body, body.formatted_body ?? body.body, senderId);
 
 					await FederationMatrix.saveFederationMessage({ event: event.event as PduForType<'m.room.message'>, event_id: event.eventId });

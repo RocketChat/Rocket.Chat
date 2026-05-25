@@ -1,7 +1,9 @@
 import crypto from 'crypto';
 
+import { Upload } from '@rocket.chat/core-services';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { Users } from '@rocket.chat/models';
+import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
 import { isAppServiceAuthenticatedMiddleware } from '../middlewares/isAppServiceAuthenticated';
@@ -26,6 +28,49 @@ const UploadResponseSchema = {
 };
 
 const isUploadResponseProps = ajv.compile(UploadResponseSchema);
+
+const UploadQuerySchema = {
+	type: 'object',
+	properties: {
+		filename: { type: 'string' },
+		user_id: { type: 'string' },
+		access_token: { type: 'string' },
+	},
+};
+
+const isUploadQueryProps = ajvQuery.compile<{
+	filename?: string;
+	user_id?: string;
+	access_token?: string;
+}>(UploadQuerySchema);
+
+const ThumbnailParamsSchema = {
+	type: 'object',
+	properties: {
+		serverName: { type: 'string' },
+		mediaId: { type: 'string' },
+	},
+	required: ['serverName', 'mediaId'],
+};
+
+const isThumbnailParamsProps = ajv.compile(ThumbnailParamsSchema);
+
+const ThumbnailQuerySchema = {
+	type: 'object',
+	properties: {
+		width: { oneOf: [{ type: 'number' }, { type: 'string' }] },
+		height: { oneOf: [{ type: 'number' }, { type: 'string' }] },
+		method: { type: 'string', enum: ['crop', 'scale'] },
+		access_token: { type: 'string' },
+	},
+};
+
+const isThumbnailQueryProps = ajvQuery.compile<{
+	width?: number | string;
+	height?: number | string;
+	method?: 'crop' | 'scale';
+	access_token?: string;
+}>(ThumbnailQuerySchema);
 
 const DownloadParamsSchema = {
 	type: 'object',
@@ -95,24 +140,68 @@ export const getMatrixMediaBridgeRoutes = () => {
 			.post(
 				'/v3/upload',
 				{
+					query: isUploadQueryProps,
 					response: {
 						200: isUploadResponseProps,
+						400: isMatrixErrorProps,
 						401: isMatrixErrorProps,
-						501: isMatrixErrorProps,
+						413: isMatrixErrorProps,
+						500: isMatrixErrorProps,
 					},
 					tags,
 					license,
 				},
 				isAppServiceAuthenticatedMiddleware(),
-				async () => {
-					// TODO: integrate with Rocket.Chat upload pipeline (FileUpload + MatrixMediaService.generateMXCUri)
-					return {
-						statusCode: 501,
-						body: {
-							errcode: 'M_UNRECOGNIZED',
-							error: 'AS media upload not yet implemented',
-						},
-					};
+				async (c) => {
+					try {
+						const senderId = c.get('impersonatedUserId') as string;
+						const fileName = c.req.query('filename') || `upload-${Date.now()}`;
+						const mimeType = c.req.header('content-type') || 'application/octet-stream';
+
+						const user = await Users.findOneByUsername(senderId, { projection: { _id: 1 } });
+						if (!user) {
+							return {
+								statusCode: 401,
+								body: {
+									errcode: 'M_UNKNOWN_TOKEN',
+									error: 'Impersonated user not found',
+								},
+							};
+						}
+
+						const arrayBuffer = await c.req.raw.arrayBuffer();
+						if (!arrayBuffer.byteLength) {
+							return {
+								statusCode: 400,
+								body: {
+									errcode: 'M_BAD_REQUEST',
+									error: 'Empty upload body',
+								},
+							};
+						}
+
+						const buffer = Buffer.from(arrayBuffer);
+
+						const { mxcUri } = await MatrixMediaService.uploadFromAppService({
+							buffer,
+							fileName,
+							mimeType,
+							userId: user._id,
+						});
+
+						return {
+							statusCode: 200,
+							body: { content_uri: mxcUri },
+						};
+					} catch (error) {
+						return {
+							statusCode: 500,
+							body: {
+								errcode: 'M_UNKNOWN',
+								error: 'Failed to upload media',
+							},
+						};
+					}
 				},
 			)
 
@@ -171,24 +260,75 @@ export const getMatrixMediaBridgeRoutes = () => {
 			.get(
 				'/v3/thumbnail/:serverName/:mediaId',
 				{
-					params: isDownloadParamsProps,
+					params: isThumbnailParamsProps,
+					query: isThumbnailQueryProps,
 					response: {
 						200: isBufferResponseProps,
+						400: isMatrixErrorProps,
 						401: isMatrixErrorProps,
-						501: isMatrixErrorProps,
+						404: isMatrixErrorProps,
+						500: isMatrixErrorProps,
 					},
 					tags,
 					license,
 				},
 				isAppServiceAuthenticatedMiddleware(),
-				async () => {
-					return {
-						statusCode: 501,
-						body: {
-							errcode: 'M_UNRECOGNIZED',
-							error: 'Media thumbnail not yet implemented',
-						},
-					};
+				async (c) => {
+					try {
+						const serverName = c.req.param('serverName') ?? '';
+						const mediaId = c.req.param('mediaId') ?? '';
+						const width = Number(c.req.query('width'));
+						const height = Number(c.req.query('height'));
+
+						if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+							return {
+								statusCode: 400,
+								body: { errcode: 'M_BAD_REQUEST', error: 'Invalid width or height' },
+							};
+						}
+
+						const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName);
+						if (!file) {
+							return {
+								statusCode: 404,
+								body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
+							};
+						}
+
+						if (!file.type?.startsWith('image/')) {
+							return {
+								statusCode: 400,
+								body: { errcode: 'M_BAD_REQUEST', error: 'Thumbnails are only supported for images' },
+							};
+						}
+
+						const stream = await Upload.streamUploadedFile({ file, imageResizeOpts: { width, height } });
+
+						const chunks: Buffer[] = [];
+						for await (const chunk of stream) {
+							chunks.push(chunk as Buffer);
+						}
+						const buffer = Buffer.concat(chunks);
+
+						const mimeType = file.type || 'image/jpeg';
+						const fileName = file.name || mediaId;
+						const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
+
+						return {
+							statusCode: 200,
+							headers: {
+								...SECURITY_HEADERS,
+								'content-type': multipartResponse.contentType,
+								'content-length': String(multipartResponse.body.length),
+							},
+							body: multipartResponse.body,
+						};
+					} catch (error) {
+						return {
+							statusCode: 500,
+							body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
+						};
+					}
 				},
 			)
 

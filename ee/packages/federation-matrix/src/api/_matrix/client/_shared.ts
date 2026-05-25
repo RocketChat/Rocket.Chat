@@ -78,3 +78,14 @@ const UserIdParamsSchema = {
 };
 
 export const isUserIdParamsProps = ajv.compile(UserIdParamsSchema);
+
+const ProfileFieldParamsSchema = {
+	type: 'object',
+	properties: {
+		userId: { type: 'string', pattern: MATRIX_USER_ID_PATTERN },
+		field: { type: 'string' },
+	},
+	required: ['userId', 'field'],
+};
+
+export const isProfileFieldParamsProps = ajv.compile(ProfileFieldParamsSchema);
