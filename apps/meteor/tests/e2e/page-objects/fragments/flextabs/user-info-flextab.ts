@@ -29,6 +29,18 @@ export class UserInfoFlexTab extends FlexTab {
 		return this.root.getByLabel('Username');
 	}
 
+	phoneLink(phoneNumber: string): Locator {
+		return this.root.locator(`a[href="tel:${phoneNumber}"]`);
+	}
+
+	phoneLinkWithLabel(phoneNumber: string, label: string): Locator {
+		return this.root.locator(`a[href="tel:${phoneNumber}"]`, { hasText: label });
+	}
+
+	get phoneLinks(): Locator {
+		return this.root.locator('a[href^="tel:"]');
+	}
+
 	async openMoreActions() {
 		await this.btnMoreActions.click();
 	}
