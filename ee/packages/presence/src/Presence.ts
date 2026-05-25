@@ -47,7 +47,7 @@ export class Presence extends ServiceClass implements IPresence {
 			}
 
 			// always store the number of connections per instance so we can show correct in the UI
-			if (diff?.hasOwnProperty('extraInformation.conns')) {
+			if (diff && Object.hasOwn(diff, 'extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
 				this.peakConnections = Math.max(this.peakConnections, this.getTotalConnections());

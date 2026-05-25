@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { Random } from '@rocket.chat/random';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { Tracker } from 'meteor/tracker';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,19 +34,13 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 
 			roomCoordinator.openRouteLink(result.t, result);
 
-			Tracker.autorun((c) => {
-				if (openedRoom !== result.rid) {
-					return;
-				}
-
+			if (openedRoom === result.rid) {
 				callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
 					rid: result.rid,
 					msg: t('Apps_Game_Center_Play_Game_Together', { name }),
 				});
-
-				c.stop();
-			});
+			}
 			onClose();
 		} catch (err) {
 			console.warn(err);

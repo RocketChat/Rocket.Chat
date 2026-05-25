@@ -974,7 +974,7 @@ export type ChatEndpoints = {
 		GET: (params: ChatSyncMessages) => {
 			result: {
 				updated: IMessage[];
-				deleted: IMessage[];
+				deleted: { _id: IMessage['_id']; _deletedAt: string }[];
 				cursor: {
 					next: string | null;
 					previous: string | null;

@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 
+import { Streamer } from '../../../../server/modules/streamer/streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../server/modules/streamer/types';
 
 type UserPresenceStreamProps = {
@@ -48,7 +49,17 @@ class UserPresence {
 
 	run = (args: UserPresenceStreamArgs): void => {
 		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
-		if (payload) this.publication._session.socket?.send(payload);
+		if (!payload) {
+			return;
+		}
+		// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+		// we were just not counting on this, session is _session so we actually should not use it
+		// now after any await, the session can potentially be null, so we need to check for that
+		if (!Streamer.isPublicationActive(this.publication)) {
+			return;
+		}
+
+		this.publication._session.socket.send(payload);
 	};
 
 	stop(): void {

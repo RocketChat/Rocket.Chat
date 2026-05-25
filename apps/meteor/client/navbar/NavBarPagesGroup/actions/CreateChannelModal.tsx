@@ -3,15 +3,7 @@ import {
 	Box,
 	Modal,
 	Button,
-	TextInput,
 	Icon,
-	Field,
-	ToggleSwitch,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
 	Accordion,
 	AccordionItem,
 	ModalHeader,
@@ -21,6 +13,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { TextInput, Field, ToggleSwitch, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -30,7 +23,7 @@ import {
 	usePermissionWithScopedRoles,
 	usePermission,
 } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -104,7 +97,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const canOnlyCreateOneType = useCreateChannelTypePermission(mainRoom?._id);
 
 	const {
-		register,
 		formState: { errors },
 		handleSubmit,
 		control,
@@ -196,14 +188,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
 
 	const createChannelFormId = useId();
-	const nameId = useId();
-	const topicId = useId();
-	const privateId = useId();
-	const federatedId = useId();
-	const readOnlyId = useId();
-	const encryptedId = useId();
-	const broadcastId = useId();
-	const addMembersId = useId();
 
 	return (
 		<Modal
@@ -219,39 +203,37 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			<ModalContent mbe={2}>
 				<FieldGroup mbe={24}>
 					<Field>
-						<FieldLabel required htmlFor={nameId}>
-							{t('Name')}
-						</FieldLabel>
+						<FieldLabel required>{t('Name')}</FieldLabel>
 						<FieldRow>
-							<TextInput
-								id={nameId}
-								{...register('name', {
+							<Controller
+								control={control}
+								name='name'
+								rules={{
 									required: t('Required_field', { field: t('Name') }),
 									validate: (value) => validateChannelName(value),
-								})}
-								error={errors.name?.message}
-								addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
-								aria-invalid={errors.name ? 'true' : 'false'}
-								aria-describedby={`${nameId}-error ${nameId}-hint`}
-								aria-required='true'
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										error={errors.name?.message}
+										addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
+										aria-required='true'
+									/>
+								)}
 							/>
 						</FieldRow>
-						{errors.name && (
-							<FieldError aria-live='assertive' id={`${nameId}-error`}>
-								{errors.name.message}
-							</FieldError>
-						)}
-						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces_or_special_characters')}</FieldHint>}
+						{errors.name && <FieldError>{errors.name.message}</FieldError>}
+						{!allowSpecialNames && <FieldHint>{t('No_spaces_or_special_characters')}</FieldHint>}
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldLabel>{t('Topic')}</FieldLabel>
 						<FieldRow>
-							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+							<Controller control={control} name='topic' render={({ field }) => <TextInput {...field} />} />
 						</FieldRow>
-						<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						<FieldHint>{t('Displayed_next_to_name')}</FieldHint>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={addMembersId}>{t('Members')}</FieldLabel>
+						<FieldLabel>{t('Members')}</FieldLabel>
 						<Controller
 							control={control}
 							name='members'
@@ -259,43 +241,26 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 								validate: (members) =>
 									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
 							}}
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple
-									id={addMembersId}
-									value={value}
-									onChange={onChange}
-									federated={federated}
-									placeholder={t('Add_people')}
-								/>
-							)}
+							render={({ field }) => <UserAutoCompleteMultiple {...field} federated={federated} placeholder={t('Add_people')} />}
 						/>
-						{errors.members && (
-							<FieldError aria-live='assertive' id={`${addMembersId}-error`}>
-								{errors.members.message}
-							</FieldError>
-						)}
+						{errors.members && <FieldError>{errors.members.message}</FieldError>}
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={privateId}>{t('Private')}</FieldLabel>
+							<FieldLabel>{t('Private')}</FieldLabel>
 							<Controller
 								control={control}
 								name='isPrivate'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
+								render={({ field: { value, ...field } }) => (
 									<ToggleSwitch
-										id={privateId}
-										aria-describedby={`${privateId}-hint`}
-										ref={ref}
+										{...field}
 										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
-										onChange={onChange}
 									/>
 								)}
 							/>
 						</FieldRow>
-						<FieldHint id={`${privateId}-hint`}>
-							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
-						</FieldHint>
+						<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
 					</Field>
 				</FieldGroup>
 				<Accordion>
@@ -306,97 +271,51 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 							</Box>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={federatedId} id={`${federatedId}-label`}>
-										{t('Federation_Matrix_Federated')}
-									</FieldLabel>
+									<FieldLabel>{t('Federation_Matrix_Federated')}</FieldLabel>
 									<Controller
 										control={control}
 										name='federated'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch
-												aria-describedby={`${federatedId}-hint`}
-												aria-labelledby={`${federatedId}-label`}
-												id={federatedId}
-												ref={ref}
-												checked={value}
-												disabled={!canUseFederation}
-												onChange={onChange}
-											/>
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
 									/>
 								</FieldRow>
-								<FieldHint id={`${federatedId}-hint`}>{t(federationFieldHint)}</FieldHint>
+								<FieldHint>{t(federationFieldHint)}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={encryptedId} id={`${encryptedId}-label`}>
-										{t('Encrypted')}
-									</FieldLabel>
+									<FieldLabel>{t('Encrypted')}</FieldLabel>
 									<Controller
 										control={control}
 										name='encrypted'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch
-												id={encryptedId}
-												ref={ref}
-												checked={value}
-												disabled={e2eDisabled}
-												onChange={onChange}
-												aria-describedby={`${encryptedId}-hint`}
-												aria-labelledby={`${encryptedId}-label`}
-											/>
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={e2eDisabled} />}
 									/>
 								</FieldRow>
-								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
+								<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={readOnlyId} id={`${readOnlyId}-label`}>
-										{t('Read_only')}
-									</FieldLabel>
+									<FieldLabel>{t('Read_only')}</FieldLabel>
 									<Controller
 										control={control}
 										name='readOnly'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch
-												id={readOnlyId}
-												aria-describedby={`${readOnlyId}-hint`}
-												aria-labelledby={`${readOnlyId}-label`}
-												ref={ref}
-												checked={value}
-												disabled={!canSetReadOnly || broadcast || federated}
-												onChange={onChange}
-											/>
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${readOnlyId}-hint`}>
+								<FieldHint>
 									{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('Anyone_can_send_new_messages')}
 								</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={broadcastId} id={`${broadcastId}-label`}>
-										{t('Broadcast')}
-									</FieldLabel>
+									<FieldLabel>{t('Broadcast')}</FieldLabel>
 									<Controller
 										control={control}
 										name='broadcast'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch
-												aria-describedby={`${broadcastId}-hint`}
-												aria-labelledby={`${broadcastId}-label`}
-												id={broadcastId}
-												ref={ref}
-												checked={value}
-												disabled={!!federated}
-												onChange={onChange}
-											/>
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
 									/>
 								</FieldRow>
-								{broadcast && <FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
+								{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
 							</Field>
 						</FieldGroup>
 					</AccordionItem>

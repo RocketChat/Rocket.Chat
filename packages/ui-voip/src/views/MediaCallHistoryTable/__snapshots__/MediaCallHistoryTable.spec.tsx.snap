@@ -197,6 +197,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -467,6 +468,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -739,6 +741,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -1009,6 +1012,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -1281,6 +1285,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -1551,6 +1556,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -1823,6 +1829,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -2093,6 +2100,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -2365,6 +2373,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -2635,6 +2644,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -2907,6 +2917,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -3177,6 +3188,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -3449,6 +3461,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -3719,6 +3732,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -3991,6 +4005,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -4261,6 +4276,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -4533,6 +4549,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -4803,6 +4820,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -5075,6 +5093,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -5345,6 +5364,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -5617,6 +5637,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -5887,6 +5908,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -6159,6 +6181,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -6429,6 +6452,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -6701,6 +6725,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -6971,6 +6996,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -7243,6 +7269,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -7513,6 +7540,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -7785,6 +7813,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -8055,6 +8084,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -8327,6 +8357,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -8597,6 +8628,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -8869,6 +8901,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"
@@ -9139,6 +9172,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1rtu0k9"
                       >
                         <svg
+                          aria-hidden="true"
                           class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
                           fill="none"
                           height="12"

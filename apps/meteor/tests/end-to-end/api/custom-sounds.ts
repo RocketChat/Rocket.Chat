@@ -1,48 +1,32 @@
 import { randomUUID } from 'crypto';
-import { readFileSync } from 'fs';
 import path from 'path';
 
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
-async function insertOrUpdateSound(fileName: string, fileId?: string): Promise<string> {
-	fileId = fileId ?? '';
+async function createCustomSound(fileName: string, filePath: string): Promise<string> {
+	let fileId = '';
 
 	await request
-		.post(api('method.call/insertOrUpdateSound'))
+		.post(api('custom-sounds.create'))
 		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				msg: 'method',
-				id: '1',
-				method: 'insertOrUpdateSound',
-				params: [{ name: fileName, extension: 'mp3', newFile: true }],
-			}),
-		})
+		.attach('sound', filePath)
+		.field('name', fileName)
 		.expect(200)
 		.expect((res) => {
-			fileId = JSON.parse(res.body.message).result;
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('sound');
+			fileId = res.body.sound._id;
 		});
 
 	return fileId;
-}
-
-async function uploadCustomSound(binary: string, fileName: string, fileId: string) {
-	await request
-		.post(api('method.call/uploadCustomSound'))
-		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				msg: 'method',
-				id: '2',
-				method: 'uploadCustomSound',
-				params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
-			}),
-		})
-		.expect(200);
 }
 
 async function deleteCustomSound(_id: string) {
@@ -62,37 +46,322 @@ async function deleteCustomSound(_id: string) {
 
 describe('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
+	const mockWavAudioPath = path.resolve(__dirname, '../../mocks/files/audio_mock.wav');
+	const mockMp3AudioPath = path.resolve(__dirname, '../../mocks/files/audio_mock.mp3');
+
 	let fileId: string;
 	let fileId2: string;
 	let uploadDate: string | undefined;
-	let binary: string;
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
-		binary = data.toString('binary');
-
-		fileId = await insertOrUpdateSound(fileName);
-		fileId2 = await insertOrUpdateSound(`${fileName}-2`);
-
-		await uploadCustomSound(binary, fileName, fileId);
-		await uploadCustomSound(binary, `${fileName}-2`, fileId2);
+		fileId = await createCustomSound(fileName, mockWavAudioPath);
+		fileId2 = await createCustomSound(`${fileName}-2`, mockWavAudioPath);
 	});
 
-	after(() =>
-		request
-			.post(api('method.call/deleteCustomSound'))
-			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					msg: 'method',
-					id: '33',
-					method: 'deleteCustomSound',
-					params: [fileId],
-				}),
-			}),
-	);
+	after(async () => {
+		if (fileId) {
+			await deleteCustomSound(fileId);
+		}
+		if (fileId2) {
+			await deleteCustomSound(fileId2);
+		}
+	});
+
+	describe('[/custom-sounds.create]', () => {
+		let fileId3: string;
+
+		after(async () => {
+			if (fileId3) {
+				await deleteCustomSound(fileId3);
+			}
+		});
+
+		it('should successfully create a new custom sound and return its _id', async () => {
+			const response = await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('name', `happy-path-sound-${randomUUID()}`)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('sound').and.to.be.an('object');
+					expect(res.body.sound).to.have.property('_id').and.to.be.a('string');
+				});
+			fileId3 = response.body.sound._id;
+		});
+
+		it('should not be able to create two sounds with the same name', async () => {
+			await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('name', fileName)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
+				});
+		});
+
+		it('should return unauthorized if not authenticated', async () => {
+			await request.post(api('custom-sounds.create')).expect(401);
+		});
+
+		it('should fail if the file exceeds the 5MB size limit', async () => {
+			const largeBuffer = Buffer.alloc(6 * 1024 * 1024, 'a');
+
+			await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', largeBuffer, { filename: 'large.wav', contentType: 'audio/wav' })
+				.field('name', 'large-sound')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error').and.to.be.equal('[error-file-too-large]');
+				});
+		});
+
+		it('should fail if the file is an invalid mime type', async () => {
+			await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', Buffer.from('this is not audio'), { filename: 'test.txt', contentType: 'text/plain' })
+				.field('name', 'invalid-sound')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.equal('MIME type not allowed');
+				});
+		});
+
+		it('should reject injection of invalid characters and symbols in name', async () => {
+			await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('name', '<script>alert("xss")</script>')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('is not a valid name');
+				});
+		});
+
+		it('should reject NoSQL regex injection in name', async () => {
+			await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('name', '{"$regex":".*"}')
+				.expect(400);
+		});
+
+		describe('without manage-sounds permission', () => {
+			let unauthorizedUser: IUser;
+			let unauthorizedUserCredentials: Credentials;
+
+			before(async () => {
+				unauthorizedUser = await createUser();
+				unauthorizedUserCredentials = await login(unauthorizedUser.username, password);
+			});
+
+			after(async () => {
+				await deleteUser(unauthorizedUser);
+			});
+
+			it('should return forbidden if user does not have the manage-sounds permission', async () => {
+				await request
+					.post(api('custom-sounds.create'))
+					.set(unauthorizedUserCredentials)
+					.attach('sound', mockWavAudioPath)
+					.field('name', `forbidden-sound-${randomUUID()}`)
+					.expect(403);
+			});
+		});
+	});
+
+	describe('[/custom-sounds.update]', () => {
+		let previousFileName: string;
+
+		before(async () => {
+			await request
+				.get(api('custom-sounds.getOne'))
+				.set(credentials)
+				.query({ _id: fileId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('sound').and.to.be.an('object');
+					previousFileName = res.body.sound.name;
+				});
+		});
+
+		after(async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.field('_id', fileId)
+				.field('name', previousFileName)
+				.attach('sound', mockWavAudioPath)
+				.expect(200);
+		});
+
+		it('should successfully update only the name of the sound without sending the file again', async () => {
+			const newSoundName = `${fileName}-updated`;
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.field('_id', fileId)
+				.field('name', newSoundName)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('custom-sounds.getOne'))
+				.set(credentials)
+				.query({ _id: fileId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('sound').and.to.be.an('object');
+					expect(res.body.sound).to.have.property('name').and.to.be.equal(newSoundName);
+				});
+		});
+
+		it('should successfully update the sound file and name', async () => {
+			const newSoundName = `${fileName}-2-updated`;
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', mockMp3AudioPath)
+				.field('_id', fileId)
+				.field('name', newSoundName)
+				.expect(200);
+
+			await request
+				.get(api('custom-sounds.getOne'))
+				.set(credentials)
+				.query({ _id: fileId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('sound').and.to.be.an('object');
+					expect(res.body.sound).to.have.property('name').and.to.be.equal(newSoundName);
+					expect(res.body.sound).to.have.property('extension').and.to.be.equal('mp3');
+				});
+		});
+
+		it('should not be able to update sounds name if the name was already taken', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('_id', fileId)
+				.field('name', `${fileName}-2`)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
+				});
+		});
+
+		it('should return unauthorized if not authenticated', async () => {
+			await request.post(api('custom-sounds.update')).expect(401);
+		});
+
+		it('should reject injection of invalid characters and symbols in name', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('_id', fileId)
+				.field('name', '<script>alert("xss")</script>')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('is not a valid name');
+				});
+		});
+
+		it('should reject NoSQL regex injection in name', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('_id', fileId)
+				.field('name', '{"$regex":".*"}')
+				.expect(400);
+		});
+
+		it('should fail if the file exceeds the 5MB size limit', async () => {
+			const largeBuffer = Buffer.alloc(6 * 1024 * 1024, 'a');
+
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', largeBuffer, { filename: 'large.wav', contentType: 'audio/wav' })
+				.field('_id', fileId)
+				.field('name', 'large-sound')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error').and.to.be.equal('[error-file-too-large]');
+				});
+		});
+
+		it('should return an error when trying to update a non-existent sound', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.field('_id', 'invalid-id-123')
+				.field('name', 'new-name')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.equal('Custom Sound not found.');
+				});
+		});
+
+		it('should fail if attempting to update with an invalid mime type file', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', Buffer.from('fake-audio'), { filename: 'test.mp4', contentType: 'video/mp4' })
+				.field('_id', fileId)
+				.field('name', fileName)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.error).to.equal('MIME type not allowed');
+				});
+		});
+
+		describe('without manage-sounds permission', async () => {
+			let unauthorizedUser: IUser;
+			let unauthorizedUserCredentials: Credentials;
+
+			before(async () => {
+				unauthorizedUser = await createUser();
+				unauthorizedUserCredentials = await login(unauthorizedUser.username, password);
+			});
+
+			after(async () => {
+				await deleteUser(unauthorizedUser);
+			});
+
+			it('should return forbidden if user does not have the manage-sounds permission', async () => {
+				await request
+					.post(api('custom-sounds.update'))
+					.set(unauthorizedUserCredentials)
+					.attach('sound', mockWavAudioPath)
+					.field('_id', fileId)
+					.field('name', `forbidden-case`)
+					.expect(403);
+			});
+		});
+	});
 
 	describe('[/custom-sounds.list]', () => {
 		it('should return custom sounds', (done) => {
@@ -261,13 +530,12 @@ describe('[CustomSounds]', () => {
 
 		before(async () => {
 			await updateSetting('CustomSounds_FileSystemPath', '', false);
+
 			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
-			fsFileId = await insertOrUpdateSound(`${fileName}-3`);
-			await uploadCustomSound(binary, `${fileName}-3`, fsFileId);
+			fsFileId = await createCustomSound(`${fileName}-3`, mockWavAudioPath);
 
 			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
-			gridFsFileId = await insertOrUpdateSound(`${fileName}-4`);
-			await uploadCustomSound(binary, `${fileName}-4`, gridFsFileId);
+			gridFsFileId = await createCustomSound(`${fileName}-4`, mockWavAudioPath);
 		});
 
 		after(async () => {

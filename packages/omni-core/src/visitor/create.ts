@@ -17,7 +17,7 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 export const registerGuest = makeFunction(
 	async (
 		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE, externalIds }: RegisterGuestType,
-		{ shouldConsiderIdleAgent }: { shouldConsiderIdleAgent: boolean },
+		{ shouldConsiderIdleAgent, shouldConsiderOfflineAgent }: { shouldConsiderIdleAgent: boolean; shouldConsiderOfflineAgent: boolean },
 	): Promise<ILivechatVisitor | null> => {
 		if (!token) {
 			throw Error('error-invalid-token');
@@ -40,7 +40,7 @@ export const registerGuest = makeFunction(
 
 			const contact = await LivechatContacts.findContactByEmailAndContactManager(visitorEmail);
 			if (contact?.contactManager) {
-				const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, {
+				const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, shouldConsiderOfflineAgent, {
 					projection: { _id: 1, username: 1, name: 1, emails: 1 },
 				});
 				if (agent?.username && agent.name && agent.emails) {

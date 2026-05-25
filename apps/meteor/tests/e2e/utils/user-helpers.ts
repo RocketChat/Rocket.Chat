@@ -3,7 +3,8 @@ import type { APIResponse } from '@playwright/test';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import type { BaseTest } from './test';
-import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
+import { BASE_URL, DEFAULT_USER_CREDENTIALS } from '../config/constants';
+import type { IUserState } from '../fixtures/userStates';
 
 export interface ICreateUserOptions {
 	username?: string;
@@ -58,6 +59,63 @@ export async function createTestUser(api: BaseTest['api'], options: ICreateUserO
 			const response = await api.post('/users.delete', { userId: user._id });
 			this.markAsDeleted();
 			return response;
+		},
+	};
+}
+
+/**
+ * Logs in a test user via the REST API and returns an IUserState
+ * suitable for use with createAuxContext.
+ *
+ * Use this instead of the pre-baked Users.userN fixtures whenever the test
+ * will deactivate (or otherwise invalidate the session of) the user, so that
+ * shared fixture tokens are never corrupted.
+ */
+export async function loginTestUser(api: BaseTest['api'], user: ITestUser): Promise<IUserState> {
+	const response = await api.post('/login', {
+		username: user.data.username,
+		password: DEFAULT_USER_CREDENTIALS.password,
+	});
+	const {
+		data: { userId, authToken },
+	} = await response.json();
+
+	const expires = new Date();
+	expires.setFullYear(expires.getFullYear() + 1);
+
+	return {
+		data: {
+			_id: userId,
+			username: user.data.username,
+			loginToken: authToken,
+			loginExpire: expires,
+			hashedToken: '',
+		},
+		state: {
+			cookies: [
+				{ sameSite: 'Lax', name: 'rc_uid', value: userId, domain: 'localhost', path: '/', expires: -1, httpOnly: false, secure: false },
+				{
+					sameSite: 'Lax',
+					name: 'rc_token',
+					value: authToken,
+					domain: 'localhost',
+					path: '/',
+					expires: -1,
+					httpOnly: false,
+					secure: false,
+				},
+			],
+			origins: [
+				{
+					origin: BASE_URL,
+					localStorage: [
+						{ name: 'userLanguage', value: 'en-US' },
+						{ name: 'Meteor.loginToken', value: authToken },
+						{ name: 'Meteor.loginTokenExpires', value: expires.toISOString() },
+						{ name: 'Meteor.userId', value: userId },
+					],
+				},
+			],
 		},
 	};
 }

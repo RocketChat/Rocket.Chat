@@ -25,7 +25,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 		const { current: root } = rootRef;
 
 		if (root) {
-			initialize(root);
+			initialize({ target: root });
 
 			const instance = osInstance();
 			if (!instance || !ref) {

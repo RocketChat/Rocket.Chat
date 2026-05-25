@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/license",
-	"version": "1.1.13",
+	"version": "1.1.16",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -20,15 +20,15 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
-		"bcrypt": "^5.1.1"
+		"bcrypt": "^6.0.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/bcrypt": "^5.0.2",
+		"@types/bcrypt": "^6.0.0",
 		"@types/jest": "~30.0.0",
-		"@types/ws": "^8.5.13",
-		"eslint": "~9.39.3",
+		"@types/ws": "^8.5.14",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.9.3"

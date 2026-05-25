@@ -144,7 +144,7 @@ export class GlobalSignalProcessor {
 			return;
 		}
 
-		await Promise.all(calls.map((call) => this.reactToUnknownCall(uid, call, signal).catch(() => null)));
+		await Promise.allSettled(calls.map((call) => this.reactToUnknownCall(uid, call, signal)));
 	}
 
 	private async reactToUnknownCall(uid: IUser['_id'], call: IMediaCall, signal: ClientMediaSignalRegister): Promise<void> {
@@ -167,6 +167,17 @@ export class GlobalSignalProcessor {
 			}
 		} else {
 			await mediaCallDirector.renewCallId(call._id);
+		}
+
+		if (call.state !== 'active') {
+			const otherActor = role === 'caller' ? call.callee : call.caller;
+			if (otherActor.type === 'user') {
+				this.sendSignal(otherActor.id, {
+					callId: call._id,
+					type: 'notification',
+					notification: 'trying',
+				});
+			}
 		}
 
 		if (!signal.requestSignals) {

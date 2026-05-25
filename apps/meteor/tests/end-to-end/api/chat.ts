@@ -3416,7 +3416,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
@@ -3475,7 +3475,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
@@ -3676,7 +3676,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 					expect(res.body.error).to.include(`must have required property 'roomId'`);
 				})
 				.end(done);
@@ -3736,7 +3736,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 					expect(res.body.error).to.include('must be equal to one of the allowed values');
 				})
 				.end(done);
@@ -4111,7 +4111,7 @@ describe('Threads', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4127,7 +4127,7 @@ describe('Threads', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4310,7 +4310,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4328,7 +4328,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4347,7 +4347,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4568,7 +4568,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4586,7 +4586,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4605,7 +4605,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});

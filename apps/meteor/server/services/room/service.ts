@@ -375,4 +375,20 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			tmid,
 		});
 	}
+
+	async unbanAndInviteUser(
+		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void> {
+		await Subscriptions.unbanToInvitedById(subscription._id, inviterUser);
+
+		void notifyOnSubscriptionChangedById(subscription._id, 'updated');
+
+		if (inviteeUser?.username) {
+			await Message.saveSystemMessage('ui', subscription.rid, inviteeUser.username, inviteeUser, {
+				u: { _id: inviterUser._id, username: inviterUser.username },
+			});
+		}
+	}
 }

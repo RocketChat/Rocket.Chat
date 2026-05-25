@@ -31,7 +31,7 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 			return <PreviewInlineElements>{firstBlock.value}</PreviewInlineElements>;
 
 		case 'HEADING':
-			return <>{firstBlock.value.map((plain) => plain.value).join('')}</>;
+			return <PreviewInlineElements>{firstBlock.value}</PreviewInlineElements>;
 
 		case 'UNORDERED_LIST':
 		case 'ORDERED_LIST': {
