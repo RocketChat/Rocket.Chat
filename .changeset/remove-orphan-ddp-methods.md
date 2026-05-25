@@ -2,7 +2,7 @@
 '@rocket.chat/meteor': major
 ---
 
-**Breaking:** Removed 87 orphan Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
+**Breaking:** Removed 86 orphan Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
 
 Removed methods:
 
@@ -74,7 +74,6 @@ Removed methods:
 - `saveNotificationSettings` — use `POST /v1/rooms.saveNotification`
 - `saveSetting` — use `POST /v1/settings/:_id`
 - `saveUserPreferences` — use `POST /v1/users.setPreferences`
-- `sendForgotPasswordEmail` — use `POST /v1/users.forgotPassword`
 - `sendMessageLivechat`
 - `sendSMTPTestEmail`
 - `setEmail` — use `POST /v1/users.update`
