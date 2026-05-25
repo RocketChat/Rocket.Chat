@@ -1,5 +1,19 @@
 # @rocket.chat/models
 
+## 1.6.12
+
+### Patch Changes
+
+- ([#40633](https://github.com/RocketChat/Rocket.Chat/pull/40633) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures OAuth tokens are cleaned up after user deactivation
+
+- ([#40570](https://github.com/RocketChat/Rocket.Chat/pull/40570) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures that deactivated users have their login tokens cleaned up in users.deactivateidle
+
+- <details><summary>Updated dependencies [1d6d62250ea310c2816e4722e03a484d73fd82b6, efeacccbf2a2cb64fa38ba58edbbc82744f68f92]:</summary>
+
+  - @rocket.chat/model-typings@1.7.12
+  - @rocket.chat/rest-typings@7.10.12
+  </details>
+
 ## 1.6.11
 
 ### Patch Changes
