@@ -3,7 +3,15 @@ import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
-import { isEmptyObjectResponseProps, isImpersonationQueryProps, isMatrixErrorProps, isUserIdParamsProps, license, tags } from './_shared';
+import {
+	isEmptyObjectResponseProps,
+	isImpersonationQueryProps,
+	isMatrixErrorProps,
+	isProfileFieldParamsProps,
+	isUserIdParamsProps,
+	license,
+	tags,
+} from './_shared';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const ProfileGetResponseSchema = {
@@ -73,6 +81,65 @@ export const addProfileRoutes = (router: ClientRouter) => {
 						body: {
 							displayname: profile.displayname,
 							...(profile.avatar_url ? { avatar_url: profile.avatar_url } : {}),
+						},
+					};
+				} catch (error) {
+					return {
+						statusCode: 500,
+						body: {
+							errcode: 'M_UNKNOWN',
+							error: 'Failed to fetch profile',
+						},
+					};
+				}
+			},
+		)
+
+		// GET /_matrix/client/v3/profile/:userId/:field
+		.get(
+			'/v3/profile/:userId/:field',
+			{
+				params: isProfileFieldParamsProps,
+				response: {
+					200: isProfileGetResponseProps,
+					401: isMatrixErrorProps,
+					404: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const userId = c.req.param('userId');
+				const field = c.req.param('field');
+
+				if (!field) {
+					return {
+						statusCode: 500,
+						body: {
+							errcode: 'M_UNKNOWN',
+							error: 'Failed to fetch profile',
+						},
+					};
+				}
+
+				try {
+					// TODO maybe this can be a query to our models instead of going through the federation-sdk
+					const profile = await federationSDK.queryProfile(userId);
+					if (!profile) {
+						return {
+							statusCode: 404,
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Profile not found',
+							},
+						};
+					}
+					return {
+						statusCode: 200,
+						body: {
+							[field]: profile[field as keyof typeof profile],
 						},
 					};
 				} catch (error) {
