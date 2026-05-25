@@ -7,6 +7,7 @@ import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeB
 import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
+import { mapMessageFromApi } from '../../utils/mapMessageFromApi';
 import type { ChatAPI } from '../ChatAPI';
 import { afterSendMessageCallback } from './afterSendMessageCallback';
 import { processMessageEditing } from './processMessageEditing';
@@ -47,12 +48,17 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 
 	chat.composer?.clear();
 	await runOptimisticSendMessage(message);
-	await sdk.call('sendMessage', message, previewUrls);
 
-	// after the request is complete we can go ahead and mark as sent
+	const { message: saved } = await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
+
+	// Replace the optimistic temp record with the server-rendered message so
+	// downstream consumers (composer quote preview, message list, threads)
+	// see the final shape — `attachments[]`, `urls[]`, `mentions[]`, etc. —
+	// in the same tick the REST call resolves. Mirrors the Minimongo replication
+	// that the DDP `sendMessage` method used to trigger.
 	Messages.state.update(
-		(record) => record._id === message._id && record.temp === true,
-		({ temp: _, ...record }) => record,
+		(record) => record._id === message._id,
+		() => mapMessageFromApi(saved),
 	);
 };
 
