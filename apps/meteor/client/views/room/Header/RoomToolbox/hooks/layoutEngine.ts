@@ -1,7 +1,7 @@
 import type { RoomToolboxLayoutConfig, RoomToolboxBaseAction } from './layoutEngine.types';
 
 export const processActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
-	if (!config || !config.items || config.items.length === 0) {
+	if (!config || config.items?.length === 0) {
 		return {
 			featuredActions: [],
 			visibleActions: actionsBase,

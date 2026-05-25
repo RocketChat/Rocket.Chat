@@ -68,6 +68,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 	it('should fall back to default maxVisibleNormal (6) when not specified in config', () => {
 		const actionsBase = [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }, { id: '6' }, { id: '7' }];
 		const config = {
+			maxVisibleNormal: 6,
 			items: [
 				{ id: '1', featured: false, order: 1 },
 				{ id: '2', featured: false, order: 2 },
