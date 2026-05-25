@@ -41,6 +41,7 @@ import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
 import type { SetupWizardEndpoints } from './v1/setupWizard';
 import type { StatisticsEndpoints } from './v1/statistics';
+import type { CronJobsEndpoints } from './v1/cronJobs';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
 import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
@@ -96,6 +97,7 @@ export interface Endpoints
 		AuthEndpoints,
 		ImportEndpoints,
 		ServerEventsEndpoints,
+		CronJobsEndpoints,
 		TwoFactorChallengesEndpoints,
 		DefaultEndpoints {}
 
@@ -257,6 +259,7 @@ export * from './v1/users/UsersRequestDataDownloadParamsGET';
 export * from './v1/users/UsersGetPresenceParamsGET';
 export * from './v1/users/UsersGetStatusParamsGET';
 export * from './v1/moderation';
+export * from './v1/cronJobs';
 export * from './v1/server-events';
 export * from './v1/statistics';
 
