@@ -88,7 +88,7 @@ export async function process2faAsyncReturn<TResult>({
 	onCode,
 	emailOrUsername,
 }: {
-	error: unknown;
+	error: MeteorErrorLike | undefined;
 	onCode: (code: string, method: string) => TResult | Promise<TResult>;
 	emailOrUsername: string | null | undefined;
 }): Promise<TResult> {

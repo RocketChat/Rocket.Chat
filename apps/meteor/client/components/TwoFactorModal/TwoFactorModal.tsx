@@ -10,7 +10,7 @@ export enum Method {
 	PASSWORD = 'password',
 }
 
-export type OnConfirm = (code: string) => void | Promise<void>;
+export type OnConfirm = (code: string, method: Method) => void | Promise<void>;
 
 type TwoFactorModalProps = {
 	onConfirm: OnConfirm;
