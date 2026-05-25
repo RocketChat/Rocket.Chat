@@ -18,6 +18,10 @@ const isTotpError = <TErrorType extends TwoFactorErrorTypes>(error: unknown, typ
 		return false;
 	}
 
+	if (!hasRequiredTwoFactorMethod(error)) {
+		return false;
+	}
+
 	if ('error' in error && error.error === type) {
 		return true;
 	}
