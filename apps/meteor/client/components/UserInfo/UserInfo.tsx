@@ -24,6 +24,7 @@ import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
+import { formatPhoneNumber } from '../../lib/formatPhoneNumber';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -35,7 +36,7 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
+		| 'phones'
 		| 'createdAt'
 		| 'statusText'
 		| 'canViewAllInfo'
@@ -64,7 +65,7 @@ const UserInfo = ({
 	avatarETag,
 	roles,
 	utcOffset,
-	phone,
+	phones,
 	email,
 	verified,
 	createdAt,
@@ -165,14 +166,21 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
+					{phones && phones.length > 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
-							</InfoPanelText>
+							{phones.map((p) => (
+								<InfoPanelText key={p.number} display='flex' flexDirection='row' alignItems='center'>
+									<Box is='a' withTruncatedText href={`tel:${p.number}`}>
+										{formatPhoneNumber(p.number)}
+									</Box>
+									{p.label && (
+										<Margins inline={4}>
+											<Tag>{p.label}</Tag>
+										</Margins>
+									)}
+								</InfoPanelText>
+							))}
 						</InfoPanelField>
 					)}
 

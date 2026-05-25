@@ -63,11 +63,15 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			lastLogin,
 			customFields,
 			phone,
+			phones,
 			nickname,
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
 		} = data.user;
+
+		const phonesFallback = phone ? [{ number: phone }] : undefined;
+		const normalizedPhones = phones ?? phonesFallback;
 
 		return {
 			_id,
@@ -80,7 +84,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phones: normalizedPhones,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),

@@ -16,11 +16,12 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import { useCallback } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -98,7 +99,23 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
-	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
+	const {
+		fields: phoneFields,
+		append: appendPhone,
+		remove: removePhone,
+	} = useFieldArray<AccountProfileFormValues>({ control, name: 'phones' });
+
+	const handleSave = async ({
+		email,
+		name,
+		username,
+		statusType,
+		statusText,
+		nickname,
+		bio,
+		customFields,
+		phones,
+	}: AccountProfileFormValues) => {
 		try {
 			await updateOwnBasicInfo({
 				data: {
@@ -111,6 +128,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					bio,
 				},
 				customFields,
+				phones,
 			});
 
 			await updateAvatar();
@@ -118,7 +136,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, phones });
 		}
 	};
 
@@ -291,6 +309,21 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
+
+				<Field>
+					<FieldLabel is='span' aria-hidden='true'>
+						{t('Phone_Number')}
+					</FieldLabel>
+					<FieldRow is='div'>
+						<PhoneNumberFieldList
+							control={control}
+							name='phones'
+							phones={phoneFields}
+							onAddPhone={appendPhone}
+							onRemovePhone={removePhone}
+						/>
+					</FieldRow>
+				</Field>
 			</FieldGroup>
 		</Box>
 	);

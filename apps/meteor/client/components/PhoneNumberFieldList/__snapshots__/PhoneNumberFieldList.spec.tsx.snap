@@ -1,0 +1,202 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PhoneNumberFieldList snapshots matches snapshot with no phones 1`] = `
+<body>
+  <div>
+    <fieldset
+      class="rcx-box rcx-box--full rcx-css-1g16yxh"
+    >
+      <legend
+        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+      >
+        Phone Number
+      </legend>
+      <ul
+        class="rcx-box rcx-box--full rcx-css-1a22y4u"
+        id="phones-phones-list"
+      />
+      <button
+        aria-controls="phones-phones-list"
+        class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1nmakuf"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-1hdf9ok"
+          >
+            
+          </i>
+          Add phone
+        </span>
+      </button>
+    </fieldset>
+  </div>
+</body>
+`;
+
+exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
+<body>
+  <div>
+    <fieldset
+      class="rcx-box rcx-box--full rcx-css-1g16yxh"
+    >
+      <legend
+        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+      >
+        Phone Number
+      </legend>
+      <ul
+        class="rcx-box rcx-box--full rcx-css-1a22y4u"
+        id="phones-phones-list"
+      >
+        <li
+          class="rcx-box rcx-box--full rcx-css-uz5pbi"
+          id="mock-phone-0"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-css-u93tip"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="react-aria-:r0:-label"
+              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            >
+              Phone number 1
+            </label>
+            <input
+              aria-describedby=""
+              aria-invalid="false"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-tel rcx-input-box rcx-css-t3n91h"
+              id="react-aria-:r0:-label"
+              name="phones.0.number"
+              placeholder="Phone number"
+              size="1"
+              type="tel"
+              value="+15551234567"
+            />
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-css-x4sk51"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="react-aria-:r1:-label"
+              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            >
+              Label for phone 1
+            </label>
+            <input
+              aria-describedby=""
+              aria-invalid="false"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+              id="react-aria-:r1:-label"
+              name="phones.0.label"
+              placeholder="Label"
+              size="1"
+              type="text"
+              value="Home"
+            />
+          </div>
+          <button
+            aria-controls="mock-phone-0"
+            aria-label="Remove phone Home"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1vd0t3o"
+            title="Remove phone Home"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </li>
+        <li
+          class="rcx-box rcx-box--full rcx-css-uz5pbi"
+          id="mock-phone-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-css-u93tip"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="react-aria-:r2:-label"
+              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            >
+              Phone number 2
+            </label>
+            <input
+              aria-describedby=""
+              aria-invalid="false"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-tel rcx-input-box rcx-css-t3n91h"
+              id="react-aria-:r2:-label"
+              name="phones.1.number"
+              placeholder="Phone number"
+              size="1"
+              type="tel"
+              value="+15559876543"
+            />
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-css-x4sk51"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="react-aria-:r3:-label"
+              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            >
+              Label for phone 2
+            </label>
+            <input
+              aria-describedby=""
+              aria-invalid="false"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+              id="react-aria-:r3:-label"
+              name="phones.1.label"
+              placeholder="Label"
+              size="1"
+              type="text"
+              value=""
+            />
+          </div>
+          <button
+            aria-controls="mock-phone-1"
+            aria-label="Remove phone 2"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1vd0t3o"
+            title="Remove phone 2"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </li>
+      </ul>
+      <button
+        aria-controls="phones-phones-list"
+        class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1nmakuf"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-1hdf9ok"
+          >
+            
+          </i>
+          Add phone
+        </span>
+      </button>
+    </fieldset>
+  </div>
+</body>
+`;
