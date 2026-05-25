@@ -63,6 +63,9 @@ const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalPro
 		if (state !== 'available') {
 			return {};
 		}
+		if (!('number' in contact) || !contact.number) {
+			return {};
+		}
 		return {
 			voiceCall: () => toggleWidget(contact),
 		};
