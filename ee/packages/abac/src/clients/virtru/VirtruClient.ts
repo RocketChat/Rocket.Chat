@@ -34,6 +34,7 @@ export class VirtruClient {
 			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
 				method: 'GET',
 				timeout: HEALTH_CHECK_TIMEOUT,
+				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
 			});
 
