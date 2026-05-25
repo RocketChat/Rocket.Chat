@@ -15,6 +15,7 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 	RoomHistoryManager: {
 		clear: jest.fn(),
 		getMoreIfIsEmpty: jest.fn(),
+		hasMoreNext: jest.fn(),
 	},
 }));
 
