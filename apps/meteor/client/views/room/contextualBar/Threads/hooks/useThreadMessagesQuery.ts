@@ -111,7 +111,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
 
 			const { messages } = await getThreadMessages({ tmid });
-			void readThreads(tmid);
+			void Promise.resolve(readThreads(tmid)).catch(() => undefined);
 			const filtered = messages
 				.map((m) => mapMessageFromApi(m))
 				.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);

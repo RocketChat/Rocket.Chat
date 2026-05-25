@@ -11,6 +11,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { callWithErrorHandling } from '../../lib/utils/callWithErrorHandling';
 
 type Username = Exclude<IUser['username'], undefined>;
 
@@ -35,7 +36,7 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 			roomCoordinator.openRouteLink(group.t, { rid: group._id, name: group.name });
 
 			if (openedRoom === group._id) {
-				void sdk.call('sendMessage', {
+				await callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
 					rid: group._id,
 					msg: t('Apps_Game_Center_Play_Game_Together', { name }),

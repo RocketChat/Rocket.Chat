@@ -44,7 +44,8 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 			dispatchToastMessage({ type: 'success', message: t('RegisterWorkspace_Syncing_Complete') });
 			setModal(null);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			const message = error instanceof Error ? error.message : t('RegisterWorkspace_Syncing_Error');
+			dispatchToastMessage({ type: 'error', message });
 		} finally {
 			onStatusChange?.();
 			setSyncing(false);
