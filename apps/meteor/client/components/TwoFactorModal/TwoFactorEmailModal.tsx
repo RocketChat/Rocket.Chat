@@ -1,7 +1,7 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -12,14 +12,14 @@ import { Method } from './TwoFactorModal';
 type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
-	resendEmail?: () => Promise<null>;
+	emailOrUsername: string;
 };
 
 type TwoFactorEmailFormData = {
 	code: string;
 };
 
-const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail }: TwoFactorEmailModalProps): ReactElement => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
@@ -33,12 +33,11 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail }: TwoFactorEmail
 		defaultValues: { code: '' },
 	});
 
+	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
+
 	const onClickResendCode = async (): Promise<void> => {
 		try {
-			if (!resendEmail) {
-				throw new Error('resendEmail is not defined');
-			}
-			await resendEmail();
+			await sendEmailCode({ emailOrUsername });
 			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
 		} catch (error) {
 			dispatchToastMessage({

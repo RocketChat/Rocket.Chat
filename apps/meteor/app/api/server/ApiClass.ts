@@ -144,7 +144,7 @@ const rateLimiterDictionary: Record<
 	}
 > = {};
 
-export const generateConnection = (
+const generateConnection = (
 	ipAddress: string,
 	httpHeaders: Record<string, any>,
 ): {
