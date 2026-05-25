@@ -75,6 +75,8 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				const serverName = federationSDK.getConfig('serverName');
 				const userId = `@${body.username}:${serverName}`;
 
+				// TODO may need to parse name and username, currently they're saved as @_xmpp_prince=2fmychannel=40conference.xmpp.host:rc.host
+
 				await createOrUpdateFederatedUser({
 					username: userId,
 					name: userId,

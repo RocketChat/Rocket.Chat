@@ -1,4 +1,5 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
+import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
@@ -56,6 +57,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			async (c) => {
 				const userId = c.req.param('userId');
 				try {
+					// TODO maybe this can be a query to our models instead of going through the federation-sdk
 					const profile = await federationSDK.queryProfile(userId);
 					if (!profile) {
 						return {
@@ -96,7 +98,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 					200: isEmptyObjectResponseProps,
 					401: isMatrixErrorProps,
 					403: isMatrixErrorProps,
-					501: isMatrixErrorProps,
+					404: isMatrixErrorProps,
 				},
 				tags,
 				license,
@@ -105,6 +107,8 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			async (c) => {
 				const userId = c.req.param('userId');
 				const senderId = c.get('impersonatedUserId') as string;
+
+				const body = await c.req.json();
 
 				if (userId !== senderId) {
 					return {
@@ -116,13 +120,22 @@ export const addProfileRoutes = (router: ClientRouter) => {
 					};
 				}
 
-				// TODO(federation-sdk): setUserProfile(userId, {displayname?, avatar_url?}) — global, propagates to rooms
+				const user = await Users.findOneByUsername(userId);
+				if (!user) {
+					return {
+						statusCode: 404,
+						body: {
+							errcode: 'M_NOT_FOUND',
+							error: 'User not found',
+						},
+					};
+				}
+
+				await Users.setName(user._id, body.displayname);
+
 				return {
-					statusCode: 501,
-					body: {
-						errcode: 'M_UNRECOGNIZED',
-						error: 'Global profile update not yet implemented',
-					},
+					statusCode: 200,
+					body: {},
 				};
 			},
 		)
