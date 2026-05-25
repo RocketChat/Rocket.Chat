@@ -13,7 +13,7 @@ import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait,
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
-import { updatePermission, updateSetting, restorePermissionToRoles } from '../../data/permissions.helper';
+import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -1080,7 +1080,7 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
+		it('should return the rooms when the user requests their own rooms but they do NOT have the necessary permission', (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
 					.get(api('users.info'))
@@ -1100,7 +1100,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it("should NOT return the rooms when the user request another user's rooms and he does NOT have the necessary permission", (done) => {
+		it("should NOT return the rooms when the user requests another user's rooms WITHOUT having the necessary permission", (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
 					.get(api('users.info'))
@@ -1118,7 +1118,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it("should NOT return any services fields when request to another user's info even if the user has the necessary permission", (done) => {
+		it("should NOT return any services fields when requesting another user's info, even if the user has the necessary permission", (done) => {
 			void updatePermission('view-full-other-user-info', ['admin']).then(() => {
 				void request
 					.get(api('users.info'))
@@ -1282,6 +1282,82 @@ describe('[Users]', () => {
 				});
 			});
 		});
+
+		(IS_EE ? describe : describe.skip)('querying by freeSwitch extension', () => {
+			let previousVoipSetting: boolean;
+			let targetUser: IUser;
+
+			before(async () => {
+				previousVoipSetting = (await getSettingValueById('VoIP_TeamCollab_SIP_Integration_Enabled')) as boolean;
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
+				targetUser = await createUser({ freeSwitchExtension: '123123' });
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('view-full-other-user-info');
+				await deleteUser(targetUser);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', previousVoipSetting);
+			});
+
+			describe("with 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', ['admin']);
+				});
+
+				it('should successfully return information on an existing user', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							freeSwitchExtension: targetUser.freeSwitchExtension,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user._id', targetUser._id);
+							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+						});
+				});
+				it('should return an error when user does not exist', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							freeSwitchExtension: 'this_is_a_fake_extension_that_does_not_exist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+			});
+
+			describe("without 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', []);
+				});
+
+				it('should successfully return information on an existing user', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							freeSwitchExtension: targetUser.freeSwitchExtension,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+						});
+				});
+			});
+		});
 	});
 	describe('[/users.getPresence]', () => {
 		it("should query a user's presence by userId", (done) => {
@@ -1390,6 +1466,48 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
 					})
 					.end(done);
+			});
+
+			it('should return presence for a single id', async () => {
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: 'rocket.cat' })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(1);
+				expect(res.body.users[0]).to.have.property('_id', 'rocket.cat');
+			});
+
+			it('should correctly parse comma-separated ids and not return an empty result', async () => {
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: `rocket.cat,${credentials['X-User-Id']}` })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				// only rocket.cat is guaranteed to be online; admin may be offline
+				expect(res.body.users.map((u: IUser) => u._id)).to.include('rocket.cat');
+			});
+
+			it('should return presence for repeated ids params', async () => {
+				const res = await request
+					.get(api('users.presence'))
+					.query(`ids=rocket.cat&ids=${credentials['X-User-Id']}`)
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				// only rocket.cat is guaranteed to be online; admin may be offline
+				expect(res.body.users.map((u: IUser) => u._id)).to.include('rocket.cat');
 			});
 
 			it('should return full list of online users for more than 10 minutes in the past', (done) => {
@@ -4769,6 +4887,29 @@ describe('[Users]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				});
+		});
+
+		it('should revoke login tokens of deactivated idle users', async () => {
+			const idleUser = await createUser();
+			await request.post(api('roles.addUserToRole')).set(credentials).send({ roleId: testRoleId, username: idleUser.username }).expect(200);
+
+			const idleUserCredentials = await login(idleUser.username, password);
+			await request.get(api('me')).set(idleUserCredentials).expect(200);
+
+			await updatePermission('edit-other-user-active-status', ['admin']);
+			await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({ daysIdle: 0, role: testRoleId })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').that.is.greaterThan(0);
+				});
+
+			await request.get(api('me')).set(idleUserCredentials).expect(401);
+
+			await deleteUser(idleUser);
 		});
 	});
 

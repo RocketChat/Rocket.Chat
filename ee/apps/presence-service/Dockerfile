@@ -1,4 +1,4 @@
-FROM node:22.22.2-alpine3.22 AS builder
+FROM node:22.22.3-alpine3.23 AS builder
 
 ARG SERVICE
 
@@ -17,7 +17,6 @@ COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
 COPY ./packages/apps-engine/package.json packages/apps-engine/package.json
-COPY ./packages/apps-engine/client packages/apps-engine/client
 COPY ./packages/apps-engine/definition packages/apps-engine/definition
 
 COPY ./packages/core-typings/package.json packages/core-typings/package.json
@@ -89,7 +88,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.22.2-alpine3.22
+FROM node:22.22.3-alpine3.23
 
 ARG SERVICE
 

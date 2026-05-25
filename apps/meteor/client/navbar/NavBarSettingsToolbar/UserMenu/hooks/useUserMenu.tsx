@@ -8,12 +8,14 @@ import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useKeyboardShortcutsModalHandler } from './useKeyboardShortcutsModalHandler';
 import { useStatusItems } from './useStatusItems';
+import { useUserDropdownAppsActionButtons } from '../../../../hooks/useUserDropdownAppsActionButtons';
 
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const appBoxItems = useUserDropdownAppsActionButtons();
 	const handleKeyboardShortcuts = useKeyboardShortcutsModalHandler();
 
 	const logout = useLogout();
@@ -51,6 +53,7 @@ export const useUserMenu = (user: IUser) => {
 		{
 			items: [keyboardShortcutsItem],
 		},
+		...(appBoxItems.isSuccess && appBoxItems.data?.length ? [{ title: t('Apps'), items: appBoxItems.data }] : []),
 		{
 			items: [logoutItem],
 		},

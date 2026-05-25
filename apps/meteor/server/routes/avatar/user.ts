@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IIncomingMessage } from '@rocket.chat/core-typings';

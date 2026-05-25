@@ -1,6 +1,6 @@
-import { mkdtemp } from 'fs/promises';
-import { tmpdir } from 'os';
-import path, { join } from 'path';
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path, { join } from 'node:path';
 
 import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';

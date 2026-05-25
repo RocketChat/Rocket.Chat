@@ -50,3 +50,8 @@ export const EJSON = {
 	clone: jest.fn((obj) => obj),
 	equals: jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
 };
+
+export const DDPCommon = {
+	parseDDP: jest.fn((msg: string) => JSON.parse(msg)),
+	stringifyDDP: jest.fn((msg: unknown) => JSON.stringify(msg)),
+};

@@ -1,4 +1,3 @@
-import type { FunctionalComponent } from 'preact';
 import { useContext, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
@@ -13,7 +12,7 @@ import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import { MultilineTextInput } from '../../components/Form/MultilineTextInput';
 import MarkdownBlock from '../../components/MarkdownBlock';
 import { ModalManager } from '../../components/Modal';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { parseOfflineMessage } from '../../helpers/parseOfflineMessage';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
@@ -22,7 +21,11 @@ import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 
-const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
+type LeaveMessageProps = {
+	path: string;
+};
+
+const LeaveMessage = (_: LeaveMessageProps) => {
 	const {
 		config: {
 			departments = [],
@@ -58,7 +61,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 			message,
 		};
 
-		await dispatch({ loading: true });
+		dispatch({ loading: true });
 
 		try {
 			// TODO: Remove intersection after ts refactor of parseOfflineMessage
@@ -73,10 +76,10 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 			const errorMessage = (error as { error: string })?.error;
 			console.error(errorMessage);
 			const alert = { id: createToken(), children: errorMessage, error: true, timeout: 5000 };
-			await dispatch({ alerts: (alerts.push(alert), alerts) });
+			dispatch({ alerts: (alerts.push(alert), alerts) });
 			return false;
 		} finally {
-			await dispatch({ loading: false });
+			dispatch({ loading: false });
 		}
 	};
 
@@ -88,7 +91,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 		<Screen title={customOfflineTitle || title || defaultTitle} color={offlineColor} className={createClassName(styles, 'leave-message')}>
 			{displayOfflineForm ? (
 				<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
-					<Screen.Content full>
+					<ScreenContent full>
 						<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 
 						<div className={createClassName(styles, 'leave-message__main-message')}>
@@ -158,22 +161,22 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 							</FormField>
 						</Form>
 						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
-					</Screen.Content>
+					</ScreenContent>
 				</FormScrollShadow>
 			) : (
-				<Screen.Content full>
+				<ScreenContent full>
 					<div className={createClassName(styles, 'leave-message__main-message')}>
 						<MarkdownBlock text={offlineUnavailableMessage || defaultUnavailableMessage} />
 					</div>
-				</Screen.Content>
+				</ScreenContent>
 			)}
-			<Screen.Footer>
+			<ScreenFooter>
 				{displayOfflineForm ? (
 					<Button loading={loading} form='leaveMessage' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 						{t('send')}
 					</Button>
 				) : null}
-			</Screen.Footer>
+			</ScreenFooter>
 		</Screen>
 	);
 };

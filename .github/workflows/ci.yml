@@ -246,7 +246,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@56219402aacc0d06b650d898c222996dbc1191ec # v2.3.14
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
@@ -695,7 +695,7 @@ jobs:
           cache-modules: true
           install: true
 
-      - uses: rharkor/caching-for-turbo@56219402aacc0d06b650d898c222996dbc1191ec # v2.3.14
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
 
       - name: Restore turbo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -809,7 +809,7 @@ jobs:
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
@@ -818,7 +818,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .

@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
