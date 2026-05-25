@@ -3,7 +3,9 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 
 import type { MitelCallItem } from '../definition';
 
-function getTypeData(typeOfCall: unknown): Pick<IMitelCallHistoryItem, 'direction' | 'state'> {
+function getTypeData(item: Partial<MitelCallItem>): Pick<IMitelCallHistoryItem, 'direction' | 'state'> {
+	const { typeOfCall, transferredCall } = item;
+
 	if (typeOfCall === 'incoming-missed') {
 		return {
 			direction: 'inbound',
@@ -12,6 +14,13 @@ function getTypeData(typeOfCall: unknown): Pick<IMitelCallHistoryItem, 'directio
 	}
 
 	const direction = typeof typeOfCall === 'string' && typeOfCall.includes('outgoing') ? 'outbound' : 'inbound';
+	if (transferredCall && direction === 'inbound') {
+		return {
+			direction,
+			state: 'transferred',
+		};
+	}
+
 	return {
 		direction,
 		state: 'ended',
@@ -22,16 +31,13 @@ export function convertMitelHistoryItem(item: Partial<MitelCallItem>, uid: IUser
 	const {
 		callIdentity: callId,
 		dateTime: ts,
-		typeOfCall,
 		directoryNumber,
 		duration = 0,
 		name,
-		// transferredCall: transferred,
-		// divertedCall: diverted,
-		// firstDialledNumber,
-		// remoteNumber,
-		// directoryNumber2: extraNumber,
-		// name2: extraContactName,
+		transferredCall: transferred,
+		divertedCall: diverted,
+		directoryNumber2: extraNumber,
+		name2: extraContactName,
 	} = item;
 
 	if (!callId) {
@@ -42,7 +48,20 @@ export function convertMitelHistoryItem(item: Partial<MitelCallItem>, uid: IUser
 		throw new Error('Missing TimeStamp');
 	}
 
-	const { direction, state } = getTypeData(typeOfCall);
+	const { direction, state } = getTypeData(item);
+
+	const hasExtraContact = direction === 'inbound' && Boolean(extraNumber || extraContactName);
+	const transferredFrom = diverted &&
+		hasExtraContact && {
+			...(extraNumber && { number: extraNumber }),
+			...(extraContactName && { name: extraContactName }),
+		};
+	const transferredTo = transferred &&
+		!diverted &&
+		hasExtraContact && {
+			...(extraNumber && { number: extraNumber }),
+			...(extraContactName && { name: extraContactName }),
+		};
 
 	return {
 		type: 'mitel',
@@ -55,15 +74,10 @@ export function convertMitelHistoryItem(item: Partial<MitelCallItem>, uid: IUser
 		...(directoryNumber && { contactNumber: directoryNumber }),
 		...(name && { contactName: name }),
 
-		// ...(transferred && { transferred }),
-		// ...(diverted && { diverted }),
-		// ...(firstDialledNumber && { firstDialledNumber }),
-		// ...(remoteNumber && { remoteNumber }),
-		// ...(extraNumber && {
-		// 	extra: {
-		// 		number: extraNumber,
-		// 		...(extraContactName && { contactName: extraContactName }),
-		// 	},
-		// }),
+		...(diverted && { diverted }),
+		...(transferredFrom && { transferredFrom }),
+
+		...(transferred && { transferred }),
+		...(transferredTo && { transferredTo }),
 	};
 }
