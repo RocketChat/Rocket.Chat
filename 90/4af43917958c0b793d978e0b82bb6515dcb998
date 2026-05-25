@@ -1,0 +1,46 @@
+apps/meteor/app/file-upload/server/lib/FileUpload.ts
+  s_b6dc24c3e1af9e::t_854d7e3b7e3484 140-142,149-150,155,164
+ee/packages/federation-matrix/src/api/_matrix/client/_shared.ts
+  h_4c386397e672f4 81-91
+ee/packages/federation-matrix/src/services/MatrixMediaService.ts
+  s_b6dc24c3e1af9e::t_4fdb9d61bf3939 91-98,101,103-111,118-119,121-126
+  s_b6dc24c3e1af9e::t_3e57438a5d53b8 1-2
+  h_4c386397e672f4 99
+  s_b6dc24c3e1af9e::t_13ef1dc10b699e 100,112-117
+  s_b6dc24c3e1af9e::t_6d67a3ef3334e8 102,120
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  s_b6dc24c3e1af9e::t_418b88a76513c5 2
+  s_b6dc24c3e1af9e::t_d87b4974645acd 173-185,188-209
+packages/core-services/src/types/IUploadService.ts
+  s_b6dc24c3e1af9e::t_e0a68db6b0ae99 10
+apps/meteor/server/services/upload/service.ts
+  s_b6dc24c3e1af9e::t_04491ac0048905 30,32
+ee/packages/federation-matrix/src/api/_matrix/media-bridge.ts
+  s_b6dc24c3e1af9e::t_13be2c4265bde3 143,146,148-149,155-184,186,188-189,191-204
+  s_b6dc24c3e1af9e::t_e65e1cf63b1dd0 263-264,267,269-270,276-331
+  h_4c386397e672f4 185,187,190
+  s_b6dc24c3e1af9e::t_f43c0e02cbb658 5-6
+  s_b6dc24c3e1af9e::t_1add853aa64632 3
+  s_b6dc24c3e1af9e::t_f613f5eadc6c13 32-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "904af43917958c0b793d978e0b82bb6515dcb998",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_b6dc24c3e1af9e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0fa1af77-cd26-4a4c-84d8-4b175e73b57f",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
