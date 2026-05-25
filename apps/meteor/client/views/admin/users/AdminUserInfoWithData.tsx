@@ -10,6 +10,7 @@ import AdminUserInfoActions from './AdminUserInfoActions';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
+import UserInfoPhoneNumberList from '../../../components/UserInfoPhoneNumberList';
 import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
@@ -55,6 +56,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			name,
 			username,
 			phone,
+			phones,
 			createdAt,
 			roles = [],
 			status,
@@ -70,6 +72,9 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			abacAttributes,
 		} = data.user;
 
+		const phonesFallback = phone ? [{ number: phone }] : undefined;
+		const normalizedPhones = phones ?? phonesFallback;
+
 		return {
 			avatarETag,
 			name,
@@ -78,7 +83,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phoneNumbers: normalizedPhones?.length ? <UserInfoPhoneNumberList phones={normalizedPhones} /> : undefined,
 			utcOffset,
 			customFields: {
 				...data.user.customFields,

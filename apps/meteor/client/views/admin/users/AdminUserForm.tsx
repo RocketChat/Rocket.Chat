@@ -1,4 +1,4 @@
-import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	AccordionItem,
@@ -34,7 +34,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
@@ -43,6 +43,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
@@ -65,6 +66,7 @@ export type UserFormProps = UserCreateParamsPOST & {
 	passwordConfirmation: string;
 	sipExtension?: string;
 	statusVisibilityDeniedByAdmin?: string[];
+	phones?: IUserPhoneNumber[];
 };
 
 const getInitialValue = ({
@@ -95,6 +97,7 @@ const getInitialValue = ({
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	sipExtension: data?.sipExtension ?? '',
+	phones: data?.phones ?? (data?.phone ? [{ number: data.phone }] : []),
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -135,6 +138,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const showVoipExtension = useShowVoipExtension();
+
+	const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({ control, name: 'phones' });
 
 	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
 	const showUserStatusSection = userStatusEnabled && canManageUserStatus;
@@ -570,6 +575,21 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 						<FieldRow>
 							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
+						</FieldRow>
+					</Field>
+
+					<Field>
+						<FieldLabel is='span' aria-hidden='true'>
+							{t('Phone_Numbers')}
+						</FieldLabel>
+						<FieldRow is='div'>
+							<PhoneNumberFieldList
+								name='phones'
+								control={control}
+								phones={phoneFields}
+								onAddPhone={appendPhone}
+								onRemovePhone={removePhone}
+							/>
 						</FieldRow>
 					</Field>
 					{!!customFieldsMetadata.length && (

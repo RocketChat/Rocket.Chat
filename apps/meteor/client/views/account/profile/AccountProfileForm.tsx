@@ -29,11 +29,12 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
 import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
@@ -143,6 +144,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		await queryClient.invalidateQueries({ queryKey: ['users'] });
 	};
 
+	const {
+		fields: phoneFields,
+		append: appendPhone,
+		remove: removePhone,
+	} = useFieldArray<AccountProfileFormValues>({ control, name: 'phones' });
+
 	const handleSave = async (values: AccountProfileFormValues) => {
 		const {
 			email,
@@ -157,6 +164,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			bio,
 			customFields,
 			statusVisibilityDenied,
+			phones,
 		} = values;
 
 		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
@@ -180,6 +188,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
+			...(dirtyFields.phones && { phones }),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
@@ -471,6 +480,22 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.email && <FieldError>{errors.email.message}</FieldError>}
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
+
+				<Field>
+					<FieldLabel is='span' aria-hidden='true'>
+						{t('Phone_Numbers')}
+					</FieldLabel>
+					<FieldRow is='div'>
+						<PhoneNumberFieldList
+							control={control}
+							name='phones'
+							phones={phoneFields}
+							onAddPhone={appendPhone}
+							onRemovePhone={removePhone}
+						/>
+					</FieldRow>
+				</Field>
+
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
 		</Box>

@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
+import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
@@ -62,12 +63,16 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			lastLogin,
 			customFields,
 			phone,
+			phones,
 			nickname,
 			createdAt,
 			canViewAllInfo,
 			sipExtension,
 			federated,
 		} = data.user;
+
+		const phonesFallback = phone ? [{ number: phone }] : undefined;
+		const normalizedPhones = phones ?? phonesFallback;
 
 		return {
 			_id,
@@ -80,7 +85,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phoneNumbers: normalizedPhones?.length ? <UserInfoPhoneNumberList phones={normalizedPhones} /> : undefined,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),
