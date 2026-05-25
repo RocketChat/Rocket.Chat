@@ -18,7 +18,7 @@ const getLevel = (level: LogLevelSetting): string => {
 	}
 };
 
-let defaultLevel = process.env.LOG_LEVEL ? getLevel(process.env.LOG_LEVEL as LogLevelSetting) : 'warn';
+let defaultLevel = 'warn';
 
 logLevel.once('changed', (level: LogLevelSetting) => {
 	defaultLevel = getLevel(level);
