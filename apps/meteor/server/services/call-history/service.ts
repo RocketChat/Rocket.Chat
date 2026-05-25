@@ -29,6 +29,7 @@ export class CallHistoryService extends ServiceClassInternal implements ICallHis
 			await importHistoryForUser(uid, externalHistoryConfig);
 		}
 
+		// If external history is toggled on, only external entries may be listed
 		const type = externalHistoryConfig ? 'mitel' : 'media-call';
 
 		const { cursor, totalCount } = CallHistory.findAllByUserIdAndSearchFilters(
