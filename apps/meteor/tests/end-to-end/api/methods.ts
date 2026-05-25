@@ -259,17 +259,7 @@ describe('Meteor.methods', () => {
 
 			describe('simple message and thread where the room message was read by the invited user but the thread message was not', () => {
 				before("should read all main room's messages with the invited user", async () => {
-					await request
-						.post(methodCall('readMessages'))
-						.set(userCredentials)
-						.send({
-							message: JSON.stringify({
-								id: 'id',
-								msg: 'method',
-								method: 'readMessages',
-								params: [room._id, true],
-							}),
-						});
+					await request.post(api('subscriptions.read')).set(userCredentials).send({ rid: room._id });
 				});
 
 				it("should return both the sender's and the invited user's read receipt for a message sent in the main room", async () => {
