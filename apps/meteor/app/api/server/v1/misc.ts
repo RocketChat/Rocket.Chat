@@ -8,6 +8,7 @@ import {
 	isShieldSvgProps,
 	isSpotlightProps,
 	isUnifiedSearchProps,
+	isSearchAnswerProps,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
@@ -412,6 +413,8 @@ API.v1.get(
 const MAX_UNIFIED_SEARCH_RESULTS = 10;
 const AI_SEARCH_PAGE_SIZE = 5;
 const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
+const MAX_SEARCH_ANSWER_MESSAGES = 12;
+const MAX_SEARCH_ANSWER_TEXT_LENGTH = 1600;
 
 const unifiedSearchResponseSchema = ajv.compile<{
 	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
@@ -422,6 +425,7 @@ const unifiedSearchResponseSchema = ajv.compile<{
 		globalMessagesEnabled: boolean;
 		intelligentSearchEnabled: boolean;
 		intelligentSearchConfigured: boolean;
+		answerGenerationConfigured: boolean;
 	};
 }>({
 	type: 'object',
@@ -487,8 +491,9 @@ const unifiedSearchResponseSchema = ajv.compile<{
 				globalMessagesEnabled: { type: 'boolean' },
 				intelligentSearchEnabled: { type: 'boolean' },
 				intelligentSearchConfigured: { type: 'boolean' },
+				answerGenerationConfigured: { type: 'boolean' },
 			},
-			required: ['globalMessagesEnabled', 'intelligentSearchEnabled', 'intelligentSearchConfigured'],
+			required: ['globalMessagesEnabled', 'intelligentSearchEnabled', 'intelligentSearchConfigured', 'answerGenerationConfigured'],
 			additionalProperties: false,
 		},
 		success: { type: 'boolean', enum: [true] },
@@ -508,6 +513,108 @@ const normalizeSimilarityPercent = (value: unknown): number => {
 };
 
 const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number => Number((1 - minimumSimilarityPercent / 100).toFixed(4));
+
+type LLMProviderSlot = 'provider_1' | 'provider_2' | 'provider_3';
+
+type LLMProviderConfig = {
+	name: string;
+	baseUrl: string;
+	apiKey: string;
+	model: string;
+};
+
+const getLLMProviderConfig = (providerId: string): LLMProviderConfig | undefined => {
+	if (!['provider_1', 'provider_2', 'provider_3'].includes(providerId)) {
+		return undefined;
+	}
+
+	const slot = providerId as LLMProviderSlot;
+	const slotNumber = slot.replace('provider_', '');
+	const idPrefix = `AI_LLM_Provider_${slotNumber}`;
+	const enabled = settings.get(`${idPrefix}_Enabled`) === true;
+	const name = String(settings.get(`${idPrefix}_Name`) || `Provider ${slotNumber}`);
+	const baseUrl = String(settings.get(`${idPrefix}_Base_URL`) || '').replace(/\/+$/, '');
+	const apiKey = String(settings.get(`${idPrefix}_API_Key`) || '');
+	const model = String(settings.get(`${idPrefix}_Model`) || '');
+
+	if (!enabled || !baseUrl || !apiKey || !model) {
+		return undefined;
+	}
+
+	return { name, baseUrl, apiKey, model };
+};
+
+const getSearchAnswerProviderConfig = (): LLMProviderConfig | undefined => {
+	const providerId = String(settings.get('AI_Intelligent_Search_Answer_Provider') || '');
+	return getLLMProviderConfig(providerId);
+};
+
+const buildSearchAnswerPrompt = (
+	query: string,
+	messages: { text: string; username?: string; roomName?: string; ts?: string; score?: number }[],
+): string =>
+	[
+		`User search query: ${query}`,
+		'Search results:',
+		...messages.slice(0, MAX_SEARCH_ANSWER_MESSAGES).map((message, index) => {
+			const metadata = [
+				message.username && `from @${message.username}`,
+				message.roomName && `in #${message.roomName}`,
+				message.ts && `at ${message.ts}`,
+				typeof message.score === 'number' && `score ${Math.round(message.score * 100)}%`,
+			]
+				.filter(Boolean)
+				.join(', ');
+			return `${index + 1}. ${metadata ? `[${metadata}] ` : ''}${message.text.slice(0, MAX_SEARCH_ANSWER_TEXT_LENGTH)}`;
+		}),
+		'Answer using only the search results above. If the results do not contain enough information, say that clearly.',
+	].join('\n\n');
+
+const generateSearchAnswer = async (
+	query: string,
+	messages: { text: string; username?: string; roomName?: string; ts?: string; score?: number }[],
+): Promise<{ answer: string; provider: Pick<LLMProviderConfig, 'name' | 'model'> }> => {
+	const provider = getSearchAnswerProviderConfig();
+	if (!provider) {
+		throw new Meteor.Error('error-ai-provider-not-configured', 'AI answer provider is not configured');
+	}
+
+	const systemPrompt =
+		String(settings.get('AI_Intelligent_Search_Answer_System_Prompt') || '') ||
+		'You are an assistant that summarizes Rocket.Chat search results into a concise answer with relevant caveats.';
+	const response = await fetch(`${provider.baseUrl}/chat/completions`, {
+		method: 'POST',
+		timeout: 20000,
+		ignoreSsrfValidation: true,
+		headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json',
+			'Authorization': `Bearer ${provider.apiKey}`,
+		},
+		body: JSON.stringify({
+			model: provider.model,
+			temperature: 0.2,
+			messages: [
+				{ role: 'system', content: systemPrompt },
+				{ role: 'user', content: buildSearchAnswerPrompt(query, messages) },
+			],
+		}),
+	});
+
+	if (!response.ok) {
+		const body = await response.text().catch(() => '');
+		SystemLogger.warn({ msg: 'Search answer LLM provider returned error', status: response.status, body });
+		throw new Meteor.Error('error-ai-provider-request-failed', 'AI answer provider request failed');
+	}
+
+	const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+	const answer = json.choices?.[0]?.message?.content?.trim();
+	if (!answer) {
+		throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
+	}
+
+	return { answer, provider: { name: provider.name, model: provider.model } };
+};
 
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
@@ -860,6 +967,7 @@ API.v1.get(
 				settings.get('AI_Intelligent_Search_API_Key') &&
 				settings.get('AI_Intelligent_Search_API_Key_Secret'),
 		);
+		const answerGenerationConfigured = Boolean(getSearchAnswerProviderConfig());
 
 		let messages: UnifiedSearchMessageResult[] = [];
 		// Room-specific search is always allowed; global search requires the setting
@@ -917,8 +1025,61 @@ API.v1.get(
 				globalMessagesEnabled,
 				intelligentSearchEnabled,
 				intelligentSearchConfigured,
+				answerGenerationConfigured,
 			},
 		});
+	},
+);
+
+API.v1.post(
+	'search.answer',
+	{
+		authRequired: true,
+		body: isSearchAnswerProps,
+		response: {
+			200: ajv.compile<{
+				answer: string;
+				provider: { name: string; model: string };
+			}>({
+				type: 'object',
+				properties: {
+					answer: { type: 'string' },
+					provider: {
+						type: 'object',
+						properties: {
+							name: { type: 'string' },
+							model: { type: 'string' },
+						},
+						required: ['name', 'model'],
+						additionalProperties: false,
+					},
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['answer', 'provider', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		if (!License.hasModule('chat.rocket.rc-ai') || settings.get('AI_Intelligent_Search_Enabled') !== true) {
+			throw new Meteor.Error('error-ai-not-enabled', 'Intelligent Search is not enabled');
+		}
+
+		const { query, messages } = this.bodyParams;
+		const answer = await generateSearchAnswer(
+			query,
+			messages.map(({ text, username, roomName, ts, score }) => ({
+				text,
+				username,
+				roomName,
+				ts,
+				score,
+			})),
+		);
+
+		return API.v1.success(answer);
 	},
 );
 

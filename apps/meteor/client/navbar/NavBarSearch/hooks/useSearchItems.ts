@@ -36,6 +36,7 @@ export type NavBarSearchSections = {
 		globalMessagesEnabled: boolean;
 		intelligentSearchEnabled: boolean;
 		intelligentSearchConfigured: boolean;
+		answerGenerationConfigured: boolean;
 		hasIntelligentSearchLicense: boolean;
 		showIntelligentSearch: boolean;
 	};
@@ -51,6 +52,7 @@ const emptySections = (recent: SubscriptionWithRoom[], hasLicense: boolean, show
 		globalMessagesEnabled: false,
 		intelligentSearchEnabled: false,
 		intelligentSearchConfigured: false,
+		answerGenerationConfigured: false,
 		hasIntelligentSearchLicense: hasLicense,
 		showIntelligentSearch,
 	},

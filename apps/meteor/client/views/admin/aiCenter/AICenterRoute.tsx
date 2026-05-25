@@ -107,9 +107,9 @@ const AICenterOverview = (): ReactElement => {
 							icon='smart'
 							title={t('AI_Center_LLM_Providers')}
 							description={t('AI_Center_LLM_Providers_card_description')}
-							status={<Tag>{t('Coming_soon')}</Tag>}
+							status={<Tag>{t('Available')}</Tag>}
 							actionLabel={t('Manage')}
-							disabled
+							onClick={() => router.navigate('/admin/ai-center/llm-providers')}
 						/>
 						<CapabilityCard
 							icon='link'
@@ -126,10 +126,19 @@ const AICenterOverview = (): ReactElement => {
 	);
 };
 
-const AISettingsSection = ({ section }: { section: 'Intelligent_Search' | 'AI_Thread_Summarization' }): ReactElement => {
+const AISettingsSection = ({
+	section,
+}: {
+	section: 'Intelligent_Search' | 'AI_Thread_Summarization' | 'AI_LLM_Providers';
+}): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const title = section === 'Intelligent_Search' ? 'Intelligent_Search' : 'Thread_Summarization';
+	const titleBySection = {
+		Intelligent_Search: 'Intelligent_Search',
+		AI_LLM_Providers: 'AI_Center_LLM_Providers',
+		AI_Thread_Summarization: 'Thread_Summarization',
+	} as const;
+	const title = titleBySection[section];
 
 	return (
 		<EditableSettingsProvider>
@@ -162,6 +171,10 @@ const AICenterRoute = (): ReactElement => {
 
 	if (section === 'thread-summarization') {
 		return <AISettingsSection section='AI_Thread_Summarization' />;
+	}
+
+	if (section === 'llm-providers') {
+		return <AISettingsSection section='AI_LLM_Providers' />;
 	}
 
 	return <AICenterOverview />;

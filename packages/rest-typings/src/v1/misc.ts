@@ -118,6 +118,50 @@ const UnifiedSearchSchema = {
 
 export const isUnifiedSearchProps = ajvQuery.compile<UnifiedSearch>(UnifiedSearchSchema);
 
+export type SearchAnswer = {
+	query: string;
+	messages: {
+		_id: string;
+		text: string;
+		username?: string;
+		roomName?: string;
+		ts?: string;
+		score?: number;
+	}[];
+};
+
+const SearchAnswerSchema = {
+	type: 'object',
+	properties: {
+		query: {
+			type: 'string',
+			minLength: 1,
+		},
+		messages: {
+			type: 'array',
+			minItems: 1,
+			maxItems: 20,
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					text: { type: 'string' },
+					username: { type: 'string', nullable: true },
+					roomName: { type: 'string', nullable: true },
+					ts: { type: 'string', nullable: true },
+					score: { type: 'number', nullable: true },
+				},
+				required: ['_id', 'text'],
+				additionalProperties: false,
+			},
+		},
+	},
+	required: ['query', 'messages'],
+	additionalProperties: false,
+};
+
+export const isSearchAnswerProps = ajv.compile<SearchAnswer>(SearchAnswerSchema);
+
 export type UnifiedSearchMessageResult = Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u'> & {
 	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
 };
@@ -280,6 +324,17 @@ export type MiscEndpoints = {
 				globalMessagesEnabled: boolean;
 				intelligentSearchEnabled: boolean;
 				intelligentSearchConfigured: boolean;
+				answerGenerationConfigured: boolean;
+			};
+		};
+	};
+
+	'/v1/search.answer': {
+		POST: (params: SearchAnswer) => {
+			answer: string;
+			provider: {
+				name: string;
+				model: string;
 			};
 		};
 	};

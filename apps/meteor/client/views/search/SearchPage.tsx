@@ -7,7 +7,7 @@ import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, ReactElement, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -235,6 +235,67 @@ const EmptySearchState = ({ children }: { children: ReactNode }): ReactElement =
 	</Box>
 );
 
+const SearchAnswerPanel = ({
+	answer,
+	provider,
+	isLoading,
+	error,
+	disabled,
+	onGenerate,
+}: {
+	answer?: string;
+	provider?: { name: string; model: string };
+	isLoading: boolean;
+	error?: unknown;
+	disabled: boolean;
+	onGenerate: () => void;
+}): ReactElement => {
+	const { t } = useTranslation();
+
+	return (
+		<Box
+			display='flex'
+			flexDirection='column'
+			p={16}
+			mbe={16}
+			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+			borderRadius={4}
+			bg='surface-light'
+			style={{ gap: 8 }}
+		>
+			<Box display='flex' alignItems='center' justifyContent='space-between' style={{ gap: 12 }}>
+				<Box display='flex' alignItems='center' fontScale='p2m' style={{ gap: 6 }}>
+					<Icon name='stars' size='x16' />
+					{t('Search_AI_answer')}
+				</Box>
+				<Button small disabled={disabled || isLoading} onClick={onGenerate}>
+					{isLoading ? t('Loading') : t(answer ? 'Regenerate' : 'Generate')}
+				</Button>
+			</Box>
+			{provider && (
+				<Box color='hint' fontScale='c1'>
+					{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
+				</Box>
+			)}
+			{Boolean(error) && (
+				<Box color='danger' fontScale='p2'>
+					{t('Search_AI_answer_error')}
+				</Box>
+			)}
+			{answer && (
+				<Box fontScale='p2' style={{ whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>
+					{answer}
+				</Box>
+			)}
+			{disabled && !answer && (
+				<Box color='hint' fontScale='p2'>
+					{t('Search_AI_answer_disabled')}
+				</Box>
+			)}
+		</Box>
+	);
+};
+
 const Section = ({
 	title,
 	count,
@@ -412,6 +473,7 @@ const SearchPage = (): ReactElement => {
 	const globalMessagesEnabledSetting = useSetting('Search.defaultProvider.GlobalSearchEnabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
+	const generateAnswer = useEndpoint('POST', '/v1/search.answer');
 
 	const debouncedQueryParam = useDebouncedValue(queryParam.trim(), 300);
 	const debouncedRoomFilterText = useDebouncedValue(filterDraft.roomName.trim(), 300);
@@ -487,6 +549,25 @@ const SearchPage = (): ReactElement => {
 			),
 		[data?.intelligent, data?.messages, intelligentAvailable],
 	);
+	const answerMutation = useMutation({
+		mutationFn: () =>
+			generateAnswer({
+				query: debouncedQueryParam,
+				messages: combinedMessages.slice(0, 12).map(({ item }) => ({
+					_id: item._id,
+					text: item.text || item.msg || '',
+					username: item.u?.username,
+					roomName: item.room?.fname || item.room?.name,
+					ts: item.ts ? new Date(item.ts).toISOString() : undefined,
+					score: item.score,
+				})),
+			}),
+	});
+
+	useEffect(() => {
+		answerMutation.reset();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [debouncedQueryParam, ridParam, fromUserParam, afterDateParam, beforeDateParam, intelligentCount]);
 
 	const counts = useMemo(
 		() => ({
@@ -567,6 +648,7 @@ const SearchPage = (): ReactElement => {
 	const showIntelligentWarning = selectedTab === 'all' || selectedTab === 'messages';
 	const hasQuery = Boolean(debouncedQueryParam || ridParam || fromUserParam || afterDateParam || beforeDateParam);
 	const hasResults = counts[selectedTab] > 0;
+	const canGenerateAnswer = Boolean(data?.meta.answerGenerationConfigured && debouncedQueryParam && combinedMessages.length > 0);
 
 	return (
 		<Page background='tint'>
@@ -640,6 +722,16 @@ const SearchPage = (): ReactElement => {
 
 					{data && !result.isLoading && (
 						<>
+							{showMessages && (
+								<SearchAnswerPanel
+									answer={answerMutation.data?.answer}
+									provider={answerMutation.data?.provider}
+									isLoading={answerMutation.isPending}
+									error={answerMutation.error}
+									disabled={!canGenerateAnswer}
+									onGenerate={() => answerMutation.mutate()}
+								/>
+							)}
 							{showMessages && (
 								<Section title={t('Messages')} count={combinedMessages.length} showHeader={showSectionHeaders}>
 									{combinedMessages.map(({ item, isIntelligent }) => (
