@@ -6,7 +6,6 @@ import { findRoomByIdOrName } from '../../../api/server/v1/rooms';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { cleanRoomHistory } from '../functions/cleanRoomHistory';
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 type CleanRoomHistoryParams = {
 	roomId: string;
@@ -79,7 +78,6 @@ Meteor.methods<ServerMethods>({
 		fromUsers = [],
 		ignoreThreads,
 	}) {
-		methodDeprecationLogger.method('cleanRoomHistory', '9.0.0', '/v1/rooms.cleanHistory');
 		check(roomId, String);
 		check(latest, Date);
 		check(oldest, Date);

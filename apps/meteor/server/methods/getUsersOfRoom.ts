@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
 declare module '@rocket.chat/ddp-client' {
@@ -27,7 +26,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getUsersOfRoom(rid, showAll, { limit, skip } = {}, filter) {
-		methodDeprecationLogger.method('getUsersOfRoom', '9.0.0', '/v1/channels.members');
 		if (!rid) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
