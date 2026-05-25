@@ -32,28 +32,9 @@ window.addEventListener('Custom_Script_Logged_In', function() {
 window.addEventListener('Custom_Script_On_Logout', function() {
 	${settings.get('Custom_Script_On_Logout')}
 })
+`;
 
-${
-	settings.get('Accounts_ForgetUserSessionOnWindowClose')
-		? `
-window.addEventListener('load', function() {
-	if (window.localStorage) {
-		Object.keys(window.localStorage).forEach(function(key) {
-			window.sessionStorage.setItem(key, window.localStorage.getItem(key));
-		});
-		window.localStorage.clear();
-		Meteor._localStorage = window.sessionStorage;
-		Accounts.config({ clientStorage: 'session'  });
-	}
+settings.watchMultiple(['Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout'], () => {
+	const content = getContent();
+	addScript('scripts', content);
 });
-`
-		: ''
-}`;
-
-settings.watchMultiple(
-	['Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout', 'Accounts_ForgetUserSessionOnWindowClose'],
-	() => {
-		const content = getContent();
-		addScript('scripts', content);
-	},
-);
