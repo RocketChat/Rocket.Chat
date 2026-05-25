@@ -33,7 +33,7 @@ export const hideRoomMethod = async (userId: string, rid: string): Promise<numbe
 
 Meteor.methods<ServerMethods>({
 	async hideRoom(rid) {
-		methodDeprecationLogger.method('hideRoom', '9.0.0', '/v1/rooms.leave');
+		methodDeprecationLogger.method('hideRoom', '9.0.0', '/v1/rooms.hide');
 		const uid = Meteor.userId();
 
 		if (!uid) {
