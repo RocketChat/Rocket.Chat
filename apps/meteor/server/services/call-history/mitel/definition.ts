@@ -2,6 +2,7 @@ export type MitelConfig = {
 	host: string;
 	username: string;
 	password: string;
+	timeout?: number;
 };
 
 export type MitelCallItem = {

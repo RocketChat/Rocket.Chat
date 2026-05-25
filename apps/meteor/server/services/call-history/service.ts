@@ -57,6 +57,7 @@ export class CallHistoryService extends ServiceClassInternal implements ICallHis
 			host: settings.get('VoIP_TeamCollab_ExternalCallHistory_Host'),
 			username: settings.get('VoIP_TeamCollab_ExternalCallHistory_User'),
 			password: settings.get('VoIP_TeamCollab_ExternalCallHistory_Password'),
+			timeout: settings.get('VoIP_TeamCollab_ExternalCallHistory_Timeout'),
 		};
 	}
 }

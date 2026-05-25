@@ -113,6 +113,14 @@ export function addSettings(): Promise<void> {
 						invalidValue: '',
 						enableQuery,
 					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Timeout', 10000, {
+						type: 'int',
+						public: false,
+						invalidValue: 10000,
+						enableQuery,
+						i18nDescription: 'VoIP_TeamCollab_ExternalCallHistory_Timeout_Description',
+					});
 				});
 			},
 		);
