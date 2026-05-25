@@ -8,7 +8,7 @@ import { slashCommands } from '../../utils/client/slashCommand';
  */
 async function Gimme({ message, params }: SlashCommandCallbackParams<'gimme'>): Promise<void> {
 	const msg = message;
-	await sdk.rest.post('/v1/chat.sendMessage', { message: { ...msg, msg: `༼ つ ◕_◕ ༽つ ${params}` } });
+	await sdk.call('sendMessage', { ...msg, msg: `༼ つ ◕_◕ ༽つ ${params}` });
 }
 
 slashCommands.add({

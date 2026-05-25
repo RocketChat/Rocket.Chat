@@ -51,12 +51,10 @@ export const useNotification = () => {
 			n.addEventListener(
 				'reply',
 				({ response }) =>
-					void sdk.rest.post('/v1/chat.sendMessage', {
-						message: {
-							_id: Random.id(),
-							rid,
-							msg: response,
-						},
+					void sdk.call('sendMessage', {
+						_id: Random.id(),
+						rid,
+						msg: response,
 					}),
 			);
 		}

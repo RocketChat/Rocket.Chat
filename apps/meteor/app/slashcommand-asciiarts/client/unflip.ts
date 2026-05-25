@@ -11,7 +11,7 @@ slashCommands.add({
 	command: 'unflip',
 	callback: async ({ message, params }: SlashCommandCallbackParams<'unflip'>): Promise<void> => {
 		const msg = message;
-		await sdk.rest.post('/v1/chat.sendMessage', { message: { ...msg, msg: `${params} ┬─┬ ノ( ゜-゜ノ)` } });
+		await sdk.call('sendMessage', { ...msg, msg: `${params} ┬─┬ ノ( ゜-゜ノ)` });
 	},
 	options: {
 		description: 'Slash_TableUnflip_Description',

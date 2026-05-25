@@ -11,7 +11,7 @@ slashCommands.add({
 	command: 'shrug',
 	callback: async ({ message, params }: SlashCommandCallbackParams<'shrug'>): Promise<void> => {
 		const msg = message;
-		await sdk.rest.post('/v1/chat.sendMessage', { message: { ...msg, msg: `${params} ¯\\\\_(ツ)_/¯` } });
+		await sdk.call('sendMessage', { ...msg, msg: `${params} ¯\\\\_(ツ)_/¯` });
 	},
 	options: {
 		description: 'Slash_Shrug_Description',

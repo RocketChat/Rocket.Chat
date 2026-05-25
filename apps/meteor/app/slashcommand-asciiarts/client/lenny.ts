@@ -9,7 +9,7 @@ import { slashCommands } from '../../utils/client/slashCommand';
 
 async function LennyFace({ message, params }: SlashCommandCallbackParams<'lenny'>): Promise<void> {
 	const msg = message;
-	await sdk.rest.post('/v1/chat.sendMessage', { message: { ...msg, msg: `${params} ( ͡° ͜ʖ ͡°)` } });
+	await sdk.call('sendMessage', { ...msg, msg: `${params} ( ͡° ͜ʖ ͡°)` });
 }
 
 slashCommands.add({
