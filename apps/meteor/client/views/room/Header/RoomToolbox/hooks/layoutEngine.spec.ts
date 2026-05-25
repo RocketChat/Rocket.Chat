@@ -65,4 +65,22 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 		const result = processActions(actionsBase, config);
 		expect(result.visibleActions.length).toBeGreaterThan(0);
 	});
+	it('should fall back to default maxVisibleNormal (6) when not specified in config', () => {
+		const actionsBase = [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }, { id: '6' }, { id: '7' }];
+		const config = {
+			items: [
+				{ id: '1', featured: false, order: 1 },
+				{ id: '2', featured: false, order: 2 },
+				{ id: '3', featured: false, order: 3 },
+				{ id: '4', featured: false, order: 4 },
+				{ id: '5', featured: false, order: 5 },
+				{ id: '6', featured: false, order: 6 },
+				{ id: '7', featured: false, order: 7 },
+			],
+		};
+		const result = processActions(actionsBase, config);
+		expect(result.visibleActions).toHaveLength(6);
+		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
+		expect(hiddenIds).toEqual(['7']);
+	});
 });
