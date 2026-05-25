@@ -3,6 +3,7 @@ import { Router } from '@rocket.chat/http-router';
 import { catchAllClient } from './_shared';
 import { addAccountRoutes } from './account';
 import { addDirectoryRoutes } from './directory';
+import { addClientMediaRoutes } from './media';
 import { addPresenceRoutes } from './presence';
 import { addProfileRoutes } from './profile';
 import { addRoomsLifecycleRoutes } from './rooms-lifecycle';
@@ -23,6 +24,7 @@ export const getClientRoutes = () => {
 	addRoomsStateRoutes(router);
 	addRoomsMessagingRoutes(router);
 	addUserRoutes(router);
+	addClientMediaRoutes(router);
 
 	return router;
 };
