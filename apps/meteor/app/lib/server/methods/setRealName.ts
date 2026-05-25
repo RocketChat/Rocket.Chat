@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setRealName(name) {
-		methodDeprecationLogger.method('setRealName', '9.0.0', '/v1/users.update');
+		methodDeprecationLogger.method('setRealName', '9.0.0', '/v1/users.updateOwnBasicInfo');
 		check(name, String);
 		const userId = Meteor.userId();
 		if (!userId) {

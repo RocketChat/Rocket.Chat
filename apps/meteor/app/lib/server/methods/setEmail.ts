@@ -40,7 +40,7 @@ export const setEmailFunction = async (email: string, user: Meteor.User | IUser)
 
 Meteor.methods<ServerMethods>({
 	async setEmail(email) {
-		methodDeprecationLogger.method('setEmail', '9.0.0', '/v1/users.update');
+		methodDeprecationLogger.method('setEmail', '9.0.0', '/v1/users.updateOwnBasicInfo');
 		const user = await Meteor.userAsync();
 
 		if (!user) {
