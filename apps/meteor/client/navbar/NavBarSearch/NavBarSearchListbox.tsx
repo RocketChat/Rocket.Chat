@@ -1,10 +1,10 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Button, Tile } from '@rocket.chat/fuselage';
+import { Box, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useCallback, useRef } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
@@ -17,67 +17,27 @@ import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
-	filterText: string;
-	onFilterTextChange: (text: string) => void;
-	onSelect: () => void;
-	onNavigateToSearch: () => void;
-	onApplyRoomFilter: (room: { _id: string; name?: string; fname?: string }) => void;
 };
 
-const NavBarSearchListBox = ({
-	state,
-	overlayProps,
-	filterText,
-	onFilterTextChange,
-	onSelect,
-	onNavigateToSearch,
-	onApplyRoomFilter,
-}: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
+	const { resetField, watch } = useFormContext();
+	const { filterText } = watch();
+
 	const debouncedFilter = useDebouncedValue(filterText, 500);
 
 	const handleSelect = useCallback(() => {
 		state.close();
-		onFilterTextChange('');
-		onSelect();
-	}, [onFilterTextChange, onSelect, state]);
+		resetField('filterText');
+	}, [resetField, state]);
 
-	const handleOpenSearchPage = useCallback(() => {
-		onNavigateToSearch();
-		state.close();
-	}, [onNavigateToSearch, state]);
-
-	const { data, isLoading } = useSearchItems(debouncedFilter);
-	const items = data ?? {
-		recent: [],
-		users: [],
-		rooms: [],
-		messages: [],
-		intelligent: [],
-		meta: {
-			globalMessagesEnabled: false,
-			intelligentSearchEnabled: false,
-			intelligentSearchConfigured: false,
-			hasIntelligentSearchLicense: false,
-			showIntelligentSearch: false,
-		},
-	};
-	const hasFilter = Boolean(filterText.trim());
-	const itemCount = hasFilter
-		? items.users.length + items.rooms.length + items.messages.length + items.intelligent.length
-		: items.recent.length;
-	const roomFilterSuggestions = hasFilter ? items.rooms.slice(0, 5) : [];
-
-	const sectionLabel = (label: string) => (
-		<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} pbs={8} mbe={4} role='presentation' aria-hidden>
-			{label}
-		</Box>
-	);
+	const { data: items = { rooms: [], intelligent: [] }, isLoading } = useSearchItems(debouncedFilter);
+	const itemCount = items.rooms.length + items.intelligent.length;
 
 	return (
 		<Tile
@@ -95,60 +55,26 @@ const NavBarSearchListBox = ({
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} />
 			<CustomScrollbars>
-				<div
-					{...overlayProps}
-					id='navbar-search-listbox'
-					role='listbox'
-					aria-label={t('Channels')}
-					aria-busy={isLoading}
-					tabIndex={-1}
-					onKeyDown={handleKeyDown}
-				>
+				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
-					{roomFilterSuggestions.length > 0 && sectionLabel(t('Search_filter_in_room'))}
-					{roomFilterSuggestions.map((item) => (
-						<Button
-							key={`filter-room-${item._id}`}
-							small
-							secondary
-							mis={12}
-							mie={4}
-							mbe={4}
-							onClick={() => {
-								onApplyRoomFilter(item);
-							}}
-						>
-							{t('Search_in', { room: `#${item.fname || item.name}` })}
-						</Button>
+					{items.intelligent.length > 0 && (
+						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} pbs={8} mbe={4} role='presentation' aria-hidden>
+							{t('Intelligent_Search')}
+						</Box>
+					)}
+					{items.intelligent.map((item) => (
+						<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={handleSelect} />
 					))}
-					{!hasFilter && items.recent.length > 0 && sectionLabel(t('Recent'))}
-					{!hasFilter && items.recent.map((item) => <NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />)}
-					{hasFilter && items.users.length > 0 && sectionLabel(t('Users'))}
-					{hasFilter && items.users.map((item) => <NavBarSearchRow key={`user-${item._id}`} room={item} onClick={handleSelect} />)}
-					{hasFilter && items.rooms.length > 0 && sectionLabel(t('Rooms'))}
-					{hasFilter &&
-						items.rooms.map((item) => (
-							<NavBarSearchRow key={`room-${item._id}`} room={item as SubscriptionWithRoom} onClick={handleSelect} />
-						))}
-					{hasFilter && items.messages.length > 0 && sectionLabel(t('Messages'))}
-					{hasFilter &&
-						items.messages.map((item) => (
-							<NavBarSearchMessageRow key={`message-${item._id}`} type='message' item={item} onClick={handleSelect} />
-						))}
-					{hasFilter && items.intelligent.length > 0 && sectionLabel(t('Intelligent_Search'))}
-					{hasFilter &&
-						items.intelligent.map((item) => (
-							<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={handleSelect} />
-						))}
+					{items.rooms.length > 0 && (
+						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
+							{filterText ? t('Results') : t('Recent')}
+						</Box>
+					)}
+					{items.rooms.map((item) => (
+						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
+					))}
 				</div>
 			</CustomScrollbars>
-			{hasFilter && (
-				<Box borderBlockStart='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)' p={8}>
-					<Button small width='full' onClick={handleOpenSearchPage}>
-						{t('View_all_results')}
-					</Button>
-				</Box>
-			)}
 		</Tile>
 	);
 };

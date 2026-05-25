@@ -221,7 +221,8 @@ API.v1.get(
 	},
 	async function action() {
 		const { type, icon } = this.queryParams;
-		let { channel, name } = this.queryParams;
+		const { channel } = this.queryParams;
+		let { name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
@@ -264,7 +265,7 @@ API.v1.get(
 
 				text = `#${channel}`;
 				break;
-			case 'user':
+			case 'user': {
 				if (settings.get('API_Shield_user_require_auth') && !this.user) {
 					return API.v1.failure('You must be logged in to do this.');
 				}
@@ -277,20 +278,17 @@ API.v1.get(
 					text = `@${user.username}`;
 				}
 
-				switch (user.status) {
-					case 'online':
-						backgroundColor = '#1fb31f';
-						break;
-					case 'away':
-						backgroundColor = '#dc9b01';
-						break;
-					case 'busy':
-						backgroundColor = '#bc2031';
-						break;
-					case 'offline':
-						backgroundColor = '#a5a1a1';
+				const statusColors: Record<string, string> = {
+					online: '#1fb31f',
+					away: '#dc9b01',
+					busy: '#bc2031',
+					offline: '#a5a1a1',
+				};
+				if (user.status && statusColors[user.status]) {
+					backgroundColor = statusColors[user.status];
 				}
 				break;
+			}
 			default:
 				text = i18n.t('Join_Chat').toUpperCase();
 		}
@@ -301,7 +299,6 @@ API.v1.get(
 		const width = leftSize + rightSize;
 		const height = 20;
 
-		channel = escapeHTML(channel);
 		text = escapeHTML(text);
 		name = escapeHTML(name);
 
@@ -331,9 +328,9 @@ API.v1.get(
 						<text x="${leftSize + 7}" y="14">${text}</text>
 					</g>
 				</svg>
-			`
+				`
 			.trim()
-			.replace(/\>[\s]+\</gm, '><');
+			.replace(/>[\s]+</gm, '><');
 
 		return {
 			statusCode: 200 as const,
@@ -514,8 +511,6 @@ const normalizeSimilarityPercent = (value: unknown): number => {
 
 const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number => Number((1 - minimumSimilarityPercent / 100).toFixed(4));
 
-type LLMProviderSlot = 'provider_1' | 'provider_2' | 'provider_3';
-
 type LLMProviderConfig = {
 	name: string;
 	baseUrl: string;
@@ -523,30 +518,16 @@ type LLMProviderConfig = {
 	model: string;
 };
 
-const getLLMProviderConfig = (providerId: string): LLMProviderConfig | undefined => {
-	if (!['provider_1', 'provider_2', 'provider_3'].includes(providerId)) {
-		return undefined;
-	}
-
-	const slot = providerId as LLMProviderSlot;
-	const slotNumber = slot.replace('provider_', '');
-	const idPrefix = `AI_LLM_Provider_${slotNumber}`;
-	const enabled = settings.get(`${idPrefix}_Enabled`) === true;
-	const name = String(settings.get(`${idPrefix}_Name`) || `Provider ${slotNumber}`);
-	const baseUrl = String(settings.get(`${idPrefix}_Base_URL`) || '').replace(/\/+$/, '');
-	const apiKey = String(settings.get(`${idPrefix}_API_Key`) || '');
-	const model = String(settings.get(`${idPrefix}_Model`) || '');
-
-	if (!enabled || !baseUrl || !apiKey || !model) {
-		return undefined;
-	}
-
-	return { name, baseUrl, apiKey, model };
-};
-
 const getSearchAnswerProviderConfig = (): LLMProviderConfig | undefined => {
-	const providerId = String(settings.get('AI_Intelligent_Search_Answer_Provider') || '');
-	return getLLMProviderConfig(providerId);
+	const baseUrl = String(settings.get('AI_LLM_OpenAI_Base_URL') || '').replace(/\/+$/, '');
+	const apiKey = String(settings.get('AI_LLM_OpenAI_API_Key') || '');
+	const model = String(settings.get('AI_LLM_OpenAI_Model') || '');
+
+	if (!baseUrl || !apiKey || !model) {
+		return undefined;
+	}
+
+	return { name: 'OpenAI compatible', baseUrl, apiKey, model };
 };
 
 const buildSearchAnswerPrompt = (
@@ -942,13 +923,14 @@ API.v1.get(
 		const fromUsername = this.queryParams.fromUsername || undefined;
 		const startDate = this.queryParams.startDate ? new Date(this.queryParams.startDate) : undefined;
 		const endDate = this.queryParams.endDate ? new Date(this.queryParams.endDate) : undefined;
+		const includeSpotlight = this.queryParams.includeSpotlight !== false;
 
 		const hasFilters = Boolean(rid || fromUsername || startDate || endDate);
 		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
 
 		const [spotlight, userRoomIds] = await Promise.all([
 			// Don't run spotlight when filtering to a specific room (not useful)
-			rid
+			rid || !includeSpotlight
 				? Promise.resolve({ users: [], rooms: [] })
 				: spotlightMethod({
 						text: query,
@@ -1028,6 +1010,89 @@ API.v1.get(
 				answerGenerationConfigured,
 			},
 		});
+	},
+);
+
+API.v1.get(
+	'ai.llm.models',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-privileged-setting'],
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
+		response: {
+			200: ajv.compile<{ data: { key: string; label: string }[] }>({
+				type: 'object',
+				properties: {
+					data: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								key: { type: 'string' },
+								label: { type: 'string' },
+							},
+							required: ['key', 'label'],
+							additionalProperties: false,
+						},
+					},
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['data', 'success'],
+				additionalProperties: false,
+			}),
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const baseUrl = String(settings.get('AI_LLM_OpenAI_Base_URL') || '').replace(/\/+$/, '');
+		const apiKey = String(settings.get('AI_LLM_OpenAI_API_Key') || '');
+		const selectedModel = String(settings.get('AI_LLM_OpenAI_Model') || '');
+
+		if (!baseUrl || !apiKey) {
+			return API.v1.success({
+				data: selectedModel ? [{ key: selectedModel, label: selectedModel }] : [],
+			});
+		}
+
+		try {
+			const response = await fetch(`${baseUrl}/models`, {
+				method: 'GET',
+				timeout: 10000,
+				ignoreSsrfValidation: true,
+				headers: {
+					Accept: 'application/json',
+					Authorization: `Bearer ${apiKey}`,
+				},
+			});
+
+			if (!response.ok) {
+				SystemLogger.warn({ msg: 'AI LLM model lookup failed', status: response.status });
+				return API.v1.success({
+					data: selectedModel ? [{ key: selectedModel, label: selectedModel }] : [],
+				});
+			}
+
+			const json = (await response.json()) as { data?: { id?: string }[] };
+			const data = (json.data || [])
+				.map(({ id }) => id)
+				.filter((id): id is string => Boolean(id))
+				.sort((a, b) => a.localeCompare(b))
+				.map((id) => ({ key: id, label: id }));
+
+			if (selectedModel && !data.some(({ key }) => key === selectedModel)) {
+				data.unshift({ key: selectedModel, label: selectedModel });
+			}
+
+			return API.v1.success({ data });
+		} catch (error) {
+			SystemLogger.warn({ msg: 'AI LLM model lookup request failed', err: error });
+			return API.v1.success({
+				data: selectedModel ? [{ key: selectedModel, label: selectedModel }] : [],
+			});
+		}
 	},
 );
 

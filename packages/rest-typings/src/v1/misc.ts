@@ -57,6 +57,7 @@ type UnifiedSearch = PaginatedRequest<{
 	query: string;
 	includeMessages?: boolean;
 	includeIntelligent?: boolean;
+	includeSpotlight?: boolean;
 	intelligentCount?: number;
 	rid?: string;
 	fromUsername?: string;
@@ -76,6 +77,10 @@ const UnifiedSearchSchema = {
 			nullable: true,
 		},
 		includeIntelligent: {
+			type: 'boolean',
+			nullable: true,
+		},
+		includeSpotlight: {
 			type: 'boolean',
 			nullable: true,
 		},
@@ -337,6 +342,10 @@ export type MiscEndpoints = {
 				model: string;
 			};
 		};
+	};
+
+	'/v1/ai.llm.models': {
+		GET: () => { data: { key: string; label: string }[] };
 	};
 
 	'/v1/pw.getPolicy': {

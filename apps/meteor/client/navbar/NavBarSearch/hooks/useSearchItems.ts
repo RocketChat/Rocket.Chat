@@ -1,8 +1,7 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import type { UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
+import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -19,72 +18,12 @@ const options = {
 	limit: LIMIT,
 } as const;
 
-type SearchRoom = Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'teamMain'> & {
-	uids?: string[];
-	avatarETag?: string;
-};
-
-type SearchUser = Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>;
-
-export type NavBarSearchSections = {
-	recent: SubscriptionWithRoom[];
-	users: SubscriptionWithRoom[];
-	rooms: SearchRoom[];
-	messages: UnifiedSearchMessageResult[];
+export type NavBarSearchItems = {
+	rooms: SubscriptionWithRoom[];
 	intelligent: UnifiedSearchIntelligentResult[];
-	meta: {
-		globalMessagesEnabled: boolean;
-		intelligentSearchEnabled: boolean;
-		intelligentSearchConfigured: boolean;
-		answerGenerationConfigured: boolean;
-		hasIntelligentSearchLicense: boolean;
-		showIntelligentSearch: boolean;
-	};
 };
 
-const emptySections = (recent: SubscriptionWithRoom[], hasLicense: boolean, showIntelligentSearch: boolean): NavBarSearchSections => ({
-	recent,
-	users: [],
-	rooms: [],
-	messages: [],
-	intelligent: [],
-	meta: {
-		globalMessagesEnabled: false,
-		intelligentSearchEnabled: false,
-		intelligentSearchConfigured: false,
-		answerGenerationConfigured: false,
-		hasIntelligentSearchLicense: hasLicense,
-		showIntelligentSearch,
-	},
-});
-
-const mapUserToRoom = (user: SearchUser): SubscriptionWithRoom =>
-	({
-		_id: user._id,
-		t: 'd',
-		name: user.username,
-		fname: user.name,
-		avatarETag: user.avatarETag,
-	}) as SubscriptionWithRoom;
-
-const mapSubscriptionToSearchRoom = ({ rid, _id, t, name, fname, teamMain }: SubscriptionWithRoom): SearchRoom => ({
-	_id: rid || _id,
-	t,
-	name,
-	fname,
-	teamMain,
-});
-
-const mapSubscriptionToSearchUser = ({ _id, name, fname, avatarETag }: SubscriptionWithRoom): SubscriptionWithRoom =>
-	({
-		_id,
-		t: 'd',
-		name,
-		fname,
-		avatarETag,
-	}) as SubscriptionWithRoom;
-
-export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchSections, Error> => {
+export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchItems, Error> => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
@@ -104,45 +43,56 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchS
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
 
+	const type = useMemo(() => {
+		if (searchForChannels) {
+			return { users: false, rooms: true, includeFederatedRooms: true };
+		}
+		if (searchForDMs) {
+			return { users: true, rooms: false };
+		}
+		return { users: true, rooms: true, includeFederatedRooms: true };
+	}, [searchForChannels, searchForDMs]);
+
+	const getSpotlight = useMethod('spotlight');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
-	const globalSearchEnabled = useSetting('Search.defaultProvider.GlobalSearchEnabled', false);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 
 	return useQuery({
 		queryKey: [
-			'sidebar/search/unified',
+			'sidebar/search/spotlight',
 			name,
 			usernamesFromClient,
-			searchForChannels,
-			searchForDMs,
-			globalSearchEnabled,
-			intelligentSearchEnabled,
+			type,
 			hasIntelligentSearchLicense,
+			intelligentSearchEnabled,
 			showIntelligentSearch,
 			localRooms.map(({ _id, name }) => _id + name),
 		],
 
 		queryFn: async () => {
-			const localUserResults = searchForChannels ? [] : localRooms.filter(({ t }) => t === 'd').map(mapSubscriptionToSearchUser);
-			const localRoomResults = searchForDMs ? [] : localRooms.filter(({ t }) => t !== 'd').map(mapSubscriptionToSearchRoom);
-			const base = {
-				...emptySections(name.trim() ? [] : localRooms, hasIntelligentSearchLicense, showIntelligentSearch),
-				users: localUserResults,
-				rooms: localRoomResults,
-			};
-
-			if (!name.trim() || localRooms.length === LIMIT) {
-				return base;
+			let intelligent: UnifiedSearchIntelligentResult[] = [];
+			const shouldSearchIntelligent = Boolean(
+				name.trim() && !mention && hasIntelligentSearchLicense && intelligentSearchEnabled && showIntelligentSearch,
+			);
+			if (shouldSearchIntelligent) {
+				const result = await unifiedSearch({
+					query: name,
+					count: 0,
+					includeSpotlight: false,
+					intelligentCount: 3,
+					includeMessages: false,
+					includeIntelligent: true,
+				});
+				intelligent = result.intelligent;
 			}
 
-			const result = await unifiedSearch({
-				query: name,
-				count: LIMIT,
-				includeMessages: Boolean(globalSearchEnabled && !mention),
-				includeIntelligent: Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled && showIntelligentSearch && !mention),
-			});
+			if (localRooms.length === LIMIT) {
+				return { rooms: localRooms, intelligent };
+			}
+
+			const spotlight = await getSpotlight(name, usernamesFromClient, type);
 
 			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
 				index === arr.findIndex((user) => _id === user._id);
@@ -156,26 +106,44 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchS
 			const usersFilter = (user: { _id: string }): boolean =>
 				!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
 
-			const users = searchForChannels
-				? []
-				: [...localUserResults, ...result.users.filter(filterUsersUnique).filter(usersFilter).map(mapUserToRoom)];
-			const rooms = searchForDMs ? [] : [...localRoomResults, ...(result.rooms as SearchRoom[]).filter(roomFilter)];
+			const userMap = (user: {
+				_id: string;
+				name: string;
+				username: string;
+				avatarETag?: string;
+			}): {
+				_id: string;
+				t: string;
+				name: string;
+				fname: string;
+				avatarETag?: string;
+			} => ({
+				_id: user._id,
+				t: 'd',
+				name: user.username,
+				fname: user.name,
+				avatarETag: user.avatarETag,
+			});
 
-			return {
-				recent: localRooms,
-				users,
-				rooms,
-				messages: result.messages,
-				intelligent: result.intelligent,
-				meta: {
-					...result.meta,
-					hasIntelligentSearchLicense,
-					showIntelligentSearch,
-				},
-			};
+			type resultsFromServerType = {
+				_id: string;
+				t: string;
+				name: string;
+				teamMain?: boolean;
+				fname?: string;
+				avatarETag?: string | undefined;
+				uids?: string[] | undefined;
+			}[];
+
+			const resultsFromServer: resultsFromServerType = [];
+			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersFilter).map(userMap));
+			resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+
+			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
+			return { rooms: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), intelligent };
 		},
 
 		staleTime: 60_000,
-		placeholderData: (previousData) => previousData ?? emptySections(localRooms, hasIntelligentSearchLicense, showIntelligentSearch),
+		placeholderData: (previousData) => previousData ?? { rooms: localRooms, intelligent: [] },
 	});
 };

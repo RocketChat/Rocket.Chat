@@ -1,72 +1,34 @@
 import { settingsRegistry } from '../../app/settings/server';
 
 const AI_LICENSE_MODULE = 'chat.rocket.rc-ai' as const;
-const LLM_PROVIDER_VALUES = [
-	{ key: '', i18nLabel: 'None' },
-	{ key: 'provider_1', i18nLabel: 'AI_LLM_Provider_1' },
-	{ key: 'provider_2', i18nLabel: 'AI_LLM_Provider_2' },
-	{ key: 'provider_3', i18nLabel: 'AI_LLM_Provider_3' },
-];
-
-type AISettingsSection = {
-	add: (id: string, value: string | boolean | number, options: Record<string, unknown>) => Promise<void>;
-};
-
-const createLLMProviderSettings = async (settingsSection: AISettingsSection, provider: '1' | '2' | '3') => {
-	const idPrefix = `AI_LLM_Provider_${provider}`;
-	const enabledSetting = `${idPrefix}_Enabled`;
-
-	await settingsSection.add(enabledSetting, provider === '1', {
-		type: 'boolean',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: false,
-		i18nDescription: 'AI_LLM_Provider_Enabled_Description',
-	});
-
-	await settingsSection.add(`${idPrefix}_Name`, provider === '1' ? 'OpenAI compatible' : '', {
-		type: 'string',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: '',
-		enableQuery: { _id: enabledSetting, value: true },
-		i18nDescription: 'AI_LLM_Provider_Name_Description',
-	});
-
-	await settingsSection.add(`${idPrefix}_Base_URL`, provider === '1' ? 'https://api.openai.com/v1' : '', {
-		type: 'string',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: '',
-		enableQuery: { _id: enabledSetting, value: true },
-		i18nDescription: 'AI_LLM_Provider_Base_URL_Description',
-	});
-
-	await settingsSection.add(`${idPrefix}_API_Key`, '', {
-		type: 'password',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: '',
-		enableQuery: { _id: enabledSetting, value: true },
-		i18nDescription: 'AI_LLM_Provider_API_Key_Description',
-	});
-
-	await settingsSection.add(`${idPrefix}_Model`, provider === '1' ? 'gpt-4o-mini' : '', {
-		type: 'string',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: '',
-		enableQuery: { _id: enabledSetting, value: true },
-		i18nDescription: 'AI_LLM_Provider_Model_Description',
-	});
-};
 
 export const createAISettings = () =>
 	settingsRegistry.addGroup('AI_Center', async function () {
 		await this.section('AI_LLM_Providers', async function () {
-			await createLLMProviderSettings(this, '1');
-			await createLLMProviderSettings(this, '2');
-			await createLLMProviderSettings(this, '3');
+			await this.add('AI_LLM_OpenAI_Base_URL', 'https://api.openai.com/v1', {
+				type: 'string',
+				enterprise: true,
+				modules: [AI_LICENSE_MODULE],
+				invalidValue: '',
+				i18nDescription: 'AI_LLM_OpenAI_Base_URL_Description',
+			});
+
+			await this.add('AI_LLM_OpenAI_API_Key', '', {
+				type: 'password',
+				enterprise: true,
+				modules: [AI_LICENSE_MODULE],
+				invalidValue: '',
+				i18nDescription: 'AI_LLM_OpenAI_API_Key_Description',
+			});
+
+			await this.add('AI_LLM_OpenAI_Model', '', {
+				type: 'lookup',
+				lookupEndpoint: 'v1/ai.llm.models',
+				enterprise: true,
+				modules: [AI_LICENSE_MODULE],
+				invalidValue: '',
+				i18nDescription: 'AI_LLM_OpenAI_Model_Description',
+			});
 		});
 
 		await this.section('Intelligent_Search', async function () {
@@ -139,15 +101,6 @@ export const createAISettings = () =>
 				invalidValue: '',
 				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
 				i18nDescription: 'AI_Intelligent_Search_Query_Template_Description',
-			});
-			await this.add('AI_Intelligent_Search_Answer_Provider', '', {
-				type: 'select',
-				enterprise: true,
-				modules: [AI_LICENSE_MODULE],
-				invalidValue: '',
-				values: LLM_PROVIDER_VALUES,
-				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
-				i18nDescription: 'AI_Intelligent_Search_Answer_Provider_Description',
 			});
 			await this.add('AI_Intelligent_Search_Answer_System_Prompt', '', {
 				type: 'string',
