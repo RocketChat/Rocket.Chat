@@ -1,16 +1,14 @@
-import type { TwoFactorErrorResponse, TwoFactorMethod } from '@rocket.chat/api-client';
+import type { TwoFactorMethod } from '@rocket.chat/api-client';
 import { isTotpInvalidError, isTotpRequiredError, hasRequiredTwoFactorMethod, isTotpMaxAttemptsError } from '@rocket.chat/api-client';
 import { SHA256 } from '@rocket.chat/sha256';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import { lazy } from 'react';
 
-import type { LoginCallback } from './overrideLoginMethod';
-import type { MeteorErrorLike } from './types';
 import { getUser } from '../user';
 
 const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
 
-type RejectChallenge = (error: TwoFactorErrorResponse) => void;
+type RejectChallenge = (error: unknown) => void;
 type OnConfirm = (twoFactorCode: string) => Promise<void>;
 type OnClose = () => void;
 type UnresolvedChallenge = {
@@ -19,17 +17,29 @@ type UnresolvedChallenge = {
 	onClose: OnClose;
 };
 
+// This is a "store" for callbacks that need to be accessed outside of the challenge2fa function's scope
+// e.g. We cannot update modal props, so callbacks that can change are stored here, and then wrapped in another function
+// that will call whatever is present here.
 let unresolvedChallenge: undefined | UnresolvedChallenge = undefined;
 
 const saveChallenge = (challenge: UnresolvedChallenge) => {
 	unresolvedChallenge = challenge;
 };
 
-const wrapWithClearChallenge = (cb: () => void) => () => {
+const endChallenge = (rejectError?: unknown) => {
+	if (rejectError) {
+		unresolvedChallenge?.rejectChallenge(rejectError);
+	}
 	unresolvedChallenge = undefined;
+	imperativeModal.close();
+};
+
+const wrapWithEndChallenge = (cb: () => void) => () => {
+	endChallenge();
 	cb();
 };
 
+// Helper to extract the resolvers from a promise without TS complaining the functions might not exist
 const makeResolvablePromise = <T>() => {
 	let resolve: undefined | ((value: T) => void) = undefined;
 	let reject: undefined | ((error: unknown) => void) = undefined;
@@ -72,32 +82,28 @@ function assertModalProps(props: {
 }
 
 type Request2faPromptOptions = {
-	error: TwoFactorErrorResponse;
+	error: unknown;
 	emailOrUsername?: string;
-	errorHandler?: LoginCallback | null;
 };
 
-export const challenge2fa = ({
-	error,
-	emailOrUsername,
-	errorHandler,
-}: Request2faPromptOptions): [Promise<string>, () => void] | undefined => {
+export const challenge2fa = ({ error, emailOrUsername }: Request2faPromptOptions): [Promise<string>, () => void] | undefined => {
 	if (isTotpMaxAttemptsError(error)) {
 		Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
 			dispatchToastMessage({
 				type: 'error',
-				message: t('Two-factor_authentication_cancelled'),
+				message: t('totp-max-attempts'),
 			});
 		});
+
+		if (unresolvedChallenge) {
+			endChallenge(error);
+		}
+
+		throw error;
 	}
 	if ((!isTotpRequiredError(error) && !isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
 		if (unresolvedChallenge) {
-			unresolvedChallenge.rejectChallenge(error);
-		}
-
-		if (typeof errorHandler === 'function') {
-			errorHandler(error as MeteorErrorLike);
-			return;
+			endChallenge(error);
 		}
 
 		throw error;
@@ -105,28 +111,33 @@ export const challenge2fa = ({
 
 	const twoFactorMethod = 'details' in error ? error.details.method : 'password';
 
+	// `code` promise is resolved with the actual code
 	const [code, resolveCode, rejectCode] = makeResolvablePromise<string>();
+	// `challengePromise` is resolved async when the user completes the challenge
+	// or rejected with the new error in case this is a retry
 	const [challengePromise, resolveChallenge, rejectChallengePromise] = makeResolvablePromise<void>();
 
 	const onConfirm = async (twoFactorCode: string): Promise<void> => {
 		const actualCode = twoFactorMethod === 'password' ? SHA256(twoFactorCode) : twoFactorCode;
 		resolveCode(actualCode);
 		await challengePromise;
+		endChallenge();
 	};
 
 	const onClose = () => {
-		rejectCode(new Error('totp-cancelled'));
-		imperativeModal.close();
+		endChallenge();
+		rejectCode(new Error('Two-factor_authentication_cancelled'));
 	};
 
-	const rejectChallenge = (error: TwoFactorErrorResponse) => {
+	const rejectChallenge = (error: unknown) => {
 		rejectChallengePromise(error);
 	};
 
 	if (unresolvedChallenge) {
+		// This is a retry, the modal will catch this error in order to show inline information
 		unresolvedChallenge.rejectChallenge(error);
 		saveChallenge({ onConfirm, rejectChallenge, onClose });
-		return [code, wrapWithClearChallenge(resolveChallenge)];
+		return [code, wrapWithEndChallenge(resolveChallenge)];
 	}
 
 	saveChallenge({ onConfirm, rejectChallenge, onClose });
@@ -141,10 +152,10 @@ export const challenge2fa = ({
 		component: TwoFactorModal,
 		props: {
 			...props,
-			onConfirm,
-			onClose,
+			onConfirm: (code) => unresolvedChallenge?.onConfirm(code),
+			onClose: () => unresolvedChallenge?.onClose(),
 		},
 	});
 
-	return [code, wrapWithClearChallenge(resolveChallenge)];
+	return [code, wrapWithEndChallenge(resolveChallenge)];
 };
