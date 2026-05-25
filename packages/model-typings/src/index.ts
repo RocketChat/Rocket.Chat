@@ -72,6 +72,7 @@ export type * from './models/IAppsPersistenceModel';
 export type * from './models/IImportsModel';
 export type * from './models/IAuditLogModel';
 export type * from './models/ICronHistoryModel';
+export type * from './models/ICronJobsModel';
 export type * from './models/IMigrationsModel';
 export type * from './models/IModerationReportsModel';
 export type * from './models/IMediaCallsModel';
