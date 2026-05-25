@@ -8,28 +8,35 @@ import { getUser } from '../user';
 
 const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
 
-type RejectChallenge = (error: unknown) => void;
+type RejectChallenge = (error?: unknown) => void;
 type OnConfirm = (twoFactorCode: string) => Promise<void>;
 type OnClose = () => void;
 type UnresolvedChallenge = {
 	onConfirm: OnConfirm;
 	rejectChallenge: RejectChallenge;
+	rejectCode: RejectChallenge;
 	onClose: OnClose;
 };
 
 // This is a "store" for callbacks that need to be accessed outside of the challenge2fa function's scope
 // e.g. We cannot update modal props, so callbacks that can change are stored here, and then wrapped in another function
 // that will call whatever is present here.
+// Ideally, this should be a queue, so that one challenge does not overwrite the other
+// But the modal being open is already a deterrent for other actions to be executed since it blocks the UI
 let unresolvedChallenge: undefined | UnresolvedChallenge = undefined;
 
 const saveChallenge = (challenge: UnresolvedChallenge) => {
 	unresolvedChallenge = challenge;
 };
 
-const endChallenge = (rejectError?: unknown) => {
-	if (rejectError) {
-		unresolvedChallenge?.rejectChallenge(rejectError);
+const endChallenge = (error?: unknown) => {
+	if (error) {
+		unresolvedChallenge?.rejectChallenge(error);
 	}
+
+	// This should never happen, but in case the modal is closed without using the provided onClose callback, we need to make sure the promises are cleaned up
+	// reject is a safe noop, so if the promise was already resolved or rejected previously, this won't cause any issues
+	unresolvedChallenge?.rejectCode(new Error('Two-factor_authentication_cancelled'));
 	unresolvedChallenge = undefined;
 	imperativeModal.close();
 };
@@ -136,11 +143,11 @@ export const challenge2fa = ({ error, emailOrUsername }: Request2faPromptOptions
 	if (unresolvedChallenge) {
 		// This is a retry, the modal will catch this error in order to show inline information
 		unresolvedChallenge.rejectChallenge(error);
-		saveChallenge({ onConfirm, rejectChallenge, onClose });
+		saveChallenge({ onConfirm, rejectChallenge, onClose, rejectCode });
 		return [code, wrapWithEndChallenge(resolveChallenge)];
 	}
 
-	saveChallenge({ onConfirm, rejectChallenge, onClose });
+	saveChallenge({ onConfirm, rejectChallenge, onClose, rejectCode });
 
 	const method = error.details.method ? error.details.method : 'password';
 
