@@ -1,5 +1,3 @@
-import crypto from 'node:crypto';
-
 import type { ILicenseV3, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
 import { isBehaviorAllowed } from '../isItemAllowed';
@@ -20,9 +18,8 @@ const validateUrl = (licenseURL: string, url: string) => {
 	return licenseURL.toLowerCase() === url.toLowerCase();
 };
 
-const validateHash = (licenseURL: string, url: string) => {
-	const value = crypto.createHash('sha256').update(url).digest('hex');
-	return licenseURL === value;
+const validateHash = (licenseURL: string, hashedUrl: string) => {
+	return licenseURL === hashedUrl;
 };
 
 export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, options: LicenseValidationOptions): BehaviorWithContext[] {
@@ -41,15 +38,18 @@ export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, op
 		return [getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' })];
 	}
 
+	const hashedWorkspaceUrl = this.hashWorkspaceUrl(workspaceUrl);
+
 	return serverUrls
 		.filter((url) => {
 			switch (url.type) {
 				case 'regex':
 					return !validateRegex(url.value, workspaceUrl);
 				case 'hash':
-					return !validateHash(url.value, workspaceUrl);
+					return !validateHash(url.value, hashedWorkspaceUrl);
 				case 'url':
-					return !validateUrl(url.value, workspaceUrl);
+					// Fall back for hash validation in case the type was not set correctly, to avoid invalidating licenses unnecessarily.
+					return !validateUrl(url.value, workspaceUrl) && !validateHash(url.value, hashedWorkspaceUrl);
 				default:
 					return false;
 			}
@@ -58,8 +58,9 @@ export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, op
 			if (!options.suppressLog) {
 				logger.error({
 					msg: 'Url validation failed',
-					url,
+					licenseUrl: url,
 					workspaceUrl,
+					hashedWorkspaceUrl,
 				});
 			}
 			return getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' });
