@@ -11,6 +11,7 @@ import {
 	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
+	CronJobsRaw,
 	CustomSoundsRaw,
 	CustomUserStatusRaw,
 	EmailInboxRaw,
@@ -93,6 +94,7 @@ registerModel('ICalendarEventModel', new CalendarEventRaw(db));
 registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
+registerModel('ICronJobsModel', new CronJobsRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
 registerModel('ICustomUserStatusModel', new CustomUserStatusRaw(db));
 registerModel('IEmailInboxModel', new EmailInboxRaw(db));
