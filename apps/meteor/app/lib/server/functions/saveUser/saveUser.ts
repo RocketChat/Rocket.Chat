@@ -54,6 +54,7 @@ export type SaveUserData = {
 	active?: boolean;
 
 	freeSwitchExtension?: string;
+	phones?: Pick<IUser, 'phones'>['phones'];
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -180,6 +181,10 @@ const _saveUser = (session?: ClientSession) =>
 			} else {
 				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
 			}
+		}
+
+		if (Array.isArray(userData.phones)) {
+			updater.set('phones', userData.phones);
 		}
 
 		if (typeof userData.verified === 'boolean') {

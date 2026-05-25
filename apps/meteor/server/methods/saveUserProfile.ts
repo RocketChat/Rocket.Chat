@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { UserStatus, IUser } from '@rocket.chat/core-typings';
+import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -34,6 +34,7 @@ async function saveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		phones?: IUserPhoneNumber[];
 	},
 	customFields: Record<string, unknown>,
 	..._: unknown[]
@@ -116,6 +117,13 @@ async function saveUserProfile(
 			});
 		}
 		await Users.setNickname(user._id, settings.nickname.trim());
+	}
+
+	if (Array.isArray(settings.phones)) {
+		await Users.setPhones(
+			user._id,
+			settings.phones.map(({ verified: _, ...phone }) => phone),
+		);
 	}
 
 	if (user && settings.email) {
@@ -213,6 +221,7 @@ declare module '@rocket.chat/ddp-client' {
 				statusType?: string;
 				bio?: string;
 				nickname?: string;
+				phones?: IUserPhoneNumber[];
 			},
 			customFields: Record<string, any>,
 			...args: unknown[]
@@ -232,6 +241,7 @@ export function executeSaveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		phones?: IUserPhoneNumber[];
 	},
 	customFields: Record<string, any> = {},
 	...args: unknown[]

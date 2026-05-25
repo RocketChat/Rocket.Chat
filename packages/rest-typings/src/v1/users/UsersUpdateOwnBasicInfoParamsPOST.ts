@@ -1,3 +1,5 @@
+import type { IUserPhoneNumber } from '@rocket.chat/core-typings';
+
 import { ajv } from '../Ajv';
 
 export type UsersUpdateOwnBasicInfoParamsPOST = {
@@ -13,6 +15,7 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		newPassword?: string;
 	};
 	customFields?: Record<string, unknown>;
+	phones?: IUserPhoneNumber[];
 };
 
 const UsersUpdateOwnBasicInfoParamsPostSchema = {
@@ -64,6 +67,20 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 		customFields: {
 			type: 'object',
 			nullable: true,
+		},
+		phones: {
+			type: 'array',
+			nullable: true,
+			items: {
+				type: 'object',
+				properties: {
+					number: { type: 'string', format: 'basic_phone_number' },
+					label: { type: 'string', nullable: true, maxLength: 50 },
+					primary: { type: 'boolean', nullable: true },
+				},
+				required: ['number'],
+				additionalProperties: false,
+			},
 		},
 	},
 	required: ['data'],
