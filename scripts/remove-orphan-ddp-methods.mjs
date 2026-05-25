@@ -53,6 +53,9 @@ const NEVER_REMOVE = new Set([
 	'cloud:logout',
 	'cloud:finishOAuthAuthorization',
 	'cloud:getOAuthAuthorizationUrl',
+	// Wired into Meteor accounts via Accounts.forgotPassword on the client —
+	// the audit's static scan can't see that chain.
+	'sendForgotPasswordEmail',
 ]);
 
 function loadAudit() {
