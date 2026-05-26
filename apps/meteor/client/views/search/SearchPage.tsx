@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Icon, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useEndpoint, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
@@ -9,6 +9,7 @@ import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import MarkdownText from '../../components/MarkdownText';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
@@ -95,6 +96,29 @@ const AnswerPanel = ({
 	onGenerate: () => void;
 }): ReactElement => {
 	const { t } = useTranslation();
+	const answerContent = (): ReactElement => {
+		if (isLoading) {
+			return (
+				<Box display='flex' flexDirection='column' style={{ gap: 12 }} aria-busy='true' aria-label={t('Loading')}>
+					<Skeleton width='60%' />
+					<Skeleton width='100%' />
+					<Skeleton width='95%' />
+					<Skeleton width='88%' />
+					<Skeleton width='72%' />
+				</Box>
+			);
+		}
+
+		if (answer) {
+			return <MarkdownText content={answer} parseEmoji fontScale='p2' style={{ lineHeight: 1.55 }} />;
+		}
+
+		return (
+			<Box color='hint' fontScale='p2'>
+				{disabled ? emptyReason : t('Search_AI_answer_ready')}
+			</Box>
+		);
+	};
 
 	return (
 		<Box
@@ -131,15 +155,7 @@ const AnswerPanel = ({
 						{t('Search_AI_answer_error')}
 					</Box>
 				)}
-				{answer ? (
-					<Box fontScale='p2' style={{ whiteSpace: 'pre-wrap', lineHeight: 1.55 }}>
-						{answer}
-					</Box>
-				) : (
-					<Box color='hint' fontScale='p2'>
-						{disabled ? emptyReason : t('Search_AI_answer_ready')}
-					</Box>
-				)}
+				{answerContent()}
 			</Box>
 		</Box>
 	);
@@ -232,7 +248,12 @@ const SearchPage = (): ReactElement => {
 						{debouncedQuery ? (
 							<Box display='flex' alignItems='center' fontScale='h4' style={{ gap: 8, minWidth: 0 }}>
 								<Icon name='magnifier' size='x18' />
-								<Box withTruncatedText>{t('Intelligent_Search_results_for', { query: debouncedQuery })}</Box>
+								<Box display='flex' alignItems='baseline' style={{ gap: 8, minWidth: 0 }}>
+									<Box flexShrink={0}>{t('Results')}</Box>
+									<Box color='hint' withTruncatedText>
+										{debouncedQuery}
+									</Box>
+								</Box>
 							</Box>
 						) : (
 							<Box color='hint' fontScale='p2'>

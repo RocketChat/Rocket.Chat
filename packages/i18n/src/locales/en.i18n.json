@@ -159,7 +159,6 @@
   "AI_Intelligent_Search_Show_In_Top_Bar_Description": "Adds semantic results to the global top-bar search panel when intelligent search is configured.",
   "Intelligent_Search_page_empty_state": "Use the top search bar to ask a question.",
   "Intelligent_Search_page_placeholder": "Ask about messages in your workspace",
-  "Intelligent_Search_results_for": "Results for “{{query}}”",
   "Intelligent_Search_scope_all_rooms": "Searching across all rooms you can access",
   "Intelligent_Search_start_from_top_bar": "Open intelligent search from the top search bar to search semantic workspace knowledge.",
   "AI_Thread_Summarization": "Thread summarization",
