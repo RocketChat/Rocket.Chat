@@ -131,7 +131,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		setShouldJumpToBottom(false);
 		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
 		setHighlightMessage(msgJumpParam);
-		setMessageJumpQueryStringParameter(null);
 		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
