@@ -361,6 +361,59 @@ describe('[CustomSounds]', () => {
 					.expect(403);
 			});
 		});
+
+		describe('mutating file on failed validation', () => {
+			let soundAId: string;
+			let soundBId: string;
+			const soundAName = `sound-a-${randomUUID()}`;
+			const soundBName = `sound-b-${randomUUID()}`;
+
+			before(async () => {
+				soundAId = await createCustomSound(soundAName, mockWavAudioPath);
+				soundBId = await createCustomSound(soundBName, mockMp3AudioPath);
+			});
+
+			after(async () => {
+				if (soundAId) {
+					await deleteCustomSound(soundAId);
+				}
+				if (soundBId) {
+					await deleteCustomSound(soundBId);
+				}
+			});
+
+			it('should not mutate the underlying file or metadata if the update fails validation (e.g., name collision)', async () => {
+				await request
+					.post(api('custom-sounds.update'))
+					.set(credentials)
+					.attach('sound', mockMp3AudioPath)
+					.field('_id', soundAId)
+					.field('name', soundBName)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
+					});
+
+				await request
+					.get(api('custom-sounds.getOne'))
+					.set(credentials)
+					.query({ _id: soundAId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.sound).to.have.property('name', soundAName);
+						expect(res.body.sound).to.have.property('extension', 'wav');
+					});
+
+				await request
+					.get(`/custom-sounds/${soundAId}.wav`)
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.headers).to.have.property('content-type', 'audio/wav');
+					});
+			});
+		});
 	});
 
 	describe('[/custom-sounds.list]', () => {
