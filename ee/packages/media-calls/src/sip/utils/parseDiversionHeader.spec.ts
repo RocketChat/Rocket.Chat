@@ -90,6 +90,10 @@ describe('parseDiversionHeader', () => {
 			expect(parseDiversionHeader('<sip:pbx.example.com>')).toBeNull();
 		});
 
+		it('returns null when there is a display name but no number in the URI', () => {
+			expect(parseDiversionHeader('Alice <sip:pbx.example.com>')).toBeNull();
+		});
+
 		it('returns null for a non-SIP URI inside brackets', () => {
 			expect(parseDiversionHeader('<tel:+1234567890>')).toBeNull();
 		});
