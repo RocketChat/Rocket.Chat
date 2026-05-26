@@ -24,7 +24,7 @@ export async function fetchWithAuthentication(
 			throw new Error('Missing auth header');
 		}
 
-		const uri = url.pathname;
+		const uri = `${url.pathname}${url.search}`;
 		const method = request.method || 'GET';
 
 		authResponse = buildDigestResponse({
@@ -39,7 +39,12 @@ export async function fetchWithAuthentication(
 		return response;
 	}
 
-	response.body?.resume();
+	try {
+		// Consume the body of the old request so it does keep any open sockets
+		response.body?.resume();
+	} catch {
+		// ignore potential errors here
+	}
 	logger.info({ msg: 'Repeating External Request with Authentication', url: urlString });
 	return fetch(urlString, { ...request, headers: { ...request.headers, Authorization: authResponse } });
 }

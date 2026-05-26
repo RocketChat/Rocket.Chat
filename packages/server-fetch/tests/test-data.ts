@@ -36,16 +36,40 @@ export const validHeaders = [
 			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=SHA-256, response="SHA-256[SHA-256[user:api.example.com:pass]:abc123:SHA-256[POST:/api/resource]]"',
 	},
 	{
+		raw: 'DIGEST realm="api.example.com", nonce="abc123"',
+		parsed: { schema: 'Digest', realm: 'api.example.com', nonce: 'abc123' },
+		response:
+			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=MD5, response="MD5[MD5[user:api.example.com:pass]:abc123:MD5[POST:/api/resource]]"',
+	},
+	{
 		raw: 'Digest realm="api.example.com", nonce="abc123", algorithm="MD5-sess"',
 		parsed: { schema: 'Digest', realm: 'api.example.com', nonce: 'abc123', algorithm: 'MD5-sess' },
 		response:
 			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=MD5-sess, response="MD5-sess[MD5-sess[MD5-sess[user:api.example.com:pass]:abc123:0102030405060708]:abc123:MD5-sess[POST:/api/resource]]"',
 	},
 	{
+		raw: 'Digest realm="api.example.com", nonce="abc123", algorithm="MD5-SESS"',
+		parsed: { schema: 'Digest', realm: 'api.example.com', nonce: 'abc123', algorithm: 'MD5-SESS' },
+		response:
+			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=MD5-SESS, response="MD5-SESS[MD5-SESS[MD5-SESS[user:api.example.com:pass]:abc123:0102030405060708]:abc123:MD5-SESS[POST:/api/resource]]"',
+	},
+	{
 		raw: 'Digest realm="api.example.com", nonce="abc123", opaque="xyz789"',
 		parsed: { schema: 'Digest', realm: 'api.example.com', nonce: 'abc123', opaque: 'xyz789' },
 		response:
 			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=MD5, response="MD5[MD5[user:api.example.com:pass]:abc123:MD5[POST:/api/resource]]", opaque="xyz789"',
+	},
+	{
+		raw: 'Digest realm = "api.example.com", nonce ="abc123", qop= "auth"',
+		parsed: { schema: 'Digest', realm: 'api.example.com', nonce: 'abc123', qop: ['auth'] },
+		response:
+			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=MD5, qop=auth, nc=00000001, cnonce="0102030405060708", response="MD5[MD5[user:api.example.com:pass]:abc123:00000001:0102030405060708:auth:MD5[POST:/api/resource]]"',
+	},
+	{
+		raw: 'digest REALM="api.example.com", nonce="abc123"',
+		parsed: { schema: 'Digest', realm: 'api.example.com', nonce: 'abc123' },
+		response:
+			'Digest username="user", realm="api.example.com", nonce="abc123", uri="/api/resource", algorithm=MD5, response="MD5[MD5[user:api.example.com:pass]:abc123:MD5[POST:/api/resource]]"',
 	},
 ];
 
@@ -91,6 +115,5 @@ export const invalidHeaders = [
 	// Missing realm
 	{ raw: 'Digest nonce="abc123"' },
 	// Invalid schema
-	{ raw: 'DIGEST realm="api.example.com", nonce="abc123"' },
 	{ raw: 'Digestrealm="api.example.com", nonce="abc123"' },
 ];

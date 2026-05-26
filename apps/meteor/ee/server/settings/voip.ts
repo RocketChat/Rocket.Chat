@@ -88,6 +88,7 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						public: true,
 						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_ExternalCallHistory_Enabled_Description',
 					});
 
 					const enableQuery = { _id: 'VoIP_TeamCollab_ExternalCallHistory_Enabled', value: true };

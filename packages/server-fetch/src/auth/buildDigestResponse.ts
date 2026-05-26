@@ -37,7 +37,7 @@ export function buildDigestResponse({
 	const cnonce = randomBytes(8).toString('hex');
 
 	const userHash = hashFn(`${username}:${realm}:${password}`);
-	const ha1 = algorithm.endsWith('-sess') ? hashFn(`${userHash}:${nonce}:${cnonce}`) : userHash;
+	const ha1 = algorithm.toLowerCase().endsWith('-sess') ? hashFn(`${userHash}:${nonce}:${cnonce}`) : userHash;
 	const ha2 = hashFn(`${method}:${uri}`);
 
 	const responseString = qop ? `${ha1}:${nonce}:${nc}:${cnonce}:${qop}:${ha2}` : `${ha1}:${nonce}:${ha2}`;

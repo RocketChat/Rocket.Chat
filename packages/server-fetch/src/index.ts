@@ -179,6 +179,9 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				}
 			}
 
+			// Do not send credentials if the origin changed
+			const useAuth = Boolean(options?.auth && new URL(currentUrl).origin === new URL(input).origin);
+
 			const response = await doFetch(
 				url,
 				{
@@ -189,7 +192,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 					headers,
 					...(agent ? { agent } : {}),
 				},
-				options?.auth,
+				useAuth ? options?.auth : undefined,
 			);
 
 			if (!redirectStatus.has(response.status)) {

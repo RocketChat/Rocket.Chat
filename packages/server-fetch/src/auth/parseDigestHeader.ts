@@ -8,7 +8,7 @@ type DigestAuthHeader = {
 };
 
 export function parseDigestHeader(authHeader: string): DigestAuthHeader {
-	if (!authHeader.startsWith('Digest ')) {
+	if (!authHeader.toLowerCase().startsWith('digest ')) {
 		throw new Error('Unsupported Auth Schema');
 	}
 
@@ -36,6 +36,6 @@ export function parseDigestHeader(authHeader: string): DigestAuthHeader {
 }
 
 function getValue(authHeader: string, name: string): string | undefined {
-	const regexp = new RegExp(`${name}="([^"]+)"`);
+	const regexp = new RegExp(`${name}\\s*=\\s*"([^"]+)"`, 'i');
 	return authHeader.match(regexp)?.[1];
 }
