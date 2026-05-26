@@ -1,11 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Icon, SearchInput, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Icon, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouter, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { ChangeEvent, FormEvent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -83,6 +83,7 @@ const AnswerPanel = ({
 	isLoading,
 	error,
 	disabled,
+	emptyReason,
 	onGenerate,
 }: {
 	answer?: string;
@@ -90,6 +91,7 @@ const AnswerPanel = ({
 	isLoading: boolean;
 	error?: unknown;
 	disabled: boolean;
+	emptyReason: string;
 	onGenerate: () => void;
 }): ReactElement => {
 	const { t } = useTranslation();
@@ -135,7 +137,7 @@ const AnswerPanel = ({
 					</Box>
 				) : (
 					<Box color='hint' fontScale='p2'>
-						{disabled ? t('Search_AI_answer_disabled') : t('Search_AI_answer_ready')}
+						{disabled ? emptyReason : t('Search_AI_answer_ready')}
 					</Box>
 				)}
 			</Box>
@@ -145,9 +147,7 @@ const AnswerPanel = ({
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const queryParam = useSearchParameter('q') ?? '';
-	const [query, setQuery] = useState(queryParam);
 	const [intelligentCount, setIntelligentCount] = useState(8);
 	const debouncedQuery = useDebouncedValue(queryParam.trim(), 300);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
@@ -156,7 +156,6 @@ const SearchPage = (): ReactElement => {
 	const generateAnswer = useEndpoint('POST', '/v1/search.answer');
 
 	useEffect(() => {
-		setQuery(queryParam);
 		setIntelligentCount(8);
 	}, [queryParam]);
 
@@ -195,13 +194,26 @@ const SearchPage = (): ReactElement => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedQuery, intelligentCount]);
 
-	const handleSubmit = (event: FormEvent): void => {
-		event.preventDefault();
-		const nextQuery = query.trim();
-		router.navigate({ name: 'search', search: nextQuery ? { q: nextQuery } : {} });
-	};
-
 	const canGenerateAnswer = Boolean(result.data?.meta.answerGenerationConfigured && debouncedQuery && intelligent.length > 0);
+	const answerEmptyReason = useMemo(() => {
+		if (!debouncedQuery) {
+			return t('Search_AI_answer_start_from_top_bar');
+		}
+
+		if (result.isLoading) {
+			return t('Search_AI_answer_waiting_for_sources');
+		}
+
+		if (!intelligent.length) {
+			return t('Search_AI_answer_no_sources');
+		}
+
+		if (!result.data?.meta.answerGenerationConfigured) {
+			return t('Search_AI_answer_disabled');
+		}
+
+		return t('Search_AI_answer_ready');
+	}, [debouncedQuery, intelligent.length, result.data?.meta.answerGenerationConfigured, result.isLoading, t]);
 
 	useEffect(() => {
 		if (!canGenerateAnswer || answerMutation.isPending || answerMutation.data || answerMutation.error) {
@@ -216,17 +228,21 @@ const SearchPage = (): ReactElement => {
 			<PageHeader title={t('Intelligent_Search')} />
 			<PageScrollableContentWithShadow p={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
-					<Box is='form' onSubmit={handleSubmit} mbe={16}>
-						<SearchInput
-							value={query}
-							placeholder={t('Intelligent_Search_page_placeholder')}
-							onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.currentTarget.value)}
-							addon={<Icon name='magnifier' size='x20' />}
-						/>
-					</Box>
-					<Box display='flex' alignItems='center' color='hint' fontScale='p2' mbe={12} style={{ gap: 8 }}>
-						<Icon name='stars' size='x14' />
-						{t('Intelligent_Search_scope_all_rooms')}
+					<Box display='flex' flexDirection='column' mbe={16} style={{ gap: 8 }}>
+						{debouncedQuery ? (
+							<Box display='flex' alignItems='center' fontScale='h4' style={{ gap: 8, minWidth: 0 }}>
+								<Icon name='magnifier' size='x18' />
+								<Box withTruncatedText>{t('Intelligent_Search_results_for', { query: debouncedQuery })}</Box>
+							</Box>
+						) : (
+							<Box color='hint' fontScale='p2'>
+								{t('Intelligent_Search_page_empty_state')}
+							</Box>
+						)}
+						<Box display='flex' alignItems='center' color='hint' fontScale='p2' style={{ gap: 8 }}>
+							<Icon name='stars' size='x14' />
+							{t('Intelligent_Search_scope_all_rooms')}
+						</Box>
 					</Box>
 					{!hasIntelligentSearchLicense && (
 						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} mbe={16}>
@@ -250,6 +266,7 @@ const SearchPage = (): ReactElement => {
 							isLoading={answerMutation.isPending}
 							error={answerMutation.error}
 							disabled={!canGenerateAnswer}
+							emptyReason={answerEmptyReason}
 							onGenerate={() => answerMutation.mutate()}
 						/>
 					)}
@@ -265,7 +282,7 @@ const SearchPage = (): ReactElement => {
 					</Box>
 					{!debouncedQuery && (
 						<Box display='flex' justifyContent='center' color='hint' p={24}>
-							{t('Intelligent_Search_page_empty_state')}
+							{t('Intelligent_Search_start_from_top_bar')}
 						</Box>
 					)}
 					{result.isLoading && (
