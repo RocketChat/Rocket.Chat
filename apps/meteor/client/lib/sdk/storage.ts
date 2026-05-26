@@ -14,6 +14,8 @@ export const STORAGE_KEYS = {
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
+type StorageBackend = 'local' | 'session';
+
 const getStorageForBackend = (backend: StorageBackend): Storage | undefined => {
 	if (typeof window === 'undefined') {
 		return undefined;
@@ -36,19 +38,22 @@ export const setStoredItem = (key: string, value: string): void => getStorage()?
 
 export const removeStoredItem = (key: string): void => getStorage()?.removeItem(key);
 
-type StorageBackend = 'local' | 'session';
-
 let storageBackend: StorageBackend = 'local';
 
-export const setStorageBackend = (backend: StorageBackend): void => {
+export const setStorageBackend = (backend: StorageBackend): boolean => {
 	if (backend === storageBackend) {
-		return;
+		return true;
 	}
-	moveLoginKeys(backend);
+
+	if (!moveLoginKeys(backend)) {
+		return false;
+	}
+
 	storageBackend = backend;
+	return true;
 };
 
-const moveLoginKeys = (backend: StorageBackend): void => {
+const moveLoginKeys = (backend: StorageBackend): boolean => {
 	const keys = [
 		STORAGE_KEYS.USER_ID,
 		STORAGE_KEYS.LOGIN_TOKEN,
@@ -62,7 +67,8 @@ const moveLoginKeys = (backend: StorageBackend): void => {
 	const targetStorage = getStorageForBackend(backend);
 
 	if (!sourceStorage || !targetStorage) {
-		return;
+		console.warn('Unable to switch storage backend because source or target storage is unavailable');
+		return false;
 	}
 
 	for (const key of keys) {
@@ -84,4 +90,6 @@ const moveLoginKeys = (backend: StorageBackend): void => {
 			continue;
 		}
 	}
+
+	return true;
 };

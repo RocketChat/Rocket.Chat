@@ -69,7 +69,10 @@ const applyForgetSessionOnWindowClose = (): void => {
 		return;
 	}
 
-	setStorageBackend(storageBackend);
+	if (!setStorageBackend(storageBackend)) {
+		return;
+	}
+
 	configureAccountsStorage(storageBackend);
 	configuredStorageBackend = storageBackend;
 };
