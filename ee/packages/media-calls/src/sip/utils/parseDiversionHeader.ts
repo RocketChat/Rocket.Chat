@@ -29,11 +29,11 @@ export function parseDiversionHeader(raw: string): ParsedDiversion | null {
 	}
 
 	const rawDisplayName = nameAddrMatch[1] ?? nameAddrMatch[2];
-	const displayName = rawDisplayName ? rawDisplayName.trim() || undefined : undefined;
+	const displayName = rawDisplayName?.trim() || undefined;
 	const sipUri = nameAddrMatch[3];
 
 	// Extract the user part from sip:user@host or sips:user@host
-	const uriMatch = sipUri.match(/^sips?:([^@;>\s]+)@/i);
+	const uriMatch = sipUri?.match(/^sips?:([^@;>\s]+)@/i);
 	if (!uriMatch?.[1]) {
 		return null;
 	}
