@@ -375,12 +375,8 @@ describe('[CustomSounds]', () => {
 			});
 
 			after(async () => {
-				if (soundAId) {
-					await deleteCustomSound(soundAId);
-				}
-				if (soundBId) {
-					await deleteCustomSound(soundBId);
-				}
+				await deleteCustomSound(soundAId);
+				await deleteCustomSound(soundBId);
 			});
 
 			it('should not mutate the underlying file or metadata if the update fails validation (e.g., name collision)', async () => {
