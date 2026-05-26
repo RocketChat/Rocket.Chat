@@ -6,7 +6,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
-import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
 import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
@@ -146,7 +145,6 @@ Meteor.startup(async () => {
 			if (asset) {
 				const buffer = Buffer.from(asset);
 
-				const rs = RocketChatFile.bufferToStream(buffer);
 				const fileStore = FileUpload.getStore('Avatars');
 				await fileStore.deleteByName('rocket.cat');
 
@@ -156,7 +154,7 @@ Meteor.startup(async () => {
 					size: buffer.length,
 				};
 
-				const upload = await fileStore.insert(file, rs);
+				const upload = await fileStore.insert(file, buffer);
 				await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 			}
 		}
@@ -207,7 +205,7 @@ Meteor.startup(async () => {
 
 	await Users.removeById('rocketchat.internal.admin.test');
 
-	if (process.env.TEST_MODE === 'true') {
+	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		console.log(colors.green('Inserting admin test user:'));
 
 		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {

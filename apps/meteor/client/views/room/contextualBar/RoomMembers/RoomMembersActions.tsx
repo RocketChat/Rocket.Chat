@@ -34,7 +34,7 @@ const RoomMembersActions = ({
 	if (!menuOptions) {
 		return null;
 	}
-	return <GenericMenu detached title={t('More')} key='menu' data-qa-id='UserUserInfo-menu' sections={menuOptions} placement='bottom-end' />;
+	return <GenericMenu detached title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
 };
 
 export default RoomMembersActions;

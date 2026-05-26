@@ -3,7 +3,11 @@ import { KJUR } from 'jsrsasign';
 import NodeRSA from 'node-rsa';
 
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
-	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });
+	const request = await fetch('https://appleid.apple.com/auth/keys', {
+		method: 'GET',
+		// SECURITY: Hardcoded URL, no SSRF protection needed
+		ignoreSsrfValidation: true,
+	});
 	const applePublicKeys = ((await request.json()) as { keys: { kid: string; e: string; n: string }[] }).keys;
 	const { kid } = header;
 
@@ -23,7 +27,7 @@ async function isValidAppleJWT(identityToken: string, header: any): Promise<bool
 	}
 }
 
-export async function handleIdentityToken(identityToken: string): Promise<{ id: string; email: string; name: string }> {
+export async function handleIdentityToken(identityToken: string): Promise<Record<string, any>> {
 	const decodedToken = KJUR.jws.JWS.parse(identityToken);
 
 	if (!(await isValidAppleJWT(identityToken, decodedToken.headerObj))) {
@@ -34,15 +38,14 @@ export async function handleIdentityToken(identityToken: string): Promise<{ id: 
 		throw new Error('identityToken does not have a payload');
 	}
 
-	const { iss, sub, email } = decodedToken.payloadObj as any;
+	const { iss, sub } = decodedToken.payloadObj as any;
 	if (!iss) {
 		throw new Error('Insufficient data in auth response token');
 	}
 
 	const serviceData = {
 		id: sub,
-		email,
-		name: '',
+		...decodedToken.payloadObj,
 	};
 
 	return serviceData;

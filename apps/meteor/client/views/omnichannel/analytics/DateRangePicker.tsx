@@ -1,34 +1,41 @@
-import { Box, InputBox, Menu, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { Moment } from 'moment';
-import moment from 'moment';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 import type { ComponentProps, FormEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-moment.locale('en');
 
 type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
 };
 
-const formatToDateInput = (date: Moment) => date.format('YYYY-MM-DD');
+const formatToDateInput = (date: Date) => format(date, 'yyyy-MM-dd');
 
-const todayDate = formatToDateInput(moment());
+const getTodayDate = () => formatToDateInput(new Date());
 
-const getMonthRange = (monthsToSubtractFromToday: number) => ({
-	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
-	end: formatToDateInput(monthsToSubtractFromToday === 0 ? moment() : moment().subtract(monthsToSubtractFromToday).date(0)),
-});
+const getMonthRange = (monthsToSubtractFromToday: number) => {
+	const now = new Date();
+	const startDate = monthsToSubtractFromToday === 0 ? startOfMonth(now) : startOfMonth(subMonths(now, monthsToSubtractFromToday));
+	const endDate = monthsToSubtractFromToday === 0 ? now : endOfMonth(subMonths(now, monthsToSubtractFromToday));
+	return {
+		start: formatToDateInput(startDate),
+		end: formatToDateInput(endDate),
+	};
+};
 
-const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: number) => ({
-	start: formatToDateInput(moment().subtract(daysToSubtractFromStart, 'day')),
-	end: formatToDateInput(moment().subtract(daysToSubtractFromEnd, 'day')),
-});
+const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: number) => {
+	const now = new Date();
+	return {
+		start: formatToDateInput(subDays(now, daysToSubtractFromStart)),
+		end: formatToDateInput(subDays(now, daysToSubtractFromEnd)),
+	};
+};
 
 const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePickerProps) => {
 	const { t } = useTranslation();
-	const [range, setRange] = useState({ start: '', end: '' });
+	const todayDate = useMemo(() => getTodayDate(), []);
+	const [range, setRange] = useState({ start: todayDate, end: todayDate });
 
 	const { start, end } = range;
 
@@ -60,53 +67,59 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 			start: todayDate,
 			end: todayDate,
 		});
-	}, [handleRange]);
+	}, [handleRange, todayDate]);
 
 	const options = useMemo(
-		() => ({
-			today: {
-				icon: 'history',
-				label: t('Today'),
-				action: () => {
+		() => [
+			{
+				id: 'today',
+				icon: 'history' as const,
+				content: t('Today'),
+				onClick: () => {
 					handleRange(getWeekRange(0, 0));
 				},
 			},
-			yesterday: {
-				icon: 'history',
-				label: t('Yesterday'),
-				action: () => {
+			{
+				id: 'yesterday',
+				icon: 'history' as const,
+				content: t('Yesterday'),
+				onClick: () => {
 					handleRange(getWeekRange(1, 1));
 				},
 			},
-			thisWeek: {
-				icon: 'history',
-				label: t('This_week'),
-				action: () => {
+			{
+				id: 'thisWeek',
+				icon: 'history' as const,
+				content: t('This_week'),
+				onClick: () => {
 					handleRange(getWeekRange(7, 0));
 				},
 			},
-			previousWeek: {
-				icon: 'history',
-				label: t('Previous_week'),
-				action: () => {
+			{
+				id: 'previousWeek',
+				icon: 'history' as const,
+				content: t('Previous_week'),
+				onClick: () => {
 					handleRange(getWeekRange(14, 7));
 				},
 			},
-			thisMonth: {
-				icon: 'history',
-				label: t('This_month'),
-				action: () => {
+			{
+				id: 'thisMonth',
+				icon: 'history' as const,
+				content: t('This_month'),
+				onClick: () => {
 					handleRange(getMonthRange(0));
 				},
 			},
-			lastMonth: {
-				icon: 'history',
-				label: t('Previous_month'),
-				action: () => {
+			{
+				id: 'lastMonth',
+				icon: 'history' as const,
+				content: t('Previous_month'),
+				onClick: () => {
 					handleRange(getMonthRange(1));
 				},
 			},
-		}),
+		],
 		[handleRange, t],
 	);
 
@@ -127,7 +140,9 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 						<Box height='x40' display='flex' width='full'>
 							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
 						</Box>
-						<Menu mis={8} options={options} />
+						<Box mis={8}>
+							<GenericMenu title={t('Date_range_presets')} items={options} small />
+						</Box>
 					</FieldRow>
 				</Field>
 			</Box>

@@ -13,7 +13,7 @@ const handleAfterOnHoldChatResumed = async (room: IRoom): Promise<IRoom> => {
 
 	const { _id: roomId } = room;
 
-	cbLogger.debug(`Removing current on hold timers for room ${roomId}`);
+	cbLogger.debug({ msg: 'Removing current on hold timers for room', roomId });
 	await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 
 	return room;

@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { isABACManagedRoom } from '../../../authorization/server/lib/isABACManagedRoom';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -62,17 +63,28 @@ type RoomSettingsValidators = {
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
-const isAbacManagedRoom = (room: IRoom): boolean => {
-	return room.t === 'p' && settings.get<boolean>('ABAC_Enabled') && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
-};
-
 const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
 	return (
-		team?.type === TEAM_TYPE.PRIVATE &&
+		team?.type === TeamType.PRIVATE &&
 		settings.get<boolean>('ABAC_Enabled') &&
 		Array.isArray(teamRoom?.abacAttributes) &&
 		teamRoom.abacAttributes.length > 0
 	);
+};
+
+const guardABACManagedField = (room: IRoom, value: string | undefined, current: string | undefined, fieldName: string): void => {
+	if (!value && !current) {
+		return;
+	}
+	if (value === current) {
+		return;
+	}
+	if (isABACManagedRoom(room)) {
+		throw new Meteor.Error('error-action-not-allowed', `Editing an ABAC managed room's ${fieldName} is not allowed`, {
+			method: 'saveRoomSettings',
+			action: 'Editing_room',
+		});
+	}
 };
 
 const validators: RoomSettingsValidators = {
@@ -83,7 +95,7 @@ const validators: RoomSettingsValidators = {
 				action: 'Viewing_room_administration',
 			});
 		}
-		if (isAbacManagedRoom(room) && value) {
+		if (isABACManagedRoom(room) && value) {
 			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
@@ -104,28 +116,28 @@ const validators: RoomSettingsValidators = {
 			return;
 		}
 
-		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (isAbacManagedRoom(room) && value !== 'p') {
+		if (isABACManagedRoom(room) && value !== 'p') {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (!room.teamId) {
+		if (!room.teamId || room.teamMain) {
 			return;
 		}
 		const team = await Team.getInfoById(room.teamId);
@@ -150,6 +162,15 @@ const validators: RoomSettingsValidators = {
 				action: 'Change_Room_Type',
 			});
 		}
+	},
+	async roomAnnouncement({ room, value }) {
+		guardABACManagedField(room, value, room.announcement, 'announcement');
+	},
+	async roomTopic({ room, value }) {
+		guardABACManagedField(room, value, room.topic, 'topic');
+	},
+	async roomDescription({ room, value }) {
+		guardABACManagedField(room, value, room.description, 'description');
 	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
@@ -236,7 +257,7 @@ const validators: RoomSettingsValidators = {
 type RoomSettingsSavers = {
 	[TRoomSetting in keyof RoomSettings]?: (params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -251,7 +272,7 @@ const settingSavers: RoomSettingsSavers = {
 
 		if (room.teamId && room.teamMain) {
 			void Team.update(user._id, room.teamId, {
-				type: room.t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
+				type: room.t === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE,
 				name: value,
 				updateRoom: false,
 			});
@@ -296,7 +317,7 @@ const settingSavers: RoomSettingsSavers = {
 		}
 
 		if (room.teamId && room.teamMain) {
-			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			const type = value === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE;
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
@@ -406,7 +427,7 @@ async function save<TRoomSetting extends keyof RoomSettings>(
 	setting: TRoomSetting,
 	params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -489,7 +510,7 @@ export async function saveRoomSettings(
 	}
 
 	// validations
-	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await validate(setting, {
 			userId,
 			value: settings[setting],
@@ -506,10 +527,10 @@ export async function saveRoomSettings(
 	}
 
 	// saving data
-	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
 			userId,
-			user: user as IUser & Required<Pick<IUser, 'username' | 'name'>>,
+			user: user as RequiredField<IUser, 'username' | 'name'>,
 			value: settings[setting],
 			room,
 			rid,

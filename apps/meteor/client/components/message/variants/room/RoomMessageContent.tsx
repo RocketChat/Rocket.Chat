@@ -2,9 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
@@ -40,7 +41,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const chat = useChat();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
@@ -51,7 +52,11 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	return (
 		<>
-			{isMessageEncrypted && <MessageBody data-qa-type='message-body'>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+			{isMessageEncrypted && (
+				<MessageBody role='document' aria-roledescription={t('message_body')}>
+					{t('E2E_message_encrypted_placeholder')}
+				</MessageBody>
+			)}
 
 			{!!quotes?.length && <Attachments attachments={quotes} />}
 

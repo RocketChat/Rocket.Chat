@@ -9,12 +9,13 @@ import {
 	isFileImageAttachment,
 	type AtLeast,
 } from '@rocket.chat/core-typings';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { Logger } from '@rocket.chat/logger';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -41,7 +42,7 @@ export async function sendTranscript({
 	subject?: string;
 	user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 }): Promise<boolean> {
-	logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
+	logger.debug({ msg: 'Sending conversation transcript', rid, token });
 
 	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v'>>(rid, { projection: { _id: 1, v: 1 } });
 	if (!room) {
@@ -55,7 +56,7 @@ export async function sendTranscript({
 
 	const userLanguage = settings.get<string>('Language') || 'en';
 	const timezone = getTimezone(user);
-	logger.debug(`Transcript will be sent using ${timezone} as timezone`);
+	logger.debug({ msg: 'Transcript will be sent using timezone', timezone });
 
 	const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
 	const showSystemMessages = settings.get<boolean>('Livechat_transcript_show_system_messages');
@@ -107,7 +108,7 @@ export async function sendTranscript({
 
 		const messageType = MessageTypes.getType(message);
 
-		let messageContent = messageType?.system
+		const messageContent = messageType?.system
 			? DOMPurify.sanitize(`
 				<i>${messageType.text(i18n.cloneInstance({ interpolation: { escapeValue: false } }).t, message)}}</i>`)
 			: escapeHtml(message.msg);
@@ -115,9 +116,6 @@ export async function sendTranscript({
 		let filesHTML = '';
 
 		if (message.attachments && message.attachments?.length > 0) {
-			messageContent = message.attachments[0].description || '';
-			escapeHtml(messageContent);
-
 			for await (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
 					continue;

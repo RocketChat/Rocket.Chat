@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('Internal Voice Calls - Enterprise Edition', () => {
@@ -11,6 +12,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', false);
 		await Promise.all([
 			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
 			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
@@ -24,12 +26,16 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		]);
 	});
 
+	test.afterAll(async ({ api }) => {
+		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', true);
+	});
+
 	test('should initiate voice call from direct message', async () => {
 		const [user1, user2] = sessions;
 
 		await test.step('should open direct message with user2', async () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 		});
 
 		await test.step('initiate a voice call from room toolbar', async () => {
@@ -53,7 +59,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		const [user1, user2] = sessions;
 		await test.step('establish call connection', async () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.initiateCall();
 			await user2.poHomeChannel.voiceCalls.acceptCall();
@@ -107,7 +113,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 
 		await test.step('establish call between user1 and user2', async () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.initiateCall();
 			await user2.poHomeChannel.voiceCalls.acceptCall();
@@ -138,7 +144,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 
 		await test.step('user1 initiates call to user2', async () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.initiateCall();
 		});

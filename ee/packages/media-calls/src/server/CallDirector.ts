@@ -1,5 +1,14 @@
-import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedContact, ServerActor } from '@rocket.chat/core-typings';
-import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
+import { randomUUID } from 'node:crypto';
+
+import type {
+	IMediaCall,
+	IMediaCallNegotiation,
+	MediaCallContact,
+	MediaCallSignedContact,
+	ServerActor,
+	MediaCallNegotiationStream,
+} from '@rocket.chat/core-typings';
+import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -52,7 +61,7 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit },
+		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
@@ -71,8 +80,14 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as accepted', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 
-		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
-		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
+		const updatedCall = await MediaCalls.findOneById(call._id);
+		if (!updatedCall) {
+			logger.error({ msg: 'Unable to find up to date call data', callId: call._id });
+			return false;
+		}
+
+		await calleeAgent.onCallAccepted(updatedCall);
+		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
 		if (data.webrtcAnswer && negotiation) {
 			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
@@ -131,7 +146,7 @@ class MediaCallDirector {
 	public async saveWebrtcSession(
 		call: IMediaCall,
 		fromAgent: IMediaCallAgent,
-		session: { sdp: RTCSessionDescriptionInit; negotiationId: string },
+		session: { sdp: RTCSessionDescriptionInit; negotiationId: string; streams?: MediaCallNegotiationStream[] },
 		contractId: string,
 	): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.saveWebrtcSession', callId: call?._id });
@@ -153,8 +168,8 @@ class MediaCallDirector {
 		}
 
 		const updater = isOffer
-			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp)
-			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp);
+			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp, session.streams)
+			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp, session.streams);
 		const updateResult = await updater;
 
 		if (!updateResult.modifiedCount) {
@@ -167,7 +182,7 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -192,7 +207,10 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
+		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const call: Omit<IMediaCall, '_updatedAt'> = {
+			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
+			_id: randomUUID(),
 			service,
 			kind: 'direct',
 			state: 'none',
@@ -213,6 +231,8 @@ class MediaCallDirector {
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
+
+			features: allowedFeatures,
 		};
 
 		logger.debug({ msg: 'creating call', call });
@@ -240,7 +260,7 @@ class MediaCallDirector {
 		agent: IMediaCallAgent,
 	): Promise<void> {
 		if (!agent.oppositeAgent) {
-			logger.error('Unable to transfer calls without a reference to the opposite agent.');
+			logger.error({ msg: 'Unable to transfer calls without a reference to the opposite agent.' });
 			return;
 		}
 

@@ -20,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['8.2']"
+        default: "['8.0']"
         required: false
         type: string
       release:
@@ -59,12 +59,14 @@ on:
         required: false
       REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
+      NPM_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
-  DOCKER_TAG: ${{ inputs.gh-docker-tag }}
+  DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
 
 jobs:
   test:
@@ -74,7 +76,7 @@ jobs:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
-      COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
+      COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
 
@@ -88,7 +90,8 @@ jobs:
 
     steps:
       - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
+        if: inputs.type == 'perf'
+        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1 # v2.0.0
         with:
           theme: dark
           job_summary: true
@@ -105,13 +108,13 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@v3
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -122,37 +125,44 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
 
-      - name: Restore packages build
-        uses: actions/download-artifact@v7
+      - uses: ./.github/actions/restore-packages
+
+      # Download Docker images from build artifacts
+      - name: Download Docker images
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          name: packages-build
-          path: /tmp
+          pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
+          path: /tmp/docker-images
+          merge-multiple: true
 
-      - name: Unpack packages build
+      # Load Docker images
+      - name: Load Docker images
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         shell: bash
         run: |
-          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+          set -o xtrace
 
-      # if we are testing a PR from a fork, we need to build the docker image at this point
-      - uses: ./.github/actions/build-docker
-        if: github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.actor == 'dependabot[bot]')
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
-          publish-image: false
-          arch: amd64
-          service: 'rocketchat'
-          type: 'coverage'
+          # Load all downloaded images
+          for image_file in /tmp/docker-images/*.tar; do
+            if [ -f "$image_file" ]; then
+              echo "Loading image from $image_file"
+              docker load -i "$image_file"
+              rm "$image_file"
+            fi
+          done
+
+          # List loaded images
+          docker images
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
-        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
+        run: echo "DEBUG_LOG_LEVEL=2" >> "$GITHUB_ENV"
 
       - name: Start httpbin container and wait for it to be ready
-        if: inputs.type == 'api'
+        if: inputs.type == 'api' || inputs.type == 'api-livechat'
         run: |
           docker compose -f docker-compose-ci.yml up -d httpbin
 
@@ -160,11 +170,18 @@ jobs:
         run: |
           set -o xtrace
 
-          mkdir -p $COVERAGE_DIR
-          chmod 777 $COVERAGE_DIR
+          mkdir -p "$COVERAGE_DIR"
+          chmod 777 "$COVERAGE_DIR"
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
+        env:
+          # API tests intentionally invoke deprecated DDP methods through
+          # /v1/method.call/:method. TEST_MODE='api' keeps every other test
+          # behavior on (rate-limiter bypass, short cache TTLs) while letting
+          # the deprecation logger log without throwing. Other suites use the
+          # docker-compose default of TEST_MODE='true'.
+          TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
         run: |
           # when we are testing CE, we only need to start the rocketchat container
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
@@ -174,6 +191,8 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
+          TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
 
@@ -185,7 +204,7 @@ jobs:
         run: |
           docker ps
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
+          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
@@ -203,12 +222,28 @@ jobs:
         run: |
           set -o xtrace
 
-          npm run testapi
+          npm run testapi || s=$?
 
           docker compose -f ../../docker-compose-ci.yml stop
 
-          ls -la $COVERAGE_DIR
-          exit $s
+          ls -la "$COVERAGE_DIR"
+          exit "${s:-0}"
+
+      - name: E2E Test API (Livechat)
+        if: inputs.type == 'api-livechat'
+        working-directory: ./apps/meteor
+        env:
+          WEBHOOK_TEST_URL: 'http://httpbin'
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+        run: |
+          set -o xtrace
+
+          npm run testapi:livechat || s=$?
+
+          docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -la "$COVERAGE_DIR"
+          exit "${s:-0}"
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
@@ -230,25 +265,27 @@ jobs:
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
+          E2E_SHARD: ${{ matrix.shard }}
+          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
         working-directory: ./apps/meteor
         run: |
           set -o xtrace
 
           yarn prepare
-          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+          yarn test:e2e --shard="$E2E_SHARD/$E2E_TOTAL_SHARD"
 
       - name: Merge ui coverage files
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
         working-directory: ./apps/meteor
         run: |
-          npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
-          ls -la $COVERAGE_DIR || true
+          npx nyc merge .nyc_output "${COVERAGE_DIR}/${COVERAGE_FILE_NAME}"
+          ls -la "$COVERAGE_DIR" || true
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
+          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 
@@ -262,7 +299,7 @@ jobs:
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage

@@ -39,7 +39,7 @@ export async function savePageHistory(token: string, roomId: string | undefined,
 	};
 
 	if (!roomId) {
-		livechatLogger.warn(`Saving page history without room id for visitor with token ${token}`);
+		livechatLogger.warn({ msg: 'Saving page history without room id for visitor', token });
 		// keep history of unregistered visitors for 1 month
 		const keepHistoryMiliseconds = 2592000000;
 		extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;

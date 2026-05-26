@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -13,12 +14,8 @@ import {
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
-	isChatStarMessageProps,
-	isChatUnstarMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
-	isChatFollowMessageProps,
-	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
@@ -48,7 +45,6 @@ import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage'
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
-import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
@@ -59,117 +55,77 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
-API.v1.addRoute(
-	'chat.delete',
-	{ authRequired: true, validateParams: isChatDeleteProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
 
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
 
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			if (
-				this.bodyParams.asUser &&
-				msg.u._id !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
-			) {
-				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
-			}
-
-			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			await deleteMessageValidatingPermission(msg, user._id);
-
-			return API.v1.success({
-				_id: msg._id,
-				ts: Date.now().toString(),
-				message: msg,
-			});
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
 		},
 	},
-);
+	required: ['messageId'],
+	additionalProperties: false,
+};
 
-API.v1.addRoute(
-	'chat.syncMessages',
-	{ authRequired: true, validateParams: isChatSyncMessagesProps },
-	{
-		async get() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
-			}
-
-			if (!lastUpdate && !type) {
-				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
-			}
-
-			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
-			}
-
-			const getMessagesQuery = {
-				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
-				...(next && { next }),
-				...(previous && { previous }),
-				...(count && { count }),
-				...(type && { type }),
-			};
-
-			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
-
-			if (!result) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({
-				result: {
-					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
-					deleted: 'deleted' in result ? result.deleted : [],
-					cursor: 'cursor' in result ? result.cursor : undefined,
-				},
-			});
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
 		},
 	},
-);
+	required: ['messageId'],
+	additionalProperties: false,
+};
 
-API.v1.addRoute(
-	'chat.getMessage',
-	{
-		authRequired: true,
-		validateParams: isChatGetMessageProps,
-	},
-	{
-		async get() {
-			if (!this.queryParams.msgId) {
-				return API.v1.failure('The "msgId" query parameter must be provided.');
-			}
+type ChatFollowMessageLocal = {
+	mid: string;
+};
 
-			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
-
-			if (!msg) {
-				return API.v1.failure();
-			}
-
-			const [message] = await normalizeMessagesForUser([msg], this.userId);
-
-			return API.v1.success({
-				message,
-			});
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
 		},
 	},
-);
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 type ChatPinMessage = {
 	messageId: IMessage['_id'];
@@ -350,13 +306,435 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
-	);
+	)
+	.post(
+		'chat.starMessage',
+		{
+			authRequired: true,
+			body: isChatStarMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
-API.v1.addRoute(
-	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
-	{
-		async post() {
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await starMessage(this.user, {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: true,
+			});
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.unStarMessage',
+		{
+			authRequired: true,
+			body: isChatUnstarMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await starMessage(this.user, {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: false,
+			});
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.followMessage',
+		{
+			authRequired: true,
+			body: isChatFollowMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { mid } = this.bodyParams;
+
+			if (!mid) {
+				throw new Meteor.Error('The required "mid" body param is missing.');
+			}
+
+			await followMessage(this.user, { mid });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.unfollowMessage',
+		{
+			authRequired: true,
+			body: isChatUnfollowMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { mid } = this.bodyParams;
+
+			if (!mid) {
+				throw new Meteor.Error('The required "mid" body param is missing.');
+			}
+
+			await unfollowMessage(this.user, { mid });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.react',
+		{
+			authRequired: true,
+			body: isChatReactProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
+
+			if (!emoji) {
+				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
+			}
+
+			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.reportMessage',
+		{
+			authRequired: true,
+			body: isChatReportMessageProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { messageId, description } = this.bodyParams;
+
+			await reportMessage(messageId, description, this.userId);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.delete',
+		{
+			authRequired: true,
+			body: isChatDeleteProps,
+			response: {
+				200: ajv.compile<{ _id: string; ts: string; message: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						ts: { type: 'string' },
+						message: {
+							type: 'object',
+							properties: {
+								_id: { type: 'string' },
+								rid: { type: 'string' },
+								u: { type: 'object' },
+							},
+							required: ['_id', 'rid', 'u'],
+							additionalProperties: true,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'ts', 'message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
+
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			}
+
+			if (this.bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			if (
+				this.bodyParams.asUser &&
+				msg.u._id !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
+			) {
+				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
+			}
+
+			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
+			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			await deleteMessageValidatingPermission(msg, user._id);
+
+			return API.v1.success({
+				_id: msg._id,
+				ts: Date.now().toString(),
+				message: msg,
+			});
+		},
+	)
+	.get(
+		'chat.syncMessages',
+		{
+			authRequired: true,
+			query: isChatSyncMessagesProps,
+			response: {
+				200: ajv.compile<{
+					result: {
+						updated: IMessage[];
+						deleted: { _id: string; _deletedAt: string }[];
+						cursor?: { next: string | null; previous: string | null };
+					};
+				}>({
+					type: 'object',
+					properties: {
+						result: {
+							type: 'object',
+							properties: {
+								updated: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								deleted: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											_deletedAt: { type: 'string', format: 'date-time' },
+										},
+										required: ['_id', '_deletedAt'],
+										additionalProperties: false,
+									},
+								},
+								cursor: {
+									type: 'object',
+									properties: {
+										next: { type: ['string', 'null'] },
+										previous: { type: ['string', 'null'] },
+									},
+								},
+							},
+							required: ['updated', 'deleted'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
+			}
+
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+			}
+
+			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+			}
+
+			const getMessagesQuery = {
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
+			};
+
+			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
+
+			if (!result) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({
+				result: {
+					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
+					deleted:
+						'deleted' in result
+							? result.deleted.map((msg) => ({
+									_id: msg._id,
+									_deletedAt:
+										'_deletedAt' in msg && msg._deletedAt instanceof Date ? msg._deletedAt.toISOString() : new Date().toISOString(),
+								}))
+							: [],
+					cursor: 'cursor' in result ? result.cursor : undefined,
+				},
+			});
+		},
+	)
+	.get(
+		'chat.getMessage',
+		{
+			authRequired: true,
+			query: isChatGetMessageProps,
+			response: {
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!this.queryParams.msgId) {
+				return API.v1.failure('The "msgId" query parameter must be provided.');
+			}
+
+			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
+
+			if (!msg) {
+				return API.v1.failure();
+			}
+
+			const [message] = await normalizeMessagesForUser([msg], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	)
+	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: isChatPostMessageProps,
+			response: {
+				200: ajv.compile<{ ts: number; channel: string; message: IMessage }>({
+					type: 'object',
+					properties: {
+						ts: { type: 'number' },
+						channel: { type: 'string' },
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['ts', 'channel', 'message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -386,14 +764,27 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.search',
+		{
+			authRequired: true,
+			query: isChatSearchProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[] }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, searchText } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -418,23 +809,36 @@ API.v1.addRoute(
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
-	},
-);
-
-// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
-// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
-// one channel whereas the other one allows for sending to more than one channel at a time.
-API.v1.addRoute(
-	'chat.sendMessage',
-	{ authRequired: true, validateParams: isChatSendMessageProps },
-	{
-		async post() {
+	)
+	// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
+	// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
+	// one channel whereas the other one allows for sending to more than one channel at a time.
+	.post(
+		'chat.sendMessage',
+		{
+			authRequired: true,
+			body: isChatSendMessageProps,
+			response: {
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -442,103 +846,26 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.starMessage',
-	{ authRequired: true, validateParams: isChatStarMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await starMessage(this.userId, {
-				_id: msg._id,
-				rid: msg.rid,
-				starred: true,
-			});
-
-			return API.v1.success();
+	)
+	.get(
+		'chat.ignoreUser',
+		{
+			authRequired: true,
+			query: isChatIgnoreUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unStarMessage',
-	{ authRequired: true, validateParams: isChatUnstarMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await starMessage(this.userId, {
-				_id: msg._id,
-				rid: msg.rid,
-				starred: false,
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.react',
-	{ authRequired: true, validateParams: isChatReactProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
-
-			if (!emoji) {
-				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
-			}
-
-			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
-			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
-
-			await reportMessage(messageId, description, this.userId);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.ignoreUser',
-	{ authRequired: true, validateParams: isChatIgnoreUserProps },
-	{
-		async get() {
+		async function action() {
 			const { rid, userId } = this.queryParams;
 			let { ignore = true } = this.queryParams;
 
@@ -556,14 +883,30 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getDeletedMessages',
-	{ authRequired: true, validateParams: isChatGetDeletedMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getDeletedMessages',
+		{
+			authRequired: true,
+			query: isChatGetDeletedMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: Pick<IMessage, '_id'>[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { type: 'object' } }, // relaxed: only _id is projected,
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -586,14 +929,30 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getPinnedMessages',
-	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getPinnedMessages',
+		{
+			authRequired: true,
+			query: isChatGetPinnedMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -615,14 +974,30 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getThreadsList',
-	{ authRequired: true, validateParams: isChatGetThreadsListProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getThreadsList',
+		{
+			authRequired: true,
+			query: isChatGetThreadsListProps,
+			response: {
+				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						threads: { type: 'array', items: { type: 'object' } }, // relaxed: IThreadMainMessage not in OpenAPI schemas,
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['threads', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { rid, type, text } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -662,14 +1037,35 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadsList',
-	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.syncThreadsList',
+		{
+			authRequired: true,
+			query: isChatSyncThreadsListProps,
+			response: {
+				200: ajv.compile<{ threads: { update: IMessage[]; remove: IMessage[] } }>({
+					type: 'object',
+					properties: {
+						threads: {
+							type: 'object',
+							properties: {
+								update: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								remove: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+							},
+							required: ['update', 'remove'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['threads', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { rid } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
@@ -706,14 +1102,30 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getThreadMessages',
-	{ authRequired: true, validateParams: isChatGetThreadMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getThreadMessages',
+		{
+			authRequired: true,
+			query: isChatGetThreadMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tmid } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -751,14 +1163,35 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadMessages',
-	{ authRequired: true, validateParams: isChatSyncThreadMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.syncThreadMessages',
+		{
+			authRequired: true,
+			query: isChatSyncThreadMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: { update: IMessage[]; remove: IMessage[] } }>({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'object',
+							properties: {
+								update: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								remove: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+							},
+							required: ['update', 'remove'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tmid } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
@@ -790,50 +1223,30 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.followMessage',
-	{ authRequired: true, validateParams: isChatFollowMessageProps },
-	{
-		async post() {
-			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
-
-			await followMessage(this.userId, { mid });
-
-			return API.v1.success();
+	)
+	.get(
+		'chat.getMentionedMessages',
+		{
+			authRequired: true,
+			query: isChatGetMentionedMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unfollowMessage',
-	{ authRequired: true, validateParams: isChatUnfollowMessageProps },
-	{
-		async post() {
-			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
-
-			await unfollowMessage(this.userId, { mid });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getMentionedMessages',
-	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
-	{
-		async get() {
+		async function action() {
 			const { roomId } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -850,14 +1263,30 @@ API.v1.addRoute(
 
 			return API.v1.success(messages);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getStarredMessages',
-	{ authRequired: true, validateParams: isChatGetStarredMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getStarredMessages',
+		{
+			authRequired: true,
+			query: isChatGetStarredMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -876,14 +1305,28 @@ API.v1.addRoute(
 
 			return API.v1.success(messages);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getDiscussions',
-	{ authRequired: true, validateParams: isChatGetDiscussionsProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getDiscussions',
+		{
+			authRequired: true,
+			query: isChatGetDiscussionsProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { type: 'object' } }, // relaxed: discussions have extra room fields,
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'total', 'success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, text } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -900,27 +1343,39 @@ API.v1.addRoute(
 			});
 			return API.v1.success(messages);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getURLPreview',
-	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getURLPreview',
+		{
+			authRequired: true,
+			query: isChatGetURLPreviewProps,
+			response: {
+				200: ajv.compile<{ urlPreview: object }>({
+					type: 'object',
+					properties: {
+						urlPreview: { type: 'object' }, // relaxed: opaque preview shape,
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['urlPreview', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, url } = this.queryParams;
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { urlPreview } = await OEmbed.parseUrl(url);
+			const { urlPreview } = await Message.parseOEmbedUrl(url);
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });
 		},
-	},
-);
+	);
 
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 

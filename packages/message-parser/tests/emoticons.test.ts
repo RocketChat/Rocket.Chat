@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { bigEmoji, paragraph, plain, emoticon } from '../src/utils';
+import { bigEmoji, paragraph, plain, emoticon } from './helpers';
 
 test.each([
 	// Should render normal Emojis
@@ -66,5 +66,5 @@ test.each([
 	['Hi:)', [paragraph([plain('Hi:)')])]],
 	['@#@#! :)@!@', [paragraph([plain('@#@#! :)@!@')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input, { emoticons: true })).toMatchObject(output);
+	expect(parse(input, { emoticons: true })).toEqual(output);
 });

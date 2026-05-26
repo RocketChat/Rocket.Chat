@@ -15,6 +15,10 @@ export class AccountSecurity extends Account {
 		return this.page.goto('/account/security');
 	}
 
+	async waitForSecurityPage() {
+		await this.securityHeader.waitFor({ state: 'visible' });
+	}
+
 	get inputNewPassword() {
 		return this.page.getByRole('textbox', { name: 'New password' });
 	}
@@ -40,7 +44,7 @@ export class AccountSecurity extends Account {
 	}
 
 	get securityHeader(): Locator {
-		return this.page.locator('h1[data-qa-type="PageHeader-title"]:has-text("Security")');
+		return this.page.getByRole('main').getByRole('heading', { level: 1, name: 'Security', exact: true });
 	}
 
 	get securityPasswordSection(): Locator {

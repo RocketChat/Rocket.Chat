@@ -139,10 +139,7 @@ export async function saveDepartment(
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
-		void Apps.self
-			?.getBridges()
-			?.getListenerBridge()
-			.livechatEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
 	}
 
 	if (departmentUnit) {
@@ -215,7 +212,7 @@ export async function setDepartmentForGuest({ visitorId, department }: { visitor
 }
 
 export async function removeDepartment(departmentId: string) {
-	livechatLogger.debug(`Removing department: ${departmentId}`);
+	livechatLogger.debug({ msg: 'Removing department', departmentId });
 
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>>(departmentId, {
 		projection: { _id: 1, businessHourId: 1, parentId: 1 },
@@ -272,7 +269,7 @@ export async function removeDepartment(departmentId: string) {
 	}
 
 	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
-	void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
+	void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
 
 	return ret;
 }
@@ -298,6 +295,7 @@ export async function checkOnlineForDepartment(departmentId: string) {
 		depUsers.map((agent) => agent.username),
 		{ projection: { _id: 1 } },
 		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 	);
 
 	return !!onlineForDep;
@@ -307,5 +305,9 @@ export async function getOnlineForDepartment(departmentId: string) {
 	const agents = await LivechatDepartmentAgents.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
 	const usernames = agents.map(({ username }) => username);
 
-	return Users.findOnlineUserFromList<ILivechatAgent>([...new Set(usernames)], settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	return Users.findOnlineUserFromList<ILivechatAgent>(
+		[...new Set(usernames)],
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+	);
 }

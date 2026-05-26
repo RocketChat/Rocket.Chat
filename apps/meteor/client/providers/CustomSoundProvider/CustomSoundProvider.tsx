@@ -23,7 +23,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const { notificationsSoundVolume, voipRingerVolume } = useUserSoundPreferences();
 
 	const { data: list } = useQuery({
-		queryFn: async () => {
+		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
 			const customSoundsList = await sdk.call('listCustomSounds');
 			if (!customSoundsList.length) {
 				return defaultSounds;
@@ -126,7 +126,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		});
 	}, [queryClient, streamAll]);
 
-	return <CustomSoundContext.Provider children={children} value={contextValue} />;
+	return <CustomSoundContext.Provider value={contextValue}>{children}</CustomSoundContext.Provider>;
 };
 
 export default CustomSoundProvider;

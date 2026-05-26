@@ -67,7 +67,7 @@ export class Callbacks<
 		const wrapCallback =
 			(callback: Callback<THook>) =>
 			async (item: unknown, constant?: unknown): Promise<unknown> => {
-				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
+				this.logger?.debug({ msg: 'Executing callback for hook', callbackId: callback.id, hook: callback.hook });
 
 				return (await this.runOne(callback, item, constant)) ?? item;
 			};

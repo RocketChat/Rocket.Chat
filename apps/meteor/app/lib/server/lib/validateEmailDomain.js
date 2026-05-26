@@ -1,5 +1,5 @@
-import dns from 'dns';
-import util from 'util';
+import dns from 'node:dns';
+import util from 'node:util';
 
 import { validateEmail } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';

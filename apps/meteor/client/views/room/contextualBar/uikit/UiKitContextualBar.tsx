@@ -16,7 +16,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
 
@@ -26,6 +25,7 @@ import { useContextualBarContextValue } from '../../../../uikit/hooks/useContext
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
+import { useRoom } from '../../contexts/RoomContext';
 
 type UiKitContextualBarProps = {
 	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes
@@ -35,7 +35,8 @@ type UiKitContextualBarProps = {
 const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Element => {
 	const actionManager = useUiKitActionManager();
 	const { view, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useContextualBarContextValue({ view, values, updateValues });
+	const room = useRoom();
+	const contextValue = useContextualBarContextValue({ view, values, updateValues, rid: room._id });
 
 	const { closeTab } = useRoomToolbox();
 
@@ -51,6 +52,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 			},
 			viewId: view.id,
+			rid: room._id,
 		});
 	});
 
@@ -67,6 +69,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 				isCleared: false,
 			},
+			rid: room._id,
 		});
 	});
 
@@ -83,6 +86,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 				isCleared: true,
 			},
+			rid: room._id,
 		});
 	});
 
@@ -91,7 +95,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 			<ContextualbarDialog>
 				<ContextualbarHeader>
 					<Avatar url={getURL(`/api/apps/${view.appId}/icon`)} />
-					<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
+					<ContextualbarTitle>{contextualBarParser.renderTextObject(view.title, 0)}</ContextualbarTitle>
 					{handleClose && <ContextualbarClose onClick={handleClose} />}
 				</ContextualbarHeader>
 				<ContextualbarScrollableContent>
@@ -103,13 +107,13 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 					<ButtonGroup stretch>
 						{view.close && (
 							<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
-								{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
+								{contextualBarParser.renderTextObject(view.close.text, 0)}
 							</Button>
 						)}
 
 						{view.submit && (
 							<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
-								{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}
+								{contextualBarParser.renderTextObject(view.submit.text, 1)}
 							</Button>
 						)}
 					</ButtonGroup>

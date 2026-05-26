@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 
 import type { ChatTranscriptData, PDFMessage } from '../../types/ChatTranscriptData';
 import type { WorkerData } from '../../types/WorkerData';
@@ -154,7 +154,14 @@ export const exampleData: WorkerData = {
 				name: 'Christian Castro',
 				username: 'cristiano.castro',
 			},
-			files: [{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') }],
+			files: [
+				{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') },
+				{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') },
+				{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') },
+				{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') },
+				{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') },
+				{ name: 'screenshot.png', buffer: Buffer.from(base64Image, 'base64') },
+			],
 		},
 		{
 			msg: 'Thank you, I am checking on that for you now.',

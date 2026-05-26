@@ -19,13 +19,9 @@ async function getAccessToken(accessToken: string) {
 	return OAuthAccessTokens.findOneByAccessToken(accessToken);
 }
 
-export async function oAuth2ServerAuth(partialRequest: {
-	headers: Record<string, string | undefined>;
-	query: Record<string, string | undefined>;
-}): Promise<IUser | undefined> {
-	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
-	const queryToken = partialRequest.query.access_token;
-	const incomingToken = headerToken || queryToken;
+export async function oAuth2ServerAuth(partialRequest: { authorization?: string; accessToken?: string }): Promise<IUser | undefined> {
+	const headerToken = partialRequest.authorization?.replace('Bearer ', '');
+	const incomingToken = headerToken || partialRequest.accessToken;
 
 	if (!incomingToken) {
 		return;
@@ -38,9 +34,9 @@ export async function oAuth2ServerAuth(partialRequest: {
 		return;
 	}
 
-	const user = await Users.findOneById(accessToken.userId);
+	const user = await Users.findOneActiveById(accessToken.userId);
 
-	if (user == null) {
+	if (!user) {
 		return;
 	}
 
@@ -58,8 +54,8 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	if (token == null) {
 		return res.status(401).send('Invalid Token');
 	}
-	const user = await Users.findOneById(token.userId);
-	if (user == null) {
+	const user = await Users.findOneActiveById(token.userId);
+	if (!user) {
 		return res.status(401).send('Invalid Token');
 	}
 	return res.send({
@@ -76,10 +72,14 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 });
 
 API.v1.addAuthMethod((routeContext) => {
-	const headers = Object.fromEntries(routeContext.request.headers.entries());
-	const query = (isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {}) as Record<string, string | undefined>;
+	const authorization = routeContext.request.headers.get('authorization') ?? undefined;
+	const query = isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {};
+	const accessToken = typeof query.access_token === 'string' ? query.access_token : undefined;
+	if (routeContext.queryParams && 'access_token' in routeContext.queryParams) {
+		delete routeContext.queryParams.access_token;
+	}
 
-	return oAuth2ServerAuth({ headers, query });
+	return oAuth2ServerAuth({ authorization, accessToken });
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);

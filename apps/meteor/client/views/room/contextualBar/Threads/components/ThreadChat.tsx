@@ -20,7 +20,11 @@ type ThreadChatProps = {
 };
 
 const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const chat = useChat();
+
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
 
@@ -47,7 +51,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		closeTab();
 	}, [closeTab]);
 
-	const chat = useChat();
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat?.messageEditing.toPreviousMessage();
@@ -56,13 +60,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const handleNavigateToNextMessage = useCallback((): void => {
 		chat?.messageEditing.toNextMessage();
 	}, [chat?.messageEditing]);
-
-	const handleUploadFiles = useCallback(
-		(files: readonly File[]): void => {
-			chat?.flows.uploadFiles(files);
-		},
-		[chat?.flows],
-	);
 
 	const room = useRoom();
 	const readThreads = useMethod('readThreads');
@@ -89,6 +86,8 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const sendToChannelID = useId();
 	const t = useTranslation();
 
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
+
 	return (
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DateListProvider>
@@ -104,10 +103,14 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					height='full'
 				>
 					<MessageListErrorBoundary>
-						<ThreadMessageList mainMessage={mainMessage} />
+						<ThreadMessageList
+							mainMessage={mainMessage}
+							shouldJumpToBottom={shouldJumpToBottom}
+							setShouldJumpToBottom={setShouldJumpToBottom}
+						/>
 					</MessageListErrorBoundary>
 
-					<RoomComposer>
+					<RoomComposer aria-label={t('Thread_composer')}>
 						<ComposerContainer
 							tmid={mainMessage._id}
 							subscription={subscription}
@@ -115,7 +118,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 							onEscape={handleComposerEscape}
 							onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 							onNavigateToNextMessage={handleNavigateToNextMessage}
-							onUploadFiles={handleUploadFiles}
 							tshow={sendToChannel}
 						>
 							<Field marginBlock={8}>

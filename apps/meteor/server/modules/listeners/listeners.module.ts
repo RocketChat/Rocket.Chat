@@ -46,8 +46,8 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.forceLogout', (uid) => {
-			notifications.notifyUserInThisInstance(uid, 'force_logout');
+		service.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
+			notifications.notifyUserInThisInstance(uid, 'force_logout', sessionId);
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
@@ -159,6 +159,10 @@ export class ListenersModule {
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
 			if (!status || !username) {
+				return;
+			}
+
+			if (settings.get('Presence_broadcast_disabled')) {
 				return;
 			}
 

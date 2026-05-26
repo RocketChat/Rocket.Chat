@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 
 import { request, credentials } from '../api-data';
-import { apps, APP_URL, APP_NAME, installedApps } from './apps-data';
+import { apps, APP_URL, installedApps } from './apps-data';
 
 const getApps = () =>
 	new Promise<App[]>((resolve) => {
@@ -23,10 +23,7 @@ const removeAppById = (id: App['id']) =>
 
 export const cleanupApps = async () => {
 	const apps = await getApps();
-	const testApp = apps.find((app) => app.name === APP_NAME);
-	if (testApp) {
-		await removeAppById(testApp.id);
-	}
+	await Promise.all(apps.map((testApp) => removeAppById(testApp.id)));
 };
 
 export const installTestApp = () =>
@@ -39,5 +36,19 @@ export const installTestApp = () =>
 			})
 			.end((_err, res) => {
 				resolve(res.body.app);
+			});
+	});
+
+export const installLocalTestPackage = (path: string) =>
+	new Promise<App>((resolve, reject) => {
+		void request
+			.post(apps())
+			.set(credentials)
+			.attach('app', path)
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				return resolve(res.body.app);
 			});
 	});

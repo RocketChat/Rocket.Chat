@@ -1,3 +1,4 @@
+import type { Optional } from '@rocket.chat/core-typings';
 import { createComparatorFromSort, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { Tracker } from 'meteor/tracker';
 import type { Filter, Sort } from 'mongodb';
@@ -573,7 +574,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 
 		if (!options._suppress_initial && !this.collection.paused) {
 			const handler = (doc: T) => {
-				const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
+				const fields: Optional<T, '_id'> = clone(doc);
 
 				delete fields._id;
 

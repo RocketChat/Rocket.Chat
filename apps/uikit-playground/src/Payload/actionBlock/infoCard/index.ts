@@ -9,9 +9,8 @@ const getIconButtonPayload = (icon: Partial<IconElement>, label?: string): IconB
 	label: label ?? 'Call history',
 });
 
-
 export const infoCardPlain: readonly LayoutBlock[] = [
-    {
+	{
 		type: 'info_card',
 		rows: [
 			{
@@ -27,7 +26,7 @@ export const infoCardPlain: readonly LayoutBlock[] = [
 ];
 
 export const infoCardMultipleRows: readonly LayoutBlock[] = [
-    {
+	{
 		type: 'info_card',
 		rows: [
 			{
@@ -45,5 +44,3 @@ export const infoCardMultipleRows: readonly LayoutBlock[] = [
 		],
 	},
 ];
-
-

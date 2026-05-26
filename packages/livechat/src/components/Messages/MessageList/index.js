@@ -1,4 +1,5 @@
 import { parseISO, isSameDay } from 'date-fns';
+import i18next from 'i18next';
 import { Suspense } from 'preact/compat';
 
 import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
@@ -23,7 +24,6 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_AT_BOTTOM_AREA = 128;
 
-	// eslint-disable-next-line no-use-before-define
 	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
 	handleScroll = () => {
@@ -176,19 +176,23 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		if (typingUsernames && typingUsernames.length) {
-			items.push(<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} />);
+			const indicatorLabel = `${typingUsernames.join(', ')} ${typingUsernames.length > 1 ? i18next.t('are_typing') : i18next.t('is_typing')}`;
+			items.push(
+				<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} text={indicatorLabel} />,
+			);
 		}
 
 		return items;
 	};
 
 	render = ({ className, style = {} }) => (
+		// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 		<div
-			onScroll={this.handleScroll}
-			className={createClassName(styles, 'message-list', {}, [className])}
-			onClick={this.handleClick}
-			style={style}
 			data-qa='message-list'
+			className={createClassName(styles, 'message-list', {}, [className])}
+			style={style}
+			onClick={this.handleClick}
+			onScroll={this.handleScroll}
 		>
 			<ol className={createClassName(styles, 'message-list__content')}>{this.renderItems(this.props)}</ol>
 		</div>

@@ -28,8 +28,8 @@ Meteor.startup(() => {
 					};
 					try {
 						await addWebdavAccountByToken(user._id, data);
-					} catch (error) {
-						SystemLogger.error(error);
+					} catch (err) {
+						SystemLogger.error({ err });
 					}
 				},
 				callbacks.priority.MEDIUM,

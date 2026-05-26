@@ -28,7 +28,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -37,6 +37,7 @@ import { links } from '../../../lib/links';
 const MonitorsTable = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
+	const usernameFieldId = useId();
 
 	const [text, setText] = useState('');
 	const [username, setUsername] = useState('');
@@ -108,15 +109,7 @@ const MonitorsTable = () => {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				data-qa-id='manage-monitors-confirm-remove'
-				onConfirm={onDeleteMonitor}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	};
 
 	const headers = useMemo(
@@ -139,9 +132,9 @@ const MonitorsTable = () => {
 		<>
 			<Box display='flex' flexDirection='column'>
 				<Field>
-					<FieldLabel>{t('Username')}</FieldLabel>
+					<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<UserAutoComplete name='monitor' value={username} onChange={setUsername as () => void} />
+						<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
 						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} mis={8}>
 							{t('Add_monitor')}
 						</Button>
@@ -171,11 +164,11 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='assertive'>
+					<GenericTable aria-busy={isLoading} aria-live='polite' aria-label={t('Monitors')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
-								<GenericTableRow key={monitor._id} tabIndex={0} width='full' data-qa-id={monitor.name}>
+								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
 									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>

@@ -1,8 +1,8 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { EventEmitter } from 'eventemitter3';
-import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 
+import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from './types';
 import { SystemLogger } from '../../lib/logger/system';
 
 class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
@@ -12,6 +12,8 @@ class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter 
 		super();
 	}
 }
+
+type ActivePublication = IPublication & { _session: NonNullable<IPublication['_session']> };
 
 export const StreamerCentral = new StreamerCentralClass();
 
@@ -78,7 +80,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 			}
 
 			if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
-				SystemLogger.error(`${name} shortcut '${fn}' is invalid`);
+				SystemLogger.error({ msg: 'shortcut is invalid', name, fn });
 			}
 
 			if (fn === 'all' || fn === true) {
@@ -183,6 +185,14 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 			throw new MeteorError('not-allowed');
 		}
 
+		// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
+		// we were just not counting on this, session is _session so we actually should not use it
+		// now after any await, the session can potentially be null, so we need to check for that
+		if (!Streamer.isPublicationActive(publication)) {
+			// if the client is disconnected, we don't want to do anything, it will not have an disconnect event to undo anymore
+			throw new MeteorError('publication-client-disconnected');
+		}
+
 		const subscription = {
 			subscription: publication,
 			eventName,
@@ -246,8 +256,8 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 
 		try {
 			this.registerMethod(method);
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 
@@ -283,6 +293,10 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		return true;
 	}
 
+	static isPublicationActive(publication: IPublication): publication is ActivePublication {
+		return !publication._isDeactivated();
+	}
+
 	async sendToManySubscriptions(
 		subscriptions: Set<DDPSubscription>,
 		origin: Connection | undefined,
@@ -290,19 +304,30 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		args: any[],
 		getMsg: string | TransformMessage,
 	): Promise<void> {
-		subscriptions.forEach(async (subscription) => {
-			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
-				return;
-			}
+		await Promise.all(
+			[...subscriptions].map(async (subscription) => {
+				try {
+					if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
+						return;
+					}
 
-			const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
-			if (allowed) {
-				const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
-				if (msg) {
-					subscription.subscription._session.socket?.send(msg);
+					const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+					if (allowed) {
+						const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
+						if (msg) {
+							subscription.subscription._session?.socket?.send(msg);
+						}
+					}
+				} catch (err) {
+					SystemLogger.error({
+						msg: 'Error while delivering streamer event',
+						eventName,
+						streamName: this.name,
+						err,
+					});
 				}
-			}
-		});
+			}),
+		);
 	}
 
 	override emit(eventName: string | symbol, ...args: any[]): boolean {

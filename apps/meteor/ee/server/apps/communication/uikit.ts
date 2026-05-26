@@ -1,6 +1,6 @@
-import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
-import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
+import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import type { Request, Response } from 'express';
@@ -11,7 +11,6 @@ import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 import { settings } from '../../../../app/settings/server';
-import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 
 const apiServer = express();
@@ -94,7 +93,7 @@ apiServer.use('/api/apps/ui.interaction/', bodyParser.json(), cors(corsOptions),
 
 type UiKitUserInteractionRequest = Request<
 	UrlParams<'/apps/ui.interaction/:id'>,
-	any,
+	OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown },
 	OperationParams<'POST', '/apps/ui.interaction/:id'> & {
 		visitor?: {
 			id: string;
@@ -111,66 +110,6 @@ type UiKitUserInteractionRequest = Request<
 	}
 >;
 
-const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayload => {
-	const { id: appId } = req.params;
-
-	if (req.body.type === 'blockAction') {
-		const { user } = req;
-		const { type, actionId, triggerId, payload, container, visitor } = req.body;
-		const message = 'mid' in req.body ? req.body.mid : undefined;
-		const room = 'rid' in req.body ? req.body.rid : undefined;
-
-		return {
-			appId,
-			type,
-			actionId,
-			triggerId,
-			container,
-			message,
-			payload,
-			user,
-			visitor,
-			room,
-		};
-	}
-
-	if (req.body.type === 'viewClosed') {
-		const { user } = req;
-		const {
-			type,
-			payload: { view, isCleared },
-			triggerId,
-		} = req.body;
-
-		return {
-			appId,
-			triggerId,
-			type,
-			user,
-			payload: {
-				view,
-				isCleared,
-			},
-		};
-	}
-
-	if (req.body.type === 'viewSubmit') {
-		const { user } = req;
-		const { type, actionId, triggerId, payload } = req.body;
-
-		return {
-			appId,
-			type,
-			actionId,
-			triggerId,
-			payload,
-			user,
-		};
-	}
-
-	throw new Error('Type not supported');
-};
-
 router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 	const { id: appId } = req.params;
 
@@ -180,12 +119,78 @@ router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 	}
 
 	try {
-		const payload = getCoreAppPayload(req);
+		const { user } = req;
 
-		const result = await UiKitCoreApp[payload.type](payload);
+		switch (req.body.type) {
+			case 'blockAction': {
+				const { type, actionId, triggerId, payload, container, visitor } = req.body;
+				const message = 'mid' in req.body ? req.body.mid : undefined;
+				const room = 'rid' in req.body ? req.body.rid : undefined;
 
-		// Using ?? to always send something in the response, even if the app had no result.
-		res.send(result ?? {});
+				const result = await UiKitCoreApp.blockAction({
+					appId,
+					type,
+					actionId,
+					triggerId,
+					container,
+					message,
+					payload,
+					user,
+					visitor,
+					room,
+				});
+
+				// Using ?? to always send something in the response, even if the app had no result.
+				res.send(result ?? {});
+
+				return;
+			}
+
+			case 'viewSubmit': {
+				const { type, actionId, triggerId, payload } = req.body;
+
+				const result = await UiKitCoreApp.viewSubmit({
+					appId,
+					type,
+					actionId,
+					triggerId,
+					payload,
+					user,
+				});
+
+				// Using ?? to always send something in the response, even if the app had no result.
+				res.send(result ?? {});
+
+				return;
+			}
+
+			case 'viewClosed': {
+				const {
+					type,
+					payload: { view, isCleared },
+					triggerId,
+				} = req.body;
+
+				const result = await UiKitCoreApp.viewClosed({
+					appId,
+					triggerId,
+					type,
+					user,
+					payload: {
+						view,
+						isCleared,
+					},
+				});
+
+				// Using ?? to always send something in the response, even if the app had no result.
+				res.send(result ?? {});
+
+				return;
+			}
+
+			default:
+				throw new Error('Type not supported');
+		}
 	} catch (e) {
 		const error = e instanceof Error ? e.message : e;
 		res.status(500).send({ error });
@@ -193,28 +198,30 @@ router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 });
 
 export class AppUIKitInteractionApi {
-	orch: AppServerOrchestrator;
+	orch: IAppServerOrchestrator;
 
-	constructor(orch: AppServerOrchestrator) {
+	constructor(orch: IAppServerOrchestrator) {
 		this.orch = orch;
 
-		router.post('/:id', this.routeHandler);
+		router.post('/:id', this.routeHandler.bind(this));
 	}
 
-	private routeHandler = async (req: UiKitUserInteractionRequest, res: Response): Promise<void> => {
+	private async routeHandler(
+		req: UiKitUserInteractionRequest,
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
+	): Promise<void> {
 		const { orch } = this;
 		const { id: appId } = req.params;
 
 		switch (req.body.type) {
 			case 'blockAction': {
-				const { type, actionId, triggerId, payload, container } = req.body;
+				const { type, actionId, triggerId, payload, container, rid } = req.body;
 				const mid = 'mid' in req.body ? req.body.mid : undefined;
-				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const { visitor } = req.body;
-				const room = await orch.getConverters()?.get('rooms').convertById(rid);
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && (await orch.getConverters()?.get('messages').convertById(mid));
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
@@ -230,7 +237,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const eventInterface = !visitor ? 'IUIKitInteractionHandler' : 'IUIKitLivechatInteractionHandler';
+					const eventInterface = !visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler;
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
@@ -245,15 +252,18 @@ export class AppUIKitInteractionApi {
 			case 'viewClosed': {
 				const {
 					type,
+					rid,
 					payload: { view, isCleared },
 				} = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
 					appId,
 					user,
+					room,
 					payload: {
 						view,
 						isCleared,
@@ -261,7 +271,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					res.send(result);
 				} catch (e) {
@@ -272,9 +282,10 @@ export class AppUIKitInteractionApi {
 			}
 
 			case 'viewSubmit': {
-				const { type, actionId, triggerId, payload } = req.body;
+				const { type, actionId, triggerId, payload, rid } = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
@@ -283,10 +294,11 @@ export class AppUIKitInteractionApi {
 					triggerId,
 					payload,
 					user,
+					room,
 				};
 
 				try {
-					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					res.send(result);
 				} catch (e) {
@@ -307,9 +319,9 @@ export class AppUIKitInteractionApi {
 					payload: { context, message: msgText },
 				} = req.body;
 
-				const room = await orch.getConverters()?.get('rooms').convertById(rid);
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && (await orch.getConverters()?.get('messages').convertById(mid));
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
 
 				const action = {
 					type,
@@ -327,7 +339,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					res.send(result);
 				} catch (e) {
@@ -343,5 +355,5 @@ export class AppUIKitInteractionApi {
 		}
 
 		// TODO: validate payloads per type
-	};
+	}
 }

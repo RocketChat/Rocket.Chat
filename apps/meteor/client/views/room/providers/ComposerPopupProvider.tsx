@@ -3,7 +3,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -26,6 +26,7 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { pipe } from '../../../lib/cachedStores/pipe';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
@@ -82,7 +83,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 	const queryClient = useQueryClient();
 	const uid = useUserId();
-	const call = useMethod('getSlashCommandPreviews');
+	const call = useEndpoint('GET', '/v1/commands.preview');
 
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
@@ -153,7 +154,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						};
 					});
 				},
-				getValue: (item) => (item.username.startsWith('@') ? item.username.substring(1) : item.username),
+				getValue: (item) => normalizeUsername(item.username),
 				renderItem: ({ item }) => <ComposerBoxPopupUser {...item} />,
 			}),
 			createMessageBoxPopupConfig<ComposerBoxPopupRoomProps>({
@@ -370,13 +371,13 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				title: previewTitle,
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
-				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
-					const result = await call({ cmd, params, msg: { rid, tmid } });
+				getItemsFromLocal: async ({ cmd, params }: { cmd: string; params: string; tmid: string }) => {
+					const { preview } = await call({ command: cmd, params, roomId: rid });
 
-					setPreviewTitle(t(result?.i18nTitle ?? ''));
+					setPreviewTitle(t(preview?.i18nTitle ?? ''));
 
 					return (
-						result?.items.map((item) => ({
+						preview?.items.map((item) => ({
 							_id: item.id,
 							value: item.value,
 							type: item.type,
@@ -402,7 +403,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 		userSpotlight,
 	]);
 
-	return <ComposerPopupContext.Provider value={value} children={children} />;
+	return <ComposerPopupContext.Provider value={value}>{children}</ComposerPopupContext.Provider>;
 };
 
 export default ComposerPopupProvider;

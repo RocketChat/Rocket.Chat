@@ -1,4 +1,4 @@
-import type { Socket } from 'net';
+import type { Socket } from 'node:net';
 
 import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
@@ -156,7 +156,7 @@ export class SipServerSession {
 		logger.info({ msg: 'Connecting to drachtio', host, port });
 
 		this.wasEverEnabled = true;
-		this.srf.connect({
+		void this.srf.connect({
 			host,
 			port,
 			secret,

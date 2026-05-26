@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
+import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
@@ -51,19 +52,16 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 				button={<IconButton icon='kebab' secondary />}
 				title={t('More')}
 				key='menu'
-				data-qa-id='UserUserInfo-menu'
 				sections={menuOptions}
 				placement='bottom-end'
 				small={false}
-				data-qa='UserUserInfo-menu'
 			/>
 		);
 	}, [menuOptions, t]);
 
-	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick }]: any): ReactElement => (
-			<UserInfoAction key={key} title={title} label={content} onClick={onClick} icon={icon} />
+		const mapAction = ([key, action]: [string, UserInfoActionType]): ReactElement => (
+			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

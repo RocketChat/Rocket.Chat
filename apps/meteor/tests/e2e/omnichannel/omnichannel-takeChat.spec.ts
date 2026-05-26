@@ -3,7 +3,8 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
@@ -63,7 +64,7 @@ test.describe('omnichannel-takeChat', () => {
 		await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
-		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+		await expect(agent.poHomeChannel.composer.inputMessage).toBeVisible();
 	});
 
 	test('When agent is offline should not take the chat', async () => {

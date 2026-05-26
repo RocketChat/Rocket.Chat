@@ -1,12 +1,12 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, SetStateAction } from 'react';
+import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
 import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefinitions';
 
 type RadioDropdownAnchorProps = {
-	onClick: (forcedValue?: SetStateAction<boolean> | undefined) => void;
+	onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 	group: RadioDropDownGroup;
 } & Omit<ComponentProps<typeof Button>, 'onClick'>;
 
@@ -17,7 +17,7 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 		<Box
 			is='button'
 			ref={ref}
-			onClick={onClick as any}
+			onClick={onClick}
 			alignItems='center'
 			bg='light'
 			borderColor='light'

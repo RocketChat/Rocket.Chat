@@ -1,17 +1,17 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 
-type RoomID = string;
+type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
 
-export type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
+export type SubscriptionStatus = 'INVITED' | 'BANNED';
 
-export type SubscriptionStatus = 'INVITED';
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
-	rid: RoomID;
+	rid: IRoom['_id'];
 	open: boolean;
 	ts: Date;
 
@@ -20,9 +20,9 @@ export interface ISubscription extends IRocketChatRecord {
 	alert?: boolean;
 	unread: number;
 	t: RoomType;
-	ls: Date;
+	ls?: Date;
 	f?: boolean;
-	lr: Date;
+	lr?: Date;
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
 	teamMain?: boolean;
@@ -36,7 +36,7 @@ export interface ISubscription extends IRocketChatRecord {
 	tunreadGroup?: Array<string>;
 	tunreadUser?: Array<string>;
 
-	prid?: RoomID;
+	prid?: IRoom['_id'];
 
 	roles?: IRole['_id'][];
 
@@ -65,6 +65,8 @@ export interface ISubscription extends IRocketChatRecord {
 
 	department?: unknown;
 
+	draft?: string;
+
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';
 	emailPrefOrigin?: 'subscription' | 'user';
@@ -85,14 +87,14 @@ export interface IInviteSubscription extends ISubscription {
 	inviter: NonNullable<ISubscription['inviter']>;
 }
 
-export interface IOmnichannelSubscription extends ISubscription {
-	department?: string; // TODO REMOVE/DEPRECATE no need keeo in both room and subscription
-}
-
-export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
-	t: 'd';
-}
-
 export const isInviteSubscription = (subscription: ISubscription): subscription is IInviteSubscription => {
 	return subscription?.status === 'INVITED' && !!subscription.inviter;
+};
+
+export interface IBannedSubscription extends ISubscription {
+	status: 'BANNED';
+}
+
+export const isBannedSubscription = (subscription: ISubscription): subscription is IBannedSubscription => {
+	return subscription?.status === 'BANNED';
 };

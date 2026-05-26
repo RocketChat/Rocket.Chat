@@ -1,10 +1,4 @@
-import type {
-	ILivechatDepartmentAgents,
-	ILivechatInquiryRecord,
-	ISetting,
-	ISubscription,
-	RocketChatRecordDeleted,
-} from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgents, ILivechatInquiryRecord, ISubscription, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	IAnalyticsModel,
 	IAvatarsModel,
@@ -19,7 +13,6 @@ import type {
 	IEmojiCustomModel,
 	IExportOperationsModel,
 	IFederationKeysModel,
-	IFederationServersModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -77,7 +70,6 @@ import type {
 	IAppLogsModel,
 	IImportsModel,
 	IFederationRoomEventsModel,
-	IAppsTokensModel,
 	IAuditLogModel,
 	ICronHistoryModel,
 	IMigrationsModel,
@@ -88,6 +80,7 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
+	ITwoFactorChallengesModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -108,7 +101,6 @@ import {
 	LivechatVisitorsRaw,
 	RolesRaw,
 	RoomsRaw,
-	SettingsRaw,
 	SubscriptionsRaw,
 	TeamRaw,
 	UsersRaw,
@@ -127,11 +119,13 @@ export * from './modelClasses';
 
 export * from './dummy/ReadReceipts';
 
+export * from './helpers';
+
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
+export { readSecondaryPreferred } from './readSecondaryPreferred';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
-export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
 export const AppLogs = proxify<IAppLogsModel>('IAppLogsModel');
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
@@ -147,7 +141,6 @@ export const EmailInbox = proxify<IEmailInboxModel>('IEmailInboxModel');
 export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMessageHistoryModel');
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
-export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
@@ -186,6 +179,7 @@ export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
+export const ReadReceiptsArchive = proxify<IReadReceiptsModel>('IReadReceiptsArchiveModel');
 export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
@@ -214,9 +208,9 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
-	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));
 

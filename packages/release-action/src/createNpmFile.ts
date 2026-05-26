@@ -1,5 +1,5 @@
-import fs from 'fs';
-import fsPromise from 'fs/promises';
+import fs from 'node:fs';
+import fsPromise from 'node:fs/promises';
 
 import * as core from '@actions/core';
 

@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import bodyParser from 'body-parser';
 import express from 'express';
@@ -54,20 +54,25 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 
 		const service = SAMLUtils.getServiceProviderOptions(samlObject.serviceName);
 		if (!service) {
-			SystemLogger.error(`${samlObject.serviceName} service provider not found`);
+			SystemLogger.error({
+				msg: 'SAML service provider not found',
+				serviceName: samlObject.serviceName,
+			});
 			throw new Error('SAML Service Provider not found.');
 		}
 
 		await SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {
 		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
-		SystemLogger.error(err);
+		SystemLogger.error({ err });
 
-		const url = Meteor.absoluteUrl('home');
-		res.writeHead(302, {
-			Location: url,
-		});
-		res.end();
+		if (!res.headersSent) {
+			const url = Meteor.absoluteUrl('home');
+			res.writeHead(302, {
+				Location: url,
+			});
+			res.end();
+		}
 	}
 };
 

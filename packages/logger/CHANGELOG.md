@@ -1,5 +1,23 @@
 # @rocket.chat/logger
 
+## 1.0.1
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 1.0.1-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 1.0.0
+
+### Major Changes
+
+- ([#37114](https://github.com/RocketChat/Rocket.Chat/pull/37114)) Removes stdout logging functionality, related components and settings
+
 ## 1.0.0-rc.0
 
 ### Major Changes

@@ -1,59 +1,18 @@
 import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
-import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import type { Condition, Filter } from 'mongodb';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useGetMessageByID } from './useGetMessageByID';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
+import { createDeleteCriteria } from '../../../../../lib/utils/threadMessageUtils';
 import { useRoom } from '../../../contexts/RoomContext';
 
 type RoomMessagesRidEvent = IMessage;
-
-type NotifyRoomRidDeleteBulkEvent = {
-	rid: IMessage['rid'];
-	excludePinned: boolean;
-	ignoreDiscussion: boolean;
-	ts: Condition<Date>;
-	users: string[];
-	ids?: string[]; // message ids have priority over ts
-	showDeletedStatus?: boolean;
-} & (
-	| {
-			filesOnly: true;
-			replaceFileAttachmentsWith?: MessageAttachment;
-	  }
-	| {
-			filesOnly?: false;
-	  }
-);
-
-const createDeleteCriteria = (params: NotifyRoomRidDeleteBulkEvent): ((message: IMessage) => boolean) => {
-	const query: Filter<IMessage> = {};
-
-	if (params.ids) {
-		query._id = { $in: params.ids };
-	} else {
-		query.ts = params.ts;
-	}
-
-	if (params.excludePinned) {
-		query.pinned = { $ne: true };
-	}
-
-	if (params.ignoreDiscussion) {
-		query.drid = { $exists: false };
-	}
-	if (params.users?.length) {
-		query['u.username'] = { $in: params.users };
-	}
-
-	return createPredicateFromFilter(query);
-};
 
 const useSubscribeToMessage = () => {
 	const subscribeToRoomMessages = useStream('room-messages');
@@ -66,10 +25,12 @@ const useSubscribeToMessage = () => {
 				onMutate,
 				onDelete,
 				onFilesDelete,
+				onMessagesRead,
 			}: {
-				onMutate?: (message: IMessage) => void;
-				onDelete?: () => void;
-				onFilesDelete?: (replaceFileAttachmentsWith?: MessageAttachment) => void;
+				onMutate?: (message: IMessage) => void | Promise<void>;
+				onDelete?: () => void | Promise<void>;
+				onFilesDelete?: (replaceFileAttachmentsWith?: MessageAttachment) => void | Promise<void>;
+				onMessagesRead?: (event: { tmid?: string; until: Date }) => void | Promise<void>;
 			},
 		) => {
 			const unsubscribeFromRoomMessages = subscribeToRoomMessages(message.rid, (event: RoomMessagesRidEvent) => {
@@ -90,10 +51,15 @@ const useSubscribeToMessage = () => {
 				}
 			});
 
+			const unsubscribeFromMessagesRead = subscribeToNotifyRoom(`${message.rid}/messagesRead`, (event) => {
+				onMessagesRead?.(event);
+			});
+
 			return () => {
 				unsubscribeFromRoomMessages();
 				unsubscribeFromDeleteMessage();
 				unsubscribeFromDeleteMessageBulk();
+				unsubscribeFromMessagesRead();
 			};
 		},
 		[subscribeToNotifyRoom, subscribeToRoomMessages],
@@ -106,7 +72,7 @@ export const useThreadMainMessageQuery = (
 ): UseQueryResult<IThreadMainMessage, Error> => {
 	const room = useRoom();
 
-	const getMessage = useGetMessageByID();
+	const getMessage = useGetMessageByID(false);
 	const subscribeToMessage = useSubscribeToMessage();
 
 	const queryClient = useQueryClient();
@@ -120,7 +86,7 @@ export const useThreadMainMessageQuery = (
 	}, [tmid]);
 
 	return useQuery({
-		queryKey: ['rooms', room._id, 'threads', tmid, 'main-message'] as const,
+		queryKey: roomsQueryKeys.threadMainMessage(room._id, tmid),
 
 		queryFn: async ({ queryKey }) => {
 			const mainMessage = await getMessage(tmid);
@@ -155,6 +121,24 @@ export const useThreadMainMessageQuery = (
 						const msg = await onClientMessageReceived(updated);
 						queryClient.setQueryData(queryKey, () => msg);
 						debouncedInvalidate();
+					},
+					onMessagesRead: ({ tmid: eventTmid, until }) => {
+						if (eventTmid) {
+							return;
+						}
+
+						queryClient.setQueryData<IThreadMainMessage>(queryKey, (old) => {
+							if (!old?.unread) {
+								return old;
+							}
+
+							if (new Date(old.ts).getTime() <= new Date(until).getTime()) {
+								const { unread: _, ...rest } = old;
+								return rest as IThreadMainMessage;
+							}
+
+							return old;
+						});
 					},
 				});
 

@@ -1,7 +1,7 @@
+import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
-import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { expect } from 'chai';
 import sinon from 'sinon';
 

@@ -6,6 +6,6 @@ type ParagraphBlockProps = {
 	items: MessageParser.Inlines[];
 };
 
-const ParagraphBlock = ({ items }: ParagraphBlockProps) => <InlineElements children={items} />;
+const ParagraphBlock = ({ items }: ParagraphBlockProps) => <InlineElements>{items}</InlineElements>;
 
 export default ParagraphBlock;

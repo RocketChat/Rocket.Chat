@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, bold, italic, emoticon } from '../src/utils';
+import { paragraph, plain, bold, italic, emoticon } from './helpers';
 
 test.each([
 	['*test:*', [paragraph([bold([plain('test:')])])]],
@@ -54,5 +54,5 @@ test.each([
 	],
 	['-_-italic content-_-', [paragraph([plain('-'), italic([plain('-italic content-')]), plain('-')])]],
 ])('parses emphasisWithEmoticons %p', (input, output) => {
-	expect(parse(input, { emoticons: true })).toMatchObject(output);
+	expect(parse(input, { emoticons: true })).toEqual(output);
 });

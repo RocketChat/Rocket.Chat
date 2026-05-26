@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker';
 
+import { resetOwnE2EKey } from './resetOwnE2EKey';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
@@ -38,12 +40,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	});
 
 	test.describe('Generate', () => {
-		test.beforeEach(async ({ page, api }) => {
+		test.beforeEach(async ({ page }) => {
 			const loginPage = new LoginPage(page);
 
-			await api.post('/method.call/e2e.resetOwnE2EKey', {
-				message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-			});
+			await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 			await page.goto('/home');
 			await loginPage.waitForIt();
@@ -130,7 +130,6 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			// Set a new password
 			await accountSecurityPage.goto();
 			await accountSecurityPage.setE2EEPassword(newPassword);
-			await accountSecurityPage.close();
 
 			// Log out
 			await navbar.logout();
@@ -228,7 +227,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
 		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 
@@ -239,7 +238,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await poHomeChannel.btnSavedMyPassword.click();
 
-		await poHomeChannel.content.inputMessage.waitFor();
+		await poHomeChannel.composer.inputMessage.waitFor();
 
 		await poHomeChannel.content.sendMessage('hello world');
 
@@ -248,6 +247,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
+		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		await page.goto('/home');
 
 		// Logout to remove e2ee keys
@@ -273,17 +273,15 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
 		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 
 		await poHomeChannel.btnRoomEnterE2EEPassword.click();
 
-		await page.locator('#modal-root input').fill(e2eePassword);
-
-		await page.locator('#modal-root .rcx-button--primary').click();
+		await enterE2EEPasswordModal.enterPassword(e2eePassword);
 
 		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
-		await poHomeChannel.content.inputMessage.waitFor();
+		await poHomeChannel.composer.inputMessage.waitFor();
 		// For E2EE to complete init setup
 		await page.waitForTimeout(300);
 
@@ -334,7 +332,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 		await poHomeChannel.btnSavedMyPassword.click();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
 
 		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.waitFor();

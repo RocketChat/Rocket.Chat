@@ -220,7 +220,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		isOverMacLimit,
 	]);
 
-	return <OmnichannelContext.Provider children={children} value={contextValue} />;
+	return <OmnichannelContext.Provider value={contextValue}>{children}</OmnichannelContext.Provider>;
 };
 
 export default memo<typeof OmnichannelProvider>(OmnichannelProvider);

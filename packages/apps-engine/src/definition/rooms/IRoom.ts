@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from '../abac/AbacAttributes';
 import type { IUser } from '../users';
 import type { RoomType } from './RoomType';
 
@@ -25,4 +26,6 @@ export interface IRoom {
 	customFields?: { [key: string]: any };
 	parentRoom?: IRoom;
 	livechatData?: { [key: string]: any };
+
+	abacAttributes?: IAbacAttributeDefinition[];
 }

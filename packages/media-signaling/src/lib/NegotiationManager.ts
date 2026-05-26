@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { INegotiationCompatibleMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
+import type { IClientMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
 import { Negotiation } from './services/webrtc/Negotiation';
 
 export class NegotiationManager {
@@ -8,6 +8,10 @@ export class NegotiationManager {
 
 	public get currentNegotiationId(): string | null {
 		return this.currentNegotiation?.negotiationId || this.highestNegotiationId;
+	}
+
+	public get hasFinishedAnyNegotiation(): boolean {
+		return Boolean(this.highestFinishedNegotiationId);
 	}
 
 	protected negotiations: Map<string, Negotiation>;
@@ -29,8 +33,11 @@ export class NegotiationManager {
 	/** id of the newest negotiation, regardless of state */
 	protected highestKnownNegotiationId: string | null;
 
+	/** id of the newest negotiation that has finished processing */
+	protected highestFinishedNegotiationId: string | null;
+
 	constructor(
-		protected readonly call: INegotiationCompatibleMediaCall,
+		protected readonly call: IClientMediaCall,
 		protected readonly config: NegotiationManagerConfig,
 	) {
 		this.negotiations = new Map();
@@ -41,6 +48,7 @@ export class NegotiationManager {
 		this.webrtcProcessor = null;
 		this.highestNegotiationId = null;
 		this.highestKnownNegotiationId = null;
+		this.highestFinishedNegotiationId = null;
 
 		this.emitter = new Emitter();
 	}
@@ -103,13 +111,10 @@ export class NegotiationManager {
 			return;
 		}
 
-		try {
-			return this.currentNegotiation.setRemoteAnswer(remoteDescription);
-		} catch (e) {
-			this.config.logger?.error(e);
-			this.currentNegotiation = null;
-			this.emitter.emit('error', { errorCode: 'failed-to-set-remote-answer', negotiationId });
-		}
+		void this.currentNegotiation
+			.setRemoteAnswer(remoteDescription)
+			// No need to handle errors here as they are already handled by the 'error' event
+			.catch(() => null);
 	}
 
 	public setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor) {
@@ -139,7 +144,7 @@ export class NegotiationManager {
 	}
 
 	protected isPoliteClient(): boolean {
-		return this.call.role === 'callee';
+		return this.call.localParticipant.role === 'callee';
 	}
 
 	protected addToQueue(negotiation: Negotiation): void {
@@ -202,6 +207,9 @@ export class NegotiationManager {
 				return;
 			}
 
+			if (negotiation.finished) {
+				this.highestFinishedNegotiationId = negotiation.negotiationId;
+			}
 			this.config.logger?.debug('NegotiationManager.processNegotiation.ended');
 			this.currentNegotiation = null;
 			void this.processNegotiations();
@@ -210,6 +218,10 @@ export class NegotiationManager {
 		negotiation.emitter.on('error', ({ errorCode }) => {
 			this.config.logger?.error('Negotiation error', errorCode);
 			this.emitter.emit('error', { errorCode, negotiationId: negotiation.negotiationId });
+
+			if (this.currentNegotiation === negotiation) {
+				this.currentNegotiation.end();
+			}
 		});
 
 		negotiation.emitter.on('local-sdp', ({ sdp }) => {
@@ -217,13 +229,10 @@ export class NegotiationManager {
 			this.emitter.emit('local-sdp', { sdp, negotiationId: negotiation.negotiationId });
 		});
 
-		try {
-			return negotiation.process(this.webrtcProcessor);
-		} catch (e) {
-			this.config.logger?.error(e);
-			this.currentNegotiation = null;
-			this.emitter.emit('error', { errorCode: 'failed-to-process-negotiation', negotiationId: negotiation.negotiationId });
-		}
+		void negotiation
+			.process(this.webrtcProcessor)
+			// No need to handle errors here as they are already handled by the 'error' event
+			.catch(() => null);
 	}
 
 	protected isConfigured(): this is WebRTCNegotiationManager {
@@ -238,8 +247,8 @@ export class NegotiationManager {
 		}
 
 		// Wait for the input track before negotiating, to avoid potentially having to renegotiate immediately
-		if (!this.call.hasInputTrack()) {
-			this.config.logger?.debug('Delaying WebRTC negotiations due to missing input track.');
+		if (!this.webrtcProcessor.streams.hasAllRequiredTracks()) {
+			this.config.logger?.debug('Delaying WebRTC negotiations due to missing required track.');
 			return false;
 		}
 

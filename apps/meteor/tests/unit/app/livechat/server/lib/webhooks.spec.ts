@@ -50,7 +50,9 @@ function buildSubject(options?: {
 
 	const metrics = {
 		totalLivechatWebhooksSuccess: { inc: sinon.spy() },
+		totalLivechatWebhooksSuccessTotal: { inc: sinon.spy() },
 		totalLivechatWebhooksFailures: { inc: sinon.spy() },
+		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
 	};
 
 	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {
@@ -228,7 +230,6 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 
 		// Process the 4 scheduled retries
 		for (let i = 0; i < 4; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			await clock.tickAsync(retryAfter);
 		}
 

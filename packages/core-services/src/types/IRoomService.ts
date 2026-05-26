@@ -37,7 +37,10 @@ export interface IRoomService {
 		},
 	): Promise<boolean | undefined>;
 	performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void>;
+	performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
+	performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
+	revokeInvite(room: IRoom, user: IUser): Promise<void>;
 	removeUserFromRoom(
 		roomId: string,
 		user: IUser,
@@ -51,7 +54,7 @@ export interface IRoomService {
 		sendMessage?: boolean,
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
-	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
+	join(param: { room: IRoom; user: Pick<IUser, '_id' | 'federated' | 'federation'>; joinCode?: string }): Promise<boolean | undefined>;
 	beforeLeave(room: IRoom): Promise<void>;
 	beforeUserRemoved(room: IRoom): Promise<void>;
 	beforeNameChange(room: IRoom): Promise<void>;
@@ -69,5 +72,16 @@ export interface IRoomService {
 		status?: 'INVITED';
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
-	updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean>;
+	updateDirectMessageRoomName(
+		room: IRoom,
+		ignoreStatusFromSubs?: string[],
+		updatedNames?: AtLeast<IUser, '_id' | 'name' | 'username'>[],
+	): Promise<boolean>;
+	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
+	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
+	unbanAndInviteUser(
+		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void>;
 }

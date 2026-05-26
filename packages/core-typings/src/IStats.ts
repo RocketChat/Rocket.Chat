@@ -1,12 +1,13 @@
-import type { CpuInfo } from 'os';
+import type { CpuInfo } from 'node:os';
 
 import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 import type { MACStats } from './omnichannel';
 
-export interface IVoIPPeriodStats {
+interface IVoIPPeriodStats {
 	calls?: number;
 	externalInboundCalls?: number;
 	externalOutboundCalls?: number;
@@ -17,8 +18,7 @@ export interface IVoIPPeriodStats {
 	callsDuration?: number;
 }
 
-export interface IStats {
-	_id: string;
+export interface IStats extends IRocketChatRecord {
 	wizard: {
 		organizationType?: string;
 		industry?: string;
@@ -272,4 +272,5 @@ export interface IStats {
 	abacTotalAttributes?: number;
 	abacTotalAttributeValues?: number;
 	abacRoomsEnrolled?: number;
+	allowUnsafeQueryAndFieldsApiParamsEnabled?: boolean;
 }

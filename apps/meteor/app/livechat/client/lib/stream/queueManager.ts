@@ -1,4 +1,10 @@
-import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Serialized } from '@rocket.chat/core-typings';
+import {
+	LivechatInquiryStatus,
+	type ILivechatDepartment,
+	type ILivechatInquiryRecord,
+	type IOmnichannelAgent,
+	type Serialized,
+} from '@rocket.chat/core-typings';
 
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
@@ -20,7 +26,7 @@ const events = {
 		await invalidateRoomQueries(inquiry.rid);
 	},
 	changed: async (inquiry: ILivechatInquiryRecord) => {
-		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
+		if (inquiry.status !== LivechatInquiryStatus.QUEUED || (inquiry.department && !departments.has(inquiry.department))) {
 			return removeInquiry(inquiry);
 		}
 
@@ -57,8 +63,10 @@ const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	return queryClient.invalidateQueries({ queryKey: ['rooms', { reference: inquiry.rid, type: 'l' }] });
 };
 
+const INQUIRY_COUNT_SETTING = 'Livechat_guest_pool_max_number_incoming_livechats_displayed';
+
 const getInquiriesFromAPI = async () => {
-	const count = settings.peek('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
+	const count = settings.peek<number>(INQUIRY_COUNT_SETTING) ?? 0;
 	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', { count });
 	return inquiries;
 };
@@ -133,10 +141,12 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 		const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 		const globalCleanup = addGlobalListener();
 
-		const computation = Tracker.autorun(async () => {
-			const inquiriesFromAPI = await getInquiriesFromAPI();
+		const refetchInquiries = async () => updateInquiries(await getInquiriesFromAPI());
 
-			await updateInquiries(inquiriesFromAPI);
+		await refetchInquiries();
+
+		const unobserveInquiryCount = settings.observe(INQUIRY_COUNT_SETTING, () => {
+			void refetchInquiries();
 		});
 
 		return () => {
@@ -145,8 +155,8 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 			cleanAgentListener?.();
 			cleanDepartmentListeners?.();
 			globalCleanup?.();
+			unobserveInquiryCount();
 			departments.clear();
-			computation.stop();
 		};
 	} catch (error) {
 		dispatchToastMessage({ type: 'error', message: error });

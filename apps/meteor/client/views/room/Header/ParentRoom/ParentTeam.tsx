@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from './ParentRoomButton';
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
-import { goToRoomById } from '../../../../lib/utils/goToRoomById';
+import { useGoToRoom } from '../../hooks/useGoToRoom';
 import { useUserTeamsQuery } from '../../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
@@ -37,8 +37,10 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 
 	const userBelongsToTeam = Boolean(userTeams?.find((team) => team._id === teamId)) || false;
-	const isPublicTeam = teamInfo?.type === TEAM_TYPE.PUBLIC;
+	const isPublicTeam = teamInfo?.type === TeamType.PUBLIC;
 	const shouldDisplayTeam = isPublicTeam || userBelongsToTeam;
+
+	const goToRoom = useGoToRoom();
 
 	const redirectToMainRoom = (): void => {
 		const rid = teamInfo?.roomId;
@@ -46,7 +48,7 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 			return;
 		}
 
-		goToRoomById(rid);
+		goToRoom(rid);
 	};
 
 	if (teamInfoError || !shouldDisplayTeam) {

@@ -1,6 +1,6 @@
-import fs from 'fs';
-import type * as http from 'http';
-import type stream from 'stream';
+import fs from 'node:fs';
+import type * as http from 'node:http';
+import type stream from 'node:stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
@@ -42,7 +42,7 @@ export class Store {
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IUpload>, options?: { session?: ClientSession }) => Promise<string>;
+	public create: (file: Omit<OptionalId<IUpload>, '_updatedAt'>, options?: { session?: ClientSession }) => Promise<string>;
 
 	public write: (
 		rs: stream.Readable,
@@ -166,25 +166,12 @@ export class Store {
 			};
 
 			const finishHandler = async () => {
-				let size = 0;
-				const readStream = await this.getReadStream(fileId, file);
-
-				readStream.on('error', (error: Error) => {
-					callback.call(this, error);
-				});
-				readStream.on('data', (data) => {
-					size += data.length;
-				});
-				readStream.on('end', async () => {
-					if (file.complete) {
-						return;
-					}
+				try {
 					// Set file attribute
 					file.complete = true;
 					file.etag = UploadFS.generateEtag();
 					file.path = await this.getFileRelativeURL(fileId);
 					file.progress = 1;
-					file.size = size;
 					file.token = this.generateToken();
 					file.uploading = false;
 					file.uploadedAt = new Date();
@@ -217,7 +204,9 @@ export class Store {
 
 					// Return file info
 					callback.call(this, undefined, file);
-				});
+				} catch (error) {
+					callback.call(this, error as Error);
+				}
 			};
 
 			const ws = await this.getWriteStream(fileId, file);
@@ -238,11 +227,8 @@ export class Store {
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		// Delete the temp file
-		fs.stat(tmpFile, (err) => {
-			!err &&
-				fs.unlink(tmpFile, (err2) => {
-					err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
-				});
+		await fs.promises.unlink(tmpFile).catch((err) => {
+			err?.code !== 'ENOENT' && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
 		});
 
 		await this.getCollection().removeById(fileId, { session: options?.session });

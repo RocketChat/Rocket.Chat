@@ -1,3 +1,4 @@
+import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -12,11 +13,18 @@ const makeError = (message: string): Record<string, any> => ({
 });
 
 Accounts.registerLoginHandler('saml', async (loginRequest) => {
-	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
+	if (
+		!loginRequest.saml ||
+		!loginRequest.credentialToken ||
+		typeof loginRequest.credentialToken !== 'string' ||
+		SAMLUtils.serviceProviders.length === 0
+	) {
 		return undefined;
 	}
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
+
+	await CredentialTokens.removeById(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
@@ -33,16 +41,16 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
 		return updatedUser;
-	} catch (error: any) {
-		SystemLogger.error(error);
+	} catch (err: any) {
+		SystemLogger.error({ err });
 
-		let message = error.toString();
+		let message = err.toString();
 		let errorCode = '';
 
-		if (error instanceof Meteor.Error) {
-			errorCode = (error.error || error.message) as string;
-		} else if (error instanceof Error) {
-			errorCode = error.message;
+		if (err instanceof Meteor.Error) {
+			errorCode = (err.error || err.message) as string;
+		} else if (err instanceof Error) {
+			errorCode = err.message;
 		}
 
 		if (errorCode) {

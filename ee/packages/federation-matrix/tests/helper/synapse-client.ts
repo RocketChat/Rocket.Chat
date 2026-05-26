@@ -1,13 +1,18 @@
-/* eslint-disable no-await-in-loop */
 /**
  * Federation test data and configuration
  * This file provides validated federation configuration for federation tests.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember, Visibility } from 'matrix-js-sdk';
+import { logger } from 'matrix-js-sdk/lib/logger';
+
+logger.debug = () => void 0;
+logger.info = () => void 0;
+logger.warn = () => void 0;
+logger.error = () => void 0;
 
 /**
  * Creates a promise that resolves after the specified delay.
@@ -686,6 +691,33 @@ export class SynapseClient {
 		} catch (error) {
 			throw new Error(`Failed to download and compare media from ${mxcUri}: ${error}`);
 		}
+	}
+
+	/**
+	 * Bans a user from a room on the Synapse homeserver.
+	 *
+	 * @param roomId - The Matrix room ID
+	 * @param userId - The Matrix user ID to ban
+	 * @param reason - Optional reason for the ban
+	 */
+	async banUser(roomId: string, userId: string, reason?: string): Promise<void> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		await this.matrixClient.ban(roomId, userId, reason);
+	}
+
+	/**
+	 * Unbans a user from a room on the Synapse homeserver.
+	 *
+	 * @param roomId - The Matrix room ID
+	 * @param userId - The Matrix user ID to unban
+	 */
+	async unbanUser(roomId: string, userId: string): Promise<void> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		await this.matrixClient.unban(roomId, userId);
 	}
 
 	/**

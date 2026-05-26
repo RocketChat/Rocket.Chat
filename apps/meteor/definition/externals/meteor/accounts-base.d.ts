@@ -1,4 +1,6 @@
 declare module 'meteor/accounts-base' {
+	import type { Meteor } from 'meteor/meteor';
+
 	namespace Accounts {
 		const storageLocation: Window['localStorage'];
 		function createUser(
@@ -21,7 +23,7 @@ declare module 'meteor/accounts-base' {
 
 		function _generateStampedLoginToken(): { token: string; when: Date };
 
-		function _insertLoginToken(userId: string, token: { token: string; when: Date }): void;
+		function _insertLoginToken(userId: string, token: { token: string; when: Date }): Promise<void>;
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
@@ -39,7 +41,9 @@ declare module 'meteor/accounts-base' {
 			serviceName: string,
 			serviceData: Record<string, unknown>,
 			options: Record<string, unknown>,
-		): Record<string, unknown>;
+		): Promise<Record<string, unknown> | undefined>;
+
+		function addAutopublishFields(options: Record<string, unknown>): void;
 
 		function _clearAllLoginTokens(userId: string | null): void;
 
@@ -65,7 +69,6 @@ declare module 'meteor/accounts-base' {
 
 		export const _options: AccountsServerOptions;
 
-		// eslint-disable-next-line @typescript-eslint/no-namespace
 		namespace oauth {
 			function credentialRequestCompleteHandler(
 				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,

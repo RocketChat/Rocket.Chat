@@ -1,6 +1,6 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -42,7 +42,7 @@ export const messageSearch = async function (
 		};
 	}
 
-	const user = (await Meteor.userAsync()) as IUser | undefined;
+	const user = (await Users.findOneById(userId)) || undefined;
 
 	const { query, options } = parseMessageSearchQuery(text, {
 		user,

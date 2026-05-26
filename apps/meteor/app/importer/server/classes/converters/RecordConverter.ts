@@ -158,6 +158,7 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 			data,
 			dataType: this.getDataType(),
 			options,
+			_updatedAt: new Date(),
 		});
 	}
 
@@ -208,7 +209,7 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 		this.failedCount = 0;
 		this.newCount = 0;
 
-		for await (const record of records) {
+		for (const record of records) {
 			const { _id } = record;
 			if (this.aborted) {
 				return;

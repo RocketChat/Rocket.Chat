@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { emoji } from '../../../../app/emoji/client';
+import { runOptimisticSetReaction } from '../../../../app/reactions/client/methods/setReaction';
 import { callWithErrorHandling } from '../../utils/callWithErrorHandling';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -21,6 +22,8 @@ export const processSetReaction = async (chat: ChatAPI, { msg }: Pick<IMessage, 
 		return false;
 	}
 
+	chat.composer?.clear();
+	runOptimisticSetReaction(reaction, lastMessage._id);
 	await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 	return true;
 };
