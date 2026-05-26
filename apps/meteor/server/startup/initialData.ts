@@ -205,7 +205,7 @@ Meteor.startup(async () => {
 
 	await Users.removeById('rocketchat.internal.admin.test');
 
-	if (process.env.TEST_MODE === 'true') {
+	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		console.log(colors.green('Inserting admin test user:'));
 
 		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {
