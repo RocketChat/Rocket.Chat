@@ -14,7 +14,6 @@ import {
 	seedBulkDecisionByEntity,
 	seedDefaultMocks,
 	seedGetDecisionBulk,
-	seedGetDecisions,
 } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -3108,7 +3107,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('user can access room history when PDP returns PERMIT', async () => {
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisions('DECISION_PERMIT');
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
 
 			await request
 				.get('/api/v1/groups.history')
@@ -3162,7 +3161,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('user loses access when PDP flips to DENY', async () => {
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisions('DECISION_DENY');
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
 
 			await request
 				.get('/api/v1/groups.history')
