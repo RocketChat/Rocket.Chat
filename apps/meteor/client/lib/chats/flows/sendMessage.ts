@@ -97,7 +97,6 @@ export const sendMessage = async (
 
 		if (isImportant) {
 			message.isImportant = true;
-			console.log('[sendMessage] Marking message as important');
 		}
 
 		if (mid) {
