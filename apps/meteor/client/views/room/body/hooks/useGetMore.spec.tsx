@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 
 import { useGetMore } from './useGetMore';
-import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 
 jest.mock('../../../../../app/ui-utils/client', () => ({
@@ -16,10 +15,6 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 		getMoreNext: jest.fn(),
 		restoreScroll: jest.fn(),
 	},
-}));
-
-jest.mock('../../../../../app/ui/client/views/app/lib/scrolling', () => ({
-	getBoundingClientRect: jest.fn(),
 }));
 
 const mockGetMore = jest.fn();
@@ -42,18 +37,16 @@ describe('useGetMore', () => {
 		(RoomHistoryManager.hasMoreNext as jest.Mock).mockReturnValue(false);
 		(RoomHistoryManager.getMore as jest.Mock).mockImplementation(mockGetMore);
 
-		(getBoundingClientRect as jest.Mock).mockReturnValue({
-			scrollTop: 10,
-			clientHeight: 100,
-			scrollHeight: 800,
-		});
-
 		render(<Test />, {
 			wrapper: root.build(),
 		});
 
 		const scrollableElement = screen.getByTestId('scrollable-element');
-		scrollableElement.scrollTop = 10;
+		Object.defineProperties(scrollableElement, {
+			scrollTop: { value: 10, writable: true, configurable: true },
+			clientHeight: { value: 100, configurable: true },
+			scrollHeight: { value: 800, configurable: true },
+		});
 		scrollableElement.dispatchEvent(new Event('scroll'));
 
 		expect(screen.getByTestId('scrollable-element')).toBeInTheDocument();
@@ -63,7 +56,7 @@ describe('useGetMore', () => {
 		});
 	});
 
-	it('should call getMoreNext when scrolling near bottom and hasMoreNext is true', () => {
+	it('should call getMoreNext when scrolling near bottom and hasMoreNext is true', async () => {
 		const root = mockAppRoot();
 		(RoomHistoryManager.isLoading as jest.Mock).mockReturnValue(false);
 		(RoomHistoryManager.hasMore as jest.Mock).mockReturnValue(false);
@@ -79,18 +72,20 @@ describe('useGetMore', () => {
 				</div>
 			);
 		};
-		(getBoundingClientRect as jest.Mock).mockReturnValue({
-			scrollTop: 700,
-			clientHeight: 100,
-			scrollHeight: 800,
-		});
 		render(<Test />, {
 			wrapper: root.build(),
 		});
 		const scrollableElement = screen.getByTestId('scrollable-element');
-		scrollableElement.scrollTop = 700;
+		Object.defineProperties(scrollableElement, {
+			scrollTop: { value: 700, writable: true, configurable: true },
+			clientHeight: { value: 100, configurable: true },
+			scrollHeight: { value: 800, configurable: true },
+		});
 		scrollableElement.dispatchEvent(new Event('scroll'));
 		expect(screen.getByTestId('scrollable-element')).toBeInTheDocument();
-		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id');
+
+		await waitFor(() => {
+			expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id');
+		});
 	});
 });

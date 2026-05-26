@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { CSSProperties, MutableRefObject } from 'react';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDateListController } from '../providers/DateListProvider';
 
@@ -41,8 +41,10 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 	const bubbleRef = useRef<HTMLElement>(null);
 
 	const hideBubbleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const animationFrameRef = useRef<number | null>(null);
+	const topMessageRef = useRef<IMessage | undefined>(undefined);
 
-	const handleDateScroll = useDebouncedCallback(
+	const processDateScroll = useDebouncedCallback(
 		(topMessage: IMessage | undefined) => {
 			if (hideBubbleTimeoutRef.current) {
 				clearTimeout(hideBubbleTimeoutRef.current);
@@ -144,6 +146,38 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		},
 		5,
 		[list, margin, setBubbleDate],
+	);
+
+	const handleDateScroll = useCallback(
+		(topMessage: IMessage | undefined) => {
+			topMessageRef.current = topMessage;
+
+			if (animationFrameRef.current !== null) {
+				return;
+			}
+
+			animationFrameRef.current = requestAnimationFrame(() => {
+				animationFrameRef.current = null;
+				processDateScroll(topMessageRef.current);
+			});
+		},
+		[processDateScroll],
+	);
+
+	useEffect(
+		() => () => {
+			if (animationFrameRef.current !== null) {
+				cancelAnimationFrame(animationFrameRef.current);
+			}
+
+			processDateScroll.cancel();
+
+			if (hideBubbleTimeoutRef.current) {
+				clearTimeout(hideBubbleTimeoutRef.current);
+				hideBubbleTimeoutRef.current = null;
+			}
+		},
+		[processDateScroll],
 	);
 	// TODO: Make the chip "gliding" work with the new sistem.
 	// const listStyle =

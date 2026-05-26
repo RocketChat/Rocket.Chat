@@ -1,9 +1,7 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
-import { flushSync } from 'react-dom';
+import { startTransition, useCallback } from 'react';
 
-import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
@@ -13,6 +11,8 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 	const ref = useSafeRefCallback(
 		useCallback(
 			(element: HTMLElement) => {
+				let animationFrameId: number | null = null;
+
 				const checkPositionAndGetMore = withThrottling({ wait: 100 })(async () => {
 					if (!element.isConnected) {
 						return;
@@ -31,7 +31,7 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 						return;
 					}
 
-					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
+					const { scrollTop, clientHeight, scrollHeight } = element;
 
 					const lastScrollTopRef = scrollTop;
 					const height = clientHeight;
@@ -49,7 +49,7 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 							return;
 						}
 
-						flushSync(() => {
+						startTransition(() => {
 							RoomHistoryManager.restoreScroll(rid);
 						});
 					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
@@ -57,22 +57,33 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 					}
 				});
 
+				const scheduleCheckPositionAndGetMore = (): void => {
+					if (animationFrameId !== null) {
+						return;
+					}
+
+					animationFrameId = requestAnimationFrame(() => {
+						animationFrameId = null;
+						checkPositionAndGetMore();
+					});
+				};
+
 				const mutationObserver = new MutationObserver((mutations) => {
 					mutations.forEach(() => {
-						checkPositionAndGetMore();
+						scheduleCheckPositionAndGetMore();
 					});
 				});
 
 				mutationObserver.observe(element, { childList: true, subtree: true });
 
 				const observer = new ResizeObserver(() => {
-					checkPositionAndGetMore();
+					scheduleCheckPositionAndGetMore();
 				});
 
 				observer.observe(element);
 
 				const handleScroll = function () {
-					checkPositionAndGetMore();
+					scheduleCheckPositionAndGetMore();
 				};
 
 				element.addEventListener('scroll', handleScroll, {
@@ -82,6 +93,9 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 				return () => {
 					observer.disconnect();
 					mutationObserver.disconnect();
+					if (animationFrameId !== null) {
+						cancelAnimationFrame(animationFrameId);
+					}
 					checkPositionAndGetMore.cancel();
 					element.removeEventListener('scroll', handleScroll);
 				};
