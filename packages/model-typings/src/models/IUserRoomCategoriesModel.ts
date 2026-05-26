@@ -10,4 +10,5 @@ export interface IUserRoomCategoriesModel extends IBaseModel<IUserRoomCategories
 	addRoomToCategory(userId: string, categoryName: string, roomId: string): Promise<UpdateResult>;
 	removeRoomFromCategory(userId: string, categoryName: string, roomId: string): Promise<UpdateResult>;
 	removeCategory(userId: string, name: string): Promise<UpdateResult>;
+	renameCategory(userId: string, oldName: string, newName: string): Promise<UpdateResult>;
 }

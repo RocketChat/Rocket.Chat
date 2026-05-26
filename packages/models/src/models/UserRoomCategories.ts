@@ -18,9 +18,15 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 	}
 
 	async createCategory(userId: string, name: string): Promise<UpdateResult> {
+		const trimmedName = name.trim();
+
+		if (!trimmedName) {
+			throw new Error('Category name is required');
+		}
+
 		const existing = await this.findByUserId(userId);
 
-		if (existing?.categories.some((c) => c.name === name)) {
+		if (existing?.categories.some((c) => c.name === trimmedName)) {
 			throw new Error('Category already exists');
 		}
 
@@ -29,7 +35,7 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 			{
 				$push: {
 					categories: {
-						$each: [{ name, roomIds: [] }],
+						$each: [{ name: trimmedName, roomIds: [] }],
 						$position: 0,
 					},
 				},

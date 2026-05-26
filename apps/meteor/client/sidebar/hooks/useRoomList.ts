@@ -1,7 +1,7 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
@@ -36,7 +36,7 @@ export const SIDEBAR_BUILTIN_GROUP_KEYS = new Set<string>(order);
 type useRoomListReturnType = {
 	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
-	groupsList: TranslationKey[];
+	groupsList: string[];
 	groupedUnreadInfo: Pick<
 		SubscriptionWithRoom,
 		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
@@ -181,7 +181,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return acc;
 					}
 
-					acc.groupsList.push(key as TranslationKey);
+					acc.groupsList.push(key);
 
 					const groupedUnreadInfoAcc = {
 						userMentions: 0,

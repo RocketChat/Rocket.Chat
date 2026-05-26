@@ -22,8 +22,7 @@ const UserRoomCategoryGroupMenu = ({ categoryName }: UserRoomCategoryGroupMenuPr
 				await removeCategory(categoryName);
 				dispatchToastMessage({ type: 'success', message: t('User_room_category_deleted') });
 			} catch (error) {
-				const message = error instanceof Error ? error.message : String(error);
-				dispatchToastMessage({ type: 'error', message: message || t('Something_went_wrong') });
+				dispatchToastMessage({ type: 'error', message: error ?? t('Something_went_wrong') });
 			} finally {
 				setModal(null);
 			}

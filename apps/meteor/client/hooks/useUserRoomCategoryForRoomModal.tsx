@@ -73,8 +73,7 @@ const UserRoomCategoryForRoomModal = ({ roomId, roomName, onClose }: UserRoomCat
 			dispatchToastMessage({ type: 'success', message: t('User_room_category_assign_success', { name: selectedCategory }) });
 			onClose();
 		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			dispatchToastMessage({ type: 'error', message: message || t('Something_went_wrong') });
+			dispatchToastMessage({ type: 'error', message: error ?? t('Something_went_wrong') });
 		} finally {
 			setSubmitting(false);
 		}
@@ -90,8 +89,7 @@ const UserRoomCategoryForRoomModal = ({ roomId, roomName, onClose }: UserRoomCat
 			dispatchToastMessage({ type: 'success', message: t('User_room_category_remove_success') });
 			onClose();
 		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			dispatchToastMessage({ type: 'error', message: message || t('Something_went_wrong') });
+			dispatchToastMessage({ type: 'error', message: error ?? t('Something_went_wrong') });
 		} finally {
 			setSubmitting(false);
 		}

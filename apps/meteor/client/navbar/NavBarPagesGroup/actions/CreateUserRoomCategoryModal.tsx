@@ -50,8 +50,7 @@ const CreateUserRoomCategoryModal = ({ onClose }: CreateUserRoomCategoryModalPro
 			dispatchToastMessage({ type: 'success', message: t('User_room_category_created') });
 			onClose();
 		} catch (err) {
-			const message = err instanceof Error ? err.message : String(err);
-			dispatchToastMessage({ type: 'error', message: message || t('User_room_category_create_failed') });
+			dispatchToastMessage({ type: 'error', message: err ?? t('User_room_category_create_failed') });
 		} finally {
 			setSubmitting(false);
 		}

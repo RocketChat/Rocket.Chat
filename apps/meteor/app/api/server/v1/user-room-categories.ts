@@ -150,6 +150,7 @@ API.v1.post(
 	'user-room-categories/remove-category',
 	{
 		authRequired: true,
+		rateLimiterOptions: false,
 		body: createCategoryBodySchema,
 		response: { 200: emptyResponseSchema, 400: emptyResponseSchema },
 	},
@@ -173,6 +174,7 @@ API.v1.post(
 	'user-room-categories/rename-category',
 	{
 		authRequired: true,
+		rateLimiterOptions: false,
 		body: renameCategoryBodySchema,
 		response: { 200: emptyResponseSchema, 400: emptyResponseSchema },
 	},
