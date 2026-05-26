@@ -21,18 +21,14 @@ Meteor.methods({
 			});
 		}
 
-		console.log('[getUsersWhoReadImportantMessage] Fetching readers for message:', messageId);
-
 		const message = await Messages.findOneById(messageId);
 		if (!message) {
-			console.error('[getUsersWhoReadImportantMessage] Message not found:', messageId);
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'getUsersWhoReadImportantMessage',
 			});
 		}
 
 		if (!message.isImportant) {
-			console.error('[getUsersWhoReadImportantMessage] Message not marked as important:', messageId);
 			throw new Meteor.Error('error-not-important-message', 'Message is not marked as important', {
 				method: 'getUsersWhoReadImportantMessage',
 			});
@@ -59,7 +55,6 @@ Meteor.methods({
 
 		const userIds = message.importantReadBy || [];
 		if (userIds.length === 0) {
-			console.log('[getUsersWhoReadImportantMessage] No readers yet:', messageId);
 			return [];
 		}
 
@@ -68,18 +63,10 @@ Meteor.methods({
 			{ projection: { 'u._id': 1, 'u.username': 1, 'u.name': 1 } }
 		).toArray();
 
-		const usersInRoom = subscriptions.map(sub => ({
+		return subscriptions.map(sub => ({
 			_id: sub.u._id,
 			username: sub.u.username || '',
 			name: sub.u.name,
 		}));
-
-		console.log('[getUsersWhoReadImportantMessage] Found readers in room:', { 
-			messageId, 
-			totalRead: userIds.length,
-			inRoom: usersInRoom.length 
-		});
-
-		return usersInRoom;
 	},
 });

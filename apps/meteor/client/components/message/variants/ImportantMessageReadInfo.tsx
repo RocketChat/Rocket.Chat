@@ -65,12 +65,9 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 	useEffect(() => {
 		const unsubscribeMessages = subscribeToRoomMessages(message.rid, (msg) => {
 			if (msg._id === message._id && msg.importantReadBy) {
-				queryClient.setQueryData(['important-message-readers', message._id], (old: User[] | undefined) => {
-					return old;
-				});
-				void queryClient.refetchQueries({ 
+				void queryClient.refetchQueries({
 					queryKey: ['important-message-readers', message._id],
-					type: 'active'
+					type: 'active',
 				});
 			}
 		});
@@ -164,8 +161,7 @@ const ImportantMessageReadInfo = ({ message }: ImportantMessageReadInfoProps): R
 			try {
 				const result = await getUsersWhoRead(message._id);
 				return result || [];
-			} catch (error) {
-				console.error('Error fetching users who read:', error);
+			} catch {
 				return [];
 			}
 		},

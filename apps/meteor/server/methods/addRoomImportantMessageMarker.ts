@@ -24,18 +24,14 @@ export const addRoomImportantMessageMarker = async (
 	check(rid, String);
 	check(userId, String);
 
-	console.log('[addRoomImportantMessageMarker] Starting:', { fromUserId, rid, userId });
-
 	const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
 	if (!room) {
-		console.error('[addRoomImportantMessageMarker] Room not found:', rid);
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'addRoomImportantMessageMarker',
 		});
 	}
 
 	if (!(await hasPermissionAsync(fromUserId, 'set-important-message-marker', rid))) {
-		console.error('[addRoomImportantMessageMarker] Permission denied:', { fromUserId, rid });
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'addRoomImportantMessageMarker',
 		});
@@ -43,7 +39,6 @@ export const addRoomImportantMessageMarker = async (
 
 	const user = await Users.findOneById(userId);
 	if (!user?.username) {
-		console.error('[addRoomImportantMessageMarker] User not found:', userId);
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'addRoomImportantMessageMarker',
 		});
@@ -51,14 +46,12 @@ export const addRoomImportantMessageMarker = async (
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (!subscription) {
-		console.error('[addRoomImportantMessageMarker] Subscription not found:', { rid, userId });
 		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 			method: 'addRoomImportantMessageMarker',
 		});
 	}
 
 	if (subscription.roles?.includes('important-message-marker')) {
-		console.log('[addRoomImportantMessageMarker] User already has role:', { rid, userId });
 		return true;
 	}
 
@@ -112,7 +105,6 @@ export const addRoomImportantMessageMarker = async (
 	}
 	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
 
-	console.log('[addRoomImportantMessageMarker] Role added successfully:', { rid, userId });
 	return true;
 };
 
