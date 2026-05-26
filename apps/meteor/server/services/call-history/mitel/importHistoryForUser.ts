@@ -17,12 +17,16 @@ async function processFetchedHistory(uid: IUser['_id'], result: string | null): 
 		return;
 	}
 
-	const callItems = parseMitelJSON(result);
-	if (!callItems) {
-		return;
-	}
+	try {
+		const callItems = parseMitelJSON(result);
+		if (!callItems) {
+			return;
+		}
 
-	await importHistoryItems(uid, callItems);
+		await importHistoryItems(uid, callItems);
+	} catch (err) {
+		logger.error({ msg: 'Unexpected error processing external call history', err });
+	}
 }
 
 async function fetchAndImportHistory(user: { directoryNumber: string; uid: IUser['_id'] }, config: MitelConfig): Promise<void> {
@@ -46,10 +50,7 @@ async function fetchAndImportHistory(user: { directoryNumber: string; uid: IUser
 
 				promiseDecided = true;
 				// If the request completes successfully we can process its data, even if the timeout was already reached
-				newPromise.then(resolve).catch((err) => {
-					logger.error({ msg: 'Unexpected error on external call history processing', err });
-					resolve();
-				});
+				newPromise.then(resolve);
 			})
 			.catch((err) => {
 				if (promiseDecided) {
