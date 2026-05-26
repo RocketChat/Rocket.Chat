@@ -7,7 +7,7 @@ export const useDismissUserBannerMutation = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
-		mutationFn: (bannerId: string) => dismissBanner({ bannerId }),
+		mutationFn: ({ id }: { id: string }) => dismissBanner({ bannerId: id }),
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
