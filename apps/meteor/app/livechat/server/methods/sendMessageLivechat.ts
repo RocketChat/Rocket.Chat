@@ -4,10 +4,10 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import type { ILivechatMessage } from '../lib/localTypes';
 import { sendMessage } from '../lib/messages';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 interface ILivechatMessageAgent {
 	agentId: string;

@@ -1,6 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
+
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

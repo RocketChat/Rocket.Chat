@@ -10,9 +10,9 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {
 	switch (field) {

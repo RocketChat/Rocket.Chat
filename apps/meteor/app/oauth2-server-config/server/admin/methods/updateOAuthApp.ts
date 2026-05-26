@@ -4,8 +4,8 @@ import { OAuthApps, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { parseUriList } from '../functions/parseUriList';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
+import { parseUriList } from '../functions/parseUriList';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

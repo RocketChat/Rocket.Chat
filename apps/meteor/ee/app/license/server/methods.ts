@@ -3,6 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { License } from '@rocket.chat/license';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+
 import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

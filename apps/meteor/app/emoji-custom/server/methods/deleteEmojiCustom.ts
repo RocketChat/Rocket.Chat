@@ -5,8 +5,8 @@ import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

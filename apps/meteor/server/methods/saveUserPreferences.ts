@@ -5,6 +5,7 @@ import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
@@ -12,7 +13,6 @@ import {
 	notifyOnUserChange,
 } from '../../app/lib/server/lib/notifyListener';
 import { settings as rcSettings } from '../../app/settings/server';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 type UserPreferences = {
 	language: string;

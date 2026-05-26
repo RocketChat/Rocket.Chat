@@ -7,11 +7,11 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { beforeChangeRoomRole } from '../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

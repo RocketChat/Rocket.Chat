@@ -6,10 +6,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 import { validateScriptEngine } from '../../lib/validateScriptEngine';
-import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

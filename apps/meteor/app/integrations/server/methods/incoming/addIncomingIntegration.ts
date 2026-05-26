@@ -8,10 +8,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
-import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 const validChannelChars = ['@', '#'];
 
