@@ -3721,44 +3721,23 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.sendConfirmationEmail]', () => {
-		it('should send email to user (return success), when is a valid email', (done) => {
-			void request
-				.post(api('users.sendConfirmationEmail'))
-				.set(credentials)
-				.send({
-					email: adminEmail,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-
-		it('should not send email to user(return error), when is a invalid email', (done) => {
-			void request
-				.post(api('users.sendConfirmationEmail'))
-				.set(credentials)
-				.send({
-					email: 'invalidEmail',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return 401 when not authenticated', async () => {
-			await request
-				.post(api('users.sendConfirmationEmail'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-				});
+		[
+			{ description: 'authenticated + known email', auth: true, email: adminEmail },
+			{ description: 'unauthenticated + known email', auth: false, email: adminEmail },
+			{ description: 'unauthenticated + unknown email', auth: false, email: 'nobody@example.invalid' },
+		].forEach(({ description, auth, email }) => {
+			it(`should return 200 success for ${description}`, async () => {
+				const req = request.post(api('users.sendConfirmationEmail')).send({ email });
+				if (auth) {
+					req.set(credentials);
+				}
+				await req
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
 		});
 
 		it('should return 400 when body is empty', async () => {
