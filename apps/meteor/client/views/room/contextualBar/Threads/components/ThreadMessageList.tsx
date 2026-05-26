@@ -130,11 +130,22 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		setShouldJumpToBottom(false);
 		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
 		setHighlightMessage(msgJumpParam);
-		setMessageJumpQueryStringParameter(null);
 		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
+
+	useEffect(() => {
+		if (!msgJumpParam) {
+			return;
+		}
+		const timeoutId = setTimeout(() => {
+			if (items.find((m) => m._id === msgJumpParam)) {
+				setMessageJumpQueryStringParameter(null);
+			}
+		}, 500);
+		return () => clearTimeout(timeoutId);
+	}, [msgJumpParam, mainMessage._id, items]);
 
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
