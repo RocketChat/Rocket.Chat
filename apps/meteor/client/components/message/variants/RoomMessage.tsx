@@ -2,9 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -22,6 +23,7 @@ import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ImportantMessageReadButton from './ImportantMessageReadButton';
 import RoomMessageContent from './room/RoomMessageContent';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 type RoomMessageProps = {
@@ -72,7 +74,7 @@ const RoomMessage = ({
 	searchText,
 	...props
 }: RoomMessageProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
@@ -88,6 +90,8 @@ const RoomMessage = ({
 
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
+
+	const checkboxLabel = getCheckboxLabel(message, t);
 
 	return (
 		<Message
@@ -126,7 +130,7 @@ const RoomMessage = ({
 						{...triggerProps}
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
+				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>

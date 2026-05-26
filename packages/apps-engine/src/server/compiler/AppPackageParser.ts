@@ -6,9 +6,9 @@ import * as semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
 import { AppImplements } from '.';
+import type { IParseAppPackageResult } from './IParseAppPackageResult';
 import type { IAppInfo } from '../../definition/metadata/IAppInfo';
 import { RequiredApiVersionError } from '../errors';
-import type { IParseAppPackageResult } from './IParseAppPackageResult';
 
 export class AppPackageParser {
 	public static uuid4Regex = /^[0-9a-fA-f]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
@@ -39,7 +39,7 @@ export class AppPackageParser {
 						'recommended as the same App can be installed several times.',
 					);
 				}
-			} catch (e) {
+			} catch {
 				throw new Error('Invalid App package. The "app.json" file is not valid json.');
 			}
 		} else {
@@ -109,7 +109,7 @@ export class AppPackageParser {
 				let content;
 				try {
 					content = JSON.parse(entry.getData().toString());
-				} catch (e) {
+				} catch {
 					// Failed to parse it, maybe warn them? idk yet
 				}
 

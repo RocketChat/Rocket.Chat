@@ -30,6 +30,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import {
 	useMessageListShowRealName,
 	useMessageListShowUsername,
@@ -63,6 +64,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
+	const checkboxLabel = getCheckboxLabel(message, t);
+
 	return (
 		<MessageSystem
 			role='listitem'
@@ -75,7 +78,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
-				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>

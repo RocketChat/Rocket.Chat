@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.53",
+	"version": "0.1.56",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

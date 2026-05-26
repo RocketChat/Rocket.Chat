@@ -10,6 +10,7 @@ import {
 	mockServerHealthy,
 	mockServerReset,
 	mockServerSet,
+	mockServerSetMany,
 	seedBulkDecisionByEntity,
 	seedDefaultMocks,
 	seedGetDecisionBulk,
@@ -3002,6 +3003,55 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 			const memberIds = res.body.members.map((m: IUser) => m._id);
 			expect(memberIds).to.include(credentials['X-User-Id']);
+		});
+	});
+
+	describe('[GET] /abac/pdp/health', () => {
+		beforeEach(async () => {
+			await mockServerReset();
+		});
+
+		after(async () => {
+			await mockServerReset();
+		});
+
+		it('returns ABAC_PDP_Health_Platform_Failed when platform /healthz is unavailable', async () => {
+			await mockServerSetMany([
+				{ method: 'GET', path: '/healthz', body: { status: 'NOT_SERVING' }, statusCode: 503 },
+				{
+					method: 'POST',
+					path: '/auth/realms/mock/protocol/openid-connect/token',
+					body: { access_token: 'mock-pdp-token', token_type: 'Bearer', expires_in: 3600 },
+				},
+			]);
+
+			const res = await request.get('/api/v1/abac/pdp/health').set(credentials).expect(400);
+
+			expect(res.body).to.deep.include({
+				success: false,
+				available: false,
+				message: 'ABAC_PDP_Health_Platform_Failed',
+			});
+		});
+
+		it('returns ABAC_PDP_Health_IdP_Failed when platform is OK but the OIDC token endpoint fails', async () => {
+			await mockServerSetMany([
+				{ method: 'GET', path: '/healthz', body: { status: 'SERVING' } },
+				{
+					method: 'POST',
+					path: '/auth/realms/mock/protocol/openid-connect/token',
+					body: { error: 'invalid_client' },
+					statusCode: 401,
+				},
+			]);
+
+			const res = await request.get('/api/v1/abac/pdp/health').set(credentials).expect(400);
+
+			expect(res.body).to.deep.include({
+				success: false,
+				available: false,
+				message: 'ABAC_PDP_Health_IdP_Failed',
+			});
 		});
 	});
 });

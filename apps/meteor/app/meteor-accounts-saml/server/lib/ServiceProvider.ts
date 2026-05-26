@@ -17,13 +17,8 @@ import { ServiceProviderMetadata } from './generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
-
-const signatureAlgorithms = {
-	'RSA-SHA1': 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
-	'RSA-SHA256': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
-	'RSA-SHA384': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384',
-	'RSA-SHA512': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512',
-} as const;
+import type { SAMLPOSTEnvelope, SAMLRedirectEnvelope } from '../definition/SAMLEnvelope';
+import { getSigAlgKeyIfSupported, type SigAlgKey, signatureAlgorithms } from './signature/signatureAlgorithms';
 
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
@@ -36,14 +31,9 @@ export class SAMLServiceProvider {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	private getSignatureAlgorithm(): keyof typeof signatureAlgorithms {
+	private getSignatureAlgorithm(): SigAlgKey {
 		const algorithm = `RSA-${this.serviceProviderOptions.signatureAlgorithm}`;
-
-		if (algorithm in signatureAlgorithms) {
-			return algorithm as keyof typeof signatureAlgorithms;
-		}
-
-		return 'RSA-SHA256';
+		return getSigAlgKeyIfSupported(algorithm) || 'RSA-SHA256';
 	}
 
 	private maybeSignRequest(samlObject: Record<string, any>): Record<string, any> {
@@ -180,37 +170,25 @@ export class SAMLServiceProvider {
 		return this.requestToUrl(request, 'authorize');
 	}
 
-	public async validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): Promise<void> {
-		await SAMLUtils.inflateXml(
-			samlRequest,
-			async (xml: string) => {
-				const parser = new LogoutRequestParser(this.serviceProviderOptions);
-				return parser.validate(xml, callback);
-			},
-			async (err: string | object | null) => {
-				await callback(err, null);
-			},
-		);
+	public async validateLogoutRequest(
+		envelope: SAMLRedirectEnvelope<'SAMLRequest'>,
+		callback: ILogoutRequestValidateCallback,
+	): Promise<void> {
+		const parser = new LogoutRequestParser(this.serviceProviderOptions);
+		return parser.validate(envelope, callback);
 	}
 
-	public async validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): Promise<void> {
-		await SAMLUtils.inflateXml(
-			samlResponse,
-			async (xml: string) => {
-				const parser = new LogoutResponseParser(this.serviceProviderOptions);
-				return parser.validate(xml, callback);
-			},
-			async (err: string | object | null) => {
-				await callback(err, null);
-			},
-		);
+	public async validateLogoutResponse(
+		envelope: SAMLRedirectEnvelope<'SAMLResponse'>,
+		callback: ILogoutResponseValidateCallback,
+	): Promise<void> {
+		const parser = new LogoutResponseParser(this.serviceProviderOptions);
+		return parser.validate(envelope, callback);
 	}
 
-	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
-		const xml = Buffer.from(samlResponse, 'base64').toString('utf8');
-
+	public validateResponse(envelope: SAMLPOSTEnvelope<'SAMLResponse'>, callback: IResponseValidateCallback): void {
 		const parser = new ResponseParser(this.serviceProviderOptions);
-		return parser.validate(xml, callback);
+		return parser.validate(envelope, callback);
 	}
 
 	public generateServiceProviderMetadata(): string {

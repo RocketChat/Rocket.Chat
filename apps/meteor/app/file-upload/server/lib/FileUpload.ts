@@ -94,7 +94,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 		return {
 			collection: UserDataFiles,
 			getPath(file: IUpload) {
-				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
+				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {

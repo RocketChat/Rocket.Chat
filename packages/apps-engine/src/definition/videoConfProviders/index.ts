@@ -1,5 +1,5 @@
-import { IVideoConfProvider } from './IVideoConfProvider';
-import { IVideoConferenceOptions } from './IVideoConferenceOptions';
-import { VideoConfData, VideoConfDataExtended } from './VideoConfData';
+import type { IVideoConfProvider } from './IVideoConfProvider';
+import type { IVideoConferenceOptions } from './IVideoConferenceOptions';
+import type { VideoConfData, VideoConfDataExtended } from './VideoConfData';
 
-export { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended };
+export type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended };

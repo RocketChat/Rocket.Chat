@@ -23,7 +23,6 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageBoxActionsToolbarProps = {
 	canSend: boolean;
-	typing: boolean;
 	isMicrophoneDenied: boolean;
 	variant: 'small' | 'large';
 	isRecording: boolean;
@@ -43,7 +42,6 @@ const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) =>
 
 const MessageBoxActionsToolbar = ({
 	canSend,
-	typing,
 	isRecording,
 	rid,
 	tmid,
@@ -83,8 +81,8 @@ const MessageBoxActionsToolbar = ({
 	const hasRole = (subscription?.roles?.includes('important-message-marker') ?? false) || hasRoleFromQuery;
 	const canMarkMessagesAsImportant = hasPermission || hasRole;
 
-	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
-	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
+	const audioMessageAction = useAudioMessageAction(!canSend || isRecording || isMicrophoneDenied, isMicrophoneDenied);
+	const videoMessageAction = useVideoMessageAction(!canSend || isRecording);
 	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
 	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
 	const createDiscussionAction = useCreateDiscussionAction(room);

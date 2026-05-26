@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
+import { runOptimisticSendMessage } from '../../../../app/lib/client/methods/sendMessage';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
@@ -44,6 +45,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	chat.composer?.clear();
+	await runOptimisticSendMessage(message);
 	await sdk.call('sendMessage', message, previewUrls);
 
 	// after the request is complete we can go ahead and mark as sent

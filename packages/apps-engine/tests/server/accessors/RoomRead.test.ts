@@ -107,7 +107,7 @@ describe('RoomRead', () => {
 		const rr = new RoomRead(mockRoomBridgeWithRoom, 'testing-app');
 
 		assert.ok((await rr.getMembers('testing')) !== undefined);
-		assert.ok((await rr.getMembers('testing') as Array<IUser>).length > 0);
+		assert.ok(((await rr.getMembers('testing')) as Array<IUser>).length > 0);
 		assert.strictEqual((await rr.getMembers('testing'))[0], user);
 	});
 

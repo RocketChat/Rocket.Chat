@@ -56,8 +56,8 @@ describe('ModifyUpdater', () => {
 		assert.doesNotThrow(() => new ModifyUpdater(mockAppBridge, mockAppId));
 
 		const mc = new ModifyUpdater(mockAppBridge, mockAppId);
-		assert.ok(await mc.message('msgId', TestData.getUser()) !== undefined);
-		assert.ok(await mc.room('roomId', TestData.getUser()) !== undefined);
+		assert.ok((await mc.message('msgId', TestData.getUser())) !== undefined);
+		assert.ok((await mc.room('roomId', TestData.getUser())) !== undefined);
 
 		assert.throws(() => mc.finish({} as any), {
 			name: 'Error',

@@ -3,11 +3,6 @@ import {
 	Box,
 	Modal,
 	Button,
-	FieldGroup,
-	Field,
-	FieldRow,
-	FieldError,
-	FieldHint,
 	ModalHeader,
 	ModalTitle,
 	ModalClose,
@@ -15,6 +10,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
@@ -29,7 +25,6 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
 	const createDMFormId = useId();
-	const membersFieldId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
@@ -71,7 +66,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 			<ModalContent mbe={2}>
 				<FieldGroup>
 					<Field>
-						<Box htmlFor={membersFieldId}>{t('Direct_message_creation_description')}</Box>
+						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='users'
@@ -90,21 +85,14 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 										value={value}
 										onBlur={onBlur}
 										federated
-										id={membersFieldId}
-										aria-describedby={`${membersFieldId}-hint ${membersFieldId}-error`}
 										aria-required='true'
-										aria-invalid={Boolean(errors.users)}
-										aria-label={t('Direct_message_creation_description')}
+										error={errors.users?.message}
 									/>
 								)}
 							/>
 						</FieldRow>
-						{errors.users && (
-							<FieldError aria-live='assertive' id={`${membersFieldId}-error`}>
-								{errors.users.message}
-							</FieldError>
-						)}
-						<FieldHint id={`${membersFieldId}-hint`}>{t('Direct_message_creation_description_hint')}</FieldHint>
+						{errors.users && <FieldError>{errors.users.message}</FieldError>}
+						<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
 					</Field>
 				</FieldGroup>
 			</ModalContent>
