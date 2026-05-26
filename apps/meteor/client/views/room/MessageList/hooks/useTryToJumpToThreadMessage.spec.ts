@@ -76,11 +76,17 @@ describe('useTryToJumpToThreadMessage', () => {
 				wrapper: mockAppRoot()
 					.withRouter({ getSearchParameters: () => ({ msg: 'msg-1', jumpContext: 'jumpToUnread' }) })
 					.withEndpoint('GET', '/v1/chat.getMessage', endpointSpy)
+					.withMethod('getRoomById', () => ({ _id: 'room-1', t: 'c', name: 'general' }) as any)
 					.build(),
 			});
 
 			await waitFor(() => {
 				expect(endpointSpy).toHaveBeenCalledWith({ msgId: 'msg-1' });
+			});
+
+			await waitFor(async () => {
+				await new Promise((resolve) => setTimeout(resolve, 300));
+				expect(mockedRoomHistoryManager.getMore).not.toHaveBeenCalled();
 			});
 
 			expect(mockedRoomHistoryManager.getSurroundingMessages).not.toHaveBeenCalled();
