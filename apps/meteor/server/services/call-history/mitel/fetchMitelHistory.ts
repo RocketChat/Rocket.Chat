@@ -3,7 +3,17 @@ import { serverFetch } from '@rocket.chat/server-fetch';
 import type { MitelConfig } from './definition';
 import { logger } from '../logger';
 
-export async function fetchMitelHistory(directoryNumber: string, config: MitelConfig): Promise<string | null> {
+export async function fetchMitelHistory(sipExtension: string, config: MitelConfig): Promise<string | null> {
+	if (!sipExtension) {
+		return null;
+	}
+
+	const directoryNumber = sipExtension.replace(/\D/g, '');
+	if (!directoryNumber) {
+		logger.warn({ msg: "User's sip extension does not include numeric digits", sipExtension });
+		return null;
+	}
+
 	const separator = config.host.endsWith('/') ? '' : '/';
 	const endpointUrl = `${config.host}${separator}callHistory/${directoryNumber}`;
 
@@ -31,6 +41,12 @@ export async function fetchMitelHistory(directoryNumber: string, config: MitelCo
 			msg: 'Failed to fetch External Call History',
 			status: response.status,
 		});
+
+		try {
+			response.body?.resume();
+		} catch {
+			// ignore errors here
+		}
 		return null;
 	}
 

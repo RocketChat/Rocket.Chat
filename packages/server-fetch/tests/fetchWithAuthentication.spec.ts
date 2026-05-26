@@ -78,6 +78,32 @@ describe('fetchWithAuthentication', () => {
 			);
 		});
 
+		it('uses search params when the url includes it', async () => {
+			const requestWithoutMethod = { headers: {} } as typeof BASE_REQUEST;
+			const originalResponse = makeResponse(AUTH_HEADER);
+			mockBuildDigestResponse.mockReturnValue(BUILT_DIGEST);
+			mockFetch.mockResolvedValue(makeResponse() as never);
+
+			const url = new URL('https://api.example.com/resource?param=1');
+
+			await fetchWithAuthentication(url, requestWithoutMethod, AUTH, originalResponse);
+
+			expect(mockBuildDigestResponse).toHaveBeenCalledWith(expect.objectContaining({ uri: '/resource?param=1' }));
+		});
+
+		it('uses only the pathname and search from the url', async () => {
+			const requestWithoutMethod = { headers: {} } as typeof BASE_REQUEST;
+			const originalResponse = makeResponse(AUTH_HEADER);
+			mockBuildDigestResponse.mockReturnValue(BUILT_DIGEST);
+			mockFetch.mockResolvedValue(makeResponse() as never);
+
+			const url = new URL('https://api.example.com/resource?param=1#somethingExtra');
+
+			await fetchWithAuthentication(url, requestWithoutMethod, AUTH, originalResponse);
+
+			expect(mockBuildDigestResponse).toHaveBeenCalledWith(expect.objectContaining({ uri: '/resource?param=1' }));
+		});
+
 		it('defaults method to GET when not specified in the request', async () => {
 			const requestWithoutMethod = { headers: {} } as typeof BASE_REQUEST;
 			const originalResponse = makeResponse(AUTH_HEADER);

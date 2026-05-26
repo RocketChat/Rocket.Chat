@@ -33,6 +33,7 @@ async function fetchAndImportHistory(user: { directoryNumber: string; uid: IUser
 		return processFetchedHistory(user.uid, result);
 	}
 
+	// Set a timeout so that the request to the external service doesn't prevent our API request from working
 	let promiseDecided = false;
 	return new Promise((resolve, reject) => {
 		fetchMitelHistory(user.directoryNumber, config)
@@ -44,7 +45,11 @@ async function fetchAndImportHistory(user: { directoryNumber: string; uid: IUser
 				}
 
 				promiseDecided = true;
-				newPromise.then(resolve).catch(reject);
+				// If the request completes successfully we can process its data, even if the timeout was already reached
+				newPromise.then(resolve).catch((err) => {
+					logger.error({ msg: 'Unexpected error on external call history processing', err });
+					resolve();
+				});
 			})
 			.catch((err) => {
 				if (promiseDecided) {
