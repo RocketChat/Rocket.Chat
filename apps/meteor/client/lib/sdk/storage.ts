@@ -37,6 +37,9 @@ type StorageBackend = 'local' | 'session';
 let storageBackend: StorageBackend = 'local';
 
 export const setStorageBackend = (backend: StorageBackend): void => {
+	if (backend === storageBackend) {
+		return;
+	}
 	moveLoginKeys(backend);
 	storageBackend = backend;
 };
