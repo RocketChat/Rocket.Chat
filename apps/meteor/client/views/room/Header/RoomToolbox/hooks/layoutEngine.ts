@@ -1,13 +1,15 @@
 import type { RoomToolboxLayoutConfig, RoomToolboxBaseAction } from './layoutEngine.types';
 
 export const processActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
-	if (!config || config.items?.length === 0) {
+	if (!config || !config.items || config.items.length === 0) {
 		return {
 			featuredActions: [],
 			visibleActions: actionsBase,
 			hiddenActions: [],
 		};
 	}
+
+	const { items } = config;
 
 	const featuredActions: RoomToolboxBaseAction[] = [];
 	const normalActions: RoomToolboxBaseAction[] = [];
@@ -19,7 +21,7 @@ export const processActions = (actionsBase: RoomToolboxBaseAction[], config: Roo
 			return;
 		}
 
-		const configItem = config.items.find((item) => item.id === action.id);
+		const configItem = items.find((item) => item.id === action.id);
 
 		if (configItem) {
 			if (configItem.featured) {

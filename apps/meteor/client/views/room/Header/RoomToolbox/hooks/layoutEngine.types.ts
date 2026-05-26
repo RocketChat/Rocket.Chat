@@ -5,8 +5,8 @@ export type RoomToolboxLayoutItem = {
 };
 
 export type RoomToolboxLayoutConfig = {
-	maxVisibleNormal: number;
-	items: RoomToolboxLayoutItem[];
+	maxVisibleNormal?: number;
+	items?: RoomToolboxLayoutItem[];
 };
 
 export type RoomToolboxBaseAction = {

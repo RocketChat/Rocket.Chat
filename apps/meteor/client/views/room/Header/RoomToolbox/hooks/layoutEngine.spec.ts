@@ -1,4 +1,5 @@
 import { processActions } from './layoutEngine';
+import type { RoomToolboxLayoutConfig } from './layoutEngine.types';
 
 describe('RoomToolbox Layout Engine (processActions)', () => {
 	it('should isolate featured items into featuredActions', () => {
@@ -65,10 +66,31 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 		const result = processActions(actionsBase, config);
 		expect(result.visibleActions.length).toBeGreaterThan(0);
 	});
+	it('should return base actions unchanged when the config has no items', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
+		const config = {
+			items: [],
+		};
+		const result = processActions(actionsBase, config);
+		expect(result).toEqual({
+			featuredActions: [],
+			visibleActions: actionsBase,
+			hiddenActions: [],
+		});
+	});
+	it('should return base actions unchanged when items is missing from the config object', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
+		const config: RoomToolboxLayoutConfig = {};
+		const result = processActions(actionsBase, config);
+		expect(result).toEqual({
+			featuredActions: [],
+			visibleActions: actionsBase,
+			hiddenActions: [],
+		});
+	});
 	it('should fall back to default maxVisibleNormal (6) when not specified in config', () => {
 		const actionsBase = [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }, { id: '6' }, { id: '7' }];
 		const config = {
-			maxVisibleNormal: 6,
 			items: [
 				{ id: '1', featured: false, order: 1 },
 				{ id: '2', featured: false, order: 2 },
