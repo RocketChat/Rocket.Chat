@@ -649,6 +649,27 @@ const firstNumber = (...values: unknown[]): number | undefined => {
 	return undefined;
 };
 
+const normalizePipelineSimilarityScore = (value: number, type: 'distance' | 'similarity'): number => {
+	const normalizedValue = Math.abs(value) > 1 ? value / 100 : value;
+	const similarity = type === 'distance' ? 1 - normalizedValue : normalizedValue;
+
+	return Math.min(1, Math.max(0, similarity));
+};
+
+const extractPipelineSimilarityScore = (result: IntelligentSearchRawResult, metadata: Record<string, unknown>): number | undefined => {
+	const similarity = firstNumber(result.similarity, metadata.similarity);
+	if (typeof similarity === 'number') {
+		return normalizePipelineSimilarityScore(similarity, 'similarity');
+	}
+
+	const distance = firstNumber(result.score, result.distance, metadata.score, metadata.distance);
+	if (typeof distance === 'number') {
+		return normalizePipelineSimilarityScore(distance, 'distance');
+	}
+
+	return undefined;
+};
+
 const extractIntelligentResultIds = (result: IntelligentSearchRawResult): { rid?: string; msgId?: string } => {
 	const metadata = asRecord(result.metadata);
 	let rid = firstString(metadata.room_id, metadata.rid, result.room_id, result.rid);
@@ -707,7 +728,7 @@ const normalizeIntelligentResults = async (
 			// Pipeline typically doesn't return message text, so we'll fetch it from the DB.
 			// Still capture it as fallback if the pipeline does return it.
 			const pipelineText = firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '';
-			const score = firstNumber(result.score, result.distance, result.similarity, metadata.score);
+			const score = extractPipelineSimilarityScore(result, metadata);
 
 			return {
 				_id: msgId || `intelligent-${index}`,
