@@ -14,16 +14,20 @@ export const STORAGE_KEYS = {
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
-const getStorage = (): Storage | undefined => {
+const getStorageForBackend = (backend: StorageBackend): Storage | undefined => {
 	if (typeof window === 'undefined') {
 		return undefined;
 	}
 
 	try {
-		return storageBackend === 'session' ? window.sessionStorage : window.localStorage;
+		return backend === 'session' ? window.sessionStorage : window.localStorage;
 	} catch {
 		return undefined;
 	}
+};
+
+const getStorage = (): Storage | undefined => {
+	return getStorageForBackend(storageBackend);
 };
 
 export const getStoredItem = (key: string): string | null => getStorage()?.getItem(key) ?? null;
@@ -45,10 +49,6 @@ export const setStorageBackend = (backend: StorageBackend): void => {
 };
 
 const moveLoginKeys = (backend: StorageBackend): void => {
-	if (typeof window === 'undefined') {
-		return;
-	}
-
 	const keys = [
 		STORAGE_KEYS.USER_ID,
 		STORAGE_KEYS.LOGIN_TOKEN,
@@ -58,16 +58,30 @@ const moveLoginKeys = (backend: StorageBackend): void => {
 		STORAGE_KEYS.E2EE_RANDOM_PASSWORD,
 	];
 
-	const sourceStorage = backend === 'session' ? window.localStorage : window.sessionStorage;
-	const targetStorage = backend === 'session' ? window.sessionStorage : window.localStorage;
+	const sourceStorage = getStorageForBackend(backend === 'session' ? 'local' : 'session');
+	const targetStorage = getStorageForBackend(backend);
+
+	if (!sourceStorage || !targetStorage) {
+		return;
+	}
 
 	for (const key of keys) {
-		const value = sourceStorage.getItem(key);
+		let value: string | null;
+		try {
+			value = sourceStorage.getItem(key);
+		} catch {
+			continue;
+		}
+
 		if (value === null) {
 			continue;
 		}
 
-		targetStorage.setItem(key, value);
-		sourceStorage.removeItem(key);
+		try {
+			targetStorage.setItem(key, value);
+			sourceStorage.removeItem(key);
+		} catch {
+			continue;
+		}
 	}
 };
