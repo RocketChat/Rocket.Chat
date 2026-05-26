@@ -55,6 +55,7 @@ API.v1.get(
 	'user-room-categories',
 	{
 		authRequired: true,
+		rateLimiterOptions: false,
 		response: { 200: categoriesResponseSchema },
 	},
 	async function action() {
@@ -70,6 +71,7 @@ API.v1.post(
 	'user-room-categories',
 	{
 		authRequired: true,
+		rateLimiterOptions: false,
 		body: createCategoryBodySchema,
 		response: { 200: emptyResponseSchema, 400: emptyResponseSchema },
 	},
@@ -94,6 +96,7 @@ API.v1.post(
 	'user-room-categories/add-room',
 	{
 		authRequired: true,
+		rateLimiterOptions: false,
 		body: addRoomToCategoryBodySchema,
 		response: { 200: emptyResponseSchema, 400: emptyResponseSchema },
 	},
@@ -120,6 +123,7 @@ API.v1.post(
 	'user-room-categories/remove-room',
 	{
 		authRequired: true,
+		rateLimiterOptions: false,
 		body: addRoomToCategoryBodySchema,
 		response: { 200: emptyResponseSchema, 400: emptyResponseSchema },
 	},
