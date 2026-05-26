@@ -41,7 +41,6 @@ Meteor.methods<ServerMethods>({
 	 * Prefer using cloud.registrationStatus rest api.
 	 */
 	async 'cloud:checkRegisterStatus'() {
-		methodDeprecationLogger.method('cloud:checkRegisterStatus', '9.0.0', '/v1/cloud.registrationStatus');
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -75,7 +74,11 @@ Meteor.methods<ServerMethods>({
 
 		return Buffer.from(JSON.stringify(await buildWorkspaceRegistrationData(undefined))).toString('base64');
 	},
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'cloud:registerWorkspace'() {
+		methodDeprecationLogger.method('cloud:registerWorkspace', '9.0.0', []);
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -137,7 +140,11 @@ Meteor.methods<ServerMethods>({
 		return connectWorkspace(token);
 	},
 	// Currently unused but will link local account to Rocket.Chat Cloud account.
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'cloud:getOAuthAuthorizationUrl'() {
+		methodDeprecationLogger.method('cloud:getOAuthAuthorizationUrl', '9.0.0', []);
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -153,7 +160,11 @@ Meteor.methods<ServerMethods>({
 
 		return getOAuthAuthorizationUrl();
 	},
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'cloud:finishOAuthAuthorization'(code, state) {
+		methodDeprecationLogger.method('cloud:finishOAuthAuthorization', '9.0.0', []);
 		check(code, String);
 		check(state, String);
 
@@ -173,7 +184,11 @@ Meteor.methods<ServerMethods>({
 
 		return finishOAuthAuthorization(code, state);
 	},
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'cloud:checkUserLoggedIn'() {
+		methodDeprecationLogger.method('cloud:checkUserLoggedIn', '9.0.0', []);
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -189,7 +204,11 @@ Meteor.methods<ServerMethods>({
 
 		return checkUserHasCloudLogin(uid);
 	},
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'cloud:logout'() {
+		methodDeprecationLogger.method('cloud:logout', '9.0.0', []);
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

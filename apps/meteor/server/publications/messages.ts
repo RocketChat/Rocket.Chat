@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { getChannelHistory } from '../../app/lib/server/methods/getChannelHistory';
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
@@ -273,10 +274,14 @@ export const getMessageHistory = async (
 };
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'messages/get'(
 		rid,
 		{ lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false, next, previous, type },
 	) {
+		methodDeprecationLogger.method('messages/get', '9.0.0', []);
 		check(rid, String);
 
 		const fromId = Meteor.userId();

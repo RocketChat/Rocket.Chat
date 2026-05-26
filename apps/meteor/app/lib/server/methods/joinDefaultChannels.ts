@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { addUserToDefaultChannels } from '../functions/addUserToDefaultChannels';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -13,7 +14,11 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async joinDefaultChannels(silenced) {
+		methodDeprecationLogger.method('joinDefaultChannels', '9.0.0', []);
 		check(silenced, Match.Optional(Boolean));
 		const user = await Meteor.userAsync();
 

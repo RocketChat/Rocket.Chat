@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { SearchLogger } from './logger/logger';
 import type { IRawSearchResult, ISearchResult } from './model/ISearchResult';
 import { searchProviderService, validationService } from './service';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -71,7 +72,11 @@ Meteor.methods<ServerMethods>({
 		}).then((result) => validationService.validateSearchResult(result));
 	},
 
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async 'rocketchatSearch.suggest'(text, context, payload) {
+		methodDeprecationLogger.method('rocketchatSearch.suggest', '9.0.0', []);
 		payload ??= undefined; // TODO is this cleanup necessary?
 
 		if (!searchProviderService.activeProvider) {

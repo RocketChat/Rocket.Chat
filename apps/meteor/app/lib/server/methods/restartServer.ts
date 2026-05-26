@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +15,11 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async restart_server() {
+		methodDeprecationLogger.method('restart_server', '9.0.0', []);
 		const uid = Meteor.userId();
 
 		if (!uid) {

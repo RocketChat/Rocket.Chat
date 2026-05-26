@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { UploadFS } from '../../../../server/ufs';
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,7 +16,11 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async getS3FileUrl(fileId) {
+		methodDeprecationLogger.method('getS3FileUrl', '9.0.0', []);
 		check(fileId, String);
 		const uid = Meteor.userId();
 		if (settings.get<boolean>('FileUpload_ProtectFiles') && !uid) {
