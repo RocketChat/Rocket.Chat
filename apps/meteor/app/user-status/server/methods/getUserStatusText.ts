@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getUserStatusText(userId) {
-		methodDeprecationLogger.method('getUserStatusText', '9.0.0', '/v1/users.info');
+		methodDeprecationLogger.method('getUserStatusText', '9.0.0', '/v1/users.presence');
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserStatusText' });

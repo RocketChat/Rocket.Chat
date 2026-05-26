@@ -5,7 +5,6 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,7 +15,6 @@ declare module '@rocket.chat/ddp-client' {
 /* @deprecated */
 Meteor.methods<ServerMethods>({
 	async getRoomJoinCode(rid) {
-		methodDeprecationLogger.method('getRoomJoinCode', '9.0.0', ['/v1/channels.info', '/v1/groups.info']);
 		check(rid, String);
 
 		const userId = Meteor.userId();
