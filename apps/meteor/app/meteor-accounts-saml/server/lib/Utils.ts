@@ -141,8 +141,8 @@ export class SAMLUtils {
 	}
 
 	public static log(obj: any, ...args: Array<any>): void {
-		if (debug && logger) {
-			logger.debug(obj, ...args);
+		if (logger) {
+			logger.warn(obj, ...args);
 		}
 	}
 

@@ -257,12 +257,15 @@ export class SAML {
 	}
 
 	private static async processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
+		SAMLUtils.log({ msg: 'processLogoutRequest: enter', url: req.url });
+
 		const errorHandler = (err: unknown) => {
 			SystemLogger.error({ err });
 			throw new Meteor.Error('Unable to Validate Logout Request');
 		};
 
 		const envelope = await getSAMLEnvelope(req, 'SAMLRequest', 'HTTP-Redirect').catch(errorHandler);
+		SAMLUtils.log({ msg: 'processLogoutRequest: got envelope', hasEnvelope: !!envelope });
 		if (!envelope) {
 			errorHandler('No envelope found for SAML Logout Request');
 			return;
@@ -270,6 +273,7 @@ export class SAML {
 
 		const serviceProvider = new SAMLServiceProvider(service);
 		await serviceProvider.validateLogoutRequest(envelope, async (err, result) => {
+			SAMLUtils.log({ msg: 'processLogoutRequest: validateLogoutRequest callback', err, result });
 			if (err) {
 				errorHandler(err);
 			}
@@ -288,8 +292,10 @@ export class SAML {
 				clearTimeout(timeoutHandler);
 				timeoutHandler = undefined;
 
+				const finalLocation = url || Meteor.absoluteUrl();
+				SAMLUtils.log({ msg: 'processLogoutRequest: redirecting', finalLocation });
 				res.writeHead(302, {
-					Location: url || Meteor.absoluteUrl(),
+					Location: finalLocation,
 				});
 				res.end();
 			};
@@ -297,11 +303,13 @@ export class SAML {
 			// Add a timeout to end the server response
 			timeoutHandler = setTimeout(() => {
 				// If we couldn't get a valid IdP url, let's redirect the user to our home so the browser doesn't hang on them.
+				SAMLUtils.log({ msg: 'processLogoutRequest: timeout fired before redirect' });
 				redirect();
 			}, 5000);
 
 			try {
 				const loggedOutUsers = await Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession).toArray();
+				SAMLUtils.log({ msg: 'processLogoutRequest: findBySAMLNameIdOrIdpSession', count: loggedOutUsers.length });
 				if (loggedOutUsers.length > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML session');
 				}
@@ -311,6 +319,7 @@ export class SAML {
 				}
 
 				await this._logoutRemoveTokens(loggedOutUsers[0]._id);
+				SAMLUtils.log({ msg: 'processLogoutRequest: tokens cleared', userId: loggedOutUsers[0]._id });
 
 				const { response } = serviceProvider.generateLogoutResponse({
 					nameID: result.nameID || '',
@@ -319,6 +328,7 @@ export class SAML {
 				});
 
 				serviceProvider.logoutResponseToUrl(response, (err, url) => {
+					SAMLUtils.log({ msg: 'processLogoutRequest: logoutResponseToUrl callback', err, url });
 					if (err) {
 						SystemLogger.error({ err });
 						return redirect();
@@ -327,6 +337,7 @@ export class SAML {
 					redirect(url);
 				});
 			} catch (e: any) {
+				SAMLUtils.log({ msg: 'processLogoutRequest: caught exception', err: e?.message });
 				SystemLogger.error(e);
 				redirect();
 			}

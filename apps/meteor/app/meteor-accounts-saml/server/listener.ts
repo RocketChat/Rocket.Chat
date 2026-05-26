@@ -43,6 +43,7 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 	// the runner
 	try {
 		const samlObject = samlUrlToObject(req.originalUrl);
+		SAMLUtils.log({ msg: 'SAML middleware: incoming', originalUrl: req.originalUrl, samlObject });
 		if (!samlObject?.serviceName) {
 			next();
 			return;
@@ -53,6 +54,14 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 		}
 
 		const service = SAMLUtils.getServiceProviderOptions(samlObject.serviceName);
+		SAMLUtils.log({
+			msg: 'SAML middleware: provider lookup',
+			serviceName: samlObject.serviceName,
+			providerFound: !!service,
+			validateLogoutRequestSignature: service?.validateLogoutRequestSignature,
+			validateLogoutResponseSignature: service?.validateLogoutResponseSignature,
+			hasCert: !!service?.cert,
+		});
 		if (!service) {
 			SystemLogger.error(`${samlObject.serviceName} service provider not found`);
 			throw new Error('SAML Service Provider not found.');
@@ -61,10 +70,12 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 		await SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {
 		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
+		SAMLUtils.log({ msg: 'SAML middleware: caught error', err: (err as Error)?.message });
 		SystemLogger.error(err);
 
 		if (!res.headersSent) {
 			const url = Meteor.absoluteUrl('home');
+			SAMLUtils.log({ msg: 'SAML middleware: fallback redirect to /home', url });
 			res.writeHead(302, {
 				Location: url,
 			});
