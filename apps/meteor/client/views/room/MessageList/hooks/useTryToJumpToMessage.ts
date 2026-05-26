@@ -38,6 +38,9 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			setIsJumpingToMessage(false);
 			return;
 		}
+		if (!message) {
+			return;
+		}
 		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
 		if (message && isThreadMessage(message) && !isThreadMainMessage(message)) {
 			setIsJumpingToMessage(false);
@@ -78,7 +81,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		setTimeout(() => {
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
-		}, 1000);
+		}, 500);
 	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message]);
 };
 

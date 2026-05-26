@@ -12,6 +12,7 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
@@ -72,7 +73,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const { messageListRef } = useMessageListNavigation();
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
-	const isAtBottom = useRef(true);
+	const isAtBottom = useRef<boolean | null>(null);
+	const lastScrollSizeRef = useRef(0);
 
 	const items = loading ? [] : [mainMessage, ...messages];
 
@@ -102,6 +104,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			setShouldJumpToBottom(false);
 			return;
 		}
+		if (isAtBottom.current === true && lastScrollSizeRef.current !== handle?.scrollSize) {
+			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
+			setShouldJumpToBottom(true);
+		}
 		if (shouldJumpToBottom) {
 			handle.scrollToIndex(items.length, { align: 'end' });
 			setShouldJumpToBottom(false);
@@ -128,6 +134,24 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			clearHighlightMessage();
 		}, 2000);
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
+
+	useEffect(() => {
+		if (!msgJumpParam) {
+			return;
+		}
+		const clearMsgJumpParam = () => {
+			if (messages.find((m) => m._id === msgJumpParam) && mainMessage._id !== msgJumpParam) {
+				setMessageJumpQueryStringParameter(null);
+			}
+		};
+		const timeoutId = setTimeout(() => {
+			clearMsgJumpParam();
+		}, 500);
+		return () => {
+			clearMsgJumpParam();
+			clearTimeout(timeoutId);
+		};
+	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
