@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-26T00:00:00.000Z",
+  "title": "Design System: Fuselage",
+  "extensions": {
+    "colorMeta": {
+      "rocket-blue": {
+        "role": "primary",
+        "displayName": "Rocket Blue",
+        "canonical": "#156FF5",
+        "darkCounterpart": "#6292DA",
+        "tonalRamp": ["#012247", "#01336B", "#10529E", "#095AD2", "#156FF5", "#549DF9", "#76B7FC", "#D1EBFE", "#E8F2FF"]
+      },
+      "featured-purple": {
+        "role": "secondary",
+        "displayName": "Featured Purple",
+        "canonical": "#5F1477",
+        "darkCounterpart": "#5F1477",
+        "tonalRamp": ["#350B42", "#4A105D", "#5F1477", "#7F1B9F", "#9F22C7", "#CA71E7", "#DCA0EF", "#EDD0F7", "#F9EFFC"]
+      },
+      "danger-red": {
+        "role": "tertiary",
+        "displayName": "Danger Red",
+        "canonical": "#EC0D2A",
+        "darkCounterpart": "#BB3E4E",
+        "tonalRamp": ["#6B0513", "#8B0719", "#BB0B21", "#D40C26", "#EC0D2A", "#F5455C", "#F98F9D", "#FFC1C9", "#FFE9EC"]
+      },
+      "success-green": {
+        "role": "tertiary",
+        "displayName": "Success Green",
+        "canonical": "#1ECB92",
+        "darkCounterpart": "#58AD90",
+        "tonalRamp": ["#0D5940", "#106D4F", "#148660", "#19AC7C", "#1ECB92", "#2DE0A5", "#96F0D2", "#C0F6E4", "#E5FBF4"]
+      },
+      "warning-yellow": {
+        "role": "tertiary",
+        "displayName": "Warning Yellow",
+        "canonical": "#F3BE08",
+        "darkCounterpart": "#C7AA66",
+        "tonalRamp": ["#573D00", "#8E6300", "#AC892F", "#DFAC00", "#F3BE08", "#FFD031", "#FFE383", "#FFECAD", "#FFF8E0"]
+      },
+      "neutral": {
+        "role": "neutral",
+        "displayName": "Tinted Neutral",
+        "canonical": "#2F343D",
+        "darkCounterpart": "#C1C7D0",
+        "tonalRamp": ["#1F2329", "#2F343D", "#6C737A", "#9EA2A8", "#CBCED1", "#D7DBE0", "#E4E7EA", "#F2F3F5", "#F7F8FA"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display / Hero", "purpose": "Marketing-scale display, rare inside the app." },
+      "headline": { "displayName": "Headline (h1)", "purpose": "Page titles." },
+      "title": { "displayName": "Title (h2/h3)", "purpose": "Section and subsection headings." },
+      "subtitle": { "displayName": "Subtitle (h4/h5)", "purpose": "Block and dense headings." },
+      "body": { "displayName": "Body (p2)", "purpose": "Default chat-density body text, 14px." },
+      "label": { "displayName": "Caption / Label", "purpose": "Captions, overlines, badge and chip text." },
+      "mono": { "displayName": "Mono", "purpose": "Code, message blocks, technical values." }
+    },
+    "shadows": [
+      { "name": "elevation-1", "value": "0 0 1px 0 rgba(47,52,61,0.08), 0 0 2px 0 rgba(47,52,61,0.12)", "purpose": "Low lift for hovered or single-step raised surfaces (Tile elevation-1)." },
+      { "name": "elevation-2", "value": "0 0 2px 0 rgba(47,52,61,0.08), 0 0 12px 0 rgba(47,52,61,0.12)", "purpose": "Menus, popovers, modals (Tile elevation-2)." },
+      { "name": "elevation-1-dark", "value": "0 0 1px 0 rgba(9,9,9,0.3), 0 0 2px 0 rgba(9,9,9,0.45)", "purpose": "Dark-theme counterpart of elevation-1." }
+    ],
+    "motion": [
+      { "name": "click-animation", "value": "transform 0.2s ease-out", "purpose": "Subtle press feedback on buttons; status buttons excluded." },
+      { "name": "state-transition", "value": "background-color 0.2s ease-out, border-color 0.2s ease-out", "purpose": "Default easing for hover/focus state changes. Respect prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "0px" },
+      { "name": "sm", "value": "600px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "xxl", "value": "1600px" },
+      { "name": "xxxl", "value": "1920px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single primary-action button. Rocket Blue fill, white text.",
+      "html": "<button class=\"ds-btn-primary\">Send</button>",
+      "css": ".ds-btn-primary { height: 40px; padding: 0 16px; min-width: 80px; border: none; border-radius: 4px; background: #156FF5; color: #FFFFFF; font-family: Inter, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; cursor: pointer; transition: background-color 0.2s ease-out, transform 0.2s ease-out; } .ds-btn-primary:hover { background: #095AD2; } .ds-btn-primary:active { background: #10529E; transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #D1EBFE; } .ds-btn-primary:disabled { background: #D1EBFE; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The everyday neutral button. Dark text on a neutral fill.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { height: 40px; padding: 0 16px; min-width: 80px; border: none; border-radius: 4px; background: #E4E7EA; color: #1F2329; font-family: Inter, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; cursor: pointer; transition: background-color 0.2s ease-out; } .ds-btn-secondary:hover { background: #CBCED1; } .ds-btn-secondary:active { background: #9EA2A8; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #D1EBFE; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive confirm only. Danger Red fill, white text.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { height: 40px; padding: 0 16px; min-width: 80px; border: none; border-radius: 4px; background: #EC0D2A; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; cursor: pointer; transition: background-color 0.2s ease-out; } .ds-btn-danger:hover { background: #D40C26; } .ds-btn-danger:active { background: #BB0B21; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard text field. Neutral border, blue focus, full-border error state.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search messages\" />",
+      "css": ".ds-input { min-width: 144px; padding: 8px 16px; border: 1px solid #CBCED1; border-radius: 4px; background: #FFFFFF; color: #2F343D; font-family: Inter, sans-serif; font-size: 14px; line-height: 20px; transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out; } .ds-input::placeholder { color: #6C737A; } .ds-input:hover { border-color: #9EA2A8; } .ds-input:focus { outline: none; border-color: #156FF5; box-shadow: 0 0 0 2px #D1EBFE; } .ds-input.invalid { border-color: #EC0D2A; box-shadow: 0 0 0 2px #FFC1C9; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat-at-rest container. 8px radius, white surface, hover tint when clickable.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card__title\">Channel settings</div><div class=\"ds-card__body\">Manage members, topic, and permissions.</div></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 8px; padding: 20px 12px; border-radius: 8px; background: #FFFFFF; color: #2F343D; font-family: Inter, sans-serif; } .ds-card__title { font-size: 16px; font-weight: 700; line-height: 24px; color: #1F2329; } .ds-card__body { font-size: 14px; line-height: 20px; color: #2F343D; }"
+    },
+    {
+      "name": "Tile (elevation-2)",
+      "kind": "card",
+      "refersTo": "tile",
+      "description": "Elevation primitive for menus and popovers. Lift comes from shadow, not standing styling.",
+      "html": "<div class=\"ds-tile\">Popover content</div>",
+      "css": ".ds-tile { padding: 16px; border-radius: 4px; background: #FFFFFF; color: #2F343D; font-family: Inter, sans-serif; font-size: 14px; line-height: 20px; box-shadow: 0 0 2px 0 rgba(47,52,61,0.08), 0 0 12px 0 rgba(47,52,61,0.12); }"
+    },
+    {
+      "name": "Callout (warning)",
+      "kind": "custom",
+      "refersTo": "callout",
+      "description": "Full-bordered status message. Never a side stripe.",
+      "html": "<div class=\"ds-callout\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M12 3 1 21h22L12 3Zm0 5 7.5 12h-15L12 8Zm-1 4v3h2v-3h-2Zm0 4v2h2v-2h-2Z\" fill=\"#C7AA66\"/></svg><span>Your trial ends in 3 days.</span></div>",
+      "css": ".ds-callout { display: flex; align-items: center; gap: 8px; padding: 12px; border: 1px solid #C7AA66; border-radius: 4px; background: #FFFFFF; color: #2F343D; font-family: Inter, sans-serif; font-size: 14px; line-height: 20px; }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill tag/filter. Secondary-button colors, hint text, full radius.",
+      "html": "<button class=\"ds-chip\">design-system <span class=\"ds-chip__x\">x</span></button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border: 1px solid #D7DBE0; border-radius: 9999px; background: #D7DBE0; color: #6C737A; font-family: Inter, sans-serif; font-size: 12px; font-weight: 700; line-height: 16px; cursor: pointer; transition: background-color 0.2s ease-out, border-color 0.2s ease-out; } .ds-chip:hover { background: #CBCED1; border-color: #CBCED1; } .ds-chip:focus-visible { outline: none; border-color: #2F343D; box-shadow: 0 0 0 2px #D1EBFE; } .ds-chip__x { color: #9EA2A8; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Field Manual",
+    "overview": "Fuselage is reference material, not decoration. It reads like a well-kept field manual: every value has a name, every name has a place, and an engineer or designer can look up the right answer instead of guessing it. The identity is the rigor. Token-driven from the ground up, documented in Storybook, predictable in every state, the closest spiritual sibling is GitHub Primer, where accessibility is a gate and the system's discipline is the thing people trust. The surface itself stays quiet so the product can speak: neutral lightly-tinted surfaces carry the room, and saturated color is reserved for meaning, never spent on ambient styling.",
+    "keyCharacteristics": [
+      "Token contract: components consume semantic roles, never raw hex.",
+      "Three themes from one base set: light, high-contrast, dark.",
+      "Flat by default; elevation and color are earned by state or meaning.",
+      "4px spatial grid, enforced at the function level.",
+      "Inter for UI, accessible at AA across all themes."
+    ],
+    "rules": [
+      { "name": "The Token Contract Rule", "body": "Components reference semantic roles (surface.tint, font.default, stroke.light), never raw ramp values. A literal hex inside a component is a defect, not a shortcut.", "section": "colors" },
+      { "name": "The Three-Theme Rule", "body": "Every color decision must resolve correctly in light, high-contrast, and dark. Dark is hand-tuned (its own hex values), never an algorithmic inversion of light.", "section": "colors" },
+      { "name": "The Meaning-Only Color Rule", "body": "Saturated color marks an action, a status, or a featured object. It is never spent on ambient decoration.", "section": "colors" },
+      { "name": "The Weight-Not-Tracking Rule", "body": "Letter-spacing is 0 across the entire scale. Hierarchy comes from size and weight contrast, never from manual tracking.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadow appears only as a response to state (hover, focus) or as an explicit elevation level. A resting card with a drop shadow is wrong; raise it with a border or a tint step instead.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do reference semantic tokens (surface.tint, font.default, stroke.light) in every component. A raw hex is a defect.",
+      "Do verify every change in light, high-contrast, and dark before it lands.",
+      "Do keep surfaces flat at rest and raise them with a border or tint step; use elevation-1/elevation-2 only for genuine lift.",
+      "Do size spacing on the 4px grid (none, 1, 2, or multiples of 4); the build rejects anything else.",
+      "Do carry status meaning with paired text/icon, never color alone, and use the matched font-on-* token for contrast.",
+      "Do build hierarchy from size and weight; keep letter-spacing at 0."
+    ],
+    "donts": [
+      "Don't reach for Material/MUI heaviness: no elevation-everywhere, ripple effects, or opinionated motion that fights the host product.",
+      "Don't expose Tailwind-style utility soup as the API; compose components and semantic tokens, not ad-hoc utility stacks.",
+      "Don't let the result read as Bootstrap genericness or any-app-on-the-internet; it must feel like Rocket.Chat.",
+      "Don't ship over-branded, playful flourishes: no decorative gradients, mascots, or trend-chasing that ages fast in an enterprise comms tool.",
+      "Don't use a border-left greater than 1px as a colored accent stripe on cards, list items, or callouts; use a full border or a tint instead.",
+      "Don't spend saturated color on ambient decoration; reserve it for actions, status, and featured objects.",
+      "Don't put a resting drop-shadow on a card. If it looks like a 2014 app, the shadow is too dark and standing where it shouldn't."
+    ]
+  }
+}
