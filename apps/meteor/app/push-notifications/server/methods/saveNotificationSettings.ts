@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 import { getUserNotificationPreference } from '../../../utils/server/getUserNotificationPreference';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 const saveAudioNotificationValue = (subId: ISubscription['_id'], value: string) =>
 	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);
@@ -132,6 +133,7 @@ export const saveNotificationSettingsMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async saveNotificationSettings(roomId, field, value) {
+		methodDeprecationLogger.method('saveNotificationSettings', '9.0.0', '/v1/rooms.saveNotification');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

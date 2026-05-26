@@ -9,6 +9,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authoriza
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 const validChannelChars = ['@', '#'];
 
@@ -191,6 +192,7 @@ export const updateIncomingIntegration = async (
 
 Meteor.methods<ServerMethods>({
 	async updateIncomingIntegration(integrationId, integration) {
+		methodDeprecationLogger.method('updateIncomingIntegration', '9.0.0', '/v1/integrations.update');
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'updateOutgoingIntegration',

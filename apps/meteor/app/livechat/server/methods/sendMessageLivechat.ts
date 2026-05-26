@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import type { ILivechatMessage } from '../lib/localTypes';
 import { sendMessage } from '../lib/messages';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 interface ILivechatMessageAgent {
 	agentId: string;
@@ -81,6 +82,7 @@ export const sendMessageLivechat = async ({
 
 Meteor.methods<ServerMethods>({
 	async sendMessageLivechat({ token, _id, rid, msg, file, files, attachments }: ILivechatMessage, agent: ILivechatMessageAgent) {
+		methodDeprecationLogger.method('sendMessageLivechat', '9.0.0', '/v1/livechat/message');
 		return sendMessageLivechat({ message: { token, _id, rid, msg, file, files, attachments }, agent });
 	},
 });

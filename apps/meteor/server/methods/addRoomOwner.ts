@@ -12,6 +12,7 @@ import { settings } from '../../app/settings/server';
 import { beforeChangeRoomRole } from '../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -107,6 +108,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 
 Meteor.methods<ServerMethods>({
 	async addRoomOwner(rid, userId) {
+		methodDeprecationLogger.method('addRoomOwner', '9.0.0', ['/v1/channels.addOwner', '/v1/groups.addOwner']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

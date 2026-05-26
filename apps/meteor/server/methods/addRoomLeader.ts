@@ -9,6 +9,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -88,6 +89,7 @@ export const addRoomLeader = async (fromUserId: IUser['_id'], rid: IRoom['_id'],
 
 Meteor.methods<ServerMethods>({
 	async addRoomLeader(rid, userId) {
+		methodDeprecationLogger.method('addRoomLeader', '9.0.0', ['/v1/channels.addLeader', '/v1/groups.addLeader']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

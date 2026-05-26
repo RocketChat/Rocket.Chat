@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -35,6 +36,7 @@ export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDes
 
 Meteor.methods<ServerMethods>({
 	async deleteEmojiCustom(emojiID) {
+		methodDeprecationLogger.method('deleteEmojiCustom', '9.0.0', '/v1/emoji-custom.delete');
 		if (!this.userId) {
 			throw new Meteor.Error('not_authorized');
 		}

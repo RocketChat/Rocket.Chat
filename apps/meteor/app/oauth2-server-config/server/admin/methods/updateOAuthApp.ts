@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { parseUriList } from '../functions/parseUriList';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -77,6 +78,7 @@ export const updateOAuthApp = async (
 
 Meteor.methods<ServerMethods>({
 	async updateOAuthApp(applicationId, application) {
+		methodDeprecationLogger.method('updateOAuthApp', '9.0.0', '/v1/oauth-apps.update');
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOAuthApp' });
 		}

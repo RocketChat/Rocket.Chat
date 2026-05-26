@@ -12,6 +12,7 @@ import { settings } from '../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../app/utils/lib/getDefaultSubscriptionPref';
 import { callbacks } from '../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../lib/getSubscriptionAutotranslateDefaultConfig';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -85,6 +86,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 
 Meteor.methods<ServerMethods>({
 	async addAllUserToRoom(rid, activeUsersOnly = false) {
+		methodDeprecationLogger.method('addAllUserToRoom', '9.0.0', ['/v1/channels.addAll', '/v1/groups.addAll']);
 		if (!this.userId) {
 			throw new Meteor.Error(403, 'Access to Method Forbidden', {
 				method: 'addAllToRoom',

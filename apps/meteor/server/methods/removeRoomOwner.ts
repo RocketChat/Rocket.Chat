@@ -10,6 +10,7 @@ import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notify
 import { settings } from '../../app/settings/server';
 import { beforeChangeRoomRole } from '../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -106,6 +107,7 @@ export const removeRoomOwner = async (fromUserId: string, rid: string, userId: s
 
 Meteor.methods<ServerMethods>({
 	async removeRoomOwner(rid, userId) {
+		methodDeprecationLogger.method('removeRoomOwner', '9.0.0', ['/v1/channels.removeOwner', '/v1/groups.removeOwner']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

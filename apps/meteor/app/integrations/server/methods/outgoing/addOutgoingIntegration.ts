@@ -9,6 +9,7 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 import { validateScriptEngine } from '../../lib/validateScriptEngine';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -75,6 +76,7 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 
 Meteor.methods<ServerMethods>({
 	async addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> {
+		methodDeprecationLogger.method('addOutgoingIntegration', '9.0.0', '/v1/integrations.create');
 		const { userId } = this;
 		if (!userId) {
 			throw new Meteor.Error('Invalid User');
