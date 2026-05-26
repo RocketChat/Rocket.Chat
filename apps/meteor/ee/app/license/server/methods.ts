@@ -26,6 +26,7 @@ Meteor.methods<ServerMethods>({
 		return License.getModules();
 	},
 	'license:getTags'() {
+		methodDeprecationLogger.method('license:getTags', '9.0.0', '/v1/licenses.info');
 		return License.getTags();
 	},
 	'license:isEnterprise'() {
