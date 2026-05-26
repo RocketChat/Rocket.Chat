@@ -2,6 +2,14 @@
   "schemaVersion": 2,
   "generatedAt": "2026-05-26T00:00:00.000Z",
   "title": "Design System: Fuselage",
+  "provenance": {
+    "canonical": "RocketChat/fuselage",
+    "sourceCommit": "faa9feb",
+    "tokenPackage": "@rocket.chat/fuselage-tokens",
+    "consumedVersions": { "@rocket.chat/fuselage": "^0.78.0", "@rocket.chat/fuselage-tokens": "~0.33.2" },
+    "note": "Derived snapshot for tooling/live-preview only. Fuselage owns all values. Component CSS uses literal hex because the Stitch shadow-DOM panel has no Fuselage runtime to resolve --rcx-* vars. Snapshot is from the source tip and may differ from the pinned runtime. Regenerate with /impeccable document on a version bump; never hand-edit.",
+    "regenerate": "/impeccable document"
+  },
   "extensions": {
     "colorMeta": {
       "rocket-blue": {

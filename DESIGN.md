@@ -1,6 +1,6 @@
 ---
 name: Fuselage
-description: Rocket.Chat's open-source design system. Token-driven, three-theme, accessible by gate.
+description: Derived token snapshot of the Fuselage design system (RocketChat/fuselage @ faa9feb). Fuselage is canonical; regenerate, do not hand-edit.
 colors:
   rocket-blue: "#156FF5"
   rocket-blue-hover: "#095AD2"
@@ -135,6 +135,8 @@ components:
 
 **Creative North Star: "The Field Manual"**
 
+> **Source of truth.** Fuselage itself is canonical. It ships semantic tokens (`@rocket.chat/fuselage-tokens`, the `Palette` export, runtime `--rcx-*` CSS variables, the `colors.*` SCSS mixins) and owns every value across light, high-contrast, and dark. **This file is a derived snapshot, not the source.** The frontmatter and sidecar carry literal hex only because the Stitch tooling and live-preview panel cannot resolve Fuselage's runtime tokens; they need static values to render swatches. The prose below references token *names*, never hex, so it cannot drift. Snapshot taken from `RocketChat/fuselage` @ `faa9feb`. This repo consumes `@rocket.chat/fuselage ^0.78.0` / `fuselage-tokens ~0.33.2`; the snapshot is from the source tip and may differ from the pinned runtime. Treat DESIGN.md as a build artifact: regenerate with `/impeccable document` on a version bump, never hand-edit the values.
+
 Fuselage is reference material, not decoration. It reads like a well-kept field manual: every value has a name, every name has a place, and an engineer or designer can look up the right answer instead of guessing it. The identity is the rigor. Token-driven from the ground up, documented in Storybook, predictable in every state. The closest spiritual sibling is GitHub Primer, where accessibility is a gate and the system's discipline is the thing people trust.
 
 The surface itself stays quiet so the product can speak. Neutral, lightly tinted surfaces carry the room; saturated color is reserved for meaning (an action, a status, a featured object), never spent on ambient styling. Density favors legibility: the default body type is 14px with tight line-height, sized for people who read this interface for hours. Nothing competes with the message being sent through Rocket.Chat.
@@ -150,32 +152,33 @@ This system explicitly rejects Material/MUI heaviness (elevation everywhere, rip
 
 ## 2. Colors: The Functional Spectrum
 
-A near-neutral surface field with a small set of saturated colors that only appear when they carry meaning. The same base ramps resolve into three themes; the frontmatter holds the light (default) values, and the sidecar carries each color's full ramp and dark-theme counterpart.
+A near-neutral surface field with a small set of saturated colors that only appear when they carry meaning. The same base ramps resolve into three themes; values are owned by `@rocket.chat/fuselage-tokens` and referenced here by token name. Hex appears once, in the frontmatter, for tooling only.
 
 ### Primary
-- **Rocket Blue** (`#156FF5`, b500): the single primary-action color. Primary buttons, focus rings, links, info highlights. Darkens to `#095AD2` on hover and `#10529E` on press. The one color a user can trust to mean "this is the actionable thing".
+- **Rocket Blue** (ramp `b500`; semantic `button.backgroundPrimaryDefault`, `stroke.highlight`, `font.info`): the single primary-action color. Primary buttons, focus rings, links, info highlights. Darkens through `b600` (hover) and `b700` (press). The one color a user can trust to mean "this is the actionable thing".
 
 ### Secondary
-- **Featured Purple** (`#5F1477`, p700): reserved for featured surfaces and brand-forward moments (featured rooms, promoted UI). Not a general accent; its scarcity is what makes it read as "special".
+- **Featured Purple** (ramp `p700`; semantic `surface.featured`): reserved for featured surfaces and brand-forward moments. Not a general accent; its scarcity is what makes it read as "special".
 
 ### Tertiary (status, never used decoratively)
-- **Success Green** (`#1ECB92`, g600): success states, paired with a darker green font on a light green fill.
-- **Warning Yellow** (`#F3BE08`, y600): warnings, paired with deep-yellow text.
-- **Danger Red** (`#EC0D2A`, r500): destructive actions, errors, danger buttons.
-- Service accents (orange `o`, purple `p`) exist for categorical tagging, always shipped as a background plus a matched `font-on-*` text color so contrast holds.
+- **Success Green** (`g600`; `status.success` + `status.font-on-success`): success states, fill plus a matched darker-green font.
+- **Warning Yellow** (`y600`; `status.warning` + `status.font-on-warning`): warnings, fill plus deep-yellow text.
+- **Danger Red** (`r500`; `status.danger`, `button.backgroundDangerDefault`, `stroke.error`): destructive actions, errors.
+- Service accents (`status.service-1..3`, orange/purple ramps) for categorical tagging, always shipped as a background plus a matched `status.font-on-*` token so contrast holds.
 
 ### Neutral
-- **Surface Light** (`#FFFFFF`): primary surface and room background.
-- **Surface Tint** (`#F7F8FA`, n100): subtly raised panels, sidebars, app chrome.
-- **Surface Hover / Selected** (`#F2F3F5` / `#D7DBE0`): interaction feedback on neutral rows.
-- **Font Titles** (`#1F2329`, n900) and **Font Default** (`#2F343D`, n800): titles and body text. Note these are tinted dark-blue-grey, never pure black.
-- **Font Hint** (`#6C737A`, n700): secondary info, annotations, placeholders.
-- **Strokes** (`#EBECEF` extraLight through `#9EA2A8` medium, n250 to n600): borders and dividers, climbing the neutral ramp by emphasis.
+- **Surface** (`surface.light` / `surface.tint` / `surface.room`): primary surface, raised panels, sidebars, app chrome.
+- **Surface Hover / Selected** (`surface.hover` / `surface.selected`): interaction feedback on neutral rows.
+- **Font** (`font.titlesLabels` for titles, `font.default` for body): note these resolve to tinted dark-blue-greys (`n900` / `n800`), never pure black.
+- **Font Hint** (`font.hint` / `font.secondaryInfo`): secondary info, annotations, placeholders.
+- **Strokes** (`stroke.extraLight` through `stroke.medium`, ramp `n250`..`n600`): borders and dividers, climbing the neutral ramp by emphasis.
 
 ### Named Rules
-**The Token Contract Rule.** Components reference semantic roles (`surface.tint`, `font.default`, `stroke.light`), never raw ramp values. A literal hex inside a component is a defect, not a shortcut.
+**The Token Contract Rule.** Product code references semantic roles (`Palette.surface.tint`, `colors.font(default)`, `var(--rcx-color-font-default)`), never raw ramp values or hex. A literal hex inside a component is a defect, not a shortcut. This document obeys the same rule: prose names tokens, never values.
 
-**The Three-Theme Rule.** Every color decision must resolve correctly in light, high-contrast, and dark. Dark is hand-tuned (its own hex values), never an algorithmic inversion of light.
+**The Derived-Snapshot Rule.** Fuselage owns the values. DESIGN.md's frontmatter is a generated mirror for tooling. On a Fuselage version bump, regenerate with `/impeccable document` against the installed package; never hand-patch a hex here. A value that disagrees with Fuselage is the snapshot being stale, not Fuselage being wrong.
+
+**The Three-Theme Rule.** Every color decision must resolve correctly in light, high-contrast, and dark. Dark is hand-tuned (its own values), never an algorithmic inversion of light.
 
 **The Meaning-Only Color Rule.** Saturated color marks an action, a status, or a featured object. It is never spent on ambient decoration. If a screen is mostly neutral with rare color, that is correct.
 
@@ -184,77 +187,81 @@ A near-neutral surface field with a small set of saturated colors that only appe
 **Display / Body Font:** Inter (with `-apple-system`, `Segoe UI`, `Roboto`, system fallbacks, plus emoji).
 **Mono Font:** Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace (code, message blocks, technical values).
 
-**Character:** One workhorse sans across the whole hierarchy, differentiated by scale and weight rather than by mixing families. The result is calm and uniform, the opposite of an expressive type pairing. Inter's high x-height keeps 12px to 14px text legible at chat density.
+**Character:** One workhorse sans across the whole hierarchy, differentiated by scale and weight rather than by mixing families. The result is calm and uniform, the opposite of an expressive type pairing. Inter's high x-height keeps 12px to 14px text legible at chat density. The scale is a stable structural token set (`fontScales` in `fuselage-tokens`), so sizes are shown inline.
 
 ### Hierarchy
-- **Display / hero** (800, 48px, 64px line-height): marketing-scale display, rare inside the app.
-- **Headline / h1** (700, 32px, 40px): page titles.
-- **Title / h2 to h3** (700, 24px to 20px, 32px to 28px): section and subsection headings.
-- **Subtitle / h4 to h5** (700, 16px to 14px, 24px to 20px): block and dense headings.
-- **Body / p1 to p2** (400/500/700, 16px or 14px, 24px or 20px): paragraph text. 14px (p2) is the chat default. Cap measure at 65 to 75ch.
-- **Caption / label** (400/700, 12px, 16px) and **micro** (700, 10px, 12px): captions, overlines, badge text.
+- **Display** (`hero`: 800, 48px, 64px line-height): marketing-scale display, rare inside the app.
+- **Headline** (`h1`: 700, 32px, 40px): page titles.
+- **Title** (`h2`/`h3`: 700, 24px to 20px, 32px to 28px): section and subsection headings.
+- **Subtitle** (`h4`/`h5`: 700, 16px to 14px, 24px to 20px): block and dense headings.
+- **Body** (`p1`/`p2`: 400/500/700, 16px or 14px, 24px or 20px): paragraph text. `p2` (14px) is the chat default. Cap measure at 65 to 75ch.
+- **Caption / Label** (`c1`/`c2`: 400/700, 12px, 16px) and **Micro** (`micro`: 700, 10px, 12px): captions, overlines, badge text.
 
 ### Named Rules
 **The Weight-Not-Tracking Rule.** Letter-spacing is 0 across the entire scale. Hierarchy comes from size and weight contrast, never from manual tracking. If two levels look too similar, change weight or size, not spacing.
 
 ## 4. Elevation
 
-Flat by default, lifted by state. Surfaces sit flush at rest. Depth is conveyed first by tonal layering (surface tint and hover steps) and by borders; shadow is reserved for genuine elevation (menus, popovers, opt-in raised tiles) and for hover/focus response. There is no ambient drop-shadow on resting cards. Dark theme deepens shadow opacity rather than reusing the light values.
+Flat by default, lifted by state. Surfaces sit flush at rest. Depth is conveyed first by tonal layering (`surface.tint` and `surface.hover` steps) and by borders; shadow is reserved for genuine elevation (menus, popovers, opt-in raised tiles) and for hover/focus response. There is no ambient drop-shadow on resting cards. Dark theme deepens shadow opacity rather than reusing the light values.
 
 ### Shadow Vocabulary
-- **elevation-border** (`#EBECEF` light, `#2F343D` dark): a 1px definition border where a shadow would be too subtle.
-- **elevation-1** (`box-shadow` from `rgba(47,52,61,0.1)` light, `rgba(9,9,9,0.35)` dark): low lift for hovered or single-step raised surfaces (Tile elevation-1).
-- **elevation-2** (composed from `rgba(47,52,61,0.08)` and `rgba(47,52,61,0.12)`; dark `rgba(9,9,9,0.3)` / `0.45`): menus, popovers, modals (Tile elevation-2).
+Drawn from the `shadow.*` and `elevation-*` tokens; the literal box-shadow strings live in the sidecar.
+- **elevation-border** (`shadow.elevation-border`): a 1px definition border where a shadow would be too subtle.
+- **elevation-1** (`shadow.elevation-1`): low lift for hovered or single-step raised surfaces (Tile `elevation-1`).
+- **elevation-2** (`shadow.elevation-2x` + `elevation-2y`): menus, popovers, modals (Tile `elevation-2`).
 
 ### Named Rules
 **The Flat-By-Default Rule.** Surfaces are flat at rest. Shadow appears only as a response to state (hover, focus) or as an explicit elevation level (`elevation-1`, `elevation-2`). A resting card with a drop shadow is wrong; raise it with a border or a tint step instead.
 
 ## 5. Components
 
-The feel across the set is **precise and legible**: tight, instrument-grade defaults optimized for density and scanning, quiet in their resting state.
+The feel across the set is **precise and legible**: tight, instrument-grade defaults optimized for density and scanning, quiet in their resting state. Shapes and sizes below are structural (`lengths.*` tokens); colors are named, not hex'd.
 
 ### Buttons
-- **Shape:** gently squared (4px radius, `rounded.medium`). Fixed 40px height, 16px horizontal padding, body-strong type (14px / 500). A subtle click-animation on press; status buttons excluded.
-- **Primary:** Rocket Blue (`#156FF5`) fill, white text. Hover `#095AD2`, press `#10529E`, disabled `#D1EBFE`.
-- **Secondary:** neutral fill (`#E4E7EA`) climbing to `#CBCED1` hover / `#9EA2A8` press, dark text. The everyday button.
-- **Danger:** Danger Red (`#EC0D2A`) fill, white text, for destructive confirms only.
+- **Shape:** gently squared (`rounded.medium`, 4px). Fixed 40px height, 16px horizontal padding (`lengths.padding`), body-strong type (`p2m`, 14px/500). A subtle click-animation on press; status buttons excluded.
+- **Primary:** `button.backgroundPrimary*` (Rocket Blue) fill, `button.fontOnPrimary` text. Hover/press/disabled track the `Primary` state set.
+- **Secondary:** `button.backgroundSecondary*` (neutral) fill, dark text. The everyday button.
+- **Danger:** `button.backgroundDanger*` (Danger Red) fill, white text, for destructive confirms only.
 - **Ghost / secondary-danger:** transparent or neutral background with colored text; used inline where a filled button would shout.
 
 ### Inputs / Fields
-- **Style:** white surface, 1px neutral border, 4px radius (`rounded.medium`), 8px/16px padding, 144px min-width, 14px body text.
-- **Focus:** border shifts to Rocket Blue (`stroke.highlight`) with a soft highlight ring. No glow bloom.
-- **Error:** border and ring shift to error red (`stroke.error`); `:invalid` is styled, not just colored, and pairs with a text message (never color alone).
+- **Style:** `surface.light` background, 1px `stroke` border, `rounded.medium` (4px), 8px/16px padding, 144px min-width, `p2` (14px) text.
+- **Focus:** border shifts to `stroke.highlight` (Rocket Blue) with a soft highlight ring. No glow bloom.
+- **Error:** border and ring shift to `stroke.error`; `:invalid` is styled, not just colored, and pairs with a text message (never color alone).
 
 ### Cards / Containers
-- **Corner Style:** rounded (8px radius, `rounded.large`), softer than controls.
-- **Background:** Surface Light (`#FFFFFF`); clickable cards shift to Surface Hover on hover/focus.
+- **Corner Style:** `rounded.large` (8px), softer than controls.
+- **Background:** `surface.light`; clickable cards shift to `surface.hover` on hover/focus.
 - **Shadow Strategy:** flat at rest per the Flat-By-Default Rule. Use a Tile with `elevation-1`/`elevation-2` when genuine lift is needed.
-- **Internal Padding:** 20px vertical, 12px horizontal, 8px internal gaps; 28px for hero cards.
+- **Internal Padding:** 20px vertical, 12px horizontal, 8px internal gaps (`lengths.margin`/`padding`); 28px for hero cards.
 
 ### Tile
-- **Style:** the elevation primitive. 4px radius, Surface Light, body text, with explicit `elevation-0` (none), `elevation-1`, `elevation-2` levels. Use Tile, not Card, when the only job is to raise content.
+- **Style:** the elevation primitive. `rounded.medium`, `surface.light`, `p2` text, with explicit `elevation-0` (none), `elevation-1`, `elevation-2` levels. Use Tile, not Card, when the only job is to raise content.
 
 ### Callout
-- **Style:** full 1px border (never a side stripe), 4px radius, 12px padding, status-colored border and text (info / success / warning / danger) drawn from the `font-on-*` status tokens.
+- **Style:** full 1px border (never a side stripe), `rounded.medium`, 12px padding, status-colored border and text (info / success / warning / danger) drawn from the `status.font-on-*` tokens.
 
 ### Chips / Tags
-- **Style:** pill (`rounded.full`), secondary-button background (`#D7DBE0` family), hint-colored text, label type (12px / 700). Hover, active, and focus states track the secondary-button color set; focus adds a dark stroke plus shadow.
-- **Badge:** four severity levels (level-1 to level-4) plus ghost, white text on a saturated fill, for counts and status pips.
+- **Style:** pill (`rounded.full`), `button.backgroundSecondary*` background, `font.secondaryInfo` text, `c2` label type (12px/700). Hover, active, and focus states track the secondary-button color set; focus adds a `stroke.extraDark` border plus shadow.
+- **Badge:** four severity levels (`badge.level-1..4`) plus ghost, `font.pureWhite` text on a saturated fill, for counts and status pips.
 
 ### Navigation
-- **Style:** neutral sidebar surface (`surface.sidebar`, n400 light / `#2F343D` dark), body type. Items rest flat; hover uses Surface Hover, the active item uses Surface Selected. Selection is a fill change, not a colored left stripe.
+- **Style:** `surface.sidebar` background, `p2` type. Items rest flat; hover uses `surface.hover`, the active item uses `surface.selected`. Selection is a fill change, not a colored left stripe.
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** reference semantic tokens (`surface.tint`, `font.default`, `stroke.light`) in every component. A raw hex is a defect.
+- **Do** consume Fuselage semantic tokens (`Palette.*`, `colors.*` mixins, `var(--rcx-color-*)`) in product code. Fuselage is the source of truth; this file is a reference.
+- **Do** reference semantic roles (`surface.tint`, `font.default`, `stroke.light`) over ramp steps, and ramp steps over hex.
 - **Do** verify every change in light, high-contrast, and dark before it lands.
 - **Do** keep surfaces flat at rest and raise them with a border or tint step; use `elevation-1`/`elevation-2` only for genuine lift.
 - **Do** size spacing on the 4px grid (`none`, `1`, `2`, or multiples of 4); the build rejects anything else.
-- **Do** carry status meaning with paired text/icon, never color alone, and use the matched `font-on-*` token for contrast.
+- **Do** carry status meaning with paired text/icon, never color alone, and use the matched `status.font-on-*` token for contrast.
 - **Do** build hierarchy from size and weight; keep letter-spacing at 0.
+- **Do** regenerate this file with `/impeccable document` when Fuselage bumps; treat its values as a snapshot.
 
 ### Don't:
+- **Don't** hardcode a hex value in product code, or hand-edit the values in this file. If a color is wrong, fix it in Fuselage and regenerate.
 - **Don't** reach for Material/MUI heaviness: no elevation-everywhere, ripple effects, or opinionated motion that fights the host product.
 - **Don't** expose Tailwind-style utility soup as the API; compose components and semantic tokens, not ad-hoc utility stacks.
 - **Don't** let the result read as Bootstrap genericness or any-app-on-the-internet; it must feel like Rocket.Chat.
