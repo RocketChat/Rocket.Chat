@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import fs from 'fs';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
@@ -405,13 +406,19 @@ describe('[CustomSounds]', () => {
 						expect(res.body.sound).to.have.property('extension', 'wav');
 					});
 
+				const originalWavBuffer = fs.readFileSync(mockWavAudioPath);
+
 				await request
 					.get(`/custom-sounds/${soundAId}.wav`)
 					.set(credentials)
 					.expect(200)
 					.expect((res) => {
 						expect(res.headers).to.have.property('content-type', 'audio/wav');
+						expect(Buffer.isBuffer(res.body)).to.be.true;
+						expect(originalWavBuffer.equals(res.body)).to.be.true;
 					});
+
+				await request.get(`/custom-sounds/${soundAId}.mp3`).set(credentials).expect(404);
 			});
 		});
 	});
