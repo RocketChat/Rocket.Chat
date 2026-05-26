@@ -39,7 +39,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail, invalidAttempt }
 		if (invalidAttempt) {
 			setError('code', {
 				type: 'manual',
-				message: t('code'),
+				message: t('Invalid_two_factor_code'),
 			});
 		}
 	}, [invalidAttempt, setError, t]);
