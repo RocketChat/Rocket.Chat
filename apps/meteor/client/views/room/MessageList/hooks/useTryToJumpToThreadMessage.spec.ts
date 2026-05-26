@@ -87,4 +87,40 @@ describe('useTryToJumpToThreadMessage', () => {
 			expect(mockedRoomHistoryManager.getMore).not.toHaveBeenCalled();
 		});
 	});
+
+	describe('when jumpContext is absent', () => {
+		it('should load more messages when jumpContext is null', async () => {
+			const threadMessage = {
+				_id: 'msg-1',
+				rid: 'room-1',
+				tmid: 'parent-msg-1',
+				ts: new Date('2024-01-01T00:00:00Z').toISOString(),
+				u: { _id: 'user-1', username: 'john' },
+				msg: 'Thread reply',
+				_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
+			};
+
+			mockedRoomHistoryManager.isLoaded.mockReturnValue(false);
+
+			const endpointSpy = jest.fn().mockResolvedValue({ message: threadMessage });
+
+			renderHook(() => useTryToJumpToThreadMessage(), {
+				wrapper: mockAppRoot()
+					.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }) })
+					.withEndpoint('GET', '/v1/chat.getMessage', endpointSpy)
+					.withMethod('getRoomById', () => ({ _id: 'room-1', t: 'c', name: 'general' }) as any)
+					.build(),
+			});
+
+			await waitFor(() => {
+				expect(endpointSpy).toHaveBeenCalledWith({ msgId: 'msg-1' });
+			});
+
+			await waitFor(() => {
+				expect(mockedRoomHistoryManager.getMore).toHaveBeenCalledWith('room-1');
+			});
+
+			expect(mockedRoomHistoryManager.getSurroundingMessages).not.toHaveBeenCalled();
+		});
+	});
 });
