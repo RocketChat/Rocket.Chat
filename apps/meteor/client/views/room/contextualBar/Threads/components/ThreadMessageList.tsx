@@ -139,12 +139,18 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		if (!msgJumpParam) {
 			return;
 		}
-		const timeoutId = setTimeout(() => {
+		const clearMsgJumpParam = () => {
 			if (messages.find((m) => m._id === msgJumpParam) && mainMessage._id !== msgJumpParam) {
 				setMessageJumpQueryStringParameter(null);
 			}
+		};
+		const timeoutId = setTimeout(() => {
+			clearMsgJumpParam();
 		}, 500);
-		return () => clearTimeout(timeoutId);
+		return () => {
+			clearMsgJumpParam();
+			clearTimeout(timeoutId);
+		};
 	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {
