@@ -13,7 +13,10 @@ scopeAdminRoomsForAbac.patch(async (next, rooms, uid) => {
 
 	const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1, name: 1 } });
 	if (!user) {
-		return next(rooms, uid);
+		return next(
+			rooms.filter((room) => !isABACManagedRoom(room)),
+			uid,
+		);
 	}
 
 	const scoped = await Abac.scopeRoomsForAdmin(managed, { _id: user._id, username: user.username, name: user.name });

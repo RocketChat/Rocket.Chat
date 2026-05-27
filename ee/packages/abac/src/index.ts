@@ -96,10 +96,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 				await this.loadVirtruPdpConfig();
 			}
 
-			const prevEffective = this.computeEffectiveStoreType();
+			const prevEffective = await this.computeEffectiveStoreType();
 			this.pdpTypeSetting = value;
 			this.setPdpStrategy(value);
-			this.fireEffectiveStoreTransitionIfChanged(prevEffective);
+			await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
 			if (value === 'local' && this.attributeStoreSetting === 'virtru') {
 				try {
 					await Settings.set('ABAC_Attribute_Store', 'local');
@@ -120,10 +120,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 
 			const prevSetting = this.attributeStoreSetting;
-			const prevEffective = this.computeEffectiveStoreType();
+			const prevEffective = await this.computeEffectiveStoreType();
 			this.attributeStoreSetting = value;
 			if (prevSetting !== undefined) {
-				this.fireEffectiveStoreTransitionIfChanged(prevEffective);
+				await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
 			}
 		});
 
@@ -191,18 +191,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 		this.lastSelectedStore = undefined;
 	}
 
-	private computeEffectiveStoreType(): AbacAttributeStoreType {
+	private async computeEffectiveStoreType(): Promise<AbacAttributeStoreType> {
 		const ctx: AttributeStoreSelectionContext = {
 			abacEnabled: this.abacEnabled === true,
 			pdpType: this.pdpTypeSetting,
-			licensed: true,
+			licensed: await License.hasModule('abac'),
 		};
 		const selected = this.attributeStoreSetting ?? 'local';
 		return this.attributeStores[selected].isEligible(ctx) ? selected : 'local';
 	}
 
-	private fireEffectiveStoreTransitionIfChanged(prevEffective: AbacAttributeStoreType): void {
-		const nextEffective = this.computeEffectiveStoreType();
+	private async fireEffectiveStoreTransitionIfChanged(prevEffective: AbacAttributeStoreType): Promise<void> {
+		const nextEffective = await this.computeEffectiveStoreType();
 		if (prevEffective === nextEffective) {
 			return;
 		}

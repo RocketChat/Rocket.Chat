@@ -25,10 +25,6 @@ describe('virtru/identity', () => {
 		expect(() => buildAttributeFqns('', [{ key: 'k', values: ['v'] }])).toThrow();
 	});
 
-	it('parseAttributeFqns ignores malformed FQNs', () => {
-		expect(parseAttributeFqns(['not-an-fqn', 'https://x/attr/k/value/v']).attributes).toEqual([{ key: 'k', values: ['v'] }]);
-	});
-
 	it('parseAttributeFqns returns malformed FQNs alongside parsed attributes', () => {
 		const { attributes, malformed } = parseAttributeFqns(['https://example.com/attr/k/value/v', 'not-a-fqn', 'https://example.com/broken']);
 		expect(malformed).toEqual(['not-a-fqn', 'https://example.com/broken']);

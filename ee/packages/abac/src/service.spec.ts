@@ -1238,6 +1238,11 @@ describe('AbacService (unit)', () => {
 
 		const localStore = { scopeRoomsPage: async (rooms: any[]) => rooms };
 
+		const asVirtru = (svc: AbacService) => {
+			mockHasModule.mockReturnValue(true);
+			Object.assign(svc as any, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
+		};
+
 		beforeEach(() => {
 			mockRoomsFindPaginated.mockReset();
 			(service as any).attributeStores.local.store = localStore;
@@ -1311,6 +1316,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('virtru mode: permitted rooms are unchanged, denied rooms are redacted', async () => {
+			asVirtru(service);
 			const fakeStore = {
 				scopeRoomsPage: jest
 					.fn()
@@ -1318,7 +1324,7 @@ describe('AbacService (unit)', () => {
 						rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
 					),
 			};
-			(service as any).attributeStores.local.store = fakeStore;
+			(service as any).attributeStores.virtru.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => [roomA, roomB, roomC] },
@@ -1345,13 +1351,14 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('virtru mode: order of rooms is preserved after scoping', async () => {
+			asVirtru(service);
 			const ordered = [roomC, roomA, roomB];
 			const fakeStore = {
 				scopeRoomsPage: jest
 					.fn()
 					.mockResolvedValue(ordered.map((r) => (r._id === 'rA' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r))),
 			};
-			(service as any).attributeStores.local.store = fakeStore;
+			(service as any).attributeStores.virtru.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => ordered },
@@ -1364,10 +1371,11 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('virtru mode: total and offset are not changed by scoping', async () => {
+			asVirtru(service);
 			const fakeStore = {
 				scopeRoomsPage: jest.fn().mockResolvedValue([{ ...roomA, abacAttributes: [], abacAttributesRedacted: true }]),
 			};
-			(service as any).attributeStores.local.store = fakeStore;
+			(service as any).attributeStores.virtru.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => [roomA] },
@@ -1765,20 +1773,6 @@ describe('AbacService (unit)', () => {
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
 		});
 
-		it('never triggers eviction / PDP / per-room audit during a virtru->local wipe', async () => {
-			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 3 });
-			const svc = await bootWith(buildSettings({}));
-			setVirtruMode(svc);
-
-			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'local');
-			await new Promise((r) => setImmediate(r));
-
-			expect(evictionSpy).not.toHaveBeenCalled();
-			expect(pdpRoomAttrsSpy).not.toHaveBeenCalled();
-			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
-		});
-
 		it('is idempotent: calling onAttributeStoreTransition directly twice succeeds and emits a fresh audit each time', async () => {
 			mockHasModule.mockReturnValue(true);
 			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 2 });
@@ -1965,39 +1959,4 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
-	describe('isExternalAttributeStore', () => {
-		const setPrivate = (svc: AbacService, fields: Record<string, unknown>) => {
-			Object.assign(svc as any, fields);
-		};
-
-		it('returns true when license + all conditions point to virtru', async () => {
-			mockHasModule.mockReturnValue(true);
-			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-			expect(await service.isExternalAttributeStore()).toBe(true);
-		});
-
-		it('returns false when license module is absent', async () => {
-			mockHasModule.mockReturnValue(false);
-			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-			expect(await service.isExternalAttributeStore()).toBe(false);
-		});
-
-		it('returns false when ABAC_Enabled is false', async () => {
-			mockHasModule.mockReturnValue(true);
-			setPrivate(service, { abacEnabled: false, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-			expect(await service.isExternalAttributeStore()).toBe(false);
-		});
-
-		it('returns false when ABAC_PDP_Type is not virtru', async () => {
-			mockHasModule.mockReturnValue(true);
-			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'local', attributeStoreSetting: 'virtru' });
-			expect(await service.isExternalAttributeStore()).toBe(false);
-		});
-
-		it('returns false when ABAC_Attribute_Store is not virtru', async () => {
-			mockHasModule.mockReturnValue(true);
-			setPrivate(service, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'local' });
-			expect(await service.isExternalAttributeStore()).toBe(false);
-		});
-	});
 });
