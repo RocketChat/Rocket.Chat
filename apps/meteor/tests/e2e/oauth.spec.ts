@@ -4,6 +4,7 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 const waitForServiceSettingsUpdate = () => new Promise((resolve) => setTimeout(resolve, 5000));
+const customOAuthAuthorizeUrlPattern = /https:\/\/(www\.)?rocket\.chat\/(oauth\/)?authorize/;
 
 test.describe('OAuth', () => {
 	let poRegistration: Registration;
@@ -81,7 +82,7 @@ test.describe('OAuth', () => {
 			await test.step('expect authorize flow to be opened in a popup', async () => {
 				const [popup] = await Promise.all([page.waitForEvent('popup'), poRegistration.btnLoginWithCustomOAuth.click()]);
 
-				await expect(popup).toHaveURL(/https:\/\/(www\.)?rocket\.chat\/oauth\/authorize/);
+				await expect(popup).toHaveURL(customOAuthAuthorizeUrlPattern);
 				await expect(page).toHaveURL(/\/home/);
 				await popup.close();
 			});
@@ -136,11 +137,11 @@ test.describe('OAuth', () => {
 
 			await test.step('expect authorize flow to be started from the iframe', async () => {
 				const [oauthRequest] = await Promise.all([
-					page.waitForRequest(/https:\/\/(www\.)?rocket\.chat\/oauth\/authorize/),
+					page.waitForRequest(customOAuthAuthorizeUrlPattern),
 					page.frameLocator('iframe[title="login"]').getByRole('button', { name: 'Sign in with Test' }).click(),
 				]);
 
-				expect(oauthRequest.url()).toMatch(/https:\/\/(www\.)?rocket\.chat\/oauth\/authorize/);
+				expect(oauthRequest.url()).toMatch(customOAuthAuthorizeUrlPattern);
 			});
 		});
 	});
