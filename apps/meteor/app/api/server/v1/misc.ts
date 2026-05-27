@@ -1,5 +1,16 @@
 import crypto from 'node:crypto';
 
+import {
+	buildIntelligentSearchPipelineFilters,
+	generateOpenAICompatibleSearchAnswer,
+	listOpenAICompatibleModels,
+	normalizeIntelligentSearchCandidates,
+	searchIntelligentPipeline,
+	type AIServiceFetch,
+	type IntelligentSearchFilters,
+	type OpenAICompatibleProviderConfig,
+	type SearchAnswerMessage,
+} from '@rocket.chat/ai-search';
 import type { IDirectoryChannelResult, IDirectoryUserResult, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Rooms, Settings, Subscriptions, Users, WorkspaceCredentials, Messages } from '@rocket.chat/models';
@@ -499,32 +510,15 @@ const unifiedSearchResponseSchema = ajv.compile<{
 	additionalProperties: false,
 });
 
-const normalizeSimilarityPercent = (value: unknown): number => {
-	const numeric = Number(value);
-
-	if (!Number.isFinite(numeric)) {
-		return 0;
-	}
-
-	return Math.min(100, Math.max(0, Math.floor(numeric)));
-};
-
-const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number => Number((1 - minimumSimilarityPercent / 100).toFixed(4));
-
 const parseCommaList = (value: string | undefined): string[] =>
 	String(value ?? '')
 		.split(',')
 		.map((item) => item.trim())
 		.filter(Boolean);
 
-type LLMProviderConfig = {
-	name: string;
-	baseUrl: string;
-	apiKey: string;
-	model: string;
-};
+const aiServiceFetch: AIServiceFetch = (url, options) => fetch(url, options as Parameters<typeof fetch>[1]);
 
-const getSearchAnswerProviderConfig = (): LLMProviderConfig | undefined => {
+const getSearchAnswerProviderConfig = (): OpenAICompatibleProviderConfig | undefined => {
 	const baseUrl = String(settings.get('AI_LLM_OpenAI_Base_URL') || '').replace(/\/+$/, '');
 	const apiKey = String(settings.get('AI_LLM_OpenAI_API_Key') || '');
 	const model = String(settings.get('AI_LLM_OpenAI_Model') || '');
@@ -536,31 +530,10 @@ const getSearchAnswerProviderConfig = (): LLMProviderConfig | undefined => {
 	return { name: 'OpenAI compatible', baseUrl, apiKey, model };
 };
 
-const buildSearchAnswerPrompt = (
-	query: string,
-	messages: { text: string; username?: string; roomName?: string; ts?: string; score?: number }[],
-): string =>
-	[
-		`User search query: ${query}`,
-		'Search results:',
-		...messages.slice(0, MAX_SEARCH_ANSWER_MESSAGES).map((message, index) => {
-			const metadata = [
-				message.username && `from @${message.username}`,
-				message.roomName && `in #${message.roomName}`,
-				message.ts && `at ${message.ts}`,
-				typeof message.score === 'number' && `score ${Math.round(message.score * 100)}%`,
-			]
-				.filter(Boolean)
-				.join(', ');
-			return `${index + 1}. ${metadata ? `[${metadata}] ` : ''}${message.text.slice(0, MAX_SEARCH_ANSWER_TEXT_LENGTH)}`;
-		}),
-		'Answer using only the search results above. If the results do not contain enough information, say that clearly.',
-	].join('\n\n');
-
 const generateSearchAnswer = async (
 	query: string,
-	messages: { text: string; username?: string; roomName?: string; ts?: string; score?: number }[],
-): Promise<{ answer: string; provider: Pick<LLMProviderConfig, 'name' | 'model'> }> => {
+	messages: SearchAnswerMessage[],
+): Promise<{ answer: string; provider: Pick<OpenAICompatibleProviderConfig, 'name' | 'model'> }> => {
 	const provider = getSearchAnswerProviderConfig();
 	if (!provider) {
 		throw new Meteor.Error('error-ai-provider-not-configured', 'AI answer provider is not configured');
@@ -569,38 +542,23 @@ const generateSearchAnswer = async (
 	const systemPrompt =
 		String(settings.get('AI_Intelligent_Search_Answer_System_Prompt') || '') ||
 		'You are an assistant that summarizes Rocket.Chat search results into a concise answer with relevant caveats.';
-	const response = await fetch(`${provider.baseUrl}/chat/completions`, {
-		method: 'POST',
-		timeout: 20000,
-		ignoreSsrfValidation: true,
-		headers: {
-			'Content-Type': 'application/json',
-			'Accept': 'application/json',
-			'Authorization': `Bearer ${provider.apiKey}`,
-		},
-		body: JSON.stringify({
-			model: provider.model,
-			temperature: 0.2,
-			messages: [
-				{ role: 'system', content: systemPrompt },
-				{ role: 'user', content: buildSearchAnswerPrompt(query, messages) },
-			],
-		}),
-	});
-
-	if (!response.ok) {
-		const body = await response.text().catch(() => '');
-		SystemLogger.warn({ msg: 'Search answer LLM provider returned error', status: response.status, body });
+	try {
+		return await generateOpenAICompatibleSearchAnswer({
+			query,
+			messages,
+			provider,
+			systemPrompt,
+			fetch: aiServiceFetch,
+			logger: SystemLogger,
+			maxMessages: MAX_SEARCH_ANSWER_MESSAGES,
+			maxTextLength: MAX_SEARCH_ANSWER_TEXT_LENGTH,
+		});
+	} catch (error) {
+		if (error instanceof Error && error.message === 'error-ai-provider-empty-response') {
+			throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
+		}
 		throw new Meteor.Error('error-ai-provider-request-failed', 'AI answer provider request failed');
 	}
-
-	const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
-	const answer = json.choices?.[0]?.message?.content?.trim();
-	if (!answer) {
-		throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
-	}
-
-	return { answer, provider: { name: provider.name, model: provider.model } };
 };
 
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
@@ -623,140 +581,12 @@ const getUserRoomIds = async (userId: string): Promise<string[]> =>
 		}).toArray()
 	).map((subscription) => subscription.rid);
 
-type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
-
-type IntelligentSearchCandidate = {
-	_id: string;
-	rid?: string;
-	msgId?: string;
-	pipelineText: string;
-	score?: number;
-};
-
-const asRecord = (value: unknown): Record<string, unknown> =>
-	value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
-
-const firstString = (...values: unknown[]): string | undefined => {
-	for (const value of values) {
-		if (typeof value === 'string' && value) {
-			return value;
-		}
-	}
-	return undefined;
-};
-
-const firstNumber = (...values: unknown[]): number | undefined => {
-	for (const value of values) {
-		const numberValue = Number(value);
-		if (Number.isFinite(numberValue)) {
-			return numberValue;
-		}
-	}
-	return undefined;
-};
-
-const normalizePipelineSimilarityScore = (value: number, type: 'distance' | 'similarity'): number => {
-	const normalizedValue = Math.abs(value) > 1 ? value / 100 : value;
-	const similarity = type === 'distance' ? 1 - normalizedValue : normalizedValue;
-
-	return Math.min(1, Math.max(0, similarity));
-};
-
-const extractPipelineSimilarityScore = (result: IntelligentSearchRawResult, metadata: Record<string, unknown>): number | undefined => {
-	const similarity = firstNumber(result.similarity, metadata.similarity);
-	if (typeof similarity === 'number') {
-		return normalizePipelineSimilarityScore(similarity, 'similarity');
-	}
-
-	const distance = firstNumber(result.score, result.distance, metadata.score, metadata.distance);
-	if (typeof distance === 'number') {
-		return normalizePipelineSimilarityScore(distance, 'distance');
-	}
-
-	return undefined;
-};
-
-const extractIntelligentResultIds = (result: IntelligentSearchRawResult): { rid?: string; msgId?: string } => {
-	const metadata = asRecord(result.metadata);
-	let rid = firstString(metadata.room_id, metadata.rid, result.room_id, result.rid);
-	let msgId = firstString(metadata.msg_id, metadata.message_id, result.msg_id, result.message_id, result.id);
-	const externalIdentifier = firstString(result.external_identifier);
-
-	if ((!rid || !msgId) && externalIdentifier) {
-		const separator = externalIdentifier.indexOf(':');
-		if (separator > 0 && separator < externalIdentifier.length - 1) {
-			rid = rid || externalIdentifier.slice(0, separator);
-			msgId = msgId || externalIdentifier.slice(separator + 1);
-		} else {
-			msgId = msgId || externalIdentifier;
-		}
-	}
-
-	return { rid, msgId };
-};
-
 const normalizeIntelligentResults = async (
 	rawSearchResults: unknown,
 	userRoomIds: string[],
 	limit = AI_SEARCH_PAGE_SIZE,
 ): Promise<UnifiedSearchIntelligentResult[]> => {
-	let rawResults: unknown[] = [];
-	const rawSearchResultsRecord = asRecord(rawSearchResults);
-
-	if (Array.isArray(rawSearchResults)) {
-		rawResults = rawSearchResults;
-	} else if (Array.isArray(rawSearchResultsRecord.results)) {
-		rawResults = rawSearchResultsRecord.results;
-	} else if (Array.isArray(rawSearchResultsRecord.context)) {
-		rawResults = rawSearchResultsRecord.context;
-	} else if (Array.isArray(rawSearchResultsRecord.documents)) {
-		rawResults = rawSearchResultsRecord.documents;
-	} else if (Array.isArray(rawSearchResultsRecord.hits)) {
-		rawResults = rawSearchResultsRecord.hits;
-	} else if (Array.isArray(rawSearchResultsRecord.data)) {
-		rawResults = rawSearchResultsRecord.data;
-	}
-
-	SystemLogger.debug({
-		msg: 'Intelligent search normalizing results',
-		rawCount: rawResults.length,
-		rawKeys: Object.keys(rawSearchResultsRecord),
-	});
-
-	const userRoomIdSet = new Set(userRoomIds);
-
-	// Extract IDs and scores from pipeline response.
-	const candidates = rawResults
-		.map((rawResult: unknown, index: number): IntelligentSearchCandidate => {
-			const result = asRecord(rawResult) as IntelligentSearchRawResult;
-			const metadata = asRecord(result.metadata);
-			const { rid, msgId } = extractIntelligentResultIds(result);
-			// Pipeline typically doesn't return message text, so we'll fetch it from the DB.
-			// Still capture it as fallback if the pipeline does return it.
-			const pipelineText = firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '';
-			const score = extractPipelineSimilarityScore(result, metadata);
-
-			return {
-				_id: msgId || `intelligent-${index}`,
-				rid,
-				msgId,
-				pipelineText,
-				...(typeof score === 'number' && { score }),
-			};
-		})
-		.filter((result) => {
-			// Must have at least a room or message ID to be useful.
-			if (!result.msgId && !result.rid) return false;
-			// Secondary security filter: if we have a room ID, verify user has access.
-			if (result.rid && !userRoomIdSet.has(result.rid)) {
-				SystemLogger.debug({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid: result.rid });
-				return false;
-			}
-			return true;
-		})
-		.slice(0, limit);
-
-	SystemLogger.debug({ msg: 'Intelligent search after filter', candidateCount: candidates.length });
+	const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, userRoomIds, limit, SystemLogger);
 
 	// Fetch actual messages from DB to get text, sender, timestamp.
 	const msgIds = candidates.map(({ msgId }) => msgId).filter(Boolean) as string[];
@@ -788,16 +618,6 @@ const normalizeIntelligentResults = async (
 	});
 };
 
-type IntelligentSearchFilters = {
-	rid?: string;
-	rids?: string[];
-	roomNames?: string[];
-	fromUsername?: string;
-	fromUsernames?: string[];
-	startDate?: Date;
-	endDate?: Date;
-};
-
 const getUserClassifications = async (userId: string): Promise<string[]> => {
 	const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
 	return Array.from(new Set(['user', ...(user?.roles || [])]));
@@ -814,43 +634,6 @@ const getAccessibleRoomIdsByName = async (userRoomIds: string[], roomNames: stri
 	);
 
 	return rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId && accessibleRoomIds.has(roomId)));
-};
-
-const buildIntelligentSearchFilters = (
-	userRoomIds: string[],
-	{ rid, rids, fromUsername, fromUsernames, startDate, endDate }: Omit<IntelligentSearchFilters, 'roomNames'>,
-): Record<string, unknown> | undefined => {
-	const requestedRoomIds = [...new Set([...(rids || []), ...(rid ? [rid] : [])])];
-	let accessibleRoomIds = userRoomIds;
-	if (requestedRoomIds.length) {
-		accessibleRoomIds = requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId));
-	}
-
-	if (!accessibleRoomIds.length) {
-		return undefined;
-	}
-
-	const filters: Record<string, unknown> = {
-		room_id: accessibleRoomIds.length === 1 ? { $eq: accessibleRoomIds[0] } : { $in: accessibleRoomIds },
-	};
-
-	const usernames = [
-		...new Set([...(fromUsernames || []), ...(fromUsername ? [fromUsername] : [])].map((username) => username.replace(/^@/, ''))),
-	];
-	if (usernames.length === 1) {
-		filters.username = { $eq: usernames[0] };
-	} else if (usernames.length > 1) {
-		filters.username = { $in: usernames };
-	}
-
-	if (startDate || endDate) {
-		filters.timestamp = {
-			...(startDate && { $ge: startDate.toISOString() }),
-			...(endDate && { $le: endDate.toISOString() }),
-		};
-	}
-
-	return filters;
 };
 
 const searchIntelligent = async (
@@ -882,7 +665,7 @@ const searchIntelligent = async (
 	}
 
 	const roomNameIds = await getAccessibleRoomIdsByName(userRoomIds, filters.roomNames);
-	const pipelineFilters = buildIntelligentSearchFilters(userRoomIds, {
+	const pipelineFilters = buildIntelligentSearchPipelineFilters(userRoomIds, {
 		...filters,
 		rids: [...(filters.rids || []), ...roomNameIds],
 	});
@@ -891,63 +674,23 @@ const searchIntelligent = async (
 		return [];
 	}
 
-	const minimumSimilarity = normalizeSimilarityPercent(settings.get('AI_Intelligent_Search_Min_Similarity_Percent'));
-	const queryTemplate = String(settings.get('AI_Intelligent_Search_Query_Template') || '');
 	const classifications = await getUserClassifications(userId);
-	// Apply query template if configured (e.g. "task: search result | query: {query}")
-	const formattedQuery = queryTemplate ? queryTemplate.replace('{query}', query) : query;
-	const url = `${baseUrl}/pipelines/${encodeURIComponent(pipelineId)}/search`;
-
-	SystemLogger.debug({
-		msg: 'Intelligent search request',
-		url,
-		formattedQuery,
-		userRoomCount: userRoomIds.length,
-		filterKeys: Object.keys(pipelineFilters),
-		classificationCount: classifications.length,
-		threshold: getSemanticDistanceThreshold(minimumSimilarity),
+	const json = await searchIntelligentPipeline({
+		query,
+		config: {
+			baseUrl,
+			pipelineId,
+			apiKey,
+			apiKeySecret,
+			queryTemplate: String(settings.get('AI_Intelligent_Search_Query_Template') || ''),
+			minimumSimilarityPercent: Number(settings.get('AI_Intelligent_Search_Min_Similarity_Percent') || 0),
+		},
+		classifications,
+		pipelineFilters,
+		limit,
+		fetch: aiServiceFetch,
+		logger: SystemLogger,
 	});
-
-	let response: Awaited<ReturnType<typeof fetch>>;
-	try {
-		response = await fetch(url, {
-			method: 'POST',
-			timeout: 10000,
-			// Admin-configured URL: SSRF validation disabled; admin is responsible for the configured endpoint
-			ignoreSsrfValidation: true,
-			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'X-API-KEY': apiKey,
-				'X-API-KEY-SECRET': apiKeySecret,
-			},
-			body: JSON.stringify({
-				query: formattedQuery,
-				type: 'similarity',
-				classification: {
-					classifications,
-					search_type: 2,
-				},
-				filters: pipelineFilters,
-				params: {
-					k: limit,
-					threshold: getSemanticDistanceThreshold(minimumSimilarity),
-				},
-			}),
-		});
-	} catch (fetchError: unknown) {
-		SystemLogger.warn({ msg: 'Intelligent search fetch failed', url, err: fetchError });
-		throw fetchError;
-	}
-
-	if (!response.ok) {
-		const body = await response.text().catch(() => '');
-		SystemLogger.warn({ msg: 'Intelligent search pipeline returned error', url, status: response.status, body });
-		return [];
-	}
-
-	const json = await response.json();
-	SystemLogger.debug({ msg: 'Intelligent search raw response received', resultKeys: Object.keys(json ?? {}) });
 
 	return normalizeIntelligentResults(json, userRoomIds, limit);
 };
@@ -1110,48 +853,14 @@ API.v1.get(
 		const apiKey = String(settings.get('AI_LLM_OpenAI_API_Key') || '');
 		const selectedModel = String(settings.get('AI_LLM_OpenAI_Model') || '');
 
-		if (!baseUrl || !apiKey) {
-			return API.v1.success({
-				data: selectedModel ? [{ key: selectedModel, label: selectedModel }] : [],
-			});
-		}
-
-		try {
-			const response = await fetch(`${baseUrl}/models`, {
-				method: 'GET',
-				timeout: 10000,
-				ignoreSsrfValidation: true,
-				headers: {
-					Accept: 'application/json',
-					Authorization: `Bearer ${apiKey}`,
-				},
-			});
-
-			if (!response.ok) {
-				SystemLogger.warn({ msg: 'AI LLM model lookup failed', status: response.status });
-				return API.v1.success({
-					data: selectedModel ? [{ key: selectedModel, label: selectedModel }] : [],
-				});
-			}
-
-			const json = (await response.json()) as { data?: { id?: string }[] };
-			const data = (json.data || [])
-				.map(({ id }) => id)
-				.filter((id): id is string => Boolean(id))
-				.sort((a, b) => a.localeCompare(b))
-				.map((id) => ({ key: id, label: id }));
-
-			if (selectedModel && !data.some(({ key }) => key === selectedModel)) {
-				data.unshift({ key: selectedModel, label: selectedModel });
-			}
-
-			return API.v1.success({ data });
-		} catch (error) {
-			SystemLogger.warn({ msg: 'AI LLM model lookup request failed', err: error });
-			return API.v1.success({
-				data: selectedModel ? [{ key: selectedModel, label: selectedModel }] : [],
-			});
-		}
+		return API.v1.success({
+			data: await listOpenAICompatibleModels({
+				provider: { baseUrl, apiKey },
+				selectedModel,
+				fetch: aiServiceFetch,
+				logger: SystemLogger,
+			}),
+		});
 	},
 );
 

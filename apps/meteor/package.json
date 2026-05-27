@@ -93,6 +93,7 @@
 		"@rocket.chat/abac": "workspace:^",
 		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/agenda": "workspace:^",
+		"@rocket.chat/ai-search": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps": "workspace:^",
 		"@rocket.chat/apps-engine": "workspace:^",

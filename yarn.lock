@@ -8788,6 +8788,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/ai-search@workspace:^, @rocket.chat/ai-search@workspace:packages/ai-search":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ai-search@workspace:packages/ai-search"
+  dependencies:
+    "@rocket.chat/tsconfig": "workspace:*"
+    eslint: "npm:~9.39.4"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:packages/api-client":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/api-client@workspace:packages/api-client"
@@ -9761,6 +9771,7 @@ __metadata:
     "@rocket.chat/abac": "workspace:^"
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
+    "@rocket.chat/ai-search": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/apps-engine": "workspace:^"
