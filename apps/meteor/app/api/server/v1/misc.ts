@@ -341,7 +341,7 @@ API.v1.get(
 );
 
 const spotlightResponseSchema = ajv.compile<{
-	users: (Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'> & {
+	users: (Pick<IUser, 'name' | '_id' | 'username'> & Partial<Pick<IUser, 'status' | 'statusText' | 'avatarETag'>> & {
 		nickname?: string;
 		outside?: boolean;
 	})[];
@@ -361,7 +361,7 @@ const spotlightResponseSchema = ajv.compile<{
 					statusText: { type: 'string' },
 					avatarETag: { type: 'string' },
 				},
-				required: ['_id', 'name', 'username', 'status'],
+				required: ['_id', 'name', 'username'],
 				additionalProperties: true,
 			},
 		},

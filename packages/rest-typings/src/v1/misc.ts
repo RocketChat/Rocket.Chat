@@ -224,8 +224,8 @@ export type MiscEndpoints = {
 
 	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
-			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> &
-				Partial<Pick<IUser, 'statusText' | 'avatarETag'>> & { nickname?: string; outside?: boolean })[];
+			users: (Pick<Required<IUser>, 'name' | '_id' | 'username'> &
+				Partial<Pick<IUser, 'status' | 'statusText' | 'avatarETag'>> & { nickname?: string; outside?: boolean })[];
 			rooms: (Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'> & { uids?: string[]; usernames?: string[]; fname?: string })[];
 		};
 	};
