@@ -179,6 +179,8 @@ export type UsersEndpoints = {
 		GET: (params: { fullExport?: 'true' | 'false' }) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
+			url: string | null;
+			pendingOperationsBeforeMyRequest: number;
 		};
 	};
 
