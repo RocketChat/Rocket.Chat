@@ -1,0 +1,20 @@
+ee/packages/federation-matrix/src/api/_matrix/send-leave.ts
+  h_4c386397e672f4 5,95
+ee/packages/federation-matrix/src/api/logger.ts
+  h_4c386397e672f4 1-3
+ee/packages/federation-matrix/src/api/_matrix/invite.ts
+  h_4c386397e672f4 7
+ee/packages/federation-matrix/src/api/_matrix/make-leave.ts
+  h_4c386397e672f4 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "222ffe5f504edb52afbdb3966d75068bea524d11",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
