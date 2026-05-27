@@ -41,7 +41,7 @@ const DiscussionListItem = ({
 	name = username,
 	ts,
 	dcount,
-	formatDate = (date: any) => date,
+	formatDate,
 	dlm,
 	className = [],
 	emoji,

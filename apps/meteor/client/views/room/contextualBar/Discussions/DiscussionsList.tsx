@@ -1,8 +1,7 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarContent,
@@ -16,16 +15,16 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent, RefObject } from 'react';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import DiscussionsListRow from './DiscussionsListRow';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { VirtualList } from '../../../../components/VirtualList';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 type DiscussionsListProps = {
 	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	isPending: boolean;
 	isSuccess: boolean;
 	onClose: () => void;
@@ -56,14 +55,10 @@ function DiscussionsList({
 	const onClick = useCallback(
 		(e: MouseEvent<HTMLElement>) => {
 			const { drid } = e.currentTarget.dataset;
-			if (drid) goToRoom(drid);
+			if (drid) void goToRoom(drid);
 		},
 		[goToRoom],
 	);
-
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
-		debounceDelay: 200,
-	});
 
 	return (
 		<ContextualbarDialog>
@@ -83,7 +78,7 @@ function DiscussionsList({
 					addon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box pi={24} pb={12}>
@@ -99,19 +94,17 @@ function DiscussionsList({
 					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<VirtualizedScrollbars>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
+							<Box h='full' w='full' style={{ minHeight: 0 }}>
+								<VirtualList
+									items={discussions}
 									totalCount={itemCount}
-									endReached={isPending ? () => undefined : (start) => loadMoreItems(start, Math.min(50, itemCount - start))}
 									overscan={25}
-									data={discussions}
-									itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
+									onEndReached={isPending ? undefined : loadMoreItems}
+									renderItem={(discussion) => (
+										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+									)}
 								/>
-							</VirtualizedScrollbars>
+							</Box>
 						)}
 					</Box>
 				)}
