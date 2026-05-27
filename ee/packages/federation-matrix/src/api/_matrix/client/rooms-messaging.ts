@@ -1,7 +1,7 @@
-import { api, FederationMatrix } from '@rocket.chat/core-services';
+import { api, FederationMatrix, Room } from '@rocket.chat/core-services';
 import type { FileMessageContent, FileMessageType, PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
@@ -15,6 +15,7 @@ import {
 	license,
 	tags,
 } from './_shared';
+import { logger } from '../../logger';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const SendEventParamsSchema = {
@@ -146,8 +147,6 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				const eventType = c.req.param('eventType');
 				const senderId = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
-
-				console.log('/v3/rooms/:roomId/send/:eventType/:txnId', { roomId, eventType, senderId, body });
 
 				if (eventType !== 'm.room.message') {
 					// TODO: support additional event types (m.reaction, m.room.redaction, etc.)
@@ -361,6 +360,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 					200: isEmptyObjectResponseProps,
 					401: isMatrixErrorProps,
 					403: isMatrixErrorProps,
+					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
 				},
 				tags,
@@ -369,20 +369,39 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const eventId = c.req.param('eventId');
 				const senderId = c.get('impersonatedUserId') as string;
 
 				try {
-					await federationSDK.sendReadReceipt({
-						roomId,
-						userId: senderId,
-						eventIds: [eventId] as never,
-					});
+					const matrixUser = await Users.findOneByUsername(senderId);
+					if (!matrixUser) {
+						return {
+							statusCode: 404,
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'User not found',
+							},
+						};
+					}
+
+					const matrixRoom = await Rooms.findOne({ 'federation.mrid': roomId });
+					if (!matrixRoom) {
+						return {
+							statusCode: 404,
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Room not found',
+							},
+						};
+					}
+
+					await Room.markAsRead(matrixRoom, matrixUser._id);
+
 					return {
 						statusCode: 200,
 						body: {},
 					};
-				} catch (error) {
+				} catch (err) {
+					logger.error({ msg: 'Failed to send read receipt', roomId, senderId, err });
 					return {
 						statusCode: 500,
 						body: {
