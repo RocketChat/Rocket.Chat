@@ -167,20 +167,24 @@ const UserInfo = ({
 					)}
 
 					{phones && phones.length > 0 && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							{phones.map((p) => (
-								<InfoPanelText key={p.number} display='flex' flexDirection='row' alignItems='center'>
-									<Box is='a' withTruncatedText href={`tel:${p.number}`}>
-										{formatPhoneNumber(p.number)}
-									</Box>
-									{p.label && (
-										<Margins inline={4}>
-											<Tag>{p.label}</Tag>
-										</Margins>
-									)}
-								</InfoPanelText>
-							))}
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>
+								<Box is='ul' display='flex' flexDirection='column' gap={4}>
+									{phones.map((p) => (
+										<Box is='li' key={p.number} display='flex' flexDirection='row' alignItems='center'>
+											<Box is='a' withTruncatedText href={`tel:${p.number}`}>
+												<span>{formatPhoneNumber(p.number)}</span>
+												{p.label && (
+													<Tag mis={4} display='inline-flex'>
+														{p.label}
+													</Tag>
+												)}
+											</Box>
+										</Box>
+									))}
+								</Box>
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 
