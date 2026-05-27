@@ -808,15 +808,12 @@ const getAccessibleRoomIdsByName = async (userRoomIds: string[], roomNames: stri
 		return [];
 	}
 
-	const rooms = await Rooms.find(
-		{
-			_id: { $in: userRoomIds },
-			$or: [{ name: { $in: roomNames } }, { fname: { $in: roomNames } }],
-		},
-		{ projection: { _id: 1 } },
-	).toArray();
+	const accessibleRoomIds = new Set(userRoomIds);
+	const rooms = await Promise.all(
+		Array.from(new Set(roomNames)).map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })),
+	);
 
-	return rooms.map(({ _id }) => _id);
+	return rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId && accessibleRoomIds.has(roomId)));
 };
 
 const buildIntelligentSearchFilters = (

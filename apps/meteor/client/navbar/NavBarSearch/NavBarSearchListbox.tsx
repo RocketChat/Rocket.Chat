@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Button, Chip, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -12,7 +12,8 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
-import { useSearchItems } from './hooks/useSearchItems';
+import type { NavBarSearchFormValues } from './hooks/useSearchItems';
+import { mergeSearchFilters, parseSearchFilterText, serializeSearchQuery, useSearchItems } from './hooks/useSearchItems';
 import { useListboxNavigation } from './hooks/useSearchNavigation';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
@@ -29,15 +30,16 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, setFocus, setValue, watch } = useFormContext<{ filterText: string }>();
-	const { filterText } = watch();
+	const { getValues, resetField, setFocus, setValue, watch } = useFormContext<NavBarSearchFormValues>();
+	const { filterText, appliedFilters } = watch();
 
 	const debouncedFilter = useDebouncedValue(filterText, 500);
 
 	const handleSelect = useCallback(() => {
 		state.close();
 		resetField('filterText');
-	}, [resetField, state]);
+		setValue('appliedFilters', { roomNames: [], rids: [], fromUsernames: [] });
+	}, [resetField, setValue, state]);
 
 	const {
 		data: items = {
@@ -50,35 +52,28 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		},
 		isLoading,
 		isFetching,
-	} = useSearchItems(debouncedFilter);
+	} = useSearchItems(debouncedFilter, appliedFilters);
 	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
 
 	const handleOpenAISearch = useCallback(() => {
+		const query = serializeSearchQuery(filterText, appliedFilters);
 		router.navigate({
 			name: 'search',
-			search: filterText?.trim() ? { q: filterText.trim() } : {},
+			search: query ? { q: query } : {},
 		});
 		state.close();
-	}, [filterText, router, state]);
+	}, [appliedFilters, filterText, router, state]);
 
 	const handleFilterSuggestion = useCallback(
 		(event: MouseEvent, value: string) => {
 			event.preventDefault();
 			event.stopPropagation();
-			setValue('filterText', value, { shouldDirty: true });
+			const { searchText, filters } = parseSearchFilterText(value);
+			setValue('appliedFilters', mergeSearchFilters(getValues('appliedFilters'), filters), { shouldDirty: true });
+			setValue('filterText', searchText, { shouldDirty: true });
 			setFocus('filterText');
 		},
-		[setFocus, setValue],
-	);
-
-	const handleRemoveFilter = useCallback(
-		(event: MouseEvent, value: string) => {
-			event.preventDefault();
-			event.stopPropagation();
-			setValue('filterText', value, { shouldDirty: true });
-			setFocus('filterText');
-		},
-		[setFocus, setValue],
+		[getValues, setFocus, setValue],
 	);
 
 	return (
@@ -98,32 +93,6 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} />
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
-					{items.appliedFilters.length > 0 && (
-						<Box
-							display='flex'
-							flexWrap='wrap'
-							alignItems='center'
-							pi={12}
-							pbs={8}
-							pbe={8}
-							style={{ gap: 4 }}
-							borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
-						>
-							<Box color='hint' fontScale='c1' mie={4}>
-								{t('Filters')}:
-							</Box>
-							{items.appliedFilters.map((filter) => (
-								<Chip
-									key={filter.key}
-									height='x20'
-									value={filter.label}
-									onClick={(event) => handleRemoveFilter(event, filter.nextFilterText)}
-								>
-									{filter.label}
-								</Chip>
-							))}
-						</Box>
-					)}
 					{items.intelligent.length > 0 && (
 						<Box
 							display='flex'

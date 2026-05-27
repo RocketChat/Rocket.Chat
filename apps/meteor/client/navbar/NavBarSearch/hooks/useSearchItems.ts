@@ -40,6 +40,11 @@ export type SearchFilters = {
 	fromUsername?: string;
 };
 
+export type NavBarSearchFormValues = {
+	filterText: string;
+	appliedFilters: SearchFilters;
+};
+
 export type SearchFilterSuggestion = {
 	key: string;
 	title: string;
@@ -50,7 +55,7 @@ export type SearchFilterSuggestion = {
 export type SearchFilterChip = {
 	key: string;
 	label: string;
-	nextFilterText: string;
+	values: string[];
 };
 
 export const emptySearchFilters = (): SearchFilters => ({ roomNames: [], rids: [], fromUsernames: [] });
@@ -66,29 +71,50 @@ const FILTER_PATTERN = /(?:^|\s)(in|from|after|before):(?:"([^"]*)"|(\S+))/gi;
 
 const normalizeFilterText = (value: string): string => value.replace(/\s+/g, ' ').trimStart();
 
+const splitFilterValues = (value: string): string[] =>
+	value
+		.split(',')
+		.map((item) => item.replace(/^[@#]/, '').trim())
+		.filter(Boolean);
+
+const unique = (items: string[]): string[] => Array.from(new Set(items));
+
+export const mergeSearchFilters = (...filtersList: SearchFilters[]): SearchFilters =>
+	filtersList.reduce<SearchFilters>(
+		(result, filters) => ({
+			roomNames: unique([...result.roomNames, ...filters.roomNames]),
+			rids: unique([...result.rids, ...filters.rids]),
+			fromUsernames: unique([...result.fromUsernames, ...filters.fromUsernames]),
+			startDate: filters.startDate || result.startDate,
+			endDate: filters.endDate || result.endDate,
+			rid: filters.rid || result.rid,
+			fromUsername: filters.fromUsername || result.fromUsername,
+		}),
+		emptySearchFilters(),
+	);
+
 export const parseSearchFilterText = (filterText: string): { searchText: string; filters: SearchFilters } => {
 	const filters: SearchFilters = emptySearchFilters();
 	const searchText = filterText
 		.replace(FILTER_PATTERN, (_match, key: string, quotedValue?: string, bareValue?: string) => {
-			const value = String(quotedValue || bareValue || '')
-				.replace(/^[@#]/, '')
-				.trim();
-			if (!value) {
+			const value = String(quotedValue || bareValue || '').trim();
+			const values = splitFilterValues(value);
+			if (!values.length) {
 				return ' ';
 			}
 
 			switch (key.toLowerCase()) {
 				case 'in':
-					filters.roomNames.push(value);
+					filters.roomNames.push(...values);
 					break;
 				case 'from':
-					filters.fromUsernames.push(value);
+					filters.fromUsernames.push(...values);
 					break;
 				case 'after':
-					filters.startDate = value;
+					filters.startDate = values[0];
 					break;
 				case 'before':
-					filters.endDate = value;
+					filters.endDate = values[0];
 					break;
 			}
 
@@ -98,6 +124,51 @@ export const parseSearchFilterText = (filterText: string): { searchText: string;
 		.trim();
 
 	return { searchText, filters };
+};
+
+export const extractCompletedSearchFilters = (
+	filterText: string,
+): { searchText: string; filters: SearchFilters; hasCompletedFilters: boolean } => {
+	const filters: SearchFilters = emptySearchFilters();
+	let hasCompletedFilters = false;
+	const trimmedLength = filterText.trimEnd().length;
+	const shouldKeepTrailingTokenEditable = Array.from(filterText.matchAll(FILTER_PATTERN)).length <= 1;
+	const searchText = filterText
+		.replace(FILTER_PATTERN, (match, key: string, quotedValue?: string, bareValue?: string, offset?: number) => {
+			const start = typeof offset === 'number' ? offset : 0;
+			const end = start + match.length;
+			const isActiveToken = shouldKeepTrailingTokenEditable && end >= trimmedLength && !/\s$/.test(filterText);
+			if (isActiveToken) {
+				return match;
+			}
+
+			const values = splitFilterValues(String(quotedValue || bareValue || ''));
+			if (!values.length) {
+				return ' ';
+			}
+
+			hasCompletedFilters = true;
+			switch (key.toLowerCase()) {
+				case 'in':
+					filters.roomNames.push(...values);
+					break;
+				case 'from':
+					filters.fromUsernames.push(...values);
+					break;
+				case 'after':
+					filters.startDate = values[0];
+					break;
+				case 'before':
+					filters.endDate = values[0];
+					break;
+			}
+
+			return ' ';
+		})
+		.replace(/\s+/g, ' ')
+		.trimStart();
+
+	return { searchText, filters, hasCompletedFilters };
 };
 
 const getActiveFilter = (filterText: string): ActiveFilter | undefined => {
@@ -137,28 +208,42 @@ const getFilterChipLabel = (key: ActiveFilter['key'], value: string): string => 
 	}
 };
 
-export const buildAppliedFilterChips = (filterText: string): SearchFilterChip[] =>
-	Array.from(filterText.matchAll(FILTER_PATTERN))
-		.map((match) => {
-			const key = match[1].toLowerCase() as ActiveFilter['key'];
-			const value = String(match[2] || match[3] || '')
-				.replace(/^[@#]/, '')
-				.trim();
+export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChip[] =>
+	[
+		filters.roomNames.length && {
+			key: 'in',
+			values: filters.roomNames,
+			label: `in: ${filters.roomNames.map((roomName) => `#${roomName}`).join(', ')}`,
+		},
+		filters.fromUsernames.length && {
+			key: 'from',
+			values: filters.fromUsernames,
+			label: `from: ${filters.fromUsernames.map((username) => `@${username}`).join(', ')}`,
+		},
+		filters.startDate && {
+			key: 'after',
+			values: [filters.startDate],
+			label: getFilterChipLabel('after', filters.startDate),
+		},
+		filters.endDate && {
+			key: 'before',
+			values: [filters.endDate],
+			label: getFilterChipLabel('before', filters.endDate),
+		},
+	].filter(Boolean) as SearchFilterChip[];
 
-			if (!value || match.index === undefined) {
-				return undefined;
-			}
-
-			const start = match.index;
-			const end = start + match[0].length;
-
-			return {
-				key: `${key}-${value}-${start}`,
-				label: getFilterChipLabel(key, value),
-				nextFilterText: normalizeFilterText(`${filterText.slice(0, start)} ${filterText.slice(end)}`),
-			};
-		})
-		.filter(Boolean) as SearchFilterChip[];
+export const serializeSearchQuery = (searchText: string, filters: SearchFilters): string =>
+	normalizeFilterText(
+		[
+			...filters.roomNames.map((roomName) => formatFilterValue('in', roomName)),
+			...filters.fromUsernames.map((username) => formatFilterValue('from', username)),
+			filters.startDate && formatFilterValue('after', filters.startDate),
+			filters.endDate && formatFilterValue('before', filters.endDate),
+			searchText,
+		]
+			.filter(Boolean)
+			.join(' '),
+	);
 
 const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
 
@@ -245,19 +330,26 @@ export const buildRoomSearchQuery = (value: string, mention?: string) => {
 	};
 };
 
-export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchItems, Error> => {
+export const useSearchItems = (
+	filterText: string,
+	appliedSearchFilters: SearchFilters = emptySearchFilters(),
+): UseQueryResult<NavBarSearchItems, Error> => {
 	const getSpotlight = useMethod('spotlight');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
-	const { searchText, filters } = useMemo(
-		() => (hasIntelligentSearchLicense ? parseSearchFilterText(filterText) : { searchText: filterText, filters: emptySearchFilters() }),
-		[filterText, hasIntelligentSearchLicense],
-	);
+	const { searchText, filters } = useMemo(() => {
+		if (!hasIntelligentSearchLicense) {
+			return { searchText: filterText, filters: emptySearchFilters() };
+		}
+
+		const parsed = parseSearchFilterText(filterText);
+		return { searchText: parsed.searchText, filters: mergeSearchFilters(appliedSearchFilters, parsed.filters) };
+	}, [appliedSearchFilters, filterText, hasIntelligentSearchLicense]);
 	const appliedFilters = useMemo(
-		() => (hasIntelligentSearchLicense ? buildAppliedFilterChips(filterText) : []),
-		[filterText, hasIntelligentSearchLicense],
+		() => (hasIntelligentSearchLicense ? buildAppliedFilterChips(filters) : []),
+		[filters, hasIntelligentSearchLicense],
 	);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
 	const activeFilter = useMemo(
