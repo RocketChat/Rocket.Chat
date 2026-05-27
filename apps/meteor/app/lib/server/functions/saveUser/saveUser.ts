@@ -184,7 +184,11 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (Array.isArray(userData.phones)) {
-			updater.set('phones', userData.phones);
+			if (userData.phones.length === 0) {
+				updater.unset('phones');
+			} else {
+				updater.set('phones', userData.phones);
+			}
 		}
 
 		if (typeof userData.verified === 'boolean') {

@@ -124,6 +124,10 @@ async function saveUserProfile(
 			user._id,
 			settings.phones.map(({ verified: _, ...phone }) => phone),
 		);
+
+		if (settings.phones.length === 0) {
+			unset.phones = true;
+		}
 	}
 
 	if (user && settings.email) {

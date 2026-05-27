@@ -126,9 +126,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					statusType,
 					nickname,
 					bio,
+					phones,
 				},
 				customFields,
-				phones,
 			});
 
 			await updateAvatar();

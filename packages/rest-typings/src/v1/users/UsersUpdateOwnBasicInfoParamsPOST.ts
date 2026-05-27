@@ -13,9 +13,9 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		statusType?: string;
 		currentPassword?: string;
 		newPassword?: string;
+		phones?: IUserPhoneNumber[];
 	};
 	customFields?: Record<string, unknown>;
-	phones?: IUserPhoneNumber[];
 };
 
 const UsersUpdateOwnBasicInfoParamsPostSchema = {
@@ -60,6 +60,20 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 					type: 'string',
 					nullable: true,
 				},
+				phones: {
+					type: 'array',
+					nullable: true,
+					items: {
+						type: 'object',
+						properties: {
+							number: { type: 'string', format: 'basic_phone_number' },
+							label: { type: 'string', nullable: true, maxLength: 50 },
+							primary: { type: 'boolean', nullable: true },
+						},
+						required: ['number'],
+						additionalProperties: false,
+					},
+				},
 			},
 			required: [],
 			additionalProperties: false,
@@ -67,20 +81,6 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 		customFields: {
 			type: 'object',
 			nullable: true,
-		},
-		phones: {
-			type: 'array',
-			nullable: true,
-			items: {
-				type: 'object',
-				properties: {
-					number: { type: 'string', format: 'basic_phone_number' },
-					label: { type: 'string', nullable: true, maxLength: 50 },
-					primary: { type: 'boolean', nullable: true },
-				},
-				required: ['number'],
-				additionalProperties: false,
-			},
 		},
 	},
 	required: ['data'],
