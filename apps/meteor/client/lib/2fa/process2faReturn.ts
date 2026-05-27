@@ -141,12 +141,13 @@ export const invokeTwoFactorModal = async (
 			props: {
 				...props,
 				onConfirm: async (code: string, method: string): Promise<void> => {
+					const actualCode = method === 'password' ? SHA256(code) : code;
 					if (validateCode) {
-						await validateCode(code, method);
+						await validateCode(actualCode, method);
 					}
 					isResolved = true;
 					imperativeModal.close();
-					resolve(method === 'password' ? SHA256(code) : code);
+					resolve(actualCode);
 				},
 				onClose: (): void => {
 					if (isClosed) {

@@ -42,7 +42,8 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			return;
 		}
 		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
-		if (message && isThreadMessage(message) && !isThreadMainMessage(message)) {
+		// If tshow is true, there is a preview on the main list, in this case we scroll to it
+		if (message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true) {
 			setIsJumpingToMessage(false);
 			return;
 		}
