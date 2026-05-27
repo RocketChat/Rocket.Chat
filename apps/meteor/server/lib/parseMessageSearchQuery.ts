@@ -166,6 +166,75 @@ class MessageSearchQueryParser {
 	}
 
 	/**
+	 * Filter on attachment field titles.
+	 */
+	private consumeFieldTitle(text: string) {
+		return text.replace(/field-title:"([^"]+)"|field-title:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
+
+			this.query['attachments.fields.title'] = {
+				$regex: escapeRegExp(tag.trim()),
+				$options: 'i',
+			};
+
+			return '';
+		});
+	}
+
+	/**
+	 * Filter on attachment field values.
+	 */
+	private consumeFieldValue(text: string) {
+		return text.replace(/field-value:"([^"]+)"|field-value:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
+
+			this.query['attachments.fields.value'] = {
+				$regex: escapeRegExp(tag.trim()),
+				$options: 'i',
+			};
+
+			return '';
+		});
+	}
+
+	/**
+	 * Filter on attachment fields (searches both title and value).
+	 */
+	private consumeField(text: string) {
+		return text.replace(/field:"([^"]+)"|field:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
+
+			const regex = {
+				$regex: escapeRegExp(tag.trim()),
+				$options: 'i',
+			};
+
+			const fieldOrCondition = {
+				$or: [
+					{ 'attachments.fields.title': regex },
+					{ 'attachments.fields.value': regex },
+				],
+			};
+
+			if (this.query.$or) {
+				this.query.$and = this.query.$and || [];
+				this.query.$and.push({ $or: this.query.$or });
+				this.query.$and.push(fieldOrCondition);
+				delete this.query.$or;
+			} else if (this.query.$and) {
+				this.query.$and.push(fieldOrCondition);
+			} else {
+				this.query.$or = fieldOrCondition.$or;
+			}
+
+			return '';
+		});
+	}
+
+	/**
 	 * Filter on messages that have been sent before a date.
 	 */
 	private consumeBefore(text: string) {
@@ -255,10 +324,30 @@ class MessageSearchQueryParser {
 				$options: r[2],
 			};
 		} else if (this.forceRegex) {
-			this.query.msg = {
+			const regex = {
 				$regex: text,
 				$options: 'i',
 			};
+			const fieldOrCondition = {
+				$or: [
+					{ msg: regex },
+					{ 'attachments.description': regex },
+					{ 'attachments.title': regex },
+					{ 'attachments.fields.title': regex },
+					{ 'attachments.fields.value': regex },
+				],
+			};
+
+			if (this.query.$or) {
+				this.query.$and = this.query.$and || [];
+				this.query.$and.push({ $or: this.query.$or });
+				this.query.$and.push(fieldOrCondition);
+				delete this.query.$or;
+			} else if (this.query.$and) {
+				this.query.$and.push(fieldOrCondition);
+			} else {
+				this.query.$or = fieldOrCondition.$or;
+			}
 		} else {
 			this.query.$text = {
 				$search: text,
@@ -284,6 +373,9 @@ class MessageSearchQueryParser {
 			(input: string) => this.consumeLabel(input),
 			(input: string) => this.consumeFileDescription(input),
 			(input: string) => this.consumeFileTitle(input),
+			(input: string) => this.consumeFieldTitle(input),
+			(input: string) => this.consumeFieldValue(input),
+			(input: string) => this.consumeField(input),
 			(input: string) => this.consumeBefore(input),
 			(input: string) => this.consumeAfter(input),
 			(input: string) => this.consumeOn(input),
