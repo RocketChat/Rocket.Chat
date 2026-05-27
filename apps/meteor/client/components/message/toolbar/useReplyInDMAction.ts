@@ -71,11 +71,12 @@ export const useReplyInDMAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'communication',
 		action() {
+			const { msg: _, ...searchParameters } = router.getSearchParameters();
 			roomCoordinator.openRouteLink(
 				'd',
 				{ name: message.u.username },
 				{
-					...router.getSearchParameters(),
+					...searchParameters,
 					reply: message._id,
 				},
 			);
