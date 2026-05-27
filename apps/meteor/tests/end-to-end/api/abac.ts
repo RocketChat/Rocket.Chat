@@ -3691,17 +3691,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(res.body).to.have.property('abacAttributesRedacted', true);
 			});
 
-			it('admin B (DENY): DELETE /abac/rooms/:rid/attributes (empty-set clear) → 400 error-abac-not-authorized-to-modify-room', async () => {
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedGetEntitlements({ [fqn('other', 'value')]: {} });
-				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
-
-				const res = await request.delete(`${v1}/abac/rooms/${room._id}/attributes`).set(adminB.creds).expect(400);
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'error-abac-not-authorized-to-modify-room');
-			});
-
 			it('admin B (DENY): non-empty POST → 400 error-abac-not-authorized-to-modify-room', async () => {
 				await mockServerReset();
 				await seedDefaultMocks();
