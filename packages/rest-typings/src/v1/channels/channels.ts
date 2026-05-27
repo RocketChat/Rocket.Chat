@@ -160,7 +160,7 @@ export type ChannelsEndpoints = {
 	};
 	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
-			mentions: IUser[];
+			mentions: IMessage[];
 		}>;
 	};
 	'/v1/channels.moderators': {
