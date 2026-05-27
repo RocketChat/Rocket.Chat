@@ -2,7 +2,6 @@ import { Box, Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat
 import type { ReactNode } from 'react';
 import { useRef } from 'react';
 
-/** Marker on portaled tooltip DOM so TooltipProvider can ignore hover inside the bubble. */
 export const RC_PORTAL_TOOLTIP_ATTR = 'data-rc-portal-tooltip';
 
 export const RC_PORTAL_TOOLTIP_SELECTOR = `[${RC_PORTAL_TOOLTIP_ATTR}]`;

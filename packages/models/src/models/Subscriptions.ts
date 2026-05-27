@@ -106,7 +106,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		excludeUserId: string | undefined,
 		limit: number,
 	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>> {
-		const safeLimit = Math.min(Math.max(limit, 1), 100);
+		const safeLimit = Math.min(Math.max(Math.trunc(limit) || 1, 1), 100);
 
 		const pipeline = [
 			{

@@ -10,15 +10,15 @@ type TooltipProviderProps = {
 	ownerDocument?: Document;
 };
 
-const resolveMouseEventTarget = (raw: EventTarget | null): HTMLElement | null => {
+const resolveMouseEventTarget = (raw: EventTarget | null): Element | null => {
 	if (!raw) {
 		return null;
 	}
-	if (raw instanceof HTMLElement) {
-		return raw;
+	if ((raw as Node).nodeType === Node.ELEMENT_NODE) {
+		return raw as Element;
 	}
-	if (raw instanceof Text) {
-		return raw.parentElement;
+	if ((raw as Node).nodeType === Node.TEXT_NODE) {
+		return (raw as Text).parentElement;
 	}
 	return null;
 };
@@ -44,9 +44,6 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 			open: (tooltip: ReactNode, anchor: HTMLElement): void => {
 				const previousAnchor = lastAnchor.current;
 				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
-				// Opening must not be debounced: custom tooltips use a 300ms debounced state, but the
-				// document mouseover handler uses a shorter gap timer before close — without flush the
-				// portal is not in the DOM yet, so hover cannot cancel the scheduled close.
 				setTooltip.flush();
 				lastAnchor.current = anchor;
 				if (previousAnchor) {
@@ -88,17 +85,11 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				return;
 			}
 
-			// Still inside the anchor subtree for the currently open custom tooltip (read count,
-			// reactions, etc.). Must run before `[data-tooltip]` logic — empty `data-tooltip=""`
-			// otherwise triggers an immediate close.
 			if (lastAnchor.current?.contains(target)) {
 				cancelGapCloseTimer();
 				return;
 			}
 
-			// Custom tooltips opened via TooltipContext.open() render inline. The global
-			// handler below only understands `[title]` / `[data-tooltip]` anchors; without these
-			// guards, hovering the tooltip bubble closes it (no matching anchor).
 			if (target.closest(RC_PORTAL_TOOLTIP_SELECTOR) || target.closest('[role="tooltip"]')) {
 				cancelGapCloseTimer();
 				return;

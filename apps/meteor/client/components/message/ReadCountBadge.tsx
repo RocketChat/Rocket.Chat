@@ -78,12 +78,10 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 
 	const readCount = data?.readCount ?? 0;
 
-	// Keep this minimal: show only on the current user's own messages.
 	if (!uid || uid !== senderId) {
 		return null;
 	}
 
-	// Exclude DMs
 	if (room.t === 'd') {
 		return null;
 	}
@@ -91,8 +89,6 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 	if (readCount <= 0) {
 		return null;
 	}
-
-	// No onMouseLeave close timer: TooltipProvider handles gap-to-portal; a badge timer raced with hover.
 
 	return (
 		<Box
