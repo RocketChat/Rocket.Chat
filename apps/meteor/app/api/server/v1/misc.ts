@@ -341,10 +341,11 @@ API.v1.get(
 );
 
 const spotlightResponseSchema = ajv.compile<{
-	users: (Pick<IUser, 'name' | '_id' | 'username'> & Partial<Pick<IUser, 'status' | 'statusText' | 'avatarETag'>> & {
-		nickname?: string;
-		outside?: boolean;
-	})[];
+	users: (Pick<IUser, 'name' | '_id' | 'username'> &
+		Partial<Pick<IUser, 'status' | 'statusText' | 'avatarETag'>> & {
+			nickname?: string;
+			outside?: boolean;
+		})[];
 	rooms: Pick<IRoom, 't' | 'name' | 'lastMessage' | '_id'>[];
 }>({
 	type: 'object',
