@@ -546,13 +546,17 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
+			const msg =
+				'fileId' in this.bodyParams
+					? await Messages.getMessageByFileId(this.bodyParams.fileId)
+					: await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+				const ref = 'fileId' in this.bodyParams ? `the file id of "${this.bodyParams.fileId}"` : `the id of "${this.bodyParams.msgId}"`;
+				return API.v1.failure(`No message found with ${ref}.`);
 			}
 
-			if (this.bodyParams.roomId !== msg.rid) {
+			if ('roomId' in this.bodyParams && this.bodyParams.roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 

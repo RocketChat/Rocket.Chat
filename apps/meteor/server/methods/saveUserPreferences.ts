@@ -53,6 +53,7 @@ type UserPreferences = {
 	notifyCalendarEvents: boolean;
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
+	utcOffset?: number;
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -128,6 +129,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		notifyCalendarEvents: Match.Optional(Boolean),
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
+		utcOffset: Match.Optional(Number),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 
@@ -149,6 +151,12 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 	if (settings.language != null) {
 		await Users.setLanguage(user._id, settings.language);
+	}
+
+	// utcOffset lives at the user-document root (not under settings.preferences)
+	if (settings.utcOffset != null) {
+		await Users.setUtcOffset(user._id, settings.utcOffset);
+		delete settings.utcOffset;
 	}
 
 	// Keep compatibility with old values

@@ -6,6 +6,8 @@ import {
 	ajv,
 	isShieldSvgProps,
 	isSpotlightProps,
+	parseSpotlightUsernames,
+	parseSpotlightType,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
@@ -339,7 +341,10 @@ API.v1.get(
 );
 
 const spotlightResponseSchema = ajv.compile<{
-	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+	users: (Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'> & {
+		nickname?: string;
+		outside?: boolean;
+	})[];
 	rooms: Pick<IRoom, 't' | 'name' | 'lastMessage' | '_id'>[];
 }>({
 	type: 'object',
@@ -392,9 +397,15 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const { query } = this.queryParams;
+		const { query, usernames, type, rid } = this.queryParams;
 
-		const result = await spotlightMethod({ text: query, userId: this.userId });
+		const result = await spotlightMethod({
+			text: query,
+			userId: this.userId,
+			usernames: parseSpotlightUsernames(usernames),
+			type: parseSpotlightType(type),
+			rid,
+		});
 
 		return API.v1.success(result);
 	},

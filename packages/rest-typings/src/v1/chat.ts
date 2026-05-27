@@ -218,11 +218,16 @@ const ChatSyncThreadsListSchema = {
 
 export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatSyncThreadsListSchema);
 
-type ChatDelete = {
-	msgId: IMessage['_id'];
-	roomId: IRoom['_id'];
-	asUser?: boolean;
-};
+type ChatDelete =
+	| {
+			msgId: IMessage['_id'];
+			roomId: IRoom['_id'];
+			asUser?: boolean;
+	  }
+	| {
+			fileId: string;
+			asUser?: boolean;
+	  };
 
 const ChatDeleteSchema = {
 	type: 'object',
@@ -233,12 +238,15 @@ const ChatDeleteSchema = {
 		roomId: {
 			type: 'string',
 		},
+		fileId: {
+			type: 'string',
+		},
 		asUser: {
 			type: 'boolean',
 			nullable: true,
 		},
 	},
-	required: ['msgId', 'roomId'],
+	anyOf: [{ required: ['msgId', 'roomId'] }, { required: ['fileId'] }],
 	additionalProperties: false,
 };
 
