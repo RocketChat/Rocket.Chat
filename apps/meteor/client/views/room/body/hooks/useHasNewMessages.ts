@@ -66,6 +66,10 @@ export const useHasNewMessages = (
 					return;
 				}
 				if (msg.u._id === uid) {
+					// If there are more next messages, jump to the recent messages
+					if (RoomHistoryManager.hasMoreNext(rid)) {
+						return handleJumpToRecentButtonClick();
+					}
 					setShouldJumpToBottom(true);
 					setHasNewMessages(false);
 				}
