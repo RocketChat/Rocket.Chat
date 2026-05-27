@@ -27,11 +27,14 @@ export type NavBarSearchItems = {
 };
 
 export type SearchFilters = {
-	roomName?: string;
-	rid?: string;
-	fromUsername?: string;
+	roomNames: string[];
+	rids: string[];
+	fromUsernames: string[];
 	startDate?: string;
 	endDate?: string;
+	// Kept for API callers that still expect a single resolved room.
+	rid?: string;
+	fromUsername?: string;
 };
 
 export type SearchFilterSuggestion = {
@@ -40,6 +43,8 @@ export type SearchFilterSuggestion = {
 	description: string;
 	value: string;
 };
+
+export const emptySearchFilters = (): SearchFilters => ({ roomNames: [], rids: [], fromUsernames: [] });
 
 type ActiveFilter = {
 	key: 'in' | 'from' | 'after' | 'before';
@@ -51,7 +56,7 @@ type ActiveFilter = {
 const FILTER_PATTERN = /(?:^|\s)(in|from|after|before):(?:"([^"]*)"|(\S+))/gi;
 
 export const parseSearchFilterText = (filterText: string): { searchText: string; filters: SearchFilters } => {
-	const filters: SearchFilters = {};
+	const filters: SearchFilters = emptySearchFilters();
 	const searchText = filterText
 		.replace(FILTER_PATTERN, (_match, key: string, quotedValue?: string, bareValue?: string) => {
 			const value = String(quotedValue || bareValue || '')
@@ -63,10 +68,10 @@ export const parseSearchFilterText = (filterText: string): { searchText: string;
 
 			switch (key.toLowerCase()) {
 				case 'in':
-					filters.roomName = value;
+					filters.roomNames.push(value);
 					break;
 				case 'from':
-					filters.fromUsername = value;
+					filters.fromUsernames.push(value);
 					break;
 				case 'after':
 					filters.startDate = value;
@@ -104,10 +109,10 @@ const formatFilterValue = (key: ActiveFilter['key'], value: string): string => `
 const applyFilterToken = (filterText: string, activeFilter: ActiveFilter | undefined, key: ActiveFilter['key'], value: string): string => {
 	const token = formatFilterValue(key, value);
 	if (activeFilter) {
-		return `${filterText.slice(0, activeFilter.start)}${token}`.trimStart();
+		return `${filterText.slice(0, activeFilter.start)}${token} `.trimStart();
 	}
 
-	return `${filterText.trim()} ${token}`.trim();
+	return `${filterText.trim()} ${token} `.trimStart();
 };
 
 const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
@@ -137,32 +142,7 @@ const buildFilterSuggestions = (
 	rooms: SubscriptionWithRoom[],
 ): SearchFilterSuggestion[] => {
 	if (!activeFilter) {
-		return [
-			{
-				key: 'filter-in',
-				title: 'in:',
-				description: 'Search in a room',
-				value: applyFilterToken(filterText, activeFilter, 'in', ''),
-			},
-			{
-				key: 'filter-from',
-				title: 'from:',
-				description: 'Search messages from a user',
-				value: applyFilterToken(filterText, activeFilter, 'from', ''),
-			},
-			{
-				key: 'filter-after',
-				title: 'after:',
-				description: 'Search after a date',
-				value: applyFilterToken(filterText, activeFilter, 'after', ''),
-			},
-			{
-				key: 'filter-before',
-				title: 'before:',
-				description: 'Search before a date',
-				value: applyFilterToken(filterText, activeFilter, 'before', ''),
-			},
-		];
+		return [];
 	}
 
 	if (activeFilter.key === 'in') {
@@ -206,7 +186,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const { searchText, filters } = useMemo(
-		() => (hasIntelligentSearchLicense ? parseSearchFilterText(filterText) : { searchText: filterText, filters: {} }),
+		() => (hasIntelligentSearchLicense ? parseSearchFilterText(filterText) : { searchText: filterText, filters: emptySearchFilters() }),
 		[filterText, hasIntelligentSearchLicense],
 	);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
@@ -223,26 +203,30 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 			return activeFilter.value;
 		}
 
-		return filters.roomName || '';
-	}, [activeFilter, filters.roomName, hasIntelligentSearchLicense]);
+		return filters.roomNames[filters.roomNames.length - 1] || '';
+	}, [activeFilter, filters.roomNames, hasIntelligentSearchLicense]);
 	const query = useMemo(() => buildRoomSearchQuery(name, mention), [name, mention]);
 	const roomLookupQuery = useMemo(() => buildRoomSearchQuery(roomLookupText, '#'), [roomLookupText]);
 
 	const localRooms = useUserSubscriptions(query, options);
 	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, options);
-	const selectedRoom = useMemo(() => {
-		if (!filters.roomName) {
-			return undefined;
+	const selectedRooms = useMemo(() => {
+		if (!filters.roomNames.length) {
+			return [];
 		}
 
-		return roomFilterRooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(filters.roomName));
-	}, [filters.roomName, roomFilterRooms]);
+		return filters.roomNames
+			.map((roomName) => roomFilterRooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(roomName)))
+			.filter(Boolean) as SubscriptionWithRoom[];
+	}, [filters.roomNames, roomFilterRooms]);
 	const resolvedFilters = useMemo(
 		() => ({
 			...filters,
-			...(selectedRoom && { rid: selectedRoom.rid || selectedRoom._id }),
+			rids: selectedRooms.map((room) => room.rid || room._id),
+			...(selectedRooms[0] && { rid: selectedRooms[0].rid || selectedRooms[0]._id }),
+			...(filters.fromUsernames[0] && { fromUsername: filters.fromUsernames[0] }),
 		}),
-		[filters, selectedRoom],
+		[filters, selectedRooms],
 	);
 	const filterSuggestions = useMemo(
 		() => (hasIntelligentSearchLicense ? buildFilterSuggestions(filterText, activeFilter, roomFilterRooms) : []),
@@ -293,7 +277,10 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 					includeMessages: false,
 					includeIntelligent: true,
 					rid: resolvedFilters.rid,
+					rids: resolvedFilters.rids.join(','),
+					roomNames: resolvedFilters.roomNames.join(','),
 					fromUsername: resolvedFilters.fromUsername,
+					fromUsernames: resolvedFilters.fromUsernames.join(','),
 					startDate: resolvedFilters.startDate,
 					endDate: resolvedFilters.endDate,
 				});

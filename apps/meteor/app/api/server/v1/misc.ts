@@ -511,6 +511,12 @@ const normalizeSimilarityPercent = (value: unknown): number => {
 
 const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number => Number((1 - minimumSimilarityPercent / 100).toFixed(4));
 
+const parseCommaList = (value: string | undefined): string[] =>
+	String(value ?? '')
+		.split(',')
+		.map((item) => item.trim())
+		.filter(Boolean);
+
 type LLMProviderConfig = {
 	name: string;
 	baseUrl: string;
@@ -784,7 +790,10 @@ const normalizeIntelligentResults = async (
 
 type IntelligentSearchFilters = {
 	rid?: string;
+	rids?: string[];
+	roomNames?: string[];
 	fromUsername?: string;
+	fromUsernames?: string[];
 	startDate?: Date;
 	endDate?: Date;
 };
@@ -794,13 +803,30 @@ const getUserClassifications = async (userId: string): Promise<string[]> => {
 	return Array.from(new Set(['user', ...(user?.roles || [])]));
 };
 
+const getAccessibleRoomIdsByName = async (userRoomIds: string[], roomNames: string[] = []): Promise<string[]> => {
+	if (!roomNames.length) {
+		return [];
+	}
+
+	const rooms = await Rooms.find(
+		{
+			_id: { $in: userRoomIds },
+			$or: [{ name: { $in: roomNames } }, { fname: { $in: roomNames } }],
+		},
+		{ projection: { _id: 1 } },
+	).toArray();
+
+	return rooms.map(({ _id }) => _id);
+};
+
 const buildIntelligentSearchFilters = (
 	userRoomIds: string[],
-	{ rid, fromUsername, startDate, endDate }: IntelligentSearchFilters,
+	{ rid, rids, fromUsername, fromUsernames, startDate, endDate }: Omit<IntelligentSearchFilters, 'roomNames'>,
 ): Record<string, unknown> | undefined => {
+	const requestedRoomIds = [...new Set([...(rids || []), ...(rid ? [rid] : [])])];
 	let accessibleRoomIds = userRoomIds;
-	if (rid) {
-		accessibleRoomIds = userRoomIds.includes(rid) ? [rid] : [];
+	if (requestedRoomIds.length) {
+		accessibleRoomIds = requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId));
 	}
 
 	if (!accessibleRoomIds.length) {
@@ -808,11 +834,16 @@ const buildIntelligentSearchFilters = (
 	}
 
 	const filters: Record<string, unknown> = {
-		room_id: rid ? { $eq: rid } : { $in: accessibleRoomIds },
+		room_id: accessibleRoomIds.length === 1 ? { $eq: accessibleRoomIds[0] } : { $in: accessibleRoomIds },
 	};
 
-	if (fromUsername) {
-		filters.username = { $eq: fromUsername.replace(/^@/, '') };
+	const usernames = [
+		...new Set([...(fromUsernames || []), ...(fromUsername ? [fromUsername] : [])].map((username) => username.replace(/^@/, ''))),
+	];
+	if (usernames.length === 1) {
+		filters.username = { $eq: usernames[0] };
+	} else if (usernames.length > 1) {
+		filters.username = { $in: usernames };
 	}
 
 	if (startDate || endDate) {
@@ -853,7 +884,11 @@ const searchIntelligent = async (
 		return [];
 	}
 
-	const pipelineFilters = buildIntelligentSearchFilters(userRoomIds, filters);
+	const roomNameIds = await getAccessibleRoomIdsByName(userRoomIds, filters.roomNames);
+	const pipelineFilters = buildIntelligentSearchFilters(userRoomIds, {
+		...filters,
+		rids: [...(filters.rids || []), ...roomNameIds],
+	});
 	if (!pipelineFilters) {
 		SystemLogger.debug({ msg: 'Intelligent search skipped: no accessible rooms for filters', rid: filters.rid });
 		return [];
@@ -941,12 +976,15 @@ API.v1.get(
 			MAX_INTELLIGENT_SEARCH_RESULTS,
 		);
 		const rid = this.queryParams.rid || undefined;
+		const rids = parseCommaList(this.queryParams.rids);
+		const roomNames = parseCommaList(this.queryParams.roomNames);
 		const fromUsername = this.queryParams.fromUsername || undefined;
+		const fromUsernames = parseCommaList(this.queryParams.fromUsernames);
 		const startDate = this.queryParams.startDate ? new Date(this.queryParams.startDate) : undefined;
 		const endDate = this.queryParams.endDate ? new Date(this.queryParams.endDate) : undefined;
 		const includeSpotlight = this.queryParams.includeSpotlight !== false;
 
-		const hasFilters = Boolean(rid || fromUsername || startDate || endDate);
+		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
 		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
 
 		const [spotlight, userRoomIds] = await Promise.all([
@@ -997,7 +1035,10 @@ API.v1.get(
 					userRoomIds,
 					{
 						rid,
+						rids,
+						roomNames,
 						fromUsername,
+						fromUsernames,
 						startDate,
 						endDate,
 					},

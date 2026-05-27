@@ -169,21 +169,28 @@ const SearchPage = (): ReactElement => {
 	const queryParam = useSearchParameter('q') ?? '';
 	const [intelligentCount, setIntelligentCount] = useState(8);
 	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
-	const roomLookupQuery = useMemo(() => buildRoomSearchQuery(parsedSearch.filters.roomName || '', '#'), [parsedSearch.filters.roomName]);
+	const roomLookupQuery = useMemo(
+		() => buildRoomSearchQuery(parsedSearch.filters.roomNames[parsedSearch.filters.roomNames.length - 1] || '', '#'),
+		[parsedSearch.filters.roomNames],
+	);
 	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, roomLookupOptions);
-	const selectedRoom = useMemo(() => {
-		if (!parsedSearch.filters.roomName) {
-			return undefined;
+	const selectedRooms = useMemo(() => {
+		if (!parsedSearch.filters.roomNames.length) {
+			return [];
 		}
 
-		return roomFilterRooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(parsedSearch.filters.roomName));
-	}, [parsedSearch.filters.roomName, roomFilterRooms]);
+		return parsedSearch.filters.roomNames
+			.map((roomName) => roomFilterRooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(roomName)))
+			.filter(Boolean) as Array<(typeof roomFilterRooms)[number]>;
+	}, [parsedSearch.filters.roomNames, roomFilterRooms]);
 	const resolvedFilters = useMemo(
 		() => ({
 			...parsedSearch.filters,
-			...(selectedRoom && { rid: selectedRoom.rid || selectedRoom._id }),
+			rids: selectedRooms.map((room) => room.rid || room._id),
+			...(selectedRooms[0] && { rid: selectedRooms[0].rid || selectedRooms[0]._id }),
+			...(parsedSearch.filters.fromUsernames[0] && { fromUsername: parsedSearch.filters.fromUsernames[0] }),
 		}),
-		[parsedSearch.filters, selectedRoom],
+		[parsedSearch.filters, selectedRooms],
 	);
 	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
@@ -213,7 +220,10 @@ const SearchPage = (): ReactElement => {
 				includeMessages: false,
 				includeIntelligent: Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled),
 				rid: resolvedFilters.rid,
+				rids: resolvedFilters.rids.join(','),
+				roomNames: resolvedFilters.roomNames.join(','),
 				fromUsername: resolvedFilters.fromUsername,
+				fromUsernames: resolvedFilters.fromUsernames.join(','),
 				startDate: resolvedFilters.startDate,
 				endDate: resolvedFilters.endDate,
 			}),

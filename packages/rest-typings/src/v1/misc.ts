@@ -60,7 +60,10 @@ type UnifiedSearch = PaginatedRequest<{
 	includeSpotlight?: boolean;
 	intelligentCount?: number;
 	rid?: string;
+	rids?: string;
+	roomNames?: string;
 	fromUsername?: string;
+	fromUsernames?: string;
 	startDate?: string;
 	endDate?: string;
 }>;
@@ -92,7 +95,19 @@ const UnifiedSearchSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		rids: {
+			type: 'string',
+			nullable: true,
+		},
+		roomNames: {
+			type: 'string',
+			nullable: true,
+		},
 		fromUsername: {
+			type: 'string',
+			nullable: true,
+		},
+		fromUsernames: {
 			type: 'string',
 			nullable: true,
 		},

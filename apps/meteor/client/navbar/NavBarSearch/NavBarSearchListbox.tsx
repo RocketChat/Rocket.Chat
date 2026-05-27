@@ -4,6 +4,7 @@ import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle
 import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
 import { useCallback, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +29,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, setValue, watch } = useFormContext<{ filterText: string }>();
+	const { resetField, setFocus, setValue, watch } = useFormContext<{ filterText: string }>();
 	const { filterText } = watch();
 
 	const debouncedFilter = useDebouncedValue(filterText, 500);
@@ -38,8 +39,16 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		resetField('filterText');
 	}, [resetField, state]);
 
-	const { data: items = { rooms: [], intelligent: [], filterSuggestions: [], searchText: '', filters: {} }, isLoading } =
-		useSearchItems(debouncedFilter);
+	const {
+		data: items = {
+			rooms: [],
+			intelligent: [],
+			filterSuggestions: [],
+			searchText: '',
+			filters: { roomNames: [], rids: [], fromUsernames: [] },
+		},
+		isLoading,
+	} = useSearchItems(debouncedFilter);
 	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
 
 	const handleOpenAISearch = useCallback(() => {
@@ -51,10 +60,13 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	}, [filterText, router, state]);
 
 	const handleFilterSuggestion = useCallback(
-		(value: string) => {
+		(event: MouseEvent, value: string) => {
+			event.preventDefault();
+			event.stopPropagation();
 			setValue('filterText', value, { shouldDirty: true });
+			setFocus('filterText');
 		},
-		[setValue],
+		[setFocus, setValue],
 	);
 
 	return (
@@ -100,7 +112,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 						</Box>
 					)}
 					{items.filterSuggestions.map((item) => (
-						<SidebarV2Item key={item.key} role='option' onClick={() => handleFilterSuggestion(item.value)}>
+						<SidebarV2Item key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item.value)}>
 							<SidebarV2ItemIcon icon={<Icon name='sort' size='x16' />} />
 							<SidebarV2ItemTitle>{item.title}</SidebarV2ItemTitle>
 							<Box color='hint' fontScale='c1' flexShrink={0}>
