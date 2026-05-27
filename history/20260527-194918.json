@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-05-27T19:48:59Z",
+  "tag": "develop",
+  "total": 1439907139,
+  "services": {
+    "account-service": 126237070,
+    "authorization-service": 125638548,
+    "ddp-streamer-service": 141384350,
+    "omnichannel-transcript-service": 148555915,
+    "presence-service": 125000980,
+    "queue-worker-service": 148530455,
+    "rocketchat": 309476691,
+    "rocketchat-cov": 315083130
+  },
+  "commit": "741b87fb95e4f8159c62e5599a403bda1c9bbb8f"
+}
