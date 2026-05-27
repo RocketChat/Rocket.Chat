@@ -49,6 +49,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			filters: { roomNames: [], rids: [], fromUsernames: [] },
 		},
 		isLoading,
+		isFetching,
 	} = useSearchItems(debouncedFilter);
 	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
 
@@ -156,7 +157,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 							</Box>
 						</SidebarV2Item>
 					))}
-					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
+					{itemCount === 0 && !isLoading && !isFetching && <NavBarSearchNoResults />}
 					{items.rooms.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 							{filterText ? t('Results') : t('Recent')}

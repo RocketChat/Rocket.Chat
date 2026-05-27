@@ -18,6 +18,8 @@ const options = {
 	limit: LIMIT,
 } as const;
 
+const emptySubscriptionQuery = { _id: '__ai_search_no_room_filter__' };
+
 export type NavBarSearchItems = {
 	rooms: SubscriptionWithRoom[];
 	intelligent: UnifiedSearchIntelligentResult[];
@@ -274,7 +276,10 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 		return filters.roomNames[filters.roomNames.length - 1] || '';
 	}, [activeFilter, filters.roomNames, hasIntelligentSearchLicense]);
 	const query = useMemo(() => buildRoomSearchQuery(name, mention), [name, mention]);
-	const roomLookupQuery = useMemo(() => buildRoomSearchQuery(roomLookupText, '#'), [roomLookupText]);
+	const roomLookupQuery = useMemo(
+		() => (roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : emptySubscriptionQuery),
+		[roomLookupText],
+	);
 
 	const localRooms = useUserSubscriptions(query, options);
 	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, options);
@@ -345,13 +350,13 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 					intelligentCount: 3,
 					includeMessages: false,
 					includeIntelligent: true,
-					rid: resolvedFilters.rid,
-					rids: resolvedFilters.rids.join(','),
-					roomNames: resolvedFilters.roomNames.join(','),
-					fromUsername: resolvedFilters.fromUsername,
-					fromUsernames: resolvedFilters.fromUsernames.join(','),
-					startDate: resolvedFilters.startDate,
-					endDate: resolvedFilters.endDate,
+					...(resolvedFilters.rid && { rid: resolvedFilters.rid }),
+					...(resolvedFilters.rids.length && { rids: resolvedFilters.rids.join(',') }),
+					...(resolvedFilters.roomNames.length && { roomNames: resolvedFilters.roomNames.join(',') }),
+					...(resolvedFilters.fromUsername && { fromUsername: resolvedFilters.fromUsername }),
+					...(resolvedFilters.fromUsernames.length && { fromUsernames: resolvedFilters.fromUsernames.join(',') }),
+					...(resolvedFilters.startDate && { startDate: resolvedFilters.startDate }),
+					...(resolvedFilters.endDate && { endDate: resolvedFilters.endDate }),
 				});
 				intelligent = result.intelligent;
 			}
