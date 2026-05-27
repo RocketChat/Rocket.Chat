@@ -68,7 +68,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-export const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
 let inflightLogin: Promise<void> | undefined;
 

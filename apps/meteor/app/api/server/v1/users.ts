@@ -670,7 +670,7 @@ API.v1.addRoute(
 				if (!canViewFullOtherUserInfo) {
 					return API.v1.forbidden();
 				}
-				const escapedEmail = escapeRegExp(this.queryParams.email as string);
+				const escapedEmail = escapeRegExp(this.queryParams.email);
 				nonEmptyQuery['emails.address'] = {
 					$regex: `^${escapedEmail}$`,
 					$options: 'i',
@@ -1580,15 +1580,22 @@ API.v1
 			authRequired: true,
 			query: isUsersRequestDataDownloadParamsGET,
 			response: {
-				200: ajv.compile<{ requested: boolean; exportOperation: IExportOperation }>({
+				200: ajv.compile<{
+					requested: boolean;
+					exportOperation: IExportOperation;
+					url: string | null;
+					pendingOperationsBeforeMyRequest: number;
+				}>({
 					type: 'object',
 					properties: {
 						requested: { type: 'boolean' },
 						// IExportOperation has complex/dynamic shape not yet in typia
 						exportOperation: { type: 'object' },
+						url: { type: 'string', nullable: true },
+						pendingOperationsBeforeMyRequest: { type: 'number' },
 						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['requested', 'exportOperation', 'success'],
+					required: ['requested', 'exportOperation', 'pendingOperationsBeforeMyRequest', 'success'],
 					additionalProperties: false,
 				}),
 				401: validateUnauthorizedErrorResponse,
@@ -1596,14 +1603,13 @@ API.v1
 		},
 		async function action() {
 			const { fullExport = false } = this.queryParams;
-			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
-				requested: boolean;
-				exportOperation: IExportOperation;
-			};
+			const result = await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' });
 
 			return API.v1.success({
 				requested: Boolean(result.requested),
 				exportOperation: result.exportOperation,
+				url: result.url,
+				pendingOperationsBeforeMyRequest: result.pendingOperationsBeforeMyRequest,
 			});
 		},
 	)
