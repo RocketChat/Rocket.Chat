@@ -29,7 +29,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const room = Rooms.use((state) => state.get(rid));
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
-	const hasLoadedOnce = useRef(false);
+	const loadedRoomId = useRef<string | null>(null);
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
 
@@ -57,8 +57,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			return null;
 		}
 
-		hasLoadedOnce.current = true;
-
 		return {
 			rid,
 			room: pseudoRoom,
@@ -70,6 +68,12 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscritionFromLocal]);
 
 	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
+
+	useEffect(() => {
+		if (pseudoRoom) {
+			loadedRoomId.current = rid;
+		}
+	}, [pseudoRoom, rid]);
 
 	useEffect(() => {
 		if (room) {
@@ -95,7 +99,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		if (!hasLoadedOnce.current) {
+		if (loadedRoomId.current !== rid) {
 			return <RoomSkeleton />;
 		}
 
