@@ -198,6 +198,7 @@ export type UsersEndpoints = {
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
+				| Record<string, never>
 				| {
 						userId: string;
 				  }
