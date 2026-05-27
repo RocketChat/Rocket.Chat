@@ -319,6 +319,17 @@ const buildUserFilterSuggestions = (
 	}));
 };
 
+const buildUsernameAutocompleteQuery = (
+	term = '',
+): {
+	selector: string;
+} => ({ selector: JSON.stringify({ term, conditions: {}, exceptions: [] }) });
+
+const mergeFilterSuggestions = (primary: SearchFilterSuggestion[], fallback: SearchFilterSuggestion[]): SearchFilterSuggestion[] => {
+	const existingValues = new Set(primary.map(({ value }) => value));
+	return [...primary, ...fallback.filter(({ value }) => !existingValues.has(value))];
+};
+
 export const buildRoomSearchQuery = (value: string, mention?: string) => {
 	const filterRegex = new RegExp(escapeRegExp(value), 'i');
 
@@ -336,6 +347,7 @@ export const useSearchItems = (
 ): UseQueryResult<NavBarSearchItems, Error> => {
 	const getSpotlight = useMethod('spotlight');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
+	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
@@ -455,10 +467,13 @@ export const useSearchItems = (
 
 			const nextFilterSuggestions =
 				activeFilter?.key === 'from'
-					? buildUserFilterSuggestions(
-							filterText,
-							activeFilter,
-							(await getSpotlight(activeFilter.value.replace(/^@/, ''), [], { users: true, rooms: false })).users,
+					? mergeFilterSuggestions(
+							buildUserFilterSuggestions(
+								filterText,
+								activeFilter,
+								(await usersAutocomplete(buildUsernameAutocompleteQuery(activeFilter.value.replace(/^@/, '')))).items,
+							),
+							filterSuggestions,
 						)
 					: filterSuggestions;
 
