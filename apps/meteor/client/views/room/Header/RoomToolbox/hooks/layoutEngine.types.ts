@@ -12,5 +12,10 @@ export type RoomToolboxLayoutConfig = {
 export type RoomToolboxBaseAction = {
 	id: string;
 	type?: string;
-	[key: string]: any;
+	[key: string]: unknown;
+};
+
+export type RoomToolboxHiddenSection = {
+	id: string;
+	items: RoomToolboxBaseAction[];
 };

@@ -106,4 +106,37 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
 		expect(hiddenIds).toEqual(['7']);
 	});
+	it('should force app actions into hiddenActions even when config is null', () => {
+		const actionsBase = [{ id: 'app-x', type: 'apps' }, { id: 'thread' }];
+		const result = processActions(actionsBase, null);
+		expect(result.visibleActions.map((a) => a.id)).toEqual(['thread']);
+		expect(result.hiddenActions).toMatchObject([{ id: 'apps', items: [{ id: 'app-x' }] }]);
+	});
+	it('should sort featuredActions by order when multiple featured items exist', () => {
+		const actionsBase = [{ id: 'start-call' }, { id: 'thread' }, { id: 'search' }];
+		const config = {
+			maxVisibleNormal: 6,
+			items: [
+				{ id: 'start-call', featured: true, order: 20 },
+				{ id: 'thread', featured: true, order: 5 },
+				{ id: 'search', featured: false, order: 10 },
+			],
+		};
+		const result = processActions(actionsBase, config);
+		expect(result.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
+	});
+	it('should treat negative maxVisibleNormal as 0, hiding all normal actions', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'search' }];
+		const config = {
+			maxVisibleNormal: -3,
+			items: [
+				{ id: 'thread', featured: false, order: 1 },
+				{ id: 'search', featured: false, order: 2 },
+			],
+		};
+		const result = processActions(actionsBase, config);
+		expect(result.visibleActions).toHaveLength(0);
+		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
+		expect(hiddenIds).toEqual(['thread', 'search']);
+	});
 });
