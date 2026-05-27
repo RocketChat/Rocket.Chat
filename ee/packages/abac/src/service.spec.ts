@@ -1958,5 +1958,4 @@ describe('AbacService (unit)', () => {
 			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
 		});
 	});
-
 });
