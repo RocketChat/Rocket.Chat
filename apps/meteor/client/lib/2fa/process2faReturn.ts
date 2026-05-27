@@ -5,7 +5,6 @@ import { lazy } from 'react';
 import type { LoginCallback } from './overrideLoginMethod';
 import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getUser } from '../user';
 
 const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
@@ -32,9 +31,7 @@ const hasRequiredTwoFactorMethod = (
 function assertModalProps(props: {
 	method: TwoFactorMethod;
 	emailOrUsername?: string;
-}): asserts props is
-	| { method: 'totp' | 'password'; invalidAttempt?: boolean }
-	| { method: 'email'; emailOrUsername: string; invalidAttempt?: boolean } {
+}): asserts props is { method: 'totp' } | { method: 'password' } | { method: 'email'; emailOrUsername: string } {
 	if (props.method === 'email' && typeof props.emailOrUsername !== 'string') {
 		throw new Error('Invalid Two Factor method');
 	}
@@ -131,7 +128,8 @@ export const invokeTwoFactorModal = async (
 	},
 	validateCode?: (code: string, method: string) => Promise<void>,
 ) => {
-	assertModalProps(props);
+	const { invalidAttempt, ...restProps } = props;
+	assertModalProps(restProps);
 
 	return new Promise<string>((resolve, reject) => {
 		let isResolved = false;
@@ -140,7 +138,7 @@ export const invokeTwoFactorModal = async (
 		imperativeModal.open({
 			component: TwoFactorModal,
 			props: {
-				...props,
+				...restProps,
 				onConfirm: async (code: string, method: string): Promise<void> => {
 					const actualCode = method === 'password' ? SHA256(code) : code;
 					if (validateCode) {
@@ -166,11 +164,7 @@ export const invokeTwoFactorModal = async (
 						reject(new Error('totp-canceled'));
 					}
 				},
-				...(props.method === 'email' &&
-					props.emailOrUsername && {
-						resendEmail: (): Promise<null> => sdk.rest.post('/v1/users.2fa.sendEmailCode', { emailOrUsername: props.emailOrUsername }),
-					}),
-				...(props.invalidAttempt && { invalidAttempt: props.invalidAttempt }),
+				...(invalidAttempt && { invalidAttempt }),
 			},
 		});
 	});

@@ -1,5 +1,3 @@
-import { Random } from '@rocket.chat/random';
-
 import { settingsRegistry } from '../../app/settings/server';
 
 export const createOauthSettings = () =>
@@ -406,11 +404,6 @@ export const createOauthSettings = () =>
 				readonly: true,
 				enableQuery,
 			});
-		});
-		await this.add('Accounts_OAuth_Session_Secret', Random.secret(), {
-			type: 'string',
-			secret: true,
-			hidden: true,
 		});
 		return this.section('Proxy', async function () {
 			await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
