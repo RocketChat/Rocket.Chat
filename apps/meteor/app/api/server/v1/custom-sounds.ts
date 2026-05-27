@@ -259,6 +259,13 @@ const customSoundsEndpoints = API.v1
 				: soundToUpdate.extension;
 
 			try {
+				await insertOrUpdateSound({
+					_id: fields._id,
+					name: fields.name,
+					extension: nextExtension,
+					previousName: soundToUpdate.name,
+					previousExtension: soundToUpdate.extension,
+				});
 				if (fileBuffer) {
 					await uploadCustomSound(fileBuffer, computedMimeType, {
 						_id: fields._id,
@@ -267,13 +274,6 @@ const customSoundsEndpoints = API.v1
 						extension: nextExtension,
 					});
 				}
-				await insertOrUpdateSound({
-					_id: fields._id,
-					name: fields.name,
-					extension: nextExtension,
-					previousName: soundToUpdate.name,
-					previousExtension: soundToUpdate.extension,
-				});
 				return API.v1.success({});
 			} catch (error) {
 				SystemLogger.error({ error });

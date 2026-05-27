@@ -78,7 +78,7 @@ export const MessageListItem = ({
 				/>
 			)}
 			{isThreadMessage(message) && (
-				<li>
+				<div role='listitem'>
 					<ThreadMessagePreview
 						data-mid={message._id}
 						data-tmid={message.tmid}
@@ -88,7 +88,7 @@ export const MessageListItem = ({
 						message={message}
 						showUserAvatar={showUserAvatar}
 					/>
-				</li>
+				</div>
 			)}
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 		</>

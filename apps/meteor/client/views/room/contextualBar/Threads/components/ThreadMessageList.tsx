@@ -73,7 +73,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const { messageListRef } = useMessageListNavigation();
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
-	const isAtBottom = useRef(true);
+	const isAtBottom = useRef<boolean | null>(null);
+
 	const lastScrollSizeRef = useRef(0);
 
 	const items = loading ? [] : [mainMessage, ...messages];
@@ -104,7 +105,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			setShouldJumpToBottom(false);
 			return;
 		}
-		if (isAtBottom.current && lastScrollSizeRef.current !== handle?.scrollSize) {
+		if (isAtBottom.current === true && lastScrollSizeRef.current !== handle?.scrollSize) {
 			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
 			setShouldJumpToBottom(true);
 		}
@@ -130,11 +131,28 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		setShouldJumpToBottom(false);
 		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
 		setHighlightMessage(msgJumpParam);
-		setMessageJumpQueryStringParameter(null);
 		setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
+
+	useEffect(() => {
+		if (!msgJumpParam) {
+			return;
+		}
+		const clearMsgJumpParam = () => {
+			if (messages.find((m) => m._id === msgJumpParam) && mainMessage._id !== msgJumpParam) {
+				setMessageJumpQueryStringParameter(null);
+			}
+		};
+		const timeoutId = setTimeout(() => {
+			clearMsgJumpParam();
+		}, 500);
+		return () => {
+			clearMsgJumpParam();
+			clearTimeout(timeoutId);
+		};
+	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
