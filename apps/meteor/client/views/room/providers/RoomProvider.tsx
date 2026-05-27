@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import { useMemo, memo, useEffect } from 'react';
+import { useRef, useMemo, memo, useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
@@ -27,8 +27,9 @@ type RoomProviderProps = {
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const room = Rooms.use((state) => state.get(rid));
-
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
+
+	const hasLoadedOnce = useRef(false);
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
 
@@ -55,6 +56,8 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		if (!pseudoRoom) {
 			return null;
 		}
+
+		hasLoadedOnce.current = true;
 
 		return {
 			rid,
@@ -92,7 +95,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !room ? <RoomNotFound /> : <RoomSkeleton />;
+		if (!hasLoadedOnce.current) {
+			return <RoomSkeleton />;
+		}
+
+		return <RoomNotFound />;
 	}
 
 	return (
