@@ -19,7 +19,9 @@ export const addVersionsRoutes = (router: ClientRouter) => {
 			license,
 		},
 		async () => ({
-			body: {},
+			body: {
+				versions: ['v1.4'],
+			},
 			statusCode: 200,
 		}),
 	);
