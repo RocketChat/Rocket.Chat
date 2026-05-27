@@ -1,12 +1,15 @@
+import { getObjectKeys } from '@rocket.chat/tools';
 import { useEndpoint, useMethod, useRouter, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 
+import { roomFields } from '../../../../lib/publishFields';
 import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
+import { Rooms } from '../../../stores';
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
@@ -51,12 +54,20 @@ const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement =>
 				return null;
 			}
 
+			// Populate Rooms store and return same shape as useOpenRoom so the shared
+			// React Query cache entry is usable when RoomOpenerEmbedded mounts.
+			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
+			unsetKeys.forEach((key) => {
+				delete roomData[key];
+			});
+			Rooms.state.store(roomData);
+
 			const subResult = await getSubscription({ roomId: roomData._id });
 			if (subResult.subscription) {
 				SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subResult.subscription));
 			}
 
-			return subResult;
+			return { rid: roomData._id };
 		},
 		enabled: shouldFetch,
 		retry: false,
