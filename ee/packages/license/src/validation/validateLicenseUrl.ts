@@ -42,16 +42,36 @@ export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, op
 
 	return serverUrls
 		.filter((url) => {
+			if (
+				url.type === 'url' &&
+				url.value.length === 64 &&
+				/^[a-f0-9]{64}$/i.test(url.value) &&
+				validateHash(url.value, hashedWorkspaceUrl)
+			) {
+				// If the url type is 'url' but the value looks like a hash, validate it as a hash to avoid invalidating licenses unnecessarily.
+				logger.warn(
+					`License URL with type 'url' is actually a hash. Validating as hash to avoid invalidating license unnecessarily. url: ${url.value}`,
+				);
+				return false;
+			}
+
+			if (url.type === 'hash' && !/^[a-f0-9]{64}$/i.test(url.value) && validateUrl(url.value, workspaceUrl)) {
+				// If the url type is 'hash' but the value looks like a url, validate it as a url to avoid invalidating licenses unnecessarily.
+				logger.warn(
+					`License URL with type 'hash' does not look like a hash. Validating as url to avoid invalidating license unnecessarily. url: ${url.value}`,
+				);
+				return false;
+			}
+
 			switch (url.type) {
 				case 'regex':
 					return !validateRegex(url.value, workspaceUrl);
 				case 'hash':
 					return !validateHash(url.value, hashedWorkspaceUrl);
 				case 'url':
-					// Fall back for hash validation in case the type was not set correctly, to avoid invalidating licenses unnecessarily.
-					return !validateUrl(url.value, workspaceUrl) && !validateHash(url.value, hashedWorkspaceUrl);
+					return !validateUrl(url.value, workspaceUrl);
 				default:
-					return false;
+					return true; // If the type is unknown, consider it invalid to be safe.
 			}
 		})
 		.map((url) => {
