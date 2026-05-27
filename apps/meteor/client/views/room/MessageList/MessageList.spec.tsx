@@ -18,7 +18,7 @@ const mockVirtualizerHandle = {
 };
 
 jest.mock('virtua', () => {
-	const React = require('react');
+	const React = jest.requireActual<typeof import('react')>('react');
 
 	return {
 		VList: React.forwardRef(
