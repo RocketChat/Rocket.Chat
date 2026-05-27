@@ -8,7 +8,7 @@ const virtruClientLogger = logger.section('VirtruClient');
 export const HEALTH_CHECK_TIMEOUT = 5000;
 const REQUEST_TIMEOUT = 10000;
 
-type PublicVirtruConfig = Pick<IVirtruPDPConfig, 'baseUrl' | 'defaultEntityKey' | 'attributeNamespace'>;
+type PublicVirtruConfig = Pick<IVirtruPDPConfig, 'baseUrl' | 'defaultEntityKey' | 'attributeNamespace' | 'clientId'>;
 
 export class VirtruClient {
 	private tokenCache: ITokenCache | null = null;
@@ -25,8 +25,8 @@ export class VirtruClient {
 	}
 
 	getConfig(): PublicVirtruConfig {
-		const { baseUrl, defaultEntityKey, attributeNamespace } = this.config;
-		return { baseUrl, defaultEntityKey, attributeNamespace };
+		const { baseUrl, defaultEntityKey, attributeNamespace, clientId } = this.config;
+		return { baseUrl, defaultEntityKey, attributeNamespace, clientId };
 	}
 
 	async isAvailable(): Promise<boolean> {

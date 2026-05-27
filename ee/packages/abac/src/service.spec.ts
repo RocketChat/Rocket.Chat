@@ -1110,15 +1110,16 @@ describe('AbacService (unit)', () => {
 			});
 		});
 
-		it('blocks the empty-clear path of setRoomAbacAttributes when assertCanModifyRoom rejects', async () => {
+		it('skips assertCanModifyRoom on the empty-clear path of setRoomAbacAttributes and still unsets', async () => {
 			const store = makeStore();
 			store.assertCanModifyRoom.mockRejectedValueOnce(new Error('error-pdp-unavailable'));
 			(service as any).attributeStores.local.store = store;
 
-			await expect(service.setRoomAbacAttributes('r1', {}, fakeActor)).rejects.toThrow('error-pdp-unavailable');
+			await expect(service.setRoomAbacAttributes('r1', {}, fakeActor)).resolves.toBeUndefined();
 
-			expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
-			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+			expect(store.assertCanModifyRoom).not.toHaveBeenCalled();
+			expect(store.validateAssignable).not.toHaveBeenCalled();
+			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
 		});
 	});
 

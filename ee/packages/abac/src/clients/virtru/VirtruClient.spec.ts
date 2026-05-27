@@ -67,15 +67,15 @@ describe('VirtruClient', () => {
 		expect(tokenCalls).toHaveLength(2);
 	});
 
-	it('getConfig exposes only baseUrl, defaultEntityKey and attributeNamespace', () => {
+	it('getConfig exposes only baseUrl, defaultEntityKey, attributeNamespace and clientId', () => {
 		const c = new VirtruClient(cfg);
 		const pub = c.getConfig();
 		expect(pub).toEqual({
 			baseUrl: cfg.baseUrl,
 			defaultEntityKey: cfg.defaultEntityKey,
 			attributeNamespace: cfg.attributeNamespace,
+			clientId: cfg.clientId,
 		});
-		expect(pub).not.toHaveProperty('clientId');
 		expect(pub).not.toHaveProperty('clientSecret');
 		expect(pub).not.toHaveProperty('oidcEndpoint');
 	});

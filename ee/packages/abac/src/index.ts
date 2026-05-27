@@ -535,14 +535,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 
-		await store.assertCanModifyRoom(room, actor);
-
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
 			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
 			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
 			return;
 		}
+
+		await store.assertCanModifyRoom(room, actor);
 
 		const normalized = validateAndNormalizeAttributes(attributes);
 
