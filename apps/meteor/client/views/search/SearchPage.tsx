@@ -3,7 +3,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useEndpoint, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState } from 'react';
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import MarkdownText from '../../components/MarkdownText';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { buildRoomSearchQuery, parseSearchFilterText } from '../../navbar/NavBarSearch/hooks/useSearchItems';
 
 type IntelligentResult = {
 	_id: string;
@@ -23,6 +24,8 @@ type IntelligentResult = {
 	u?: Pick<IUser, 'username' | 'name'>;
 	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
 };
+
+const roomLookupOptions = { sort: { lm: -1, name: 1 }, limit: 20 } as const;
 
 const formatMessageTime = (ts: Date | string | undefined): string => {
 	if (!ts) return '';
@@ -165,7 +168,24 @@ const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
 	const queryParam = useSearchParameter('q') ?? '';
 	const [intelligentCount, setIntelligentCount] = useState(8);
-	const debouncedQuery = useDebouncedValue(queryParam.trim(), 300);
+	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
+	const roomLookupQuery = useMemo(() => buildRoomSearchQuery(parsedSearch.filters.roomName || '', '#'), [parsedSearch.filters.roomName]);
+	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, roomLookupOptions);
+	const selectedRoom = useMemo(() => {
+		if (!parsedSearch.filters.roomName) {
+			return undefined;
+		}
+
+		return roomFilterRooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(parsedSearch.filters.roomName));
+	}, [parsedSearch.filters.roomName, roomFilterRooms]);
+	const resolvedFilters = useMemo(
+		() => ({
+			...parsedSearch.filters,
+			...(selectedRoom && { rid: selectedRoom.rid || selectedRoom._id }),
+		}),
+		[parsedSearch.filters, selectedRoom],
+	);
+	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
@@ -176,7 +196,14 @@ const SearchPage = (): ReactElement => {
 	}, [queryParam]);
 
 	const result = useQuery({
-		queryKey: ['search/intelligent/page', debouncedQuery, hasIntelligentSearchLicense, intelligentSearchEnabled, intelligentCount],
+		queryKey: [
+			'search/intelligent/page',
+			debouncedQuery,
+			resolvedFilters,
+			hasIntelligentSearchLicense,
+			intelligentSearchEnabled,
+			intelligentCount,
+		],
 		queryFn: () =>
 			unifiedSearch({
 				query: debouncedQuery,
@@ -185,6 +212,10 @@ const SearchPage = (): ReactElement => {
 				intelligentCount,
 				includeMessages: false,
 				includeIntelligent: Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled),
+				rid: resolvedFilters.rid,
+				fromUsername: resolvedFilters.fromUsername,
+				startDate: resolvedFilters.startDate,
+				endDate: resolvedFilters.endDate,
 			}),
 		enabled: Boolean(debouncedQuery),
 	});

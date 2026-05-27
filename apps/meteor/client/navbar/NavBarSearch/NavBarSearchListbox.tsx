@@ -1,8 +1,9 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -21,12 +22,13 @@ type NavBarSearchListBoxProps = {
 
 const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const containerRef = useRef<HTMLElement>(null);
 
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, watch } = useFormContext();
+	const { resetField, setValue, watch } = useFormContext<{ filterText: string }>();
 	const { filterText } = watch();
 
 	const debouncedFilter = useDebouncedValue(filterText, 500);
@@ -36,8 +38,24 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		resetField('filterText');
 	}, [resetField, state]);
 
-	const { data: items = { rooms: [], intelligent: [] }, isLoading } = useSearchItems(debouncedFilter);
-	const itemCount = items.rooms.length + items.intelligent.length;
+	const { data: items = { rooms: [], intelligent: [], filterSuggestions: [], searchText: '', filters: {} }, isLoading } =
+		useSearchItems(debouncedFilter);
+	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
+
+	const handleOpenAISearch = useCallback(() => {
+		router.navigate({
+			name: 'search',
+			search: filterText?.trim() ? { q: filterText.trim() } : {},
+		});
+		state.close();
+	}, [filterText, router, state]);
+
+	const handleFilterSuggestion = useCallback(
+		(value: string) => {
+			setValue('filterText', value, { shouldDirty: true });
+		},
+		[setValue],
+	);
 
 	return (
 		<Tile
@@ -58,12 +76,37 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.intelligent.length > 0 && (
-						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} pbs={8} mbe={4} role='presentation' aria-hidden>
-							{t('Intelligent_Search')}
+						<Box
+							display='flex'
+							flexDirection='column'
+							pbs={8}
+							pbe={12}
+							borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+						>
+							<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
+								{t('Intelligent_Search')}
+							</Box>
+							<Box color='hint' fontScale='c1' pi={12} mbe={4}>
+								{t('AI_Search_related_messages', { count: items.intelligent.length })}
+							</Box>
+							{items.intelligent.map((item) => (
+								<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={handleSelect} />
+							))}
+							<Box pi={12} pbs={4}>
+								<Button small onClick={handleOpenAISearch} title={t('Open_AI_Search')}>
+									{t('Open_AI_Search')}
+								</Button>
+							</Box>
 						</Box>
 					)}
-					{items.intelligent.map((item) => (
-						<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={handleSelect} />
+					{items.filterSuggestions.map((item) => (
+						<SidebarV2Item key={item.key} role='option' onClick={() => handleFilterSuggestion(item.value)}>
+							<SidebarV2ItemIcon icon={<Icon name='sort' size='x16' />} />
+							<SidebarV2ItemTitle>{item.title}</SidebarV2ItemTitle>
+							<Box color='hint' fontScale='c1' flexShrink={0}>
+								{item.description}
+							</Box>
+						</SidebarV2Item>
 					))}
 					{items.rooms.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>

@@ -1,7 +1,7 @@
 import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
-import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useRef } from 'react';
@@ -133,13 +133,14 @@ const NavBarSearch = () => {
 							) : (
 								<Icon name='magnifier' size='x16' aria-label={t('Search')} />
 							)}
-							<IconButton
+							<Button
 								mini
-								icon='stars'
-								aria-label={hasIntelligentSearchLicense ? t('Intelligent_Search') : t('Intelligent_Search_locked')}
-								title={hasIntelligentSearchLicense ? t('Intelligent_Search') : t('Contact_sales_for_Intelligent_Search')}
+								aria-label={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Intelligent_Search_locked')}
+								title={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Contact_sales_for_Intelligent_Search')}
 								onClick={handleIntelligentSearchClick}
-							/>
+							>
+								AI
+							</Button>
 						</Box>
 					}
 				/>
