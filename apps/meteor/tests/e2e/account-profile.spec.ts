@@ -80,6 +80,54 @@ test.describe.serial('settings-account-profile', () => {
 				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
 			});
 		});
+
+		test.describe('Phones', () => {
+			test.beforeEach(async ({ api }) => {
+				await api.post('/users.update', {
+					userId: Users.user3.data._id,
+					data: { phones: [] },
+				});
+			});
+
+			test('should add and persist multiple phones on account profile', async ({ page }) => {
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(0);
+				await poAccountProfile.phoneNumber.addPhone('+15554440001', 'Work');
+				await poAccountProfile.phoneNumber.addPhone('+15554440002', 'Home');
+
+				await poAccountProfile.btnSaveChanges.click();
+
+				await page.reload();
+
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(2);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('+15554440001');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(0)).toHaveValue('Work');
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(1)).toHaveValue('+15554440002');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(1)).toHaveValue('Home');
+			});
+
+			test('should remove a phone on account profile and persist result', async ({ api, page }) => {
+				await api.post('/users.update', {
+					userId: Users.user3.data._id,
+					data: {
+						phones: [
+							{ number: '+15554440001', label: 'Work', primary: true },
+							{ number: '+15554440002', label: 'Home', primary: false },
+						],
+					},
+				});
+
+				await page.reload();
+
+				await poAccountProfile.phoneNumber.removePhone(0);
+				await poAccountProfile.btnSaveChanges.click();
+
+				await page.reload();
+
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(1);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('+15554440002');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(0)).toHaveValue('Home');
+			});
+		});
 	});
 
 	test('Personal Access Tokens', async ({ page }) => {
