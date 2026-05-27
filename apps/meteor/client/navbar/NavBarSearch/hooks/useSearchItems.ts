@@ -22,6 +22,7 @@ export type NavBarSearchItems = {
 	rooms: SubscriptionWithRoom[];
 	intelligent: UnifiedSearchIntelligentResult[];
 	filterSuggestions: SearchFilterSuggestion[];
+	appliedFilters: SearchFilterChip[];
 	searchText: string;
 	filters: SearchFilters;
 };
@@ -44,6 +45,12 @@ export type SearchFilterSuggestion = {
 	value: string;
 };
 
+export type SearchFilterChip = {
+	key: string;
+	label: string;
+	nextFilterText: string;
+};
+
 export const emptySearchFilters = (): SearchFilters => ({ roomNames: [], rids: [], fromUsernames: [] });
 
 type ActiveFilter = {
@@ -54,6 +61,8 @@ type ActiveFilter = {
 };
 
 const FILTER_PATTERN = /(?:^|\s)(in|from|after|before):(?:"([^"]*)"|(\S+))/gi;
+
+const normalizeFilterText = (value: string): string => value.replace(/\s+/g, ' ').trimStart();
 
 export const parseSearchFilterText = (filterText: string): { searchText: string; filters: SearchFilters } => {
 	const filters: SearchFilters = emptySearchFilters();
@@ -109,11 +118,45 @@ const formatFilterValue = (key: ActiveFilter['key'], value: string): string => `
 const applyFilterToken = (filterText: string, activeFilter: ActiveFilter | undefined, key: ActiveFilter['key'], value: string): string => {
 	const token = formatFilterValue(key, value);
 	if (activeFilter) {
-		return `${filterText.slice(0, activeFilter.start)}${token} `.trimStart();
+		return normalizeFilterText(`${filterText.slice(0, activeFilter.start)}${token} `);
 	}
 
-	return `${filterText.trim()} ${token} `.trimStart();
+	return normalizeFilterText(`${filterText.trim()} ${token} `);
 };
+
+const getFilterChipLabel = (key: ActiveFilter['key'], value: string): string => {
+	switch (key) {
+		case 'in':
+			return `#${value}`;
+		case 'from':
+			return `@${value}`;
+		default:
+			return `${key}:${value}`;
+	}
+};
+
+export const buildAppliedFilterChips = (filterText: string): SearchFilterChip[] =>
+	Array.from(filterText.matchAll(FILTER_PATTERN))
+		.map((match) => {
+			const key = match[1].toLowerCase() as ActiveFilter['key'];
+			const value = String(match[2] || match[3] || '')
+				.replace(/^[@#]/, '')
+				.trim();
+
+			if (!value || match.index === undefined) {
+				return undefined;
+			}
+
+			const start = match.index;
+			const end = start + match[0].length;
+
+			return {
+				key: `${key}-${value}-${start}`,
+				label: getFilterChipLabel(key, value),
+				nextFilterText: normalizeFilterText(`${filterText.slice(0, start)} ${filterText.slice(end)}`),
+			};
+		})
+		.filter(Boolean) as SearchFilterChip[];
 
 const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
 
@@ -168,6 +211,27 @@ const buildFilterSuggestions = (
 	return getDateFilterSuggestions(filterText, activeFilter, activeFilter.key);
 };
 
+const buildUserFilterSuggestions = (
+	filterText: string,
+	activeFilter: ActiveFilter | undefined,
+	users: {
+		_id: string;
+		name?: string;
+		username: string;
+	}[],
+): SearchFilterSuggestion[] => {
+	if (activeFilter?.key !== 'from') {
+		return [];
+	}
+
+	return users.slice(0, 5).map((user) => ({
+		key: `from-${user._id}`,
+		title: `@${user.username}`,
+		description: user.name || 'Search messages from this user',
+		value: applyFilterToken(filterText, activeFilter, 'from', user.username),
+	}));
+};
+
 export const buildRoomSearchQuery = (value: string, mention?: string) => {
 	const filterRegex = new RegExp(escapeRegExp(value), 'i');
 
@@ -189,6 +253,10 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 		() => (hasIntelligentSearchLicense ? parseSearchFilterText(filterText) : { searchText: filterText, filters: emptySearchFilters() }),
 		[filterText, hasIntelligentSearchLicense],
 	);
+	const appliedFilters = useMemo(
+		() => (hasIntelligentSearchLicense ? buildAppliedFilterChips(filterText) : []),
+		[filterText, hasIntelligentSearchLicense],
+	);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
 	const activeFilter = useMemo(
 		() => (hasIntelligentSearchLicense ? getActiveFilter(filterText) : undefined),
@@ -200,7 +268,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 		}
 
 		if (activeFilter?.key === 'in') {
-			return activeFilter.value;
+			return activeFilter.value.replace(/^#/, '');
 		}
 
 		return filters.roomNames[filters.roomNames.length - 1] || '';
@@ -255,6 +323,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 			searchText,
 			resolvedFilters,
 			filterSuggestions,
+			appliedFilters,
 			usernamesFromClient,
 			type,
 			hasIntelligentSearchLicense,
@@ -287,8 +356,24 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 				intelligent = result.intelligent;
 			}
 
+			const nextFilterSuggestions =
+				activeFilter?.key === 'from'
+					? buildUserFilterSuggestions(
+							filterText,
+							activeFilter,
+							(await getSpotlight(activeFilter.value.replace(/^@/, ''), [], { users: true, rooms: false })).users,
+						)
+					: filterSuggestions;
+
 			if (localRooms.length === LIMIT) {
-				return { rooms: localRooms, intelligent, filterSuggestions, searchText, filters: resolvedFilters };
+				return {
+					rooms: localRooms,
+					intelligent,
+					filterSuggestions: nextFilterSuggestions,
+					appliedFilters,
+					searchText,
+					filters: resolvedFilters,
+				};
 			}
 
 			const spotlight = await getSpotlight(name, usernamesFromClient, type);
@@ -342,7 +427,8 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 			return {
 				rooms: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])),
 				intelligent,
-				filterSuggestions,
+				filterSuggestions: nextFilterSuggestions,
+				appliedFilters,
 				searchText,
 				filters: resolvedFilters,
 			};
@@ -350,6 +436,6 @@ export const useSearchItems = (filterText: string): UseQueryResult<NavBarSearchI
 
 		staleTime: 60_000,
 		placeholderData: (previousData) =>
-			previousData ?? { rooms: localRooms, intelligent: [], filterSuggestions, searchText, filters: resolvedFilters },
+			previousData ?? { rooms: localRooms, intelligent: [], filterSuggestions, appliedFilters, searchText, filters: resolvedFilters },
 	});
 };

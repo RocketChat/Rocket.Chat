@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, Chip, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -44,6 +44,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			rooms: [],
 			intelligent: [],
 			filterSuggestions: [],
+			appliedFilters: [],
 			searchText: '',
 			filters: { roomNames: [], rids: [], fromUsernames: [] },
 		},
@@ -60,6 +61,16 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	}, [filterText, router, state]);
 
 	const handleFilterSuggestion = useCallback(
+		(event: MouseEvent, value: string) => {
+			event.preventDefault();
+			event.stopPropagation();
+			setValue('filterText', value, { shouldDirty: true });
+			setFocus('filterText');
+		},
+		[setFocus, setValue],
+	);
+
+	const handleRemoveFilter = useCallback(
 		(event: MouseEvent, value: string) => {
 			event.preventDefault();
 			event.stopPropagation();
@@ -86,7 +97,32 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} />
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
-					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
+					{items.appliedFilters.length > 0 && (
+						<Box
+							display='flex'
+							flexWrap='wrap'
+							alignItems='center'
+							pi={12}
+							pbs={8}
+							pbe={8}
+							style={{ gap: 4 }}
+							borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+						>
+							<Box color='hint' fontScale='c1' mie={4}>
+								{t('Filters')}:
+							</Box>
+							{items.appliedFilters.map((filter) => (
+								<Chip
+									key={filter.key}
+									height='x20'
+									value={filter.label}
+									onClick={(event) => handleRemoveFilter(event, filter.nextFilterText)}
+								>
+									{filter.label}
+								</Chip>
+							))}
+						</Box>
+					)}
 					{items.intelligent.length > 0 && (
 						<Box
 							display='flex'
@@ -120,6 +156,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 							</Box>
 						</SidebarV2Item>
 					))}
+					{itemCount === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.rooms.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 							{filterText ? t('Results') : t('Recent')}
