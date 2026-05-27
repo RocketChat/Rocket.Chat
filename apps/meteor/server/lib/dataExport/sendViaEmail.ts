@@ -29,7 +29,7 @@ export async function sendViaEmail(
 			projection: { 'username': 1, 'emails.address': 1 },
 		}).toArray()
 	).forEach((user: IUser) => {
-		const emailAddress = user.emails?.[0].address;
+		const emailAddress = user.emails?.[0]?.address;
 
 		if (!emailAddress) {
 			return;
@@ -67,9 +67,8 @@ export async function sendViaEmail(
 	)
 		.map((message: IMessage) => {
 			const dateTime = moment(message.ts).locale(lang).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${
-				message.u.username
-			}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${Message.parse(message, data.language)}</p>`;
+			return `<p style='margin-bottom: 5px'><b>${message.u.username
+				}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${Message.parse(message, data.language)}</p>`;
 		})
 		.join('');
 
