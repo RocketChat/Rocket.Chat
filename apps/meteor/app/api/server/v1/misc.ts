@@ -643,6 +643,7 @@ API.v1.addRoute(
 	'fingerprint',
 	{
 		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
 		validateParams: isFingerprintProps,
 	},
 	{
