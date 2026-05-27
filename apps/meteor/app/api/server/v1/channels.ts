@@ -64,12 +64,12 @@ async function findChannelByIdOrName({
 	userId,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	userId?: string;
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
@@ -432,19 +432,17 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+			const { mentions, total } = await getUserMentionsByChannel(this.userId, roomId, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
-
 			return API.v1.success({
 				mentions,
 				count: mentions.length,
 				offset,
-				total: allMentions.length,
+				total,
 			});
 		},
 	},
