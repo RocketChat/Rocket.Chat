@@ -78,13 +78,17 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const conversation = new Set();
 			const onHold = new Set();
 			const customCategoryRooms = new Map<string, Set<SubscriptionWithRoom>>();
-			const customCategoryOrder = userRoomCategories.map((category) => category.name);
+			// Drop user categories whose name collides with a built-in section key, otherwise
+			// `groups.set(categoryName, ...)` below would silently overwrite (or be overwritten by)
+			// the built-in section, and rooms placed in those categories would disappear.
+			const safeUserRoomCategories = userRoomCategories.filter((category) => !SIDEBAR_BUILTIN_GROUP_KEYS.has(category.name));
+			const customCategoryOrder = safeUserRoomCategories.map((category) => category.name);
 			const roomIdToCategoryName = new Map<string, string>();
 
-			for (const category of userRoomCategories) {
+			for (const category of safeUserRoomCategories) {
 				customCategoryRooms.set(category.name, new Set());
 				for (const roomId of category.roomIds ?? []) {
-					// Deterministic mapping: first category in `userRoomCategories` wins.
+					// Deterministic mapping: first category in `safeUserRoomCategories` wins.
 					if (!roomIdToCategoryName.has(roomId)) {
 						roomIdToCategoryName.set(roomId, category.name);
 					}

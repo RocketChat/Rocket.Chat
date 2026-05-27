@@ -24,102 +24,80 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 			throw new Error('Category name is required');
 		}
 
-		const existing = await this.findByUserId(userId);
-
-		if (existing?.categories.some((c) => c.name === trimmedName)) {
-			throw new Error('Category already exists');
-		}
-
-		return this.updateOne(
-			{ userId },
-			{
-				$push: {
-					categories: {
-						$each: [{ name: trimmedName, roomIds: [] }],
-						$position: 0,
+		// Atomic conditional upsert: only push when no category with this name exists.
+		// If a doc exists for the user but the category is already there, the filter does not
+		// match, the upsert path is taken, and the unique `userId` index forces an E11000.
+		try {
+			return await this.updateOne(
+				{ userId, 'categories.name': { $ne: trimmedName } },
+				{
+					$push: {
+						categories: {
+							$each: [{ name: trimmedName, roomIds: [] }],
+							$position: 0,
+						},
 					},
+					$setOnInsert: { userId },
 				},
-			},
-			{ upsert: true },
-		);
+				{ upsert: true },
+			);
+		} catch (error: any) {
+			if (error?.code === 11000) {
+				throw new Error('Category already exists');
+			}
+			throw error;
+		}
 	}
 
 	async addRoomToCategory(userId: string, categoryName: string, roomId: string): Promise<UpdateResult> {
-		const doc = await this.findByUserId(userId);
-		if (!doc) {
-			throw new Error('User categories document not found');
-		}
-
 		const trimmedCategoryName = categoryName.trim();
 		const trimmedRoomId = roomId.trim();
 
-		const categoryExists = doc.categories.some((c) => c.name === trimmedCategoryName);
-		if (!categoryExists) {
+		// Step 1: atomically add the roomId to the target category. The filter requires the
+		// category to exist, so a missing doc/category yields matchedCount = 0.
+		const result = await this.updateOne(
+			{ userId, 'categories.name': trimmedCategoryName },
+			{ $addToSet: { 'categories.$.roomIds': trimmedRoomId } },
+		);
+
+		if (result.matchedCount === 0) {
 			throw new Error('Category not found');
 		}
 
-		const categoriesWithoutRoom = doc.categories.map((c) => ({
-			...c,
-			roomIds: (c.roomIds ?? []).filter((rid) => rid !== trimmedRoomId),
-		}));
+		// Step 2: atomically remove the roomId from any other category that may contain it,
+		// preserving the single-category invariant.
+		await this.updateOne(
+			{ userId },
+			{ $pull: { 'categories.$[other].roomIds': trimmedRoomId } },
+			{ arrayFilters: [{ 'other.name': { $ne: trimmedCategoryName } }] },
+		);
 
-		const targetIndex = categoriesWithoutRoom.findIndex((c) => c.name === trimmedCategoryName);
-		const target = categoriesWithoutRoom[targetIndex];
-
-		categoriesWithoutRoom[targetIndex] = {
-			...target,
-			roomIds: Array.from(new Set([...(target?.roomIds ?? []), trimmedRoomId])),
-		};
-
-		return this.updateOne({ userId }, { $set: { categories: categoriesWithoutRoom } });
+		return result;
 	}
 
 	async removeRoomFromCategory(userId: string, categoryName: string, roomId: string): Promise<UpdateResult> {
-		const doc = await this.findByUserId(userId);
-		if (!doc) {
-			throw new Error('User categories document not found');
-		}
-
 		const trimmedCategoryName = categoryName.trim();
 		const trimmedRoomId = roomId.trim();
 
-		const targetIndex = doc.categories.findIndex((c) => c.name === trimmedCategoryName);
-		if (targetIndex === -1) {
+		const result = await this.updateOne(
+			{ userId, 'categories.name': trimmedCategoryName },
+			{ $pull: { 'categories.$.roomIds': trimmedRoomId } },
+		);
+
+		if (result.matchedCount === 0) {
 			throw new Error('Category not found');
 		}
 
-		const categories = doc.categories.map((c, index) => {
-			if (index !== targetIndex) {
-				return c;
-			}
-
-			return {
-				...c,
-				roomIds: (c.roomIds ?? []).filter((rid) => rid !== trimmedRoomId),
-			};
-		});
-
-		return this.updateOne({ userId }, { $set: { categories } });
+		return result;
 	}
 
 	async removeCategory(userId: string, name: string): Promise<UpdateResult> {
-		const doc = await this.findByUserId(userId);
-		if (!doc) {
-			throw new Error('User categories document not found');
-		}
-
 		const trimmedName = name.trim();
-		const categories = doc.categories.filter((c) => c.name !== trimmedName);
 
-		return this.updateOne({ userId }, { $set: { categories } });
+		return this.updateOne({ userId }, { $pull: { categories: { name: trimmedName } } });
 	}
 
 	async renameCategory(userId: string, oldName: string, newName: string): Promise<UpdateResult> {
-		const doc = await this.findByUserId(userId);
-		if (!doc) {
-			throw new Error('User categories document not found');
-		}
-
 		const trimmedOldName = oldName.trim();
 		const trimmedNewName = newName.trim();
 
@@ -127,17 +105,29 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 			throw new Error('oldName and newName are required');
 		}
 
-		const targetIndex = doc.categories.findIndex((c) => c.name === trimmedOldName);
-		if (targetIndex === -1) {
+		// Atomic conditional rename: oldName must exist AND newName must not. The positional
+		// `$` matches the element selected by `'categories.name': trimmedOldName`.
+		const result = await this.updateOne(
+			{
+				userId,
+				'categories.name': trimmedOldName,
+				categories: { $not: { $elemMatch: { name: trimmedNewName } } },
+			},
+			{ $set: { 'categories.$.name': trimmedNewName } },
+		);
+
+		if (result.matchedCount === 0) {
+			// Disambiguate the failure for the API layer.
+			const doc = await this.findByUserId(userId);
+			if (!doc) {
+				throw new Error('User categories document not found');
+			}
+			if (doc.categories.some((c) => c.name === trimmedNewName)) {
+				throw new Error('Category already exists');
+			}
 			throw new Error('Category not found');
 		}
 
-		if (doc.categories.some((c) => c.name === trimmedNewName)) {
-			throw new Error('Category already exists');
-		}
-
-		const categories = doc.categories.map((c, index) => (index === targetIndex ? { ...c, name: trimmedNewName } : c));
-
-		return this.updateOne({ userId }, { $set: { categories } });
+		return result;
 	}
 }
