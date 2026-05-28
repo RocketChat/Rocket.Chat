@@ -65,6 +65,10 @@ export const useHasNewMessages = (
 				if (msg.tmid) {
 					return;
 				}
+				if (isEditedMessage(msg)) {
+					return;
+				}
+
 				if (msg.u._id === uid) {
 					// If there are more next messages, jump to the recent messages
 					if (RoomHistoryManager.hasMoreNext(rid)) {

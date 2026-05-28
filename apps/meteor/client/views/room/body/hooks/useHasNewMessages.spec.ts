@@ -155,6 +155,27 @@ describe('useHasNewMessages', () => {
 		expect(result.current.hasNewMessages).toBe(false);
 	});
 
+	it('should NOT jump to bottom when afterSaveMessage fires for current user editing their own message', () => {
+		renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+
+		const editedOwnMsg: IEditedMessage = {
+			_id: 'msg-edit',
+			rid,
+			u: { _id: uid, username: 'current-user', name: 'Current User' },
+			msg: 'Edited message',
+			ts: new Date(),
+			_updatedAt: new Date(),
+			editedAt: new Date(),
+			editedBy: { _id: uid, username: 'current-user' },
+		};
+
+		const afterSaveCallbacks = clientCallbacks.getCallbacks('afterSaveMessage');
+		act(() => {
+			afterSaveCallbacks.forEach((callback) => callback(editedOwnMsg));
+		});
+		expect(setShouldJumpToBottom).not.toHaveBeenCalled();
+	});
+
 	it('should clear hasNewMessages when afterSaveMessage fires for current user', () => {
 		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
 			wrapper: mockAppRoot().build(),
