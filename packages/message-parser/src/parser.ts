@@ -1,6 +1,18 @@
 import type { Root, Inlines } from './definitions';
 import type { Options } from './index';
-import { paragraph, plain, lineBreak, reducePlainTexts, inlineCode, bold, italic, strike } from './utils';
+import {
+	paragraph,
+	plain,
+	lineBreak,
+	reducePlainTexts,
+	inlineCode,
+	bold,
+	italic,
+	strike,
+	heading,
+	mentionChannel,
+	mentionUser,
+} from './utils';
 import { Scanner } from './scanner';
 import { isAlpha, isAlphaNum, isNewline, isPlainChar, isSpace } from './chars';
 
@@ -36,11 +48,18 @@ export function parse(input: string, options: Options = {}): Root {
 				root.push(lineBreak());
 			}
 		} else {
-			// Re-scan properly through parseInline
 			scanner.restore(start);
-			const inlines = parseInline(scanner, options);
-			if (inlines.length > 0) {
-				root.push(paragraph(inlines));
+
+			// Try block-level rules first
+			const headingNode: any = tryHeading(scanner, options);
+			if (headingNode !== null) {
+				root.push(headingNode);
+			} else {
+				// Fall back to inline paragraph
+				const inlines = parseInline(scanner, options);
+				if (inlines.length > 0) {
+					root.push(paragraph(inlines));
+				}
 			}
 		}
 
@@ -120,6 +139,28 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 				nodes.push(result);
 				prevChar = '~';
 				continue;
+			}
+		}
+
+		// User mention
+		if (ch === '@') {
+			const result = tryUserMention(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '@';
+				continue;
+			}
+		}
+
+		// Channel mention — only when preceded by space or start
+		if (ch === '#') {
+			if (prevChar === '' || isSpace(prevChar)) {
+				const result = tryChannelMention(scanner);
+				if (result !== null) {
+					nodes.push(result);
+					prevChar = '#';
+					continue;
+				}
 			}
 		}
 
@@ -210,6 +251,28 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 				nodes.push(result);
 				prevChar = '~';
 				continue;
+			}
+		}
+
+		// User mention
+		if (ch === '@') {
+			const result = tryUserMention(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '@';
+				continue;
+			}
+		}
+
+		// Channel mention — only when preceded by space or start
+		if (ch === '#') {
+			if (prevChar === '' || isSpace(prevChar)) {
+				const result = tryChannelMention(scanner);
+				if (result !== null) {
+					nodes.push(result);
+					prevChar = '#';
+					continue;
+				}
 			}
 		}
 
@@ -410,4 +473,100 @@ function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 
 	scanner.advance(delimiter.length);
 	return strike(reducePlainTexts(content) as any);
+}
+
+function tryHeading(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	// Count # characters (max 4)
+	let level = 0;
+	while (level < 4 && scanner.char() === '#') {
+		level++;
+		scanner.advance();
+	}
+
+	if (level === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Must be followed by at least one space or tab
+	if (!isSpace(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Skip all leading spaces/tabs
+	while (isSpace(scanner.char())) {
+		scanner.advance();
+	}
+
+	// Must have content after the spaces
+	if (scanner.isEnd() || isNewline(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Parse heading content as inline
+	const inlines = parseInline(scanner, options);
+
+	return heading(inlines, level as 1 | 2 | 3 | 4);
+}
+
+function tryChannelMention(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+
+	// consume '#'
+	scanner.advance();
+
+	const nameStart = scanner.save();
+
+	// channel name: alphanumeric, dash, dot, underscore
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		const ch = scanner.char();
+		if (!isAlphaNum(ch) && ch !== '-' && ch !== '_' && ch !== '.') break;
+		scanner.advance();
+	}
+
+	const name = scanner.sliceFrom(nameStart);
+
+	if (name.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return mentionChannel(name);
+}
+
+function tryUserMention(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	scanner.advance();
+
+	const nameStart = scanner.save();
+
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		const ch = scanner.char();
+		const code = ch.charCodeAt(0);
+		// Allow: alphanumeric, dot, dash, underscore, colon, @, non-ASCII
+		if (isAlphaNum(ch) || ch === '.' || ch === '-' || ch === '_' || ch === ':' || ch === '@' || code > 127) {
+			scanner.advance();
+		} else {
+			break;
+		}
+	}
+
+	const name = scanner.sliceFrom(nameStart);
+
+	if (name.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Must not end with double underscore (grammar rule)
+	if (name.endsWith('__')) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return mentionUser(name);
 }
