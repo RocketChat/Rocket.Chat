@@ -23,6 +23,8 @@ import {
 	isUsersRequestDataDownloadParamsGET,
 	isUsersGetPresenceParamsGET,
 	isUsersGetStatusParamsGET,
+	isUsersBlockParamsPOST,
+	isUsersUnblockParamsPOST,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -53,6 +55,7 @@ import { executeSetUserActiveStatus } from '../../../../server/methods/setUserAc
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { blockUserMethod } from '../../../lib/server/functions/blockUser';
 import { checkEmailAvailability } from '../../../lib/server/functions/checkEmailAvailability';
 import {
 	checkUsernameAvailability,
@@ -70,6 +73,7 @@ import { canEditExtension } from '../../../lib/server/functions/saveUser/validat
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { unblockUserMethod } from '../../../lib/server/functions/unblockUser';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
 import { validateUsername } from '../../../lib/server/functions/validateUsername';
@@ -1805,6 +1809,44 @@ API.v1
 				return API.v1.success();
 			}
 			await resetTOTP(this.userId, false);
+			return API.v1.success();
+		},
+	)
+	.post(
+		'users.block',
+		{
+			authRequired: true,
+			body: isUsersBlockParamsPOST,
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid, userId } = this.bodyParams;
+
+			await blockUserMethod(this.userId, { rid, blocked: userId });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'users.unblock',
+		{
+			authRequired: true,
+			body: isUsersUnblockParamsPOST,
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid, userId } = this.bodyParams;
+
+			await unblockUserMethod(this.userId, { rid, blocked: userId });
+
 			return API.v1.success();
 		},
 	);

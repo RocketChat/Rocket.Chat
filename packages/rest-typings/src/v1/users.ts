@@ -8,6 +8,7 @@ import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
+import type { UsersBlockParamsPOST } from './users/UsersBlockParamsPOST';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
@@ -15,6 +16,7 @@ import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
+import type { UsersUnblockParamsPOST } from './users/UsersUnblockParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 
@@ -371,6 +373,14 @@ export type UsersEndpoints = {
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
 	};
+
+	'/v1/users.block': {
+		POST: (params: UsersBlockParamsPOST) => void;
+	};
+
+	'/v1/users.unblock': {
+		POST: (params: UsersUnblockParamsPOST) => void;
+	};
 };
 
 export * from './users/UserCreateParamsPOST';
@@ -384,3 +394,5 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersBlockParamsPOST';
+export * from './users/UsersUnblockParamsPOST';
