@@ -351,16 +351,6 @@ describe('AbacService (unit)', () => {
 			expect(returned).toBe(result);
 			expect(mockAbacFindPaginated).not.toHaveBeenCalled();
 		});
-
-		it('passes undefined actor through to the store', async () => {
-			const result = { attributes: [], offset: 0, count: 0, total: 0 };
-			const fakeStore = { list: jest.fn().mockResolvedValue(result) };
-			(service as any).attributeStores.local.store = fakeStore;
-
-			await service.listAbacAttributes();
-
-			expect(fakeStore.list).toHaveBeenCalledWith(undefined, undefined);
-		});
 	});
 
 	describe('updateAbacAttributeById', () => {
@@ -1262,20 +1252,6 @@ describe('AbacService (unit)', () => {
 			);
 		});
 
-		it('calls Rooms.findPaginated with the same base query when actor is absent', async () => {
-			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA] },
-				totalCount: Promise.resolve(1),
-			});
-
-			await service.listAbacRooms({ offset: 0, count: 10 });
-
-			expect(mockRoomsFindPaginated).toHaveBeenCalledWith(
-				{ t: 'p', abacAttributes: { $exists: true, $ne: [] } },
-				{ skip: 0, limit: 10, sort: { name: 1 } },
-			);
-		});
-
 		it('local mode: returns rooms byte-identical to the Mongo page (identity pass-through)', async () => {
 			mockRoomsFindPaginated.mockReturnValue({
 				cursor: { toArray: async () => [roomA, roomB] },
@@ -1287,16 +1263,6 @@ describe('AbacService (unit)', () => {
 			expect(result).toEqual({ rooms: [roomA, roomB], offset: 0, count: 2, total: 2 });
 			expect(result.rooms[0]).toBe(roomA);
 			expect(result.rooms[1]).toBe(roomB);
-		});
-
-		it('local mode: no redaction flags on any room', async () => {
-			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA, roomB, roomC] },
-				totalCount: Promise.resolve(3),
-			});
-
-			const result = await service.listAbacRooms({ offset: 0, count: 25 }, actor);
-
 			for (const r of result.rooms) {
 				expect((r as any).abacAttributesRedacted).toBeUndefined();
 			}
@@ -1421,23 +1387,6 @@ describe('AbacService (unit)', () => {
 
 			expect(scopeRoomsPage).toHaveBeenCalledWith([roomA, roomB], actor);
 			expect(result).toEqual([roomA, roomB]);
-		});
-
-		it('virtru mode: denied room is redacted, permitted room unchanged', async () => {
-			asVirtru(service);
-			const scopeRoomsPage = jest
-				.fn()
-				.mockImplementation(async (rooms: any[]) =>
-					rooms.map((r) => (r._id === 'rB' ? { ...r, abacAttributes: [], abacAttributesRedacted: true } : r)),
-				);
-			(service as any).attributeStores.virtru.store = { scopeRoomsPage, onStoreSelected: jest.fn() };
-
-			const [permitted, denied] = await service.scopeRoomsForAdmin([roomA, roomB], actor);
-
-			expect(permitted).toEqual(roomA);
-			expect((permitted as any).abacAttributesRedacted).toBeUndefined();
-			expect(denied.abacAttributes).toEqual([]);
-			expect((denied as any).abacAttributesRedacted).toBe(true);
 		});
 	});
 

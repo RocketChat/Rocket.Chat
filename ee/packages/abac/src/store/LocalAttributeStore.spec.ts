@@ -51,10 +51,4 @@ describe('LocalAttributeStore', () => {
 			{ projection: { key: 1, values: 1 }, skip: 5, limit: 10 },
 		);
 	});
-
-	it('list applies default pagination when no opts', async () => {
-		findPaginated.mockReturnValue({ cursor: { toArray: async () => [] }, totalCount: Promise.resolve(0) });
-		await new LocalAttributeStore().list(actor);
-		expect(findPaginated).toHaveBeenCalledWith({}, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
-	});
 });

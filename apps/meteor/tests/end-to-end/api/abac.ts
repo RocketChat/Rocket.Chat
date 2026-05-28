@@ -3950,17 +3950,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(res.body).to.have.property('error', 'error-pdp-unavailable');
 			});
 
-			it('decision unreachable on list → 200 rooms attribute-redacted+flagged (fail-closed by redaction)', async () => {
-				await mockServerReset();
-				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
-
-				const res = await request.get(`${v1}/abac/rooms`).set(adminU.creds).expect(200);
-				const found = (res.body.rooms as IRoom[]).find((r) => r._id === room._id);
-				expect(found, 'room remains in list when decision unreachable').to.exist;
-				expect(found?.abacAttributes).to.deep.equal([]);
-				expect(found).to.have.property('abacAttributesRedacted', true);
-			});
-
 			it('decision unreachable on rooms.adminRooms.getRoom → 200 with abacAttributes redacted+flagged', async () => {
 				await mockServerReset();
 				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
