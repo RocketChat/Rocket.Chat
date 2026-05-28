@@ -30,6 +30,7 @@ async function createCustomSound(fileName: string, filePath: string): Promise<st
 	return fileId;
 }
 
+// TODO migrate to POST /v1/custom-sounds.delete once the helper is moved off the DDP method proxy.
 async function deleteCustomSound(_id: string) {
 	await request.post(api('custom-sounds.delete')).set(credentials).send({ _id }).expect(200);
 }

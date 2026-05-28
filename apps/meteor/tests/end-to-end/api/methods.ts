@@ -3251,6 +3251,7 @@ describe('Meteor.methods', () => {
 		});
 	});
 
+	// TODO migrate these three cases to POST /v1/settings.bulk once the deprecated DDP method is removed.
 	describe('[@saveSettings]', () => {
 		it('should return an error when trying to save a "NaN" value', () => {
 			void request
