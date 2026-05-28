@@ -714,10 +714,15 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAdminRoomsProps,
 		response: {
-			200: ajv.compile<{ rooms: IRoom[]; count: number; offset: number; total: number }>({
+			200: ajv.compile<{
+				rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
+				count: number;
+				offset: number;
+				total: number;
+			}>({
 				type: 'object',
 				properties: {
-					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields
+					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields + optional ABAC redaction
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },

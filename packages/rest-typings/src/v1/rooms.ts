@@ -902,7 +902,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.adminRooms': {
-		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
+		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction> }>;
 	};
 
 	'/v1/rooms.adminRooms.getRoom': {

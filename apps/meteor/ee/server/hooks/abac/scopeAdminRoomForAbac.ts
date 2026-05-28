@@ -12,9 +12,9 @@ scopeAdminRoomForAbac.patch(async (next, room, uid) => {
 
 	const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1, name: 1 } });
 	if (!user) {
-		return next(room, uid);
+		return { ...room, abacAttributes: [], abacAttributesRedacted: true };
 	}
 
 	const [scoped] = await Abac.scopeRoomsForAdmin([room], { _id: user._id, username: user.username, name: user.name });
-	return scoped ?? next(room, uid);
+	return scoped ?? { ...room, abacAttributes: [], abacAttributesRedacted: true };
 });

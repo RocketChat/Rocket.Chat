@@ -3,6 +3,7 @@ import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { scopeAdminRoomForAbac } from './scopeAdminRoomForAbac';
+import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
@@ -18,7 +19,7 @@ export async function findAdminRooms({
 	types: Array<RoomType | 'discussions' | 'teams'>;
 	pagination: { offset: number; count: number; sort: Sort };
 }): Promise<{
-	rooms: IRoom[];
+	rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
 	count: number;
 	offset: number;
 	total: number;
@@ -50,7 +51,7 @@ export async function findAdminRooms({
 	]);
 
 	return {
-		rooms,
+		rooms: await scopeAdminRoomsForAbac(rooms, uid),
 		count: rooms.length,
 		offset,
 		total,
