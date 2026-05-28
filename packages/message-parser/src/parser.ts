@@ -12,15 +12,17 @@ import {
 	heading,
 	mentionChannel,
 	mentionUser,
+	code,
+	codeLine,
 } from './utils';
 import { Scanner } from './scanner';
-import { isAlpha, isAlphaNum, isNewline, isPlainChar, isSpace } from './chars';
+import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum } from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ESCAPABLE = new Set(['*', '_', '~', '`', '#', '.']);
 
-// ─── Re-entrancy guards (mirrors PeggyJS skip flags) ──────────────────────────
+// ─── Re-entrancy guards ───────────────────────────────────────────────────────
 
 let skipBold = false;
 let skipItalic = false;
@@ -51,11 +53,16 @@ export function parse(input: string, options: Options = {}): Root {
 			scanner.restore(start);
 
 			// Try block-level rules first
+			const codeFenceNode: any = tryCodeFence(scanner);
+			if (codeFenceNode !== null) {
+				root.push(codeFenceNode);
+				continue;
+			}
+
 			const headingNode: any = tryHeading(scanner, options);
 			if (headingNode !== null) {
 				root.push(headingNode);
 			} else {
-				// Fall back to inline paragraph
 				const inlines = parseInline(scanner, options);
 				if (inlines.length > 0) {
 					root.push(paragraph(inlines));
@@ -76,6 +83,110 @@ export function parse(input: string, options: Options = {}): Root {
 	return root;
 }
 
+// ─── Block: Code Fence ────────────────────────────────────────────────────────
+
+function tryCodeFence(scanner: Scanner): Root[number] | null {
+	const start = scanner.save();
+
+	if (!scanner.matches('```')) {
+		return null;
+	}
+	scanner.advance(3);
+
+	// Optional language tag
+	const langStart = scanner.save();
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		scanner.advance();
+	}
+	const language = scanner.sliceFrom(langStart).trim();
+
+	// Must be followed by newline
+	if (scanner.isEnd()) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Consume newline after opening ```
+	if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+		scanner.advance(2);
+	} else {
+		scanner.advance(1);
+	}
+
+	const lines: ReturnType<typeof codeLine>[] = [];
+
+	while (!scanner.isEnd()) {
+		// Check for closing ```
+		if (scanner.matches('```')) {
+			scanner.advance(3);
+			// Consume any trailing content after closing ```
+			while (!scanner.isEnd() && !isNewline(scanner.char())) {
+				scanner.advance();
+			}
+			return code(lines, language || undefined);
+		}
+
+		// Collect line content
+		const lineStart = scanner.save();
+		while (!scanner.isEnd() && !isNewline(scanner.char())) {
+			scanner.advance();
+		}
+		const lineText = scanner.sliceFrom(lineStart);
+		lines.push(codeLine(plain(lineText)));
+
+		// Consume newline
+		if (!scanner.isEnd()) {
+			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+				scanner.advance(2);
+			} else {
+				scanner.advance(1);
+			}
+		}
+	}
+
+	// Never found closing ``` → backtrack
+	scanner.restore(start);
+	return null;
+}
+
+// ─── Block: Heading ───────────────────────────────────────────────────────────
+
+function tryHeading(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	// Count # characters (max 4)
+	let level = 0;
+	while (level < 4 && scanner.char() === '#') {
+		level++;
+		scanner.advance();
+	}
+
+	if (level === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Must be followed by at least one space or tab
+	if (!isSpace(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Skip all spaces/tabs
+	while (isSpace(scanner.char())) {
+		scanner.advance();
+	}
+
+	// Must have content
+	if (scanner.isEnd() || isNewline(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	const inlines = parseInline(scanner, options);
+	return heading(inlines, level as 1 | 2 | 3 | 4);
+}
+
 // ─── Inline parser ────────────────────────────────────────────────────────────
 
 function parseInline(scanner: Scanner, options: Options): Inlines[] {
@@ -90,8 +201,8 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
 				scanner.advance(2);
-				prevChar = next;
 				nodes.push(plain(next));
+				prevChar = next;
 				continue;
 			}
 			nodes.push(plain('\\'));
@@ -120,7 +231,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Italic — only if not preceded by alphanumeric
+		// Italic — only when not preceded by alphanumeric
 		if (ch === '_') {
 			if (!isAlphaNum(prevChar)) {
 				const result = tryItalic(scanner, options);
@@ -185,8 +296,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 	return reducePlainTexts(nodes);
 }
 
-// ─── Inner content parser (used inside bold, italic, strike) ──────────────────
-// Parses inline content stopping at a given delimiter string.
+// ─── Inner content parser ─────────────────────────────────────────────────────
 
 function parseInlineContent(scanner: Scanner, options: Options, stopChar: string): Inlines[] {
 	const nodes: Inlines[] = [];
@@ -232,7 +342,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Italic — only if not preceded by alphanumeric
+		// Italic
 		if (ch === '_') {
 			if (!isAlphaNum(prevChar)) {
 				const result = tryItalic(scanner, options);
@@ -264,7 +374,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Channel mention — only when preceded by space or start
+		// Channel mention
 		if (ch === '#') {
 			if (prevChar === '' || isSpace(prevChar)) {
 				const result = tryChannelMention(scanner);
@@ -334,7 +444,6 @@ function tryBold(scanner: Scanner, options: Options): Inlines | null {
 		return null;
 	}
 
-	// Whitespace-only content → plain fallback
 	const isWhitespaceOnly = content.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
 	if (isWhitespaceOnly) {
 		scanner.restore(start);
@@ -345,44 +454,18 @@ function tryBold(scanner: Scanner, options: Options): Inlines | null {
 	return bold(reducePlainTexts(content) as any);
 }
 
-// ─── Inline code ──────────────────────────────────────────────────────────────
-
-function tryInlineCode(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	scanner.advance(); // consume opening '`'
-
-	const contentStart = scanner.save();
-	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '`') {
-		scanner.advance();
-	}
-
-	if (scanner.isEnd() || isNewline(scanner.char()) || scanner.char() !== '`') {
-		scanner.restore(start);
-		return null;
-	}
-
-	const content = scanner.sliceFrom(contentStart);
-	if (content.length === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	scanner.advance(); // consume closing '`'
-	return inlineCode(plain(content));
-}
+// ─── Italic ───────────────────────────────────────────────────────────────────
 
 function tryItalic(scanner: Scanner, options: Options): Inlines | null {
 	if (skipItalic) return null;
 
 	const start = scanner.save();
 
-	// Detect _ or __
 	const isDouble = scanner.matches('__');
 	const delimiter = isDouble ? '__' : '_';
 
 	scanner.advance(delimiter.length);
 
-	// Cannot start italic and immediately end/newline
 	if (scanner.isEnd() || isNewline(scanner.char())) {
 		scanner.restore(start);
 		return null;
@@ -392,49 +475,46 @@ function tryItalic(scanner: Scanner, options: Options): Inlines | null {
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipItalic = false;
 
-	// Closing delimiter missing
 	if (!scanner.matches(delimiter)) {
 		scanner.restore(start);
 		return null;
 	}
 
-	// Empty italic like "__"
 	if (content.length === 0) {
 		scanner.restore(start);
 		return null;
 	}
 
-	// Ignore whitespace-only italic
 	const isWhitespaceOnly = content.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
-
 	if (isWhitespaceOnly) {
 		scanner.restore(start);
 		return null;
 	}
 
-	// "__hello__text" → plain text
+	// Double underscore followed by alphanumeric → not italic
 	if (isDouble && isAlphaNum(scanner.charAt(delimiter.length))) {
 		scanner.restore(start);
 		return null;
 	}
 
-	// "_hello_text" → plain text
+	// Single underscore followed by alpha → not italic
 	if (!isDouble && isAlpha(scanner.charAt(delimiter.length))) {
 		scanner.restore(start);
 		return null;
 	}
 
 	scanner.advance(delimiter.length);
-
 	return italic(reducePlainTexts(content) as any);
 }
+
+// ─── Strikethrough ────────────────────────────────────────────────────────────
 
 function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 	if (skipStrike) return null;
 
 	const start = scanner.save();
 
-	// Triple tilde: emit plain('~') and let next iteration handle '~~'
+	// Triple tilde: emit plain('~')
 	if (scanner.matches('~~~')) {
 		scanner.advance(1);
 		return plain('~');
@@ -464,7 +544,6 @@ function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 		return null;
 	}
 
-	// Whitespace-only → plain fallback
 	const isWhitespaceOnly = content.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
 	if (isWhitespaceOnly) {
 		scanner.restore(start);
@@ -475,79 +554,43 @@ function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 	return strike(reducePlainTexts(content) as any);
 }
 
-function tryHeading(scanner: Scanner, options: Options): Root[number] | null {
+// ─── Inline code ──────────────────────────────────────────────────────────────
+
+function tryInlineCode(scanner: Scanner): Inlines | null {
 	const start = scanner.save();
+	scanner.advance(); // consume opening '`'
 
-	// Count # characters (max 4)
-	let level = 0;
-	while (level < 4 && scanner.char() === '#') {
-		level++;
+	const contentStart = scanner.save();
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '`') {
 		scanner.advance();
 	}
 
-	if (level === 0) {
+	if (scanner.isEnd() || isNewline(scanner.char()) || scanner.char() !== '`') {
 		scanner.restore(start);
 		return null;
 	}
 
-	// Must be followed by at least one space or tab
-	if (!isSpace(scanner.char())) {
+	const content = scanner.sliceFrom(contentStart);
+	if (content.length === 0) {
 		scanner.restore(start);
 		return null;
 	}
 
-	// Skip all leading spaces/tabs
-	while (isSpace(scanner.char())) {
-		scanner.advance();
-	}
-
-	// Must have content after the spaces
-	if (scanner.isEnd() || isNewline(scanner.char())) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// Parse heading content as inline
-	const inlines = parseInline(scanner, options);
-
-	return heading(inlines, level as 1 | 2 | 3 | 4);
+	scanner.advance(); // consume closing '`'
+	return inlineCode(plain(content));
 }
 
-function tryChannelMention(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-
-	// consume '#'
-	scanner.advance();
-
-	const nameStart = scanner.save();
-
-	// channel name: alphanumeric, dash, dot, underscore
-	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
-		const ch = scanner.char();
-		if (!isAlphaNum(ch) && ch !== '-' && ch !== '_' && ch !== '.') break;
-		scanner.advance();
-	}
-
-	const name = scanner.sliceFrom(nameStart);
-
-	if (name.length === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	return mentionChannel(name);
-}
+// ─── User mention ─────────────────────────────────────────────────────────────
 
 function tryUserMention(scanner: Scanner): Inlines | null {
 	const start = scanner.save();
-	scanner.advance();
+	scanner.advance(); // consume '@'
 
 	const nameStart = scanner.save();
 
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
 		const ch = scanner.char();
 		const code = ch.charCodeAt(0);
-		// Allow: alphanumeric, dot, dash, underscore, colon, @, non-ASCII
 		if (isAlphaNum(ch) || ch === '.' || ch === '-' || ch === '_' || ch === ':' || ch === '@' || code > 127) {
 			scanner.advance();
 		} else {
@@ -562,11 +605,34 @@ function tryUserMention(scanner: Scanner): Inlines | null {
 		return null;
 	}
 
-	// Must not end with double underscore (grammar rule)
 	if (name.endsWith('__')) {
 		scanner.restore(start);
 		return null;
 	}
 
 	return mentionUser(name);
+}
+
+// ─── Channel mention ──────────────────────────────────────────────────────────
+
+function tryChannelMention(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	scanner.advance(); // consume '#'
+
+	const nameStart = scanner.save();
+
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		const ch = scanner.char();
+		if (!isAlphaNum(ch) && ch !== '-' && ch !== '_' && ch !== '.') break;
+		scanner.advance();
+	}
+
+	const name = scanner.sliceFrom(nameStart);
+
+	if (name.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return mentionChannel(name);
 }
