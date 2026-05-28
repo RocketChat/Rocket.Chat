@@ -24,9 +24,6 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 			throw new Error('Category name is required');
 		}
 
-		// Atomic conditional upsert: only push when no category with this name exists.
-		// If a doc exists for the user but the category is already there, the filter does not
-		// match, the upsert path is taken, and the unique `userId` index forces an E11000.
 		try {
 			return await this.updateOne(
 				{ userId, 'categories.name': { $ne: trimmedName } },
@@ -53,24 +50,20 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 		const trimmedCategoryName = categoryName.trim();
 		const trimmedRoomId = roomId.trim();
 
-		// Step 1: atomically add the roomId to the target category. The filter requires the
-		// category to exist, so a missing doc/category yields matchedCount = 0.
 		const result = await this.updateOne(
 			{ userId, 'categories.name': trimmedCategoryName },
-			{ $addToSet: { 'categories.$.roomIds': trimmedRoomId } },
+			{
+				$addToSet: { 'categories.$[target].roomIds': trimmedRoomId },
+				$pull: { 'categories.$[other].roomIds': trimmedRoomId },
+			},
+			{
+				arrayFilters: [{ 'target.name': trimmedCategoryName }, { 'other.name': { $ne: trimmedCategoryName } }],
+			},
 		);
 
 		if (result.matchedCount === 0) {
 			throw new Error('Category not found');
 		}
-
-		// Step 2: atomically remove the roomId from any other category that may contain it,
-		// preserving the single-category invariant.
-		await this.updateOne(
-			{ userId },
-			{ $pull: { 'categories.$[other].roomIds': trimmedRoomId } },
-			{ arrayFilters: [{ 'other.name': { $ne: trimmedCategoryName } }] },
-		);
 
 		return result;
 	}
@@ -105,8 +98,6 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 			throw new Error('oldName and newName are required');
 		}
 
-		// Atomic conditional rename: oldName must exist AND newName must not. The positional
-		// `$` matches the element selected by `'categories.name': trimmedOldName`.
 		const result = await this.updateOne(
 			{
 				userId,
@@ -117,7 +108,6 @@ export class UserRoomCategoriesRaw extends BaseRaw<IUserRoomCategories> implemen
 		);
 
 		if (result.matchedCount === 0) {
-			// Disambiguate the failure for the API layer.
 			const doc = await this.findByUserId(userId);
 			if (!doc) {
 				throw new Error('User categories document not found');

@@ -6484,6 +6484,7 @@
   "error-user-not-in-room": "User is not in this room",
   "error-user-registration-disabled": "User registration is disabled",
   "error-user-registration-secret": "User registration is only allowed via Secret URL",
+  "error-user-room-category-name-reserved": "This category name is reserved by a built-in sidebar section",
   "error-validating-department-chat-closing-tags": "At least one closing tag is required when the department requires tag(s) on closing conversations.",
   "error-videoconf-cant-start-call-with-manager-busy": "Unable to start a new call due to the current state of other calls.",
   "error-videoconf-direct-call-accept-canceled": "The remote user hang up before we had time to accept the call.",

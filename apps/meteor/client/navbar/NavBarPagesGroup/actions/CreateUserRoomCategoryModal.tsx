@@ -19,6 +19,7 @@ import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-context
 import type { FormEvent } from 'react';
 import { useId, useState } from 'react';
 
+import { isReservedSidebarGroupName } from '../../../../lib/sidebarBuiltinGroups';
 import { useUserRoomCategories } from '../../../hooks/useUserRoomCategories';
 
 type CreateUserRoomCategoryModalProps = {
@@ -41,6 +42,10 @@ const CreateUserRoomCategoryModal = ({ onClose }: CreateUserRoomCategoryModalPro
 		const trimmed = name.trim();
 		if (!trimmed) {
 			setError(t('User_room_category_name_required'));
+			return;
+		}
+		if (isReservedSidebarGroupName(trimmed)) {
+			setError(t('error-user-room-category-name-reserved'));
 			return;
 		}
 		setError(undefined);

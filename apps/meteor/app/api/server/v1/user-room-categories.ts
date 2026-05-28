@@ -3,6 +3,7 @@ import { UserRoomCategories } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
+import { isReservedSidebarGroupName } from '../../../../lib/sidebarBuiltinGroups';
 import { API } from '../api';
 
 const createCategoryBodySchema = ajv.compile<{ name: string }>({
@@ -84,6 +85,10 @@ API.v1.post(
 
 		if (!categoryName) {
 			return API.v1.failure('Category name is required');
+		}
+
+		if (isReservedSidebarGroupName(categoryName)) {
+			return API.v1.failure('error-user-room-category-name-reserved');
 		}
 
 		await UserRoomCategories.createCategory(this.userId, categoryName);
@@ -189,6 +194,10 @@ API.v1.post(
 
 		if (!trimmedOldName || !trimmedNewName) {
 			return API.v1.failure('oldName and newName are required');
+		}
+
+		if (isReservedSidebarGroupName(trimmedNewName)) {
+			return API.v1.failure('error-user-room-category-name-reserved');
 		}
 
 		await UserRoomCategories.renameCategory(this.userId, trimmedOldName, trimmedNewName);

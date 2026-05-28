@@ -6,6 +6,7 @@ import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.cha
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
+import { SIDEBAR_BUILTIN_GROUP_KEYS, SIDEBAR_BUILTIN_GROUP_ORDER } from '../../../lib/sidebarBuiltinGroups';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useUserRoomCategories } from '../../hooks/useUserRoomCategories';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -15,23 +16,10 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-const order = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-	'Drafts',
-	'Favorites',
-	'Teams',
-	'Discussions',
-	'Channels',
-	'Direct_Messages',
-	'Conversations',
-] as const;
+const order = SIDEBAR_BUILTIN_GROUP_ORDER;
 
 /** Known sidebar section keys (i18n); any other `groupTitle` is a user-defined room category name. */
-export const SIDEBAR_BUILTIN_GROUP_KEYS = new Set<string>(order);
+export { SIDEBAR_BUILTIN_GROUP_KEYS };
 
 type useRoomListReturnType = {
 	roomList: Array<SubscriptionWithRoom>;
