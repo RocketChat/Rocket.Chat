@@ -12,6 +12,7 @@ import {
 	validateNotFoundErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateInternalErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -302,6 +303,7 @@ const customSoundsEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
 				404: validateNotFoundErrorResponse,
+				500: validateInternalErrorResponse,
 			},
 			authRequired: true,
 			body: isCustomSoundsDeleteProps,
@@ -316,7 +318,12 @@ const customSoundsEndpoints = API.v1
 				return API.v1.success({});
 			} catch (error: any) {
 				SystemLogger.error({ error });
-				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
+
+				if (error.error === 'Custom_Sound_Error_Invalid_Sound') {
+					return API.v1.failure('Custom Sound not found.');
+				}
+
+				return API.v1.internalError<any>();
 			}
 		},
 	);
