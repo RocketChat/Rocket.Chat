@@ -3,7 +3,7 @@ import EJSON from 'ejson';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { createMeteorBackedSdk } from './meteorBackedSdk';
+import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
 import { getRootUrl } from '../meteorRuntimeConfig';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from './storage';

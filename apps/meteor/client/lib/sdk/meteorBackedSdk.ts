@@ -272,7 +272,7 @@ const createMeteorBackedAccount = () => {
 	} as unknown as DDPSDK['account'];
 };
 
-const createMeteorBackedStorage = () => {
+export const createMeteorBackedStorage = () => {
 	return {
 		changeStorageBackend: () => {
 			setStorageBackend(window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local');
