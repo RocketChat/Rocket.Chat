@@ -389,7 +389,10 @@ const spotlightResponseSchema = ajv.compile<{
 API.v1.get(
 	'spotlight',
 	{
-		authRequired: true,
+		// DDP `spotlight` accepts anonymous calls (Accounts_AllowAnonymousRead).
+		// Keep parity so anonymous-user / embedded-layout flows can still
+		// resolve a public channel through the navbar search.
+		authRequired: false,
 		query: isSpotlightProps,
 		response: {
 			200: spotlightResponseSchema,
