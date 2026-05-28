@@ -2,16 +2,18 @@ import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typin
 import { getObjectKeys } from '@rocket.chat/tools';
 import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
+import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { roomFields } from '../../../../lib/publishFields';
+import { RoomManager } from '../../../lib/RoomManager';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
-import { Rooms } from '../../../stores';
+import { Rooms, Subscriptions } from '../../../stores';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -22,11 +24,48 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
 
+	// Try to resolve the reference to a known rid using locally cached subscriptions and rooms.
+	// Returns null when the cache can't safely answer (anonymous user, public preview, DM redirect
+	// from a username URL, missing record). The caller still validates side effects.
+	const tryCacheShortcut = useCallback((): { rid: IRoom['_id'] } | undefined => {
+		if (!user?._id || !reference || !type) {
+			return undefined;
+		}
+		const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
+		if (!sub) {
+			return undefined;
+		}
+		const room = Rooms.state.get(sub.rid);
+		if (!room) {
+			return undefined;
+		}
+		// DM URLs that still reference a username (rather than the rid) need the redirect path in
+		// queryFn — let the server resolve.
+		if (type === 'd' && reference !== sub.rid) {
+			return undefined;
+		}
+		// Skip when the user hasn't actually opened the subscription yet; queryFn will call
+		// openRoom.mutateAsync to flip sub.open.
+		if (sub.open === false) {
+			return undefined;
+		}
+		return { rid: sub.rid };
+	}, [reference, type, user?._id]);
+
 	const result = useQuery({
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
 		queryKey: roomsQueryKeys.roomReference(reference, type, user?._id, user?.username),
 
+		// Render immediately from local cache when we already know the rid; queryFn still runs in
+		// the background to revalidate permissions / fetch fresh room fields.
+		placeholderData: tryCacheShortcut,
+
 		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
+			const cached = tryCacheShortcut();
+			if (cached) {
+				LegacyRoomManager.open({ typeName: type + reference, rid: cached.rid });
+				return cached;
+			}
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
 			}
@@ -58,8 +97,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const { Rooms, Subscriptions } = await import('../../../stores');
-
 			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
 			unsetKeys.forEach((key) => {
 				delete roomData[key];
@@ -72,8 +109,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new TypeError('room is undefined');
 			}
 
-			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
-
 			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
 
 			if (reference !== undefined && room._id !== reference && type === 'd') {
@@ -82,8 +117,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				directRoute.push({ rid: room._id }, (prev) => prev);
 				throw new OldUrlRoomError(undefined, { rid: room._id });
 			}
-
-			const { RoomManager } = await import('../../../lib/RoomManager');
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
 			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
