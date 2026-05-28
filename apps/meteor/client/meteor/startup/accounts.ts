@@ -1,10 +1,8 @@
-import { Accounts } from 'meteor/accounts-base';
-
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
-import { setStorageBackend } from '../../lib/sdk/storage';
+import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
 import { settings } from '../../lib/settings';
 import { dispatchToastMessage } from '../../lib/toast';
 import { userIdStore } from '../../lib/user';
@@ -50,37 +48,24 @@ const whenMainReady = (): Promise<void> => {
 	});
 };
 
-const FORGET_SESSION_SETTING_ID = 'Accounts_ForgetUserSessionOnWindowClose';
-
 let configuredStorageBackend: 'local' | 'session' | undefined;
 
-const configureAccountsStorage = (clientStorage: 'local' | 'session'): void => {
-	(
-		Accounts as unknown as {
-			config: (options: { clientStorage: 'local' | 'session' }) => void;
-		}
-	).config({ clientStorage });
-};
-
 const applyForgetSessionOnWindowClose = (): void => {
-	const storageBackend = settings.peek<boolean>(FORGET_SESSION_SETTING_ID) ? 'session' : 'local';
+	const forgetSession = settings.peek<boolean>(FORGET_SESSION_SETTING_ID) ?? window[FORGET_SESSION_SETTING_ID];
+
+	const storageBackend = forgetSession ? 'session' : 'local';
 
 	if (configuredStorageBackend === storageBackend) {
 		return;
 	}
+	window[FORGET_SESSION_SETTING_ID] = forgetSession;
+	getDdpSdk().storage.changeStorageBackend();
 
-	if (!setStorageBackend(storageBackend)) {
-		return;
-	}
-
-	configureAccountsStorage(storageBackend);
 	configuredStorageBackend = storageBackend;
 };
 
 applyForgetSessionOnWindowClose();
 settings.observe(FORGET_SESSION_SETTING_ID, applyForgetSessionOnWindowClose);
-PublicSettingsCachedStore.useReady.subscribe(applyForgetSessionOnWindowClose);
-userIdStore.subscribe(applyForgetSessionOnWindowClose);
 
 getDdpSdk().account.onEmailVerificationLink(async (token: string) => {
 	try {

@@ -53,6 +53,8 @@ export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
 			instance = DDPSDK.create(computeDdpUrl());
+			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
+			instance.storage = createMeteorBackedStorage();
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {

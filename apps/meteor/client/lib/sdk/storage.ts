@@ -32,11 +32,11 @@ const getStorage = (): Storage | undefined => {
 	return getStorageForBackend(storageBackend);
 };
 
-export const getStoredItem = (key: string): string | null => getStorage()?.getItem(key) ?? null;
+export const getStoredItem = (key: StorageKey): string | null => getStorage()?.getItem(key) ?? null;
 
-export const setStoredItem = (key: string, value: string): void => getStorage()?.setItem(key, value);
+export const setStoredItem = (key: StorageKey, value: string): void => getStorage()?.setItem(key, value);
 
-export const removeStoredItem = (key: string): void => getStorage()?.removeItem(key);
+export const removeStoredItem = (key: StorageKey): void => getStorage()?.removeItem(key);
 
 let storageBackend: StorageBackend = 'local';
 
@@ -90,6 +90,7 @@ const moveLoginKeys = (backend: StorageBackend): boolean => {
 			continue;
 		}
 	}
+	sourceStorage.clear();
 
 	return true;
 };

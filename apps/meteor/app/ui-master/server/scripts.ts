@@ -32,9 +32,13 @@ window.addEventListener('Custom_Script_Logged_In', function() {
 window.addEventListener('Custom_Script_On_Logout', function() {
 	${settings.get('Custom_Script_On_Logout')}
 })
-`;
 
-settings.watchMultiple(['Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout'], () => {
-	const content = getContent();
-	addScript('scripts', content);
-});
+${settings.get('Accounts_ForgetUserSessionOnWindowClose') ? `window.Accounts_ForgetUserSessionOnWindowClose = true;` : ''}`;
+
+settings.watchMultiple(
+	['Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout', 'Accounts_ForgetUserSessionOnWindowClose'],
+	() => {
+		const content = getContent();
+		addScript('scripts', content);
+	},
+);

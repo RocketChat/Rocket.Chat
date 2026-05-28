@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { parseDDP } from './ddpProtocol';
+import { setStorageBackend } from './storage';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -271,12 +272,42 @@ const createMeteorBackedAccount = () => {
 	} as unknown as DDPSDK['account'];
 };
 
+const createMeteorBackedStorage = () => {
+	return {
+		changeStorageBackend: () => {
+			setStorageBackend(window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local');
+			(Meteor._localStorage as unknown as Storage) = window[FORGET_SESSION_SETTING_ID] ? window.sessionStorage : window.localStorage;
+			Accounts.config({ clientStorage: window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local' });
+		},
+	};
+};
+
+export const FORGET_SESSION_SETTING_ID = 'Accounts_ForgetUserSessionOnWindowClose';
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		[FORGET_SESSION_SETTING_ID]?: boolean;
+	}
+}
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface DDPSDK {
+		storage: {
+			changeStorageBackend: () => void;
+		};
+	}
+}
+
 export const createMeteorBackedSdk = (): DDPSDK => {
 	const connection = createMeteorBackedConnection();
 	const client = createMeteorBackedClient();
 	const account = createMeteorBackedAccount();
+	const storage = createMeteorBackedStorage();
 
 	return {
+		storage,
 		connection,
 		client,
 		account,
