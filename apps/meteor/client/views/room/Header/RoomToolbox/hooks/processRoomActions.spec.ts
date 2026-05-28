@@ -1,7 +1,7 @@
-import { processActions } from './layoutEngine';
-import type { RoomToolboxLayoutConfig } from './layoutEngine.types';
+import { processRoomActions } from './processRoomActions';
+import type { RoomToolboxLayoutConfig } from './processRoomActions';
 
-describe('RoomToolbox Layout Engine (processActions)', () => {
+describe('RoomToolbox Layout Engine (processRoomActions)', () => {
 	it('should isolate featured items into featuredActions', () => {
 		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
 		const config = {
@@ -11,7 +11,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 				{ id: 'start-call', featured: true, order: 5 },
 			],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.featuredActions.map((a) => a.id)).toEqual(['start-call']);
 	});
 	it('should respect maxVisibleNormal limit and sort items by order', () => {
@@ -25,7 +25,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 				{ id: 'members-list', featured: false, order: 7 },
 			],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.visibleActions.map((a) => a.id)).toEqual(['team-info', 'members-list']);
 		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
 		expect(hiddenIds).toContain('thread');
@@ -37,7 +37,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 			maxVisibleNormal: 6,
 			items: [{ id: 'app-star-actions', featured: false, order: 1 }],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.visibleActions).toHaveLength(0);
 		expect(result.hiddenActions).toMatchObject([
 			{
@@ -52,7 +52,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 			maxVisibleNormal: 6,
 			items: [{ id: 'legacy-action', featured: false, order: 1 }],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		const allRenderedIds = [
 			...result.featuredActions.map((a) => a.id),
 			...result.visibleActions.map((a) => a.id),
@@ -63,7 +63,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 	it('should safely fall back to legacy ordering if the provided layout config is invalid or empty', () => {
 		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
 		const config = null;
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.visibleActions.length).toBeGreaterThan(0);
 	});
 	it('should return base actions unchanged when the config has no items', () => {
@@ -71,7 +71,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 		const config = {
 			items: [],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result).toEqual({
 			featuredActions: [],
 			visibleActions: actionsBase,
@@ -81,7 +81,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 	it('should return base actions unchanged when items is missing from the config object', () => {
 		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
 		const config: RoomToolboxLayoutConfig = {};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result).toEqual({
 			featuredActions: [],
 			visibleActions: actionsBase,
@@ -101,14 +101,14 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 				{ id: '7', featured: false, order: 7 },
 			],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.visibleActions).toHaveLength(6);
 		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
 		expect(hiddenIds).toEqual(['7']);
 	});
 	it('should force app actions into hiddenActions even when config is null', () => {
 		const actionsBase = [{ id: 'app-x', type: 'apps' }, { id: 'thread' }];
-		const result = processActions(actionsBase, null);
+		const result = processRoomActions(actionsBase, null);
 		expect(result.visibleActions.map((a) => a.id)).toEqual(['thread']);
 		expect(result.hiddenActions).toMatchObject([{ id: 'apps', items: [{ id: 'app-x' }] }]);
 	});
@@ -122,7 +122,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 				{ id: 'search', featured: false, order: 10 },
 			],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
 	});
 	it('should treat negative maxVisibleNormal as 0, hiding all normal actions', () => {
@@ -134,7 +134,7 @@ describe('RoomToolbox Layout Engine (processActions)', () => {
 				{ id: 'search', featured: false, order: 2 },
 			],
 		};
-		const result = processActions(actionsBase, config);
+		const result = processRoomActions(actionsBase, config);
 		expect(result.visibleActions).toHaveLength(0);
 		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
 		expect(hiddenIds).toEqual(['thread', 'search']);

@@ -1,6 +1,26 @@
-import type { RoomToolboxLayoutConfig, RoomToolboxBaseAction, RoomToolboxHiddenSection } from './layoutEngine.types';
+export type RoomToolboxLayoutItem = {
+	id: string;
+	featured: boolean;
+	order: number;
+};
 
-export const processActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
+export type RoomToolboxLayoutConfig = {
+	maxVisibleNormal?: number;
+	items?: RoomToolboxLayoutItem[];
+};
+
+export type RoomToolboxBaseAction = {
+	id: string;
+	type?: string;
+	[key: string]: unknown;
+};
+
+export type RoomToolboxHiddenSection = {
+	id: string;
+	items: RoomToolboxBaseAction[];
+};
+
+export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
 	const appActions = actionsBase.filter((a) => a.type === 'apps');
 	const nonAppActions = actionsBase.filter((a) => a.type !== 'apps');
 
@@ -18,22 +38,20 @@ export const processActions = (actionsBase: RoomToolboxBaseAction[], config: Roo
 
 	const itemMap = new Map(config.items.map((item) => [item.id, item]));
 
-	const featuredWithOrder: { action: RoomToolboxBaseAction; order: number }[] = [];
-	const normalWithOrder: { action: RoomToolboxBaseAction; order: number }[] = [];
-
-	nonAppActions.forEach((action) => {
-		const configItem = itemMap.get(action.id);
-
-		if (configItem) {
-			if (configItem.featured) {
-				featuredWithOrder.push({ action, order: configItem.order });
+	const [featuredWithOrder, normalWithOrder] = nonAppActions.reduce<
+		[{ action: RoomToolboxBaseAction; order: number }[], { action: RoomToolboxBaseAction; order: number }[]]
+	>(
+		(acc, action) => {
+			const configItem = itemMap.get(action.id);
+			if (configItem?.featured) {
+				acc[0].push({ action, order: configItem.order });
 			} else {
-				normalWithOrder.push({ action, order: configItem.order });
+				acc[1].push({ action, order: configItem?.order ?? 9999 });
 			}
-		} else {
-			normalWithOrder.push({ action, order: 9999 });
-		}
-	});
+			return acc;
+		},
+		[[], []],
+	);
 
 	featuredWithOrder.sort((a, b) => a.order - b.order);
 	normalWithOrder.sort((a, b) => a.order - b.order);
