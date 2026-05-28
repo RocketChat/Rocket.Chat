@@ -8,6 +8,6 @@ export * from './request-call';
 export * from './transfer';
 
 // WebRTC P2P-specific signals (SDP, ICE, renegotiation).
-export * from './webrtc';
+export type * from './webrtc';
 
 export * from './MediaSignal';

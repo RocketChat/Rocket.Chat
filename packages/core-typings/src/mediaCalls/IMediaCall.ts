@@ -121,4 +121,3 @@ export interface IMediaCall extends IRocketChatRecord {
 		storage: 'local' | 's3' | 'filestore' | 'both';
 	};
 }
-

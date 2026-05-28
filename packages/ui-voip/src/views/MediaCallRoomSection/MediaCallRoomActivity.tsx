@@ -15,10 +15,11 @@ type MediaCallRoomActivityProps = {
 	 * provider; group calls pass a LiveKit-driven provider instead. Keeps the rest of
 	 * the activity (layout, showChat, ResizeObserver, etc.) shared across both call kinds.
 	 */
-	Provider?: ComponentType<{ children: ReactNode }>;
+	provider?: ComponentType<{ children: ReactNode }>;
 };
 
-const MediaCallRoomActivity = ({ children, Provider = MediaCallViewProvider }: MediaCallRoomActivityProps) => {
+const MediaCallRoomActivity = ({ children, provider = MediaCallViewProvider }: MediaCallRoomActivityProps) => {
+	const Provider = provider;
 	const [showChat, setShowChat] = useState(true);
 	const user = useUser();
 

@@ -1,12 +1,6 @@
+/* eslint-disable react/no-multi-comp */
+import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
-import {
-	LiveKitRoom,
-	RoomAudioRenderer,
-	useLocalParticipant,
-	useParticipants,
-	useRoomContext,
-	useTracks,
-} from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -112,16 +106,13 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 
 	const onToggleMic = useCallback(() => void localParticipant.setMicrophoneEnabled(!micEnabled), [localParticipant, micEnabled]);
 	const onToggleCamera = useCallback(() => void localParticipant.setCameraEnabled(!camEnabled), [localParticipant, camEnabled]);
-	const onToggleScreen = useCallback(
-		() => void localParticipant.setScreenShareEnabled(!screenEnabled),
-		[localParticipant, screenEnabled],
-	);
+	const onToggleScreen = useCallback(() => void localParticipant.setScreenShareEnabled(!screenEnabled), [localParticipant, screenEnabled]);
 
 	const ctxValue = useMemo(
 		() => ({
 			sessionState: {
 				state: 'ongoing' as const,
-				connectionState: (room.state === 'connected' ? 'CONNECTED' : 'CONNECTING') as 'CONNECTED' | 'CONNECTING',
+				connectionState: room.state === 'connected' ? 'CONNECTED' : 'CONNECTING',
 				peerInfo: undefined,
 				transferredBy: undefined,
 				hidden: false,

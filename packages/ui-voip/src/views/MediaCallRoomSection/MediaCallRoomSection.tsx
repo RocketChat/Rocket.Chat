@@ -2,6 +2,7 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ParticipantCards from './ParticipantCards';
 import {
 	ToggleButton,
 	Timer,
@@ -16,40 +17,9 @@ import {
 	ActionStrip,
 	ActionToggleChat,
 } from '../../components';
-import { useMediaCallView, type RemoteParticipantInfo } from '../../context/MediaCallViewContext';
+import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
-
-/**
- * Cards for a single remote participant: their avatar tile (with embedded
- * camera video if active) and, when present, a separate StreamCard for their
- * screen share.
- */
-const ParticipantCards = ({ participant }: { participant: RemoteParticipantInfo }) => {
-	const [cameraRefCallback] = usePlayMediaStream(participant.cameraStream ?? null);
-	const [screenRefCallback] = usePlayMediaStream(participant.screenStream ?? null);
-	const cameraActive = Boolean(participant.cameraStream);
-	const screenActive = Boolean(participant.screenStream);
-	return (
-		<>
-			<PeerCard
-				displayName={participant.displayName}
-				avatarUrl={participant.avatarUrl}
-				muted={participant.muted}
-				held={participant.held}
-				videoActive={cameraActive}
-				videoRef={cameraRefCallback}
-			/>
-			{screenActive && (
-				<StreamCard autoHeight maxHeight={240}>
-					<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={screenRefCallback}>
-						<track kind='captions' />
-					</video>
-				</StreamCard>
-			)}
-		</>
-	);
-};
 
 type MediaCallRoomSectionProps = {
 	showChat: boolean;
@@ -111,7 +81,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 				if (!res.ok || cancelled) return;
 				const data = await res.json();
 				setIsRecording(Boolean(data.recording));
-			} catch {}
+			} catch {
+				// recording status is best-effort; transient fetch failures are non-fatal
+			}
 		};
 		void fetchStatus();
 		const interval = setInterval(fetchStatus, 5000);
@@ -231,15 +203,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 					pressed={isRecording}
 					onToggle={onToggleRecording}
 				/>
-				{isOneOnOne && (
-					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
-				)}
-				<ActionButton
-					label={t('Voice_call__user__hangup', { user: hangupTarget })}
-					icon='phone-off'
-					danger
-					onClick={onEndCall}
-				/>
+				{isOneOnOne && <ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />}
+				<ActionButton label={t('Voice_call__user__hangup', { user: hangupTarget })} icon='phone-off' danger onClick={onEndCall} />
 			</ActionStrip>
 		</Box>
 	);

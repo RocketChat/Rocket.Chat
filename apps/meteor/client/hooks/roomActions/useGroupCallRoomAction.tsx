@@ -1,5 +1,5 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Button, Icon } from '@rocket.chat/fuselage';
 import type { RoomToolboxActionConfig, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMediaCallInstance, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
@@ -58,7 +58,7 @@ const leaveGroupRequest = async (callId: string) => {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json', ...headersOf() },
 		body: JSON.stringify({ callId }),
-	}).catch(() => {});
+	});
 };
 
 /**
@@ -138,6 +138,7 @@ export const useGroupCallRoomAction = (): RoomToolboxActionConfig | undefined =>
 
 		return {
 			id: 'start-group-call',
+			// eslint-disable-next-line no-nested-ternary
 			title: (inCallHere ? 'Leave_call' : hasJoinable ? 'Join_call' : 'Start_call') as TranslationKey,
 			icon: inCallHere ? 'phone-off' : 'phone',
 			featured: true,

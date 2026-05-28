@@ -1,9 +1,24 @@
-import { MediaCalls as MediaCallsModel, Rooms } from '@rocket.chat/models';
 import { randomUUID } from 'crypto';
+
+import { MediaCalls as MediaCallsModel, Rooms } from '@rocket.chat/models';
+import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../app/api/server/api';
 import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { settings } from '../../../app/settings/server';
+
+const looseSuccessSchema = ajv.compile<Record<string, unknown>>({ type: 'object', additionalProperties: true });
+const looseSuccessResponse = {
+	200: looseSuccessSchema,
+	400: validateBadRequestErrorResponse,
+	401: validateUnauthorizedErrorResponse,
+	403: validateForbiddenErrorResponse,
+};
 
 /**
  * Starts a new group call in a room. Idempotent: if there's already an active
@@ -13,12 +28,16 @@ import { settings } from '../../../app/settings/server';
  */
 API.v1.post(
 	'media-calls.startGroup',
-	{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
 	async function action() {
 		const { roomId } = this.bodyParams as { roomId?: string };
 		if (!roomId) return API.v1.failure('invalid-params');
 
-		const userId = this.userId;
+		const { userId } = this;
 		const room = await Rooms.findOneById(roomId);
 		if (!room) return API.v1.failure('invalid-room');
 
@@ -39,7 +58,7 @@ API.v1.post(
 			return API.v1.success({ call: existing, alreadyActive: true });
 		}
 
-		const user = this.user;
+		const { user } = this;
 		const createdBy = {
 			type: 'user' as const,
 			id: userId,
@@ -83,14 +102,18 @@ API.v1.post(
  */
 API.v1.post(
 	'media-calls.joinGroup',
-	{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
 	async function action() {
 		const { callId } = this.bodyParams as { callId?: string };
 		if (!callId) return API.v1.failure('invalid-params');
 
-		const userId = this.userId;
+		const { userId } = this;
 		const call = await MediaCallsModel.findOneById(callId);
-		if (!call || call.kind !== 'group' || call.ended) return API.v1.failure('invalid-call');
+		if (call?.kind !== 'group' || call.ended) return API.v1.failure('invalid-call');
 		if (!call.rid) return API.v1.failure('invalid-call');
 
 		// Permission: must have room access.
@@ -99,7 +122,7 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
-		const user = this.user;
+		const { user } = this;
 		await MediaCallsModel.addGroupParticipant(callId, {
 			type: 'user',
 			id: userId,
@@ -119,12 +142,16 @@ API.v1.post(
  */
 API.v1.get(
 	'media-calls.activeInRoom',
-	{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
 	async function action() {
 		const { roomId } = this.queryParams as { roomId?: string };
 		if (!roomId) return API.v1.failure('invalid-params');
 
-		const userId = this.userId;
+		const { userId } = this;
 		const room = await Rooms.findOneById(roomId);
 		if (!room || !(await canAccessRoomAsync(room, { _id: userId }))) {
 			return API.v1.forbidden();
@@ -141,14 +168,18 @@ API.v1.get(
  */
 API.v1.post(
 	'media-calls.leaveGroup',
-	{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
 	async function action() {
 		const { callId } = this.bodyParams as { callId?: string };
 		if (!callId) return API.v1.failure('invalid-params');
 
-		const userId = this.userId;
+		const { userId } = this;
 		const call = await MediaCallsModel.findOneById(callId);
-		if (!call || call.kind !== 'group') return API.v1.failure('invalid-call');
+		if (call?.kind !== 'group') return API.v1.failure('invalid-call');
 
 		await MediaCallsModel.markGroupParticipantLeft(callId, userId);
 
@@ -159,6 +190,6 @@ API.v1.post(
 			await MediaCallsModel.hangupCallById(callId, { reason: 'all-participants-left' });
 		}
 
-		return API.v1.success();
+		return API.v1.success({});
 	},
 );

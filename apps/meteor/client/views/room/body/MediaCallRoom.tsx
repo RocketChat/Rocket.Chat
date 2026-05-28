@@ -50,7 +50,7 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	}, [state, session, room?._id]);
 
 	if (isGroupCallHere) {
-		return <MediaCallRoomActivity Provider={LiveKitMediaCallProvider}>{children}</MediaCallRoomActivity>;
+		return <MediaCallRoomActivity provider={LiveKitMediaCallProvider}>{children}</MediaCallRoomActivity>;
 	}
 
 	if (!screenShareEnabled) {

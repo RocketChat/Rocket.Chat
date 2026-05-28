@@ -94,7 +94,7 @@ function buildFileOutput(roomName: string, callId: string): FileOutput {
 		return { filepath: `${dir}/${roomName}/${filename}` };
 	}
 
-	const s3 = cfg.recording.s3;
+	const { s3 } = cfg.recording;
 	return {
 		filepath: `rocketchat/${roomName}/${filename}`,
 		s3: {

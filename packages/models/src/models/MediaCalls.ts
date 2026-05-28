@@ -237,10 +237,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	 * channel-header banner ("Active call — Join") and to deduplicate when
 	 * multiple users try to start a call simultaneously.
 	 */
-	public async findActiveGroupCallInRoom<T extends Document = IMediaCall>(
-		rid: string,
-		options?: FindOptions<T>,
-	): Promise<T | null> {
+	public async findActiveGroupCallInRoom<T extends Document = IMediaCall>(rid: string, options?: FindOptions<T>): Promise<T | null> {
 		return this.findOne<T>(
 			{
 				rid,
@@ -254,7 +251,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	/**
 	 * Append a participant to a group call's participants[] (idempotent via $addToSet on id).
 	 */
-	public async addGroupParticipant(callId: string, participant: { type: string; id: string; contractId?: string; displayName?: string; username?: string }): Promise<UpdateResult> {
+	public async addGroupParticipant(
+		callId: string,
+		participant: { type: string; id: string; contractId?: string; displayName?: string; username?: string },
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: callId },
 			{
@@ -275,9 +275,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	 * Mark a participant as having left the group call. Idempotent.
 	 */
 	public async markGroupParticipantLeft(callId: string, userId: IUser['_id']): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: callId, 'participants.id': userId } as any,
-			{ $set: { 'participants.$.leftAt': new Date() } } as any,
-		);
+		return this.updateOne({ '_id': callId, 'participants.id': userId } as any, { $set: { 'participants.$.leftAt': new Date() } } as any);
 	}
 }
