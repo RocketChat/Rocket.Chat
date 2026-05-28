@@ -430,7 +430,7 @@ describe('[CustomSounds]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.equal('Invalid sound [Custom_Sound_Error_Invalid_Sound]');
+					expect(res.body.error).to.equal('Custom Sound not found.');
 				});
 		});
 
