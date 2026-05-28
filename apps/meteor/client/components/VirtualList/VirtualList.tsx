@@ -38,6 +38,8 @@ function VirtualList<T extends { _id: string }>({
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const onEndReachedRef = useRef(onEndReached);
 	const lastEndReachKeyRef = useRef<string | null>(null);
+	const firstItemId = items[0]?._id ?? '';
+	const lastItemId = items[items.length - 1]?._id ?? '';
 
 	useEffect(() => {
 		onEndReachedRef.current = onEndReached;
@@ -65,8 +67,6 @@ function VirtualList<T extends { _id: string }>({
 				return;
 			}
 
-			const firstItemId = items[0]?._id ?? '';
-			const lastItemId = items[items.length - 1]?._id ?? '';
 			const key = `${firstItemId}:${lastItemId}:${items.length}:${totalCount}`;
 			if (lastEndReachKeyRef.current === key) {
 				return;
@@ -88,7 +88,7 @@ function VirtualList<T extends { _id: string }>({
 				releaseEndReachLock();
 			}
 		},
-		[items.length, totalCount],
+		[firstItemId, items.length, lastItemId, totalCount],
 	);
 
 	const handleScroll = useCallback(
