@@ -1,5 +1,5 @@
-import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { Login } from './page-objects';
+import { ADMIN_CREDENTIALS, DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { AccountSecurity, HomeChannel, Login } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.describe.serial('Forget session on window close setting', () => {
@@ -59,6 +59,42 @@ test.describe.serial('Forget session on window close setting', () => {
 			await newPoLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(newPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
+		});
+
+		test.describe('E2EE save password flow', () => {
+			test.beforeAll(async ({ api }) => {
+				await api.post('/settings/E2E_Enable', { value: true });
+				await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+			});
+
+			test.afterAll(async ({ api }) => {
+				await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
+				await api.post('/settings/E2E_Enable', { value: false });
+			});
+
+			test('E2EE save password button opens modal in SAVE_PASSWORD state', async ({ page }) => {
+				const poHomeChannel = new HomeChannel(page);
+				const poAccountSecurity = new AccountSecurity(page);
+
+				await poLogin.login(ADMIN_CREDENTIALS.username, ADMIN_CREDENTIALS.password);
+				await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
+
+				await poAccountSecurity.goto();
+				await poAccountSecurity.resetE2EEPassword();
+
+				await page.locator('role=button[name="Login"]').waitFor();
+
+				await poLogin.login(ADMIN_CREDENTIALS.username, ADMIN_CREDENTIALS.password);
+				await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
+				await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
+				await poHomeChannel.bannerSaveEncryptionPassword.click();
+
+				const randomPassword = await page.evaluate(() => window.sessionStorage.getItem('e2e.randomPassword') ?? '');
+				expect(randomPassword).toBeTruthy();
+
+				await expect(poHomeChannel.dialogSaveE2EEPassword).toBeVisible();
+				await expect(poHomeChannel.dialogSaveE2EEPassword).toContainText(randomPassword);
+			});
 		});
 	});
 });
