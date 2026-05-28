@@ -204,6 +204,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					$gt: new Date(),
 				},
 				uids: uid,
+				// Exclude group calls the user has already left. We keep `uids`
+				// intact across leaves so call history still includes them, so
+				// the "is this user currently in this call?" check has to look
+				// at the participants array.
+				participants: { $not: { $elemMatch: { id: uid, leftAt: { $exists: true } } } } as any,
 			},
 			options,
 		);
@@ -219,10 +224,60 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{
 				ended: false,
 				uids: uid,
+				participants: { $not: { $elemMatch: { id: uid, leftAt: { $exists: true } } } } as any,
 				...(exceptCallId && { _id: { $ne: exceptCallId } }),
 			},
 			{ limit: 1 },
 		);
 		return count > 0;
+	}
+
+	/**
+	 * Find the currently-active group call in a room, if any. Used by the
+	 * channel-header banner ("Active call — Join") and to deduplicate when
+	 * multiple users try to start a call simultaneously.
+	 */
+	public async findActiveGroupCallInRoom<T extends Document = IMediaCall>(
+		rid: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				rid,
+				kind: 'group',
+				ended: false,
+			} as any,
+			options as FindOptions<IMediaCall>,
+		);
+	}
+
+	/**
+	 * Append a participant to a group call's participants[] (idempotent via $addToSet on id).
+	 */
+	public async addGroupParticipant(callId: string, participant: { type: string; id: string; contractId?: string; displayName?: string; username?: string }): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: callId },
+			{
+				$pull: { participants: { id: participant.id } } as any,
+			},
+		).then(() =>
+			this.updateOne(
+				{ _id: callId },
+				{
+					$addToSet: { uids: participant.id },
+					$push: { participants: { ...participant, joinedAt: new Date() } as any },
+				},
+			),
+		);
+	}
+
+	/**
+	 * Mark a participant as having left the group call. Idempotent.
+	 */
+	public async markGroupParticipantLeft(callId: string, userId: IUser['_id']): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: callId, 'participants.id': userId } as any,
+			{ $set: { 'participants.$.leftAt': new Date() } } as any,
+		);
 	}
 }

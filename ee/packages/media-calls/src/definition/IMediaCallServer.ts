@@ -37,6 +37,7 @@ export interface IMediaCallServerSettings {
 
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
+	isLiveKitEnabled?: () => boolean;
 }
 
 export interface IMediaCallServer {
@@ -61,4 +62,5 @@ export interface IMediaCallServer {
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
 	isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean;
+	isLiveKitEnabled?(): boolean;
 }

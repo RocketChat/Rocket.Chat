@@ -14,7 +14,7 @@ const getAudioStream = (instance?: MediaSignalingSession) => {
 			return null;
 		}
 
-		return instanceState.remoteParticipant.getMediaStream('main')?.stream || null;
+		return instanceState.remoteParticipant.getMediaStream('microphone')?.stream || null;
 	} catch (error) {
 		console.error('MediaCall: useAudioStream - Error getting remote media stream (main audio)', error);
 		return null;

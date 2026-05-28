@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 
 import MediaCallRoomSection from './MediaCallRoomSection';
@@ -10,9 +10,15 @@ import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 
 type MediaCallRoomActivityProps = {
 	children: ReactNode;
+	/**
+	 * Provider that populates MediaCallViewContext. Default is the 1:1 session-driven
+	 * provider; group calls pass a LiveKit-driven provider instead. Keeps the rest of
+	 * the activity (layout, showChat, ResizeObserver, etc.) shared across both call kinds.
+	 */
+	Provider?: ComponentType<{ children: ReactNode }>;
 };
 
-const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
+const MediaCallRoomActivity = ({ children, Provider = MediaCallViewProvider }: MediaCallRoomActivityProps) => {
 	const [showChat, setShowChat] = useState(true);
 	const user = useUser();
 
@@ -33,14 +39,14 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	};
 	return (
 		<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
-			<MediaCallViewProvider>
+			<Provider>
 				<MediaCallRoomSection
 					showChat={showChat}
 					onToggleChat={onClickToggleChat}
 					user={ownUser}
 					containerHeight={borderBoxSize?.blockSize || 0}
 				/>
-			</MediaCallViewProvider>
+			</Provider>
 
 			{showChat && (
 				<Box w='full' flexGrow={2} flexShrink={0}>

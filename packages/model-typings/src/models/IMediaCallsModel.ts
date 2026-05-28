@@ -31,4 +31,10 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	findActiveGroupCallInRoom<T extends Document = IMediaCall>(rid: string, options?: FindOptions<T>): Promise<T | null>;
+	addGroupParticipant(
+		callId: string,
+		participant: { type: string; id: string; contractId?: string; displayName?: string; username?: string },
+	): Promise<UpdateResult>;
+	markGroupParticipantLeft(callId: string, userId: IUser['_id']): Promise<UpdateResult>;
 }

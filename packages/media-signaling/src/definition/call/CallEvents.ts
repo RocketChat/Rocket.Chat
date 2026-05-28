@@ -32,6 +32,9 @@ export type CallEvents = {
 	/* Triggered when screen share is toggled */
 	screenShareRequestChange: boolean;
 
+	/* Triggered when camera sharing is toggled */
+	cameraRequestChange: boolean;
+
 	/* Triggered when any of the streams or tracks have changed */
 	streamChange: void;
 };

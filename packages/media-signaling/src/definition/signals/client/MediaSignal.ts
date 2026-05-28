@@ -4,9 +4,9 @@ import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './a
 import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf';
 import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
-import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
 import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
-import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
+import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './webrtc/local-sdp';
+import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './webrtc/negotiation-needed';
 import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
 import { clientMediaSignalTransferSchema, type ClientMediaSignalTransfer } from './transfer';

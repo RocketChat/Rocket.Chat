@@ -104,6 +104,13 @@ class MediaCallDirector {
 		call: MediaCallHeader,
 		offer?: RTCSessionDescriptionInit,
 	): Promise<IMediaCallNegotiation['_id'] | null> {
+		// LiveKit-mode calls never run an SDP negotiation — the peers dial the
+		// SFU directly. Bail at the entry point so we don't write empty
+		// MediaCallNegotiations documents or fire downstream WebRTC handlers.
+		if (call.service !== 'webrtc') {
+			return null;
+		}
+
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
 		// If the call already has a negotiation, do nothing
 		if (negotiation) {
@@ -118,6 +125,10 @@ class MediaCallDirector {
 		offerer: CallRole,
 		offer?: RTCSessionDescriptionInit,
 	): Promise<IMediaCallNegotiation['_id']> {
+		// LiveKit-mode calls have no SDP negotiation. No-op at the entry.
+		if (call.service !== 'webrtc') {
+			throw new Error('negotiation-not-applicable-for-livekit');
+		}
 		logger.debug({ msg: 'Adding new negotiation', callId: call._id, offerer, hasOffer: Boolean(offer) });
 		const newNegotiation: InsertionModel<IMediaCallNegotiation> = {
 			callId: call._id,
@@ -149,6 +160,10 @@ class MediaCallDirector {
 		session: { sdp: RTCSessionDescriptionInit; negotiationId: string; streams?: MediaCallNegotiationStream[] },
 		contractId: string,
 	): Promise<void> {
+		// WebRTC-only: storing SDP for an SFU call has no purpose.
+		if (call.service !== 'webrtc') {
+			return;
+		}
 		logger.debug({ msg: 'MediaCallDirector.saveWebrtcSession', callId: call?._id });
 		const negotiation = await MediaCallNegotiations.findOneById(session.negotiationId);
 		if (!negotiation) {
@@ -189,10 +204,14 @@ class MediaCallDirector {
 			throw new Error('invalid-caller');
 		}
 
-		const service = requestedService || 'webrtc';
+		// 1:1 direct calls created via this entry point always use WebRTC P2P —
+		// the LiveKit transport for direct calls is a future enhancement and
+		// would also require client-side changes to the existing DM call flow.
+		// Group calls take a different path (media-calls.startGroup REST), which
+		// sets service='livekit' explicitly on the call document.
+		const service: 'webrtc' | 'livekit' = requestedService || 'webrtc';
 
-		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
-		if (service !== 'webrtc') {
+		if (service !== 'webrtc' && service !== 'livekit') {
 			throw new Error('invalid-call-service');
 		}
 

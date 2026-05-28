@@ -33,9 +33,17 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private videoTrack: MediaStreamTrackWrapper | null = null;
 
-	private audioSender: RTCRtpSender | null = null;
+	private _audioSender: RTCRtpSender | null = null;
 
-	private videoSender: RTCRtpSender | null = null;
+	private _videoSender: RTCRtpSender | null = null;
+
+	public get audioSender(): RTCRtpSender | null {
+		return this._audioSender;
+	}
+
+	public get videoSender(): RTCRtpSender | null {
+		return this._videoSender;
+	}
 
 	private stopped = false;
 
@@ -52,7 +60,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	constructor(
 		remote: boolean,
 		public readonly tag: string,
-		private readonly peer: RTCPeerConnection,
+		private readonly peer: RTCPeerConnection | null,
 		private readonly logger?: IMediaSignalLogger,
 	) {
 		this.remote = remote;
@@ -62,8 +70,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this._audioLevel = 0;
 		this._trackingAudioStats = false;
 
-		// Main stream initiates as active, any other initiates as inactive
-		this._active = tag === 'main';
+		// Microphone stream initiates as active, any other initiates as inactive.
+		// ('main' kept as a deprecated alias for the rename window.)
+		this._active = tag === 'microphone' || tag === 'main';
 	}
 
 	public hasAudio(): boolean {
@@ -201,7 +210,12 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		if (this.remote) {
 			return;
 		}
-		const sender = kind === 'audio' ? this.audioSender : this.videoSender;
+		// LiveKit-mode wrappers run without an RTCPeerConnection — no transceivers
+		// to manage. The track itself is owned by the LiveKit publication.
+		if (!this.peer) {
+			return;
+		}
+		const sender = kind === 'audio' ? this._audioSender : this._videoSender;
 		if (sender) {
 			// If we already have a sender of the same kind for this stream, we can just replace the track with no issues
 			// TODO: safe guard against edge cases where this would fail (eg: changing number of audio channels or increasing video quality)
@@ -221,9 +235,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		const transceiver = this.peer.getTransceivers().find((t) => t.sender.track === track);
 		if (transceiver) {
 			if (kind === 'audio') {
-				this.audioSender = transceiver.sender;
+				this._audioSender = transceiver.sender;
 			} else {
-				this.videoSender = transceiver.sender;
+				this._videoSender = transceiver.sender;
 			}
 		}
 	}
@@ -296,6 +310,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		}
 
 		try {
+			if (!this.peer) {
+				return;
+			}
 			const stats = await this.peer.getStats(this.audioTrack.track);
 
 			if (!stats) {

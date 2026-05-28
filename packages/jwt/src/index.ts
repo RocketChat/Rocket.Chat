@@ -27,3 +27,43 @@ export async function getPairs(): Promise<[string, string]> {
 
 	return [spki, pkcs8];
 }
+
+// ---- HS256 (shared-secret) JWTs ----
+// Used for systems like LiveKit that authenticate with an API key/secret pair.
+
+export type HS256SignOptions = {
+	secret: string;
+	issuer?: string;
+	subject?: string;
+	// Accepts a duration string like '6h' or '30s', a Date, or seconds since epoch.
+	expiresIn?: string | number | Date;
+	// Same accepted forms as expiresIn. Pass 0 for "immediately valid".
+	notBefore?: string | number | Date;
+};
+
+export async function signHS256(payload: JWTPayload, options: HS256SignOptions): Promise<string> {
+	const secretBytes = new TextEncoder().encode(options.secret);
+	const builder = new SignJWT(payload).setProtectedHeader({ alg: 'HS256', typ: 'JWT' }).setIssuedAt();
+
+	if (options.issuer) {
+		builder.setIssuer(options.issuer);
+	}
+	if (options.subject) {
+		builder.setSubject(options.subject);
+	}
+	if (options.expiresIn !== undefined) {
+		builder.setExpirationTime(options.expiresIn as Parameters<SignJWT['setExpirationTime']>[0]);
+	}
+	if (options.notBefore !== undefined) {
+		builder.setNotBefore(options.notBefore as Parameters<SignJWT['setNotBefore']>[0]);
+	}
+
+	return builder.sign(secretBytes);
+}
+
+export async function verifyHS256(jwt: string, secret: string, options?: { issuer?: string }): Promise<JWTPayload> {
+	const { payload } = await jwtVerify(jwt, new TextEncoder().encode(secret), {
+		...(options?.issuer ? { issuer: options.issuer } : {}),
+	});
+	return payload;
+}

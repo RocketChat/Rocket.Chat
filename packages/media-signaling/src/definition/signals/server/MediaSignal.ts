@@ -2,8 +2,8 @@ import type { ServerMediaSignalNewCall } from './new';
 import type { ServerMediaSignalNotification } from './notification';
 import type { ServerMediaSignalRegistered } from './registered';
 import type { ServerMediaSignalRejectedCallRequest } from './rejected-call-request';
-import type { ServerMediaSignalRemoteSDP } from './remote-sdp';
-import type { ServerMediaSignalRequestOffer } from './request-offer';
+import type { ServerMediaSignalRemoteSDP } from './webrtc/remote-sdp';
+import type { ServerMediaSignalRequestOffer } from './webrtc/request-offer';
 
 export type ServerMediaCallSignal =
 	| ServerMediaSignalNewCall

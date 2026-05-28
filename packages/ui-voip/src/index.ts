@@ -2,6 +2,7 @@ export { default as MediaCallProvider } from './providers/MediaCallProvider';
 
 export {
 	MediaCallInstanceContext,
+	useMediaCallInstance,
 	useWidgetExternalControls,
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
@@ -18,3 +19,17 @@ export * from './definitions/callHistoryContacts';
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 
 export * from './views/MediaCallHistoryTable';
+
+// Building blocks used by external call views (e.g. the group call view in
+// apps/meteor) that want to render the same look-and-feel as the 1:1 call.
+export { PeerCard, StreamCard, CardListContainer, CardListSection, CARD_LIST_SECTION_MAX_HEIGHT } from './components/Cards';
+export { ActionStrip, ActionToggleChat } from './components/Actions';
+export { default as ToggleButton } from './components/ToggleButton';
+export { default as ActionButton } from './components/ActionButton';
+export { default as Timer } from './components/Timer';
+
+// Shared call section used by both 1:1 (driven by MediaCallViewProvider) and
+// group calls (driven externally via a custom MediaCallViewContext value).
+export { default as MediaCallRoomSection } from './views/MediaCallRoomSection/MediaCallRoomSection';
+export { default as MediaCallViewContext } from './context/MediaCallViewContext';
+export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCallViewContext';

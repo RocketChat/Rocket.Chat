@@ -8,3 +8,5 @@ import '../apps/communication/uikit';
 import './engagementDashboard';
 import './audit';
 import './abac';
+import './mediaCallsLiveKit';
+import './mediaCallsGroup';

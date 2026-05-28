@@ -13,6 +13,7 @@ export type MediaSessionControls = {
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
 	toggleScreenSharing: () => void;
+	toggleCamera: () => void;
 };
 
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
@@ -108,10 +109,28 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			}
 		};
 
+		const toggleCamera = () => {
+			if (!instance) {
+				return;
+			}
+
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
+				return;
+			}
+
+			try {
+				instanceState.call.requestCamera(!instanceState.call.hasCameraVideoTrack());
+			} catch (error) {
+				console.error('Error toggling camera', error);
+			}
+		};
+
 		return {
 			toggleMute,
 			toggleHold,
 			toggleScreenSharing,
+			toggleCamera,
 			endCall,
 			startCall,
 			acceptCall,

@@ -17,6 +17,13 @@ export function addSettings(): Promise<void> {
 						i18nDescription: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Description',
 					});
 
+					await this.add('VoIP_TeamCollab_Video_Enabled', true, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_Video_Enabled_Description',
+					});
+
 					await this.add('VoIP_TeamCollab_Mobile_Ringing_Enabled', false, {
 						type: 'boolean',
 						public: true,
@@ -35,6 +42,111 @@ export function addSettings(): Promise<void> {
 						type: 'int',
 						public: true,
 						invalidValue: 5000,
+					});
+				});
+
+				await this.section('VoIP_TeamCollab_LiveKit', async function () {
+					await this.add('VoIP_TeamCollab_LiveKit_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Enabled_Description',
+					});
+
+					const livekitEnabled = { _id: 'VoIP_TeamCollab_LiveKit_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_LiveKit_Mode', 'self_hosted', {
+						type: 'select',
+						values: [
+							{ key: 'self_hosted', i18nLabel: 'Self_hosted' },
+							{ key: 'cloud', i18nLabel: 'LiveKit_Cloud' },
+						],
+						public: true,
+						invalidValue: 'self_hosted',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Url', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Api_Key', '', {
+						type: 'string',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Api_Secret', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						enableQuery: [livekitEnabled],
+					});
+
+					const recordingEnabled = { _id: 'VoIP_TeamCollab_LiveKit_Recording_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_Storage', 's3', {
+						type: 'select',
+						values: [
+							{ key: 'local', i18nLabel: 'Local_Disk' },
+							{ key: 's3', i18nLabel: 'S3_compatible' },
+							{ key: 'filestore', i18nLabel: 'Rocket_Chat_File_Store' },
+							{ key: 'both', i18nLabel: 'Both' },
+						],
+						invalidValue: 's3',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					const localStorage = { _id: 'VoIP_TeamCollab_LiveKit_Recording_Storage', value: 'local' };
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_Local_Path', '/out', {
+						type: 'string',
+						invalidValue: '/out',
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Recording_Local_Path_Description',
+						enableQuery: [livekitEnabled, recordingEnabled, localStorage],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Bucket', '', {
+						type: 'string',
+						invalidValue: '',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Region', 'us-east-1', {
+						type: 'string',
+						invalidValue: 'us-east-1',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Access_Key', '', {
+						type: 'string',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Secret_Key', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Endpoint', '', {
+						type: 'string',
+						invalidValue: '',
+						enableQuery: [livekitEnabled, recordingEnabled],
 					});
 				});
 

@@ -9,11 +9,12 @@ export type MediaStreamManagerEvents = {
 export interface IMediaStreamManager {
 	readonly emitter: Emitter<MediaStreamManagerEvents>;
 
-	readonly mainLocal: IMediaStreamWrapper;
+	/** Microphone audio stream — the call's primary audio channel. */
+	readonly microphoneLocal: IMediaStreamWrapper;
 
 	readonly screenShareLocal: IMediaStreamWrapper;
 
-	readonly mainRemote: IMediaStreamWrapper;
+	readonly microphoneRemote: IMediaStreamWrapper;
 
 	readonly screenShareRemote: IMediaStreamWrapper;
 

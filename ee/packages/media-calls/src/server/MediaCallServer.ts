@@ -150,6 +150,10 @@ export class MediaCallServer implements IMediaCallServer {
 		return this.settings.isFeatureAvailableForUser(uid, feature);
 	}
 
+	public isLiveKitEnabled(): boolean {
+		return this.settings.isLiveKitEnabled?.() ?? false;
+	}
+
 	/**
 	 * Receives params for a call a client wishes to do, with actors needing only their basic identification
 	 * Returns params for a call that should actually be done, according to server routing rules

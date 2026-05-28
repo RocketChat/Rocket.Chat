@@ -7,7 +7,14 @@ import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
-type P2PCommand = 'mute' | 'unmute' | 'end' | 'screen-share.start' | 'screen-share.stop';
+type P2PCommand =
+	| 'mute'
+	| 'unmute'
+	| 'end'
+	| 'screen-share.start'
+	| 'screen-share.stop'
+	| 'camera.start'
+	| 'camera.stop';
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public readonly emitter: Emitter<WebRTCProcessorEvents>;
@@ -23,6 +30,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	private inputTrack: MediaStreamTrack | null;
 
 	private screenVideoTrack: MediaStreamTrack | null;
+
+	private cameraVideoTrack: MediaStreamTrack | null;
 
 	private _muted = false;
 
@@ -54,6 +63,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
 		this.screenVideoTrack = config.screenVideoTrack || null;
+		this.cameraVideoTrack = config.cameraVideoTrack || null;
 		this._dataChannel = null;
 		this.emitter = new Emitter();
 
@@ -98,6 +108,20 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.updateDirectionForVideoTrackChanged();
 	}
 
+	public async setCameraVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.setCameraVideoTrack');
+		if (newVideoTrack && newVideoTrack.kind !== 'video') {
+			throw new Error('Unsupported track kind');
+		}
+
+		await this.initialization;
+
+		this.cameraVideoTrack = newVideoTrack;
+		await this.loadCameraVideoTrack();
+
+		this.updateDirectionForVideoTrackChanged();
+	}
+
 	public async createOffer({ iceRestart }: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer');
 		if (this.stopped) {
@@ -122,7 +146,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this._muted = muted;
-		this.streams.mainLocal.setAudioEnabled(!muted && !this._held);
+		this.streams.microphoneLocal.setAudioEnabled(!muted && !this._held);
 		this.updateMuteForRemote();
 	}
 
@@ -132,8 +156,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this._held = held;
-		this.streams.mainLocal.setAudioEnabled(!held && !this._muted);
-		this.streams.mainRemote.setAudioEnabled(!held);
+		this.streams.microphoneLocal.setAudioEnabled(!held && !this._muted);
+		this.streams.microphoneRemote.setAudioEnabled(!held);
 
 		this.updateAudioDirectionWithoutNegotiation();
 	}
@@ -147,6 +171,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.streams.stopRemoteStreams();
 		// The screen share local stream is safe to stop here, as currently it shouldn't be used by any other call
 		this.screenVideoTrack?.stop();
+		// Same for the camera local track — owned by this call
+		this.cameraVideoTrack?.stop();
 		this.unregisterPeerEvents();
 
 		this.peer.close();
@@ -314,6 +340,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.screenVideoTrack) {
 			await this.loadScreenVideoTrack();
 		}
+
+		if (this.cameraVideoTrack) {
+			await this.loadCameraVideoTrack();
+		}
 	}
 
 	private startNewGathering(): void {
@@ -348,16 +378,45 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private updateVideoDirectionBeforeNegotiation(): void {
-		const desiredDirection = this.screenVideoTrack ? 'sendrecv' : 'recvonly';
-
-		this.updateDirectionBeforeNegotiation('video', desiredDirection);
+		// Each local video stream (screen-share, camera) owns its own transceiver
+		// via its wrapper's videoSender. Set direction per-transceiver so screen
+		// and camera can be on/off independently.
+		this.updateVideoStreamDirection(this.streams.screenShareLocal.videoSender ?? null, Boolean(this.screenVideoTrack), 'before');
+		this.updateVideoStreamDirection(this.streams.cameraLocal.videoSender ?? null, Boolean(this.cameraVideoTrack), 'before');
 	}
 
 	private updateVideoDirectionAfterNegotiation(): void {
-		const desiredDirection = this.screenVideoTrack ? 'sendrecv' : 'recvonly';
-		const acceptableDirection = this.screenVideoTrack ? 'sendonly' : 'inactive';
+		this.updateVideoStreamDirection(this.streams.screenShareLocal.videoSender ?? null, Boolean(this.screenVideoTrack), 'after');
+		this.updateVideoStreamDirection(this.streams.cameraLocal.videoSender ?? null, Boolean(this.cameraVideoTrack), 'after');
+	}
 
-		this.updateDirectionAfterNegotiation('video', desiredDirection, acceptableDirection);
+	private updateVideoStreamDirection(sender: RTCRtpSender | null, sending: boolean, phase: 'before' | 'after'): void {
+		if (!sender) {
+			return;
+		}
+		const transceiver = this.peer.getTransceivers().find((t) => t.sender === sender);
+		if (!transceiver || transceiver.direction === 'stopped') {
+			return;
+		}
+
+		const desired: RTCRtpTransceiverDirection = sending ? 'sendrecv' : 'recvonly';
+		const acceptable: RTCRtpTransceiverDirection = sending ? 'sendonly' : 'inactive';
+
+		if (phase === 'before') {
+			if (transceiver.direction !== desired) {
+				this.config.logger?.debug(`Changing video direction ${transceiver.direction} -> ${desired}`);
+				transceiver.direction = desired;
+			}
+			return;
+		}
+
+		// "after": if the negotiated currentDirection narrowed our requested direction,
+		// align our request with it to avoid spurious renegotiations.
+		if (transceiver.direction !== desired) return;
+		if (!transceiver.currentDirection || ['stopped', desired].includes(transceiver.currentDirection)) return;
+		if (transceiver.currentDirection === acceptable) {
+			transceiver.direction = transceiver.currentDirection;
+		}
 	}
 
 	private updateDirectionBeforeNegotiation(kind: 'audio' | 'video', desiredDirection: RTCRtpTransceiverDirection): void {
@@ -397,33 +456,31 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 	}
 
-	private requestDirection(
-		kind: 'audio' | 'video',
-		desiredDirection: RTCRtpTransceiverDirection,
-		acceptableDirection: RTCRtpTransceiverDirection,
-	): void {
+	private updateDirectionForVideoTrackChanged(): void {
 		if (!this.canRenegotiate()) {
 			return;
 		}
-
-		const transceivers = this.getTransceivers(kind);
-
-		for (const transceiver of transceivers) {
-			if ([desiredDirection, acceptableDirection, 'stopped'].includes(transceiver.direction)) {
-				continue;
-			}
-
-			this.config.logger?.debug(`Requesting new ${kind} direction: ${desiredDirection}.`);
-
-			transceiver.direction = desiredDirection;
-		}
+		// Adjust each video transceiver independently — screen-share and camera
+		// can be sending/receiving on different transceivers.
+		this.requestVideoSenderDirection(this.streams.screenShareLocal.videoSender ?? null, Boolean(this.screenVideoTrack));
+		this.requestVideoSenderDirection(this.streams.cameraLocal.videoSender ?? null, Boolean(this.cameraVideoTrack));
 	}
 
-	private updateDirectionForVideoTrackChanged(): void {
-		const desiredDirection = this.screenVideoTrack ? 'sendrecv' : 'recvonly';
-		const acceptableDirection = this.screenVideoTrack ? 'sendonly' : 'inactive';
-
-		this.requestDirection('video', desiredDirection, acceptableDirection);
+	private requestVideoSenderDirection(sender: RTCRtpSender | null, sending: boolean): void {
+		if (!sender) {
+			return;
+		}
+		const transceiver = this.peer.getTransceivers().find((t) => t.sender === sender);
+		if (!transceiver) {
+			return;
+		}
+		const desired: RTCRtpTransceiverDirection = sending ? 'sendrecv' : 'recvonly';
+		const acceptable: RTCRtpTransceiverDirection = sending ? 'sendonly' : 'inactive';
+		if ([desired, acceptable, 'stopped'].includes(transceiver.direction)) {
+			return;
+		}
+		this.config.logger?.debug(`Requesting new video direction: ${desired}`);
+		transceiver.direction = desired;
 	}
 
 	private getTransceivers(kind: 'audio' | 'video'): RTCRtpTransceiver[] {
@@ -528,7 +585,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private isValidCommand(command: string): command is P2PCommand {
-		return ['mute', 'unmute', 'end', 'screen-share.start', 'screen-share.stop'].includes(command);
+		return ['mute', 'unmute', 'end', 'screen-share.start', 'screen-share.stop', 'camera.start', 'camera.stop'].includes(command);
 	}
 
 	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
@@ -561,6 +618,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				break;
 			case 'screen-share.stop':
 				this.streams.screenShareRemote.setActive(false);
+				break;
+			case 'camera.start':
+				this.streams.cameraRemote.setActive(true);
+				break;
+			case 'camera.stop':
+				this.streams.cameraRemote.setActive(false);
 				break;
 		}
 	}
@@ -751,7 +814,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private async loadInputTrack(): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.loadInputTrack');
-		await this.streams.mainLocal.setTrack('audio', this.inputTrack);
+		await this.streams.microphoneLocal.setTrack('audio', this.inputTrack);
 	}
 
 	private async loadScreenVideoTrack(): Promise<void> {
@@ -764,6 +827,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			this.sendP2PCommand('screen-share.start');
 		} else {
 			this.sendP2PCommand('screen-share.stop');
+		}
+	}
+
+	private async loadCameraVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.loadCameraVideoTrack');
+		await this.streams.cameraLocal.setTrack('video', this.cameraVideoTrack);
+
+		this.streams.cameraLocal.setActive(Boolean(this.cameraVideoTrack));
+
+		if (this.cameraVideoTrack) {
+			this.sendP2PCommand('camera.start');
+		} else {
+			this.sendP2PCommand('camera.stop');
 		}
 	}
 

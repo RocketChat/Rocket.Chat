@@ -48,6 +48,11 @@ export interface IClientMediaCallConfig {
 const TIMEOUT_TO_ACCEPT = 60000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
+// transport-connecting covers what used to be 4 separate SDP/ICE substates
+// (waiting-for-offer, generating-local-sdp, waiting-for-answer, activating),
+// each previously getting its own 10s window. Use a larger budget here, and
+// rely on WebRTC progress events to reset it (see onWebRTCInternalStateChange).
+const TIMEOUT_TO_PROGRESS_TRANSPORT_CONNECTING = 45000;
 const STATE_REPORT_DELAY = 300;
 const CALLS_WITH_NO_REMOTE_DATA_REPORT_DELAY = 5000;
 
@@ -177,6 +182,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
+	// Room id this call belongs to. Populated for group calls (which always have
+	// a room) so the UI can match the active call against the current room.
+	private _rid: string | null = null;
+
+	public get rid(): string | null {
+		return this._rid;
+	}
+
 	private acceptedLocally: boolean;
 
 	private acceptedRemotely: boolean;
@@ -209,16 +222,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private screenVideoTrack: MediaStreamTrack | null;
 
+	private cameraVideoTrack: MediaStreamTrack | null;
+
 	/** localCallId will only be different on calls initiated by this session */
 	private localCallId: string;
 
 	private creationTimestamp: Date;
 
 	private negotiationManager: NegotiationManager;
-
-	private sentLocalSdp: boolean;
-
-	private receivedRemoteSdp: boolean;
 
 	private enabledFeatures: CallFeature[] | null;
 
@@ -304,9 +315,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.screenVideoTrack = null;
+		this.cameraVideoTrack = null;
 		this.creationTimestamp = new Date();
-		this.sentLocalSdp = false;
-		this.receivedRemoteSdp = false;
 		this.enabledFeatures = null;
 
 		this.earlySignals = new Set();
@@ -494,13 +504,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public getClientState(): ClientState {
-		if (this.isOver()) {
-			return 'hangup';
-		}
-
-		if (this.hidden) {
-			return 'busy-elsewhere';
-		}
+		if (this.isOver()) return 'hangup';
+		if (this.hidden) return 'busy-elsewhere';
 
 		switch (this._state) {
 			case 'none':
@@ -510,29 +515,22 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 				return 'pending';
 			case 'accepted':
-				if (!this.negotiationManager.currentNegotiationId) {
-					return 'waiting-for-offer';
-				}
-
-				if (this._role === 'caller') {
-					if (!this.sentLocalSdp) {
-						return 'generating-local-sdp';
-					}
-					if (!this.receivedRemoteSdp) {
-						return 'waiting-for-answer';
-					}
-				} else {
-					if (!this.receivedRemoteSdp) {
-						return 'waiting-for-offer';
-					}
-					if (!this.sentLocalSdp) {
-						return 'generating-local-sdp';
-					}
-				}
-
-				return 'activating';
-			default:
-				return this._state;
+				// Stay in 'transport-connecting' until the underlying state
+				// machine flips to 'active' (via onWebRTCConnectionStateChange
+				// for WebRTC; via the transport's own activation for LK). Don't
+				// race ahead on hasAudio() — remote tracks arrive during SDP,
+				// well before ICE has actually connected, and going 'active'
+				// early arms a misplaced timer that fires post-hangup.
+				return 'transport-connecting';
+			case 'active':
+				return 'active';
+			case 'renegotiating':
+				// renegotiating is a WebRTC-internal substate; surface it as active
+				// to public consumers — the transport reports its substate via
+				// getInternalState() for anyone who needs it.
+				return 'active';
+			case 'hangup':
+				return 'hangup';
 		}
 	}
 
@@ -549,7 +547,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			await this.webrtcProcessor.setInputTrack(newInputTrack);
 		}
 
-		if (newInputTrack && !hadInputTrack) {
+		if (newInputTrack && !hadInputTrack && this.webrtcProcessor) {
 			await this.negotiationManager.processNegotiations();
 		}
 	}
@@ -572,7 +570,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			await this.webrtcProcessor.setScreenVideoTrack(newVideoTrack);
 		}
 
-		if (newVideoTrack && !hadVideoTrack) {
+		if (newVideoTrack && !hadVideoTrack && this.webrtcProcessor) {
 			await this.negotiationManager.processNegotiations();
 		}
 	}
@@ -593,22 +591,44 @@ export class ClientMediaCall implements IClientMediaCall {
 		return Boolean(this.screenVideoTrack);
 	}
 
-	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
-		this.config.logger?.debug('ClientMediaCall.getLocalMediaStream', tag);
-		if (!this.mayUseStreams()) {
-			return null;
+	public async setCameraVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('ClientMediaCall.setCameraVideoTrack', Boolean(newVideoTrack));
+		if (newVideoTrack && !this.canHaveCameraVideoTrack()) {
+			newVideoTrack.stop();
+			newVideoTrack = null;
 		}
 
-		return this.webrtcProcessor.streams.getLocalStreamByTag(tag || 'main');
+		const hadVideoTrack = this.hasCameraVideoTrack();
+		if (hadVideoTrack && newVideoTrack !== this.cameraVideoTrack) {
+			this.config.logger?.debug('ClientMediaCall.setCameraVideoTrack.stopOldTrack');
+			this.cameraVideoTrack?.stop();
+		}
+
+		this.cameraVideoTrack = newVideoTrack;
+		if (this.webrtcProcessor) {
+			await this.webrtcProcessor.setCameraVideoTrack(newVideoTrack);
+		}
+
+		if (newVideoTrack && !hadVideoTrack && this.webrtcProcessor) {
+			await this.negotiationManager.processNegotiations();
+		}
+	}
+
+	public canHaveCameraVideoTrack(): boolean {
+		// Same availability rules as screen share.
+		return this.canHaveScreenVideoTrack();
+	}
+
+	public hasCameraVideoTrack(): boolean {
+		return Boolean(this.cameraVideoTrack);
+	}
+
+	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
+		return this.webrtcProcessor?.streams.getLocalStreamByTag(tag || 'microphone') ?? null;
 	}
 
 	public getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null {
-		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream', tag);
-		if (!this.mayUseStreams()) {
-			return null;
-		}
-
-		return this.webrtcProcessor.streams.getRemoteStreamByTag(tag || 'main');
+		return this.webrtcProcessor?.streams.getRemoteStreamByTag(tag || 'microphone') ?? null;
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -769,30 +789,16 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public setMuted(muted: boolean): void {
-		if (this.isOver() || this.hidden) {
-			return;
-		}
-		if (!this.webrtcProcessor && !muted) {
-			return;
-		}
-
-		this.requireWebRTC();
-		const wasMuted = this.webrtcProcessor.muted;
+		if (this.isOver() || this.hidden) return;
+		if (!this.webrtcProcessor) return;
 		this.webrtcProcessor.setMuted(muted);
-		if (wasMuted !== this.webrtcProcessor.muted) {
-			this.emitter.emit('trackStateChange');
-		}
+		this.emitter.emit('trackStateChange');
 	}
 
 	public setHeld(held: boolean): void {
-		if (this.isOver() || this.hidden) {
-			return;
-		}
-		if (!this.webrtcProcessor && !held) {
-			return;
-		}
+		if (this.isOver() || this.hidden) return;
+		if (!this.webrtcProcessor) return;
 
-		this.requireWebRTC();
 		const wasOnHold = this.webrtcProcessor.held;
 		this.webrtcProcessor.setHeld(held);
 		if (wasOnHold !== this.webrtcProcessor.held) {
@@ -817,6 +823,50 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.requireWebRTC();
 
 		this.emitter.emit('screenShareRequestChange', requested);
+	}
+
+	/**
+	 * Fast-track this call into an active LiveKit group call, skipping the
+	 * contract / accept / SDP dance that direct calls go through. The actual
+	 * LiveKit room connection is handled by the UI layer (the
+	 * LiveKitMediaCallProvider that mounts when this call is the session's
+	 * active call). The Call itself just holds lifecycle state — `rid` is
+	 * what MediaCallRoom uses to match against the current room.
+	 */
+	public bootstrapAsGroupCall({ rid }: { rid: string }): void {
+		this._service = 'livekit';
+		this._rid = rid;
+		this.initialized = true;
+		this.hasRemoteData = true;
+		this.acceptedLocally = true;
+		this.acceptedRemotely = true;
+		this.contractState = 'signed';
+		if (this._state === 'none') {
+			(this as any)._state = 'active';
+		}
+		this.emitter.emit('initialized');
+		this.emitter.emit('confirmed');
+		this.emitter.emit('accepted');
+		this.emitter.emit('active');
+	}
+
+	public requestCamera(requested: boolean): void {
+		this.config.logger?.debug('ClientMediaCall.setCameraRequested', requested);
+		if (!this.canHaveCameraVideoTrack()) {
+			return;
+		}
+
+		if (!this.webrtcProcessor && !requested) {
+			return;
+		}
+
+		if (!this.isFeatureAvailable('video')) {
+			this.throwError('Camera sharing is not available for this call.');
+		}
+
+		this.requireWebRTC();
+
+		this.emitter.emit('cameraRequestChange', requested);
 	}
 
 	public setContractState(state: 'signed' | 'ignored') {
@@ -888,7 +938,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null> {
-		return this.webrtcProcessor?.getStats(selector) ?? null;
+		const result = await this.webrtcProcessor?.getStats(selector);
+		return (result as RTCStatsReport | null) ?? null;
 	}
 
 	public isFeatureAvailable(feature: CallFeature): boolean {
@@ -966,10 +1017,16 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.updateClientState', `${oldClientState} => ${clientState}`);
 
 		this.updateStateTimeouts();
-		// Any time the client state changes within the 'accepted' call state, set a new timeout for the new client state
-		// This ensures there will be three separate timeouts for the different negotiation stages: "generating local sdp", "waiting for remote sdp" and "connecting"
+		// While the call is 'accepted' but not yet 'active', arm a watchdog
+		// against the negotiation getting stuck. Only the connection-establishing
+		// substates get a timer — never 'active' (the call is up) and never the
+		// pre-accept substates (those have their own timeouts elsewhere).
 		if (this._state === 'accepted') {
-			this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_SIGNALING);
+			if (clientState === 'transport-connecting') {
+				this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_TRANSPORT_CONNECTING);
+			} else if (clientState === 'activating') {
+				this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_SIGNALING);
+			}
 		}
 
 		this.requestStateReport();
@@ -978,11 +1035,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private maybeStopWebRTC(): void {
-		if (!this.webrtcProcessor) {
-			return;
-		}
-
-		if (this.isOver() || this.hidden) {
+		if (this.webrtcProcessor && (this.isOver() || this.hidden)) {
 			this.webrtcProcessor.stop();
 		}
 	}
@@ -1094,7 +1147,6 @@ export class ClientMediaCall implements IClientMediaCall {
 				return;
 		}
 
-		this.receivedRemoteSdp = true;
 		this.updateClientState();
 	}
 
@@ -1103,7 +1155,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (!this.hidden) {
 			this.config.transporter.sendToServer(this.callId, 'local-sdp', { ...data, streams: this.getLocalStreamIds() });
-			this.sentLocalSdp = true;
 		}
 
 		this.updateClientState();
@@ -1268,11 +1319,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		switch (state) {
 			case 'pending':
 				return 'not-answered';
-			case 'waiting-for-offer':
-			case 'waiting-for-answer':
+			case 'transport-connecting':
+				// Was previously split into timeout-remote-sdp / timeout-local-sdp
+				// for the WebRTC SDP substates. The unified state means we report
+				// a single transport-connecting timeout. Per-transport finer detail
+				// is available via transport.getInternalState() for diagnostics.
 				return 'timeout-remote-sdp';
-			case 'generating-local-sdp':
-				return 'timeout-local-sdp';
 			case 'activating':
 				return 'timeout-activation';
 		}
@@ -1342,10 +1394,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.config.logger?.debug(stateName, stateValue);
 			this.serviceStates.set(stateName, stateValue);
 
-			switch (stateName) {
-				case 'connection':
-					this.onWebRTCConnectionStateChange(stateValue as RTCPeerConnectionState);
-					break;
+			if (stateName === 'connection') {
+				this.onWebRTCConnectionStateChange(stateValue as RTCPeerConnectionState);
+			}
+			// Each meaningful negotiation step (SDP exchange, ICE gathering /
+			// checking, peer-connection state) bumps the transport-connecting
+			// deadline. Without this, slow TURN paths hit the timeout before
+			// the connection finishes.
+			if (stateName === 'connection' || stateName === 'signaling' || stateName === 'iceConnection' || stateName === 'iceGathering') {
+				this.resetStateTimeouts();
 			}
 
 			this.requestStateReport();
@@ -1529,24 +1586,13 @@ export class ClientMediaCall implements IClientMediaCall {
 		});
 	}
 
-	private mayUseStreams(): this is ClientMediaCallWebRTC {
-		if (this.hidden || !this.signed) {
-			return false;
-		}
-
-		if (this.shouldIgnoreWebRTC()) {
-			return false;
-		}
-
-		if (!this.webrtcProcessor) {
-			return false;
-		}
-
-		return true;
-	}
-
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
 		if (this.webrtcProcessor) {
+			return;
+		}
+		// Group calls (service==='livekit') don't use the WebRTC processor — the
+		// LiveKitMediaCallProvider drives LiveKit directly.
+		if (this._service === 'livekit') {
 			return;
 		}
 		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
@@ -1567,6 +1613,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			call: this,
 			inputTrack: this.inputTrack,
 			screenVideoTrack: this.screenVideoTrack,
+			cameraVideoTrack: this.cameraVideoTrack,
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));

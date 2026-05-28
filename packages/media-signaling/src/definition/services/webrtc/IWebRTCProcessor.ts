@@ -36,9 +36,10 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
 	setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void>;
+	setCameraVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void>;
+
 	createOffer(params: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit>;
 	createAnswer(): Promise<RTCSessionDescriptionInit>;
-
 	setLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
 	setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
 	waitForIceGathering(): Promise<void>;
@@ -56,6 +57,7 @@ export type WebRTCProcessorConfig = {
 	call: IClientMediaCall;
 	inputTrack: MediaStreamTrack | null;
 	screenVideoTrack?: MediaStreamTrack | null;
+	cameraVideoTrack?: MediaStreamTrack | null;
 	iceGatheringTimeout: number;
 	logger?: IMediaSignalLogger;
 	rtc?: RTCConfiguration;

@@ -151,7 +151,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: this.logger,
-			features: ['audio', 'screen-share', 'transfer', 'hold'],
+			features: ['audio', 'screen-share', 'transfer', 'hold', 'video'],
 			autoSync: true,
 		});
 

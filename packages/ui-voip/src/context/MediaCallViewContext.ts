@@ -8,6 +8,22 @@ import { type LastKnownPosition } from '../providers/useWidgetPositionTracker';
 export type MediaCallStreams = {
 	remoteScreen?: IMediaStreamWrapper;
 	localScreen?: IMediaStreamWrapper;
+	remoteCamera?: IMediaStreamWrapper;
+	localCamera?: IMediaStreamWrapper;
+};
+
+/**
+ * One remote participant in a media call. The room section iterates this list
+ * regardless of whether the call is 1:1 (length 1) or a group call (N peers).
+ */
+export type RemoteParticipantInfo = {
+	id: string;
+	displayName: string;
+	avatarUrl?: string;
+	muted: boolean;
+	held: boolean;
+	cameraStream?: MediaStream;
+	screenStream?: MediaStream;
 };
 
 type MediaCallViewContextValue = {
@@ -23,7 +39,15 @@ type MediaCallViewContextValue = {
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
+	onToggleCamera: () => void;
 	streams: MediaCallStreams;
+	/**
+	 * Remote participants in the call. Always present (possibly empty when the
+	 * call is pre-ongoing or you're alone in a group). MediaCallRoomSection
+	 * iterates this to render PeerCards — 1:1 calls populate length 1, group
+	 * calls populate N.
+	 */
+	remoteParticipants: RemoteParticipantInfo[];
 	widgetPositionTracker?: {
 		onChangePosition: (position: LastKnownPosition | null) => void;
 		getRestorePosition: () => LastKnownPosition | null;
@@ -56,7 +80,9 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onAccept: () => Promise.resolve(undefined),
 	onSelectPeer: () => undefined,
 	onToggleScreenSharing: () => undefined,
+	onToggleCamera: () => undefined,
 	streams: {},
+	remoteParticipants: [],
 };
 
 const MediaCallViewContext = createContext<MediaCallViewContextValue>(defaultMediaCallContextValue);

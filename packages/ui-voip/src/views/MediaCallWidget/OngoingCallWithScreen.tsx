@@ -32,14 +32,17 @@ const OngoingCall = () => {
 		onClickDirectMessage,
 		streams,
 		onToggleScreenSharing,
+		onToggleCamera,
 		widgetPositionTracker,
 	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
-	const { localScreen, remoteScreen } = streams;
+	const { localScreen, remoteScreen, localCamera, remoteCamera } = streams;
 
 	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
 	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
+	const [remoteCameraRefCallback] = usePlayMediaStream(remoteCamera?.stream ?? null);
+	const [localCameraRefCallback] = usePlayMediaStream(localCamera?.stream ?? null);
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -82,6 +85,25 @@ const OngoingCall = () => {
 							<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
 						</Box>
 					)}
+					{remoteCamera?.active && (
+						<StreamCard autoHeight maxHeight={120}>
+							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={remoteCameraRefCallback}>
+								<track kind='captions' />
+							</video>
+						</StreamCard>
+					)}
+					{localCamera?.active && (
+						<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleCamera}>
+							<video
+								preload='metadata'
+								muted
+								style={{ objectFit: 'cover', height: '100%', width: '100%', transform: 'scaleX(-1)' }}
+								ref={localCameraRefCallback}
+							>
+								<track kind='captions' />
+							</video>
+						</StreamCard>
+					)}
 				</CardWidgetContainer>
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
@@ -102,6 +124,13 @@ const OngoingCall = () => {
 						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 						pressed={localScreen?.active ?? false}
 						onToggle={onToggleScreenSharing}
+					/>
+					<ToggleButton
+						label={t('Camera')}
+						icons={['video', 'video-off']}
+						titles={[t('Start_camera'), t('Stop_camera')]}
+						pressed={localCamera?.active ?? false}
+						onToggle={onToggleCamera}
 					/>
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					<ActionButton

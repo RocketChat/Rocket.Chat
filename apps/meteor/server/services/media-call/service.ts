@@ -399,6 +399,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			mobileRinging,
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
+			isLiveKitEnabled: () => settings.get<boolean>('VoIP_TeamCollab_LiveKit_Enabled') ?? false,
 		};
 	}
 
@@ -409,6 +410,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 		if (feature === 'screen-share') {
 			return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
+		}
+
+		if (feature === 'video') {
+			return settings.get<boolean>('VoIP_TeamCollab_Video_Enabled') ?? false;
 		}
 
 		return true;

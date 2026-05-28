@@ -16,13 +16,16 @@ const getStreamWrappers = (instance?: MediaSignalingSession) => {
 
 		const { localParticipant, remoteParticipant } = instanceState;
 
-		const localStream = localParticipant.getMediaStream('screen-share');
-
-		const remoteStream = remoteParticipant.getMediaStream('screen-share');
+		const localScreen = localParticipant.getMediaStream('screen-share');
+		const remoteScreen = remoteParticipant.getMediaStream('screen-share');
+		const localCamera = localParticipant.getMediaStream('camera');
+		const remoteCamera = remoteParticipant.getMediaStream('camera');
 
 		return {
-			localScreen: localStream ?? undefined,
-			remoteScreen: remoteStream ?? undefined,
+			localScreen: localScreen ?? undefined,
+			remoteScreen: remoteScreen ?? undefined,
+			localCamera: localCamera ?? undefined,
+			remoteCamera: remoteCamera ?? undefined,
 		};
 	} catch (error) {
 		console.error('MediaCall: useMediaStream - Error getting local media stream', error);
@@ -40,18 +43,19 @@ const areStreamsEqual = (a?: IMediaStreamWrapper, b?: IMediaStreamWrapper) => {
 	return a.stream.id === b.stream.id;
 };
 
+const emptyStreams: MediaCallStreams = {
+	remoteScreen: undefined,
+	localScreen: undefined,
+	remoteCamera: undefined,
+	localCamera: undefined,
+};
+
 export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
-	const [streams, setStreams] = useState<MediaCallStreams>({
-		remoteScreen: undefined,
-		localScreen: undefined,
-	});
+	const [streams, setStreams] = useState<MediaCallStreams>(emptyStreams);
 
 	useEffect(() => {
 		if (!instance) {
-			setStreams({
-				remoteScreen: undefined,
-				localScreen: undefined,
-			});
+			setStreams(emptyStreams);
 			return;
 		}
 
@@ -59,12 +63,14 @@ export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
 			const next = getStreamWrappers(instance);
 			setStreams((oldStreams) => {
 				if (!next) {
-					return {
-						remoteScreen: undefined,
-						localScreen: undefined,
-					};
+					return emptyStreams;
 				}
-				if (areStreamsEqual(oldStreams.localScreen, next.localScreen) && areStreamsEqual(oldStreams.remoteScreen, next.remoteScreen)) {
+				if (
+					areStreamsEqual(oldStreams.localScreen, next.localScreen) &&
+					areStreamsEqual(oldStreams.remoteScreen, next.remoteScreen) &&
+					areStreamsEqual(oldStreams.localCamera, next.localCamera) &&
+					areStreamsEqual(oldStreams.remoteCamera, next.remoteCamera)
+				) {
 					return oldStreams;
 				}
 				return next;
