@@ -1,19 +1,8 @@
 import crypto from 'node:crypto';
 
-import {
-	buildIntelligentSearchPipelineFilters,
-	generateOpenAICompatibleSearchAnswer,
-	listOpenAICompatibleModels,
-	normalizeIntelligentSearchCandidates,
-	searchIntelligentPipeline,
-	type AIServiceFetch,
-	type IntelligentSearchFilters,
-	type OpenAICompatibleProviderConfig,
-	type SearchAnswerMessage,
-} from '@rocket.chat/ai-search';
+import { AISearch } from '@rocket.chat/core-services';
 import type { IDirectoryChannelResult, IDirectoryUserResult, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
-import { Rooms, Settings, Subscriptions, Users, WorkspaceCredentials, Messages } from '@rocket.chat/models';
+import { Rooms, Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
 	isShieldSvgProps,
@@ -28,7 +17,6 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { MeApiSuccessResponse, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
@@ -421,8 +409,6 @@ API.v1.get(
 const MAX_UNIFIED_SEARCH_RESULTS = 10;
 const AI_SEARCH_PAGE_SIZE = 5;
 const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
-const MAX_SEARCH_ANSWER_MESSAGES = 12;
-const MAX_SEARCH_ANSWER_TEXT_LENGTH = 1600;
 
 const unifiedSearchResponseSchema = ajv.compile<{
 	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
@@ -516,183 +502,16 @@ const parseCommaList = (value: string | undefined): string[] =>
 		.map((item) => item.trim())
 		.filter(Boolean);
 
-const aiServiceFetch: AIServiceFetch = (url, options) => fetch(url, options as Parameters<typeof fetch>[1]);
-
-const getSearchAnswerProviderConfig = (): OpenAICompatibleProviderConfig | undefined => {
-	const baseUrl = String(settings.get('AI_LLM_OpenAI_Base_URL') || '').replace(/\/+$/, '');
-	const apiKey = String(settings.get('AI_LLM_OpenAI_API_Key') || '');
-	const model = String(settings.get('AI_LLM_OpenAI_Model') || '');
-
-	if (!baseUrl || !apiKey || !model) {
-		return undefined;
-	}
-
-	return { name: 'OpenAI compatible', baseUrl, apiKey, model };
-};
-
-const generateSearchAnswer = async (
-	query: string,
-	messages: SearchAnswerMessage[],
-): Promise<{ answer: string; provider: Pick<OpenAICompatibleProviderConfig, 'name' | 'model'> }> => {
-	const provider = getSearchAnswerProviderConfig();
-	if (!provider) {
-		throw new Meteor.Error('error-ai-provider-not-configured', 'AI answer provider is not configured');
-	}
-
-	const systemPrompt =
-		String(settings.get('AI_Intelligent_Search_Answer_System_Prompt') || '') ||
-		'You are an assistant that summarizes Rocket.Chat search results into a concise answer with relevant caveats.';
-	try {
-		return await generateOpenAICompatibleSearchAnswer({
-			query,
-			messages,
-			provider,
-			systemPrompt,
-			fetch: aiServiceFetch,
-			logger: SystemLogger,
-			maxMessages: MAX_SEARCH_ANSWER_MESSAGES,
-			maxTextLength: MAX_SEARCH_ANSWER_TEXT_LENGTH,
-		});
-	} catch (error) {
-		if (error instanceof Error && error.message === 'error-ai-provider-empty-response') {
-			throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
-		}
-		throw new Meteor.Error('error-ai-provider-request-failed', 'AI answer provider request failed');
-	}
-};
-
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
 		return new Map();
 	}
 
-	const uniqueRoomIds = [...new Set(roomIds)];
-	const rooms = await Rooms.findByIds(uniqueRoomIds, {
+	const rooms = await Rooms.findByIds([...new Set(roomIds)], {
 		projection: { _id: 1, t: 1, name: 1, fname: 1 },
 	}).toArray();
 
 	return new Map(rooms.map((room) => [room._id, room]));
-};
-
-const getUserRoomIds = async (userId: string): Promise<string[]> =>
-	(
-		await Subscriptions.findByUserId(userId, {
-			projection: { rid: 1 },
-		}).toArray()
-	).map((subscription) => subscription.rid);
-
-const normalizeIntelligentResults = async (
-	rawSearchResults: unknown,
-	userRoomIds: string[],
-	limit = AI_SEARCH_PAGE_SIZE,
-): Promise<UnifiedSearchIntelligentResult[]> => {
-	const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, userRoomIds, limit, SystemLogger);
-
-	// Fetch actual messages from DB to get text, sender, timestamp.
-	const msgIds = candidates.map(({ msgId }) => msgId).filter(Boolean) as string[];
-	const messageMap = new Map<string, IMessage>();
-	if (msgIds.length > 0) {
-		const msgs = await Messages.find({ _id: { $in: msgIds } }, { projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 } }).toArray();
-		for (const m of msgs) {
-			messageMap.set(String(m._id), m);
-		}
-		SystemLogger.debug({ msg: 'Intelligent search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
-	}
-
-	const rooms = await getRoomMap(candidates.map(({ rid }) => rid).filter(Boolean) as string[]);
-
-	return candidates.map((result) => {
-		const dbMsg = result.msgId ? messageMap.get(result.msgId) : undefined;
-		const rid = dbMsg?.rid || result.rid;
-		return {
-			_id: result.msgId || result._id,
-			rid,
-			msgId: result.msgId,
-			// Prefer DB message text; fall back to pipeline text
-			text: dbMsg?.msg || result.pipelineText || '',
-			ts: dbMsg?.ts,
-			u: dbMsg?.u ? { username: dbMsg.u.username, name: dbMsg.u.name } : undefined,
-			...(Number.isFinite(result.score) && { score: result.score }),
-			...(rid && rooms.has(rid) && { room: rooms.get(rid) }),
-		};
-	});
-};
-
-const getUserClassifications = async (userId: string): Promise<string[]> => {
-	const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
-	return Array.from(new Set(['user', ...(user?.roles || [])]));
-};
-
-const getAccessibleRoomIdsByName = async (userRoomIds: string[], roomNames: string[] = []): Promise<string[]> => {
-	if (!roomNames.length) {
-		return [];
-	}
-
-	const accessibleRoomIds = new Set(userRoomIds);
-	const rooms = await Promise.all(
-		Array.from(new Set(roomNames)).map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })),
-	);
-
-	return rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId && accessibleRoomIds.has(roomId)));
-};
-
-const searchIntelligent = async (
-	query: string,
-	userId: string,
-	userRoomIds: string[],
-	filters: IntelligentSearchFilters = {},
-	limit = AI_SEARCH_PAGE_SIZE,
-): Promise<UnifiedSearchIntelligentResult[]> => {
-	const baseUrl = String(settings.get('AI_Intelligent_Search_Pipeline_Base_URL') || '').replace(/\/+$/, '');
-	const pipelineId = String(settings.get('AI_Intelligent_Search_Pipeline_ID') || '');
-	const apiKey = String(settings.get('AI_Intelligent_Search_API_Key') || '');
-	const apiKeySecret = String(settings.get('AI_Intelligent_Search_API_Key_Secret') || '');
-
-	if (!baseUrl || !pipelineId || !apiKey || !apiKeySecret) {
-		SystemLogger.debug({
-			msg: 'Intelligent search skipped: missing configuration',
-			baseUrl: !!baseUrl,
-			pipelineId: !!pipelineId,
-			apiKey: !!apiKey,
-			apiKeySecret: !!apiKeySecret,
-		});
-		return [];
-	}
-
-	if (!userRoomIds.length) {
-		SystemLogger.debug({ msg: 'Intelligent search skipped: user has no room subscriptions' });
-		return [];
-	}
-
-	const roomNameIds = await getAccessibleRoomIdsByName(userRoomIds, filters.roomNames);
-	const pipelineFilters = buildIntelligentSearchPipelineFilters(userRoomIds, {
-		...filters,
-		rids: [...(filters.rids || []), ...roomNameIds],
-	});
-	if (!pipelineFilters) {
-		SystemLogger.debug({ msg: 'Intelligent search skipped: no accessible rooms for filters', rid: filters.rid });
-		return [];
-	}
-
-	const classifications = await getUserClassifications(userId);
-	const json = await searchIntelligentPipeline({
-		query,
-		config: {
-			baseUrl,
-			pipelineId,
-			apiKey,
-			apiKeySecret,
-			queryTemplate: String(settings.get('AI_Intelligent_Search_Query_Template') || ''),
-			minimumSimilarityPercent: Number(settings.get('AI_Intelligent_Search_Min_Similarity_Percent') || 0),
-		},
-		classifications,
-		pipelineFilters,
-		limit,
-		fetch: aiServiceFetch,
-		logger: SystemLogger,
-	});
-
-	return normalizeIntelligentResults(json, userRoomIds, limit);
 };
 
 API.v1.get(
@@ -727,7 +546,7 @@ API.v1.get(
 		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
 		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
 
-		const [spotlight, userRoomIds] = await Promise.all([
+		const [spotlight, aiSearchStatus] = await Promise.all([
 			// Don't run spotlight when filtering to a specific room (not useful)
 			rid || !includeSpotlight
 				? Promise.resolve({ users: [], rooms: [] })
@@ -736,19 +555,18 @@ API.v1.get(
 						userId: this.userId,
 						type: { users: true, rooms: true, includeFederatedRooms: true },
 					}),
-			getUserRoomIds(this.userId),
+			AISearch.status().catch((error) => {
+				SystemLogger.warn({ msg: 'AI search status unavailable', err: error });
+				return {
+					hasIntelligentSearchLicense: false,
+					intelligentSearchEnabled: false,
+					intelligentSearchConfigured: false,
+					answerGenerationConfigured: false,
+				};
+			}),
 		]);
 
 		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
-		const intelligentSearchEnabled = settings.get('AI_Intelligent_Search_Enabled') === true;
-		const hasIntelligentSearchLicense = License.hasModule('chat.rocket.rc-ai');
-		const intelligentSearchConfigured = Boolean(
-			settings.get('AI_Intelligent_Search_Pipeline_Base_URL') &&
-				settings.get('AI_Intelligent_Search_Pipeline_ID') &&
-				settings.get('AI_Intelligent_Search_API_Key') &&
-				settings.get('AI_Intelligent_Search_API_Key_Secret'),
-		);
-		const answerGenerationConfigured = Boolean(getSearchAnswerProviderConfig());
 
 		let messages: UnifiedSearchMessageResult[] = [];
 		// Room-specific search is always allowed; global search requires the setting
@@ -767,36 +585,40 @@ API.v1.get(
 		}
 
 		let intelligent: UnifiedSearchIntelligentResult[] = [];
-		if (this.queryParams.includeIntelligent && hasIntelligentSearchLicense && intelligentSearchEnabled && intelligentSearchConfigured) {
+		if (
+			this.queryParams.includeIntelligent &&
+			aiSearchStatus.hasIntelligentSearchLicense &&
+			aiSearchStatus.intelligentSearchEnabled &&
+			aiSearchStatus.intelligentSearchConfigured
+		) {
 			try {
-				intelligent = await searchIntelligent(
+				intelligent = await AISearch.search({
 					query,
-					this.userId,
-					userRoomIds,
-					{
+					userId: this.userId,
+					filters: {
 						rid,
 						rids,
 						roomNames,
 						fromUsername,
 						fromUsernames,
-						startDate,
-						endDate,
+						startDate: startDate?.toISOString(),
+						endDate: endDate?.toISOString(),
 					},
-					intelligentLimit,
-				);
+					limit: intelligentLimit,
+				});
 			} catch (error) {
 				SystemLogger.warn({
-					msg: 'Intelligent search request failed',
+					msg: 'AI search request failed',
 					err: error,
 				});
 			}
 		} else {
 			SystemLogger.debug({
-				msg: 'Intelligent search skipped at endpoint',
+				msg: 'AI search skipped at endpoint',
 				includeIntelligent: this.queryParams.includeIntelligent,
-				hasIntelligentSearchLicense,
-				intelligentSearchEnabled,
-				intelligentSearchConfigured,
+				hasIntelligentSearchLicense: aiSearchStatus.hasIntelligentSearchLicense,
+				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
+				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
 			});
 		}
 
@@ -807,9 +629,9 @@ API.v1.get(
 			intelligent,
 			meta: {
 				globalMessagesEnabled,
-				intelligentSearchEnabled,
-				intelligentSearchConfigured,
-				answerGenerationConfigured,
+				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
+				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
+				answerGenerationConfigured: aiSearchStatus.answerGenerationConfigured,
 			},
 		});
 	},
@@ -849,17 +671,8 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const baseUrl = String(settings.get('AI_LLM_OpenAI_Base_URL') || '').replace(/\/+$/, '');
-		const apiKey = String(settings.get('AI_LLM_OpenAI_API_Key') || '');
-		const selectedModel = String(settings.get('AI_LLM_OpenAI_Model') || '');
-
 		return API.v1.success({
-			data: await listOpenAICompatibleModels({
-				provider: { baseUrl, apiKey },
-				selectedModel,
-				fetch: aiServiceFetch,
-				logger: SystemLogger,
-			}),
+			data: await AISearch.models(),
 		});
 	},
 );
@@ -896,21 +709,32 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		if (!License.hasModule('chat.rocket.rc-ai') || settings.get('AI_Intelligent_Search_Enabled') !== true) {
-			throw new Meteor.Error('error-ai-not-enabled', 'Intelligent Search is not enabled');
-		}
-
 		const { query, messages } = this.bodyParams;
-		const answer = await generateSearchAnswer(
-			query,
-			messages.map(({ text, username, roomName, ts, score }) => ({
-				text,
-				username,
-				roomName,
-				ts,
-				score,
-			})),
-		);
+		let answer;
+		try {
+			answer = await AISearch.answer({
+				query,
+				messages: messages.map(({ text, username, roomName, ts, score }) => ({
+					text,
+					username,
+					roomName,
+					ts,
+					score,
+				})),
+			});
+		} catch (error) {
+			const message = error instanceof Error ? error.message : '';
+			if (message.includes('error-ai-not-enabled')) {
+				throw new Meteor.Error('error-ai-not-enabled', 'AI Search is not enabled');
+			}
+			if (message.includes('error-ai-provider-not-configured')) {
+				throw new Meteor.Error('error-ai-provider-not-configured', 'AI answer provider is not configured');
+			}
+			if (message.includes('error-ai-provider-empty-response')) {
+				throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
+			}
+			throw new Meteor.Error('error-ai-provider-request-failed', 'AI answer provider request failed');
+		}
 
 		return API.v1.success(answer);
 	},

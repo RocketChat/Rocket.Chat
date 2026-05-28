@@ -5,6 +5,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { isRunningMs } from '../lib/isRunningMs';
+import { AISearchService } from './ai-search/service';
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
@@ -59,6 +60,10 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new OmnichannelAnalyticsService());
 	api.registerService(new UserService());
 	api.registerService(new MediaCallService());
+
+	if (!process.env.USE_EXTERNAL_AI_SEARCH_SERVICE) {
+		api.registerService(new AISearchService());
+	}
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {
