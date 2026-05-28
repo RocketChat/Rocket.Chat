@@ -14,7 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async blockUser({ rid, blocked }) {
-		methodDeprecationLogger.method('blockUser', '9.0.0', '/v1/users.block');
+		methodDeprecationLogger.method('blockUser', '9.0.0', '/v1/im.blockUser');
 		check(rid, String);
 		check(blocked, String);
 

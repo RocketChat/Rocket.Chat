@@ -102,7 +102,7 @@ const SettingsBulkSchema = {
 					_id: { type: 'string', minLength: 1 },
 					value: {},
 				},
-				required: ['_id'],
+				required: ['_id', 'value'],
 				additionalProperties: false,
 			},
 			minItems: 1,
@@ -135,15 +135,12 @@ export type SettingsEndpoints = {
 		GET: (params: SettingsGetParams) => {
 			settings: ISetting[];
 		};
+		POST: (params: SettingsBulkProps) => void;
 	};
 
 	'/v1/settings/:_id': {
 		GET: () => Pick<ISetting, '_id' | 'value'>;
 		POST: (params: SettingsUpdateProps) => void;
-	};
-
-	'/v1/settings.bulk': {
-		POST: (params: SettingsBulkProps) => void;
 	};
 
 	'/v1/service.configurations': {

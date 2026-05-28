@@ -27,14 +27,12 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 
 	const { roomCanBlock } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
-	const isUserBlocked = currentSubscription?.blocker;
-	const blockUser = useEndpoint('POST', '/v1/users.block');
-	const unblockUser = useEndpoint('POST', '/v1/users.unblock');
-	const toggleBlock = isUserBlocked ? unblockUser : blockUser;
+	const isUserBlocked = Boolean(currentSubscription?.blocker);
+	const toggleBlockUser = useEndpoint('POST', '/v1/im.blockUser');
 
 	const toggleBlockUserAction = useStableCallback(async () => {
 		try {
-			await toggleBlock({ rid, userId: uid });
+			await toggleBlockUser({ roomId: rid, block: !isUserBlocked });
 			dispatchToastMessage({
 				type: 'success',
 				message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked'),

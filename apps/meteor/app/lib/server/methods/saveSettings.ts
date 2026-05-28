@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			value: ISetting['value'];
 		}[] = [],
 	) {
-		methodDeprecationLogger.method('saveSettings', '9.0.0', '/v1/settings.bulk');
+		methodDeprecationLogger.method('saveSettings', '9.0.0', '/v1/settings');
 
 		const uid = Meteor.userId();
 		if (uid === null) {

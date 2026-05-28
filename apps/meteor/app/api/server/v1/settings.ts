@@ -408,7 +408,7 @@ API.v1.post(
 );
 
 API.v1.post(
-	'settings.bulk',
+	'settings',
 	{
 		authRequired: true,
 		twoFactorRequired: true,

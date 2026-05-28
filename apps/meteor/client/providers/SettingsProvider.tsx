@@ -96,7 +96,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const saveSettings = useEndpoint('POST', '/v1/settings.bulk');
+	const saveSettings = useEndpoint('POST', '/v1/settings');
 	const dispatch = useCallback(
 		async (changes: Partial<ISetting>[]) => {
 			// FIXME: This is a temporary solution to invalidate queries when settings change
