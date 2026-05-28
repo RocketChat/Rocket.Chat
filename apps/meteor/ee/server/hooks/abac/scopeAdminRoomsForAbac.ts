@@ -2,8 +2,26 @@ import { Abac } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
+import { scopeAdminRoomForAbac } from '../../../../app/api/server/lib/scopeAdminRoomForAbac';
 import { scopeAdminRoomsForAbac } from '../../../../app/api/server/lib/scopeAdminRoomsForAbac';
 import { isABACManagedRoom } from '../../../../app/authorization/server/lib/isABACManagedRoom';
+
+const projection = { _id: 1, username: 1, name: 1 } as const;
+const redact = <T extends { abacAttributes?: unknown }>(room: T) => ({ ...room, abacAttributes: [], abacAttributesRedacted: true });
+
+scopeAdminRoomForAbac.patch(async (next, room, uid) => {
+	if (!License.hasModule('abac') || !isABACManagedRoom(room)) {
+		return next(room, uid);
+	}
+
+	const user = await Users.findOneById(uid, { projection });
+	if (!user) {
+		return redact(room);
+	}
+
+	const [scoped] = await Abac.scopeRoomsForAdmin([room], { _id: user._id, username: user.username, name: user.name });
+	return scoped ?? redact(room);
+});
 
 scopeAdminRoomsForAbac.patch(async (next, rooms, uid) => {
 	const managed = License.hasModule('abac') ? rooms.filter(isABACManagedRoom) : [];
@@ -11,7 +29,7 @@ scopeAdminRoomsForAbac.patch(async (next, rooms, uid) => {
 		return next(rooms, uid);
 	}
 
-	const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1, name: 1 } });
+	const user = await Users.findOneById(uid, { projection });
 	if (!user) {
 		return next(
 			rooms.filter((room) => !isABACManagedRoom(room)),

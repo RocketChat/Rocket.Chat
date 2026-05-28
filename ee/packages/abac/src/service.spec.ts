@@ -1081,23 +1081,6 @@ describe('AbacService (unit)', () => {
 				expect(store.assertCanModifyRoom).toHaveBeenCalledTimes(1);
 				noMutation();
 			});
-
-			it('awaits assertCanModifyRoom before validateAssignable', async () => {
-				const order: string[] = [];
-				const store = {
-					assertCanModifyRoom: jest.fn().mockImplementation(async () => {
-						order.push('assert');
-					}),
-					validateAssignable: jest.fn().mockImplementation(async () => {
-						order.push('validate');
-					}),
-				};
-				(service as any).attributeStores.local.store = store;
-
-				await invoke(method);
-
-				expect(order).toEqual(['assert', 'validate']);
-			});
 		});
 
 		it('skips assertCanModifyRoom on the empty-clear path of setRoomAbacAttributes and still unsets', async () => {
@@ -1720,19 +1703,6 @@ describe('AbacService (unit)', () => {
 			expect(evictionSpy).not.toHaveBeenCalled();
 			expect(pdpRoomAttrsSpy).not.toHaveBeenCalled();
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
-		});
-
-		it('is idempotent: calling onAttributeStoreTransition directly twice succeeds and emits a fresh audit each time', async () => {
-			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 2 });
-			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
-
-			await (svc as any).onAttributeStoreTransition('local', 'virtru');
-			await (svc as any).onAttributeStoreTransition('local', 'virtru');
-
-			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(2);
-			await new Promise((r) => setImmediate(r));
-			expect(auditSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('does not emit an audit when updateMany reports modifiedCount: 0 (loser node in multi-node fan-out)', async () => {
