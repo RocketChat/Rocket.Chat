@@ -6,6 +6,7 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../../onClientMessageReceived';
 import { dispatchToastMessage } from '../../toast';
 import { mapMessageFromApi } from '../../utils/mapMessageFromApi';
 import type { ChatAPI } from '../ChatAPI';
@@ -56,9 +57,15 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	// see the final shape — `attachments[]`, `urls[]`, `mentions[]`, etc. —
 	// in the same tick the REST call resolves. Mirrors the Minimongo replication
 	// that the DDP `sendMessage` method used to trigger.
+	//
+	// Run the server response through onClientMessageReceived so E2EE rooms
+	// re-decrypt the ciphertext into the rendered plaintext (matching what
+	// runOptimisticSendMessage already does for the optimistic record); for
+	// non-encrypted rooms the hook is a no-op.
+	const processed = await onClientMessageReceived(mapMessageFromApi(saved));
 	Messages.state.update(
 		(record) => record._id === message._id,
-		() => mapMessageFromApi(saved),
+		() => processed,
 	);
 };
 
