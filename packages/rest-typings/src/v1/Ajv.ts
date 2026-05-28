@@ -139,6 +139,7 @@ const InternalErrorResponseSchema = {
 		error: { type: 'string' },
 	},
 	required: ['success', 'error'],
+	additionalProperties: false,
 };
 
 export const validateInternalErrorResponse = ajv.compile<InternalErrorResponse>(InternalErrorResponseSchema);
