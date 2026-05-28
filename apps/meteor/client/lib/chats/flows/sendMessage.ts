@@ -6,9 +6,7 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
-import { onClientMessageReceived } from '../../onClientMessageReceived';
 import { dispatchToastMessage } from '../../toast';
-import { mapMessageFromApi } from '../../utils/mapMessageFromApi';
 import type { ChatAPI } from '../ChatAPI';
 import { afterSendMessageCallback } from './afterSendMessageCallback';
 import { processMessageEditing } from './processMessageEditing';
@@ -50,22 +48,15 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	chat.composer?.clear();
 	await runOptimisticSendMessage(message);
 
-	const { message: saved } = await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
+	await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
 
-	// Replace the optimistic temp record with the server-rendered message so
-	// downstream consumers (composer quote preview, message list, threads)
-	// see the final shape — `attachments[]`, `urls[]`, `mentions[]`, etc. —
-	// in the same tick the REST call resolves. Mirrors the Minimongo replication
-	// that the DDP `sendMessage` method used to trigger.
-	//
-	// Run the server response through onClientMessageReceived so E2EE rooms
-	// re-decrypt the ciphertext into the rendered plaintext (matching what
-	// runOptimisticSendMessage already does for the optimistic record); for
-	// non-encrypted rooms the hook is a no-op.
-	const processed = await onClientMessageReceived(mapMessageFromApi(saved));
+	// Clear the optimistic `temp` flag only if the messages stream hasn't already
+	// replaced the record. Overwriting with the server response can clobber stream
+	// updates that arrive first — e.g. read-receipt-driven `unread: false`, async
+	// URL/quote attachments, or E2EE decrypt — leading to stale UI state.
 	Messages.state.update(
-		(record) => record._id === message._id,
-		() => processed,
+		(record) => record._id === message._id && record.temp === true,
+		({ temp: _, ...record }) => record,
 	);
 };
 
