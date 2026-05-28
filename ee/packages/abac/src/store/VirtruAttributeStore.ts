@@ -133,12 +133,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 			storeLogger.warn({ msg: 'Virtru store: redacting all rooms after decision failure', err });
 			return new Set<string>();
 		});
-		return rooms.map((r) => {
-			if (permitted.has(r._id)) {
-				return r;
-			}
-			return { ...r, abacAttributes: [], abacAttributesRedacted: true };
-		});
+		return rooms.map((r) => (permitted.has(r._id) ? r : { ...r, abacAttributes: [], abacAttributesRedacted: true }));
 	}
 
 	async assertCanModifyRoom(room: Pick<IRoom, '_id' | 'abacAttributes'>, actor: AbacActor): Promise<void> {

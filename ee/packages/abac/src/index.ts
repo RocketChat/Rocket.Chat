@@ -212,14 +212,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private async resolveAttributeStore(): Promise<IAttributeStore> {
-		const ctx: AttributeStoreSelectionContext = {
-			abacEnabled: this.abacEnabled === true,
-			pdpType: this.pdpTypeSetting,
-			licensed: await License.hasModule('abac'),
-		};
-
-		const selected = this.attributeStores[this.attributeStoreSetting ?? 'local'];
-		const store = selected.isEligible(ctx) ? selected.store : this.attributeStores.local.store;
+		const effective = await this.computeEffectiveStoreType();
+		const { store } = this.attributeStores[effective];
 
 		if (store !== this.lastSelectedStore) {
 			this.lastSelectedStore = store;
@@ -285,7 +279,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		await this.loadVirtruPdpConfig();
-		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
 		this.setPdpStrategy('virtru');
 	}
 
