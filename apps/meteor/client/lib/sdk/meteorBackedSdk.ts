@@ -273,11 +273,32 @@ const createMeteorBackedAccount = () => {
 };
 
 export const createMeteorBackedStorage = () => {
+	let appliedBackend: 'local' | 'session' | undefined;
+
 	return {
 		changeStorageBackend: () => {
-			setStorageBackend(window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local');
-			(Meteor._localStorage as unknown as Storage) = window[FORGET_SESSION_SETTING_ID] ? window.sessionStorage : window.localStorage;
-			Accounts.config({ clientStorage: window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local' });
+			const backend: 'local' | 'session' = window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local';
+
+			if (appliedBackend === backend) {
+				return;
+			}
+
+			if (!setStorageBackend(backend)) {
+				return;
+			}
+
+			(Meteor._localStorage as unknown as Storage) = backend === 'session' ? window.sessionStorage : window.localStorage;
+
+			try {
+				Accounts.config({ clientStorage: backend });
+			} catch (error) {
+				// Accounts.config throws when invoked twice with a conflicting value. Meteor's
+				// own boot may have already set clientStorage; the _localStorage reassign above
+				// is what actually switches the backend Meteor reads from, so swallow.
+				console.warn('[storage] Accounts.config(clientStorage) refused at runtime', error);
+			}
+
+			appliedBackend = backend;
 		},
 	};
 };

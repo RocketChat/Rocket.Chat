@@ -54,7 +54,13 @@ export const getDdpSdk = (): DDPSDK => {
 		if (sdkTransportEnabled) {
 			instance = DDPSDK.create(computeDdpUrl());
 			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
-			instance.storage = createMeteorBackedStorage();
+			try {
+				instance.storage = createMeteorBackedStorage();
+			} catch (error) {
+				// DDPSDK.create may return a sealed/frozen instance under strict mode; failing
+				// to attach the storage hook must not abort SDK bootstrap.
+				console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
+			}
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
