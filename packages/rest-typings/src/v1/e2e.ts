@@ -26,4 +26,8 @@ export type E2eEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
 		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
 	};
+
+	'/v1/e2e.requestSubscriptionKeys': {
+		POST: () => void;
+	};
 };
