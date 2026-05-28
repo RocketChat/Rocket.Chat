@@ -1,11 +1,10 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { CustomSoundContext, useEndpoint, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
 import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
 
 type CustomSoundProviderProps = {
@@ -17,6 +16,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const queryClient = useQueryClient();
 	const streamAll = useStream('notify-all');
+	const getCustomSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
 	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
@@ -24,11 +24,11 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const { data: list } = useQuery({
 		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
-			const customSoundsList = await sdk.call('listCustomSounds');
-			if (!customSoundsList.length) {
+			const { sounds } = await getCustomSounds({});
+			if (!sounds.length) {
 				return defaultSounds;
 			}
-			return [...customSoundsList.map((sound) => ({ ...sound, src: getCustomSoundURL(sound) })), ...defaultSounds];
+			return [...sounds.map(({ _updatedAt: _, ...sound }) => ({ ...sound, src: getCustomSoundURL(sound) })), ...defaultSounds];
 		},
 		queryKey: ['listCustomSounds'],
 		initialData: defaultSounds,
