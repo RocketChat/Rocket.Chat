@@ -15,7 +15,7 @@ class AddExistingChannelModal extends Modal {
 	}
 
 	get btnAdd(): Locator {
-		return this.root.getByRole('button', { name: 'Add' });
+		return this.root.getByRole('button', { name: 'Add', exact: true });
 	}
 
 	async confirmAdd() {
@@ -42,11 +42,11 @@ export class ChannelsFlexTab extends FlexTab {
 	}
 
 	get btnAddExisting(): Locator {
-		return this.root.getByRole('button', { name: 'Add Existing' });
+		return this.root.getByRole('button', { name: 'Add Existing', exact: true });
 	}
 
 	get btnCreateNew(): Locator {
-		return this.root.getByRole('button', { name: 'Create new' });
+		return this.root.getByRole('button', { name: 'Create new', exact: true });
 	}
 
 	get channelsList(): Locator {

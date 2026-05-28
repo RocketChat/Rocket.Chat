@@ -20,7 +20,7 @@ test.describe('export-messages', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -31,7 +31,6 @@ test.describe('export-messages', () => {
 	});
 
 	test('should all export methods be available in targetChannel', async () => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
@@ -42,7 +41,6 @@ test.describe('export-messages', () => {
 	});
 
 	test('should display export output format correctly depending on the selected method', async () => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
@@ -71,7 +69,6 @@ test.describe('export-messages', () => {
 	test('when trying to send email without filling to users or to additional emails, should mark both fields as invalid', async () => {
 		const testMessage = uniqueMessage();
 
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(testMessage);
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
@@ -94,7 +91,6 @@ test.describe('export-messages', () => {
 	});
 
 	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
@@ -112,7 +108,6 @@ test.describe('export-messages', () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
@@ -128,7 +123,6 @@ test.describe('export-messages', () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.content.sendMessage(message2);
 
@@ -153,7 +147,6 @@ test.describe('export-messages', () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.content.sendMessage(message2);
 

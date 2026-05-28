@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { createRoom } from '../functions/createRoom';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -60,6 +61,7 @@ export const createChannelMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
+		methodDeprecationLogger.method('createChannel', '9.0.0', '/v1/channels.create');
 		const uid = Meteor.userId();
 
 		if (!uid) {

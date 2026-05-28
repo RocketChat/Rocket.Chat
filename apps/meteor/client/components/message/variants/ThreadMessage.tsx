@@ -8,7 +8,6 @@ import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -33,15 +32,12 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
 
-	const messageRef = useJumpToMessage(message._id);
-
 	return (
 		<Message
 			role='listitem'
 			aria-roledescription={t('thread_message')}
 			tabIndex={0}
 			id={message._id}
-			ref={messageRef}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}

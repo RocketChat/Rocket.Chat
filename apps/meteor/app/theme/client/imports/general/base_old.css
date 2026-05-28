@@ -56,8 +56,9 @@
 		padding-bottom: 24px;
 	}
 
-	& ul.messages-list {
-		padding: 21px 0 10px;
+	/* Overlay scrollbars overrides styles, so we need an important here */
+	& .messages-list {
+		padding: 21px 0 10px !important;
 	}
 }
 

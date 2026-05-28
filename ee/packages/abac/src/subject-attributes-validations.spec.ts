@@ -13,6 +13,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 		removeUserFromRoom: jest.fn(),
 	},
 	MeteorError: class extends Error {},
+	isMeteorError: () => false,
 }));
 
 const makeUser = (overrides: Partial<IUser> = {}): IUser =>
@@ -89,6 +90,7 @@ const getStaticUser = (_id: string, overrides: Partial<IUser> = {}): IUser => {
 type StaticUserUpdate = Partial<IUser> & { _id: string };
 
 const service = new AbacService();
+service.setPdpStrategy('local');
 
 let db: Db;
 let sharedMongo: SharedMongoConnection;

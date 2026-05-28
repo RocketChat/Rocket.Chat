@@ -2,6 +2,8 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
+import { sanitizeUrl } from './sanitizeUrl';
+
 const flattenMarkup = (
 	markup:
 		| MessageParser.Timestamp
@@ -47,10 +49,11 @@ type ImageElementProps = {
 
 const ImageElement = ({ src, alt }: ImageElementProps): ReactElement => {
 	const plainAlt = useMemo(() => flattenMarkup(alt), [alt]);
+	const safeSrc = sanitizeUrl(src);
 
 	return (
-		<a href={src} target='_blank' rel='noopener noreferrer' title={plainAlt}>
-			<img src={src} data-title={src} alt={plainAlt} style={style} />
+		<a href={safeSrc} target='_blank' rel='noopener noreferrer' title={plainAlt}>
+			<img src={safeSrc} data-title={safeSrc} alt={plainAlt} style={style} />
 		</a>
 	);
 };

@@ -1,9 +1,9 @@
-import moment from 'moment';
+import { startOfDay, endOfDay } from 'date-fns';
 
 export type DateRange = {
 	start?: Date;
 	end?: Date;
 };
 
-export const createStartOfToday = () => moment().startOf('day').toDate();
-export const createEndOfToday = () => moment().endOf('day').toDate();
+export const createStartOfToday = () => startOfDay(new Date());
+export const createEndOfToday = () => endOfDay(new Date());

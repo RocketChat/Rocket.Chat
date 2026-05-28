@@ -26,12 +26,18 @@ export const takeInquiry = async (
 		});
 	}
 
-	const user = await Users.findOneOnlineAgentById(userId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	const user = await Users.findOneOnlineAgentById(
+		userId,
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+		{},
+	);
 	if (!user) {
 		throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 			method: 'livechat:takeInquiry',
 			...(process.env.TEST_MODE && {
 				Livechat_enabled_when_agent_idle: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				Livechat_accept_chats_with_no_agents: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 				user: await Users.findOneById(userId),
 			}),
 		});

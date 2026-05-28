@@ -1,6 +1,6 @@
-import fs from 'fs';
-import { readFile, writeFile } from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
 import mdastToString from 'mdast-util-to-string';
 import remarkParse from 'remark-parse';

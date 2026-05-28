@@ -1,4 +1,4 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse } from 'node:http';
 
 import type { IncomingMessage } from 'connect';
 import { WebApp } from 'meteor/webapp';

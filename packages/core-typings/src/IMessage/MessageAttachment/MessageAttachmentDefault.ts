@@ -1,5 +1,6 @@
 import type { Root } from '@rocket.chat/message-parser';
 
+import type { MessageAttachment } from './MessageAttachment';
 import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 export type MarkdownFields = 'text' | 'pretext' | 'fields';
@@ -32,4 +33,9 @@ export type MessageAttachmentDefault = {
 	thumb_url?: string;
 
 	color?: string;
+
+	attachments?: MessageAttachment[];
+
+	/** Encrypted content from e2e messages, preserved in pin attachments */
+	content?: object; // TODO: check if MessageAttachmentDefault[content] is a valid type it does not seem to be used anywhere
 } & MessageAttachmentBase;
