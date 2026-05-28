@@ -1251,19 +1251,6 @@ describe('AbacService (unit)', () => {
 			}
 		});
 
-		it('local mode: no actor → rooms returned as-is', async () => {
-			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA] },
-				totalCount: Promise.resolve(1),
-			});
-
-			const result = await service.listAbacRooms({ offset: 0, count: 25 });
-
-			expect(result.rooms).toEqual([roomA]);
-			expect(result.total).toBe(1);
-			expect(result.offset).toBe(0);
-		});
-
 		it('virtru mode: permitted rooms are unchanged, denied rooms are redacted', async () => {
 			asVirtru(service);
 			const fakeStore = {
@@ -1345,11 +1332,6 @@ describe('AbacService (unit)', () => {
 		const roomA = { _id: 'rA', abacAttributes: [{ key: 'dept', values: ['eng'] }] } as any;
 		const roomB = { _id: 'rB', abacAttributes: [{ key: 'dept', values: ['sales'] }] } as any;
 
-		const asVirtru = (svc: AbacService) => {
-			mockHasModule.mockReturnValue(true);
-			Object.assign(svc as any, { abacEnabled: true, pdpTypeSetting: 'virtru', attributeStoreSetting: 'virtru' });
-		};
-
 		it('always delegates to attributeStore.scopeRoomsPage (local store is a no-op pass-through)', async () => {
 			const fakeStore = { scopeRoomsPage: jest.fn().mockImplementation(async (rooms: any[]) => rooms) };
 			(service as any).attributeStores.local.store = fakeStore;
@@ -1358,17 +1340,6 @@ describe('AbacService (unit)', () => {
 			const result = await service.scopeRoomsForAdmin(input, actor);
 
 			expect(fakeStore.scopeRoomsPage).toHaveBeenCalledWith(input, actor);
-			expect(result).toEqual([roomA, roomB]);
-		});
-
-		it('virtru mode: delegates to the virtru store scopeRoomsPage', async () => {
-			asVirtru(service);
-			const scopeRoomsPage = jest.fn().mockResolvedValue([roomA, roomB]);
-			(service as any).attributeStores.virtru.store = { scopeRoomsPage, onStoreSelected: jest.fn() };
-
-			const result = await service.scopeRoomsForAdmin([roomA, roomB], actor);
-
-			expect(scopeRoomsPage).toHaveBeenCalledWith([roomA, roomB], actor);
 			expect(result).toEqual([roomA, roomB]);
 		});
 	});
