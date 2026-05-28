@@ -1,15 +1,13 @@
-import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import passport from 'passport';
-import _ from 'underscore';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { beforeCreateUserCallback } from '../../../server/lib/callbacks/beforeCreateUserCallback';
-import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
-const config: Partial<OAuthConfiguration> = {
+const config = {
 	serverURL: '',
 	authorizePath: '/m/oauth2/auth/',
 	tokenPath: '/m/oauth2/token/',
@@ -22,6 +20,8 @@ const config: Partial<OAuthConfiguration> = {
 	accessTokenParam: 'access_token',
 };
 
+const Dolphin = new CustomOAuth('dolphin', config);
+
 function DolphinOnCreateUser(options: any, user?: IUser) {
 	// TODO: callbacks Fix this
 	if (user?.services?.dolphin?.NickName) {
@@ -30,32 +30,11 @@ function DolphinOnCreateUser(options: any, user?: IUser) {
 	return options;
 }
 
-const configureDolphinOAuth = () => {
-	passport.unuse('dolphin');
-
-	const enabled = settings.get<boolean>('Accounts_OAuth_Dolphin');
-	if (!enabled) {
-		return;
-	}
-
-	const serverURL = settings.get<string>('Accounts_OAuth_Dolphin_URL').trim().replace(/\/*$/, '');
-	const clientId = settings.get<string>('Accounts_OAuth_Dolphin_id');
-	const clientSecret = settings.get<string>('Accounts_OAuth_Dolphin_secret');
-
-	if (!clientId || !clientSecret || !serverURL) {
-		return;
-	}
-
-	addPassportCustomOAuth('dolphin', { ...config, serverURL, clientId, clientSecret });
-};
-
 Meteor.startup(async () => {
-	const updateConfig = () => _.debounce(configureDolphinOAuth, 300);
-
-	settings.watchMultiple(
-		['Accounts_OAuth_Dolphin', 'Accounts_OAuth_Dolphin_URL', 'Accounts_OAuth_Dolphin_id', 'Accounts_OAuth_Dolphin_secret'],
-		updateConfig,
-	);
+	settings.watch<string>('Accounts_OAuth_Dolphin_URL', (value) => {
+		config.serverURL = value;
+		return Dolphin.configure(config);
+	});
 
 	if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 		const data = {

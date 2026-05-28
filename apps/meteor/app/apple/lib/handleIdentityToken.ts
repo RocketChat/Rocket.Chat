@@ -27,7 +27,7 @@ async function isValidAppleJWT(identityToken: string, header: any): Promise<bool
 	}
 }
 
-export async function handleIdentityToken(identityToken: string): Promise<Record<string, any>> {
+export async function handleIdentityToken(identityToken: string): Promise<{ id: string; email: string; name: string }> {
 	const decodedToken = KJUR.jws.JWS.parse(identityToken);
 
 	if (!(await isValidAppleJWT(identityToken, decodedToken.headerObj))) {
@@ -38,14 +38,15 @@ export async function handleIdentityToken(identityToken: string): Promise<Record
 		throw new Error('identityToken does not have a payload');
 	}
 
-	const { iss, sub } = decodedToken.payloadObj as any;
+	const { iss, sub, email } = decodedToken.payloadObj as any;
 	if (!iss) {
 		throw new Error('Insufficient data in auth response token');
 	}
 
 	const serviceData = {
 		id: sub,
-		...decodedToken.payloadObj,
+		email,
+		name: '',
 	};
 
 	return serviceData;
