@@ -1,4 +1,4 @@
-import { IconButton } from '@rocket.chat/fuselage';
+import { SidebarV2ItemMenu } from '@rocket.chat/fuselage';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -46,31 +46,32 @@ const UserRoomCategoryGroupMenu = ({ categoryName }: UserRoomCategoryGroupMenuPr
 	}, [categoryName, setModal]);
 
 	return (
-		<GenericMenu
-			detached
-			mini
-			title={t('Options')}
-			button={<IconButton mini secondary flexShrink={0} icon='kebab' aria-label={t('Options')} />}
-			sections={[
-				{
-					items: [
-						{
-							id: 'rename-user-room-category',
-							content: t('User_room_category_rename'),
-							icon: 'edit',
-							onClick: openRename,
-						},
-						{
-							id: 'delete-user-room-category',
-							content: t('User_room_category_delete'),
-							icon: 'trash',
-							variant: 'danger',
-							onClick: openConfirmDelete,
-						},
-					],
-				},
-			]}
-		/>
+		<SidebarV2ItemMenu>
+			<GenericMenu
+				detached
+				mini
+				title={t('Options')}
+				sections={[
+					{
+						items: [
+							{
+								id: 'rename-user-room-category',
+								content: t('User_room_category_rename'),
+								icon: 'edit',
+								onClick: openRename,
+							},
+							{
+								id: 'delete-user-room-category',
+								content: t('User_room_category_delete'),
+								icon: 'trash',
+								variant: 'danger',
+								onClick: openConfirmDelete,
+							},
+						],
+					},
+				]}
+			/>
+		</SidebarV2ItemMenu>
 	);
 };
 

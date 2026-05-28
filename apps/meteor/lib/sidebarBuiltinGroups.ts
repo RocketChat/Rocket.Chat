@@ -1,7 +1,7 @@
 /**
  * Built-in sidebar section keys. These keys are reserved as i18n labels for
  * Rocket.Chat's standard sidebar groups (Channels, Direct Messages, etc.) and
- * must not be reused as user-defined room category names — otherwise a user
+ * must not be reused as user-defined room category names - otherwise a user
  * category would either silently overwrite the built-in section, or be
  * filtered out and its rooms would disappear from the sidebar.
  *
