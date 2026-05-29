@@ -16401,27 +16401,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"aws-sdk@npm:^2.1691.0":
-  version: 2.1693.0
-  resolution: "aws-sdk@npm:2.1693.0"
-  dependencies:
-    buffer: "npm:4.9.2"
-    events: "npm:1.1.1"
-    ieee754: "npm:1.1.13"
-    jmespath: "npm:0.16.0"
-    querystring: "npm:0.2.0"
-    sax: "npm:1.2.1"
-    url: "npm:0.10.3"
-    util: "npm:^0.12.4"
-    uuid: "npm:8.0.0"
-    xml2js: "npm:0.6.2"
-  checksum: 10/4dc3d7f747cebeea832391465de2f9bbb16c079e19ed5bb58788ae343c828477c87aa8c324e0d4276e7510e9ecbbe95a92ab9bce3d30a7f928ee37e812832bb3
-  languageName: node
-  linkType: hard
-
-=======
->>>>>>> upstream/develop
 "aws-sign2@npm:~0.7.0":
   version: 0.7.0
   resolution: "aws-sign2@npm:0.7.0"
@@ -17113,11 +17092,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"brace-expansion@npm:^1.0.0, brace-expansion@npm:^1.1.7":
-  version: 1.1.12
-  resolution: "brace-expansion@npm:1.1.12"
-=======
 "bowser@npm:^2.11.0":
   version: 2.14.1
   resolution: "bowser@npm:2.14.1"
@@ -17125,10 +17099,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brace-expansion@npm:^1.1.7":
-  version: 1.1.11
-  resolution: "brace-expansion@npm:1.1.11"
->>>>>>> upstream/develop
+"brace-expansion@npm:^1.0.0, brace-expansion@npm:^1.1.7":
+  version: 1.1.12
+  resolution: "brace-expansion@npm:1.1.12"
   dependencies:
     balanced-match: "npm:^1.0.0"
     concat-map: "npm:0.0.1"
@@ -21555,7 +21528,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "events-universal@npm:^1.0.0":
   version: 1.0.1
   resolution: "events-universal@npm:1.0.1"
@@ -21565,16 +21537,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"events@npm:1.1.1":
-  version: 1.1.1
-  resolution: "events@npm:1.1.1"
-  checksum: 10/524355c4364b4851d53ccf4fdab9570e3953e1f64ebca15554f33e50bebb4e71ab947ac0dee6f4ed5a567ff2eda54b0489b278b4fb7c8ec1f4982150079dfd40
-=======
 "events@npm:3.3.0, events@npm:^3.2.0, events@npm:^3.3.0":
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: 10/a3d47e285e28d324d7180f1e493961a2bbb4cad6412090e4dec114f4db1f5b560c7696ee8e758f55e23913ede856e3689cd3aa9ae13c56b5d8314cd3b3ddd1be
->>>>>>> upstream/develop
   languageName: node
   linkType: hard
 
@@ -23396,8 +23362,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"hono@npm:^4.11.9":
+"hono@npm:^4.12.5":
   version: 4.12.5
   resolution: "hono@npm:4.12.5"
   checksum: 10/3d03cf2885f7c75325869a178bc94291a17a656002b930dc91456cb177366f6f344c7c90c09707c1fcb4c6e40b1f33fac98f1622628061628cabadcf8cf6d3fd
@@ -23408,12 +23373,6 @@ __metadata:
   version: 1.15.1
   resolution: "hookified@npm:1.15.1"
   checksum: 10/ecaee63506d9a213e8b78dfdb92346227f951d3bcd8ef60d14105c5590f61d466f130a908274e1ec87ee3b3668bd87d9250cad64547cf15cfa69932bcdbbea8f
-=======
-"hono@npm:^4.12.5":
-  version: 4.12.5
-  resolution: "hono@npm:4.12.5"
-  checksum: 10/3d03cf2885f7c75325869a178bc94291a17a656002b930dc91456cb177366f6f344c7c90c09707c1fcb4c6e40b1f33fac98f1622628061628cabadcf8cf6d3fd
->>>>>>> upstream/develop
   languageName: node
   linkType: hard
 
@@ -33157,24 +33116,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"sax@npm:1.2.1":
-  version: 1.2.1
-  resolution: "sax@npm:1.2.1"
-  checksum: 10/d64f65291ce127f191eb2c22012f8f608736e306db6a28306e618bb1324cfbc19f6783c49ce0d88e5628fde30878c29189c8fb3c62c83f079b471734e4df455d
-  languageName: node
-  linkType: hard
-
 "sax@npm:>=0.6.0, sax@npm:^1.5.0":
   version: 1.5.0
   resolution: "sax@npm:1.5.0"
   checksum: 10/9012ff37dda7a7ac5da45db2143b04036103e8bef8d586c3023afd5df6caf0ebd7f38017eee344ad2e2247eded7d38e9c42cf291d8dd91781352900ac0fd2d9f
-=======
-"sax@npm:>=0.6.0":
-  version: 1.2.4
-  resolution: "sax@npm:1.2.4"
-  checksum: 10/09b79ff6dc09689a24323352117c94593c69db348997b2af0edbd82fa08aba47d778055bf9616b57285bb73d25d790900c044bf631a8f10c8252412e3f3fe5dd
->>>>>>> upstream/develop
   languageName: node
   linkType: hard
 
@@ -34728,13 +34673,6 @@ __metadata:
   version: 1.1.2
   resolution: "strnum@npm:1.1.2"
   checksum: 10/ccd6297a1fdaf0fc8ea0ea904acdae76878d49a4b0d98a70155df4bc081fd88eac5ec99fb150f3d1d1af065c1898d38420705259ba6c39aa850c671bcd54e35d
-  languageName: node
-  linkType: hard
-
-"strnum@npm:^2.1.2":
-  version: 2.2.0
-  resolution: "strnum@npm:2.2.0"
-  checksum: 10/2969dbc8441f5af1b55db1d2fcea64a8f912de18515b57f85574e66bdb8f30ae76c419cf1390b343d72d687e2aea5aca82390f18b9e0de45d6bcc6d605eb9385
   languageName: node
   linkType: hard
 
@@ -36710,7 +36648,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "url-regex@npm:^3.0.0":
   version: 3.2.0
   resolution: "url-regex@npm:3.2.0"
@@ -36720,18 +36657,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url@npm:0.10.3":
-  version: 0.10.3
-  resolution: "url@npm:0.10.3"
-  dependencies:
-    punycode: "npm:1.3.2"
-    querystring: "npm:0.2.0"
-  checksum: 10/8c04e30d65907a1e01569cead632c74ea3af99d1b9b63dfbb2cf636640fe210f7a1bc16990aac04914dbb63ad2bd50effee3e782e0170d5938a11e8aa38358a5
-  languageName: node
-  linkType: hard
-
-=======
->>>>>>> upstream/develop
 "url@npm:^0.11.0, url@npm:^0.11.4, url@npm:~0.11.0":
   version: 0.11.4
   resolution: "url@npm:0.11.4"
@@ -36838,27 +36763,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"uuid@npm:8.0.0":
-  version: 8.0.0
-  resolution: "uuid@npm:8.0.0"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 10/5086c43bbe11e2337d9bb9a3b3a156311e5f5ba5da2de8152da9e00cfd5fbbf626d36e6a2838dde06e2105ac563bc298470acc0e4800c96fa2d50565c5782f8a
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^11.0.3":
-  version: 11.1.0
-  resolution: "uuid@npm:11.1.0"
-=======
 "uuid@npm:^11.0.3, uuid@npm:~11.0.5":
   version: 11.0.5
   resolution: "uuid@npm:11.0.5"
->>>>>>> upstream/develop
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
+  checksum: 10/0594ecdff3051e15d4a2c614b4c72e73af373bde0a5d156512353c01156975295d024ae8d7151846d7bd4d22ccd251b16ed51b4318fa71505fb20ad984102dc1
   languageName: node
   linkType: hard
 
@@ -36886,15 +36796,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10/9d0b6adb72b736e36f2b1b53da0d559125ba3e39d913b6072f6f033e0c87835b414f0836b45bcfaf2bdf698f92297fea1c3cc19b0b258bc182c9c43cc0fab9f2
-  languageName: node
-  linkType: hard
-
-"uuid@npm:~11.0.5":
-  version: 11.0.5
-  resolution: "uuid@npm:11.0.5"
-  bin:
-    uuid: dist/esm/bin/uuid
-  checksum: 10/0594ecdff3051e15d4a2c614b4c72e73af373bde0a5d156512353c01156975295d024ae8d7151846d7bd4d22ccd251b16ed51b4318fa71505fb20ad984102dc1
   languageName: node
   linkType: hard
 
