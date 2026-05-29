@@ -1,5 +1,5 @@
 import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useMethod, useStream } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
@@ -26,10 +26,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 	const queryClient = useQueryClient();
 	const queryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
-	// REST has no per-thread read-marker endpoint yet; fall back to the
-	// `readThreads` DDP method so the side effect that DDP getThreadMessages
-	// used to do server-side keeps happening for callers.
-	const readThreads = useMethod('readThreads');
+	const markThreadRead = useEndpoint('POST', '/v1/subscriptions.read');
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
@@ -111,7 +108,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
 
 			const { messages } = await getThreadMessages({ tmid });
-			void Promise.resolve(readThreads(tmid)).catch(() => undefined);
+			void markThreadRead({ rid: roomId, tmid }).catch(() => undefined);
 			const filtered = messages
 				.map((m) => mapMessageFromApi(m))
 				.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);

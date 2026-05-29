@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { readThread } from '../../app/threads/server/functions';
 import { callbacks } from '../lib/callbacks';
@@ -18,6 +19,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async readThreads(tmid) {
+		methodDeprecationLogger.method('readThreads', '9.0.0', '/v1/subscriptions.read');
 		check(tmid, String);
 
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {

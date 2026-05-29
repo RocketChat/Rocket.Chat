@@ -6,6 +6,8 @@ import {
 	ajv,
 	isShieldSvgProps,
 	isSpotlightProps,
+	parseSpotlightUsernames,
+	parseSpotlightType,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
@@ -339,7 +341,11 @@ API.v1.get(
 );
 
 const spotlightResponseSchema = ajv.compile<{
-	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+	users: (Pick<IUser, 'name' | '_id' | 'username'> &
+		Partial<Pick<IUser, 'status' | 'statusText' | 'avatarETag'>> & {
+			nickname?: string;
+			outside?: boolean;
+		})[];
 	rooms: Pick<IRoom, 't' | 'name' | 'lastMessage' | '_id'>[];
 }>({
 	type: 'object',
@@ -356,7 +362,7 @@ const spotlightResponseSchema = ajv.compile<{
 					statusText: { type: 'string' },
 					avatarETag: { type: 'string' },
 				},
-				required: ['_id', 'name', 'username', 'status'],
+				required: ['_id', 'name', 'username'],
 				additionalProperties: true,
 			},
 		},
@@ -383,7 +389,10 @@ const spotlightResponseSchema = ajv.compile<{
 API.v1.get(
 	'spotlight',
 	{
-		authRequired: true,
+		// DDP `spotlight` accepts anonymous calls (Accounts_AllowAnonymousRead).
+		// Keep parity so anonymous-user / embedded-layout flows can still
+		// resolve a public channel through the navbar search.
+		authRequired: false,
 		query: isSpotlightProps,
 		response: {
 			200: spotlightResponseSchema,
@@ -392,9 +401,15 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const { query } = this.queryParams;
+		const { query, usernames, type, rid } = this.queryParams;
 
-		const result = await spotlightMethod({ text: query, userId: this.userId });
+		const result = await spotlightMethod({
+			text: query,
+			userId: this.userId,
+			usernames: parseSpotlightUsernames(usernames),
+			type: parseSpotlightType(type),
+			rid,
+		});
 
 		return API.v1.success(result);
 	},

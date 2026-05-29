@@ -3,7 +3,8 @@ import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { LegacyRoomManager, upsertMessage } from '../../../../app/ui-utils/client';
-import { callWithErrorHandling } from '../../../lib/utils/callWithErrorHandling';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { Messages, Subscriptions } from '../../../stores';
 
 /**
@@ -21,10 +22,13 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 	}
 
 	try {
-		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
-		if (result) {
+		const { result } = await sdk.rest.get('/v1/chat.syncMessages', {
+			roomId: rid,
+			lastUpdate: lastMessage.ts.toISOString(),
+		});
+		if (result?.updated?.length) {
 			const subscription = Subscriptions.state.find((record) => record.rid === rid);
-			await Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
+			await Promise.all(result.updated.map((msg) => upsertMessage({ msg: mapMessageFromApi(msg), subscription })));
 		}
 	} catch (error) {
 		console.error('Error loading missed messages:', error);

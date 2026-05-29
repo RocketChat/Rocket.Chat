@@ -1,5 +1,5 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isSubscriptionsGetProps,
@@ -14,6 +14,7 @@ import { Meteor } from 'meteor/meteor';
 import { readMessages } from '../../../../server/lib/readMessages';
 import { getSubscriptions } from '../../../../server/publications/subscription';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
+import { readThread } from '../../../threads/server/functions';
 import { API } from '../api';
 
 const subscriptionsGetResponseSchema = ajv.compile<{
@@ -139,12 +140,21 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { readThreads = false } = this.bodyParams;
+		const { readThreads = false, tmid } = this.bodyParams;
 		const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
 
 		const room = await Rooms.findOneById(roomId);
 		if (!room) {
 			throw new Error('error-invalid-subscription');
+		}
+
+		if (tmid) {
+			const thread = await Messages.findOneById(tmid);
+			if (thread?.rid !== room._id) {
+				throw new Error('error-invalid-thread');
+			}
+			await readThread({ user: this.user, room, tmid });
+			return API.v1.success();
 		}
 
 		await readMessages(room, this.userId, readThreads);
