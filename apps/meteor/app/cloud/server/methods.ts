@@ -112,6 +112,7 @@ Meteor.methods<ServerMethods>({
 		return true;
 	},
 	async 'cloud:connectWorkspace'(token) {
+		methodDeprecationLogger.method('cloud:connectWorkspace', '9.0.0', '/v1/cloud.connectWorkspace');
 		check(token, String);
 
 		const uid = Meteor.userId();

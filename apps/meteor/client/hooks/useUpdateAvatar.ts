@@ -1,5 +1,5 @@
 import type { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +17,6 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
 
 	const successMessage = t('Avatar_changed_successfully');
-	const setAvatarFromService = useMethod('setAvatarFromService');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -54,30 +53,19 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 		}
 
 		if (isServiceObject(avatarObj)) {
-			const { blob, contentType, service } = avatarObj;
-			try {
-				await setAvatarFromService(blob, contentType, service);
-				dispatchToastMessage({ type: 'success', message: successMessage });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
+			const { blob, service } = avatarObj;
+			const formData = new FormData();
+			formData.append('userId', userId);
+			formData.append('service', service);
+			formData.append('image', blob);
+			await saveAvatarAction(formData);
 			return;
 		}
 		if (avatarObj instanceof FormData) {
 			avatarObj.set('userId', userId);
 			await saveAvatarAction(avatarObj);
 		}
-	}, [
-		avatarObj,
-		avatarUrl,
-		dispatchToastMessage,
-		resetAvatarAction,
-		saveAvatarAction,
-		saveAvatarUrlAction,
-		setAvatarFromService,
-		successMessage,
-		userId,
-	]);
+	}, [avatarObj, avatarUrl, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, successMessage, userId]);
 
 	return updateAvatar;
 };

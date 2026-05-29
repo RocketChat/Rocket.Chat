@@ -1,10 +1,12 @@
 import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 
+import type { IntegrationsClearHistoryProps } from './IntegrationsClearHistoryProps';
 import type { IntegrationsCreateProps } from './IntegrationsCreateProps';
 import type { IntegrationsGetProps } from './IntegrationsGetProps';
 import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps';
 import type { IntegrationsListProps } from './IntegrationsListProps';
 import type { IntegrationsRemoveProps } from './IntegrationsRemoveProps';
+import type { IntegrationsReplayProps } from './IntegrationsReplayProps';
 import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
@@ -39,5 +41,13 @@ export type IntegrationsEndpoints = {
 
 	'/v1/integrations.update': {
 		PUT: (params: IntegrationsUpdateProps) => { integration: IIntegration | null };
+	};
+
+	'/v1/integrations.history.clear': {
+		POST: (params: IntegrationsClearHistoryProps) => void;
+	};
+
+	'/v1/integrations.outgoing.replay': {
+		POST: (params: IntegrationsReplayProps) => void;
 	};
 };

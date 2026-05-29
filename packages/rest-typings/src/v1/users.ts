@@ -371,6 +371,10 @@ export type UsersEndpoints = {
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
 	};
+
+	'/v1/users.verifyEmail': {
+		POST: (params: { token: string }) => void;
+	};
 };
 
 export * from './users/UserCreateParamsPOST';

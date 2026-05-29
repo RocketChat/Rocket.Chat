@@ -3,7 +3,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Pagination, Palette } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '@rocket.chat/ui-client';
 import type { usePagination } from '@rocket.chat/ui-client';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PermissionRow from './PermissionRow';
@@ -22,8 +23,22 @@ type PermissionsTableProps = {
 const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationData }: PermissionsTableProps) => {
 	const { t } = useTranslation();
 
-	const grantRole = useMethod('authorization:addPermissionToRole');
-	const removeRole = useMethod('authorization:removeRoleFromPermission');
+	const addPermissionRole = useEndpoint('POST', '/v1/permissions.addRole');
+	const removePermissionRole = useEndpoint('POST', '/v1/permissions.removeRole');
+
+	const grantRole = useCallback(
+		async (permissionId: IPermission['_id'], role: IRole['_id']) => {
+			await addPermissionRole({ permissionId, role });
+		},
+		[addPermissionRole],
+	);
+
+	const removeRole = useCallback(
+		async (permissionId: IPermission['_id'], role: IRole['_id']) => {
+			await removePermissionRole({ permissionId, role });
+		},
+		[removePermissionRole],
+	);
 
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 

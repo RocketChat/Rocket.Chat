@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { addPermissionToRoleMethod, removeRoleFromPermissionMethod } from '../../../authorization/server/functions/permissionRole';
 import { permissionsGetMethod } from '../../../authorization/server/streamer/permissions';
 import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -61,6 +62,25 @@ const permissionUpdatePropsSchema = {
 const isPermissionsListAll = ajvQuery.compile<PermissionsListAllProps>(permissionListAllSchema);
 
 const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+
+type PermissionRolePayload = { permissionId: string; role: string };
+
+const isPermissionRolePayload = ajv.compile<PermissionRolePayload>({
+	type: 'object',
+	properties: {
+		permissionId: { type: 'string', minLength: 1 },
+		role: { type: 'string', minLength: 1 },
+	},
+	required: ['permissionId', 'role'],
+	additionalProperties: false,
+});
+
+const voidPermissionResponse = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
 
 const permissionsEndpoints = API.v1
 	.get(
@@ -184,6 +204,42 @@ const permissionsEndpoints = API.v1
 			return API.v1.success({
 				permissions: result,
 			});
+		},
+	)
+	.post(
+		'permissions.addRole',
+		{
+			authRequired: true,
+			body: isPermissionRolePayload,
+			response: {
+				200: voidPermissionResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { permissionId, role } = this.bodyParams;
+			await addPermissionToRoleMethod(this.userId, permissionId, role);
+			return API.v1.success();
+		},
+	)
+	.post(
+		'permissions.removeRole',
+		{
+			authRequired: true,
+			body: isPermissionRolePayload,
+			response: {
+				200: voidPermissionResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { permissionId, role } = this.bodyParams;
+			await removeRoleFromPermissionMethod(this.userId, permissionId, role);
+			return API.v1.success();
 		},
 	);
 

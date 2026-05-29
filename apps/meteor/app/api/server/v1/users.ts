@@ -38,9 +38,11 @@ import type { Filter } from 'mongodb';
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { runUserLogoutCleanUp } from '../../../../server/hooks/userLogoutCleanUp';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { runAfterVerifyEmail } from '../../../../server/lib/users/runAfterVerifyEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
 import { resetAvatar } from '../../../../server/methods/resetAvatar';
@@ -343,7 +345,9 @@ API.v1
 				}
 			}
 
-			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
+			const service = typeof fields.service === 'string' && fields.service.length > 0 ? fields.service : 'rest';
+
+			await setUserAvatar(user, fileBuffer, mimetype, service as 'rest');
 
 			return API.v1.success();
 		},
@@ -1880,6 +1884,8 @@ API.v1
 				return API.v1.forbidden();
 			}
 
+			const user = await Users.findOneById(userId);
+
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -1888,6 +1894,10 @@ API.v1
 			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
+
+			if (user) {
+				await runUserLogoutCleanUp(user);
+			}
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
@@ -2087,6 +2097,38 @@ API.v1
 			});
 		},
 	);
+
+API.v1.post(
+	'users.verifyEmail',
+	{
+		authRequired: false,
+		body: ajv.compile<{ token: string }>({
+			type: 'object',
+			properties: {
+				token: { type: 'string', minLength: 1 },
+			},
+			required: ['token'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+
+		const user = await Users.findOne<Pick<IUser, '_id'>>({ 'services.email.verificationTokens.token': token }, { projection: { _id: 1 } });
+
+		await Meteor.callAsync('verifyEmail', token);
+
+		if (user) {
+			await runAfterVerifyEmail(user._id);
+		}
+
+		return API.v1.success();
+	},
+);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

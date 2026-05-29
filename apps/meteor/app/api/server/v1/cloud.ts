@@ -1,6 +1,7 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 import {
 	isCloudConfirmationPollProps,
+	isCloudConnectWorkspaceProps,
 	isCloudCreateRegistrationIntentProps,
 	isCloudManualRegisterProps,
 	ajv,
@@ -11,6 +12,7 @@ import {
 
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { connectWorkspace } from '../../../cloud/server/functions/connectWorkspace';
 import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 import {
@@ -286,6 +288,25 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+API.v1.post(
+	'cloud.connectWorkspace',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		body: isCloudConnectWorkspaceProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await connectWorkspace(this.bodyParams.token);
+		return API.v1.success();
+	},
+);
 
 API.v1.get(
 	'cloud.checkoutUrl',
