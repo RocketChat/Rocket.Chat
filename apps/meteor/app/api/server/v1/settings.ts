@@ -16,9 +16,9 @@ import {
 	isSettingsPublicWithPaginationProps,
 	isSettingsGetParams,
 	isSettingsBulkProps,
+	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -31,6 +31,8 @@ import { saveSettingsBulk } from '../../../lib/server/functions/saveSettingsBulk
 import { checkSettingValueBounds } from '../../../lib/server/lib/checkSettingValueBonds';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { addOAuthServiceMethod } from '../../../lib/server/methods/addOAuthService';
+import { refreshOAuthServiceMethod } from '../../../lib/server/methods/refreshOAuthService';
+import { removeOAuthServiceMethod } from '../../../lib/server/methods/removeOAuthService';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
@@ -239,6 +241,59 @@ API.v1.post(
 
 		await addOAuthServiceMethod(this.userId, name);
 
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.removeCustomOAuth',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		body: addCustomOAuthBodySchema,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { name } = this.bodyParams;
+		if (!name?.trim()) {
+			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		await removeOAuthServiceMethod(this.userId, name);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.refreshOAuthServices',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await refreshOAuthServiceMethod(this.userId);
 		return API.v1.success();
 	},
 );

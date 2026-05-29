@@ -2,7 +2,7 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useAbsoluteUrl, useEndpoint, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 import { memo, useEffect, useState } from 'react';
@@ -34,15 +34,15 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 	};
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const refreshOAuthService = useMethod('refreshOAuthService');
-	const addOAuthService = useMethod('addOAuthService');
-	const removeOAuthService = useMethod('removeOAuthService');
+	const refreshOAuthService = useEndpoint('POST', '/v1/settings.refreshOAuthServices');
+	const addOAuthService = useEndpoint('POST', '/v1/settings.addCustomOAuth');
+	const removeOAuthService = useEndpoint('POST', '/v1/settings.removeCustomOAuth');
 	const setModal = useSetModal();
 
 	const handleRefreshOAuthServicesButtonClick = async (): Promise<void> => {
 		dispatchToastMessage({ type: 'info', message: t('Refreshing') });
 		try {
-			await refreshOAuthService();
+			await refreshOAuthService(undefined);
 			dispatchToastMessage({ type: 'success', message: t('Done') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -52,7 +52,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 	const handleAddCustomOAuthButtonClick = (): void => {
 		const onConfirm = async (text: string): Promise<void> => {
 			try {
-				await addOAuthService(text);
+				await addOAuthService({ name: text });
 				dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_added') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -72,7 +72,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 		(): void => {
 			const handleConfirm = async (): Promise<void> => {
 				try {
-					await removeOAuthService(id);
+					await removeOAuthService({ name: id });
 					dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
 					setSettingSections(settingSections.filter((section) => section !== `Custom OAuth: ${capitalize(id)}`));
 				} catch (error) {

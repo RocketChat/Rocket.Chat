@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,8 +15,58 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const removeOAuthServiceMethod = async (userId: string, name: string): Promise<void> => {
+	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
+	}
+
+	const normalized = capitalize(name.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+
+	const settingsIds = [
+		`Accounts_OAuth_Custom-${normalized}`,
+		`Accounts_OAuth_Custom-${normalized}-url`,
+		`Accounts_OAuth_Custom-${normalized}-token_path`,
+		`Accounts_OAuth_Custom-${normalized}-identity_path`,
+		`Accounts_OAuth_Custom-${normalized}-authorize_path`,
+		`Accounts_OAuth_Custom-${normalized}-scope`,
+		`Accounts_OAuth_Custom-${normalized}-access_token_param`,
+		`Accounts_OAuth_Custom-${normalized}-token_sent_via`,
+		`Accounts_OAuth_Custom-${normalized}-identity_token_sent_via`,
+		`Accounts_OAuth_Custom-${normalized}-id`,
+		`Accounts_OAuth_Custom-${normalized}-secret`,
+		`Accounts_OAuth_Custom-${normalized}-button_label_text`,
+		`Accounts_OAuth_Custom-${normalized}-button_label_color`,
+		`Accounts_OAuth_Custom-${normalized}-button_color`,
+		`Accounts_OAuth_Custom-${normalized}-login_style`,
+		`Accounts_OAuth_Custom-${normalized}-key_field`,
+		`Accounts_OAuth_Custom-${normalized}-username_field`,
+		`Accounts_OAuth_Custom-${normalized}-email_field`,
+		`Accounts_OAuth_Custom-${normalized}-name_field`,
+		`Accounts_OAuth_Custom-${normalized}-avatar_field`,
+		`Accounts_OAuth_Custom-${normalized}-roles_claim`,
+		`Accounts_OAuth_Custom-${normalized}-merge_roles`,
+		`Accounts_OAuth_Custom-${normalized}-roles_to_sync`,
+		`Accounts_OAuth_Custom-${normalized}-merge_users`,
+		`Accounts_OAuth_Custom-${normalized}-show_button`,
+		`Accounts_OAuth_Custom-${normalized}-groups_claim`,
+		`Accounts_OAuth_Custom-${normalized}-channels_admin`,
+		`Accounts_OAuth_Custom-${normalized}-map_channels`,
+		`Accounts_OAuth_Custom-${normalized}-groups_channel_map`,
+		`Accounts_OAuth_Custom-${normalized}-merge_users_distinct_services`,
+	];
+
+	const promises = settingsIds.map((id) => Settings.removeById(id));
+
+	(await Promise.all(promises)).forEach((value, index) => {
+		if (value?.deletedCount) {
+			void notifyOnSettingChangedById(settingsIds[index], 'removed');
+		}
+	});
+};
+
 Meteor.methods<ServerMethods>({
 	async removeOAuthService(name) {
+		methodDeprecationLogger.method('removeOAuthService', '9.0.0', '/v1/settings.removeCustomOAuth');
 		check(name, String);
 
 		const userId = Meteor.userId();
@@ -26,52 +77,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
-		}
-
-		name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
-		name = capitalize(name);
-
-		const settingsIds = [
-			`Accounts_OAuth_Custom-${name}`,
-			`Accounts_OAuth_Custom-${name}-url`,
-			`Accounts_OAuth_Custom-${name}-token_path`,
-			`Accounts_OAuth_Custom-${name}-identity_path`,
-			`Accounts_OAuth_Custom-${name}-authorize_path`,
-			`Accounts_OAuth_Custom-${name}-scope`,
-			`Accounts_OAuth_Custom-${name}-access_token_param`,
-			`Accounts_OAuth_Custom-${name}-token_sent_via`,
-			`Accounts_OAuth_Custom-${name}-identity_token_sent_via`,
-			`Accounts_OAuth_Custom-${name}-id`,
-			`Accounts_OAuth_Custom-${name}-secret`,
-			`Accounts_OAuth_Custom-${name}-button_label_text`,
-			`Accounts_OAuth_Custom-${name}-button_label_color`,
-			`Accounts_OAuth_Custom-${name}-button_color`,
-			`Accounts_OAuth_Custom-${name}-login_style`,
-			`Accounts_OAuth_Custom-${name}-key_field`,
-			`Accounts_OAuth_Custom-${name}-username_field`,
-			`Accounts_OAuth_Custom-${name}-email_field`,
-			`Accounts_OAuth_Custom-${name}-name_field`,
-			`Accounts_OAuth_Custom-${name}-avatar_field`,
-			`Accounts_OAuth_Custom-${name}-roles_claim`,
-			`Accounts_OAuth_Custom-${name}-merge_roles`,
-			`Accounts_OAuth_Custom-${name}-roles_to_sync`,
-			`Accounts_OAuth_Custom-${name}-merge_users`,
-			`Accounts_OAuth_Custom-${name}-show_button`,
-			`Accounts_OAuth_Custom-${name}-groups_claim`,
-			`Accounts_OAuth_Custom-${name}-channels_admin`,
-			`Accounts_OAuth_Custom-${name}-map_channels`,
-			`Accounts_OAuth_Custom-${name}-groups_channel_map`,
-			`Accounts_OAuth_Custom-${name}-merge_users_distinct_services`,
-		];
-
-		const promises = settingsIds.map((id) => Settings.removeById(id));
-
-		(await Promise.all(promises)).forEach((value, index) => {
-			if (value?.deletedCount) {
-				void notifyOnSettingChangedById(settingsIds[index], 'removed');
-			}
-		});
+		await removeOAuthServiceMethod(userId, name);
 	},
 });
