@@ -117,36 +117,45 @@ export function addSettings(): Promise<void> {
 						enableQuery: [livekitEnabled, recordingEnabled, localStorage],
 					});
 
+					await this.add('VoIP_TeamCollab_LiveKit_Recording_Use_FileUpload_S3', false, {
+						type: 'boolean',
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Recording_Use_FileUpload_S3_Description',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					const useFileUploadS3 = { _id: 'VoIP_TeamCollab_LiveKit_Recording_Use_FileUpload_S3', value: false };
+
 					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Bucket', '', {
 						type: 'string',
 						invalidValue: '',
-						enableQuery: [livekitEnabled, recordingEnabled],
+						enableQuery: [livekitEnabled, recordingEnabled, useFileUploadS3],
 					});
 
 					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Region', 'us-east-1', {
 						type: 'string',
 						invalidValue: 'us-east-1',
-						enableQuery: [livekitEnabled, recordingEnabled],
+						enableQuery: [livekitEnabled, recordingEnabled, useFileUploadS3],
 					});
 
 					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Access_Key', '', {
 						type: 'string',
 						secret: true,
 						invalidValue: '',
-						enableQuery: [livekitEnabled, recordingEnabled],
+						enableQuery: [livekitEnabled, recordingEnabled, useFileUploadS3],
 					});
 
 					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Secret_Key', '', {
 						type: 'password',
 						secret: true,
 						invalidValue: '',
-						enableQuery: [livekitEnabled, recordingEnabled],
+						enableQuery: [livekitEnabled, recordingEnabled, useFileUploadS3],
 					});
 
 					await this.add('VoIP_TeamCollab_LiveKit_Recording_S3_Endpoint', '', {
 						type: 'string',
 						invalidValue: '',
-						enableQuery: [livekitEnabled, recordingEnabled],
+						enableQuery: [livekitEnabled, recordingEnabled, useFileUploadS3],
 					});
 				});
 

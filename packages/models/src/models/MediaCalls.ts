@@ -233,6 +233,15 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	}
 
 	/**
+	 * Find a call by its recording egress id. Used by the LiveKit webhook
+	 * handler to locate the right call doc when an egress event arrives —
+	 * the egress payload only carries the egress id, not our internal callId.
+	 */
+	public async findOneByRecordingEgressId<T extends Document = IMediaCall>(egressId: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne<T>({ 'recording.egressId': egressId } as any, options as FindOptions<IMediaCall>);
+	}
+
+	/**
 	 * Find the currently-active group call in a room, if any. Used by the
 	 * channel-header banner ("Active call — Join") and to deduplicate when
 	 * multiple users try to start a call simultaneously.
