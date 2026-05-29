@@ -1,4 +1,4 @@
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IAuditLog, IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
 import {
 	isServerEventsAuditSettingsProps,
@@ -15,6 +15,7 @@ import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
+import { auditGetAuditionsMethod, auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } from '../lib/audit/functions';
 
 type AuditRoomMembersParams = PaginatedRequest<{
 	roomId: string;
@@ -36,6 +37,76 @@ const auditRoomMembersSchema = {
 
 export const isAuditRoomMembersProps = ajvQuery.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
 
+type AuditAuditionsParams = { startDate: string; endDate: string };
+
+const auditAuditionsSchema = {
+	type: 'object',
+	properties: {
+		startDate: { type: 'string', minLength: 1 },
+		endDate: { type: 'string', minLength: 1 },
+	},
+	required: ['startDate', 'endDate'],
+	additionalProperties: false,
+};
+
+const isAuditAuditionsProps = ajvQuery.compile<AuditAuditionsParams>(auditAuditionsSchema);
+
+type AuditMessagesPayload = {
+	rid?: string;
+	startDate: string;
+	endDate: string;
+	users: string[];
+	msg: string;
+	type: string;
+	visitor?: string;
+	agent?: string;
+};
+
+const auditMessagesSchema = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+		startDate: { type: 'string', minLength: 1 },
+		endDate: { type: 'string', minLength: 1 },
+		users: { type: 'array', items: { type: 'string' } },
+		msg: { type: 'string' },
+		type: { type: 'string' },
+		visitor: { type: 'string' },
+		agent: { type: 'string' },
+	},
+	required: ['startDate', 'endDate', 'users', 'msg', 'type'],
+	additionalProperties: false,
+};
+
+const isAuditMessagesProps = ajv.compile<AuditMessagesPayload>(auditMessagesSchema);
+
+type AuditOmnichannelMessagesPayload = {
+	startDate: string;
+	endDate: string;
+	users: string[];
+	msg: string;
+	type: string;
+	visitor?: string;
+	agent?: string;
+};
+
+const auditOmnichannelMessagesSchema = {
+	type: 'object',
+	properties: {
+		startDate: { type: 'string', minLength: 1 },
+		endDate: { type: 'string', minLength: 1 },
+		users: { type: 'array', items: { type: 'string' } },
+		msg: { type: 'string' },
+		type: { type: 'string' },
+		visitor: { type: 'string' },
+		agent: { type: 'string' },
+	},
+	required: ['startDate', 'endDate', 'users', 'msg', 'type'],
+	additionalProperties: false,
+};
+
+const isAuditOmnichannelMessagesProps = ajv.compile<AuditOmnichannelMessagesPayload>(auditOmnichannelMessagesSchema);
+
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
@@ -43,6 +114,18 @@ declare module '@rocket.chat/rest-typings' {
 			GET: (
 				params: AuditRoomMembersParams,
 			) => PaginatedResult<{ members: Pick<IUser, '_id' | 'name' | 'username' | 'status' | '_updatedAt'>[] }>;
+		};
+
+		'/v1/audit.auditions': {
+			GET: (params: AuditAuditionsParams) => { auditions: IAuditLog[] };
+		};
+
+		'/v1/audit.messages': {
+			POST: (params: AuditMessagesPayload) => { messages: IMessage[] };
+		};
+
+		'/v1/audit.omnichannel.messages': {
+			POST: (params: AuditOmnichannelMessagesPayload) => { messages: IMessage[] };
 		};
 	}
 }
@@ -237,5 +320,80 @@ API.v1.get(
 			offset,
 			total,
 		});
+	},
+);
+
+API.v1.get(
+	'audit.auditions',
+	{
+		authRequired: true,
+		permissionsRequired: ['can-audit-log'],
+		query: isAuditAuditionsProps,
+		license: ['auditing'],
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+	},
+	async function action() {
+		const startDate = parseDateOrFail(this.queryParams.startDate, 'startDate');
+		const endDate = parseDateOrFail(this.queryParams.endDate, 'endDate');
+
+		const auditions = await auditGetAuditionsMethod(this.userId, startDate, endDate);
+		return API.v1.success({ auditions });
+	},
+);
+
+API.v1.post(
+	'audit.messages',
+	{
+		authRequired: true,
+		permissionsRequired: ['can-audit'],
+		body: isAuditMessagesProps,
+		license: ['auditing'],
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+	},
+	async function action() {
+		const { rid, users, msg, type, visitor, agent } = this.bodyParams;
+		const startDate = parseDateOrFail(this.bodyParams.startDate, 'startDate');
+		const endDate = parseDateOrFail(this.bodyParams.endDate, 'endDate');
+
+		const messages = await auditGetMessagesMethod(this.userId, {
+			rid,
+			startDate,
+			endDate,
+			users,
+			msg,
+			type,
+			visitor,
+			agent,
+		});
+
+		return API.v1.success({ messages });
+	},
+);
+
+API.v1.post(
+	'audit.omnichannel.messages',
+	{
+		authRequired: true,
+		permissionsRequired: ['can-audit'],
+		body: isAuditOmnichannelMessagesProps,
+		license: ['auditing'],
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+	},
+	async function action() {
+		const { users, msg, type, visitor, agent } = this.bodyParams;
+		const startDate = parseDateOrFail(this.bodyParams.startDate, 'startDate');
+		const endDate = parseDateOrFail(this.bodyParams.endDate, 'endDate');
+
+		const messages = await auditGetOmnichannelMessagesMethod(this.userId, {
+			startDate,
+			endDate,
+			users,
+			msg,
+			type,
+			visitor,
+			agent,
+		});
+
+		return API.v1.success({ messages });
 	},
 );

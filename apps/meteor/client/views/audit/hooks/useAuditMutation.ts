@@ -1,39 +1,44 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 import type { AuditFields } from './useAuditForm';
 
 export const useAuditMutation = (type: IAuditLog['fields']['type']) => {
-	const getAuditMessages = useMethod('auditGetMessages');
-	const getOmnichannelAuditMessages = useMethod('auditGetOmnichannelMessages');
+	const getAuditMessages = useEndpoint('POST', '/v1/audit.messages');
+	const getOmnichannelAuditMessages = useEndpoint('POST', '/v1/audit.omnichannel.messages');
 
 	return useMutation({
 		mutationKey: ['audit'] as const,
 
 		mutationFn: async ({ msg, dateRange, rid, users, visitor, agent }: AuditFields) => {
+			const startDate = (dateRange.start ?? new Date(0)).toISOString();
+			const endDate = (dateRange.end ?? new Date()).toISOString();
+
 			if (type === 'l') {
-				return getOmnichannelAuditMessages({
+				const { messages } = await getOmnichannelAuditMessages({
 					type,
 					msg,
-					startDate: dateRange.start ?? new Date(0),
-					endDate: dateRange.end ?? new Date(),
+					startDate,
+					endDate,
 					users,
 					visitor: '',
 					agent: '',
 				});
+				return messages;
 			}
 
-			return getAuditMessages({
+			const { messages } = await getAuditMessages({
 				type,
 				msg,
-				startDate: dateRange.start ?? new Date(0),
-				endDate: dateRange.end ?? new Date(),
+				startDate,
+				endDate,
 				rid,
 				users,
 				visitor,
 				agent,
 			});
+			return messages;
 		},
 	});
 };
