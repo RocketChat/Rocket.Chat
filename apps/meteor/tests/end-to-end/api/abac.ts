@@ -3821,9 +3821,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
 
 				await request
-					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.post(`${v1}/abac/rooms/${room._id}/attributes/team`)
 					.set(adminBypass.creds)
-					.send({ values: ['secret'] })
+					.send({ values: ['blue'] })
 					.expect(200);
 
 				await deleteRoom({ type: 'p', roomId: room._id });
