@@ -1,8 +1,23 @@
 /* eslint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { useEffect, useRef, useState } from 'react';
 
+import { useAudioLevel } from '../../providers/useAudioLevel';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+
+// Above this normalised audio level the speaking ring becomes visible. Keeps
+// background noise / fan hum from constantly lighting the border.
+const SPEAKING_THRESHOLD = 0.12;
+// Minimum visible intensity for the speaking ring. Anything above threshold
+// maps to at least this much display level so the border is clearly visible
+// even on the quietest speech — without this, levels just over the threshold
+// produce a near-invisible 1px ring.
+const MIN_VISIBLE_RING = 0.55;
+// After speech drops below threshold, keep the ring visible at the last
+// active level for this long before clearing it. Avoids a flickery indicator
+// during natural pauses between words.
+const SPEAKING_HOLD_MS = 1000;
 
 const tileStyles = css`
 	position: relative;
@@ -16,6 +31,7 @@ const tileStyles = css`
 	background-color: ${Palette.surface['surface-neutral'].toString()};
 	border: 1px solid ${Palette.stroke['stroke-medium'].toString()};
 	color: ${Palette.text['font-pure-white'].toString()};
+	transition: box-shadow 80ms linear;
 `;
 
 const labelStyles = css`
@@ -61,6 +77,8 @@ type CallTileProps = {
 	muted?: boolean;
 	held?: boolean;
 	cameraStream?: MediaStream | null;
+	/** Microphone MediaStream — drives the speaking indicator. */
+	audioStream?: MediaStream | null;
 	/** Renders the camera flipped (use for the local participant). */
 	mirrored?: boolean;
 	/** When true, the embedded video element is muted (use for local self-view). */
@@ -69,13 +87,53 @@ type CallTileProps = {
 	compact?: boolean;
 };
 
-const CallTile = ({ displayName, avatarUrl, muted, held, cameraStream, mirrored, muteVideoAudio, compact }: CallTileProps) => {
+const CallTile = ({ displayName, avatarUrl, muted, held, cameraStream, audioStream, mirrored, muteVideoAudio, compact }: CallTileProps) => {
 	const [videoRef] = usePlayMediaStream(cameraStream ?? null);
 	const cameraActive = Boolean(cameraStream);
 	const avatarSize = compact ? 'x32' : 'x48';
 
+	// Speaking ring scales with audio RMS. Muted tiles never light up — a
+	// muted mic shouldn't visually "speak" even if there's residual signal.
+	// Anything over the threshold maps into [MIN_VISIBLE_RING, 1] so a quiet
+	// tail of speech still shows a clearly-visible border instead of a 1px hint.
+	const rawLevel = useAudioLevel(muted ? null : audioStream ?? null);
+	const activeLevel =
+		rawLevel > SPEAKING_THRESHOLD
+			? MIN_VISIBLE_RING + (1 - MIN_VISIBLE_RING) * Math.min(1, (rawLevel - SPEAKING_THRESHOLD) / (1 - SPEAKING_THRESHOLD))
+			: 0;
+
+	// Display value lingers for SPEAKING_HOLD_MS after speech stops so the ring
+	// doesn't flicker on / off between words. While active, display tracks the
+	// current level live; once it drops to 0, a timer holds the last visible
+	// level then clears it.
+	const [displayLevel, setDisplayLevel] = useState(0);
+	const heldLevelRef = useRef(0);
+	useEffect(() => {
+		if (activeLevel > 0) {
+			heldLevelRef.current = activeLevel;
+			setDisplayLevel(activeLevel);
+			return;
+		}
+		if (heldLevelRef.current === 0) return;
+		const handle = setTimeout(() => {
+			heldLevelRef.current = 0;
+			setDisplayLevel(0);
+		}, SPEAKING_HOLD_MS);
+		return () => clearTimeout(handle);
+	}, [activeLevel]);
+
+	const ringThickness = displayLevel * (compact ? 3 : 4);
+	const ringGlow = displayLevel * (compact ? 6 : 12);
+	const ringColor = Palette.stroke['stroke-highlight'].toString();
+	const ringStyle =
+		displayLevel > 0
+			? {
+					boxShadow: `0 0 0 ${ringThickness}px ${ringColor}, 0 0 ${ringGlow}px ${ringThickness / 2}px ${ringColor}`,
+				}
+			: undefined;
+
 	return (
-		<Box className={tileStyles}>
+		<Box className={tileStyles} style={ringStyle}>
 			{cameraActive ? (
 				<video
 					ref={videoRef as any}

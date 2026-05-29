@@ -76,11 +76,13 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 	);
 	const remoteCameraTracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { onlySubscribed: true });
+	const remoteAudioTracks = useTracks([Track.Source.Microphone], { onlySubscribed: true });
 
 	const remoteParticipants: RemoteParticipantInfo[] = useMemo(() => {
 		return remotes.map((p) => {
 			const cam = remoteCameraTracks.find((t) => t.participant.identity === p.identity);
 			const scr = remoteScreenTracks.find((t) => t.participant.identity === p.identity);
+			const aud = remoteAudioTracks.find((t) => t.participant.identity === p.identity);
 			const micPub = p.getTrackPublication(Track.Source.Microphone);
 			return {
 				id: p.identity,
@@ -89,12 +91,14 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 				held: false,
 				cameraStream: cam?.publication?.track?.mediaStream,
 				screenStream: scr?.publication?.track?.mediaStream,
+				audioStream: aud?.publication?.track?.mediaStream,
 			};
 		});
-	}, [remotes, remoteCameraTracks, remoteScreenTracks]);
+	}, [remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks]);
 
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
+	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
 	const localCameraStream = useMemo(
 		() => (localCameraPub?.track?.mediaStream ? { active: camEnabled, stream: localCameraPub.track.mediaStream } : undefined),
 		[localCameraPub?.track?.mediaStream, camEnabled],
@@ -102,6 +106,10 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 	const localScreenStream = useMemo(
 		() => (localScreenPub?.track?.mediaStream ? { active: screenEnabled, stream: localScreenPub.track.mediaStream } : undefined),
 		[localScreenPub?.track?.mediaStream, screenEnabled],
+	);
+	const localMicrophoneStream = useMemo(
+		() => (localMicPub?.track?.mediaStream ? { active: micEnabled, stream: localMicPub.track.mediaStream } : undefined),
+		[localMicPub?.track?.mediaStream, micEnabled],
 	);
 
 	const onToggleMic = useCallback(() => void localParticipant.setMicrophoneEnabled(!micEnabled), [localParticipant, micEnabled]);
@@ -139,6 +147,7 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 			streams: {
 				localCamera: localCameraStream as any,
 				localScreen: localScreenStream as any,
+				localMicrophone: localMicrophoneStream as any,
 			},
 		}),
 		[
@@ -153,6 +162,7 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,
+			localMicrophoneStream,
 		],
 	);
 

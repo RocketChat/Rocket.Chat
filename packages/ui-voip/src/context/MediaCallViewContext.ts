@@ -10,6 +10,14 @@ export type MediaCallStreams = {
 	localScreen?: IMediaStreamWrapper;
 	remoteCamera?: IMediaStreamWrapper;
 	localCamera?: IMediaStreamWrapper;
+	/** Local microphone stream — used to drive the local speaking indicator. */
+	localMicrophone?: IMediaStreamWrapper;
+	/**
+	 * Remote microphone stream — used to drive the remote speaking indicator
+	 * on 1:1 P2P calls. Group calls (LK) attach audioStream per-participant on
+	 * RemoteParticipantInfo instead.
+	 */
+	remoteMicrophone?: IMediaStreamWrapper;
 };
 
 /**
@@ -24,6 +32,8 @@ export type RemoteParticipantInfo = {
 	held: boolean;
 	cameraStream?: MediaStream;
 	screenStream?: MediaStream;
+	/** Microphone MediaStream — drives the per-tile speaking indicator. */
+	audioStream?: MediaStream;
 };
 
 type MediaCallViewContextValue = {

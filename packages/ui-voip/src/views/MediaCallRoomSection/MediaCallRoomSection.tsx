@@ -28,7 +28,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 		onEndCall,
 		onToggleScreenSharing,
 		onToggleCamera,
-		streams: { localScreen, localCamera },
+		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants,
 	} = useMediaCallView();
 
@@ -100,6 +100,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 		held,
 		cameraStream: localCamera?.stream ?? null,
 		screenStream: localScreen?.active ? (localScreen?.stream ?? null) : null,
+		audioStream: localMicrophone?.stream ?? null,
 	};
 
 	return (

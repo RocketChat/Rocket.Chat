@@ -231,9 +231,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 				held: remoteHeld,
 				cameraStream: streams.remoteCamera?.stream,
 				screenStream: streams.remoteScreen?.active ? streams.remoteScreen.stream : undefined,
+				audioStream: streams.remoteMicrophone?.stream,
 			},
 		];
-	}, [sessionState, streams.remoteCamera, streams.remoteScreen]);
+	}, [sessionState, streams.remoteCamera, streams.remoteScreen, streams.remoteMicrophone]);
 
 	useWidgetExternalControlSignalListener(
 		'toggleWidget',

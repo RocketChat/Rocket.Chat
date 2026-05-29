@@ -15,6 +15,7 @@ type LocalParticipant = {
 	held: boolean;
 	cameraStream?: MediaStream | null;
 	screenStream?: MediaStream | null;
+	audioStream?: MediaStream | null;
 };
 
 type CallStageProps = {
@@ -154,6 +155,7 @@ const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShar
 				muted: localParticipant.muted,
 				held: localParticipant.held,
 				cameraStream: localParticipant.cameraStream,
+				audioStream: localParticipant.audioStream,
 				mirrored: true,
 				muteVideoAudio: true,
 			},
@@ -164,6 +166,7 @@ const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShar
 				muted: p.muted,
 				held: p.held,
 				cameraStream: p.cameraStream,
+				audioStream: p.audioStream,
 				mirrored: false,
 				muteVideoAudio: false,
 			})),

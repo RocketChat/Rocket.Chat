@@ -20,12 +20,16 @@ const getStreamWrappers = (instance?: MediaSignalingSession) => {
 		const remoteScreen = remoteParticipant.getMediaStream('screen-share');
 		const localCamera = localParticipant.getMediaStream('camera');
 		const remoteCamera = remoteParticipant.getMediaStream('camera');
+		const localMicrophone = localParticipant.getMediaStream('microphone');
+		const remoteMicrophone = remoteParticipant.getMediaStream('microphone');
 
 		return {
 			localScreen: localScreen ?? undefined,
 			remoteScreen: remoteScreen ?? undefined,
 			localCamera: localCamera ?? undefined,
 			remoteCamera: remoteCamera ?? undefined,
+			localMicrophone: localMicrophone ?? undefined,
+			remoteMicrophone: remoteMicrophone ?? undefined,
 		};
 	} catch (error) {
 		console.error('MediaCall: useMediaStream - Error getting local media stream', error);
@@ -48,6 +52,8 @@ const emptyStreams: MediaCallStreams = {
 	localScreen: undefined,
 	remoteCamera: undefined,
 	localCamera: undefined,
+	localMicrophone: undefined,
+	remoteMicrophone: undefined,
 };
 
 export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
@@ -69,7 +75,9 @@ export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
 					areStreamsEqual(oldStreams.localScreen, next.localScreen) &&
 					areStreamsEqual(oldStreams.remoteScreen, next.remoteScreen) &&
 					areStreamsEqual(oldStreams.localCamera, next.localCamera) &&
-					areStreamsEqual(oldStreams.remoteCamera, next.remoteCamera)
+					areStreamsEqual(oldStreams.remoteCamera, next.remoteCamera) &&
+					areStreamsEqual(oldStreams.localMicrophone, next.localMicrophone) &&
+					areStreamsEqual(oldStreams.remoteMicrophone, next.remoteMicrophone)
 				) {
 					return oldStreams;
 				}
