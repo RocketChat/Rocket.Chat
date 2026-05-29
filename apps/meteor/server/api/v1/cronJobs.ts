@@ -11,3 +11,13 @@ API.v1.get(
 		return API.v1.success({ jobs });
 	},
 );
+
+API.v1.get(
+	'cron.appjobs',
+	{ authRequired: true },
+	async function action() {
+		const { jobs } = await CronJobsSvc.getAppJobs();
+
+		return API.v1.success({ jobs });
+	},
+);

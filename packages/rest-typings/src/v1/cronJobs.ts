@@ -6,4 +6,9 @@ export type CronJobsEndpoints = {
 			jobs: ICronJobItem[];
 		};
 	};
+	'/v1/cron.appjobs': {
+		GET: (params: void) => {
+			jobs: ICronJobItem[];
+		};
+	};
 };
