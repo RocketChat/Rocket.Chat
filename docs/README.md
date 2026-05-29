@@ -13,6 +13,19 @@ monorepo developers. Reviewed in PRs like any other code.
 - **[Troubleshooting (local dev)](./local-dev/troubleshooting.md)** — Watchman,
   file watching, Mongo, ports, versions.
 
+## Architecture (mental model)
+
+- **[Architecture overview](./architecture/overview.md)** — one-page map; start
+  here to place a feature in the right layer.
+- [Monorepo layout](./architecture/monorepo-layout.md) — `apps/`, `packages/`,
+  `ee/`; where code lives and where new code goes.
+- [Monolith & microservices](./architecture/meteor-and-microservices.md) — how
+  the Meteor app relates to the `ee/apps/*` services and run modes.
+- [Critical flows](./architecture/critical-flows.md) — REST lifecycle, message
+  send, real-time delivery, login, write→MongoDB.
+- [Glossary](./reference/glossary.md) — Rocket.Chat-specific vocabulary and the
+  gotchas behind each term.
+
 ## Conventions & patterns
 
 - [API endpoint migration](./api-endpoint-migration.md) — migrating from
