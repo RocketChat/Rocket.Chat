@@ -13,7 +13,7 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		statusType?: string;
 		currentPassword?: string;
 		newPassword?: string;
-		phones?: IUserPhoneNumber[];
+		phones?: Omit<IUserPhoneNumber, 'verified'>[];
 	};
 	customFields?: Record<string, unknown>;
 };
