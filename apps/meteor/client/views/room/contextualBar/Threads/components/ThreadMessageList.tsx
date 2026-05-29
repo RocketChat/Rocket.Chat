@@ -195,7 +195,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
 
 							const topMessage = items[handle.findItemIndex(handle.scrollOffset)];
-							handleDateScroll(topMessage);
+							handleDateScroll(topMessage, offset);
 						}}
 					>
 						{loading ? (

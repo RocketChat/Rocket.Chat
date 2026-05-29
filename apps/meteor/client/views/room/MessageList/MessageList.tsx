@@ -42,7 +42,7 @@ type MessageListProps = {
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
 	debouncedClearNewMessagesOnScroll: () => void;
-	handleDateScroll: (topMessage: IMessage | undefined) => void;
+	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>;
 	debouncedMessageRead: () => void;
 };
@@ -253,7 +253,7 @@ export const MessageList = function MessageList({
 						const handle = virtualizerRef.current;
 						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
 						handleTopVisibleMessage(topMessage);
-						handleDateScroll(topMessage);
+						handleDateScroll(topMessage, offset);
 						debouncedMessageRead();
 					}}
 				>
