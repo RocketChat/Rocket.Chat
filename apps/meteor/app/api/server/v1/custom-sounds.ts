@@ -6,6 +6,7 @@ import {
 	isCustomSoundsListProps,
 	isCustomSoundsCreateProps,
 	isCustomSoundsUpdateProps,
+	isCustomSoundsDeleteProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
@@ -16,6 +17,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../../lib/constants';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { deleteCustomSoundById } from '../../../custom-sounds/server/lib/deleteCustomSound';
 import { insertOrUpdateSound } from '../../../custom-sounds/server/lib/insertOrUpdateSound';
 import { uploadCustomSound } from '../../../custom-sounds/server/lib/uploadCustomSound';
 import { getExtension, getMimeTypeFromFileName } from '../../../utils/lib/mimeTypes';
@@ -279,6 +281,27 @@ const customSoundsEndpoints = API.v1
 				SystemLogger.error({ error });
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
 			}
+		},
+	)
+	.post(
+		'custom-sounds.delete',
+		{
+			response: {
+				200: updateCustomSoundsResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			body: isCustomSoundsDeleteProps,
+			authRequired: true,
+			permissionsRequired: ['manage-sounds'],
+		},
+		async function action() {
+			const { _id } = this.bodyParams;
+
+			await deleteCustomSoundById(this.userId, _id);
+
+			return API.v1.success({});
 		},
 	);
 

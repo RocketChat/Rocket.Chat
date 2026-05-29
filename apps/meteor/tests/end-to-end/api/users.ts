@@ -247,6 +247,22 @@ describe('[Users]', () => {
 			});
 	});
 
+	describe('[/e2e.requestSubscriptionKeys]', () => {
+		it('should return unauthorized when not authenticated', async () => {
+			await request.post(api('e2e.requestSubscriptionKeys')).expect(401);
+		});
+
+		it('should accept the request and return success for an authenticated user', async () => {
+			await request
+				.post(api('e2e.requestSubscriptionKeys'))
+				.set(userCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+	});
+
 	describe('[/users.create]', () => {
 		before(async () => clearCustomFields());
 		after(async () => clearCustomFields());
