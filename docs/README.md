@@ -26,24 +26,41 @@ monorepo developers. Reviewed in PRs like any other code.
 - [Glossary](./reference/glossary.md) — Rocket.Chat-specific vocabulary and the
   gotchas behind each term.
 
-## Conventions & patterns
+## Conventions (how we write code)
 
-- [API endpoint migration](./api-endpoint-migration.md) — migrating from
-  `API.v1.addRoute()` to the typed `.get()/.post()/...` pattern with validation.
-- [AJV instances](./ajv-instances.md) — schema validation with AJV.
-- [Form validation](./form-validation.md) — form validation patterns.
-- [Anchor navigation](./anchor-navigation.md) — navigation patterns.
-- [Coverage](./coverage.md) — test coverage.
+- **[REST endpoints](./conventions/rest-endpoints.md)** — the typed
+  `API.v1.get/post/...` pattern, AJV validation, guards, response schemas.
+- [Settings](./conventions/settings.md) — registering and reading settings; the
+  cache gotcha.
+- [Models (data access)](./conventions/models.md) — `@rocket.chat/models`,
+  proxify, the updater pattern, migrations.
+- [Error handling](./conventions/error-handling.md) — `error-<domain>-<issue>`
+  codes and how to raise them.
+
+Deeper references: [API endpoint migration](./api-endpoint-migration.md) ·
+[AJV instances](./ajv-instances.md) ·
+[Form validation](./form-validation.md) ·
+[Anchor navigation](./anchor-navigation.md) · [Coverage](./coverage.md).
+
+## Extending the system
+
+- [Callbacks (in-repo hooks)](./extending/callbacks.md) — `before*/after*`
+  lifecycle hooks and priorities.
+- [Slash commands](./extending/slash-commands.md) — adding a `/command`.
+- [Apps-Engine](./extending/apps-engine.md) — marketplace apps; events &
+  fire-and-forget gotcha. Deep dive: [migration](./apps-engine-migration.md).
+- [Integrations & webhooks](./extending/integrations-webhooks.md) — incoming /
+  outgoing webhooks and the sandbox constraint.
+
+## Guides (hands-on)
+
+- [Add a REST endpoint end-to-end](./guides/add-a-rest-endpoint.md).
 
 ## Build & stack
 
 - [Meteor modern build stack](./meteor-modern-stack.md) — Meteor build, watcher,
   Watchman/TurboRepo caveats.
 - [Bundle optimization (react-aria)](./bundle-optimization-react-aria.md).
-
-## Apps-Engine & extension
-
-- [Apps-Engine migration](./apps-engine-migration.md).
 
 ## Real-time & DDP
 
