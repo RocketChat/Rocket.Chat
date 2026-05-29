@@ -375,6 +375,26 @@ export type UsersEndpoints = {
 	'/v1/users.verifyEmail': {
 		POST: (params: { token: string }) => void;
 	};
+
+	'/v1/users.totp.enable': {
+		POST: () => { secret: string; url: string };
+	};
+
+	'/v1/users.totp.disable': {
+		POST: (params: { code: string }) => { disabled: boolean };
+	};
+
+	'/v1/users.totp.validate': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.totp.regenerateCodes': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.totp.codesRemaining': {
+		GET: () => { remaining: number };
+	};
 };
 
 export * from './users/UserCreateParamsPOST';

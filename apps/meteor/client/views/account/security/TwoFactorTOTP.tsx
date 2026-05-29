@@ -1,6 +1,6 @@
 import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentPropsWithoutRef, FormEvent } from 'react';
 import { useState, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
@@ -23,11 +23,11 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	const user = useUser();
 	const setModal = useSetModal();
 
-	const enableTotpFn = useMethod('2fa:enable');
-	const disableTotpFn = useMethod('2fa:disable');
-	const verifyCodeFn = useMethod('2fa:validateTempToken');
-	const checkCodesRemainingFn = useMethod('2fa:checkCodesRemaining');
-	const regenerateCodesFn = useMethod('2fa:regenerateCodes');
+	const enableTotpFn = useEndpoint('POST', '/v1/users.totp.enable');
+	const disableTotpFn = useEndpoint('POST', '/v1/users.totp.disable');
+	const verifyCodeFn = useEndpoint('POST', '/v1/users.totp.validate');
+	const checkCodesRemainingFn = useEndpoint('GET', '/v1/users.totp.codesRemaining');
+	const regenerateCodesFn = useEndpoint('POST', '/v1/users.totp.regenerateCodes');
 
 	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
 	const [qrCode, setQrCode] = useSafely(useState<string>());
@@ -73,9 +73,9 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 
 		const onDisable = async (authCode: string): Promise<void> => {
 			try {
-				const result = await disableTotpFn(authCode);
+				const { disabled } = await disableTotpFn({ code: authCode });
 
-				if (!result) {
+				if (!disabled) {
 					dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 
 					return;
@@ -106,7 +106,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	const handleVerifyCode = useCallback(
 		async ({ authCode }: TwoFactorTOTPFormData) => {
 			try {
-				const result = await verifyCodeFn(authCode);
+				const result = await verifyCodeFn({ code: authCode });
 
 				if (!result) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
@@ -126,9 +126,9 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	const handleRegenerateCodes = useCallback(() => {
 		const onRegenerate = async (authCode: string): Promise<void> => {
 			try {
-				const result = await regenerateCodesFn(authCode);
+				const result = await regenerateCodesFn({ code: authCode });
 
-				if (!result) {
+				if (!result?.codes) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
