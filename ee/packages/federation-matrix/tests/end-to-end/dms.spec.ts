@@ -687,7 +687,6 @@ const waitForRoomEvent = async (
 					);
 				});
 
-				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					const response = await addUserToRoom({
 						usernames: [userDmId3],
@@ -696,12 +695,7 @@ const waitForRoomEvent = async (
 					});
 
 					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-
-					expect(messageData).toHaveProperty('error.error', 'error-not-allowed');
+					expect(response.body).toHaveProperty('error', 'error-not-allowed');
 				});
 
 				it('should allow a user to leave the group DM', async () => {
@@ -1187,12 +1181,7 @@ const waitForRoomEvent = async (
 					});
 
 					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-
-					expect(messageData).toHaveProperty('error.error', 'error-not-allowed');
+					expect(response.body).toHaveProperty('error', 'error-cant-invite-for-direct-room');
 				});
 
 				it('should add another user by another user than the initial inviter', async () => {
@@ -1758,12 +1747,7 @@ const waitForRoomEvent = async (
 					});
 
 					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-
-					expect(messageData).toHaveProperty('error.error', 'error-cant-invite-for-direct-room');
+					expect(response.body).toHaveProperty('error', 'error-cant-invite-for-direct-room');
 				});
 
 				it('should create a 1:1 federated DM', async () => {

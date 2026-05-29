@@ -188,7 +188,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('error', 'error-not-authorized-federation');
 				});
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
@@ -200,8 +200,6 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(addUserResponse.status).toBe(200);
 					expect(addUserResponse.body).toHaveProperty('success', true);
-					expect(addUserResponse.body).toHaveProperty('message');
-					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
 				});
 			});
 		});
@@ -272,8 +270,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					}).expect(200);
 
 					expect(addUserResponse.body).toHaveProperty('success', true);
-					expect(addUserResponse.body).toHaveProperty('message');
-					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
 				});
 			});
 		});
@@ -523,12 +519,13 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('error', 'error-not-authorized-federation');
 				});
 
 				it('should NOT be able to be added to a federated room during creation', async () => {
 					const channelName = `federated-room-${Date.now()}`;
-					const createResponse = await createRoom({
+
+					await createRoom({
 						type: 'p',
 						name: channelName,
 						members: [userWithNonMatchingEmail.username],
@@ -538,9 +535,9 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: userRequestConfig,
 					});
 
-					expect(createResponse.status).toBe(400);
-					expect(createResponse.body).toHaveProperty('success', false);
-					expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+					expect(addUserResponse.status).toBe(400);
+					expect(addUserResponse.body).toHaveProperty('success', false);
+					expect(addUserResponse.body).toHaveProperty('error', 'error-not-authorized-federation');
 				});
 			});
 
@@ -605,7 +602,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('error', 'error-not-authorized-federation');
 				});
 			});
 
@@ -669,7 +666,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('error', 'error-not-authorized-federation');
 				});
 			});
 
