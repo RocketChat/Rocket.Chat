@@ -3771,6 +3771,65 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 		});
 
+		describe('bypass-abac-store-validation permission (spec §4.2)', () => {
+			let adminBypass: { user: IUser; creds: Credentials };
+
+			before(async function () {
+				this.timeout(15000);
+				adminBypass = await makeAdmin('bypass');
+				await updatePermission('bypass-abac-store-validation', ['admin']);
+			});
+
+			after(async () => {
+				await mockServerReset();
+				await updatePermission('bypass-abac-store-validation', []);
+				await deleteUser(adminBypass.user);
+			});
+
+			it('skips validateAssignable: assigns a value the admin is not entitled to → 200', async () => {
+				const room = (await createRoom({ type: 'p', name: `vstore-bypass-wg-${Date.now()}` })).body.group;
+
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
+				await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/team`)
+					.set(adminBypass.creds)
+					.send({ values: ['blue'] })
+					.expect(200);
+
+				await deleteRoom({ type: 'p', roomId: room._id });
+			});
+
+			it('skips assertCanModifyRoom: edits an attribute on a room the PDP denies → 200', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] }]);
+
+				const room = (await createRoom({ type: 'p', name: `vstore-bypass-mod-${Date.now()}` })).body.group;
+				await storeConnection
+					.db()
+					.collection('rocketchat_room')
+					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
+
+				await request
+					.post(`${v1}/abac/rooms/${room._id}/attributes/clearance`)
+					.set(adminBypass.creds)
+					.send({ values: ['secret'] })
+					.expect(200);
+
+				await deleteRoom({ type: 'p', roomId: room._id });
+			});
+		});
+
 		describe('hierarchy expansion (spec §3.3)', () => {
 			let room: IRoom;
 			let adminH: { user: IUser; creds: Credentials };
