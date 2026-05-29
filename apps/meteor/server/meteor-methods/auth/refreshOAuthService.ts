@@ -1,6 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { refreshLoginServices } from '../../lib/refreshLoginServices';
 
@@ -11,8 +12,21 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const refreshOAuthServiceMethod = async (userId: string): Promise<void> => {
+	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
+		throw new Meteor.Error('error-action-not-allowed', 'Refresh OAuth Services is not allowed', {
+			method: 'refreshOAuthService',
+			action: 'Refreshing_OAuth_Services',
+		});
+	}
+
+	await refreshLoginServices();
+};
+
 Meteor.methods<ServerMethods>({
 	async refreshOAuthService() {
+		methodDeprecationLogger.method('refreshOAuthService', '9.0.0', '/v1/settings.refreshOAuthServices');
+
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -21,13 +35,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
-			throw new Meteor.Error('error-action-not-allowed', 'Refresh OAuth Services is not allowed', {
-				method: 'refreshOAuthService',
-				action: 'Refreshing_OAuth_Services',
-			});
-		}
-
-		await refreshLoginServices();
+		await refreshOAuthServiceMethod(userId);
 	},
 });

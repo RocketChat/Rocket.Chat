@@ -29,6 +29,8 @@ import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/no
 import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
+import { refreshOAuthServiceMethod } from '../../meteor-methods/auth/refreshOAuthService';
+import { removeOAuthServiceMethod } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
 import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
@@ -251,6 +253,59 @@ API.v1.post(
 
 		await addOAuthServiceMethod(this.userId, name);
 
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.removeCustomOAuth',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		body: addCustomOAuthBodySchema,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { name } = this.bodyParams;
+		if (!name?.trim()) {
+			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		await removeOAuthServiceMethod(this.userId, name);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.refreshOAuthServices',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await refreshOAuthServiceMethod(this.userId);
 		return API.v1.success();
 	},
 );
