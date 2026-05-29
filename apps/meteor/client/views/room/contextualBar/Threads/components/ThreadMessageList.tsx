@@ -157,7 +157,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
 		clientCallbacks.add(
-			'afterSaveMessage',
+			'streamNewMessage',
 			(msg: IMessage) => {
 				if (msg.rid !== room._id || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
@@ -171,7 +171,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		);
 
 		return () => {
-			clientCallbacks.remove('afterSaveMessage', handlerId);
+			clientCallbacks.remove('streamNewMessage', handlerId);
 		};
 	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom]);
 
