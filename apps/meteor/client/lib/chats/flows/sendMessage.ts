@@ -47,9 +47,13 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 
 	chat.composer?.clear();
 	await runOptimisticSendMessage(message);
-	await sdk.call('sendMessage', message, previewUrls);
 
-	// after the request is complete we can go ahead and mark as sent
+	await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
+
+	// Clear the optimistic `temp` flag only if the messages stream hasn't already
+	// replaced the record. Overwriting with the server response can clobber stream
+	// updates that arrive first — e.g. read-receipt-driven `unread: false`, async
+	// URL/quote attachments, or E2EE decrypt — leading to stale UI state.
 	Messages.state.update(
 		(record) => record._id === message._id && record.temp === true,
 		({ temp: _, ...record }) => record,

@@ -24,6 +24,7 @@ export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionCo
 			setModal(
 				<ReadReceiptsModal
 					messageId={message._id}
+					rid={message.rid}
 					onClose={() => {
 						setModal(null);
 					}}

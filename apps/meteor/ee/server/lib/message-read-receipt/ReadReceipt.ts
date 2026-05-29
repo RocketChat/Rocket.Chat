@@ -49,7 +49,7 @@ class ReadReceiptClass {
 			return;
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
 			},
@@ -80,7 +80,7 @@ class ReadReceiptClass {
 			}
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Promise.resolve([message]);
 			},
@@ -101,7 +101,7 @@ class ReadReceiptClass {
 			return;
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Messages.findUnreadThreadMessagesByDate(message.rid, tmid, userId, userLastSeen).toArray();
 			},
