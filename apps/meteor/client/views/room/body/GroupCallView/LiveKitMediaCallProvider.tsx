@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
-import type { LocalAudioTrack } from 'livekit-client';
-import { Track } from 'livekit-client';
+import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
+import { RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 
@@ -153,6 +153,86 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 	const onToggleCamera = useCallback(() => void localParticipant.setCameraEnabled(!camEnabled), [localParticipant, camEnabled]);
 	const onToggleScreen = useCallback(() => void localParticipant.setScreenShareEnabled(!screenEnabled), [localParticipant, screenEnabled]);
 
+	// Raise-hand state, broadcast over the LK data channel. raisedAt is used to
+	// sort the queue position shown on the tile. A late-joining peer only sees
+	// hands that are raised after they join (LK data channel doesn't replay).
+	const [handsMap, setHandsMap] = useState<Record<string, number>>({});
+	const [localHandRaised, setLocalHandRaised] = useState(false);
+	const localRaisedAtRef = useRef(0);
+
+	useEffect(() => {
+		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
+			if (!participant) return;
+			let msg: { type?: string; raised?: boolean; raisedAt?: number };
+			try {
+				msg = JSON.parse(new TextDecoder().decode(payload));
+			} catch {
+				return;
+			}
+			if (msg.type !== 'hand') return;
+			setHandsMap((prev) => ({
+				...prev,
+				[participant.identity]: msg.raised ? msg.raisedAt || Date.now() : 0,
+			}));
+		};
+		room.on(RoomEvent.DataReceived, onData);
+		return () => {
+			room.off(RoomEvent.DataReceived, onData);
+		};
+	}, [room]);
+
+	// Late joiners: rebroadcast our current hand state when someone new connects,
+	// so they see us in the queue if we already had our hand up before they joined.
+	useEffect(() => {
+		if (!localHandRaised) return undefined;
+		const rebroadcast = () => {
+			const data = new TextEncoder().encode(
+				JSON.stringify({ type: 'hand', raised: true, raisedAt: localRaisedAtRef.current }),
+			);
+			void localParticipant.publishData(data, { reliable: true });
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, localHandRaised]);
+
+	const onToggleHand = useCallback(() => {
+		const raised = !localHandRaised;
+		const raisedAt = raised ? Date.now() : 0;
+		localRaisedAtRef.current = raisedAt;
+		setLocalHandRaised(raised);
+		setHandsMap((prev) => ({ ...prev, [localParticipant.identity]: raisedAt }));
+		const data = new TextEncoder().encode(JSON.stringify({ type: 'hand', raised, raisedAt }));
+		void localParticipant.publishData(data, { reliable: true }).catch((err) => {
+			console.warn('raise-hand publish failed', err);
+		});
+	}, [localHandRaised, localParticipant]);
+
+	const raisedHands = useMemo(
+		() =>
+			Object.entries(handsMap)
+				.filter(([, t]) => t > 0)
+				.map(([id, raisedAt]) => ({ id, raisedAt }))
+				.sort((a, b) => a.raisedAt - b.raisedAt),
+		[handsMap],
+	);
+
+	// If a participant leaves, drop them from the queue so positions stay correct.
+	useEffect(() => {
+		const onDisconnect = (participant: RemoteParticipant) => {
+			setHandsMap((prev) => {
+				if (!(participant.identity in prev)) return prev;
+				const { [participant.identity]: _drop, ...rest } = prev;
+				return rest;
+			});
+		};
+		room.on(RoomEvent.ParticipantDisconnected, onDisconnect);
+		return () => {
+			room.off(RoomEvent.ParticipantDisconnected, onDisconnect);
+		};
+	}, [room]);
+
 	const ctxValue = useMemo(
 		() => ({
 			sessionState: {
@@ -180,6 +260,9 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 			onSelectPeer: () => undefined,
 			onToggleScreenSharing: onToggleScreen,
 			onToggleCamera,
+			onToggleHand,
+			localHandRaised,
+			raisedHands,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -196,6 +279,9 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 			onLeave,
 			onToggleScreen,
 			onToggleCamera,
+			onToggleHand,
+			localHandRaised,
+			raisedHands,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

@@ -1,11 +1,24 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
 import { ToggleButton, Timer, DevicePicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
+import { useAudioLevel } from '../../providers/useAudioLevel';
+
+// Speaking threshold used to auto-lower a raised hand. Mirrors the visual
+// threshold in CallTile so the auto-lower triggers on the same "actually
+// speaking" signal users see.
+const SPEAKING_THRESHOLD = 0.12;
+// Tolerance for natural inter-word pauses. As long as we hear speech again
+// within this window, the auto-lower timer keeps counting — without this,
+// every breath between sentences would reset the 3s countdown.
+const SPEAKING_GAP_TOLERANCE_MS = 800;
+// User must speak (with the gap tolerance above) for this long while their
+// hand is raised before the hand drops automatically. Tuned to "you got the floor".
+const AUTO_LOWER_AFTER_MS = 3000;
 
 type MediaCallRoomSectionProps = {
 	showChat: boolean;
@@ -28,6 +41,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 		onEndCall,
 		onToggleScreenSharing,
 		onToggleCamera,
+		onToggleHand,
+		localHandRaised,
+		raisedHands,
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants,
 	} = useMediaCallView();
@@ -103,12 +119,60 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 		audioStream: localMicrophone?.stream ?? null,
 	};
 
+	// Map participant id → 1-based queue position for the raise-hand badge.
+	const handPositions = useMemo(() => {
+		const out: Record<string, number> = {};
+		(raisedHands ?? []).forEach((h, i) => {
+			out[h.id] = i + 1;
+		});
+		return out;
+	}, [raisedHands]);
+
+	// Auto-lower the local hand after AUTO_LOWER_AFTER_MS of (mostly continuous)
+	// speech — once the user has "the floor", they don't need the hand up any
+	// more. Natural inter-word pauses up to SPEAKING_GAP_TOLERANCE_MS don't
+	// cancel the timer. The hook only runs while the hand is up.
+	const localMicForAutoLower = localHandRaised ? localMicrophone?.stream ?? null : null;
+	const liveLevel = useAudioLevel(localMicForAutoLower);
+	const autoLowerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const lastSpeakingAtRef = useRef(0);
+	useEffect(() => {
+		if (!localHandRaised || !onToggleHand) {
+			if (autoLowerTimerRef.current) {
+				clearTimeout(autoLowerTimerRef.current);
+				autoLowerTimerRef.current = null;
+			}
+			lastSpeakingAtRef.current = 0;
+			return;
+		}
+		const now = Date.now();
+		const speakingNow = liveLevel > SPEAKING_THRESHOLD;
+		if (speakingNow) {
+			lastSpeakingAtRef.current = now;
+			if (!autoLowerTimerRef.current) {
+				autoLowerTimerRef.current = setTimeout(() => {
+					autoLowerTimerRef.current = null;
+					onToggleHand();
+				}, AUTO_LOWER_AFTER_MS);
+			}
+			return;
+		}
+		// Below threshold: cancel only if the gap exceeds the tolerance.
+		// Brief pauses between words keep the timer ticking.
+		if (autoLowerTimerRef.current && lastSpeakingAtRef.current > 0 && now - lastSpeakingAtRef.current > SPEAKING_GAP_TOLERANCE_MS) {
+			clearTimeout(autoLowerTimerRef.current);
+			autoLowerTimerRef.current = null;
+			lastSpeakingAtRef.current = 0;
+		}
+	}, [liveLevel, localHandRaised, onToggleHand]);
+
 	return (
 		<Box w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' minHeight={0}>
 			<CallStage
 				localParticipant={localParticipant}
 				remoteParticipants={remoteParticipants}
 				onStopLocalScreenShare={onToggleScreenSharing}
+				handPositions={handPositions}
 			/>
 			<ActionStrip
 				leftSlot={
@@ -145,6 +209,15 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 					pressed={!(localCamera?.active ?? false)}
 					onToggle={onToggleCamera}
 				/>
+				{onToggleHand && (
+					<ToggleButton
+						label='Raise hand'
+						icons={['hand-pointer', 'hand-pointer']}
+						titles={['Raise hand', 'Lower hand']}
+						pressed={Boolean(localHandRaised)}
+						onToggle={onToggleHand}
+					/>
+				)}
 				<ToggleButton
 					label={t('Record')}
 					icons={['circle-cross', 'circle-cross']}

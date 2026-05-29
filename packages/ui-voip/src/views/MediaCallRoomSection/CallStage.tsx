@@ -22,6 +22,8 @@ type CallStageProps = {
 	localParticipant: LocalParticipant;
 	remoteParticipants: RemoteParticipantInfo[];
 	onStopLocalScreenShare?: () => void;
+	/** Map from participantId → 1-based queue position for the raise-hand badge. */
+	handPositions?: Record<string, number>;
 };
 
 const stageStyles = css`
@@ -131,7 +133,7 @@ const ScreenViewer = ({ stream, label, isLocal, onStop }: ScreenViewerProps) => 
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShare }: CallStageProps) => {
+const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShare, handPositions }: CallStageProps) => {
 	// Pick a single "featured" screen share. Priority: remote first (more
 	// interesting to the local viewer), then local. Multi-remote-screen calls
 	// are rare; the others just become participant tiles via cameraStream.
@@ -158,6 +160,7 @@ const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShar
 				audioStream: localParticipant.audioStream,
 				mirrored: true,
 				muteVideoAudio: true,
+				handPosition: handPositions?.[localParticipant.id],
 			},
 			...remoteParticipants.map((p) => ({
 				id: p.id,
@@ -169,10 +172,11 @@ const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShar
 				audioStream: p.audioStream,
 				mirrored: false,
 				muteVideoAudio: false,
+				handPosition: handPositions?.[p.id],
 			})),
 		];
 		return all;
-	}, [localParticipant, remoteParticipants]);
+	}, [localParticipant, remoteParticipants, handPositions]);
 
 	if (featuredScreen) {
 		return (

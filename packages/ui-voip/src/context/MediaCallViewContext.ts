@@ -50,6 +50,18 @@ type MediaCallViewContextValue = {
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
 	onToggleCamera: () => void;
+	/**
+	 * Toggle the local user's "raise hand" state. Group calls broadcast this
+	 * over the LK data channel; direct calls only track it locally.
+	 */
+	onToggleHand?: () => void;
+	/** Whether the local user currently has their hand raised. */
+	localHandRaised?: boolean;
+	/**
+	 * All raised hands across the call, ordered by raise time (oldest first).
+	 * The index + 1 is the queue position rendered on the participant tile.
+	 */
+	raisedHands?: { id: string; raisedAt: number }[];
 	streams: MediaCallStreams;
 	/**
 	 * Remote participants in the call. Always present (possibly empty when the

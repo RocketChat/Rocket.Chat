@@ -71,6 +71,13 @@ const indicatorBadgeStyles = css`
 	color: white;
 `;
 
+// When the participant has their hand raised, the tile background tints
+// green so the queue is visible at a glance, while the name label keeps
+// its original dark-pill styling unchanged.
+const handRaisedLabelStyles = css`
+	background-color: rgb(54 135 58 / 95%);
+`;
+
 type CallTileProps = {
 	displayName: string;
 	avatarUrl?: string;
@@ -85,9 +92,22 @@ type CallTileProps = {
 	muteVideoAudio?: boolean;
 	/** Smaller avatar; used in the spotlight thumbnail rail. */
 	compact?: boolean;
+	/** When defined, render the raise-hand badge with this queue position (1-based). */
+	handPosition?: number;
 };
 
-const CallTile = ({ displayName, avatarUrl, muted, held, cameraStream, audioStream, mirrored, muteVideoAudio, compact }: CallTileProps) => {
+const CallTile = ({
+	displayName,
+	avatarUrl,
+	muted,
+	held,
+	cameraStream,
+	audioStream,
+	mirrored,
+	muteVideoAudio,
+	compact,
+	handPosition,
+}: CallTileProps) => {
 	const [videoRef] = usePlayMediaStream(cameraStream ?? null);
 	const cameraActive = Boolean(cameraStream);
 	const avatarSize = compact ? 'x32' : 'x48';
@@ -155,7 +175,14 @@ const CallTile = ({ displayName, avatarUrl, muted, held, cameraStream, audioStre
 			) : (
 				<Icon name='user' size={avatarSize} />
 			)}
-			<Box className={labelStyles}>{displayName}</Box>
+			<Box className={[labelStyles, handPosition !== undefined ? handRaisedLabelStyles : null]}>
+				{handPosition !== undefined && (
+					<>
+						<span aria-hidden>✋</span> ({handPosition}){'  '}
+					</>
+				)}
+				{displayName}
+			</Box>
 			{(muted || held) && (
 				<Box className={indicatorRowStyles}>
 					{muted && (
