@@ -19,7 +19,7 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio'] as const;
+export const callFeatureList = ['audio', 'screen-share'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -112,6 +112,7 @@ export interface IClientMediaCall {
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
+	setScreenShareTrack(track: MediaStreamTrack | null): Promise<void>;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;

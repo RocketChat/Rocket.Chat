@@ -186,6 +186,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private inputTrack: MediaStreamTrack | null;
 
+	private screenShareTrack: MediaStreamTrack | null;
+
 	/** localCallId will only be different on calls initiated by this session */
 	private localCallId: string;
 
@@ -227,6 +229,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
+		this.screenShareTrack = null;
 		this.creationTimestamp = new Date();
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
@@ -466,6 +469,25 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (newInputTrack && !hadInputTrack) {
 			await this.negotiationManager.processNegotiations();
+		}
+	}
+
+	public async setScreenShareTrack(newScreenShareTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('ClientMediaCall.setScreenShareTrack', Boolean(newScreenShareTrack));
+		if (newScreenShareTrack && (this.isOver() || this.hidden)) {
+			return;
+		}
+
+		const hadScreenShareTrack = Boolean(this.screenShareTrack);
+
+		this.screenShareTrack = newScreenShareTrack;
+		if (this.webrtcProcessor) {
+			await this.webrtcProcessor.setScreenShareTrack(newScreenShareTrack);
+		}
+
+		if (newScreenShareTrack || hadScreenShareTrack) {
+			await this.negotiationManager.processNegotiations();
+			this.emitter.emit('streamChange');
 		}
 	}
 
@@ -1277,6 +1299,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
+			screenShareTrack: this.screenShareTrack,
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));

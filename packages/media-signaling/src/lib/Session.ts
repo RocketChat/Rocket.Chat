@@ -403,7 +403,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.currentDeviceId = this.deviceId;
 
-		let userMedia: MediaStream | null = null;
+		let userMedia: MediaStream | null;
 		this.callsToGetUserMedia++;
 		try {
 			userMedia = await this.config.mediaStreamFactory({ audio: this.getAudioConstraints() }).catch(() => null);
@@ -419,12 +419,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		if (!userMedia) {
-			return this.hangupCallsThatNeedInput();
+			return;
 		}
 
 		const tracks = userMedia.getAudioTracks();
 		if (!tracks.length) {
-			return this.hangupCallsThatNeedInput();
+			return;
 		}
 
 		const inputTrack = tracks[0];
@@ -441,22 +441,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		return this.setInputTrack(inputTrack);
-	}
-
-	private hangupCallsThatNeedInput(): void {
-		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedInput');
-
-		for (const call of this.knownCalls.values()) {
-			if (!call.needsInputTrack()) {
-				continue;
-			}
-
-			try {
-				call.hangup('input-error');
-			} catch {
-				//
-			}
-		}
 	}
 
 	private mayNeedInputTrack(): boolean {

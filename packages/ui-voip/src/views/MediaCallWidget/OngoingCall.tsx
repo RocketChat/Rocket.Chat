@@ -1,4 +1,5 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -16,13 +17,17 @@ import {
 	useKeypad,
 	useInfoSlots,
 } from '../../components';
+import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
+	const { instance } = useMediaCallInstance();
+	const videoRef = useRef<HTMLVideoElement | null>(null);
+
+	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage, onToggleScreenShare } = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, screenSharing, remoteScreenSharing } = sessionState;
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
@@ -31,6 +36,29 @@ const OngoingCall = () => {
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
+
+	useEffect(() => {
+		if (!remoteScreenSharing) {
+			return;
+		}
+
+		const node = videoRef.current;
+		const stream = instance?.getMainCall()?.getRemoteMediaStream()?.stream || null;
+
+		if (!node || !stream) {
+			return;
+		}
+
+		node.srcObject = stream;
+		node.play().catch((error) => {
+			console.error('MediaCall: OngoingCall - Error playing screen share stream', error);
+		});
+
+		return () => {
+			node.pause();
+			node.srcObject = null;
+		};
+	}, [instance, remoteScreenSharing]);
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -47,6 +75,13 @@ const OngoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
+				{remoteScreenSharing && (
+					<Box mbe={12}>
+						<video ref={videoRef} autoPlay playsInline style={{ width: '100%', maxHeight: 140, backgroundColor: 'black', borderRadius: 4 }}>
+							<track kind='captions' />
+						</video>
+					</Box>
+				)}
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
@@ -61,6 +96,14 @@ const OngoingCall = () => {
 						titles={[t('Hold'), t('Resume')]}
 						pressed={held}
 						onToggle={onHold}
+					/>
+					<ToggleButton
+						disabled={connecting || reconnecting}
+						label={t('Share_screen')}
+						icons={['video', 'video-off']}
+						titles={[t('Share_screen'), t('Stop_sharing')]}
+						pressed={screenSharing}
+						onToggle={onToggleScreenShare}
 					/>
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					<ActionButton

@@ -8,7 +8,7 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
@@ -79,6 +79,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const onMute = () => controls.toggleMute();
 	const onHold = () => controls.toggleHold();
+	const screenShareTrackRef = useRef<MediaStreamTrack | null>(null);
 
 	const onCall = async () => {
 		if (sessionState.state !== 'new') {
@@ -97,7 +98,6 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			stopTracks(stream);
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			return;
 		}
 
 		if ('userId' in peerInfo) {
@@ -123,10 +123,11 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
 		} catch (error) {
+			console.error('Media Call - Error requesting device', error);
 			if (error instanceof PermissionRequestCancelledCallRejectedError) {
 				controls.endCall();
+				return;
 			}
-			return;
 		}
 
 		controls.acceptCall();
@@ -196,8 +197,50 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	};
 
 	const onEndCall = () => {
+		screenShareTrackRef.current?.stop();
+		screenShareTrackRef.current = null;
 		controls.endCall();
 	};
+
+	const stopScreenShare = useCallback(async () => {
+		const track = screenShareTrackRef.current;
+		screenShareTrackRef.current = null;
+		track?.stop();
+		await controls.setScreenShareTrack(null);
+	}, [controls]);
+
+	const onToggleScreenShare = useCallback(async () => {
+		if (screenShareTrackRef.current) {
+			await stopScreenShare();
+			return;
+		}
+
+		try {
+			if (!navigator.mediaDevices.getDisplayMedia) {
+				return;
+			}
+
+			const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+			const [track] = stream.getVideoTracks();
+			if (!track) {
+				return;
+			}
+
+			screenShareTrackRef.current = track;
+			track.addEventListener('ended', () => {
+				void stopScreenShare();
+			});
+			await controls.setScreenShareTrack(track);
+		} catch (error) {
+			console.error('Media Call - Error sharing screen', error);
+		}
+	}, [controls, stopScreenShare]);
+
+	useEffect(() => {
+		if (sessionState.state === 'closed') {
+			void stopScreenShare();
+		}
+	}, [sessionState.state, stopScreenShare]);
 
 	const onSelectPeer = (peerInfo: PeerInfo) => {
 		selectPeer(peerInfo);
@@ -222,6 +265,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onForward,
 		onTone,
 		onEndCall,
+		onToggleScreenShare,
 		onCall,
 		onAccept,
 		onSelectPeer,

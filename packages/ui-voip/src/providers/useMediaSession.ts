@@ -17,6 +17,8 @@ const defaultSessionInfo: SessionState = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
+	screenSharing: false,
+	remoteScreenSharing: false,
 	startedAt: new Date(),
 	hidden: false,
 };
@@ -136,6 +138,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				remoteMute,
 				callId,
 			} = mainCall;
+			const localMediaStream = mainCall.getLocalMediaStream();
+			const remoteMediaStream = mainCall.getRemoteMediaStream();
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
@@ -160,6 +164,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						hidden,
 						remoteHeld,
 						remoteMuted: remoteMute,
+						screenSharing: Boolean(localMediaStream?.hasVideo()),
+						remoteScreenSharing: Boolean(remoteMediaStream?.hasVideo()),
 						callId,
 					},
 				});
@@ -182,7 +188,20 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 			dispatch({
 				type: 'instance_updated',
-				payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, remoteHeld, remoteMuted: remoteMute, callId },
+				payload: {
+					state,
+					peerInfo,
+					transferredBy,
+					muted,
+					held,
+					connectionState,
+					hidden,
+					remoteHeld,
+					remoteMuted: remoteMute,
+					screenSharing: Boolean(localMediaStream?.hasVideo()),
+					remoteScreenSharing: Boolean(remoteMediaStream?.hasVideo()),
+					callId,
+				},
 			});
 		};
 

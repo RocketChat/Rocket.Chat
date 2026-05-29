@@ -10,6 +10,7 @@ export type MediaSessionControls = {
 	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
 	acceptCall: () => void;
 	changeDevice: (deviceId: string) => Promise<void>;
+	setScreenShareTrack: (track: MediaStreamTrack | null) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
 };
@@ -39,7 +40,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 				return;
 			}
 			const call = instance.getMainCall();
-			if (!call || call.state !== 'ringing') {
+			if (call?.state !== 'ringing') {
 				return;
 			}
 			call.accept();
@@ -61,6 +62,19 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 				return;
 			}
 			void instance.setDeviceId({ exact: deviceId });
+		};
+
+		const setScreenShareTrack = async (track: MediaStreamTrack | null) => {
+			const mainCall = instance?.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			try {
+				await mainCall.setScreenShareTrack(track);
+			} catch (error) {
+				console.error('Error setting screen share track', error);
+			}
 		};
 
 		const forwardCall = (type: 'user' | 'sip', id: string) => {
@@ -96,6 +110,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			startCall,
 			acceptCall,
 			changeDevice,
+			setScreenShareTrack,
 			forwardCall,
 			sendTone,
 		};

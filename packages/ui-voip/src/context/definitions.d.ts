@@ -28,6 +28,8 @@ interface IBaseSession {
 	held: boolean;
 	remoteMuted: boolean;
 	remoteHeld: boolean;
+	screenSharing: boolean;
+	remoteScreenSharing: boolean;
 	startedAt?: Date | null; // todo not sure if I need this
 	hidden: boolean;
 }

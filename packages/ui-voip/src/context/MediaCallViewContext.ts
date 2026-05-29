@@ -12,6 +12,7 @@ type MediaCallViewContextValue = {
 	onForward: () => void;
 	onTone: (tone: string) => void;
 	onEndCall: () => void;
+	onToggleScreenShare: () => Promise<void>;
 	onCall: () => Promise<void>;
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
@@ -27,6 +28,8 @@ const defaultSessionState: SessionState = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
+	screenSharing: false,
+	remoteScreenSharing: false,
 	callId: undefined,
 };
 
@@ -38,6 +41,7 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onForward: () => undefined,
 	onTone: () => undefined,
 	onEndCall: () => undefined,
+	onToggleScreenShare: () => Promise.resolve(undefined),
 	onCall: () => Promise.resolve(undefined),
 	onAccept: () => Promise.resolve(undefined),
 	onSelectPeer: () => undefined,
