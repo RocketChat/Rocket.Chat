@@ -48,18 +48,24 @@ const whenMainReady = (): Promise<void> => {
 	});
 };
 
-let configuredStorageBackend: 'local' | 'session' | undefined;
+let configuredStorageBackend: 'local' | 'session' = 'local';
 
 const applyForgetSessionOnWindowClose = (): void => {
-	const forgetSession = settings.peek<boolean>(FORGET_SESSION_SETTING_ID) ?? window[FORGET_SESSION_SETTING_ID];
+	const forgetSession = Boolean(settings.peek<boolean>(FORGET_SESSION_SETTING_ID) ?? window[FORGET_SESSION_SETTING_ID]);
 
 	const storageBackend = forgetSession ? 'session' : 'local';
 
 	if (configuredStorageBackend === storageBackend) {
 		return;
 	}
+
 	window[FORGET_SESSION_SETTING_ID] = forgetSession;
-	getDdpSdk().storage.changeStorageBackend();
+	try {
+		getDdpSdk().storage?.changeStorageBackend();
+	} catch (error) {
+		console.warn('[accounts] changeStorageBackend failed', error);
+		return;
+	}
 
 	configuredStorageBackend = storageBackend;
 };
