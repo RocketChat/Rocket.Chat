@@ -1,5 +1,5 @@
-import { createReadStream } from 'fs';
-import { stat } from 'fs/promises';
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
 
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';

@@ -1,10 +1,10 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
+import { parseDDP } from '../../../../client/lib/sdk/ddpProtocol';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../../../client/lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../../../client/lib/sdk/sdkTransportEnabled';
 
@@ -16,6 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 			args: [key: K, ...args: unknown[]],
 			callback: (...args: StreamerCallbackArgs<N, K>) => void,
 		): ReturnType<ClientStream['subscribe']>;
+		onAnyStreamEvent<N extends StreamNames>(name: N, callback: (eventName: string, args: unknown[]) => void): { stop: () => void };
 		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
@@ -267,7 +268,7 @@ const createStreamManager = () => {
 		// the SDK socket and createNewDdpSdkStream registers its own onCollection
 		// listener instead.
 		Meteor.connection._stream!.on('message', (rawMsg: string) => {
-			const msg = DDPCommon.parseDDP(rawMsg);
+			const msg = parseDDP(rawMsg);
 			if (!isChangedCollectionPayload(msg)) {
 				return;
 			}
@@ -352,8 +353,83 @@ const createStreamManager = () => {
 	return { stream, stopAll };
 };
 
+// Per-stream wildcard emitters for `onAnyStreamEvent`. Each emitter is fed by
+// up to two sources (de-duplicated by the underlying bridges):
+//   1) `getDdpSdk().client.onCollection(...)` — the canonical bridge. Covers
+//      both transport-OFF (via `meteorBackedSdk.onCollection`, which listens
+//      on `Meteor.connection._stream`) and transport-ON (via the real DDPSDK
+//      socket).
+//   2) When SDK transport is ON, a direct `Meteor.connection._stream` bridge
+//      to catch frames that land on Meteor while the SDK socket is still
+//      authenticating — see `apps/meteor/client/lib/presence.ts`'s fallback
+//      to `Meteor.subscribe('stream-user-presence', ...)`. This is the
+//      "artificial trigger" and is TEMPORARY: it disappears once SDK
+//      transport rollout completes and the Meteor fallback is removed.
+//
+// Bridges are wired exactly once per stream name (singleton listeners on the
+// underlying Meteor stream — Meteor's `on()` has no `off()`, so we can't
+// detach them per subscription anyway). Consumers register/unregister on the
+// per-stream Emitter, which DOES support `off`, so unsubscription is clean.
+const anyStreamEmitters = new Map<string, Emitter<Record<string, [eventName: string, args: unknown[]]>>>();
+const anyStreamBridged = new Set<string>();
+
+const createOnAnyStreamEvent = () => {
+	return <N extends StreamNames>(name: N, callback: (eventName: string, args: unknown[]) => void): { stop: () => void } => {
+		const collectionId = `stream-${name}`;
+
+		let emitter = anyStreamEmitters.get(collectionId);
+		if (!emitter) {
+			emitter = new Emitter<Record<string, [eventName: string, args: unknown[]]>>();
+			anyStreamEmitters.set(collectionId, emitter);
+		}
+
+		if (!anyStreamBridged.has(collectionId)) {
+			anyStreamBridged.add(collectionId);
+			const bridgeEmitter = emitter;
+
+			// Primary bridge — works for both transport-OFF (meteorBackedSdk's
+			// onCollection listens on Meteor.connection._stream) and transport-ON
+			// (real DDPSDK socket).
+			getDdpSdk().client.onCollection(collectionId, (data: unknown) => {
+				if (!isChangedCollectionPayload(data)) return;
+				if (data.collection !== collectionId) return;
+				bridgeEmitter.emit('event', [data.fields.eventName, data.fields.args]);
+			});
+
+			// Temporary secondary bridge — see block comment above. Only needed
+			// while SDK transport is on AND Meteor.connection may still receive
+			// frames during the SDK socket's anonymous window.
+			if (sdkTransportEnabled) {
+				Meteor.connection._stream!.on('message', (rawMsg: string) => {
+					let msg: unknown;
+					try {
+						msg = parseDDP(rawMsg);
+					} catch {
+						return;
+					}
+					if (!isChangedCollectionPayload(msg)) return;
+					if (msg.collection !== collectionId) return;
+					bridgeEmitter.emit('event', [msg.fields.eventName, msg.fields.args]);
+				});
+			}
+		}
+
+		const handler = ([eventName, args]: [string, unknown[]]): void => {
+			callback(eventName, args);
+		};
+		emitter.on('event', handler);
+
+		return {
+			stop: () => {
+				emitter.off('event', handler);
+			},
+		};
+	};
+};
+
 export const createSDK = (rest: RestClientInterface) => {
 	const { stream, stopAll } = createStreamManager();
+	const onAnyStreamEvent = createOnAnyStreamEvent();
 
 	const publish = sdkTransportEnabled
 		? (name: string, args: unknown[]) => {
@@ -373,6 +449,7 @@ export const createSDK = (rest: RestClientInterface) => {
 		rest,
 		stop: stopAll,
 		stream,
+		onAnyStreamEvent,
 		publish,
 		call,
 	};

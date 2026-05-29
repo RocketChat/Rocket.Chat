@@ -2,7 +2,6 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { differenceInMilliseconds } from 'date-fns';
 import { useCallback, useSyncExternalStore } from 'react';
-import type { MutableRefObject } from 'react';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserId } from '../../../../client/lib/user';
@@ -108,10 +107,14 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private run(fn: () => void) {
 		const difference = this.lastRequest ? differenceInMilliseconds(new Date(), this.lastRequest) : Infinity;
-		if (difference > 500) {
+		// Original cooldown was 500ms which forced ~330ms wait on the second getMore call when a
+		// user opens a room. Pagination throughput here is bounded by the loadHistory server
+		// method itself, so a smaller client-side spacing is enough to avoid hammering.
+		const minSpacingMs = 100;
+		if (difference > minSpacingMs) {
 			return fn();
 		}
-		return setTimeout(fn, 500 - difference);
+		return setTimeout(fn, minSpacingMs - difference);
 	}
 
 	public isLoaded(rid: IRoom['_id']) {
@@ -225,14 +228,13 @@ class RoomHistoryManagerClass extends Emitter {
 		room.scroll = undefined;
 	}
 
-	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
+	public async getMoreNext(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext !== true) {
 			return;
 		}
 
 		await this.queue();
-		atBottomRef.current = false;
 
 		this.updateRoom(rid, { isLoading: true });
 
@@ -323,6 +325,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
+		this.updateRoom(message.rid, { isLoading: true });
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
@@ -330,6 +333,7 @@ class RoomHistoryManagerClass extends Emitter {
 		this.clear(message.rid);
 
 		if (!result) {
+			this.updateRoom(message.rid, { isLoading: false });
 			return;
 		}
 		const { messages = [] } = result;

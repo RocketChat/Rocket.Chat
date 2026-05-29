@@ -3,6 +3,40 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+
+async function authorizeAndExchange(loginToken: string, cId: string, cSecret: string, redirectUri: string) {
+	const authRes = await request
+		.post(`/oauth/authorize`)
+		.type('form')
+		.send({
+			token: loginToken,
+			client_id: cId,
+			response_type: 'code',
+			redirect_uri: redirectUri,
+			state: 'test-state',
+			allow: 'yes',
+		})
+		.expect(302);
+
+	const location = new URL(authRes.headers.location);
+	const code = location.searchParams.get('code') as string;
+
+	const tokenRes = await request
+		.post(`/oauth/token`)
+		.type('form')
+		.send({
+			grant_type: 'authorization_code',
+			code,
+			client_id: cId,
+			client_secret: cSecret,
+			redirect_uri: redirectUri,
+		})
+		.expect(200);
+
+	return { accessToken: tokenRes.body.access_token as string, refreshToken: tokenRes.body.refresh_token as string };
+}
 
 describe('[OAuth Server]', () => {
 	let oAuthAppId: string;
@@ -226,6 +260,167 @@ describe('[OAuth Server]', () => {
 						expect(res.body).to.have.property('message', 'You must be logged in to do this.');
 					});
 			});
+		});
+	});
+
+	describe('[user deactivation revokes OAuth tokens]', () => {
+		let testUser: Awaited<ReturnType<typeof createUser>>;
+		let testUserCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+		let deactivationClientId: string;
+		let deactivationClientSecret: string;
+		let deactivationAppId: string;
+		let userAccessToken: string;
+		let userRefreshToken: string;
+		const redirectUri = 'http://asd.com';
+
+		before(async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+
+			const appRes = await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({ name: 'deactivation-test-app', redirectUri: `http://test.com,${redirectUri}`, active: true })
+				.expect(200);
+
+			deactivationAppId = appRes.body.application._id;
+			deactivationClientId = appRes.body.application.clientId;
+			deactivationClientSecret = appRes.body.application.clientSecret;
+
+			const tokens = await authorizeAndExchange(
+				testUserCredentials['X-Auth-Token'],
+				deactivationClientId,
+				deactivationClientSecret,
+				redirectUri,
+			);
+			userAccessToken = tokens.accessToken;
+			userRefreshToken = tokens.refreshToken;
+
+			// Verify tokens work before deactivation
+			await request.get(api('me')).auth(userAccessToken, { type: 'bearer' }).expect(200);
+
+			// Deactivate the user
+			await request.post(api('users.setActiveStatus')).set(credentials).send({ userId: testUser._id, activeStatus: false }).expect(200);
+		});
+
+		after(async () => {
+			await request.post(api('oauth-apps.delete')).set(credentials).send({ appId: deactivationAppId }).expect(200);
+			await deleteUser(testUser);
+		});
+
+		it('should reject the access token after user deactivation', async () => {
+			await request.get(api('me')).auth(userAccessToken, { type: 'bearer' }).expect(401);
+		});
+
+		it('should reject the access token on /oauth/userinfo after user deactivation', async () => {
+			await request.get(`/oauth/userinfo`).auth(userAccessToken, { type: 'bearer' }).expect(401);
+		});
+
+		it('should reject the refresh token grant after user deactivation', async () => {
+			await request
+				.post(`/oauth/token`)
+				.type('form')
+				.send({
+					grant_type: 'refresh_token',
+					refresh_token: userRefreshToken,
+					client_id: deactivationClientId,
+					client_secret: deactivationClientSecret,
+				})
+				.expect((res: Response) => {
+					expect(res.status).to.not.equal(200);
+					expect(res.body).to.have.property('error');
+					expect(res.body).to.not.have.property('access_token');
+				});
+		});
+
+		it('should still reject the access token after user reactivation (token was deleted, not just blocked)', async () => {
+			await request.post(api('users.setActiveStatus')).set(credentials).send({ userId: testUser._id, activeStatus: true }).expect(200);
+
+			await request.get(api('me')).auth(userAccessToken, { type: 'bearer' }).expect(401);
+
+			// Reactivated user can obtain new tokens via a fresh OAuth flow
+			const reactivatedCredentials = await login(testUser.username, password);
+			const newTokens = await authorizeAndExchange(
+				reactivatedCredentials['X-Auth-Token'],
+				deactivationClientId,
+				deactivationClientSecret,
+				redirectUri,
+			);
+
+			await request
+				.get(api('me'))
+				.auth(newTokens.accessToken, { type: 'bearer' })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', testUser._id);
+				});
+		});
+	});
+
+	describe('[users.deactivateIdle revokes OAuth tokens]', () => {
+		let idleUser: Awaited<ReturnType<typeof createUser>>;
+		let idleUserCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+		let idleClientId: string;
+		let idleClientSecret: string;
+		let idleAppId: string;
+		let idleAccessToken: string;
+		let idleRefreshToken: string;
+		const redirectUri = 'http://asd.com';
+
+		before(async () => {
+			idleUser = await createUser();
+			idleUserCredentials = await login(idleUser.username, password);
+
+			const appRes = await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({ name: 'idle-deactivation-test-app', redirectUri: `http://test.com,${redirectUri}`, active: true })
+				.expect(200);
+
+			idleAppId = appRes.body.application._id;
+			idleClientId = appRes.body.application.clientId;
+			idleClientSecret = appRes.body.application.clientSecret;
+
+			const tokens = await authorizeAndExchange(idleUserCredentials['X-Auth-Token'], idleClientId, idleClientSecret, redirectUri);
+			idleAccessToken = tokens.accessToken;
+			idleRefreshToken = tokens.refreshToken;
+
+			// Verify tokens work before deactivation
+			await request.get(api('me')).auth(idleAccessToken, { type: 'bearer' }).expect(200);
+
+			// Deactivate via deactivateIdle using daysIdle=0 to catch all users with no recent login
+			await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({ daysIdle: 0, role: idleUser.roles?.[0] ?? 'user' })
+				.expect(200);
+		});
+
+		after(async () => {
+			await request.post(api('oauth-apps.delete')).set(credentials).send({ appId: idleAppId }).expect(200);
+			await deleteUser(idleUser);
+		});
+
+		it('should reject the access token after idle deactivation', async () => {
+			await request.get(api('me')).auth(idleAccessToken, { type: 'bearer' }).expect(401);
+		});
+
+		it('should reject the refresh token grant after idle deactivation', async () => {
+			await request
+				.post(`/oauth/token`)
+				.type('form')
+				.send({
+					grant_type: 'refresh_token',
+					refresh_token: idleRefreshToken,
+					client_id: idleClientId,
+					client_secret: idleClientSecret,
+				})
+				.expect((res: Response) => {
+					expect(res.status).to.not.equal(200);
+					expect(res.body).to.have.property('error');
+					expect(res.body).to.not.have.property('access_token');
+				});
 		});
 	});
 });

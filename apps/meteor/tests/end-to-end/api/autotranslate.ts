@@ -3,7 +3,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, after, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -431,6 +431,94 @@ describe('AutoTranslate', () => {
 						})
 						.end(done);
 				});
+			});
+		});
+
+		describe('[autoTranslate.translateMessage method]', () => {
+			let userA: TestUser<IUser>;
+			let userB: TestUser<IUser>;
+			let credA: Credentials;
+			let credB: Credentials;
+			let privateRoom: IRoom;
+			let privateMessage: IMessage;
+
+			before(async () => {
+				await updateSetting('AutoTranslate_Enabled', true);
+
+				userA = await createUser();
+				userB = await createUser();
+
+				credA = await login(userA.username, password);
+				credB = await login(userB.username, password);
+
+				privateRoom = (
+					await createRoom({
+						type: 'p',
+						name: `test-autotranslate-method-${Date.now()}`,
+						credentials: credA,
+					})
+				).body.group;
+
+				const msgRes = await sendSimpleMessage({
+					roomId: privateRoom._id,
+					text: 'Isso é um teste',
+					userCredentials: credA,
+				});
+				privateMessage = msgRes.body.message;
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('AutoTranslate_Enabled', false),
+					deleteUser(userA),
+					deleteUser(userB),
+					deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				]);
+			});
+
+			it('should fail when messageId is not a string', (done) => {
+				void request
+					.post(methodCall('autoTranslate.translateMessage'))
+					.set(credA)
+					.send({
+						message: JSON.stringify({
+							msg: 'method',
+							id: 'id',
+							method: 'autoTranslate.translateMessage',
+							params: [{ _id: { $gt: '' } }, 'en'],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						const parsedBody = JSON.parse(res.body.message);
+						expect(parsedBody).to.have.a.property('error');
+					})
+					.end(done);
+			});
+
+			it('should return error-not-allowed when the caller is not a member of the room', (done) => {
+				void request
+					.post(methodCall('autoTranslate.translateMessage'))
+					.set(credB)
+					.send({
+						message: JSON.stringify({
+							msg: 'method',
+							id: 'id',
+							method: 'autoTranslate.translateMessage',
+							params: [{ _id: privateMessage._id }, 'en'],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						const parsedBody = JSON.parse(res.body.message);
+						expect(parsedBody).to.have.a.property('error');
+						expect(parsedBody.error).to.have.a.property('error', 'error-not-allowed');
+					})
+					.end(done);
 			});
 		});
 

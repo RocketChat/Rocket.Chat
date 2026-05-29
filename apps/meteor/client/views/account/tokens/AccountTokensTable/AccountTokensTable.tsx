@@ -8,7 +8,7 @@ import {
 	GenericTableHeaderCell,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, RefObject } from 'react';
 import { useMemo, useCallback } from 'react';
@@ -26,8 +26,8 @@ const AccountTokensTable = (): ReactElement => {
 	const setModal = useSetModal();
 	const userId = useUserId();
 
-	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
-	const removeToken = useMethod('personalAccessTokens:removeToken');
+	const regenerateToken = useEndpoint('POST', '/v1/users.regeneratePersonalAccessToken');
+	const removeToken = useEndpoint('POST', '/v1/users.removePersonalAccessToken');
 
 	const getPersonalAccessTokens = useEndpoint('GET', '/v1/users.getPersonalAccessTokens');
 	const { isPending, isSuccess, data, isError, error } = useQuery({
@@ -69,7 +69,7 @@ const AccountTokensTable = (): ReactElement => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					setModal(null);
-					const token = await regenerateToken({ tokenName: name });
+					const { token } = await regenerateToken({ tokenName: name });
 
 					setModal(
 						<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={closeModal}>

@@ -90,6 +90,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[name="msg"]').fill('this message was edited');
 		await page.keyboard.press('Enter');
 
+		await poHomeChannel.content.scrollToMessage(poHomeChannel.content.getMessageByText('this message was edited'), 'down');
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 	});
 
@@ -109,6 +110,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[name="msg"]').fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
+		await poHomeChannel.content.scrollToMessage(poHomeChannel.content.getMessageByText(message), 'down');
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
@@ -128,6 +130,7 @@ test.describe.serial('message-actions', () => {
 		await expect(page.locator('header h1')).toHaveText(discussionName);
 		await poHomeChannel.gotoChannel(targetChannel);
 		// Should fail if more than one discussion has been created
+		await poHomeChannel.content.scrollToMessage(poHomeChannel.content.getMessageByText(message), 'down');
 		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
 

@@ -14,7 +14,6 @@ import {
 	seedBulkDecisionByEntity,
 	seedDefaultMocks,
 	seedGetDecisionBulk,
-	seedGetDecisions,
 } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -1560,6 +1559,43 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body.success).to.be.true;
 					});
 			});
+
+			it('should strip abacAttributes when converting private room to public while ABAC disabled', async () => {
+				await updateSetting('ABAC_Enabled', true);
+				const roomId = (await createRoom({ type: 'p', name: `abac-type-strip-${Date.now()}` })).body.group._id;
+				await request
+					.post(`${v1}/abac/rooms/${roomId}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['val1'] })
+					.expect(200);
+
+				await updateSetting('ABAC_Enabled', false);
+				await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: roomId, roomType: 'c' }).expect(200);
+
+				const roomRes = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid: roomId }).expect(200);
+				expect(roomRes.body).to.not.have.property('abacAttributes');
+
+				await deleteRoom({ type: 'c', roomId });
+			});
+
+			it('should keep abacAttributes when room stays private while ABAC disabled', async () => {
+				await updateSetting('ABAC_Enabled', true);
+				const roomId = (await createRoom({ type: 'p', name: `abac-type-keep-${Date.now()}` })).body.group._id;
+				await request
+					.post(`${v1}/abac/rooms/${roomId}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['val2'] })
+					.expect(200);
+
+				await updateSetting('ABAC_Enabled', false);
+				await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: roomId, roomTopic: 'still private' }).expect(200);
+
+				const roomRes = await request.get(`${v1}/rooms.adminRooms.getRoom`).set(credentials).query({ rid: roomId }).expect(200);
+				expect(roomRes.body).to.have.property('abacAttributes').that.is.an('array').with.lengthOf(1);
+				expect(roomRes.body.abacAttributes[0]).to.have.property('key', attrKey);
+
+				await deleteRoom({ type: 'p', roomId });
+			});
 		});
 
 		describe('ABAC Team Type Conversion', () => {
@@ -1655,6 +1691,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect((res) => {
 						expect(res.body.success).to.be.true;
 					});
+
+				const roomRes = await request.get(`${v1}/channels.info?roomId=${mainRoomIdWithAttrAbacDisabled}`).set(credentials).expect(200);
+				expect(roomRes.body.channel).to.not.have.property('abacAttributes');
 			});
 		});
 
@@ -2977,6 +3016,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	before(async function () {
 		this.timeout(15000);
 
+		connection = await MongoClient.connect(URL_MONGODB);
+
 		const healthy = await mockServerHealthy();
 		expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
@@ -3012,6 +3053,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await mockServerReset();
 		await updateSetting('ABAC_PDP_Type', 'local');
 		await updateSetting('ABAC_Enabled', false);
+
+		await connection.close();
 	});
 
 	describe('PERMIT all: users remain when PDP permits everyone', () => {
@@ -3068,7 +3111,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('user can access room history when PDP returns PERMIT', async () => {
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisions('DECISION_PERMIT');
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
 
 			await request
 				.get('/api/v1/groups.history')
@@ -3122,7 +3165,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('user loses access when PDP flips to DENY', async () => {
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisions('DECISION_DENY');
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] }]);
 
 			await request
 				.get('/api/v1/groups.history')
@@ -3452,6 +3495,27 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				available: false,
 				message: 'ABAC_PDP_Health_IdP_Failed',
 			});
+		});
+	});
+
+	describe('users.info abacAttributes visibility', () => {
+		let userWithAttrs: IUser;
+
+		before(async () => {
+			userWithAttrs = await createUser();
+			await addAbacAttributesToUserDirectly(userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
+		});
+
+		after(async () => {
+			await deleteUser(userWithAttrs);
+		});
+
+		it('omits abacAttributes from /v1/users.info when PDP type is virtru', async () => {
+			const res = await request.get('/api/v1/users.info').set(credentials).query({ userId: userWithAttrs._id }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('user');
+			expect(res.body.user).to.not.have.property('abacAttributes');
 		});
 	});
 });

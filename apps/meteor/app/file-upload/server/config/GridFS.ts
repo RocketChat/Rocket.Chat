@@ -1,7 +1,7 @@
-import type * as http from 'http';
-import type { TransformCallback, TransformOptions } from 'stream';
-import stream from 'stream';
-import zlib from 'zlib';
+import type * as http from 'node:http';
+import type { TransformCallback, TransformOptions } from 'node:stream';
+import stream from 'node:stream';
+import zlib from 'node:zlib';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';

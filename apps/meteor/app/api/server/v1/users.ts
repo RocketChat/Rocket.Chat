@@ -1,6 +1,6 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
+import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -59,7 +59,7 @@ import {
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByIdOrUsernameOrImportIdOrEmail, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
@@ -554,6 +554,12 @@ API.v1.post(
 
 		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
 
+		await Promise.all([
+			OAuthAccessTokens.deleteByUserIds(ids),
+			OAuthRefreshTokens.deleteByUserIds(ids),
+			OAuthAuthCodes.deleteByUserIds(ids),
+		]);
+
 		ids.forEach((_id) => {
 			void notifyOnUserChange({
 				clientAction: 'updated',
@@ -581,22 +587,26 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email'] | false =
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension'] | false =
 			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
 			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
-			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']);
+			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']) ||
+			('freeSwitchExtension' in this.queryParams &&
+				!!this.queryParams.freeSwitchExtension && [this.queryParams.freeSwitchExtension, 'freeSwitchExtension']);
 
 		if (!searchTerms) {
 			return API.v1.failure('Invalid search query.');
 		}
 
-		const user = await getFullUserDataByIdOrUsernameOrImportIdOrEmail(this.userId, ...searchTerms);
+		const user = await getFullUserDataByUniqueSearchTerm(this.userId, ...searchTerms);
 
 		if (!user) {
 			return API.v1.failure('User not found.');
 		}
+
 		const myself = user._id === this.userId;
+
 		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 			return API.v1.success({
 				user: {
@@ -660,7 +670,7 @@ API.v1.addRoute(
 				if (!canViewFullOtherUserInfo) {
 					return API.v1.forbidden();
 				}
-				const escapedEmail = escapeRegExp(this.queryParams.email as string);
+				const escapedEmail = escapeRegExp(this.queryParams.email);
 				nonEmptyQuery['emails.address'] = {
 					$regex: `^${escapedEmail}$`,
 					$options: 'i',
@@ -1570,15 +1580,22 @@ API.v1
 			authRequired: true,
 			query: isUsersRequestDataDownloadParamsGET,
 			response: {
-				200: ajv.compile<{ requested: boolean; exportOperation: IExportOperation }>({
+				200: ajv.compile<{
+					requested: boolean;
+					exportOperation: IExportOperation;
+					url: string | null;
+					pendingOperationsBeforeMyRequest: number;
+				}>({
 					type: 'object',
 					properties: {
 						requested: { type: 'boolean' },
 						// IExportOperation has complex/dynamic shape not yet in typia
 						exportOperation: { type: 'object' },
+						url: { type: 'string', nullable: true },
+						pendingOperationsBeforeMyRequest: { type: 'number' },
 						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['requested', 'exportOperation', 'success'],
+					required: ['requested', 'exportOperation', 'pendingOperationsBeforeMyRequest', 'success'],
 					additionalProperties: false,
 				}),
 				401: validateUnauthorizedErrorResponse,
@@ -1586,14 +1603,13 @@ API.v1
 		},
 		async function action() {
 			const { fullExport = false } = this.queryParams;
-			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
-				requested: boolean;
-				exportOperation: IExportOperation;
-			};
+			const result = await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' });
 
 			return API.v1.success({
 				requested: Boolean(result.requested),
 				exportOperation: result.exportOperation,
+				url: result.url,
+				pendingOperationsBeforeMyRequest: result.pendingOperationsBeforeMyRequest,
 			});
 		},
 	)

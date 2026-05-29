@@ -674,7 +674,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		await Push.send({
 			from: 'push',
 			badge: 0,
@@ -701,6 +700,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				category: 'VIDEOCONF',
 			},
 		});
+
+		metrics.notificationsSent.inc({ notification_type: 'mobile' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'mobile' });
 	}
 
 	private async sendAllPushNotifications(callId: VideoConference['_id']): Promise<void> {

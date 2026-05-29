@@ -1,8 +1,10 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
+import { parseDDP } from './ddpProtocol';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -27,33 +29,29 @@ const safeMeteorStatus = (): { status: string; connected: boolean; retryCount?: 
 };
 
 const onMeteorStatusChange = (cb: () => void): (() => void) => {
-	// Subscribe to Meteor's underlying WebSocket lifecycle events directly instead
-	// of riding Meteor.status's Tracker reactivity. The stream is the canonical
-	// non-reactive source: `'reset'` fires when a new DDP session is established
-	// (effectively the "connected" signal — see socket-stream-client.js), and
-	// `'disconnect'` fires when the WebSocket drops or each retry attempt restarts.
-	// `'connected'` is intentionally NOT subscribed: the stream's allowed event
-	// list is `['message', 'reset', 'disconnect']` and `on('connected')` throws
-	// `Error: unknown event type: connected`. Throwing here would propagate up
-	// through `connection.on(...)` callers (notably `CachedStore.performInitialization`)
-	// and abort their initialization before `setupListener()` runs, silently
-	// breaking real-time stream subscriptions for settings, subscriptions, etc.
-	const stream = Meteor.connection?._stream;
-	if (!stream || typeof stream.on !== 'function') {
-		// Test / SSR environment with a stubbed Meteor — no stream to subscribe to.
+	// Drive notifications off Meteor.status's Tracker reactivity. Listening to
+	// `_stream` events directly misses the `connecting`↔`waiting` transitions
+	// and the per-second `retryTime` ticks that Meteor mutates internally
+	// without restarting the socket, leaving ConnectionStatusBar stuck on a
+	// stale status while reconnection retries run.
+	if (typeof Meteor.status !== 'function' || typeof Tracker?.autorun !== 'function') {
+		// Test / SSR environment with a stubbed Meteor — nothing to subscribe to.
 		return noopUnsubscribe;
 	}
-	let stopped = false;
-	const handler = (): void => {
-		if (!stopped) cb();
-	};
-	stream.on('reset', handler);
-	stream.on('disconnect', handler);
-	// Meteor's stream `on` doesn't expose an `off`; flip a flag instead so the
-	// stale listener becomes a no-op once stopBridge runs.
-	return () => {
-		stopped = true;
-	};
+	let firstRun = true;
+	const computation = Tracker.autorun(() => {
+		try {
+			Meteor.status();
+		} catch {
+			return;
+		}
+		if (firstRun) {
+			firstRun = false;
+			return;
+		}
+		cb();
+	});
+	return () => computation.stop();
 };
 
 const meteorStatusToSdkStatus = (): string => {
@@ -100,7 +98,7 @@ const createMeteorBackedClient = () => {
 		const handler = (rawMsg: string): void => {
 			let msg: unknown;
 			try {
-				msg = DDPCommon.parseDDP(rawMsg);
+				msg = parseDDP(rawMsg);
 			} catch {
 				return;
 			}
@@ -115,13 +113,13 @@ const createMeteorBackedClient = () => {
 		return noopUnsubscribe;
 	};
 
-	// Some consumers (`streamerAdapter`) reach into `client.ddp.onMessage` to
-	// register listeners on the SDK's underlying socket. With the proxy,
-	// Meteor.connection already gets the same frames AND has its own streamer
-	// wiring (e.g. `app/notifications/client/lib/Presence.ts:18`), so attaching
-	// a second listener here would deliver every Meteor frame twice into
-	// streamerCentral. Make this a no-op — meteor-side wiring covers the
-	// streams the SDK adapter would otherwise have handled.
+	// `ddp.onMessage` is reached by code that wants raw DDP frames off the SDK
+	// socket. In Meteor-backed mode there is no separate SDK socket; the same
+	// frames are already delivered through `onCollection` above (which listens
+	// on `Meteor.connection._stream`). Registering a second listener here
+	// would double-deliver. The Meteor-backed `onCollection` is also the
+	// temporary bridge used by `sdk.onAnyStreamEvent` until SDK transport
+	// rollout completes and the Meteor fallback can be removed.
 	const ddp = {
 		onMessage: (_cb: (payload: unknown) => void): (() => void) => noopUnsubscribe,
 	};

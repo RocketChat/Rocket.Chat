@@ -10,6 +10,7 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
@@ -346,6 +347,7 @@ export const browseChannelsMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async browseChannels(params: BrowseChannelsParams) {
+		methodDeprecationLogger.method('browseChannels', '9.0.0', '/v1/directory');
 		return browseChannelsMethod(params, (await Meteor.userAsync()) as IUser | null);
 	},
 });

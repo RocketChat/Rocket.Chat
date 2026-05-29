@@ -1,6 +1,6 @@
-export interface ICredentialToken {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
+export interface ICredentialToken extends IRocketChatRecord {
 	userInfo: {
 		username?: string;
 		attributes?: any;
