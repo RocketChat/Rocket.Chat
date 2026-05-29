@@ -54,4 +54,4 @@ backfill or a new index is a **migration**, not just a type change — use
 ---
 
 **Next:** [error-handling](./error-handling.md) ·
-[critical-flows](../architecture/critical-flows.md)
+[critical-flows](../../architecture/critical-flows.md)

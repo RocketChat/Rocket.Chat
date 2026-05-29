@@ -61,4 +61,4 @@ endpoint's test suddenly fails on the error string, this is usually why.
 ---
 
 **Next:** [rest-endpoints](./rest-endpoints.md) ·
-[glossary](../reference/glossary.md)
+[glossary](../../reference/glossary.md)

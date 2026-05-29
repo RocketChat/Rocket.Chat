@@ -5,7 +5,7 @@ reading:** you've shipped a typed, validated, tested endpoint following the
 project conventions.
 
 This is the hands-on companion to
-[conventions/rest-endpoints](../conventions/rest-endpoints.md). Reference
+[conventions/rest-endpoints](../conventions/backend/rest-endpoints.md). Reference
 implementation to copy from: `apps/meteor/app/api/server/v1/custom-user-status.ts`.
 
 ---
@@ -67,7 +67,7 @@ API.v1.get(
 );
 ```
 
-Rules recap (full list in [conventions](../conventions/rest-endpoints.md)):
+Rules recap (full list in [conventions](../conventions/backend/rest-endpoints.md)):
 runtime AJV validation, response schema per status code, guards in the options,
 `API.v1.success/failure` for the envelope, `error-<domain>-<issue>` codes.
 
@@ -87,7 +87,7 @@ yarn testapi     # mocha API tests (needs a running server)
 
 Assert both the success body **and** the error code on bad input — and use the
 **prefixed** code (`error-invalid-params`), see
-[error-handling](../conventions/error-handling.md).
+[error-handling](../conventions/backend/error-handling.md).
 
 ## 5. Verify locally
 
@@ -111,6 +111,6 @@ Expect a `200` matching your schema; a bad param should return your declared
 
 ---
 
-**Related:** [conventions/rest-endpoints](../conventions/rest-endpoints.md) ·
-[error-handling](../conventions/error-handling.md) ·
+**Related:** [conventions/rest-endpoints](../conventions/backend/rest-endpoints.md) ·
+[error-handling](../conventions/backend/error-handling.md) ·
 [api-endpoint-migration](../api-endpoint-migration.md)

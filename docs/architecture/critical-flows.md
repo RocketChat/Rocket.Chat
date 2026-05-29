@@ -29,8 +29,8 @@ A request to `/api/v1/<endpoint>` passes through, in order:
    `API.v1.success(...)` / `API.v1.failure(...)`.
 
 Conventions for writing endpoints (typed pattern, schemas, error codes) are in
-[api-endpoint-migration](../api-endpoint-migration.md) and the planned
-`conventions/rest-endpoints.md`.
+[conventions/backend/rest-endpoints](../conventions/backend/rest-endpoints.md)
+and [api-endpoint-migration](../api-endpoint-migration.md).
 
 ## Message send
 

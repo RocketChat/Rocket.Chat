@@ -28,14 +28,27 @@ monorepo developers. Reviewed in PRs like any other code.
 
 ## Conventions (how we write code)
 
-- **[REST endpoints](./conventions/rest-endpoints.md)** — the typed
+**Backend:**
+
+- **[REST endpoints](./conventions/backend/rest-endpoints.md)** — the typed
   `API.v1.get/post/...` pattern, AJV validation, guards, response schemas.
-- [Settings](./conventions/settings.md) — registering and reading settings; the
-  cache gotcha.
-- [Models (data access)](./conventions/models.md) — `@rocket.chat/models`,
-  proxify, the updater pattern, migrations.
-- [Error handling](./conventions/error-handling.md) — `error-<domain>-<issue>`
-  codes and how to raise them.
+- [Settings](./conventions/backend/settings.md) — registering and reading
+  settings; the cache gotcha.
+- [Models (data access)](./conventions/backend/models.md) —
+  `@rocket.chat/models`, proxify, the updater pattern, migrations.
+- [Error handling](./conventions/backend/error-handling.md) —
+  `error-<domain>-<issue>` codes and how to raise them.
+
+**Frontend:**
+
+- [Folder structure](./conventions/frontend/folder-structure.md) — colocation,
+  promote-when-shared, UI-semantic layout.
+- [Components & styling](./conventions/frontend/components-and-styling.md) —
+  Fuselage first, design tokens, gazzodown for messages.
+- [Data fetching](./conventions/frontend/data-fetching.md) — `useEndpoint` +
+  React Query; `useMethod` is legacy.
+- [Contexts & hooks](./conventions/frontend/contexts-and-hooks.md) —
+  `ui-contexts` (settings, permissions, i18n, routing, user).
 
 Deeper references: [API endpoint migration](./api-endpoint-migration.md) ·
 [AJV instances](./ajv-instances.md) ·

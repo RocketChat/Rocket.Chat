@@ -3,10 +3,10 @@
 **Who this is for:** anyone adding or changing a `/api/v1` endpoint. **After
 reading:** you know the current typed pattern and the rules that get a PR
 through review. For a hands-on build, see
-[guides/add-a-rest-endpoint](../guides/add-a-rest-endpoint.md).
+[guides/add-a-rest-endpoint](../../guides/add-a-rest-endpoint.md).
 
 > The authoritative deep-dive (legacy → typed migration, edge cases) is
-> [api-endpoint-migration](../api-endpoint-migration.md). This page is the short
+> [api-endpoint-migration](../../api-endpoint-migration.md). This page is the short
 > "how we do it now".
 
 ---
@@ -66,9 +66,9 @@ const endpoints = API.v1.get(
 
 > A feature may still expose a **legacy Meteor method** alongside or instead of
 > REST. New work should be REST (DDP is legacy — see
-> [realtime-and-ddp](../architecture/realtime-and-ddp.md)).
+> [realtime-and-ddp](../../architecture/realtime-and-ddp.md)).
 
 ---
 
-**Next:** [guides/add-a-rest-endpoint](../guides/add-a-rest-endpoint.md) ·
+**Next:** [guides/add-a-rest-endpoint](../../guides/add-a-rest-endpoint.md) ·
 [error-handling](./error-handling.md)
