@@ -36,6 +36,13 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import {
+	codesRemainingTotp,
+	disableTotp,
+	enableTotp,
+	regenerateTotpCodes,
+	validateTotpTempToken,
+} from '../../lib/2fa/functions/totp';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
@@ -2125,6 +2132,142 @@ API.v1.post(
 		return API.v1.success();
 	},
 );
+API.v1
+	.post(
+		'users.totp.enable',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ secret: string; url: string }>({
+					type: 'object',
+					properties: {
+						secret: { type: 'string' },
+						url: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['secret', 'url', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await enableTotp(this.userId));
+		},
+	)
+	.post(
+		'users.totp.disable',
+		{
+			authRequired: true,
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ disabled: boolean }>({
+					type: 'object',
+					properties: {
+						disabled: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['disabled', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const disabled = await disableTotp(this.userId, this.bodyParams.code);
+			return API.v1.success({ disabled });
+		},
+	)
+	.post(
+		'users.totp.validate',
+		{
+			authRequired: true,
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await validateTotpTempToken(this.userId, this.bodyParams.code, this.token);
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'users.totp.regenerateCodes',
+		{
+			authRequired: true,
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await regenerateTotpCodes(this.userId, this.bodyParams.code);
+			if (!result) {
+				return API.v1.failure('invalid-totp');
+			}
+			return API.v1.success(result);
+		},
+	)
+	.get(
+		'users.totp.codesRemaining',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ remaining: number }>({
+					type: 'object',
+					properties: {
+						remaining: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['remaining', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await codesRemainingTotp(this.userId));
+		},
+	);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';
