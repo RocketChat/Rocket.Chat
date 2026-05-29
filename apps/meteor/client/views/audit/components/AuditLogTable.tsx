@@ -1,6 +1,7 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableLoadingRow, GenericTableHeader } from '@rocket.chat/ui-client';
-import { useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
@@ -19,14 +20,18 @@ const AuditLogTable = (): ReactElement => {
 		end: createEndOfToday(),
 	}));
 
-	const getAudits = useMethod('auditGetAuditions');
+	const getAudits = useEndpoint('GET', '/v1/audit.auditions');
 
 	const { data, isLoading, isSuccess } = useQuery({
 		queryKey: ['audits', dateRange],
 
 		queryFn: async () => {
 			const { start, end } = dateRange;
-			return getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() });
+			const { auditions } = await getAudits({
+				startDate: (start ?? new Date(0)).toISOString(),
+				endDate: (end ?? new Date()).toISOString(),
+			});
+			return auditions;
 		},
 		meta: {
 			apiErrorToastMessage: true,
@@ -65,7 +70,7 @@ const AuditLogTable = (): ReactElement => {
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((auditLog) => (
-							<AuditLogEntry key={auditLog._id} value={auditLog} />
+							<AuditLogEntry key={auditLog._id} value={auditLog as unknown as IAuditLog} />
 						))}
 					</GenericTableBody>
 				</GenericTable>
