@@ -37,6 +37,8 @@ import type { Filter } from 'mongodb';
 
 import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
 import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
+import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
+import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
@@ -340,7 +342,9 @@ API.v1
 				}
 			}
 
-			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
+			const service = typeof fields.service === 'string' && fields.service.length > 0 ? fields.service : 'rest';
+
+			await setUserAvatar(user, fileBuffer, mimetype, service);
 
 			return API.v1.success();
 		},
@@ -1874,6 +1878,8 @@ API.v1
 				return API.v1.forbidden();
 			}
 
+			const user = await Users.findOneById(userId);
+
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -1882,6 +1888,10 @@ API.v1
 			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
+
+			if (user) {
+				await runUserLogoutCleanUp(user);
+			}
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
@@ -2072,6 +2082,38 @@ API.v1
 			});
 		},
 	);
+
+API.v1.post(
+	'users.verifyEmail',
+	{
+		authRequired: false,
+		body: ajv.compile<{ token: string }>({
+			type: 'object',
+			properties: {
+				token: { type: 'string', minLength: 1 },
+			},
+			required: ['token'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+
+		const user = await Users.findOne<Pick<IUser, '_id'>>({ 'services.email.verificationTokens.token': token }, { projection: { _id: 1 } });
+
+		await Meteor.callAsync('verifyEmail', token);
+
+		if (user) {
+			await runAfterVerifyEmail(user._id);
+		}
+
+		return API.v1.success();
+	},
+);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

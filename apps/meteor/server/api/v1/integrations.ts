@@ -8,6 +8,8 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 	isIntegrationsListProps,
+	isIntegrationsClearHistoryProps,
+	isIntegrationsReplayProps,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -16,6 +18,10 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
+import {
+	clearIntegrationHistoryMethod,
+	replayOutgoingIntegrationMethod,
+} from '../../../integrations/server/functions/clearIntegrationHistory';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
@@ -361,5 +367,49 @@ API.v1.put(
 			default:
 				return API.v1.failure('Invalid integration type.');
 		}
+	},
+);
+
+const voidIntegrationsResponse = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
+	'integrations.history.clear',
+	{
+		authRequired: true,
+		body: isIntegrationsClearHistoryProps,
+		response: {
+			200: voidIntegrationsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await clearIntegrationHistoryMethod(this.userId, this.bodyParams.integrationId);
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'integrations.outgoing.replay',
+	{
+		authRequired: true,
+		body: isIntegrationsReplayProps,
+		response: {
+			200: voidIntegrationsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { integrationId, historyId } = this.bodyParams;
+		await replayOutgoingIntegrationMethod(this.userId, { integrationId, historyId });
+		return API.v1.success();
 	},
 );

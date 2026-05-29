@@ -129,6 +129,20 @@ const RoomsInfoSchema = {
 
 export const isRoomsInfoProps = ajv.compile<RoomsInfoProps>(RoomsInfoSchema);
 
+type RoomsGetByTypeAndNameProps = { type: IRoom['t']; name: string };
+
+const RoomsGetByTypeAndNameSchema = {
+	type: 'object',
+	properties: {
+		type: { type: 'string', enum: ['c', 'p', 'd', 'l', 'v'] },
+		name: { type: 'string', minLength: 1 },
+	},
+	required: ['type', 'name'],
+	additionalProperties: false,
+};
+
+export const isRoomsGetByTypeAndNameProps = ajvQuery.compile<RoomsGetByTypeAndNameProps>(RoomsGetByTypeAndNameSchema);
+
 type RoomsCreateDiscussionProps = {
 	prid: IRoom['_id'];
 	pmid?: IMessage['_id'];
@@ -920,6 +934,12 @@ export type RoomsEndpoints = {
 			room: IRoom | undefined;
 			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
+		};
+	};
+
+	'/v1/rooms.getByTypeAndName': {
+		GET: (params: RoomsGetByTypeAndNameProps) => {
+			room: Partial<IRoom>;
 		};
 	};
 

@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
 import { CustomScrollbars, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useRouteParameter, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { useMemo, useState, useEffect } from 'react';
@@ -18,7 +18,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const [mounted, setMounted] = useState(false);
 	const [total, setTotal] = useState(0);
 
-	const clearIntegrationHistory = useMethod('clearIntegrationHistory');
+	const clearIntegrationHistory = useEndpoint('POST', '/v1/integrations.history.clear');
 
 	const id = useRouteParameter('id') as string;
 
@@ -52,7 +52,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	const handleClearHistory = async (): Promise<void> => {
 		try {
-			await clearIntegrationHistory(id);
+			await clearIntegrationHistory({ integrationId: id });
 			dispatchToastMessage({ type: 'success', message: t('Integration_History_Cleared') });
 			refetch();
 			setMounted(false);

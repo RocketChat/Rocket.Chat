@@ -1,6 +1,6 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
-import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
@@ -19,7 +19,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const user = useUser();
 	const hasPreviewPermission = usePermission('preview-c-room');
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
-	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
+	const getRoomByTypeAndName = useEndpoint('GET', '/v1/rooms.getByTypeAndName');
 	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
@@ -76,7 +76,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			let roomData: IRoom;
 			try {
-				roomData = await getRoomByTypeAndName(type, reference);
+				roomData = (await getRoomByTypeAndName({ type, name: reference })).room as IRoom;
 			} catch (error) {
 				const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
 
