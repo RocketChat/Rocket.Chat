@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
+import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -79,6 +80,11 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { onlySubscribed: true });
 	const remoteAudioTracks = useTracks([Track.Source.Microphone], { onlySubscribed: true });
 
+	// LK uses participant.identity == userId, so we can derive each remote's
+	// avatar through the same hook used for the local user. Without this, every
+	// remote tile fell back to the generic user-placeholder icon.
+	const getUserAvatarPath = useUserAvatarPath();
+
 	const remoteParticipants: RemoteParticipantInfo[] = useMemo(() => {
 		return remotes.map((p) => {
 			const cam = remoteCameraTracks.find((t) => t.participant.identity === p.identity);
@@ -88,6 +94,7 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 			return {
 				id: p.identity,
 				displayName: p.name || p.identity,
+				avatarUrl: getUserAvatarPath({ userId: p.identity }),
 				muted: Boolean(!micPub || micPub.isMuted),
 				held: false,
 				cameraStream: cam?.publication?.track?.mediaStream,
@@ -95,7 +102,7 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 				audioStream: aud?.publication?.track?.mediaStream,
 			};
 		});
-	}, [remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks]);
+	}, [remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath]);
 
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
