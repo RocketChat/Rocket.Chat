@@ -23,6 +23,9 @@ jest.mock('@rocket.chat/core-services', () => ({
 	License: {
 		hasModule: async () => true,
 	},
+	Authorization: {
+		hasPermission: async () => false,
+	},
 	MeteorError: class extends Error {},
 	isMeteorError: () => false,
 }));

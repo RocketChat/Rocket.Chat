@@ -1,4 +1,4 @@
-import { api, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { api, Authorization, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
@@ -523,6 +523,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void api.broadcast('watch.rooms', { clientAction: 'updated', room });
 	}
 
+	private async enforceCanModifyRoom(store: IAttributeStore, room: Pick<IRoom, '_id' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
+			return;
+		}
+		await store.assertCanModifyRoom(room, actor);
+	}
+
+	private async enforceStoreValidation(store: IAttributeStore, attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
+			return;
+		}
+		await store.validateAssignable(attrs, actor);
+	}
+
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
@@ -535,11 +549,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		await store.assertCanModifyRoom(room, actor);
+		await this.enforceCanModifyRoom(store, room, actor);
 
 		const normalized = validateAndNormalizeAttributes(attributes);
 
-		await store.validateAssignable(normalized, actor);
+		await this.enforceStoreValidation(store, normalized, actor);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
@@ -559,7 +573,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 
-		await store.assertCanModifyRoom(room, actor);
+		await this.enforceCanModifyRoom(store, room, actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
@@ -569,7 +583,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new AbacInvalidAttributeValuesError();
 		}
 
-		await store.validateAssignable([{ key, values }], actor);
+		await this.enforceStoreValidation(store, [{ key, values }], actor);
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
@@ -619,7 +633,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 
-		await store.assertCanModifyRoom(room, actor);
+		await this.enforceCanModifyRoom(store, room, actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const exists = previous.some((a) => a.key === key);
@@ -650,9 +664,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 
-		await store.assertCanModifyRoom(room, actor);
+		await this.enforceCanModifyRoom(store, room, actor);
 
-		await store.validateAssignable([{ key, values }], actor);
+		await this.enforceStoreValidation(store, [{ key, values }], actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
@@ -679,9 +693,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 
-		await store.assertCanModifyRoom(room, actor);
+		await this.enforceCanModifyRoom(store, room, actor);
 
-		await store.validateAssignable([{ key, values }], actor);
+		await this.enforceStoreValidation(store, [{ key, values }], actor);
 
 		const exists = room?.abacAttributes?.find((a) => a.key === key);
 

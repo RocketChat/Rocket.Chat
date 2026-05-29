@@ -5,6 +5,7 @@ import { LocalAttributeStore, VirtruAttributeStore } from './store';
 
 const mockSettingsGet = jest.fn();
 const mockHasModule = jest.fn();
+const mockHasPermission = jest.fn();
 
 jest.mock('./store', () => {
 	const { ensureAttributeDefinitionsExist } = jest.requireActual('./helper');
@@ -119,6 +120,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		License: {
 			hasModule: (...args: any[]) => mockHasModule(...args),
+		},
+		Authorization: {
+			hasPermission: (...args: any[]) => mockHasPermission(...args),
 		},
 	};
 });
@@ -1080,6 +1084,31 @@ describe('AbacService (unit)', () => {
 
 				expect(store.assertCanModifyRoom).toHaveBeenCalledTimes(1);
 				noMutation();
+			});
+
+			it('skips assertCanModifyRoom and validateAssignable when the actor has the bypass permission', async () => {
+				const store = makeStore();
+				store.assertCanModifyRoom.mockRejectedValue(new Error('should-not-be-called'));
+				store.validateAssignable.mockRejectedValue(new Error('should-not-be-called'));
+				(service as any).attributeStores.local.store = store;
+				mockHasPermission.mockResolvedValue(true);
+
+				await expect(invoke(method)).resolves.toBeUndefined();
+
+				expect(mockHasPermission).toHaveBeenCalledWith(fakeActor._id, 'bypass-abac-store-validation');
+				expect(store.assertCanModifyRoom).not.toHaveBeenCalled();
+				expect(store.validateAssignable).not.toHaveBeenCalled();
+			});
+
+			it('enforces both store guards when the actor lacks the bypass permission', async () => {
+				const store = makeStore();
+				(service as any).attributeStores.local.store = store;
+				mockHasPermission.mockResolvedValue(false);
+
+				await expect(invoke(method)).resolves.toBeUndefined();
+
+				expect(store.assertCanModifyRoom).toHaveBeenCalledTimes(1);
+				expect(store.validateAssignable).toHaveBeenCalledTimes(1);
 			});
 		});
 
