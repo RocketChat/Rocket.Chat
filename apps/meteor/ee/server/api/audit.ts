@@ -323,6 +323,36 @@ API.v1.get(
 	},
 );
 
+const auditAuditionsResponseSchema = ajv.compile<{ auditions: IAuditLog[] }>({
+	type: 'object',
+	properties: {
+		auditions: { type: 'array', items: { type: 'object' } },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['auditions', 'success'],
+	additionalProperties: false,
+});
+
+const auditMessagesResponseSchema = ajv.compile<{ messages: IMessage[] }>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { type: 'object' } },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
+const auditErrorResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success', 'error'],
+});
+
 API.v1.get(
 	'audit.auditions',
 	{
@@ -331,6 +361,10 @@ API.v1.get(
 		query: isAuditAuditionsProps,
 		license: ['auditing'],
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: auditAuditionsResponseSchema,
+			400: auditErrorResponseSchema,
+		},
 	},
 	async function action() {
 		const startDate = parseDateOrFail(this.queryParams.startDate, 'startDate');
@@ -349,6 +383,10 @@ API.v1.post(
 		body: isAuditMessagesProps,
 		license: ['auditing'],
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: auditMessagesResponseSchema,
+			400: auditErrorResponseSchema,
+		},
 	},
 	async function action() {
 		const { rid, users, msg, type, visitor, agent } = this.bodyParams;
@@ -378,6 +416,10 @@ API.v1.post(
 		body: isAuditOmnichannelMessagesProps,
 		license: ['auditing'],
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: auditMessagesResponseSchema,
+			400: auditErrorResponseSchema,
+		},
 	},
 	async function action() {
 		const { users, msg, type, visitor, agent } = this.bodyParams;

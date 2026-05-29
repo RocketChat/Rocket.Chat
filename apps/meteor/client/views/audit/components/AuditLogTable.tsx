@@ -1,3 +1,4 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableLoadingRow, GenericTableHeader } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -68,7 +69,7 @@ const AuditLogTable = () => {
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((auditLog) => (
-							<AuditLogEntry key={auditLog._id} value={auditLog} />
+							<AuditLogEntry key={auditLog._id} value={auditLog as unknown as IAuditLog} />
 						))}
 					</GenericTableBody>
 				</GenericTable>
