@@ -116,7 +116,7 @@ const CallTile = ({
 	// muted mic shouldn't visually "speak" even if there's residual signal.
 	// Anything over the threshold maps into [MIN_VISIBLE_RING, 1] so a quiet
 	// tail of speech still shows a clearly-visible border instead of a 1px hint.
-	const rawLevel = useAudioLevel(muted ? null : audioStream ?? null);
+	const rawLevel = useAudioLevel(muted ? null : (audioStream ?? null));
 	const activeLevel =
 		rawLevel > SPEAKING_THRESHOLD
 			? MIN_VISIBLE_RING + (1 - MIN_VISIBLE_RING) * Math.min(1, (rawLevel - SPEAKING_THRESHOLD) / (1 - SPEAKING_THRESHOLD))

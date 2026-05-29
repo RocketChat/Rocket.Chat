@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
-import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -144,6 +144,7 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 				console.debug('[Krisp] supported?', supported);
 				if (!supported) return;
 				console.debug('[Krisp] attaching processor to track', audioTrack.sid);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, new-cap
 				await audioTrack.setProcessor(mod.KrispNoiseFilter());
 				console.info('[Krisp] processor attached');
 			} catch (err) {
@@ -193,9 +194,7 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 	useEffect(() => {
 		if (!localHandRaised) return undefined;
 		const rebroadcast = () => {
-			const data = new TextEncoder().encode(
-				JSON.stringify({ type: 'hand', raised: true, raisedAt: localRaisedAtRef.current }),
-			);
+			const data = new TextEncoder().encode(JSON.stringify({ type: 'hand', raised: true, raisedAt: localRaisedAtRef.current }));
 			void localParticipant.publishData(data, { reliable: true });
 		};
 		room.on(RoomEvent.ParticipantConnected, rebroadcast);

@@ -132,7 +132,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 	// speech — once the user has "the floor", they don't need the hand up any
 	// more. Natural inter-word pauses up to SPEAKING_GAP_TOLERANCE_MS don't
 	// cancel the timer. The hook only runs while the hand is up.
-	const localMicForAutoLower = localHandRaised ? localMicrophone?.stream ?? null : null;
+	const localMicForAutoLower = localHandRaised ? (localMicrophone?.stream ?? null) : null;
 	const liveLevel = useAudioLevel(localMicForAutoLower);
 	const autoLowerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const lastSpeakingAtRef = useRef(0);
