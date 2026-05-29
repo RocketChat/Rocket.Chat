@@ -1,0 +1,19 @@
+name: Docs link check
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - 'scripts/check-docs-links.mjs'
+      - '.github/workflows/ci-docs-links.yml'
+
+jobs:
+  docs-links:
+    runs-on: ubuntu-24.04-arm
+    name: Check /docs internal links
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Check internal links in /docs
+        shell: bash
+        run: node scripts/check-docs-links.mjs docs

@@ -101,6 +101,11 @@ Deeper references: [API endpoint migration](./api-endpoint-migration.md) ·
 - **Every doc opens with "who this is for" + "what you can do after reading".**
 - Code links point to `path:line` where useful (clickable in the editor).
 - **Write all docs in English.**
+- **Internal links are CI-checked.** A PR touching `/docs` runs
+  `yarn docs:check-links` (see `scripts/check-docs-links.mjs`) and fails on a
+  dead internal link or `#anchor`. Run it locally before pushing.
+- **Docs have owners** via `.github/CODEOWNERS` (`/docs/`), and the PR template
+  reminds you to update affected docs in the same PR.
 
 > Larger roadmap for this initiative (architecture, conventions, extension,
 > glossary): see the docs/onboarding plan maintained by the engineering team.
