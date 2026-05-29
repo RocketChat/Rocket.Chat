@@ -219,6 +219,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return;
 		}
 
+		// Group calls only enter knownCalls via an explicit Session.joinGroupCall()
+		// from the UI button. If the server pushes a 'new' for a group call we
+		// haven't actively joined (typically: server still thinks we're in it
+		// because a previous tab closed before the leave REST landed), ignore it
+		// permanently — otherwise it lands in knownCalls and blocks the next
+		// real join with "Already on a call." Stale server-side participant
+		// entries get cleared the next time the user explicitly joins (the
+		// model's addGroupParticipant pulls + pushes), or expire via expiresAt.
+		if (signal.type === 'new' && signal.kind === 'group' && !this.knownCalls.has(signal.callId)) {
+			this.config.logger?.debug('MediaSignalingSession.processCallSignal: ignoring unsolicited group call', signal.callId);
+			this.ignoredCalls.add(signal.callId);
+			return;
+		}
+
 		const call = this.getOrCreateCallBySignal(signal);
 
 		if (signal.type === 'notification' && signal.signedContractId) {

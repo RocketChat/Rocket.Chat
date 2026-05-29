@@ -233,6 +233,22 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	}
 
 	/**
+	 * All group calls currently considered "active" (not ended, not expired).
+	 * Used by the reconciliation cron to find candidates to verify against
+	 * LiveKit's actual room presence.
+	 */
+	public findActiveGroupCalls<T extends Document = IMediaCall>(options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				kind: 'group',
+				ended: false,
+				expiresAt: { $gt: new Date() },
+			} as any,
+			options as FindOptions<IMediaCall>,
+		) as unknown as FindCursor<T>;
+	}
+
+	/**
 	 * Find a call by its recording egress id. Used by the LiveKit webhook
 	 * handler to locate the right call doc when an egress event arrives —
 	 * the egress payload only carries the egress id, not our internal callId.

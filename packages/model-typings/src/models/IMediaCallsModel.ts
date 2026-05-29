@@ -32,6 +32,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
 	findActiveGroupCallInRoom<T extends Document = IMediaCall>(rid: string, options?: FindOptions<T>): Promise<T | null>;
+	findActiveGroupCalls<T extends Document = IMediaCall>(options?: FindOptions<T>): FindCursor<T>;
 	findOneByRecordingEgressId<T extends Document = IMediaCall>(egressId: string, options?: FindOptions<T>): Promise<T | null>;
 	addGroupParticipant(
 		callId: string,

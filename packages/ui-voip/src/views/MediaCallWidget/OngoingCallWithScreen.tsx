@@ -128,8 +128,8 @@ const OngoingCall = () => {
 					<ToggleButton
 						label={t('Camera')}
 						icons={['video', 'video-off']}
-						titles={[t('Start_camera'), t('Stop_camera')]}
-						pressed={localCamera?.active ?? false}
+						titles={[t('Stop_camera'), t('Start_camera')]}
+						pressed={!(localCamera?.active ?? false)}
 						onToggle={onToggleCamera}
 					/>
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
