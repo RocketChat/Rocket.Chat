@@ -95,6 +95,7 @@ test.describe.serial('settings-account-profile', () => {
 				await poAccountProfile.phoneNumber.addPhone('+15554440002', 'Home');
 
 				await poAccountProfile.btnSaveChanges.click();
+				await poAccountProfile.toastMessage.dismissToast();
 
 				await page.reload();
 
@@ -120,6 +121,7 @@ test.describe.serial('settings-account-profile', () => {
 
 				await poAccountProfile.phoneNumber.removePhone(0);
 				await poAccountProfile.btnSaveChanges.click();
+				await poAccountProfile.toastMessage.dismissToast();
 
 				await page.reload();
 

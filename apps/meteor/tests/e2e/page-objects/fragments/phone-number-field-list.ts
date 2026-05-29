@@ -12,7 +12,7 @@ export class PhoneNumberFieldList {
 	}
 
 	getPhoneLabelInput(index: number): Locator {
-		return this.root.getByRole('textbox', { name: new RegExp(`Label for phone.*${index + 1}`) });
+		return this.root.getByRole('textbox', { name: new RegExp(`^Label for phone.*${index + 1}$`) });
 	}
 
 	getRemovePhoneButton(index: number): Locator {
