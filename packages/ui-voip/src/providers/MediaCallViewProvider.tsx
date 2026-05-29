@@ -99,7 +99,6 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			stopTracks(stream);
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			return;
 		}
 
 		if ('userId' in peerInfo) {
@@ -125,10 +124,11 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
 		} catch (error) {
+			console.error('Media Call - Error requesting device', error);
 			if (error instanceof PermissionRequestCancelledCallRejectedError) {
 				controls.endCall();
+				return;
 			}
-			return;
 		}
 
 		controls.acceptCall();
@@ -201,6 +201,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.endCall();
 	};
 
+	const onToggleScreenShare = useCallback(async () => {
+		controls.toggleScreenSharing();
+	}, [controls]);
+
 	const onSelectPeer = (peerInfo: PeerInfo) => {
 		selectPeer(peerInfo);
 	};
@@ -238,6 +242,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onForward,
 		onTone,
 		onEndCall,
+		onToggleScreenShare,
 		onCall,
 		onAccept,
 		onSelectPeer,

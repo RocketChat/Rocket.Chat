@@ -93,6 +93,8 @@ export interface IClientMediaCall {
 	accept(): void;
 	reject(): void;
 	hangup(): void;
+	setMuted(muted: boolean): void;
+	setHeld(onHold: boolean): void;
 	requestScreenShare(requested: boolean): void;
 	setScreenVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
 	hasScreenVideoTrack(): boolean;
