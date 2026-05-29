@@ -2,50 +2,22 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ParticipantCards from './ParticipantCards';
-import {
-	ToggleButton,
-	Timer,
-	DevicePicker,
-	ActionButton,
-	CardListContainer,
-	CardListSection,
-	PeerCard,
-	StreamCard,
-	useShouldWrapCards,
-	CARD_LIST_SECTION_MAX_HEIGHT,
-	ActionStrip,
-	ActionToggleChat,
-} from '../../components';
+import CallStage from './CallStage';
+import { ToggleButton, Timer, DevicePicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
 type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {
+		id: string;
 		displayName: string;
 		avatarUrl: string;
 	};
-	containerHeight: number;
 };
 
-const getSplitStyles = (showChat?: boolean) => {
-	if (showChat) {
-		return {
-			maxHeight: `${CARD_LIST_SECTION_MAX_HEIGHT}vh`,
-		};
-	}
-	return {
-		height: '100%',
-		// This is a workaround to match the border height with the sidebar footer
-		// The sidebar footer uses a divider instead of a border, so it's 1px taller than it should be.
-		paddingBlockEnd: '1px',
-	};
-};
-
-const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
+const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -115,52 +87,28 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		}
 	}, [callId, isRecording, recordingBusy]);
 
-	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
-
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
-	const [localCameraRefCallback] = usePlayMediaStream(localCamera?.stream ?? null);
-
 	useRoomView();
 
-	const localStreamCard = localScreen?.active ? (
-		<StreamCard own onClickStopSharing={onToggleScreenSharing} showStopSharingOnHover>
-			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
+	const localParticipant = {
+		id: user.id || 'local',
+		displayName: user.displayName,
+		avatarUrl: user.avatarUrl,
+		muted,
+		held,
+		cameraStream: localCamera?.stream ?? null,
+		screenStream: localScreen?.active ? (localScreen?.stream ?? null) : null,
+	};
 
 	return (
-		<Box
-			id='outer-element'
-			w='full'
-			bg='surface-tint'
-			overflow='hidden'
-			display='flex'
-			flexDirection='column'
-			{...getSplitStyles(showChat)}
-		>
-			<CardListSection>
-				<CardListContainer shouldWrapCards={shouldWrapCards}>
-					<PeerCard
-						displayName={user.displayName}
-						avatarUrl={user.avatarUrl}
-						muted={muted}
-						held={held}
-						videoActive={localCamera?.active ?? false}
-						videoRef={localCameraRefCallback}
-						mirrored
-						muteVideoAudio
-					/>
-					{remoteParticipants.map((p) => (
-						<ParticipantCards key={p.id} participant={p} />
-					))}
-					{localStreamCard}
-				</CardListContainer>
-			</CardListSection>
+		<Box w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' minHeight={0}>
+			<CallStage
+				localParticipant={localParticipant}
+				remoteParticipants={remoteParticipants}
+				onStopLocalScreenShare={onToggleScreenSharing}
+			/>
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>
@@ -192,8 +140,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 				<ToggleButton
 					label={t('Camera')}
 					icons={['video', 'video-off']}
-					titles={[t('Start_camera'), t('Stop_camera')]}
-					pressed={localCamera?.active ?? false}
+					titles={[t('Stop_camera'), t('Start_camera')]}
+					pressed={!(localCamera?.active ?? false)}
 					onToggle={onToggleCamera}
 				/>
 				<ToggleButton
