@@ -58,3 +58,17 @@ export const InvitedUser = Template.bind({});
 InvitedUser.args = {
 	invitationDate: '2025-01-01T12:00:00Z',
 };
+
+export const WithPhoneNumbers = Template.bind({});
+WithPhoneNumbers.args = {
+	phones: [
+		{
+			number: '+5511999999999',
+			label: 'Mobile',
+		},
+		{
+			number: '+5511888888888',
+			label: 'Work',
+		},
+	],
+};

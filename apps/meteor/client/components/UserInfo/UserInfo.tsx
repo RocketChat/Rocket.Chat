@@ -24,7 +24,7 @@ import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
-import { formatPhoneNumber } from '../../lib/formatPhoneNumber';
+import UserInfoPhoneNumberList from './UserInfoPhoneNumberList';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -170,20 +170,7 @@ const UserInfo = ({
 						<InfoPanelField is='dl'>
 							<InfoPanelLabel is='dt'>{t('Phone')}</InfoPanelLabel>
 							<InfoPanelText is='dd'>
-								<Box is='ul' display='flex' flexDirection='column' gap={4}>
-									{phones.map((p) => (
-										<Box is='li' key={p.number} display='flex' flexDirection='row' alignItems='center'>
-											<Box is='a' withTruncatedText href={`tel:${p.number}`}>
-												<span>{formatPhoneNumber(p.number)}</span>
-												{p.label && (
-													<Tag mis={4} display='inline-flex'>
-														{p.label}
-													</Tag>
-												)}
-											</Box>
-										</Box>
-									))}
-								</Box>
+								<UserInfoPhoneNumberList phones={phones} />
 							</InfoPanelText>
 						</InfoPanelField>
 					)}
