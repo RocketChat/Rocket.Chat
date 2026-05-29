@@ -344,7 +344,7 @@ API.v1
 
 			const service = typeof fields.service === 'string' && fields.service.length > 0 ? fields.service : 'rest';
 
-			await setUserAvatar(user, fileBuffer, mimetype, service);
+			await setUserAvatar(user, fileBuffer, mimetype, service as 'rest');
 
 			return API.v1.success();
 		},

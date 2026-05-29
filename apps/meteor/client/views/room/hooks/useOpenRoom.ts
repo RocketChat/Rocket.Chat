@@ -76,7 +76,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			let roomData: IRoom;
 			try {
-				roomData = (await getRoomByTypeAndName({ type, name: reference })).room as IRoom;
+				roomData = (await getRoomByTypeAndName({ type, name: reference })).room as unknown as IRoom;
 			} catch (error) {
 				const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
 

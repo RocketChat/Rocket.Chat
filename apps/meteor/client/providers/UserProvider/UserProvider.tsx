@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
@@ -18,6 +19,7 @@ import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
@@ -27,10 +29,13 @@ export type UserProviderProps = {
 	children: ReactNode;
 };
 
-// `afterLogoutCleanUpCallback` and `Apps.IPostUserLoggedOut` are now fired
-// server-side by the `Accounts.onLogout` hook (and by `/v1/users.logout`
-// after token invalidation), so the client does not need to make a round
-// trip to invoke them.
+// Local logout broadcaster — `onLogout(cb)` consumers (e.g. e2ee cleanup) still
+// subscribe to this. The post-logout side effects that used to require a
+// `sdk.call('logoutCleanUp')` round-trip (afterLogoutCleanUpCallback +
+// Apps.IPostUserLoggedOut) now fire server-side via `Accounts.onLogout` and
+// `POST /v1/users.logout`, so this emitter is purely client-side fan-out.
+const ee = new Emitter();
+getDdpSdk().account.onLogout(() => ee.emit('logout'));
 
 const queryRoom = (
 	query: Filter<Pick<IRoom, '_id'>>,
