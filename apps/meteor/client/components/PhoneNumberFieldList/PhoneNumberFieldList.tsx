@@ -10,7 +10,7 @@ const MAX_PHONE_NUMBER_LABEL_LENGTH = 50;
 
 export type PhoneFieldType = {
 	id: string;
-	number?: string;
+	number: string;
 	label?: string;
 	primary?: boolean;
 };
