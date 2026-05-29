@@ -175,6 +175,13 @@ jobs:
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
+        env:
+          # API tests intentionally invoke deprecated DDP methods through
+          # /v1/method.call/:method. TEST_MODE='api' keeps every other test
+          # behavior on (rate-limiter bypass, short cache TTLs) while letting
+          # the deprecation logger log without throwing. Other suites use the
+          # docker-compose default of TEST_MODE='true'.
+          TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
         run: |
           # when we are testing CE, we only need to start the rocketchat container
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
@@ -185,6 +192,7 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
+          TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
 

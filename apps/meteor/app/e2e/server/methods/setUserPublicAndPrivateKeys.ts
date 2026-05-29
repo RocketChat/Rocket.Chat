@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -42,6 +43,7 @@ export const setUserPublicAndPrivateKeysMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.setUserPublicAndPrivateKeys'(keyPair) {
+		methodDeprecationLogger.method('e2e.setUserPublicAndPrivateKeys', '9.0.0', '/v1/e2e.setUserPublicAndPrivateKeys');
 		const userId = Meteor.userId();
 
 		if (!userId) {

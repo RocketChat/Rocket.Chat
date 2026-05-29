@@ -24,6 +24,7 @@ const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 const skipMongoDbDeprecationCheck =
 	['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase()) ||
 	process.env.TEST_MODE === 'true' ||
+	process.env.TEST_MODE === 'api' ||
 	process.env.NODE_ENV === 'development';
 // const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 

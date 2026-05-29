@@ -130,7 +130,7 @@ describe('useLoadSurroundingMessages', () => {
 							message,
 						}) as any,
 				)
-				.withMethod('getRoomById', () => ({ _id: 'room-2', t: 'c', name: 'general' }) as any)
+				.withEndpoint('GET', '/v1/rooms.info', () => ({ room: { _id: 'room-2', t: 'c', name: 'general' } }) as any)
 				.build(),
 		});
 
@@ -241,7 +241,7 @@ describe('useLoadSurroundingMessages', () => {
 							message,
 						}) as any,
 				)
-				.withMethod('getRoomById', () => ({ _id: 'room-5', t: 'c', name: 'general' }) as any)
+				.withEndpoint('GET', '/v1/rooms.info', () => ({ room: { _id: 'room-5', t: 'c', name: 'general' } }) as any)
 				.build(),
 		});
 

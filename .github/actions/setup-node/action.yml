@@ -89,7 +89,6 @@ runs:
       shell: bash
       run: |
         CACHE_DIR="${{ runner.temp }}/mongodb-memory-server"
-        mkdir -p "$CACHE_DIR"
         echo "MONGOMS_DOWNLOAD_DIR=$CACHE_DIR" >> $GITHUB_ENV
         echo "MONGOMS_PREFER_GLOBAL_PATH=false" >> $GITHUB_ENV
 

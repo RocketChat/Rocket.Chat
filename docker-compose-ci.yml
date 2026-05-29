@@ -13,7 +13,7 @@ services:
         DENO_VERSION: ${DENO_VERSION:-}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
     environment:
-      - TEST_MODE=true
+      - 'TEST_MODE=${TEST_MODE:-true}'
       - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
@@ -162,7 +162,7 @@ services:
         SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
-      - TEST_MODE=true
+      - 'TEST_MODE=${TEST_MODE:-true}'
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info

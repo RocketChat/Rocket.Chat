@@ -29,10 +29,10 @@ Accounts.registerLoginHandler('apple', async (loginRequest) => {
 			profile.name = `${givenName} ${familyName}`;
 		}
 
-		const result = await Accounts.updateOrCreateUserFromExternalService('apple', serviceData, { profile });
+		const result = Accounts.updateOrCreateUserFromExternalService('apple', serviceData, { profile });
 
 		// Ensure processing succeeded
-		if (result?.userId === undefined) {
+		if (result === undefined || result.userId === undefined) {
 			return {
 				type: 'apple',
 				error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Apple response token'),
