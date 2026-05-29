@@ -5299,6 +5299,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@livekit/krisp-noise-filter@npm:^0.2.16":
+  version: 0.2.16
+  resolution: "@livekit/krisp-noise-filter@npm:0.2.16"
+  peerDependencies:
+    livekit-client: ^2.0.8
+  checksum: 10/1c0fd4e5c7baa0a6eab8f813a7387ac875e7ae65829d734a4c9a41a36c7930413751b16d56b7b71500786d6b62954d631067c1333ed58d235e67bc8d34dea4ef
+  languageName: node
+  linkType: hard
+
 "@livekit/mutex@npm:1.1.1":
   version: 1.1.1
   resolution: "@livekit/mutex@npm:1.1.1"
@@ -10021,6 +10030,7 @@ __metadata:
     "@kaciras/deasync": "npm:^1.1.0"
     "@livekit/components-react": "npm:^2.6.0"
     "@livekit/components-styles": "npm:^1.1.0"
+    "@livekit/krisp-noise-filter": "npm:^0.2.16"
     "@nivo/bar": "npm:0.88.0"
     "@nivo/core": "npm:0.88.0"
     "@nivo/heatmap": "npm:0.88.0"

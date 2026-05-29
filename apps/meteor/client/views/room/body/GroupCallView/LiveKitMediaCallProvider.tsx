@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
+import type { LocalAudioTrack } from 'livekit-client';
 import { Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -111,6 +112,42 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 		() => (localMicPub?.track?.mediaStream ? { active: micEnabled, stream: localMicPub.track.mediaStream } : undefined),
 		[localMicPub?.track?.mediaStream, micEnabled],
 	);
+
+	// Apply Krisp noise filter to the local mic track whenever it's (re)published.
+	// Dynamic import keeps the WASM bundle out of the main JS chunk; if loading or
+	// support detection fails we silently fall back to the raw mic — the filter is
+	// quality-of-life, not load-bearing.
+	useEffect(() => {
+		const audioTrack = localMicPub?.track as LocalAudioTrack | undefined;
+		if (!audioTrack) {
+			console.debug('[Krisp] no local mic track yet, skipping');
+			return;
+		}
+		if (typeof audioTrack.setProcessor !== 'function') {
+			console.warn('[Krisp] setProcessor not available on this livekit-client version');
+			return;
+		}
+		let cancelled = false;
+		void (async () => {
+			try {
+				console.debug('[Krisp] loading module…');
+				const mod = await import('@livekit/krisp-noise-filter');
+				if (cancelled) return;
+				const supported = mod.isKrispNoiseFilterSupported();
+				console.debug('[Krisp] supported?', supported);
+				if (!supported) return;
+				console.debug('[Krisp] attaching processor to track', audioTrack.sid);
+				await audioTrack.setProcessor(mod.KrispNoiseFilter());
+				console.info('[Krisp] processor attached');
+			} catch (err) {
+				console.warn('[Krisp] noise filter unavailable', err);
+			}
+		})();
+		return () => {
+			cancelled = true;
+			void audioTrack.stopProcessor?.().catch(() => undefined);
+		};
+	}, [localMicPub?.track]);
 
 	const onToggleMic = useCallback(() => void localParticipant.setMicrophoneEnabled(!micEnabled), [localParticipant, micEnabled]);
 	const onToggleCamera = useCallback(() => void localParticipant.setCameraEnabled(!camEnabled), [localParticipant, camEnabled]);
