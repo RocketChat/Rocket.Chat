@@ -62,7 +62,8 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 				// Some dividers might be kept in the DOM if the "new day" message has a file attached
 				// So we check if they are actually visible to avoid showing old dates in the bubble
 				// We also need the parent since it has the actual offset inside the scroll container
-				const parentSafeOffset = divider.parentElement?.offsetTop ? divider.parentElement.offsetTop + DATE_DIVIDER_VISIBILITY_THRESHOLD : 0;
+				const parentOffsetTop = divider.parentElement?.offsetTop;
+				const parentSafeOffset = parentOffsetTop !== undefined ? parentOffsetTop + DATE_DIVIDER_VISIBILITY_THRESHOLD : 0;
 
 				// Sanitize elements
 				if (!divider.dataset.id || parentSafeOffset < offset) {
