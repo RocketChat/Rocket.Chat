@@ -61,6 +61,18 @@ const updateCustomSoundsResponse = ajv.compile<{ success: boolean }>({
 	required: ['success'],
 });
 
+const deleteCustomSoundsResponse = ajv.compile<void>({
+	additionalProperties: false,
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['success'],
+});
+
 const customSoundsEndpoints = API.v1
 	.get(
 		'custom-sounds.list',
@@ -288,17 +300,7 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.delete',
 		{
 			response: {
-				200: ajv.compile<{ success: boolean }>({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success'],
-				}),
+				200: deleteCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -315,7 +317,7 @@ const customSoundsEndpoints = API.v1
 			try {
 				await deleteCustomSound(_id);
 
-				return API.v1.success({});
+				return API.v1.success();
 			} catch (error: any) {
 				SystemLogger.error({ error });
 
