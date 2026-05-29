@@ -12,19 +12,20 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import type { ChangeEvent, MouseEvent, RefObject } from 'react';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
-import { VirtualList } from '../../../../components/VirtualList';
+import { PaginatedVirtualList } from '../../../../components/VirtualList';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 type DiscussionsListProps = {
 	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
-	loadMoreItems: () => void;
+	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
 	isPending: boolean;
 	isSuccess: boolean;
 	onClose: () => void;
@@ -95,7 +96,7 @@ function DiscussionsList({
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
 							<Box h='full' w='full' style={{ minHeight: 0 }}>
-								<VirtualList
+								<PaginatedVirtualList
 									items={discussions}
 									totalCount={itemCount}
 									overscan={25}

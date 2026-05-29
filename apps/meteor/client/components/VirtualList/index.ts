@@ -1,1 +1,1 @@
-export { default as VirtualList } from './VirtualList';
+export { default as PaginatedVirtualList } from './VirtualList';

@@ -102,9 +102,7 @@ exports[`renders Default with stable structure 1`] = `
                     style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                   >
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-0"
@@ -202,9 +200,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-1"
@@ -302,9 +298,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-2"
@@ -402,9 +396,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-3"
@@ -502,9 +494,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-4"
@@ -602,9 +592,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-5"
@@ -702,9 +690,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-6"
@@ -802,9 +788,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-7"
@@ -902,9 +886,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-8"
@@ -1002,9 +984,7 @@ exports[`renders Default with stable structure 1`] = `
                       </div>
                     </li>
                     <li>
-                      <div
-                        style="min-height: 120px;"
-                      >
+                      <div>
                         <div
                           class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-1eoct74 rcx-css-mg522s"
                           data-drid="drid-9"

@@ -1,10 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import * as React from 'react';
 import { Children, forwardRef, isValidElement } from 'react';
 
-import VirtualList from './VirtualList';
+import PaginatedVirtualList from './VirtualList';
 
 const mockVirtualizerHandle = {
 	scrollToIndex: jest.fn(),
@@ -62,6 +63,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 		{ children, ...props },
 		ref,
 	) {
+		// eslint-disable-next-line testing-library/no-node-access
 		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
 
 		return (
@@ -81,17 +83,26 @@ const renderVirtualList = (
 		items: VirtualListTestItem[];
 		totalCount: number;
 		renderItem: (item: VirtualListTestItem, index: number) => ReactNode;
-		estimateSize?: (index: number) => number;
 		overscan?: number;
-		onEndReached?: () => void | Promise<unknown>;
+		onEndReached?: UseInfiniteQueryResult['fetchNextPage'];
 	}> = {},
-) => render(<VirtualList items={items} totalCount={20} renderItem={(item) => <div>{item._id}</div>} {...props} />);
+) => render(<PaginatedVirtualList items={items} totalCount={20} renderItem={(item) => <div>{item._id}</div>} {...props} />);
 
-describe('VirtualList', () => {
+const advanceDebouncedScroll = async () => {
+	await act(async () => {
+		await jest.advanceTimersByTimeAsync(300);
+	});
+};
+
+describe('PaginatedVirtualList', () => {
 	beforeEach(() => {
 		mockVirtualizerHandle.scrollOffset = 0;
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
 	});
 
 	it('has no accessibility violations', async () => {
@@ -99,20 +110,22 @@ describe('VirtualList', () => {
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	it('calls onEndReached when scrolled near the bottom', () => {
-		const onEndReached = jest.fn();
+	it('calls onEndReached when scrolled near the bottom', async () => {
+		jest.useFakeTimers();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
 
 		renderVirtualList({ onEndReached });
 		expect(onEndReached).not.toHaveBeenCalled();
 
 		mockVirtualizerHandle.scrollOffset = 700;
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(1);
 	});
 
 	it('does not call onEndReached when all items are loaded', () => {
-		const onEndReached = jest.fn();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
 
 		renderVirtualList({ onEndReached, totalCount: items.length });
 		mockVirtualizerHandle.scrollOffset = 700;
@@ -121,26 +134,33 @@ describe('VirtualList', () => {
 		expect(onEndReached).not.toHaveBeenCalled();
 	});
 
-	it('does not call onEndReached repeatedly for the same item count', () => {
-		const onEndReached = jest.fn();
+	it('does not call onEndReached repeatedly for the same item count', async () => {
+		jest.useFakeTimers();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
 
 		renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(1);
 	});
 
-	it('calls onEndReached after a same-size dataset reset', () => {
-		const onEndReached = jest.fn();
+	it('calls onEndReached after a same-size dataset reset', async () => {
+		jest.useFakeTimers();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
 		const { rerender } = renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 
 		const resetItems = Array.from({ length: 10 }, (_, index) => ({ _id: `reset-${index}` }));
-		rerender(<VirtualList items={resetItems} totalCount={20} renderItem={(item) => <div>{item._id}</div>} onEndReached={onEndReached} />);
+		rerender(
+			<PaginatedVirtualList items={resetItems} totalCount={20} renderItem={(item) => <div>{item._id}</div>} onEndReached={onEndReached} />,
+		);
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
 	});
@@ -152,19 +172,22 @@ describe('VirtualList', () => {
 	});
 
 	it('allows onEndReached to retry after a failed load', async () => {
+		jest.useFakeTimers();
 		const onEndReached = jest.fn().mockRejectedValue(new Error('failed to load more items'));
 
 		renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
-		await Promise.resolve();
+		await advanceDebouncedScroll();
 
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
 	});
 
-	it('allows onEndReached to retry after a synchronous throw', () => {
+	it('allows onEndReached to retry after a synchronous throw', async () => {
+		jest.useFakeTimers();
 		const onEndReached = jest
 			.fn()
 			.mockImplementationOnce(() => {
@@ -175,13 +198,15 @@ describe('VirtualList', () => {
 		renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
 	});
 
 	it('calls onEndReached when the viewport is underfilled', () => {
-		const onEndReached = jest.fn();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
 		mockVirtualizerHandle.scrollSize = 200;
 
 		renderVirtualList({ onEndReached });

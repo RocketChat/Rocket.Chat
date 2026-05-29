@@ -1,6 +1,8 @@
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 import type { VirtualizerHandle } from 'virtua';
 import { Virtualizer } from 'virtua';
 
@@ -14,42 +16,34 @@ const scrollViewportStyle = {
 	overflow: 'auto',
 } as const;
 
-type OnEndReached = () => void | Promise<unknown>;
-
-const isThenable = (value: unknown): value is PromiseLike<unknown> => typeof (value as PromiseLike<unknown> | null)?.then === 'function';
-
-type VirtualListProps<T extends { _id: string }> = {
+type PaginatedVirtualListProps<T extends { _id: string }> = {
 	items: T[];
 	totalCount: number;
 	renderItem: (item: T, index: number) => ReactNode;
-	estimateSize?: (index: number) => number;
 	overscan?: number;
-	onEndReached?: OnEndReached;
+	onEndReached?: UseInfiniteQueryResult['fetchNextPage'];
 };
 
-function VirtualList<T extends { _id: string }>({
+function PaginatedVirtualList<T extends { _id: string }>({
 	items,
 	totalCount,
 	renderItem,
-	estimateSize = () => 120,
 	overscan,
 	onEndReached,
-}: VirtualListProps<T>) {
+}: PaginatedVirtualListProps<T>) {
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
-	const onEndReachedRef = useRef(onEndReached);
-	const lastEndReachKeyRef = useRef<string | null>(null);
+	const isEndReachedLockedRef = useRef(false);
 	const firstItemId = items[0]?._id ?? '';
 	const lastItemId = items[items.length - 1]?._id ?? '';
 
-	useEffect(() => {
-		onEndReachedRef.current = onEndReached;
-	}, [onEndReached]);
+	useLayoutEffect(() => {
+		isEndReachedLockedRef.current = false;
+	}, [firstItemId, items.length, lastItemId, totalCount]);
 
 	const checkEndReached = useCallback(
 		(offset: number) => {
 			const handle = virtualizerRef.current;
-			const loadMore = onEndReachedRef.current;
-			if (!handle || !loadMore) {
+			if (!handle || !onEndReached) {
 				return;
 			}
 
@@ -67,34 +61,27 @@ function VirtualList<T extends { _id: string }>({
 				return;
 			}
 
-			const key = `${firstItemId}:${lastItemId}:${items.length}:${totalCount}`;
-			if (lastEndReachKeyRef.current === key) {
+			if (isEndReachedLockedRef.current) {
 				return;
 			}
-			lastEndReachKeyRef.current = key;
-
-			const releaseEndReachLock = () => {
-				if (lastEndReachKeyRef.current === key) {
-					lastEndReachKeyRef.current = null;
-				}
-			};
+			isEndReachedLockedRef.current = true;
 
 			try {
-				const result = loadMore();
-				if (isThenable(result)) {
-					void Promise.resolve(result).catch(releaseEndReachLock);
-				}
+				void onEndReached().catch(() => {
+					isEndReachedLockedRef.current = false;
+				});
 			} catch {
-				releaseEndReachLock();
+				isEndReachedLockedRef.current = false;
 			}
 		},
-		[firstItemId, items.length, lastItemId, totalCount],
+		[items.length, onEndReached, totalCount],
 	);
 
-	const handleScroll = useCallback(
+	const handleScroll = useDebouncedCallback(
 		(offset: number) => {
 			checkEndReached(offset);
 		},
+		300,
 		[checkEndReached],
 	);
 
@@ -104,16 +91,14 @@ function VirtualList<T extends { _id: string }>({
 			return;
 		}
 		checkEndReached(handle.scrollOffset);
-	}, [checkEndReached, items.length, totalCount]);
+	}, [checkEndReached, firstItemId, items.length, lastItemId, totalCount]);
 
 	return (
 		<CustomVirtuaScrollbars>
 			<div style={scrollViewportStyle}>
 				<Virtualizer ref={virtualizerRef} as={VirtuaListContainer} item='li' bufferSize={overscan} onScroll={handleScroll}>
 					{items.map((item, index) => (
-						<div key={item._id} style={{ minHeight: estimateSize(index) }}>
-							{renderItem(item, index)}
-						</div>
+						<div key={item._id}>{renderItem(item, index)}</div>
 					))}
 				</Virtualizer>
 			</div>
@@ -121,4 +106,4 @@ function VirtualList<T extends { _id: string }>({
 	);
 }
 
-export default VirtualList;
+export default PaginatedVirtualList;
