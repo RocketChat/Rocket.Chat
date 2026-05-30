@@ -11,11 +11,13 @@ import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 type MediaCallRoomActivityProps = {
 	children: ReactNode;
 	/**
-	 * Provider that populates MediaCallViewContext. Default is the 1:1 session-driven
-	 * provider; group calls pass a LiveKit-driven provider instead. Keeps the rest of
-	 * the activity (layout, showChat, ResizeObserver, etc.) shared across both call kinds.
+	 * Provider that populates MediaCallViewContext. Default is the 1:1
+	 * session-driven provider. Pass `null` to use whatever MediaCallViewContext
+	 * is provided upstream — group calls do this so the LK connection can live
+	 * at the app level (and survive room navigation) instead of mounting/
+	 * unmounting per-room.
 	 */
-	provider?: ComponentType<{ children: ReactNode }>;
+	provider?: ComponentType<{ children: ReactNode }> | null;
 };
 
 const MIN_CALL_HEIGHT_PCT = 20;
@@ -49,8 +51,13 @@ const dividerStyles = css`
 	}
 `;
 
+// Identity wrapper used when the activity should defer to whatever
+// MediaCallViewContext is mounted upstream (provider={null} case).
+const PassthroughProvider = ({ children }: { children: ReactNode }) => <>{children}</>;
+
+// eslint-disable-next-line react/no-multi-comp
 const MediaCallRoomActivity = ({ children, provider = MediaCallViewProvider }: MediaCallRoomActivityProps) => {
-	const Provider = provider;
+	const Provider = provider ?? PassthroughProvider;
 	const [showChat, setShowChat] = useState(true);
 	const [callHeightPct, setCallHeightPct] = useState(DEFAULT_CALL_HEIGHT_PCT);
 	const user = useUser();

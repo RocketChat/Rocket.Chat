@@ -7,6 +7,7 @@ export {
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
+	useMediaCallView,
 } from './context';
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
@@ -31,5 +32,5 @@ export { default as Timer } from './components/Timer';
 // Shared call section used by both 1:1 (driven by MediaCallViewProvider) and
 // group calls (driven externally via a custom MediaCallViewContext value).
 export { default as MediaCallRoomSection } from './views/MediaCallRoomSection/MediaCallRoomSection';
-export { default as MediaCallViewContext } from './context/MediaCallViewContext';
+export { default as MediaCallViewContext, defaultMediaCallContextValue } from './context/MediaCallViewContext';
 export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCallViewContext';

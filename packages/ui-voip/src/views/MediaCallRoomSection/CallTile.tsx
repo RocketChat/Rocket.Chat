@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+import { useStreamHasLiveVideo } from '../../providers/useStreamHasLiveVideo';
 
 // Above this normalised audio level the speaking ring becomes visible. Keeps
 // background noise / fan hum from constantly lighting the border.
@@ -109,7 +110,11 @@ const CallTile = ({
 	handPosition,
 }: CallTileProps) => {
 	const [videoRef] = usePlayMediaStream(cameraStream ?? null);
-	const cameraActive = Boolean(cameraStream);
+	// Camera is "active" only while a video track is actually producing frames
+	// — having a MediaStream object isn't enough. When the user toggles the
+	// camera off, the track is muted/disabled but the stream reference stays,
+	// which used to leave the tile black; now we fall back to the avatar.
+	const cameraActive = useStreamHasLiveVideo(cameraStream);
 	const avatarSize = compact ? 'x32' : 'x48';
 
 	// Speaking ring scales with audio RMS. Muted tiles never light up — a

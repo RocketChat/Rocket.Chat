@@ -11,7 +11,6 @@ import {
 import type { ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
-import LiveKitMediaCallProvider from './GroupCallView/LiveKitMediaCallProvider';
 import { useRoom } from '../contexts/RoomContext';
 
 const isOneToOneDirectCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
@@ -28,8 +27,11 @@ type MediaCallRoomProps = {
 /**
  * Decides whether to render the call activity (top-half call view + chat below)
  * in the current room. Three modes:
- *  - 1:1 DM call (existing): MediaCallRoomActivity with the default session-driven provider
- *  - Group call (new, session-tracked): MediaCallRoomActivity with the LiveKit-driven provider
+ *  - 1:1 DM call: MediaCallRoomActivity with the default session-driven provider
+ *  - Group call in this room: MediaCallRoomActivity reading from the app-level
+ *    LiveKitMediaCallProvider (mounted in MediaCallProvider.tsx). The LK
+ *    connection lives above the room router so it survives navigation to
+ *    other channels — without that, switching channels mid-call disconnects.
  *  - No call: pass-through
  */
 const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
@@ -50,7 +52,7 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	}, [state, session, room?._id]);
 
 	if (isGroupCallHere) {
-		return <MediaCallRoomActivity provider={LiveKitMediaCallProvider}>{children}</MediaCallRoomActivity>;
+		return <MediaCallRoomActivity provider={null}>{children}</MediaCallRoomActivity>;
 	}
 
 	if (!screenShareEnabled) {

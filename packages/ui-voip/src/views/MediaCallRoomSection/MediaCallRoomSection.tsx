@@ -28,9 +28,11 @@ type MediaCallRoomSectionProps = {
 		displayName: string;
 		avatarUrl: string;
 	};
+	/** When true, suppresses the chat-toggle button (used by the floating widget which has no chat slot). */
+	hideChatToggle?: boolean;
 };
 
-const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSectionProps) => {
+const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -51,6 +53,11 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 	const { muted, held, connectionState, startedAt, callId } = sessionState;
 	const isOneOnOne = remoteParticipants.length === 1;
 	const hangupTarget = isOneOnOne ? remoteParticipants[0].displayName : t('Call');
+	// LK group calls don't support Hold (no SIP-style hold concept) and don't
+	// support Forward (no caller/callee transfer model). onToggleHand is only
+	// wired up by LiveKitMediaCallProvider, so its presence is a reliable
+	// "this is an LK call" signal without threading another prop through.
+	const isLiveKitCall = Boolean(onToggleHand);
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingBusy, setRecordingBusy] = useState(false);
@@ -114,7 +121,11 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 		avatarUrl: user.avatarUrl,
 		muted,
 		held,
-		cameraStream: localCamera?.stream ?? null,
+		// Only expose the stream when the transport flagged it active. LK's
+		// setCameraEnabled(false) keeps the MediaStream reference alive but
+		// stops producing frames — without this gate the tile would render a
+		// black <video> element instead of the avatar.
+		cameraStream: localCamera?.active ? (localCamera?.stream ?? null) : null,
 		screenStream: localScreen?.active ? (localScreen?.stream ?? null) : null,
 		audioStream: localMicrophone?.stream ?? null,
 	};
@@ -182,19 +193,21 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 				}
 				rightSlot={
 					<ButtonGroup>
-						<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+						{!hideChatToggle && <ActionToggleChat pressed={showChat} onClick={onToggleChat} />}
 						<DevicePicker secondary />
 					</ButtonGroup>
 				}
 			>
 				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-				<ToggleButton
-					label={t('Hold')}
-					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-					titles={[t('Hold'), t('Resume')]}
-					pressed={held}
-					onToggle={onHold}
-				/>
+				{!isLiveKitCall && (
+					<ToggleButton
+						label={t('Hold')}
+						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+						titles={[t('Hold'), t('Resume')]}
+						pressed={held}
+						onToggle={onHold}
+					/>
+				)}
 				<ToggleButton
 					label={t('Share_screen')}
 					icons={['desktop-arrow-up', 'desktop-cross']}
@@ -225,7 +238,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user }: MediaCallRoomSec
 					pressed={isRecording}
 					onToggle={onToggleRecording}
 				/>
-				{isOneOnOne && <ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />}
+				{isOneOnOne && !isLiveKitCall && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				)}
 				<ActionButton label={t('Voice_call__user__hangup', { user: hangupTarget })} icon='phone-off' danger onClick={onEndCall} />
 			</ActionStrip>
 		</Box>

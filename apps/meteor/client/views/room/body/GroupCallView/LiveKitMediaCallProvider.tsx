@@ -1,11 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { MediaCallViewContext, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
+import { MediaCallViewContext, defaultMediaCallContextValue, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+
+import FloatingGroupCallWidget from './FloatingGroupCallWidget';
 
 const headersOf = () => ({
 	'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
@@ -45,10 +48,21 @@ const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
 };
 
 /**
- * Inner provider: lives inside <LiveKitRoom>. Reads LK hooks and populates
- * MediaCallViewContext so the shared MediaCallRoomSection renders.
+ * Inner bridge: lives inside <LiveKitRoom> as a sibling of children. Reads LK
+ * hooks every render, computes the MediaCallViewContext value, and pushes it
+ * up to the parent via onContextChange. Renders nothing — children stay in
+ * their stable position in the React tree above, avoiding a full app remount
+ * when the LK room mounts/unmounts on call start/end.
  */
-const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; callId: string; onLeave: () => void }) => {
+const InnerProvider = ({
+	callId,
+	onLeave,
+	onContextChange,
+}: {
+	callId: string;
+	onLeave: () => void;
+	onContextChange: (value: unknown) => void;
+}) => {
 	const room = useRoomContext();
 	const { localParticipant } = useLocalParticipant();
 	const allParticipants = useParticipants();
@@ -91,14 +105,20 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 			const scr = remoteScreenTracks.find((t) => t.participant.identity === p.identity);
 			const aud = remoteAudioTracks.find((t) => t.participant.identity === p.identity);
 			const micPub = p.getTrackPublication(Track.Source.Microphone);
+			// Skip the camera/screen streams when the remote publication is
+			// muted — useTracks() can still surface the publication after the
+			// remote disables their camera, and a "muted" video stream renders
+			// as a black frame instead of falling back to the avatar.
+			const camMuted = cam?.publication?.isMuted ?? true;
+			const scrMuted = scr?.publication?.isMuted ?? true;
 			return {
 				id: p.identity,
 				displayName: p.name || p.identity,
 				avatarUrl: getUserAvatarPath({ userId: p.identity }),
 				muted: Boolean(!micPub || micPub.isMuted),
 				held: false,
-				cameraStream: cam?.publication?.track?.mediaStream,
-				screenStream: scr?.publication?.track?.mediaStream,
+				cameraStream: cam && !camMuted ? cam.publication?.track?.mediaStream : undefined,
+				screenStream: scr && !scrMuted ? scr.publication?.track?.mediaStream : undefined,
 				audioStream: aud?.publication?.track?.mediaStream,
 			};
 		});
@@ -295,24 +315,32 @@ const InnerProvider = ({ children, callId, onLeave }: { children: ReactNode; cal
 		],
 	);
 
-	return <MediaCallViewContext.Provider value={ctxValue as any}>{children}</MediaCallViewContext.Provider>;
+	useEffect(() => {
+		onContextChange(ctxValue);
+	}, [ctxValue, onContextChange]);
+
+	return null;
 };
 
 /**
- * Drop-in replacement for MediaCallViewProvider for group calls. Reads the
- * current group call from MediaSignalingSession, fetches its LiveKit creds
- * on first mount, opens the LiveKit room, then provides MediaCallViewContext
- * to MediaCallRoomSection (which renders identical UI for 1:1 and group).
+ * App-level host for the LiveKit group-call connection. Always renders children
+ * in the same React tree position (no remount on call start/end). When a group
+ * call is active, the LK Room mounts into a sibling portal and an inner bridge
+ * pushes the populated MediaCallViewContext value upward via state. The result:
+ * the per-room MediaCallRoomActivity (rendered with provider={null}) sees the
+ * live LK context, and navigating between channels doesn't tear down LK.
  */
 const LiveKitMediaCallProvider = ({ children }: { children: ReactNode }) => {
 	const { instance: session } = useMediaCallInstance();
 	const call = session?.getState(false)?.call as any;
 	const callId = call?.callId as string | undefined;
 	const [creds, setCreds] = useState<LKCreds | null>(null);
+	const [ctxValue, setCtxValue] = useState<unknown>(defaultMediaCallContextValue);
 
 	useEffect(() => {
 		if (!callId) {
 			setCreds(null);
+			setCtxValue(defaultMediaCallContextValue);
 			return;
 		}
 		let cancelled = false;
@@ -344,25 +372,43 @@ const LiveKitMediaCallProvider = ({ children }: { children: ReactNode }) => {
 		};
 	}, [callId]);
 
-	if (!callId || !creds) {
-		return <>{children}</>;
-	}
+	const lkActive = Boolean(callId && creds);
+
+	// The LK Room mounts into a hidden, app-lifetime detached node so it isn't
+	// part of any per-room DOM that might unmount on navigation. The React tree
+	// position of children above stays untouched.
+	const lkPortalTarget = useMemo(() => {
+		if (typeof document === 'undefined') return null;
+		const node = document.createElement('div');
+		node.setAttribute('data-livekit-host', '');
+		node.style.display = 'none';
+		document.body.appendChild(node);
+		return node;
+	}, []);
+	useEffect(() => {
+		return () => {
+			if (lkPortalTarget?.parentNode) lkPortalTarget.parentNode.removeChild(lkPortalTarget);
+		};
+	}, [lkPortalTarget]);
 
 	return (
-		<LiveKitRoom
-			token={creds.token}
-			serverUrl={creds.serverUrl}
-			connect={true}
-			audio={true}
-			video={false}
-			onDisconnected={onLeave}
-			style={{ display: 'contents' }}
-		>
-			<InnerProvider callId={callId} onLeave={onLeave}>
-				{children}
-			</InnerProvider>
-			<RoomAudioRenderer />
-		</LiveKitRoom>
+		<MediaCallViewContext.Provider value={ctxValue as any}>
+			{children}
+			{/* Floating mini-view of the call, shown when the user has navigated
+			    away from the call's room. Renders nothing while in the call room
+			    (MediaCallRoomSection.useRoomView keeps inRoomView=true) or when
+			    no group call is active. */}
+			<FloatingGroupCallWidget />
+			{lkActive && creds && callId && lkPortalTarget
+				? createPortal(
+						<LiveKitRoom token={creds.token} serverUrl={creds.serverUrl} connect={true} audio={true} video={false} onDisconnected={onLeave}>
+							<InnerProvider callId={callId} onLeave={onLeave} onContextChange={setCtxValue} />
+							<RoomAudioRenderer />
+						</LiveKitRoom>,
+						lkPortalTarget,
+					)
+				: null}
+		</MediaCallViewContext.Provider>
 	);
 };
 
