@@ -2,10 +2,11 @@ import { createHash } from 'crypto';
 
 import { verifyHS256 } from '@rocket.chat/jwt';
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel, Users } from '@rocket.chat/models';
+import { MediaCalls as MediaCallsModel, Uploads, Users } from '@rocket.chat/models';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../app/api/server/api';
+import { sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { getLiveKitConfig } from '../lib/livekit/config';
 
@@ -13,7 +14,7 @@ const logger = new Logger('MediaCalls/LiveKit/Webhook');
 
 const webhookResponseSchema = ajv.compile<Record<string, unknown>>({ type: 'object', additionalProperties: true });
 
-type EgressFileResult = { location?: string; filename?: string; size?: string };
+type EgressFileResult = { location?: string; filename?: string; size?: string; duration?: string };
 type EgressInfo = {
 	egressId?: string;
 	egress_id?: string;
@@ -65,20 +66,77 @@ async function verifyWebhook(authHeader: string | undefined, rawBody: string): P
 }
 
 /**
- * Post a system-ish message in the call's room with a link to the recording.
- * Uses the call creator as the message author so it appears under a real
- * user. Falls back to the rocket.cat bot user if the creator can't be found.
+ * Register the egress output as a Rocket.Chat upload and post it as a normal
+ * file-attachment message. Two paths:
+ *
+ *  - When the recording was started with a pre-allocated upload id (the modern
+ *    flow): insert an Uploads doc at that id pointing at the AmazonS3 key
+ *    egress wrote to, then call sendFileMessage so the message renders the
+ *    standard video attachment block (download, preview, etc.).
+ *  - When that metadata is missing (legacy recording started before this code
+ *    shipped): fall back to a plain link message so the URL still surfaces.
  */
-async function postRecordingMessage(rid: string, fileUrl: string, authorUserId: string, displayName?: string) {
-	const author = (await Users.findOneById(authorUserId)) || (await Users.findOneById('rocket.cat'));
+async function postRecordingMessage(opts: {
+	rid: string;
+	authorUserId: string;
+	displayName?: string;
+	uploadId?: string;
+	uploadKey?: string;
+	filename?: string;
+	fileUrl: string;
+	fileSize: number;
+}) {
+	const author = (await Users.findOneById(opts.authorUserId)) || (await Users.findOneById('rocket.cat'));
 	if (!author) {
-		logger.warn({ msg: 'no author available to post recording message', rid });
+		logger.warn({ msg: 'no author available to post recording message', rid: opts.rid });
 		return;
 	}
-	const heading = displayName ? `${displayName} — call recording is ready` : 'Call recording is ready';
+
+	if (opts.uploadId && opts.uploadKey && opts.filename) {
+		// AmazonS3 store reads file.AmazonS3.path as the bucket key (with a
+		// fallback to file._id). Storing both keeps it robust to default-key
+		// changes in the store.
+		try {
+			await Uploads.insertOne({
+				_id: opts.uploadId,
+				name: opts.filename,
+				type: 'video/mp4',
+				typeGroup: 'video',
+				size: opts.fileSize,
+				rid: opts.rid,
+				userId: author._id,
+				store: 'AmazonS3:Uploads',
+				complete: true,
+				uploading: false,
+				progress: 1,
+				extension: 'mp4',
+				uploadedAt: new Date(),
+				AmazonS3: { path: opts.uploadKey },
+			} as any);
+
+			await sendFileMessage(author._id, {
+				roomId: opts.rid,
+				file: {
+					_id: opts.uploadId,
+					name: opts.filename,
+					type: 'video/mp4',
+					size: opts.fileSize,
+				},
+				msgData: {
+					msg: opts.displayName ? `${opts.displayName} — call recording` : 'Call recording',
+				},
+			});
+			return;
+		} catch (err) {
+			logger.error({ msg: 'failed to register recording upload; falling back to link', err });
+		}
+	}
+
+	// Legacy / fallback: just post the raw URL as a chat message.
+	const heading = opts.displayName ? `${opts.displayName} — call recording is ready` : 'Call recording is ready';
 	await executeSendMessage(author, {
-		rid,
-		msg: `${heading}\n${fileUrl}`,
+		rid: opts.rid,
+		msg: `${heading}\n${opts.fileUrl}`,
 	});
 }
 
@@ -134,7 +192,10 @@ API.v1.post(
 			return API.v1.success({ ok: true, ignored: `status:${status}` });
 		}
 
-		const fileUrl = status === 'EGRESS_COMPLETE' ? pickFileUrl(pickFileResults(egress)) : undefined;
+		const fileResults = status === 'EGRESS_COMPLETE' ? pickFileResults(egress) : [];
+		const firstResult = fileResults[0];
+		const fileUrl = pickFileUrl(fileResults);
+		const fileSize = firstResult?.size ? Number(firstResult.size) : 0;
 
 		await MediaCallsModel.updateOne(
 			{ _id: call._id },
@@ -146,9 +207,22 @@ API.v1.post(
 			},
 		);
 
-		if (status === 'EGRESS_COMPLETE' && fileUrl && call.rid) {
+		// Idempotency: webhooks can deliver the same egress_ended event more than
+		// once. messageSent on the recording doc gates the upload+message side
+		// effects so a retry doesn't duplicate the message in the channel.
+		if (status === 'EGRESS_COMPLETE' && fileUrl && call.rid && !call.recording?.messageSent) {
 			try {
-				await postRecordingMessage(call.rid, fileUrl, call.createdBy?.id || 'rocket.cat', call.createdBy?.displayName);
+				await postRecordingMessage({
+					rid: call.rid,
+					authorUserId: call.createdBy?.id || 'rocket.cat',
+					displayName: call.createdBy?.displayName,
+					uploadId: call.recording?.uploadId,
+					uploadKey: call.recording?.uploadKey,
+					filename: call.recording?.filename,
+					fileUrl,
+					fileSize,
+				});
+				await MediaCallsModel.updateOne({ _id: call._id }, { $set: { 'recording.messageSent': true } });
 			} catch (err) {
 				logger.error({ msg: 'failed to post recording message', err, callId: call._id, rid: call.rid });
 			}

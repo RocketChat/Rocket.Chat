@@ -26,10 +26,16 @@ type FileOutput = {
 
 export type StartRoomCompositeEgressInput = {
 	roomName: string;
-	// Used to derive a file path inside the bucket / local dir.
+	// Used to derive a file path inside the bucket / local dir when filepath
+	// isn't explicitly provided.
 	callId: string;
 	// Optional layout: "grid" (default), "speaker", "single-speaker".
 	layout?: string;
+	// Explicit S3 key (or local path) to write the file at. When set, takes
+	// priority over the default derived path — used by the FileUpload-integrated
+	// flow so the egress output lands at the same key the AmazonS3 store
+	// expects when serving via the Rocket.Chat file-download endpoint.
+	filepath?: string;
 };
 
 export type StartRoomCompositeEgressResult = {
@@ -80,7 +86,7 @@ async function twirp<T>(method: string, body: Record<string, unknown>): Promise<
 	}
 }
 
-function buildFileOutput(roomName: string, callId: string): FileOutput {
+function buildFileOutput(roomName: string, callId: string, explicitFilepath?: string): FileOutput {
 	const cfg = getLiveKitConfig();
 	const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 	const filename = `${callId}-${stamp}.mp4`;
@@ -91,12 +97,12 @@ function buildFileOutput(roomName: string, callId: string): FileOutput {
 		// volume mount at the parent directory of localPath for the file to be
 		// visible outside the container.
 		const dir = cfg.recording.localPath.replace(/\/$/, '');
-		return { filepath: `${dir}/${roomName}/${filename}` };
+		return { filepath: explicitFilepath || `${dir}/${roomName}/${filename}` };
 	}
 
 	const { s3 } = cfg.recording;
 	return {
-		filepath: `rocketchat/${roomName}/${filename}`,
+		filepath: explicitFilepath || `rocketchat/${roomName}/${filename}`,
 		s3: {
 			access_key: s3.accessKey,
 			secret: s3.secretKey,
@@ -113,7 +119,7 @@ export async function startRoomCompositeEgress(input: StartRoomCompositeEgressIn
 		throw new Error('LiveKit recording is not enabled');
 	}
 
-	const file = buildFileOutput(input.roomName, input.callId);
+	const file = buildFileOutput(input.roomName, input.callId, input.filepath);
 
 	// EncodingOptionsPreset enum values (from livekit-egress proto):
 	// 0=H264_720P_30, 1=H264_720P_60, 2=H264_1080P_30, 3=H264_1080P_60,

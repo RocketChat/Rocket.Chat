@@ -119,5 +119,16 @@ export interface IMediaCall extends IRocketChatRecord {
 		endedAt?: Date;
 		fileUrl?: string;
 		storage: 'local' | 's3' | 'filestore' | 'both';
+		/**
+		 * Pre-allocated Uploads document id reserved at recording-start time.
+		 * The egress writes the file to S3 at this key; the webhook handler
+		 * inserts the matching Uploads row on EGRESS_COMPLETE so the file can
+		 * be served via the standard /file-upload/<id>/<name> path.
+		 */
+		uploadId?: string;
+		uploadKey?: string;
+		filename?: string;
+		/** Set after the webhook posts the message in the channel. */
+		messageSent?: boolean;
 	};
 }
