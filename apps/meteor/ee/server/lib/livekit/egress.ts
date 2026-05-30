@@ -61,6 +61,17 @@ async function twirp<T>(method: string, body: Record<string, unknown>): Promise<
 	const token = await createLiveKitApiToken({ roomRecord: true, roomAdmin: true });
 
 	const url = `${toHttpUrl(cfg.url)}/twirp/livekit.Egress/${method}`;
+	// Redact secrets but log the rest of the payload so we can see exactly
+	// what egress was asked to do.
+	const redactedBody = JSON.parse(JSON.stringify(body));
+	if (redactedBody.file_outputs?.[0]?.s3) {
+		redactedBody.file_outputs[0].s3 = {
+			...redactedBody.file_outputs[0].s3,
+			access_key: redactedBody.file_outputs[0].s3.access_key ? '<set>' : '<empty>',
+			secret: redactedBody.file_outputs[0].s3.secret ? '<set>' : '<empty>',
+		};
+	}
+	logger.debug({ msg: 'twirp request', method, url, body: redactedBody });
 	try {
 		const resp = await fetch(url, {
 			method: 'POST',
@@ -73,13 +84,17 @@ async function twirp<T>(method: string, body: Record<string, unknown>): Promise<
 
 		if (!resp.ok) {
 			const text = await resp.text().catch(() => '');
+			logger.error({ msg: 'twirp non-ok', method, status: resp.status, body: text });
 			throw new Error(`LiveKit Egress.${method} failed: ${resp.status} ${text}`);
 		}
 
-		return resp.json() as Promise<T>;
+		const json = (await resp.json()) as T;
+		logger.debug({ msg: 'twirp response', method, response: json });
+		return json;
 	} catch (err) {
 		// Wrap transport errors so the log shows what URL we tried to hit.
 		if (err instanceof Error && err.message === 'fetch failed') {
+			logger.error({ msg: 'twirp transport failure', method, url, cause: (err as any).cause?.message });
 			throw new Error(`LiveKit Egress.${method} transport failure to ${url}: ${(err as any).cause?.message || err.message}`);
 		}
 		throw err;
@@ -115,11 +130,26 @@ function buildFileOutput(roomName: string, callId: string, explicitFilepath?: st
 
 export async function startRoomCompositeEgress(input: StartRoomCompositeEgressInput): Promise<StartRoomCompositeEgressResult> {
 	const cfg = getLiveKitConfig();
+	logger.info({
+		msg: 'startRoomCompositeEgress: called',
+		roomName: input.roomName,
+		callId: input.callId,
+		filepath: input.filepath,
+		storage: cfg.recording.storage,
+	});
 	if (!cfg.recording.enabled) {
 		throw new Error('LiveKit recording is not enabled');
 	}
 
 	const file = buildFileOutput(input.roomName, input.callId, input.filepath);
+	logger.debug({
+		msg: 'startRoomCompositeEgress: file output',
+		filepath: file.filepath,
+		hasS3Block: Boolean(file.s3),
+		bucket: file.s3?.bucket,
+		region: file.s3?.region,
+		endpoint: file.s3?.endpoint,
+	});
 
 	// EncodingOptionsPreset enum values (from livekit-egress proto):
 	// 0=H264_720P_30, 1=H264_720P_60, 2=H264_1080P_30, 3=H264_1080P_60,
@@ -148,5 +178,31 @@ export async function stopEgress(egressId: string): Promise<void> {
 		await twirp('StopEgress', { egress_id: egressId });
 	} catch (err) {
 		logger.warn({ msg: 'Failed to stop egress (may already be stopped)', err, egressId });
+	}
+}
+
+export type EgressFileResult = { location?: string; filename?: string; size?: string; duration?: string };
+export type EgressInfo = {
+	egress_id?: string;
+	egressId?: string;
+	status?: string;
+	error?: string;
+	file_results?: EgressFileResult[];
+	fileResults?: EgressFileResult[];
+	file?: EgressFileResult;
+};
+
+/**
+ * Returns the current EgressInfo for a single egress id. Returns null when LK
+ * has no record of it (e.g. egress expired from LK's retention window). Used
+ * by the in-process recording poller in place of relying on webhooks.
+ */
+export async function listEgress(egressId: string): Promise<EgressInfo | null> {
+	try {
+		const resp = await twirp<{ items?: EgressInfo[] }>('ListEgress', { egress_id: egressId });
+		return resp.items?.[0] ?? null;
+	} catch (err) {
+		logger.warn({ msg: 'ListEgress failed', err, egressId });
+		return null;
 	}
 }

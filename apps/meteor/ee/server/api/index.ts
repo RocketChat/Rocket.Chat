@@ -9,5 +9,4 @@ import './engagementDashboard';
 import './audit';
 import './abac';
 import './mediaCallsLiveKit';
-import './mediaCallsLiveKitWebhook';
 import './mediaCallsGroup';
