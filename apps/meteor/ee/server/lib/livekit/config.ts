@@ -20,29 +20,13 @@ export type LiveKitConfig = {
 	};
 };
 
-/**
- * When VoIP_TeamCollab_LiveKit_Recording_Use_FileUpload_S3 is on, the egress
- * recording reuses the workspace's FileUpload_S3_* credentials so the operator
- * doesn't have to maintain two copies of the same bucket config.
- */
 function getRecordingS3(): LiveKitConfig['recording']['s3'] {
-	if (settings.get<boolean>('VoIP_TeamCollab_LiveKit_Recording_Use_FileUpload_S3')) {
-		return {
-			bucket: settings.get<string>('FileUpload_S3_Bucket') || '',
-			region: settings.get<string>('FileUpload_S3_Region') || 'us-east-1',
-			accessKey: settings.get<string>('FileUpload_S3_AWSAccessKeyId') || '',
-			secretKey: settings.get<string>('FileUpload_S3_AWSSecretAccessKey') || '',
-			// BucketURL on FileUpload is the full endpoint (e.g. https://s3.eu-central-1.amazonaws.com).
-			// Pass it through as the S3 endpoint so non-AWS / region-pinned setups still work.
-			endpoint: settings.get<string>('FileUpload_S3_BucketURL') || '',
-		};
-	}
 	return {
-		bucket: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Bucket') || '',
-		region: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Region') || 'us-east-1',
+		bucket: settings.get<string>('FileUpload_S3_Bucket') || '',
+		region: settings.get<string>('FileUpload_S3_Region') || 'us-east-1',,
 		accessKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Access_Key') || '',
 		secretKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Secret_Key') || '',
-		endpoint: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Endpoint') || '',
+		endpoint: settings.get<string>('FileUpload_S3_BucketURL') || '',
 	};
 }
 
