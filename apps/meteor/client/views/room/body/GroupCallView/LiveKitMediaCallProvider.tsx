@@ -188,26 +188,90 @@ const InnerProvider = ({
 	const [localHandRaised, setLocalHandRaised] = useState(false);
 	const localRaisedAtRef = useRef(0);
 
+	// Reactions: floating emoji broadcast from a participant to everyone in the
+	// call. The visible life of each one is the CSS animation duration; the
+	// state entry sticks around for REACTION_TTL_MS before auto-removal so
+	// React unmounts the DOM after the animation completes.
+	const [activeReactions, setActiveReactions] = useState<
+		{ id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number }[]
+	>([]);
+	const REACTION_TTL_MS = 3500;
+
 	useEffect(() => {
 		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
-			if (!participant) return;
-			let msg: { type?: string; raised?: boolean; raisedAt?: number };
+			let msg: { type?: string; raised?: boolean; raisedAt?: number; emoji?: string; reactionId?: string };
 			try {
 				msg = JSON.parse(new TextDecoder().decode(payload));
 			} catch {
 				return;
 			}
-			if (msg.type !== 'hand') return;
-			setHandsMap((prev) => ({
-				...prev,
-				[participant.identity]: msg.raised ? msg.raisedAt || Date.now() : 0,
-			}));
+			if (msg.type === 'hand') {
+				if (!participant) return;
+				setHandsMap((prev) => ({
+					...prev,
+					[participant.identity]: msg.raised ? msg.raisedAt || Date.now() : 0,
+				}));
+				return;
+			}
+			if (msg.type === 'reaction' && msg.emoji) {
+				const senderId = participant?.identity ?? localParticipant.identity;
+				const now = Date.now();
+				setActiveReactions((prev) => [
+					...prev,
+					{
+						id: msg.reactionId || `${senderId}-${now}-${Math.random().toString(36).slice(2, 6)}`,
+						participantId: senderId,
+						emoji: msg.emoji as string,
+						sentAt: now,
+						expiresAt: now + REACTION_TTL_MS,
+					},
+				]);
+			}
 		};
 		room.on(RoomEvent.DataReceived, onData);
 		return () => {
 			room.off(RoomEvent.DataReceived, onData);
 		};
-	}, [room]);
+	}, [room, localParticipant.identity]);
+
+	// Sweep expired reactions out of state once a second so the lists stay
+	// bounded. Interval (not setTimeout per entry) so concurrent reactions
+	// don't fan out into many timers.
+	useEffect(() => {
+		if (activeReactions.length === 0) return undefined;
+		const handle = setInterval(() => {
+			const now = Date.now();
+			setActiveReactions((prev) => {
+				const next = prev.filter((r) => r.expiresAt > now);
+				return next.length === prev.length ? prev : next;
+			});
+		}, 1000);
+		return () => clearInterval(handle);
+	}, [activeReactions.length]);
+
+	const onSendReaction = useCallback(
+		(emoji: string) => {
+			const now = Date.now();
+			const reactionId = `${localParticipant.identity}-${now}-${Math.random().toString(36).slice(2, 6)}`;
+			// Render locally immediately — don't wait for the data-channel echo
+			// (LK doesn't deliver our own messages back to us).
+			setActiveReactions((prev) => [
+				...prev,
+				{
+					id: reactionId,
+					participantId: localParticipant.identity,
+					emoji,
+					sentAt: now,
+					expiresAt: now + REACTION_TTL_MS,
+				},
+			]);
+			const data = new TextEncoder().encode(JSON.stringify({ type: 'reaction', emoji, reactionId }));
+			void localParticipant.publishData(data, { reliable: false }).catch((err) => {
+				console.warn('reaction publish failed', err);
+			});
+		},
+		[localParticipant],
+	);
 
 	// Late joiners: rebroadcast our current hand state when someone new connects,
 	// so they see us in the queue if we already had our hand up before they joined.
@@ -289,6 +353,8 @@ const InnerProvider = ({
 			onToggleHand,
 			localHandRaised,
 			raisedHands,
+			onSendReaction,
+			activeReactions,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -308,6 +374,8 @@ const InnerProvider = ({
 			onToggleHand,
 			localHandRaised,
 			raisedHands,
+			onSendReaction,
+			activeReactions,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

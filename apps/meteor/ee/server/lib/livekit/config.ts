@@ -23,7 +23,7 @@ export type LiveKitConfig = {
 function getRecordingS3(): LiveKitConfig['recording']['s3'] {
 	return {
 		bucket: settings.get<string>('FileUpload_S3_Bucket') || '',
-		region: settings.get<string>('FileUpload_S3_Region') || 'us-east-1',,
+		region: settings.get<string>('FileUpload_S3_Region') || 'us-east-1',
 		accessKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Access_Key') || '',
 		secretKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Secret_Key') || '',
 		endpoint: settings.get<string>('FileUpload_S3_BucketURL') || '',

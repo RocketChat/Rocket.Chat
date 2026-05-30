@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,48 @@ import { useAudioLevel } from '../../providers/useAudioLevel';
 // threshold in CallTile so the auto-lower triggers on the same "actually
 // speaking" signal users see.
 const SPEAKING_THRESHOLD = 0.12;
+
+// Reactions shown in the picker — matches Google Meet's defaults so users
+// don't need to learn a new vocabulary.
+const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '🎉', '👏', '🤔', '🙏'];
+
+const reactionPickerWrapStyles = css`
+	position: relative;
+`;
+
+const reactionPickerStyles = css`
+	position: absolute;
+	bottom: 48px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 4px;
+	padding: 8px;
+	background-color: rgba(20, 20, 25, 0.95);
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	z-index: 5;
+`;
+
+const reactionButtonStyles = css`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 8px;
+	border: none;
+	background: transparent;
+	color: white;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	transition: background-color 80ms ease;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+`;
 // Tolerance for natural inter-word pauses. As long as we hear speech again
 // within this window, the auto-lower timer keeps counting — without this,
 // every breath between sentences would reset the 3s countdown.
@@ -46,6 +89,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		onToggleHand,
 		localHandRaised,
 		raisedHands,
+		onSendReaction,
+		activeReactions,
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants,
 	} = useMediaCallView();
@@ -61,6 +106,23 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingBusy, setRecordingBusy] = useState(false);
+	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
+	const reactionPickerRef = useRef<HTMLDivElement>(null);
+
+	// Click-outside dismiss for the reaction popover. Stays open while the
+	// user clicks emojis inside it (so they can send several in a row), but
+	// closes when they click anywhere else on the page.
+	useEffect(() => {
+		if (!reactionPickerOpen) return undefined;
+		const onPointerDown = (e: PointerEvent) => {
+			const node = reactionPickerRef.current;
+			if (node && !node.contains(e.target as Node)) {
+				setReactionPickerOpen(false);
+			}
+		};
+		document.addEventListener('pointerdown', onPointerDown);
+		return () => document.removeEventListener('pointerdown', onPointerDown);
+	}, [reactionPickerOpen]);
 
 	useEffect(() => {
 		if (!callId) return;
@@ -139,6 +201,17 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		return out;
 	}, [raisedHands]);
 
+	// Group active reactions by participant so CallStage can hand each tile
+	// just its own list. The provider's auto-expiry keeps the arrays bounded.
+	const reactionsByParticipant = useMemo(() => {
+		const out: Record<string, { id: string; emoji: string }[]> = {};
+		(activeReactions ?? []).forEach((r) => {
+			if (!out[r.participantId]) out[r.participantId] = [];
+			out[r.participantId].push({ id: r.id, emoji: r.emoji });
+		});
+		return out;
+	}, [activeReactions]);
+
 	// Auto-lower the local hand after AUTO_LOWER_AFTER_MS of (mostly continuous)
 	// speech — once the user has "the floor", they don't need the hand up any
 	// more. Natural inter-word pauses up to SPEAKING_GAP_TOLERANCE_MS don't
@@ -184,6 +257,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				remoteParticipants={remoteParticipants}
 				onStopLocalScreenShare={onToggleScreenSharing}
 				handPositions={handPositions}
+				reactionsByParticipant={reactionsByParticipant}
 			/>
 			<ActionStrip
 				leftSlot={
@@ -230,6 +304,33 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 						pressed={Boolean(localHandRaised)}
 						onToggle={onToggleHand}
 					/>
+				)}
+				{onSendReaction && (
+					<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
+						<ToggleButton
+							label='Send reaction'
+							icons={['emoji', 'emoji']}
+							titles={['Send reaction', 'Send reaction']}
+							pressed={reactionPickerOpen}
+							onToggle={() => setReactionPickerOpen((p) => !p)}
+						/>
+						{reactionPickerOpen && (
+							<Box className={reactionPickerStyles}>
+								{REACTION_EMOJIS.map((emoji) => (
+									<Box
+										key={emoji}
+										is='button'
+										type='button'
+										title={`Send ${emoji}`}
+										className={reactionButtonStyles}
+										onClick={() => onSendReaction(emoji)}
+									>
+										{emoji}
+									</Box>
+								))}
+							</Box>
+						)}
+					</Box>
 				)}
 				<ToggleButton
 					label={t('Record')}

@@ -79,6 +79,46 @@ const handRaisedLabelStyles = css`
 	background-color: rgb(54 135 58 / 95%);
 `;
 
+// Floating reaction emoji — rises from the bottom of the tile and fades out
+// over ~3s, like Meet/Zoom. Multiple concurrent reactions get a small lateral
+// offset so they don't overlap.
+const reactionLayerStyles = css`
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 32px;
+	pointer-events: none;
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+`;
+
+const reactionFloatStyles = css`
+	font-size: 40px;
+	line-height: 1;
+	text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+	animation: rcx-reaction-float 3s ease-out forwards;
+
+	@keyframes rcx-reaction-float {
+		0% {
+			opacity: 0;
+			transform: translateY(20px) scale(0.6);
+		}
+		15% {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+		80% {
+			opacity: 1;
+			transform: translateY(-80px) scale(1);
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(-120px) scale(0.9);
+		}
+	}
+`;
+
 type CallTileProps = {
 	displayName: string;
 	avatarUrl?: string;
@@ -95,6 +135,8 @@ type CallTileProps = {
 	compact?: boolean;
 	/** When defined, render the raise-hand badge with this queue position (1-based). */
 	handPosition?: number;
+	/** Currently-active reactions to overlay on this tile (auto-cleared by the provider). */
+	reactions?: { id: string; emoji: string }[];
 };
 
 const CallTile = ({
@@ -108,6 +150,7 @@ const CallTile = ({
 	muteVideoAudio,
 	compact,
 	handPosition,
+	reactions,
 }: CallTileProps) => {
 	const [videoRef] = usePlayMediaStream(cameraStream ?? null);
 	// Camera is "active" only while a video track is actually producing frames
@@ -200,6 +243,15 @@ const CallTile = ({
 							<Icon name='pause-shape-unfilled' size='x16' />
 						</Box>
 					)}
+				</Box>
+			)}
+			{reactions && reactions.length > 0 && (
+				<Box className={reactionLayerStyles}>
+					{reactions.map((r) => (
+						<Box key={r.id} is='span' className={reactionFloatStyles}>
+							{r.emoji}
+						</Box>
+					))}
 				</Box>
 			)}
 		</Box>

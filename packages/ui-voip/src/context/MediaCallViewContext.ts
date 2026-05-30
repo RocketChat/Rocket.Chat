@@ -62,6 +62,14 @@ type MediaCallViewContextValue = {
 	 * The index + 1 is the queue position rendered on the participant tile.
 	 */
 	raisedHands?: { id: string; raisedAt: number }[];
+	/**
+	 * Currently-active reactions across the call. The provider auto-removes
+	 * each one after its `expiresAt`. Indexed by sender participant id so the
+	 * UI can render the emoji on the sender's tile.
+	 */
+	activeReactions?: { id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number }[];
+	/** Send a reaction emoji from the local user. */
+	onSendReaction?: (emoji: string) => void;
 	streams: MediaCallStreams;
 	/**
 	 * Remote participants in the call. Always present (possibly empty when the
