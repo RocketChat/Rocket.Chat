@@ -1,7 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ICronJobsService } from '@rocket.chat/core-services';
-import type { ICronJobItem } from '@rocket.chat/core-typings';
-import { CronJobs } from '@rocket.chat/models';
+import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
+import { CronJobs, CronHistory } from '@rocket.chat/models';
 
 import { deriveStatus } from './deriveStatus';
 
@@ -32,5 +32,15 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		}));
 
 		return { jobs };
+	}
+
+	async getHistory(jobName: string): Promise<{ history: ICronHistoryItem[] }> {
+		const history = await CronHistory.find({
+			name: jobName,
+		})
+			.sort({ intendedAt: -1 })
+			.toArray();
+
+		return { history };
 	}
 }

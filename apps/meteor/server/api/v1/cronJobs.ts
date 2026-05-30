@@ -21,3 +21,14 @@ API.v1.get(
 		return API.v1.success({ jobs });
 	},
 );
+
+API.v1.get(
+	'cron.history',
+	{ authRequired: true },
+	async function action() {
+		const { jobName } = this.queryParams;
+		const { history } = await CronJobsSvc.getHistory(jobName);
+
+		return API.v1.success({ history });
+	},
+);
