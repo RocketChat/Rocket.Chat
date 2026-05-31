@@ -15,6 +15,8 @@ import {
 	code,
 	codeLine,
 	quote,
+	spoiler,
+	spoilerBlock,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum } from './chars';
@@ -57,6 +59,12 @@ export function parse(input: string, options: Options = {}): Root {
 			const codeFenceNode: any = tryCodeFence(scanner);
 			if (codeFenceNode !== null) {
 				root.push(codeFenceNode);
+				continue;
+			}
+
+			const blockSpoilerNode: any = tryBlockSpoiler(scanner, options);
+			if (blockSpoilerNode !== null) {
+				root.push(blockSpoilerNode);
 				continue;
 			}
 
@@ -282,6 +290,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Inline spoiler
+		if (ch === '|') {
+			const result = trySpoiler(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '|';
+				continue;
+			}
+		}
+
 		// Plain run
 		if (isPlainChar(ch)) {
 			const start = scanner.save();
@@ -390,6 +408,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 					prevChar = '#';
 					continue;
 				}
+			}
+		}
+
+		// Inline spoiler
+		if (ch === '|') {
+			const result = trySpoiler(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '|';
+				continue;
 			}
 		}
 
@@ -687,4 +715,106 @@ function tryBlockquote(scanner: Scanner, options: Options): Root[number] | null 
 	}
 
 	return quote(paragraphs);
+}
+
+function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
+	const start = scanner.save();
+
+	// Must start with "||"
+	if (!scanner.matches('||')) {
+		return null;
+	}
+	scanner.advance(2); // consume opening "||"
+
+	// Empty spoiler "||||" → plain
+	if (scanner.matches('||')) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Parse content stopping at "||"
+	const content = parseInlineContent(scanner, options, '||');
+
+	// Must find closing "||"
+	if (!scanner.matches('||')) {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.advance(2); // consume closing "||"
+
+	// Content must not be empty
+	if (content.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return spoiler(reducePlainTexts(content) as any);
+}
+
+function tryBlockSpoiler(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	// Must be "||" followed immediately by newline
+	if (!scanner.matches('||')) {
+		return null;
+	}
+
+	// Check that "||" is alone on this line
+	const peekPos = scanner.save();
+	scanner.advance(2);
+	if (!scanner.isEnd() && !isNewline(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Consume the opening "||" line's newline
+	if (!scanner.isEnd()) {
+		if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+			scanner.advance(2);
+		} else if (isNewline(scanner.char())) {
+			scanner.advance(1);
+		}
+	} else {
+		// "||" at end of input with no content → not a block spoiler
+		scanner.restore(start);
+		return null;
+	}
+
+	const paragraphs: ReturnType<typeof paragraph>[] = [];
+
+	// Collect lines until closing "||"
+	while (!scanner.isEnd()) {
+		// Check for closing "||" on its own line
+		if (scanner.matches('||')) {
+			const closingPos = scanner.save();
+			scanner.advance(2);
+			// Must be end of line or end of input
+			if (scanner.isEnd() || isNewline(scanner.char())) {
+				if (paragraphs.length === 0) {
+					scanner.restore(start);
+					return null;
+				}
+				return spoilerBlock(paragraphs);
+			}
+			// Not a closing line → restore and treat as content
+			scanner.restore(closingPos);
+		}
+
+		// Parse line as paragraph content
+		const inlines = parseInline(scanner, options);
+		paragraphs.push(paragraph(inlines));
+
+		// Consume newline
+		if (!scanner.isEnd()) {
+			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+				scanner.advance(2);
+			} else if (isNewline(scanner.char())) {
+				scanner.advance(1);
+			}
+		}
+	}
+
+	// Never found closing "||" → backtrack
+	scanner.restore(start);
+	return null;
 }
