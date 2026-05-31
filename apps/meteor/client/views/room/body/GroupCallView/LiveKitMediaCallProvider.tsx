@@ -3,7 +3,7 @@ import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, u
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { MediaCallViewContext, defaultMediaCallContextValue, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
-import { RoomEvent, Track } from 'livekit-client';
+import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
@@ -86,8 +86,23 @@ const InnerProvider = ({
 		};
 	}, [localParticipant]);
 
+	// LK marks agent participants with kind=AGENT, but that property can be set
+	// after the participant first appears — useParticipants() may not re-emit
+	// when only `kind` flips, leaving the agent tile rendered for whichever
+	// client happened to subscribe before the update. We additionally check
+	// the identity prefix (LK auto-generates agent identities as
+	// `agent-AJ_<jobId>` when the worker doesn't set its own), which is
+	// race-free because identity is set at join time.
+	const isAgentParticipant = (p: { identity: string; kind?: ParticipantKind }) => {
+		if (p.kind === ParticipantKind.AGENT) return true;
+		const id = p.identity || '';
+		return id.startsWith('agent-') || id.startsWith('agent_') || /^AJ_[A-Za-z0-9]+$/.test(id);
+	};
 	const remotes = useMemo(
-		() => allParticipants.filter((p) => p.identity !== localParticipant.identity),
+		() =>
+			allParticipants.filter(
+				(p) => p.identity !== localParticipant.identity && !isAgentParticipant(p as { identity: string; kind?: ParticipantKind }),
+			),
 		[allParticipants, localParticipant.identity],
 	);
 	const remoteCameraTracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
@@ -197,9 +212,26 @@ const InnerProvider = ({
 	>([]);
 	const REACTION_TTL_MS = 3500;
 
+	// Live captions published by the transcription agent. Each speaker's
+	// latest text replaces the previous one (interim updates supersede each
+	// other). Finals are kept for CAPTION_FINAL_TTL_MS then cleared so the
+	// overlay doesn't linger forever after someone stops talking.
+	const [activeCaptions, setActiveCaptions] = useState<Record<string, { text: string; isFinal: boolean; updatedAt: number }>>({});
+	const CAPTION_FINAL_TTL_MS = 5000;
+	const CAPTION_INTERIM_TTL_MS = 8000;
+
 	useEffect(() => {
 		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
-			let msg: { type?: string; raised?: boolean; raisedAt?: number; emoji?: string; reactionId?: string };
+			let msg: {
+				type?: string;
+				raised?: boolean;
+				raisedAt?: number;
+				emoji?: string;
+				reactionId?: string;
+				participantId?: string;
+				text?: string;
+				isFinal?: boolean;
+			};
 			try {
 				msg = JSON.parse(new TextDecoder().decode(payload));
 			} catch {
@@ -226,6 +258,20 @@ const InnerProvider = ({
 						expiresAt: now + REACTION_TTL_MS,
 					},
 				]);
+				return;
+			}
+			if (msg.type === 'transcript' && msg.text && msg.participantId) {
+				// The agent supplies the speaker's identity in `participantId`
+				// (since the data message itself comes from the agent, not the
+				// speaker, `participant?.identity` would be the agent's id).
+				const speaker = msg.participantId;
+				const { text } = msg;
+				const isFinal = Boolean(msg.isFinal);
+				console.debug('[Captions]', speaker, isFinal ? 'final' : 'interim', text);
+				setActiveCaptions((prev) => ({
+					...prev,
+					[speaker]: { text, isFinal, updatedAt: Date.now() },
+				}));
 			}
 		};
 		room.on(RoomEvent.DataReceived, onData);
@@ -233,6 +279,29 @@ const InnerProvider = ({
 			room.off(RoomEvent.DataReceived, onData);
 		};
 	}, [room, localParticipant.identity]);
+
+	// Sweep stale captions: a final transcript hangs around for a few seconds
+	// of "afterglow", an interim that never got finalised expires a bit later.
+	useEffect(() => {
+		if (Object.keys(activeCaptions).length === 0) return undefined;
+		const handle = setInterval(() => {
+			const now = Date.now();
+			setActiveCaptions((prev) => {
+				const next: typeof prev = {};
+				let changed = false;
+				for (const [id, cap] of Object.entries(prev)) {
+					const ttl = cap.isFinal ? CAPTION_FINAL_TTL_MS : CAPTION_INTERIM_TTL_MS;
+					if (now - cap.updatedAt > ttl) {
+						changed = true;
+						continue;
+					}
+					next[id] = cap;
+				}
+				return changed ? next : prev;
+			});
+		}, 1000);
+		return () => clearInterval(handle);
+	}, [activeCaptions]);
 
 	// Sweep expired reactions out of state once a second so the lists stay
 	// bounded. Interval (not setTimeout per entry) so concurrent reactions
@@ -355,6 +424,7 @@ const InnerProvider = ({
 			raisedHands,
 			onSendReaction,
 			activeReactions,
+			activeCaptions,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -376,6 +446,7 @@ const InnerProvider = ({
 			raisedHands,
 			onSendReaction,
 			activeReactions,
+			activeCaptions,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

@@ -91,6 +91,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		raisedHands,
 		onSendReaction,
 		activeReactions,
+		activeCaptions,
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants,
 	} = useMediaCallView();
@@ -258,6 +259,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				onStopLocalScreenShare={onToggleScreenSharing}
 				handPositions={handPositions}
 				reactionsByParticipant={reactionsByParticipant}
+				captionsByParticipant={activeCaptions}
 			/>
 			<ActionStrip
 				leftSlot={

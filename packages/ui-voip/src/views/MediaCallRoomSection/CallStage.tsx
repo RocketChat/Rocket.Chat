@@ -26,6 +26,8 @@ type CallStageProps = {
 	handPositions?: Record<string, number>;
 	/** Map from participantId → list of active reactions to overlay on their tile. */
 	reactionsByParticipant?: Record<string, { id: string; emoji: string }[]>;
+	/** Map from participantId → latest caption to overlay on their tile. */
+	captionsByParticipant?: Record<string, { text: string; isFinal: boolean; updatedAt: number }>;
 };
 
 const stageStyles = css`
@@ -141,6 +143,7 @@ const CallStage = ({
 	onStopLocalScreenShare,
 	handPositions,
 	reactionsByParticipant,
+	captionsByParticipant,
 }: CallStageProps) => {
 	// Pick a single "featured" screen share. Priority: remote first (more
 	// interesting to the local viewer), then local. Multi-remote-screen calls
@@ -170,6 +173,7 @@ const CallStage = ({
 				muteVideoAudio: true,
 				handPosition: handPositions?.[localParticipant.id],
 				reactions: reactionsByParticipant?.[localParticipant.id],
+				caption: captionsByParticipant?.[localParticipant.id],
 			},
 			...remoteParticipants.map((p) => ({
 				id: p.id,
@@ -183,10 +187,11 @@ const CallStage = ({
 				muteVideoAudio: false,
 				handPosition: handPositions?.[p.id],
 				reactions: reactionsByParticipant?.[p.id],
+				caption: captionsByParticipant?.[p.id],
 			})),
 		];
 		return all;
-	}, [localParticipant, remoteParticipants, handPositions, reactionsByParticipant]);
+	}, [localParticipant, remoteParticipants, handPositions, reactionsByParticipant, captionsByParticipant]);
 
 	if (featuredScreen) {
 		return (

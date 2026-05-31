@@ -70,6 +70,14 @@ type MediaCallViewContextValue = {
 	activeReactions?: { id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number }[];
 	/** Send a reaction emoji from the local user. */
 	onSendReaction?: (emoji: string) => void;
+	/**
+	 * Latest caption text per participant. Populated by the transcription
+	 * agent (see apps/livekit-agent) via LK data messages — interim updates
+	 * supersede each other; final transcripts replace and then expire after
+	 * a short delay. Indexed by speaker id so the UI can overlay captions
+	 * on the matching tile.
+	 */
+	activeCaptions?: Record<string, { text: string; isFinal: boolean; updatedAt: number }>;
 	streams: MediaCallStreams;
 	/**
 	 * Remote participants in the call. Always present (possibly empty when the
