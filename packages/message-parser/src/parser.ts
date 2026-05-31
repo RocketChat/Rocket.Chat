@@ -14,6 +14,7 @@ import {
 	mentionUser,
 	code,
 	codeLine,
+	quote,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum } from './chars';
@@ -56,6 +57,12 @@ export function parse(input: string, options: Options = {}): Root {
 			const codeFenceNode: any = tryCodeFence(scanner);
 			if (codeFenceNode !== null) {
 				root.push(codeFenceNode);
+				continue;
+			}
+
+			const blockquoteNode: any = tryBlockquote(scanner, options);
+			if (blockquoteNode !== null) {
+				root.push(blockquoteNode);
 				continue;
 			}
 
@@ -635,4 +642,49 @@ function tryChannelMention(scanner: Scanner): Inlines | null {
 	}
 
 	return mentionChannel(name);
+}
+
+function tryBlockquote(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	// Must start with '>'
+	if (scanner.char() !== '>') {
+		return null;
+	}
+
+	const paragraphs: ReturnType<typeof paragraph>[] = [];
+
+	while (!scanner.isEnd() && scanner.char() === '>') {
+		scanner.advance(); // consume '>'
+
+		// Optional space/tab after '>'
+		if (isSpace(scanner.char())) {
+			scanner.advance();
+		}
+
+		// Empty line inside blockquote
+		if (scanner.isEnd() || isNewline(scanner.char())) {
+			paragraphs.push(paragraph([plain('')]));
+		} else {
+			// Parse the line content as inline
+			const inlines = parseInline(scanner, options);
+			paragraphs.push(paragraph(inlines));
+		}
+
+		// Consume newline
+		if (!scanner.isEnd()) {
+			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+				scanner.advance(2);
+			} else if (isNewline(scanner.char())) {
+				scanner.advance(1);
+			}
+		}
+	}
+
+	if (paragraphs.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return quote(paragraphs);
 }
