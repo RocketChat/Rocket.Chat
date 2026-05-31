@@ -3016,6 +3016,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	before(async function () {
 		this.timeout(15000);
 
+		connection = await MongoClient.connect(URL_MONGODB);
+
 		const healthy = await mockServerHealthy();
 		expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
@@ -3051,6 +3053,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await mockServerReset();
 		await updateSetting('ABAC_PDP_Type', 'local');
 		await updateSetting('ABAC_Enabled', false);
+
+		await connection.close();
 	});
 
 	describe('PERMIT all: users remain when PDP permits everyone', () => {
@@ -3491,6 +3495,27 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				available: false,
 				message: 'ABAC_PDP_Health_IdP_Failed',
 			});
+		});
+	});
+
+	describe('users.info abacAttributes visibility', () => {
+		let userWithAttrs: IUser;
+
+		before(async () => {
+			userWithAttrs = await createUser();
+			await addAbacAttributesToUserDirectly(userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
+		});
+
+		after(async () => {
+			await deleteUser(userWithAttrs);
+		});
+
+		it('omits abacAttributes from /v1/users.info when PDP type is virtru', async () => {
+			const res = await request.get('/api/v1/users.info').set(credentials).query({ userId: userWithAttrs._id }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('user');
+			expect(res.body.user).to.not.have.property('abacAttributes');
 		});
 	});
 });

@@ -107,10 +107,14 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private run(fn: () => void) {
 		const difference = this.lastRequest ? differenceInMilliseconds(new Date(), this.lastRequest) : Infinity;
-		if (difference > 500) {
+		// Original cooldown was 500ms which forced ~330ms wait on the second getMore call when a
+		// user opens a room. Pagination throughput here is bounded by the loadHistory server
+		// method itself, so a smaller client-side spacing is enough to avoid hammering.
+		const minSpacingMs = 100;
+		if (difference > minSpacingMs) {
 			return fn();
 		}
-		return setTimeout(fn, 500 - difference);
+		return setTimeout(fn, minSpacingMs - difference);
 	}
 
 	public isLoaded(rid: IRoom['_id']) {
