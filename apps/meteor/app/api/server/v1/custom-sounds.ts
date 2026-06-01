@@ -325,7 +325,7 @@ const customSoundsEndpoints = API.v1
 					return API.v1.failure('Custom Sound not found.');
 				}
 
-				return API.v1.internalError<any>();
+				return API.v1.internalError();
 			}
 		},
 	);
