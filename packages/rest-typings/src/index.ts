@@ -13,7 +13,6 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
-import type { CronJobsEndpoints } from './v1/cronJobs';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
@@ -94,7 +93,6 @@ export interface Endpoints
 		AuthEndpoints,
 		ImportEndpoints,
 		ServerEventsEndpoints,
-		CronJobsEndpoints,
 		TwoFactorChallengesEndpoints,
 		DefaultEndpoints {}
 
@@ -254,7 +252,6 @@ export * from './v1/users/UsersRequestDataDownloadParamsGET';
 export * from './v1/users/UsersGetPresenceParamsGET';
 export * from './v1/users/UsersGetStatusParamsGET';
 export * from './v1/moderation';
-export * from './v1/cronJobs';
 export * from './v1/server-events';
 export * from './v1/statistics';
 
