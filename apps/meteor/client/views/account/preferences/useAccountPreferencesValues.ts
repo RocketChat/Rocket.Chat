@@ -35,6 +35,7 @@ export type AccountPreferencesData = {
 	sidebarViewMode?: 'extended' | 'condensed';
 	sidebarDisplayAvatar?: boolean;
 	sidebarGroupByType?: boolean;
+	sidebarGroupTeamsAndChannels?: boolean;
 	masterVolume?: number;
 	notificationsSoundVolume?: number;
 	voipRingerVolume?: number;
