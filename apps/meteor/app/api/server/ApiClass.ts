@@ -346,6 +346,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
+	public internalError(): InternalError<never>;
+
 	public internalError<T>(msg?: T): InternalError<T> {
 		return {
 			statusCode: 500,
