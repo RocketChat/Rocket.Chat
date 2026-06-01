@@ -2513,6 +2513,7 @@
   "Group_by": "Group by",
   "Group_by_Type": "Group by Type",
   "Group_Teams_and_Channels": "Group teams and channels together",
+  "Group_Unlisted_In_Conversations": "Group unlisted rooms in Conversations",
   "Group_discussions": "Group discussions",
   "Group_favorites": "Group favorites",
   "Group_mentions_disabled_x_members": "Group mentions `@all` and `@here` have been disabled for rooms with more than {{total}} members.",
