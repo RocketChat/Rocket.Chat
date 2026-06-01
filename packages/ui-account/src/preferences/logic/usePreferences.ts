@@ -49,6 +49,7 @@ export type AccountPreferencesData = {
 	sidebarViewMode?: string;
 	sidebarDisplayAvatar?: boolean;
 	sidebarGroupByType?: boolean;
+	sidebarGroupTeamsAndChannels?: boolean;
 	masterVolume?: number;
 	notificationsSoundVolume?: number;
 	voipRingerVolume?: number;
