@@ -978,6 +978,11 @@ describe('[Users]', () => {
 					getSettingValueById('Accounts_RegistrationForm'),
 					getSettingValueById('Accounts_RegistrationForm_SecretURL'),
 				]);
+
+				await Promise.all([
+					updateSetting('Accounts_RegistrationForm', 'Secret URL'),
+					updateSetting('Accounts_RegistrationForm_SecretURL', 'valid-secret'),
+				]);
 			});
 
 			afterEach(async () => {
@@ -988,11 +993,6 @@ describe('[Users]', () => {
 			});
 
 			it('should reject registration without a secret when registration is limited to a secret URL', async () => {
-				await Promise.all([
-					updateSetting('Accounts_RegistrationForm', 'Secret URL'),
-					updateSetting('Accounts_RegistrationForm_SecretURL', 'valid-secret'),
-				]);
-
 				const username = `missingSecret_${Date.now()}`;
 				const email = `${username}@rocket.chat`;
 
@@ -1016,11 +1016,6 @@ describe('[Users]', () => {
 			});
 
 			it('should reject registration with an invalid secret when registration is limited to a secret URL', async () => {
-				await Promise.all([
-					updateSetting('Accounts_RegistrationForm', 'Secret URL'),
-					updateSetting('Accounts_RegistrationForm_SecretURL', 'valid-secret'),
-				]);
-
 				const username = `invalidSecret_${Date.now()}`;
 				const email = `${username}@rocket.chat`;
 
@@ -1045,11 +1040,6 @@ describe('[Users]', () => {
 			});
 
 			it('should register a user with a valid secret when registration is limited to a secret URL', async () => {
-				await Promise.all([
-					updateSetting('Accounts_RegistrationForm', 'Secret URL'),
-					updateSetting('Accounts_RegistrationForm_SecretURL', 'valid-secret'),
-				]);
-
 				const username = `validSecret_${Date.now()}`;
 				const email = `${username}@rocket.chat`;
 
@@ -1204,6 +1194,7 @@ describe('[Users]', () => {
 					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
+						// TODO: assert error-user-registration-custom-field directly after users.register formats this Meteor.Error correctly
 						expect(res.body).to.have.property('errorType', 'error-invalid-body');
 						expect(res.body).to.have.nested.property('body.error', 'error-user-registration-custom-field');
 					});
