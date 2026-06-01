@@ -1,13 +1,15 @@
+/* eslint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
-import { ToggleButton, Timer, DevicePicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
+import { ToggleButton, Timer, DevicePicker, CameraPicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
+import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
 // threshold in CallTile so the auto-lower triggers on the same "actually
@@ -55,6 +57,110 @@ const reactionButtonStyles = css`
 		background-color: rgba(255, 255, 255, 0.1);
 	}
 `;
+// Header bar above the tiles: transparent strip carrying the call elapsed
+// timer on the left and a row of "session-scope" controls (recording etc.)
+// on the right. Visually independent of the action strip below the tiles,
+// which is for "my media" controls (mic / camera / share).
+const callHeaderStyles = css`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-shrink: 0;
+	padding: 8px 16px;
+	background: transparent;
+	color: white;
+	font-size: 13px;
+	line-height: 1.2;
+`;
+
+const callHeaderTimerStyles = css`
+	display: inline-flex;
+	align-items: center;
+	color: rgba(255, 255, 255, 0.85);
+	font-variant-numeric: tabular-nums;
+`;
+
+// Recording pill — default state shows a static red dot + "Start recording".
+// While recording, background flips to red and the dot blinks against white.
+// Hovering during recording swaps the label to "Stop recording" so the
+// affordance is obvious without an extra "stop" control.
+const recordPillStyles = css`
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 28px;
+	padding: 0 12px;
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	background-color: transparent;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 12px;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		background-color 120ms ease,
+		color 120ms ease,
+		border-color 120ms ease;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.08);
+		color: white;
+	}
+
+	&:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	&.recording {
+		background-color: rgb(200 54 45);
+		border-color: rgb(200 54 45);
+		color: white;
+	}
+
+	&.recording:hover:not(:disabled) {
+		background-color: rgb(168 41 33);
+		border-color: rgb(168 41 33);
+	}
+`;
+
+// Visual grouping for "toggle + its device chevron": tightens the gap
+// between the toggle button and its adjacent device picker so they read
+// as one composite control rather than two unrelated buttons. The
+// chevron also nudges left slightly so it sits flush against the toggle.
+const controlGroupStyles = css`
+	display: inline-flex;
+	align-items: center;
+	gap: 0;
+`;
+
+const chevronWrapStyles = css`
+	margin-inline-start: -2px;
+`;
+
+const recordDotStyles = css`
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: rgb(200 54 45);
+	flex-shrink: 0;
+
+	&.recording {
+		background-color: white;
+		animation: rcx-record-blink 1.2s ease-in-out infinite;
+	}
+
+	@keyframes rcx-record-blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.25;
+		}
+	}
+`;
+
 // Tolerance for natural inter-word pauses. As long as we hear speech again
 // within this window, the auto-lower timer keeps counting — without this,
 // every breath between sentences would reset the 3s countdown.
@@ -107,8 +213,33 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingBusy, setRecordingBusy] = useState(false);
+	const [recordHover, setRecordHover] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
+
+	// Plays a chime on every client whenever the polled recording state
+	// transitions — ascending for off→on, descending mirror for on→off.
+	// We track the previous value so we don't chime on the initial mount
+	// (where the first poll might surface an already-running recording)
+	// and so we don't double-fire when the toggle handler optimistically
+	// sets the state — both the optimistic flip and the next poll
+	// converge to the same value.
+	const prevRecordingRef = useRef<boolean | null>(null);
+	useEffect(() => {
+		if (prevRecordingRef.current === null) {
+			// First observation. Record the value; never chime on first paint.
+			prevRecordingRef.current = isRecording;
+			return;
+		}
+		if (prevRecordingRef.current !== isRecording) {
+			if (isRecording) {
+				playRecordingChime();
+			} else {
+				playRecordingStopChime();
+			}
+		}
+		prevRecordingRef.current = isRecording;
+	}, [isRecording]);
 
 	// Click-outside dismiss for the reaction popover. Stays open while the
 	// user clicks emojis inside it (so they can send several in a row), but
@@ -253,6 +384,24 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 
 	return (
 		<Box w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' minHeight={0}>
+			<Box className={callHeaderStyles}>
+				<Box className={callHeaderTimerStyles}>
+					<Timer startAt={startedAt} />
+				</Box>
+				<Box
+					is='button'
+					type='button'
+					className={[recordPillStyles, isRecording ? 'recording' : null]}
+					onClick={onToggleRecording}
+					disabled={recordingBusy}
+					onMouseEnter={() => setRecordHover(true)}
+					onMouseLeave={() => setRecordHover(false)}
+					title={isRecording ? t('Stop_recording') : t('Start_recording')}
+				>
+					<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
+					<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
+				</Box>
+			</Box>
 			<CallStage
 				localParticipant={localParticipant}
 				remoteParticipants={remoteParticipants}
@@ -262,19 +411,32 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				captionsByParticipant={activeCaptions}
 			/>
 			<ActionStrip
-				leftSlot={
-					<Box color='default' alignContent='center' pis={16}>
-						<Timer startAt={startedAt} />
-					</Box>
-				}
 				rightSlot={
-					<ButtonGroup>
-						{!hideChatToggle && <ActionToggleChat pressed={showChat} onClick={onToggleChat} />}
-						<DevicePicker secondary />
-					</ButtonGroup>
+					!hideChatToggle ? (
+						<ButtonGroup>
+							<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+						</ButtonGroup>
+					) : undefined
 				}
 			>
-				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+				<Box className={controlGroupStyles}>
+					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					<Box className={chevronWrapStyles}>
+						<DevicePicker chevron />
+					</Box>
+				</Box>
+				<Box className={controlGroupStyles}>
+					<ToggleButton
+						label={t('Camera')}
+						icons={['video', 'video-off']}
+						titles={[t('Stop_camera'), t('Start_camera')]}
+						pressed={!(localCamera?.active ?? false)}
+						onToggle={onToggleCamera}
+					/>
+					<Box className={chevronWrapStyles}>
+						<CameraPicker />
+					</Box>
+				</Box>
 				{!isLiveKitCall && (
 					<ToggleButton
 						label={t('Hold')}
@@ -290,13 +452,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 					pressed={localScreen?.active ?? false}
 					onToggle={onToggleScreenSharing}
-				/>
-				<ToggleButton
-					label={t('Camera')}
-					icons={['video', 'video-off']}
-					titles={[t('Stop_camera'), t('Start_camera')]}
-					pressed={!(localCamera?.active ?? false)}
-					onToggle={onToggleCamera}
 				/>
 				{onToggleHand && (
 					<ToggleButton
@@ -334,13 +489,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 						)}
 					</Box>
 				)}
-				<ToggleButton
-					label={t('Record')}
-					icons={['circle-cross', 'circle-cross']}
-					titles={[t('Start_recording'), t('Stop_recording')]}
-					pressed={isRecording}
-					onToggle={onToggleRecording}
-				/>
 				{isOneOnOne && !isLiveKitCall && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 				)}

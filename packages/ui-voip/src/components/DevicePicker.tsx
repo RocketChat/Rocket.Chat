@@ -14,15 +14,29 @@ import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermis
 type DevicePickerButtonProps = {
 	secondary?: boolean;
 	small?: boolean;
+	chevron?: boolean;
 } & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
 
 // GenericMenu for some reason passes `small: true` when the button is disabled (??).
 // so this is just a wrapper to stop that from happening.
+// `chevron` renders the compact in-strip variant (small chevron-down) used
+// when the picker sits inline next to its associated control (mic / camera);
+// without it we keep the original "customize" cog icon.
 const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps>(function DevicePickerButton(
-	{ secondary = false, small: _small, ...props },
+	{ secondary = false, chevron = false, small: _small, ...props },
 	ref,
 ) {
-	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='customize' icon='customize' ref={ref} />;
+	return (
+		<ActionButton
+			secondary={secondary}
+			flexShrink={1}
+			flexGrow={0}
+			{...props}
+			label={chevron ? 'Device options' : 'customize'}
+			icon={chevron ? 'chevron-down' : 'customize'}
+			ref={ref}
+		/>
+	);
 });
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
@@ -36,7 +50,15 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 });
 
 // eslint-disable-next-line react/no-multi-comp
-const DevicePicker = ({ secondary = false, className }: { secondary?: boolean; className?: string }) => {
+const DevicePicker = ({
+	secondary = false,
+	chevron = false,
+	className,
+}: {
+	secondary?: boolean;
+	chevron?: boolean;
+	className?: string;
+}) => {
 	const { t } = useTranslation();
 
 	const { onDeviceChange } = useMediaCallView();
@@ -150,7 +172,7 @@ const DevicePicker = ({ secondary = false, className }: { secondary?: boolean; c
 
 				console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
 			}}
-			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
+			button={<DevicePickerButton secondary={secondary} chevron={chevron} tiny={!secondary || chevron} />}
 		/>
 	);
 };

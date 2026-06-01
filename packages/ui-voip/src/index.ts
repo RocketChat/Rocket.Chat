@@ -34,3 +34,6 @@ export { default as Timer } from './components/Timer';
 export { default as MediaCallRoomSection } from './views/MediaCallRoomSection/MediaCallRoomSection';
 export { default as MediaCallViewContext, defaultMediaCallContextValue } from './context/MediaCallViewContext';
 export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCallViewContext';
+
+// In-call notification chimes (recording started/stopped, participant joined).
+export { playRecordingChime, playRecordingStopChime, playJoinChime } from './utils/callChimes';

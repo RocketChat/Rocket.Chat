@@ -1,7 +1,13 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { MediaCallViewContext, defaultMediaCallContextValue, useMediaCallInstance, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
+import {
+	MediaCallViewContext,
+	defaultMediaCallContextValue,
+	playJoinChime,
+	useMediaCallInstance,
+	type RemoteParticipantInfo,
+} from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -392,6 +398,48 @@ const InnerProvider = ({
 		};
 	}, [room]);
 
+	// "Someone joined" plink. Gated by call size so big calls don't get a
+	// chime per joiner — the convention is to signal new arrivals only
+	// while the call is small enough that each face still matters.
+	// Threshold uses room.numParticipants (post-join, includes local) so
+	// the chime fires for joiners 2 through 6 inclusive (call growing
+	// 1→2, 2→3, 3→4, 4→5, 5→6), and goes silent from the 7th onward.
+	// Agent participants never trigger it.
+	const JOIN_CHIME_MAX_PARTICIPANTS = 6;
+	useEffect(() => {
+		const onConnect = (participant: RemoteParticipant) => {
+			if (isAgentParticipant(participant as { identity: string; kind?: ParticipantKind })) return;
+			if (room.numParticipants <= JOIN_CHIME_MAX_PARTICIPANTS) {
+				playJoinChime();
+			}
+		};
+		room.on(RoomEvent.ParticipantConnected, onConnect);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, onConnect);
+		};
+	}, [room]);
+
+	// Switch the active camera (videoinput) through the LK Room — LK's
+	// switchActiveDevice republishes the track on the chosen device so no
+	// renegotiation is needed at our level. The method lives on Room (not
+	// LocalParticipant) in livekit-client ≥1.6.
+	const onVideoInputChange = useCallback(
+		(deviceId: string) => {
+			void room.switchActiveDevice('videoinput', deviceId).catch((err: unknown) => {
+				console.warn('camera switch failed', err);
+			});
+		},
+		[room],
+	);
+
+	// Current camera deviceId is read from the published track's settings.
+	// We re-derive on each render of the bridge — useTracks ensures we
+	// rerender when the publication changes (e.g. after switchActiveDevice).
+	const currentCameraDeviceId = useMemo(() => {
+		const pub = localParticipant.getTrackPublication(Track.Source.Camera);
+		return pub?.track?.mediaStreamTrack?.getSettings().deviceId;
+	}, [localParticipant, camEnabled, localCameraPub?.trackSid]);
+
 	const ctxValue = useMemo(
 		() => ({
 			sessionState: {
@@ -425,6 +473,8 @@ const InnerProvider = ({
 			onSendReaction,
 			activeReactions,
 			activeCaptions,
+			onVideoInputChange,
+			currentCameraDeviceId,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -447,6 +497,8 @@ const InnerProvider = ({
 			onSendReaction,
 			activeReactions,
 			activeCaptions,
+			onVideoInputChange,
+			currentCameraDeviceId,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

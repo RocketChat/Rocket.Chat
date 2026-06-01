@@ -135,12 +135,16 @@ export const useGroupCallRoomAction = (): RoomToolboxActionConfig | undefined =>
 
 	return useMemo<RoomToolboxActionConfig | undefined>(() => {
 		if (!eligible || !livekitEnabled) return undefined;
+		// Once the user is in the call, the in-call view already exposes a
+		// hangup control. Showing a duplicate phone-off in the room header
+		// just clutters the toolbox and is the most common source of
+		// "which one ends the call?" confusion.
+		if (inCallHere) return undefined;
 
 		return {
 			id: 'start-group-call',
-			// eslint-disable-next-line no-nested-ternary
-			title: (inCallHere ? 'Leave_call' : hasJoinable ? 'Join_call' : 'Start_call') as TranslationKey,
-			icon: inCallHere ? 'phone-off' : 'phone',
+			title: (hasJoinable ? 'Join_call' : 'Start_call') as TranslationKey,
+			icon: 'phone',
 			featured: true,
 			action,
 			groups: ['channel', 'group', 'team'] as const,

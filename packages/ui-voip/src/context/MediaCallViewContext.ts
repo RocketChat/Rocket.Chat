@@ -78,6 +78,15 @@ type MediaCallViewContextValue = {
 	 * on the matching tile.
 	 */
 	activeCaptions?: Record<string, { text: string; isFinal: boolean; updatedAt: number }>;
+	/**
+	 * Switch the active camera input (videoinput device). Only meaningful when
+	 * the underlying transport supports live device switching — currently
+	 * wired by the LiveKit provider. P2P providers may leave this undefined,
+	 * in which case the camera-chevron menu won't render.
+	 */
+	onVideoInputChange?: (deviceId: string) => void;
+	/** Currently-active camera deviceId, used to mark the selected entry in the picker. */
+	currentCameraDeviceId?: string;
 	streams: MediaCallStreams;
 	/**
 	 * Remote participants in the call. Always present (possibly empty when the
