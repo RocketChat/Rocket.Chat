@@ -168,7 +168,7 @@ const UserInfo = ({
 
 					{phones && phones.length > 0 && (
 						<InfoPanelField is='dl'>
-							<InfoPanelLabel is='dt'>{t('Phone')}</InfoPanelLabel>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
 							<InfoPanelText is='dd'>
 								<UserInfoPhoneNumberList phones={phones} />
 							</InfoPanelText>

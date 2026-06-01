@@ -1170,7 +1170,7 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                       <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
                       >
-                        Phone
+                        Phone_Numbers
                       </dt>
                       <dd
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
@@ -1184,18 +1184,19 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                             <a
                               class="rcx-box rcx-box--full rcx-css-1te28na"
                               href="tel:+5511999999999"
+                              style="text-decoration: none;"
                             >
-                              <span>
+                              <span
+                                style="text-decoration: underline;"
+                              >
                                 +55 11 99999-9999
                               </span>
                               <span
-                                class="rcx-box rcx-box--full rcx-tag  rcx-css-10p06i9"
+                                class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                               >
-                                <span
-                                  class="rcx-tag__inner"
-                                >
-                                  Mobile
-                                </span>
+                                (
+                                Mobile
+                                )
                               </span>
                             </a>
                           </li>
@@ -1205,18 +1206,19 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                             <a
                               class="rcx-box rcx-box--full rcx-css-1te28na"
                               href="tel:+5511888888888"
+                              style="text-decoration: none;"
                             >
-                              <span>
+                              <span
+                                style="text-decoration: underline;"
+                              >
                                 +5511888888888
                               </span>
                               <span
-                                class="rcx-box rcx-box--full rcx-tag  rcx-css-10p06i9"
+                                class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                               >
-                                <span
-                                  class="rcx-tag__inner"
-                                >
-                                  Work
-                                </span>
+                                (
+                                Work
+                                )
                               </span>
                             </a>
                           </li>

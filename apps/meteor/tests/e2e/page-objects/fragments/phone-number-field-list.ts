@@ -4,7 +4,7 @@ export class PhoneNumberFieldList {
 	constructor(private readonly root: Locator) {}
 
 	get btnAddPhone(): Locator {
-		return this.root.getByRole('button', { name: 'Add phone', exact: true });
+		return this.root.getByRole('button', { name: 'Add number', exact: true });
 	}
 
 	getPhoneNumberInput(index: number): Locator {
@@ -12,11 +12,11 @@ export class PhoneNumberFieldList {
 	}
 
 	getPhoneLabelInput(index: number): Locator {
-		return this.root.getByRole('textbox', { name: new RegExp(`^Label for phone.*${index + 1}$`) });
+		return this.root.getByRole('textbox', { name: new RegExp(`^Label for phone number "${index + 1}"$`) });
 	}
 
 	getRemovePhoneButton(index: number): Locator {
-		return this.root.getByRole('button', { name: /remove phone/i }).nth(index);
+		return this.root.getByRole('button', { name: /remove number/i }).nth(index);
 	}
 
 	get inputPhoneNumber(): Locator {
@@ -28,7 +28,7 @@ export class PhoneNumberFieldList {
 	}
 
 	get removePhoneButtons(): Locator {
-		return this.root.getByRole('button', { name: /remove phone/i });
+		return this.root.getByRole('button', { name: /remove number/i });
 	}
 
 	async removePhone(index: number): Promise<void> {

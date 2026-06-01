@@ -17,15 +17,15 @@ type TestComponentProps = {
 
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
-		Phone_Number: 'Phone Number',
+		Phone_Numbers: 'Phone Numbers',
 		Phone_number: 'Phone number',
 		Required_field: '{{field}} required',
 		__field__is_invalid: '{{field}} is invalid',
-		Add_phone: 'Add phone',
-		Remove_phone__label__: 'Remove phone {{label}}',
+		Add_number: 'Add number',
+		Remove_number__label__: 'Remove number {{label}}',
 		Phone_number_placeholder: 'Phone number',
 		Phone_label_placeholder: 'Label',
-		Label_for_phone__label__: 'Label for phone {{label}}',
+		Label_for_phone_number__label__: 'Label for phone number {{label}}',
 		Max_length_is: 'Max length is %s',
 	})
 	.build();
@@ -88,11 +88,11 @@ describe('PhoneNumberFieldList', () => {
 	});
 
 	describe('interactions', () => {
-		it('calls onAddPhone with empty phone defaults when clicking Add phone', async () => {
+		it('calls onAddPhone with empty phone defaults when clicking Add number', async () => {
 			const onAddPhone = jest.fn();
 			render(<TestComponent onAddPhone={onAddPhone} onRemovePhone={jest.fn()} />, { wrapper: appRoot });
 
-			await userEvent.click(screen.getByRole('button', { name: 'Add phone' }));
+			await userEvent.click(screen.getByRole('button', { name: 'Add number' }));
 
 			expect(onAddPhone).toHaveBeenCalledTimes(1);
 			expect(onAddPhone).toHaveBeenCalledWith({ number: '', label: '', primary: false });
@@ -112,7 +112,7 @@ describe('PhoneNumberFieldList', () => {
 				{ wrapper: appRoot },
 			);
 
-			await userEvent.click(screen.getAllByRole('button', { name: /remove phone/i })[0]);
+			await userEvent.click(screen.getAllByRole('button', { name: /remove number/i })[0]);
 
 			expect(onRemovePhone).toHaveBeenCalledTimes(1);
 			expect(onRemovePhone).toHaveBeenCalledWith(0);
@@ -153,7 +153,7 @@ describe('PhoneNumberFieldList', () => {
 				/>,
 				{ wrapper: appRoot },
 			);
-			const labelInput = screen.getByRole('textbox', { name: 'Label for phone 1' });
+			const labelInput = screen.getByRole('textbox', { name: 'Label for phone number 1' });
 			await userEvent.type(labelInput, 'a'.repeat(51));
 			await userEvent.tab();
 
@@ -169,7 +169,7 @@ describe('PhoneNumberFieldList', () => {
 				/>,
 				{ wrapper: appRoot },
 			);
-			const labelInput = screen.getByRole('textbox', { name: 'Label for phone 1' });
+			const labelInput = screen.getByRole('textbox', { name: 'Label for phone number 1' });
 			await userEvent.type(labelInput, 'a'.repeat(50));
 			await userEvent.tab();
 

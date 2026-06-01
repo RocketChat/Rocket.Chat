@@ -9,7 +9,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with no phones 1`] = `
       <legend
         style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
       >
-        Phone Number
+        Phone Numbers
       </legend>
       <ul
         class="rcx-box rcx-box--full rcx-css-1a22y4u"
@@ -17,19 +17,13 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with no phones 1`] = `
       />
       <button
         aria-controls="phones-phones-list"
-        class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1nmakuf"
+        class="rcx-box rcx-box--full rcx-button rcx-css-1nmakuf"
         type="button"
       >
         <span
           class="rcx-button--content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-1hdf9ok"
-          >
-            
-          </i>
-          Add phone
+          Add number
         </span>
       </button>
     </fieldset>
@@ -46,7 +40,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
       <legend
         style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
       >
-        Phone Number
+        Phone Numbers
       </legend>
       <ul
         class="rcx-box rcx-box--full rcx-css-1a22y4u"
@@ -86,7 +80,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
               for="react-aria-:r1:-label"
               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              Label for phone 1
+              Label for phone number 1
             </label>
             <input
               aria-describedby=""
@@ -102,9 +96,9 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
           </div>
           <button
             aria-controls="mock-phone-0"
-            aria-label="Remove phone Home"
+            aria-label="Remove number Home"
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1vd0t3o"
-            title="Remove phone Home"
+            title="Remove"
             type="button"
           >
             <i
@@ -149,7 +143,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
               for="react-aria-:r3:-label"
               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              Label for phone 2
+              Label for phone number 2
             </label>
             <input
               aria-describedby=""
@@ -165,9 +159,9 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
           </div>
           <button
             aria-controls="mock-phone-1"
-            aria-label="Remove phone 2"
+            aria-label="Remove number 2"
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1vd0t3o"
-            title="Remove phone 2"
+            title="Remove"
             type="button"
           >
             <i
@@ -181,19 +175,13 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
       </ul>
       <button
         aria-controls="phones-phones-list"
-        class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1nmakuf"
+        class="rcx-box rcx-box--full rcx-button rcx-css-1nmakuf"
         type="button"
       >
         <span
           class="rcx-button--content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-1hdf9ok"
-          >
-            
-          </i>
-          Add phone
+          Add number
         </span>
       </button>
     </fieldset>

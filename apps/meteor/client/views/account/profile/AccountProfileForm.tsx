@@ -311,7 +311,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 				<Field>
 					<FieldLabel is='span' aria-hidden='true'>
-						{t('Phone_Number')}
+						{t('Phone_Numbers')}
 					</FieldLabel>
 					<FieldRow is='div'>
 						<PhoneNumberFieldList

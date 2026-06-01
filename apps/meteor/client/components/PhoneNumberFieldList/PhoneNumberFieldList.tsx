@@ -35,7 +35,7 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 
 	return (
 		<Box is='fieldset' display='flex' flexDirection='column' width='100%'>
-			<legend {...visuallyHiddenProps}>{t('Phone_Number')}</legend>
+			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
 			<Box is='ul' id={`${name}-phones-list`} display='flex' flexDirection='column' gap={8}>
 				{phones.map((phone, index) => (
 					<Box is='li' id={phone.id} key={phone.id} display='flex' gap={8} alignItems='start'>
@@ -69,7 +69,7 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 							}}
 							render={({ field, fieldState: { error } }) => (
 								<Field w='auto' flexGrow={1} flexShrink={1} flexBasis='30%'>
-									<FieldLabel {...visuallyHiddenProps}>{`${t('Label_for_phone__label__', { label: index + 1 })}`}</FieldLabel>
+									<FieldLabel {...visuallyHiddenProps}>{`${t('Label_for_phone_number__label__', { label: index + 1 })}`}</FieldLabel>
 									<TextInput {...field} flexGrow={1} error={error?.message} placeholder={t('Phone_label_placeholder')} />
 									{error?.message && <FieldError>{error.message}</FieldError>}
 								</Field>
@@ -78,8 +78,8 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 
 						<IconButton
 							aria-controls={phone.id}
-							title={t('Remove_phone__label__', { label: phone.label || index + 1 })}
-							aria-label={t('Remove_phone__label__', { label: phone.label || index + 1 })}
+							title={t('Remove')}
+							aria-label={t('Remove_number__label__', { label: phone.label || index + 1 })}
 							small
 							mb={6}
 							icon='trash'
@@ -88,14 +88,8 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 					</Box>
 				))}
 			</Box>
-			<Button
-				small
-				icon='plus'
-				aria-controls={`${name}-phones-list`}
-				onClick={() => onAddPhone({ number: '', label: '', primary: false })}
-				mbs={8}
-			>
-				{t('Add_phone')}
+			<Button aria-controls={`${name}-phones-list`} onClick={() => onAddPhone({ number: '', label: '', primary: false })} mbs={8}>
+				{t('Add_number')}
 			</Button>
 		</Box>
 	);
