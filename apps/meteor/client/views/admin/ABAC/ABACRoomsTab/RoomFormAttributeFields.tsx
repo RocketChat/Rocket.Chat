@@ -1,9 +1,9 @@
 import { Box, Field, FieldLabel, InputBoxSkeleton } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RoomFormAttributeField from './RoomFormAttributeField';
 import { useAttributeList } from '../hooks/useAttributeList';
+import { useIsExternalAttributeStore } from '../hooks/useIsExternalAttributeStore';
 
 type RoomFormAttributeFieldsProps = {
 	fields: { id: string }[];
@@ -13,7 +13,7 @@ type RoomFormAttributeFieldsProps = {
 
 const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormAttributeFieldsProps) => {
 	const { t } = useTranslation();
-	const attributeStore = useSetting('ABAC_Attribute_Store', 'local');
+	const isExternalAttributeStore = useIsExternalAttributeStore();
 
 	const { data: attributeList, isLoading } = useAttributeList();
 
@@ -23,7 +23,7 @@ const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormA
 
 	return (
 		<>
-			{attributeStore !== 'local' && (
+			{isExternalAttributeStore && (
 				<Box mbe={8} color='annotation' fontSize='p2'>
 					{t('ABAC_Picker_External_Store_Helper')}
 				</Box>
