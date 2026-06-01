@@ -63,4 +63,5 @@ export interface IRocketChatDesktop {
 	setUserToken: (token: string, userId: string) => void;
 	openDocumentViewer: (url: string, format: string, options: any) => void;
 	reloadServer: () => void;
+	onTelephonyCallRequested?: (callback: (payload: { phoneNumber: string; rawUri: string }) => void) => void;
 }

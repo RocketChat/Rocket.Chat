@@ -139,6 +139,66 @@ describe('hook', () => {
 		expect(result.current.value).toBeUndefined();
 	});
 
+	describe('external number sync', () => {
+		it('should reflect peerInfo.number in the filter (deeplink-forwarded number)', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+			const peerInfo: PeerInfo = { number: '312312313123' };
+
+			const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+			});
+
+			expect(result.current.filter).toBe('312312313123');
+		});
+
+		it('should not touch the filter when peerInfo has a userId', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+			const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1' };
+
+			const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+			});
+
+			expect(result.current.filter).toBe('');
+		});
+
+		it('should update the filter when a new number arrives', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+
+			const { result, rerender } = renderHook(({ peerInfo }) => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+				initialProps: { peerInfo: { number: '111' } as PeerInfo },
+			});
+
+			expect(result.current.filter).toBe('111');
+
+			rerender({ peerInfo: { number: '222' } as PeerInfo });
+
+			expect(result.current.filter).toBe('222');
+		});
+
+		it('should preserve manual typing while peerInfo is unchanged', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+			const peerInfo: PeerInfo = { number: '111' };
+
+			const { result, rerender } = renderHook(({ peerInfo }) => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+				initialProps: { peerInfo },
+			});
+
+			expect(result.current.filter).toBe('111');
+
+			act(() => {
+				result.current.onChangeFilter('11199');
+			});
+
+			// Same peerInfo identity -> sync effect must not fire and clobber the edit.
+			rerender({ peerInfo });
+
+			expect(result.current.filter).toBe('11199');
+		});
+	});
+
 	describe('onChangeValue', () => {
 		it('should do nothing if value is an array', async () => {
 			mockGetAutocompleteOptions.mockResolvedValue([]);
