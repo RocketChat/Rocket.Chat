@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Palette } from '@rocket.chat/fuselage';
 import type { Ref } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import CallTile from './CallTile';
 import type { RemoteParticipantInfo } from '../../context/MediaCallViewContext';
@@ -41,11 +41,28 @@ const stageStyles = css`
 	overflow: hidden;
 `;
 
-const spotlightStyles = css`
-	display: grid;
-	grid-template-rows: minmax(0, 1fr) auto;
+// Two flavours: stacked (screen on top, thumbs in a row at the bottom) and
+// side-by-side (screen on left, thumbs in a column on the right). The
+// orientation choice (below) picks whichever maximises the rendered screen
+// area inside the available stage. Both use flex so the thumb strip's
+// orientation is a single direction flip.
+const spotlightStackedStyles = css`
+	display: flex;
+	flex-direction: column;
 	gap: 8px;
 	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+`;
+
+const spotlightSideBySideStyles = css`
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
 	min-height: 0;
 `;
 
@@ -74,25 +91,47 @@ const gridStyles = css`
 
 const TILE_GAP_PX = 8;
 
-// keep the screen video framed as 16:9 inside the bounding box
+// Screen viewer's bounding box. Needs to grow into all the space the spotlight
+// container leaves it after the thumb strip / column takes its fixed slot —
+// hence `flex: 1 1 0` and zero mins so flexbox actually shrinks it when the
+// stage is short or narrow. Without flex-grow the box sized to its intrinsic
+// content (or zero in some browsers) and the screen ended up letterboxed
+// inside a too-small viewer, leaving large empty stage area beside it.
 const mainStreamStyles = css`
 	position: relative;
 	display: flex;
+	flex: 1 1 0;
+	min-width: 0;
+	min-height: 0;
 	align-items: center;
 	justify-content: center;
 	background-color: ${Palette.surface['surface-neutral'].toString()};
 	border-radius: 6px;
 	overflow: hidden;
-	min-height: 0;
 `;
 
 const thumbStripStyles = css`
 	display: flex;
 	gap: 8px;
 	height: 96px;
+	flex-shrink: 0;
 	overflow-x: auto;
 	overflow-y: hidden;
 	padding-block: 2px;
+	scrollbar-width: thin;
+`;
+
+// Side-by-side variant: column of thumbs, fixed width on the right.
+const thumbColumnStyles = css`
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 200px;
+	height: 100%;
+	flex-shrink: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding-inline: 2px;
 	scrollbar-width: thin;
 `;
 
@@ -102,9 +141,21 @@ const thumbItemStyles = css`
 	height: 100%;
 `;
 
+// When laid out as a column, each thumb takes the full column width and
+// constrains its height via aspect-ratio so the avatar/camera stays in a
+// reasonable proportion regardless of how tall the column is.
+const thumbItemColumnStyles = css`
+	flex: 0 0 auto;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+`;
+
 // A screen-share tile in the thumb strip — wider than participant thumbs so
 // the actual screen content is legible. On hover a "spotlight" overlay
 // reveals a button to promote the tile to the principal screen position.
+// In side-by-side spotlight, the parent column forces width=100% and the
+// aspect-ratio rule below pins the height; in stacked mode the parent row
+// uses the explicit width/height defaults below.
 const screenThumbStyles = css`
 	position: relative;
 	flex: 0 0 auto;
@@ -114,6 +165,12 @@ const screenThumbStyles = css`
 	overflow: hidden;
 	background-color: black;
 	border: 1px solid ${Palette.stroke['stroke-medium'].toString()};
+
+	[data-thumb-orientation='column'] & {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+	}
 
 	& .rcx-screen-thumb-overlay {
 		opacity: 0;
@@ -264,7 +321,7 @@ const CallStage = ({
 		let newlyAdded: string | null = null;
 		currentMap.forEach((stream, id) => {
 			const existing = screenShareInfoRef.current.get(id);
-			if (!existing || existing.stream !== stream) {
+			if (existing?.stream !== stream) {
 				screenShareInfoRef.current.set(id, { stream, startedAt: Date.now() });
 				newlyAdded = id;
 			}
@@ -343,17 +400,52 @@ const CallStage = ({
 	const measureRef = useRef<HTMLDivElement>(null);
 	const { rows, cols, cellWidth, cellHeight } = useTileGridLayout(measureRef, tiles.length);
 
+	// Spotlight orientation: when the stage is wider than ~16:9 the screen
+	// fits better against a vertical thumb column on the right; otherwise
+	// keep the screen on top with thumbs along the bottom.
+	//
+	// IMPORTANT: the stage element only mounts on the spotlight branch
+	// (i.e. once `featuredScreen` becomes non-null). A plain `useRef` +
+	// `useEffect([], ...)` setup observed the ref at mount-time, when it
+	// was still null, and never re-ran. Using a callback ref re-runs the
+	// effect whenever the underlying element appears or detaches.
+	const [stageEl, setStageEl] = useState<HTMLDivElement | null>(null);
+	const stageRefCallback = useCallback((node: HTMLDivElement | null) => {
+		setStageEl(node);
+	}, []);
+	const [stageSize, setStageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+	useEffect(() => {
+		if (!stageEl) return undefined;
+		const update = () => {
+			const rect = stageEl.getBoundingClientRect();
+			setStageSize({ width: rect.width, height: rect.height });
+		};
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(stageEl);
+		return () => ro.disconnect();
+	}, [stageEl]);
+	// Lowered the threshold from a strict 16:9 (1.78) to ~1.5 so typical
+	// "wider than tall" stages flip to side-by-side. The exact 16:9 cutoff
+	// matches the screen content aspect, but in practice a stage at 1.6
+	// already benefits from the side column because the bottom strip
+	// would otherwise eat too much of the screen's vertical room.
+	const SPOTLIGHT_SIDE_BY_SIDE_ASPECT = 1.5;
+	const spotlightOrientation: 'stacked' | 'side-by-side' =
+		stageSize.height > 0 && stageSize.width / stageSize.height >= SPOTLIGHT_SIDE_BY_SIDE_ASPECT ? 'side-by-side' : 'stacked';
+
 	if (featuredScreen) {
+		const isSideBySide = spotlightOrientation === 'side-by-side';
 		return (
-			<Box className={stageStyles}>
-				<Box className={spotlightStyles}>
+			<Box className={stageStyles} ref={stageRefCallback}>
+				<Box className={isSideBySide ? spotlightSideBySideStyles : spotlightStackedStyles}>
 					<ScreenViewer
 						stream={featuredScreen.stream}
 						label={featuredScreen.label}
 						isLocal={featuredScreen.isLocal}
 						onStop={featuredScreen.isLocal ? onStopLocalScreenShare : undefined}
 					/>
-					<Box className={thumbStripStyles}>
+					<Box className={isSideBySide ? thumbColumnStyles : thumbStripStyles} data-thumb-orientation={isSideBySide ? 'column' : 'row'}>
 						{otherScreenShares.map((s) => (
 							<ScreenShareThumb
 								key={`screen-${s.id}`}
@@ -364,7 +456,7 @@ const CallStage = ({
 							/>
 						))}
 						{tiles.map((t) => (
-							<Box key={t.id} className={thumbItemStyles}>
+							<Box key={t.id} className={isSideBySide ? thumbItemColumnStyles : thumbItemStyles}>
 								<CallTile {...t} compact />
 							</Box>
 						))}

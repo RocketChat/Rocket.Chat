@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -140,6 +140,37 @@ const chevronWrapStyles = css`
 	margin-inline-start: -2px;
 `;
 
+// Fullscreen toggle in the call header — small icon-only button styled
+// to read as "header action" rather than a primary control. White-on-
+// transparent with a subtle hover background, matching the recording
+// pill's chrome.
+const headerActionsRowStyles = css`
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+`;
+
+const fullscreenButtonStyles = css`
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	background-color: transparent;
+	color: rgba(255, 255, 255, 0.9);
+	cursor: pointer;
+	transition:
+		background-color 120ms ease,
+		color 120ms ease;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.08);
+		color: white;
+	}
+`;
+
 const recordDotStyles = css`
 	width: 10px;
 	height: 10px;
@@ -218,6 +249,28 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const [recordHover, setRecordHover] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
+
+	// Fullscreen target is the call section's root. We listen to
+	// `fullscreenchange` rather than tracking state purely through the
+	// toggle handler, so we react to the user pressing Esc (which the
+	// browser handles without calling our handler) and to programmatic
+	// exits from other parts of the app.
+	const rootRef = useRef<HTMLDivElement>(null);
+	const [isFullscreen, setIsFullscreen] = useState(false);
+	useEffect(() => {
+		const onChange = () => setIsFullscreen(document.fullscreenElement !== null);
+		document.addEventListener('fullscreenchange', onChange);
+		return () => document.removeEventListener('fullscreenchange', onChange);
+	}, []);
+	const onToggleFullscreen = useCallback(() => {
+		if (document.fullscreenElement) {
+			void document.exitFullscreen().catch(() => undefined);
+			return;
+		}
+		const node = rootRef.current;
+		if (!node) return;
+		void node.requestFullscreen().catch(() => undefined);
+	}, []);
 
 	// Dev-only: simulate N additional remote participants for grid-layout
 	// testing. Toggled on by `?fakeTiles=N` or `localStorage.RCFakeTiles`.
@@ -405,23 +458,35 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	}, [liveLevel, localHandRaised, onToggleHand]);
 
 	return (
-		<Box w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' minHeight={0}>
+		<Box ref={rootRef} w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' minHeight={0}>
 			<Box className={callHeaderStyles}>
 				<Box className={callHeaderTimerStyles}>
 					<Timer startAt={startedAt} />
 				</Box>
-				<Box
-					is='button'
-					type='button'
-					className={[recordPillStyles, isRecording ? 'recording' : null]}
-					onClick={onToggleRecording}
-					disabled={recordingBusy}
-					onMouseEnter={() => setRecordHover(true)}
-					onMouseLeave={() => setRecordHover(false)}
-					title={isRecording ? t('Stop_recording') : t('Start_recording')}
-				>
-					<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
-					<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
+				<Box className={headerActionsRowStyles}>
+					<Box
+						is='button'
+						type='button'
+						className={[recordPillStyles, isRecording ? 'recording' : null]}
+						onClick={onToggleRecording}
+						disabled={recordingBusy}
+						onMouseEnter={() => setRecordHover(true)}
+						onMouseLeave={() => setRecordHover(false)}
+						title={isRecording ? t('Stop_recording') : t('Start_recording')}
+					>
+						<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
+						<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
+					</Box>
+					<Box
+						is='button'
+						type='button'
+						className={fullscreenButtonStyles}
+						onClick={onToggleFullscreen}
+						title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+						aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+					>
+						<Icon name={isFullscreen ? 'arrow-collapse' : 'arrow-expand'} size='x16' />
+					</Box>
 				</Box>
 			</Box>
 			<CallStage
