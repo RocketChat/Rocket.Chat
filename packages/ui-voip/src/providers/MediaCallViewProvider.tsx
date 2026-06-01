@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useAllowedFeatures } from './useAllowedFeatures';
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
+import { useDesktopTelephonyListener } from './useDesktopTelephonyListener';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
@@ -44,6 +45,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
+
+	useDesktopTelephonyListener({ sessionState, toggleWidget, selectPeer });
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
