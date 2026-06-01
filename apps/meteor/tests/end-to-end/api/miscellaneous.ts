@@ -171,6 +171,7 @@ describe('miscellaneous', () => {
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'sidebarGroupTeamsAndChannels',
+					'sidebarGroupUnlistedInConversations',
 					'sidebarSectionsOrder',
 					'muteFocusedConversations',
 					'notifyCalendarEvents',
