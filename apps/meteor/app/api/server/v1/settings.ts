@@ -185,6 +185,11 @@ API.v1.get(
 					return service;
 				}
 
+				//	CAUTION: Never hide sign-in with apple button from mobile app.
+				if (service.service && ['apple'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
 				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
 					return { ...service, hideButtonOnMobile: false };
 				}
