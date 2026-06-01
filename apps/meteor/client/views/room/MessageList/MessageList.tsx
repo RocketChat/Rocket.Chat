@@ -14,6 +14,7 @@ import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
+import { useScrollAnchor } from './hooks/useScrollAnchor';
 import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
@@ -85,6 +86,9 @@ export const MessageList = function MessageList({
 
 	const handlePrepend = useCallback(
 		(offset: number) => {
+			if (!isRoomInitialized.current) {
+				return;
+			}
 			// If the offset is less than 200, it means the user is reaching the top of the list,
 			// so the prepend need to be enabled for smooth scrolling,
 			// if the prepend is enabled when a new message is added, the list will misalign.
@@ -187,6 +191,12 @@ export const MessageList = function MessageList({
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 
+	const { updateTopAnchor } = useScrollAnchor({
+		virtualizerRef,
+		suppress: isJumpingToMessage,
+		pinToBottom: shouldJumpToBottom,
+	});
+
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
@@ -250,8 +260,8 @@ export const MessageList = function MessageList({
 						storeScrollPosition();
 						debouncedClearNewMessagesOnScroll();
 
-						const handle = virtualizerRef.current;
-						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
+						const topItemIndex = updateTopAnchor();
+						const topMessage = messages[topItemIndex - (canPreview ? 1 : 0)];
 						handleTopVisibleMessage(topMessage);
 						handleDateScroll(topMessage, offset);
 						debouncedMessageRead();
