@@ -23,7 +23,7 @@ const configureFederation = async () => {
 	}
 
 	try {
-		configureFederationMatrixSettings({
+		await configureFederationMatrixSettings({
 			instanceId: InstanceStatus.id(),
 			domain: settings.get('Federation_Service_Domain'),
 			signingKey: settings.get('Federation_Service_Matrix_Signing_Key'),
@@ -34,6 +34,10 @@ const configureFederation = async () => {
 			processEDUTyping: settings.get('Federation_Service_EDU_Process_Typing'),
 			processEDUPresence: settings.get('Federation_Service_EDU_Process_Presence'),
 			processEDUReceipt: settings.get('Federation_Service_EDU_Process_Receipt'),
+			xmppEnabled: settings.get('Federation_XMPP_Enabled'),
+			xmppBridgeURL: settings.get('Federation_XMPP_Bridge_URL'),
+			xmppBridgeHSToken: settings.get('Federation_XMPP_Bridge_HS_Token'),
+			xmppBridgeASToken: settings.get('Federation_XMPP_Bridge_AS_Token'),
 		});
 	} catch (err) {
 		logger.error({ msg: 'Failed to start federation-matrix service', err });
@@ -58,6 +62,16 @@ export const startFederationService = async (): Promise<void> => {
 		}
 	});
 
+	// `setupFederationMatrix()` runs the SDK's `init()`, which registers the DB
+	// collections (including `AppServiceStateCollection`). It must complete
+	// before the settings watcher below, whose initial fire calls `setConfig`
+	// and resolves repositories that depend on those collections.
+	try {
+		await setupFederationMatrix();
+	} catch (err) {
+		logger.error({ msg: 'Failed to setup federation-matrix:', err });
+	}
+
 	settings.watchMultiple(
 		[
 			'Federation_Service_Enabled',
@@ -70,17 +84,15 @@ export const startFederationService = async (): Promise<void> => {
 			'Federation_Service_Matrix_Signing_Version',
 			'Federation_Service_Join_Encrypted_Rooms',
 			'Federation_Service_Join_Non_Private_Rooms',
+			'Federation_XMPP_Enabled',
+			'Federation_XMPP_Bridge_URL',
+			'Federation_XMPP_Bridge_HS_Token',
+			'Federation_XMPP_Bridge_AS_Token',
 		],
 		async () => {
 			await configureFederation();
 		},
 	);
-
-	try {
-		await setupFederationMatrix();
-	} catch (err) {
-		logger.error({ msg: 'Failed to setup federation-matrix:', err });
-	}
 
 	slashCommands.add({
 		command: 'xmpp',

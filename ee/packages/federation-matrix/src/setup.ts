@@ -32,7 +32,7 @@ function validateDomain(domain: string): boolean {
 	return true;
 }
 
-export function configureFederationMatrixSettings(settings: {
+export async function configureFederationMatrixSettings(settings: {
 	instanceId: string;
 	domain: string;
 	signingKey: string;
@@ -43,6 +43,10 @@ export function configureFederationMatrixSettings(settings: {
 	processEDUTyping: boolean;
 	processEDUPresence: boolean;
 	processEDUReceipt: boolean;
+	xmppEnabled: boolean;
+	xmppBridgeURL: string;
+	xmppBridgeHSToken: string;
+	xmppBridgeASToken: string;
 }) {
 	const {
 		instanceId,
@@ -55,13 +59,17 @@ export function configureFederationMatrixSettings(settings: {
 		processEDUTyping,
 		processEDUPresence,
 		processEDUReceipt,
+		xmppEnabled,
+		xmppBridgeURL,
+		xmppBridgeHSToken,
+		xmppBridgeASToken,
 	} = settings;
 
 	if (!validateDomain(serverName)) {
 		throw new Error('Invalid Federation domain');
 	}
 
-	federationSDK.setConfig({
+	await federationSDK.setConfig({
 		instanceId,
 		serverName,
 		keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
@@ -98,6 +106,13 @@ export function configureFederationMatrixSettings(settings: {
 			processPresence: processEDUPresence,
 			processReceipt: processEDUReceipt,
 		},
+		...(xmppEnabled && {
+			xmpp: {
+				bridgeURL: xmppBridgeURL,
+				hsToken: xmppBridgeHSToken,
+				asToken: xmppBridgeASToken,
+			},
+		}),
 	});
 }
 
