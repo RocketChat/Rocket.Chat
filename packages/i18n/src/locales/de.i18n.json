@@ -3010,6 +3010,7 @@
   "Group_mentions_disabled_x_members": "Die Gruppenerwähnungen `@all` und `@here` wurden für Räume mit mehr als {{total}} Mitgliedern deaktiviert.",
   "Group_mentions_only": "Nur Gruppen-Erwähnungen",
   "Group_Teams_and_Channels": "Teams und Kanäle gruppieren",
+  "Group_Unlisted_In_Conversations": "Nicht gelistete Räume in Unterhaltungen gruppieren",
   "Grouping": "Gruppierung",
   "Guest": "Gast",
   "Hang_up_and_transfer_call": "Auflegen und Anruf weiterleiten",
