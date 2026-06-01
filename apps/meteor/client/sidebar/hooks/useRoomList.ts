@@ -25,6 +25,7 @@ const order = [
 	'Teams',
 	'Discussions',
 	'Channels',
+	'Teams_and_channels',
 	'Direct_Messages',
 	'Conversations',
 ] as const;
@@ -41,6 +42,7 @@ type useRoomListReturnType = {
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
+	const sidebarGroupTeamsAndChannels = useUserPreference('sidebarGroupTeamsAndChannels');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
 	const sidebarDrafts = useFeaturePreview('sidebarDrafts');
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
@@ -134,17 +136,35 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 
-			sidebarGroupByType && team.size && groups.set('Teams', team);
+			const mergeTeamsAndChannels = sidebarGroupByType && sidebarGroupTeamsAndChannels;
+
+			sidebarGroupByType && !mergeTeamsAndChannels && team.size && groups.set('Teams', team);
 
 			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
 
-			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			sidebarGroupByType && !mergeTeamsAndChannels && channels.size && groups.set('Channels', channels);
+
+			if (mergeTeamsAndChannels) {
+				const teamsAndChannels = new Set([...team, ...channels]);
+				teamsAndChannels.size && groups.set('Teams_and_channels', teamsAndChannels);
+			}
 
 			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
+			// Users with a `sidebarSectionsOrder` saved before this group existed won't have the
+			// 'Teams_and_channels' key, so the merged group would never render. Inject it after 'Channels'.
+			const effectiveOrder = sidebarOrder.includes('Teams_and_channels')
+				? sidebarOrder
+				: (() => {
+						const next = [...sidebarOrder];
+						const channelsIndex = next.indexOf('Channels');
+						next.splice(channelsIndex === -1 ? next.length : channelsIndex + 1, 0, 'Teams_and_channels');
+						return next;
+					})();
+
+			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = effectiveOrder.reduce(
 				(acc, key) => {
 					const value = groups.get(key);
 
@@ -208,6 +228,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			sidebarShowUnread,
 			favoritesEnabled,
 			sidebarGroupByType,
+			sidebarGroupTeamsAndChannels,
 			isDiscussionEnabled,
 			sidebarOrder,
 			collapsedGroups,

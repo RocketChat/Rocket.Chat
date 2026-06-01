@@ -39,6 +39,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
+		sidebarGroupTeamsAndChannels?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -195,6 +196,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				sidebarGroupByType: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarGroupTeamsAndChannels: {
 					type: 'boolean',
 					nullable: true,
 				},

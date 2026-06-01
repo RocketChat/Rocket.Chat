@@ -536,6 +536,11 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Group_by_Type',
 			});
+			await this.add('Accounts_Default_User_Preferences_sidebarGroupTeamsAndChannels', false, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Group_Teams_and_Channels',
+			});
 			await this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
 				type: 'select',
 				values: [
@@ -755,6 +760,7 @@ export const createAccountSettings = () =>
 				'Teams',
 				'Discussions',
 				'Channels',
+				'Teams_and_channels',
 				'Direct_Messages',
 				'Conversations',
 			];
