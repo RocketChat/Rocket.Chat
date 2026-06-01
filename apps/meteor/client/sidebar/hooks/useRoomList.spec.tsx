@@ -73,19 +73,23 @@ const emptyArr: any[] = [];
 
 const getWrapperSettings = ({
 	sidebarGroupByType = false,
+	sidebarGroupTeamsAndChannels = false,
 	sidebarShowFavorites = true,
 	sidebarShowUnread = false,
 	isDiscussionEnabled = false,
 	isEnterprise = false,
+	sidebarSectionsOrder = undefined,
 	fakeRoom = undefined,
 	rooms = fakeRooms as unknown as SubscriptionWithRoom[],
 	sidebarCategories = [],
 }: {
 	sidebarGroupByType?: boolean;
+	sidebarGroupTeamsAndChannels?: boolean;
 	sidebarShowFavorites?: boolean;
 	sidebarShowUnread?: boolean;
 	isDiscussionEnabled?: boolean;
 	isEnterprise?: boolean;
+	sidebarSectionsOrder?: string[];
 	fakeRoom?: SubscriptionWithRoom;
 	rooms?: SubscriptionWithRoom[];
 	sidebarCategories?: { _id: string; name?: string; default?: boolean; showUnreads?: boolean; keepUnreadsOnTop?: boolean }[];
@@ -105,10 +109,15 @@ const getWrapperSettings = ({
 		.withUser(user)
 		.withSubscriptions([...rooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])
 		.withUserPreference('sidebarGroupByType', sidebarGroupByType)
+		.withUserPreference('sidebarGroupTeamsAndChannels', sidebarGroupTeamsAndChannels)
 		.withUserPreference('sidebarShowFavorites', sidebarShowFavorites)
 		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
 		.withUserPreference('sidebarCategories', sidebarCategories)
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
+
+	if (sidebarSectionsOrder) {
+		root.withUserPreference('sidebarSectionsOrder', sidebarSectionsOrder);
+	}
 
 	if (isEnterprise) {
 		root.withEndpoint('GET', '/v1/licenses.info', () => ({
@@ -174,6 +183,47 @@ it('should return groupsList with "Teams" if sidebarGroupByType is enabled and r
 	const teamsIndex = groupsList.indexOf('Teams');
 	expect(groupsList).toContain('Teams');
 	expect(result.current.groupsCount[teamsIndex]).toEqual(teams.length);
+});
+
+it('should merge teams and channels into "Teams_and_channels" when sidebarGroupTeamsAndChannels is enabled', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarGroupTeamsAndChannels: true }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	expect(groupsList).toContain('Teams_and_channels');
+	expect(groupsList).not.toContain('Teams');
+	expect(groupsList).not.toContain('Channels');
+
+	const mergedIndex = groupsList.indexOf('Teams_and_channels');
+	// The merged group holds every team plus every channel, so it is strictly larger than teams alone.
+	expect(result.current.groupsCount[mergedIndex]).toBeGreaterThan(teams.length);
+	// Every room still has a home (favorites go to Favorites, DMs to Direct_Messages), so nothing is dropped.
+	expect(result.current.groupsCount.reduce((a, b) => a + b, 0)).toBe(fakeRooms.length);
+});
+
+it('should keep "Teams" and "Channels" separate when sidebarGroupTeamsAndChannels is disabled', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarGroupTeamsAndChannels: false }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	expect(groupsList).toContain('Teams');
+	expect(groupsList).toContain('Channels');
+	expect(groupsList).not.toContain('Teams_and_channels');
+});
+
+it('should render the merged group even when the saved sidebarSectionsOrder predates it', async () => {
+	const legacyOrder = ['Unread', 'Favorites', 'Teams', 'Discussions', 'Channels', 'Direct_Messages', 'Conversations'];
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarGroupTeamsAndChannels: true,
+			sidebarSectionsOrder: legacyOrder,
+		}).build(),
+	});
+
+	expect(groupsListOf(result.current.groups)).toContain('Teams_and_channels');
 });
 
 it('should group favorites into a "Favorites" group when sidebarShowFavorites is on', async () => {
