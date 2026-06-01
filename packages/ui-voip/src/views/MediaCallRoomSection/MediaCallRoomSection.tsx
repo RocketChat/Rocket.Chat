@@ -73,7 +73,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || !('userId' in peerInfo) || !peerInfo.userId) {
 		return null;
 	}
 
