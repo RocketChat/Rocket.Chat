@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Palette } from '@rocket.chat/fuselage';
 import type { Ref } from 'react';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import CallTile from './CallTile';
 import type { RemoteParticipantInfo } from '../../context/MediaCallViewContext';
@@ -102,6 +102,43 @@ const thumbItemStyles = css`
 	height: 100%;
 `;
 
+// A screen-share tile in the thumb strip — wider than participant thumbs so
+// the actual screen content is legible. On hover a "spotlight" overlay
+// reveals a button to promote the tile to the principal screen position.
+const screenThumbStyles = css`
+	position: relative;
+	flex: 0 0 auto;
+	width: 200px;
+	height: 100%;
+	border-radius: 6px;
+	overflow: hidden;
+	background-color: black;
+	border: 1px solid ${Palette.stroke['stroke-medium'].toString()};
+
+	& .rcx-screen-thumb-overlay {
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 150ms ease;
+	}
+	&:hover .rcx-screen-thumb-overlay {
+		opacity: 1;
+		pointer-events: auto;
+	}
+	&:focus-within .rcx-screen-thumb-overlay {
+		opacity: 1;
+		pointer-events: auto;
+	}
+`;
+
+const spotlightOverlayStyles = css`
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.45);
+`;
+
 const stopShareButtonStyles = css`
 	position: absolute;
 	top: 8px;
@@ -151,6 +188,41 @@ const ScreenViewer = ({ stream, label, isLocal, onStop }: ScreenViewerProps) => 
 	);
 };
 
+// Compact screen-share preview shown in the thumb strip when more than one
+// participant is sharing. Renders the live screen video at a small size with
+// a hover-revealed "spotlight" button — clicking it promotes this share to
+// the principal (big) position.
+// eslint-disable-next-line react/no-multi-comp
+const ScreenShareThumb = ({
+	stream,
+	label,
+	isLocal,
+	onSpotlight,
+}: {
+	stream: MediaStream;
+	label: string;
+	isLocal: boolean;
+	onSpotlight: () => void;
+}) => {
+	const [videoRef] = usePlayMediaStream(stream);
+	return (
+		<Box className={screenThumbStyles}>
+			<video
+				ref={videoRef as unknown as Ref<HTMLVideoElement>}
+				preload='metadata'
+				muted={isLocal}
+				style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: 'black' }}
+			>
+				<track kind='captions' />
+			</video>
+			<Box className={ownBadgeStyles}>{label}</Box>
+			<Box className={['rcx-screen-thumb-overlay', spotlightOverlayStyles]}>
+				<IconButton icon='arrow-expand' small primary onClick={onSpotlight} title='Spotlight this screen' />
+			</Box>
+		</Box>
+	);
+};
+
 // eslint-disable-next-line react/no-multi-comp
 const CallStage = ({
 	localParticipant,
@@ -160,19 +232,73 @@ const CallStage = ({
 	reactionsByParticipant,
 	captionsByParticipant,
 }: CallStageProps) => {
-	// Pick a single "featured" screen share. Priority: remote first (more
-	// interesting to the local viewer), then local. Multi-remote-screen calls
-	// are rare; the others just become participant tiles via cameraStream.
-	const featuredScreen = useMemo<{ stream: MediaStream; label: string; isLocal: boolean } | null>(() => {
-		const remoteWithScreen = remoteParticipants.find((p) => p.screenStream);
-		if (remoteWithScreen?.screenStream) {
-			return { stream: remoteWithScreen.screenStream, label: `${remoteWithScreen.displayName} — screen`, isLocal: false };
-		}
+	// All currently-active screen shares (local + remote), in a stable shape
+	// the rest of the component consumes. Re-derived each render from the
+	// participants list; tracking of "when did each share start" lives in a
+	// ref below so we can detect new arrivals.
+	const currentScreenShares = useMemo<{ id: string; stream: MediaStream; label: string; isLocal: boolean }[]>(() => {
+		const shares: { id: string; stream: MediaStream; label: string; isLocal: boolean }[] = [];
 		if (localParticipant.screenStream) {
-			return { stream: localParticipant.screenStream, label: 'You — screen', isLocal: true };
+			shares.push({ id: localParticipant.id, stream: localParticipant.screenStream, label: 'You — screen', isLocal: true });
 		}
-		return null;
-	}, [remoteParticipants, localParticipant.screenStream]);
+		remoteParticipants.forEach((p) => {
+			if (p.screenStream) shares.push({ id: p.id, stream: p.screenStream, label: `${p.displayName} — screen`, isLocal: false });
+		});
+		return shares;
+	}, [localParticipant.id, localParticipant.screenStream, remoteParticipants]);
+
+	// Map participantId → { stream, startedAt }. Updated by the effect below.
+	// We compare against `stream` identity (not just presence) so that a
+	// user who stops sharing and restarts is treated as a fresh share —
+	// the new stream object means a new startedAt and an auto-promote.
+	const screenShareInfoRef = useRef<Map<string, { stream: MediaStream; startedAt: number }>>(new Map());
+	const [pinnedScreenId, setPinnedScreenId] = useState<string | null>(null);
+
+	// Sync the start-time map and auto-promote brand-new shares to pinned.
+	// Convention: when someone starts sharing, their share immediately
+	// becomes the principal — overriding any prior pinned selection. If
+	// the pinned share stops, fall back to "no pin" and the featured
+	// selector picks the most recent of the survivors.
+	useEffect(() => {
+		const currentMap = new Map(currentScreenShares.map((s) => [s.id, s.stream] as const));
+		let newlyAdded: string | null = null;
+		currentMap.forEach((stream, id) => {
+			const existing = screenShareInfoRef.current.get(id);
+			if (!existing || existing.stream !== stream) {
+				screenShareInfoRef.current.set(id, { stream, startedAt: Date.now() });
+				newlyAdded = id;
+			}
+		});
+		Array.from(screenShareInfoRef.current.keys()).forEach((id) => {
+			if (!currentMap.has(id)) screenShareInfoRef.current.delete(id);
+		});
+		setPinnedScreenId((prev) => {
+			if (newlyAdded !== null) return newlyAdded;
+			if (prev && !currentMap.has(prev)) return null;
+			return prev;
+		});
+	}, [currentScreenShares]);
+
+	// Choose the principal screen: explicit pin (if still active), else
+	// most recently started. Lookups go through the ref so we don't need
+	// to re-derive on every map mutation.
+	const featuredScreen = useMemo(() => {
+		if (currentScreenShares.length === 0) return null;
+		if (pinnedScreenId) {
+			const pinned = currentScreenShares.find((s) => s.id === pinnedScreenId);
+			if (pinned) return pinned;
+		}
+		return [...currentScreenShares].sort((a, b) => {
+			const ta = screenShareInfoRef.current.get(a.id)?.startedAt ?? 0;
+			const tb = screenShareInfoRef.current.get(b.id)?.startedAt ?? 0;
+			return tb - ta;
+		})[0];
+	}, [currentScreenShares, pinnedScreenId]);
+
+	const otherScreenShares = useMemo(
+		() => (featuredScreen ? currentScreenShares.filter((s) => s.id !== featuredScreen.id) : []),
+		[currentScreenShares, featuredScreen],
+	);
 
 	const tiles = useMemo(() => {
 		const all = [
@@ -228,6 +354,15 @@ const CallStage = ({
 						onStop={featuredScreen.isLocal ? onStopLocalScreenShare : undefined}
 					/>
 					<Box className={thumbStripStyles}>
+						{otherScreenShares.map((s) => (
+							<ScreenShareThumb
+								key={`screen-${s.id}`}
+								stream={s.stream}
+								label={s.label}
+								isLocal={s.isLocal}
+								onSpotlight={() => setPinnedScreenId(s.id)}
+							/>
+						))}
 						{tiles.map((t) => (
 							<Box key={t.id} className={thumbItemStyles}>
 								<CallTile {...t} compact />
