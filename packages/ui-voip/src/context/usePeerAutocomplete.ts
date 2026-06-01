@@ -39,6 +39,16 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 		initialData: [],
 	});
 
+	// Reflect an externally-selected phone number (e.g. forwarded from a `tel:`/`callto:` deeplink
+	// by the Desktop app) in the visible input. `value` is derived from `userId` only, so a peer
+	// set as `{ number }` would otherwise leave the field empty. Fires on `peerInfo` identity change
+	// only, so manual typing is preserved and re-selecting the same number is a no-op.
+	useEffect(() => {
+		if (peerInfo && 'number' in peerInfo) {
+			setFilter(peerInfo.number);
+		}
+	}, [peerInfo]);
+
 	const status = useUserPresence(peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined);
 
 	useEffect(() => {
