@@ -187,6 +187,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 					roomId: message.rid,
 					customFields: message.customFields,
 					text: message.msg,
+					tshow: message.tshow
 				};
 
 		await sdk.rest.post('/v1/chat.update', params);
