@@ -2,22 +2,6 @@
  * Usually, normal messages won't have a type, but system messages will, end those are the types that are available.
  */
 export type MessageType =
-	/** Sent when a voip call has started  */
-	| 'voip-call-started'
-	/** Sent when a voip call has been declined */
-	| 'voip-call-declined'
-	/** Sent when a voip call is put on hold */
-	| 'voip-call-on-hold'
-	/** Sent when a voip call is unhold */
-	| 'voip-call-unhold'
-	/** Sent when a voip call is paused */
-	| 'voip-call-ended'
-	/** Sent when a voip call is over, contains the duration of the call */
-	| 'voip-call-duration'
-	/** Sent when a voip call is ended */
-	| 'voip-call-wrapup'
-	/** Sent when a voip call is ended unexpectedly */
-	| 'voip-call-ended-unexpectedly'
 	/** Sent when a user is removed from main room of a team */
 	| 'removed-user-from-team'
 	/** Sent when a user is added to a team */
@@ -49,8 +33,6 @@ export type MessageType =
 	/** Sent when a livechat conversation is closed */
 	| 'livechat-close'
 	/** Sent when a livechat conversation is started */
-	| 'livechat_webrtc_video_call'
-	/** Sent when a livechat conversation is started */
 	| 'livechat-started'
 	/** Sent when the priority of omnichannel is changed */
 	| 'omnichannel_priority_change_history'
@@ -60,10 +42,6 @@ export type MessageType =
 	| 'omnichannel_placed_chat_on_hold'
 	/** Sent when a chat is resumed */
 	| 'omnichannel_on_hold_chat_resumed'
-	| 'otr'
-	| 'otr-ack'
-	| 'user_joined_otr'
-	| 'user_requested_otr_key_refresh'
 	| 'user_key_refreshed_successfully'
 	/** Sent when the message came through e2e */
 	| 'e2e'
@@ -144,4 +122,6 @@ export type MessageType =
 	/** Sent when a leader was removed */
 	| 'leader-removed'
 	/** Sent when a user was added to a room */
-	| 'discussion-created';
+	| 'discussion-created'
+	// ** Sent when a user was removed from an abac room */
+	| 'abac-removed-user-from-room';

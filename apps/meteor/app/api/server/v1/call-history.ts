@@ -1,18 +1,26 @@
-import type { CallHistoryItem, IMediaCall } from '@rocket.chat/core-typings';
+import type { CallHistoryItem, CallHistoryItemState, IMediaCall } from '@rocket.chat/core-typings';
 import { CallHistory, MediaCalls } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	ajv,
+	ajvQuery,
 	validateNotFoundErrorResponse,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-type CallHistoryList = PaginatedRequest<Record<never, never>>;
+type CallHistoryList = PaginatedRequest<{
+	filter?: string;
+	direction?: CallHistoryItem['direction'];
+	state?: CallHistoryItemState[];
+}>;
 
 const CallHistoryListSchema = {
 	type: 'object',
@@ -26,12 +34,25 @@ const CallHistoryListSchema = {
 		sort: {
 			type: 'string',
 		},
+		filter: {
+			type: 'string',
+		},
+		direction: {
+			type: 'string',
+			enum: ['inbound', 'outbound'],
+		},
+		state: {
+			type: 'array',
+			items: {
+				$ref: '#/components/schemas/CallHistoryItemState',
+			},
+		},
 	},
 	required: [],
 	additionalProperties: false,
 };
 
-export const isCallHistoryListProps = ajv.compile<CallHistoryList>(CallHistoryListSchema);
+export const isCallHistoryListProps = ajvQuery.compile<CallHistoryList>(CallHistoryListSchema);
 
 const callHistoryListEndpoints = API.v1.get(
 	'call-history.list',
@@ -71,7 +92,8 @@ const callHistoryListEndpoints = API.v1.get(
 				required: ['count', 'offset', 'total', 'items', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
-			403: validateUnauthorizedErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 		query: isCallHistoryListProps,
 		authRequired: true,
@@ -80,11 +102,34 @@ const callHistoryListEndpoints = API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort } = await this.parseJsonQuery();
 
-		const filter = {
+		const { direction, state, filter } = this.queryParams;
+
+		const filterText = typeof filter === 'string' && filter.trim();
+
+		const stateFilter = state && ensureArray(state);
+		const query = {
 			uid: this.userId,
+			...(direction && { direction }),
+			...(stateFilter?.length && { state: { $in: stateFilter } }),
+			...(filterText && {
+				$or: [
+					{
+						external: false,
+						contactName: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+					{
+						external: false,
+						contactUsername: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+					{
+						external: true,
+						contactExtension: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+				],
+			}),
 		};
 
-		const { cursor, totalCount } = CallHistory.findPaginated(filter, {
+		const { cursor, totalCount } = CallHistory.findPaginated(query, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
@@ -102,7 +147,7 @@ const callHistoryListEndpoints = API.v1.get(
 
 type CallHistoryListEndpoints = ExtractRoutesFromAPI<typeof callHistoryListEndpoints>;
 
-type CallHistoryInfo = { historyId: string; callId: never } | { callId: string; historyId: never };
+type CallHistoryInfo = { historyId: string } | { callId: string };
 
 const CallHistoryInfoSchema = {
 	oneOf: [
@@ -131,7 +176,7 @@ const CallHistoryInfoSchema = {
 	],
 };
 
-export const isCallHistoryInfoProps = ajv.compile<CallHistoryInfo>(CallHistoryInfoSchema);
+export const isCallHistoryInfoProps = ajvQuery.compile<CallHistoryInfo>(CallHistoryInfoSchema);
 
 const callHistoryInfoEndpoints = API.v1.get(
 	'call-history.info',
@@ -162,20 +207,23 @@ const callHistoryInfoEndpoints = API.v1.get(
 				required: ['item', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
-			403: validateUnauthorizedErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 		query: isCallHistoryInfoProps,
 		authRequired: true,
 	},
 	async function action() {
-		if (!this.queryParams.historyId && !this.queryParams.callId) {
+		const { historyId, callId } = this.queryParams as Record<string, never> & typeof this.queryParams;
+
+		if (!historyId && !callId) {
 			return API.v1.failure();
 		}
 
-		const item = await (this.queryParams.historyId
-			? CallHistory.findOneByIdAndUid(this.queryParams.historyId, this.userId)
-			: CallHistory.findOneByCallIdAndUid(this.queryParams.callId, this.userId));
+		const item = await (historyId
+			? CallHistory.findOneByIdAndUid(historyId, this.userId)
+			: CallHistory.findOneByCallIdAndUid(callId, this.userId));
 
 		if (!item) {
 			return API.v1.notFound();

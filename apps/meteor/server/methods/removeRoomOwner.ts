@@ -6,9 +6,10 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
-import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
+import { beforeChangeRoomRole } from '../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 
 declare module '@rocket.chat/ddp-client' {
@@ -106,6 +107,7 @@ export const removeRoomOwner = async (fromUserId: string, rid: string, userId: s
 
 Meteor.methods<ServerMethods>({
 	async removeRoomOwner(rid, userId) {
+		methodDeprecationLogger.method('removeRoomOwner', '9.0.0', ['/v1/channels.removeOwner', '/v1/groups.removeOwner']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

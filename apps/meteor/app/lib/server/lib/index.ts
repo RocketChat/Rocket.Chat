@@ -5,8 +5,8 @@
 	for the *server* pieces of code which does include the shared
 	library files.
 */
+import './afterUserActions';
 import './notifyUsersOnMessage';
-import './meteorFixes';
 
 export { sendNotification } from './sendNotificationsOnMessage';
 export { passwordPolicy } from './passwordPolicy';

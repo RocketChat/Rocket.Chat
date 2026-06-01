@@ -4,15 +4,12 @@ import { withTranslation } from 'react-i18next';
 
 import styles from './styles.scss';
 import { Button } from '../../components/Button';
-import { CallIframe } from '../../components/Calls/CallIFrame';
-import { default as CallNotification } from '../../components/Calls/CallNotification';
-import { CallStatus } from '../../components/Calls/CallStatus';
 import { Composer, ComposerAction, ComposerActions } from '../../components/Composer';
 import { FilesDropTarget } from '../../components/FilesDropTarget';
 import { FooterOptions, CharCounter } from '../../components/Footer';
-import { Menu } from '../../components/Menu';
+import { MenuGroup, MenuItem } from '../../components/Menu';
 import { MessageList } from '../../components/Messages';
-import { Screen } from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
@@ -152,11 +149,7 @@ class Chat extends Component {
 			{...props}
 		>
 			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
-				<Screen.Content nopadding>
-					{incomingCallAlert && !!incomingCallAlert.show && <CallNotification {...incomingCallAlert} dispatch={dispatch} />}
-					{incomingCallAlert?.show && ongoingCall && ongoingCall.callStatus === CallStatus.IN_PROGRESS_SAME_TAB ? (
-						<CallIframe {...incomingCallAlert} />
-					) : null}
+				<ScreenContent nopadding>
 					<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
 						<MessageList
 							ref={this.handleMessagesContainerRef}
@@ -185,28 +178,28 @@ class Chat extends Component {
 							</Suspense>
 						)}
 					</div>
-				</Screen.Content>
-				<Screen.Footer
+				</ScreenContent>
+				<ScreenFooter
 					options={
 						options && !registrationRequired ? (
 							<FooterOptions>
-								<Menu.Group>
+								<MenuGroup>
 									{onChangeDepartment && (
-										<Menu.Item onClick={onChangeDepartment} icon={ChangeIcon}>
+										<MenuItem onClick={onChangeDepartment} icon={ChangeIcon}>
 											{t('change_department')}
-										</Menu.Item>
+										</MenuItem>
 									)}
 									{onRemoveUserData && (
-										<Menu.Item onClick={onRemoveUserData} icon={RemoveIcon}>
+										<MenuItem onClick={onRemoveUserData} icon={RemoveIcon}>
 											{t('forget_remove_my_data')}
-										</Menu.Item>
+										</MenuItem>
 									)}
 									{onFinishChat && (
-										<Menu.Item danger onClick={onFinishChat} icon={FinishIcon}>
+										<MenuItem danger onClick={onFinishChat} icon={FinishIcon}>
 											{t('finish_this_chat')}
-										</Menu.Item>
+										</MenuItem>
 									)}
-								</Menu.Group>
+								</MenuGroup>
 							</FooterOptions>
 						) : null
 					}
@@ -251,7 +244,7 @@ class Chat extends Component {
 							limitTextLength={limitTextLength}
 						/>
 					)}
-				</Screen.Footer>
+				</ScreenFooter>
 			</FilesDropTarget>
 		</Screen>
 	);

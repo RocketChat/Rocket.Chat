@@ -1,23 +1,28 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { callbacks } from '../../../lib/callbacks';
+import { PermissionsCachedStore } from '../../cachedStores';
 import { settings } from '../../lib/settings';
+import { Users } from '../../stores';
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const isEnabled = settings.watch('AutoTranslate_Enabled') && hasPermission('auto-translate');
+const STREAM_HANDLER_ID = 'autotranslate-stream';
 
-		if (!isEnabled) {
-			callbacks.remove('streamMessage', 'autotranslate-stream');
-			return;
-		}
+const applyAutoTranslateStreamHandler = () => {
+	const isEnabled = settings.peek('AutoTranslate_Enabled') && hasPermission('auto-translate');
 
-		import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageStreamHandler }) => {
-			const streamMessage = createAutoTranslateMessageStreamHandler();
-			callbacks.remove('streamMessage', 'autotranslate-stream');
-			callbacks.add('streamMessage', streamMessage, callbacks.priority.HIGH - 3, 'autotranslate-stream');
-		});
+	if (!isEnabled) {
+		clientCallbacks.remove('streamMessage', STREAM_HANDLER_ID);
+		return;
+	}
+
+	void import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageStreamHandler }) => {
+		const streamMessage = createAutoTranslateMessageStreamHandler();
+		clientCallbacks.remove('streamMessage', STREAM_HANDLER_ID);
+		clientCallbacks.add('streamMessage', streamMessage, clientCallbacks.priority.HIGH - 3, STREAM_HANDLER_ID);
 	});
-});
+};
+
+applyAutoTranslateStreamHandler();
+settings.observe('AutoTranslate_Enabled', applyAutoTranslateStreamHandler);
+PermissionsCachedStore.useReady.subscribe(applyAutoTranslateStreamHandler);
+Users.use.subscribe(applyAutoTranslateStreamHandler);

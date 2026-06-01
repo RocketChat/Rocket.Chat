@@ -1,7 +1,7 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-export type HeaderTagProps = ComponentPropsWithoutRef<typeof Tag>;
+type HeaderTagProps = ComponentPropsWithoutRef<typeof Tag>;
 
 const HeaderTag = ({ children, ...props }: HeaderTagProps) => (
 	<Box p={4} withTruncatedText minWidth='x32'>

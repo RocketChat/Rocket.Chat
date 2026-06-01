@@ -3,7 +3,6 @@ import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 
 const groupsDict = {
 	l: 'live',
-	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',

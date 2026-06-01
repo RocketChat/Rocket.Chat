@@ -3,14 +3,15 @@ import { Message } from '@rocket.chat/core-services';
 import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../lib/isTruthy';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
@@ -91,9 +92,6 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-	if (settings.get('Message_Read_Receipt_Store_Users')) {
-		await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
-	}
 	if (isTheLastMessage(room, originalMessage)) {
 		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 	}
@@ -109,7 +107,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	}
 
 	// App IPostMessagePinned event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
 
@@ -119,7 +117,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				text: originalMessage.msg,
 				author_name: originalMessage.u.username,
 				author_icon: getUserAvatarURL(originalMessage.u.username),
-				content: originalMessage.content,
+				...(originalMessage.content && { content: originalMessage.content }),
 				ts: originalMessage.ts,
 				attachments: attachments.map(recursiveRemove),
 			},
@@ -136,7 +134,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	let originalMessage = await Messages.findOneById(message._id);
-	if (originalMessage == null || originalMessage._id == null) {
+	if (originalMessage?._id == null) {
 		throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
 			method: 'unpinMessage',
 			action: 'Message_pinning',
@@ -189,12 +187,9 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	// App IPostMessagePinned event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-	if (settings.get('Message_Read_Receipt_Store_Users')) {
-		await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
-	}
 	void notifyOnMessageChange({
 		id: message._id,
 	});
@@ -204,6 +199,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 
 Meteor.methods<ServerMethods>({
 	async pinMessage(message, pinnedAt) {
+		methodDeprecationLogger.method('pinMessage', '9.0.0', '/v1/chat.pinMessage');
 		check(message._id, String);
 
 		const userId = Meteor.userId();
@@ -216,6 +212,7 @@ Meteor.methods<ServerMethods>({
 		return pinMessage(message, userId, pinnedAt);
 	},
 	async unpinMessage(message) {
+		methodDeprecationLogger.method('unpinMessage', '9.0.0', '/v1/chat.unPinMessage');
 		check(message._id, String);
 
 		const userId = Meteor.userId();

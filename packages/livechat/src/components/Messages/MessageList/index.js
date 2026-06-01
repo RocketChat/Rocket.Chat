@@ -1,13 +1,11 @@
 import { parseISO, isSameDay } from 'date-fns';
+import i18next from 'i18next';
 import { Suspense } from 'preact/compat';
 
 import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
 import { createClassName } from '../../../helpers/createClassName';
-import constants from '../../../lib/constants';
 import store from '../../../store';
-import { isCallOngoing } from '../../Calls/CallStatus';
-import { JoinCallButton } from '../../Calls/JoinCallButton';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
@@ -26,7 +24,6 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_AT_BOTTOM_AREA = 128;
 
-	// eslint-disable-next-line no-use-before-define
 	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
 	handleScroll = () => {
@@ -143,37 +140,12 @@ export class MessageList extends MemoizedComponent {
 		typingUsernames,
 	}) => {
 		const items = [];
-		const { incomingCallAlert, ongoingCall } = store.state;
 		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
 			const previousMessage = messages[i - 1];
 			const message = messages[i];
 			const nextMessage = messages[i + 1];
-
-			if (
-				message.t === constants.webRTCCallStartedMessageType &&
-				message.actionLinks &&
-				message.actionLinks.length &&
-				ongoingCall &&
-				isCallOngoing(ongoingCall.callStatus) &&
-				!message.webRtcCallEndTs
-			) {
-				const { url, callProvider, rid } = incomingCallAlert || {};
-				items.push(<JoinCallButton callStatus={ongoingCall.callStatus} url={url} callProvider={callProvider} rid={rid} />);
-				continue;
-			}
-
-			const videoConfJoinBlock = message.blocks
-				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
-				?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
-			if (videoConfJoinBlock) {
-				// If the call is not accepted yet, don't render the message.
-				if (!ongoingCall || !isCallOngoing(ongoingCall.callStatus)) {
-					continue;
-				}
-			}
-
 			const showDateSeparator = !previousMessage || !isSameDay(parseISO(message.ts), parseISO(previousMessage.ts));
 			if (showDateSeparator) {
 				items.push(<MessageSeparator key={`sep-${message.ts}`} use='li' date={message.ts} />);
@@ -204,19 +176,23 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		if (typingUsernames && typingUsernames.length) {
-			items.push(<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} />);
+			const indicatorLabel = `${typingUsernames.join(', ')} ${typingUsernames.length > 1 ? i18next.t('are_typing') : i18next.t('is_typing')}`;
+			items.push(
+				<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} text={indicatorLabel} />,
+			);
 		}
 
 		return items;
 	};
 
 	render = ({ className, style = {} }) => (
+		// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 		<div
-			onScroll={this.handleScroll}
-			className={createClassName(styles, 'message-list', {}, [className])}
-			onClick={this.handleClick}
-			style={style}
 			data-qa='message-list'
+			className={createClassName(styles, 'message-list', {}, [className])}
+			style={style}
+			onClick={this.handleClick}
+			onScroll={this.handleScroll}
 		>
 			<ol className={createClassName(styles, 'message-list__content')}>{this.renderItems(this.props)}</ol>
 		</div>

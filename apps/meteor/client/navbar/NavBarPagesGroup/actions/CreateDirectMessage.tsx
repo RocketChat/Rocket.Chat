@@ -1,0 +1,111 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import {
+	Box,
+	Modal,
+	Button,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
+import { FieldGroup, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
+import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
+import { useId, memo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
+
+type CreateDirectMessageProps = { onClose: () => void };
+
+const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
+	const t = useTranslation();
+	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const createDMFormId = useId();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
+
+	const {
+		control,
+		handleSubmit,
+		formState: { isSubmitting, isValidating, errors },
+	} = useForm({ defaultValues: { users: [] } });
+
+	const goToRoom = useGoToRoom();
+
+	const mutateDirectMessage = useMutation({
+		mutationFn: createDirectAction,
+		onSuccess: ({ room: { rid } }) => {
+			goToRoom(rid);
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => {
+			onClose();
+		},
+	});
+
+	const handleCreate = async ({ users }: { users: IUser['username'][] }) => {
+		return mutateDirectMessage.mutateAsync({ usernames: users.join(',') });
+	};
+
+	return (
+		<Modal
+			aria-labelledby={`${createDMFormId}-title`}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+		>
+			<ModalHeader>
+				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
+				<ModalClose tabIndex={-1} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
+				<FieldGroup>
+					<Field>
+						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='users'
+								rules={{
+									required: t('Direct_message_creation_error'),
+									validate: (users) =>
+										users.length + 1 > directMaxUsers
+											? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
+											: undefined,
+								}}
+								control={control}
+								render={({ field: { name, onChange, value, onBlur } }) => (
+									<UserAutoCompleteMultiple
+										name={name}
+										onChange={onChange}
+										value={value}
+										onBlur={onBlur}
+										federated
+										aria-required='true'
+										error={errors.users?.message}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.users && <FieldError>{errors.users.message}</FieldError>}
+						<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
+					</Field>
+				</FieldGroup>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button loading={isSubmitting || isValidating} type='submit' primary>
+						{t('Create')}
+					</Button>
+				</ModalFooterControllers>
+			</ModalFooter>
+		</Modal>
+	);
+};
+
+export default memo(CreateDirectMessage);

@@ -38,6 +38,6 @@ export const requestPdfTranscript = async (
 		return;
 	}
 
-	logger.info(`Queuing work for room ${room._id}`);
+	logger.info({ msg: 'Queuing work for room', roomId: room._id });
 	await QueueWorker.queueWork('work', `${serviceName}.workOnPdf`, details);
 };

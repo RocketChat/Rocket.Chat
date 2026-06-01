@@ -1,9 +1,9 @@
 import type { IPersonalAccessToken, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
 type AccountTokensRowProps = {

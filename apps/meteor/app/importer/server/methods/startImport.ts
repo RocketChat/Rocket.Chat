@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 export const executeStartImport = async ({ input }: StartImportParamsPOST, startedByUserId: IUser['_id']) => {
 	const operation = await Imports.findLastImport();
@@ -33,6 +34,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async startImport({ input }: StartImportParamsPOST) {
+		methodDeprecationLogger.method('startImport', '9.0.0', '/v1/startImport');
 		if (!input || typeof input !== 'object' || !isStartImportParamsPOST({ input })) {
 			throw new Meteor.Error(`Invalid Selection data provided to the importer.`);
 		}

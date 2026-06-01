@@ -2,11 +2,11 @@ import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser, IVisit
 import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
-	const visitor = await LivechatVisitors.findOneEnabledById(visitorId);
+	const visitor = await LivechatVisitors.findOneEnabledById(visitorId, { projection: { token: 0 } });
 	if (!visitor) {
 		throw new Error('visitor-not-found');
 	}

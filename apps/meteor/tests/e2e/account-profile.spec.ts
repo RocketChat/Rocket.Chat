@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -31,15 +32,15 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputUsername.fill(newUsername);
 			await poAccountProfile.btnSubmit.click();
 			await poAccountProfile.btnClose.click();
-			await poHomeChannel.sidenav.openChat('general');
+			await poHomeChannel.navbar.openChat('general');
 			await poHomeChannel.content.sendMessage('any_message');
 
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.content.linkUserCard.click();
+			await poHomeChannel.userCard.openUserInfo();
 
-			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {
@@ -58,38 +59,26 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
 
-			test('should display a skeleton if the image url is not valid', async () => {
+			test('should show inline error if the image url is not valid', async () => {
 				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
 				await poAccountProfile.btnSetAvatarLink.click();
 
-				await poAccountProfile.btnSubmit.click();
-				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
 			});
-		});
-	});
 
-	test.describe('Security', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('account/security');
-			await page.waitForSelector('#main-content');
-		});
+			test('should show inline error if url does not point to an image', async () => {
+				await poAccountProfile.inputAvatarLink.fill('https://google.com');
+				await poAccountProfile.btnSetAvatarLink.click();
 
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/security');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
 
-			const results = await makeAxeBuilder().analyze();
-			expect(results.violations).toEqual([]);
-		});
-
-		test('should disable and enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.email2FASwitch).toBeVisible();
-			await poAccountProfile.email2FASwitch.click();
-			await poHomeChannel.toastMessage.waitForDisplay();
-			await poHomeChannel.toastMessage.dismissToast();
-
-			await poAccountProfile.email2FASwitch.click();
-			await poHomeChannel.toastMessage.waitForDisplay();
+			test('should not allow avatar URL change when avatar changes are disabled', async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', false);
+				await expect(poAccountProfile.btnSetAvatarLink).toBeDisabled();
+				await expect(poAccountProfile.inputAvatarLink).toBeDisabled();
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
+			});
 		});
 	});
 

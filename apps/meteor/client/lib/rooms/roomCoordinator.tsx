@@ -1,6 +1,5 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../app/authorization/client';
 import type {
@@ -17,6 +16,7 @@ import { router } from '../../providers/RouterProvider';
 import { Subscriptions } from '../../stores';
 import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout';
+import { absoluteUrl } from '../absoluteUrl';
 import { appLayout } from '../appLayout';
 
 class RoomCoordinatorClient extends RoomCoordinator {
@@ -67,18 +67,18 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		roomType: RoomType,
 		subData: RoomIdentification,
 		queryParams?: Record<string, string>,
-		options: { replace?: boolean } = {},
+		options: { replace?: boolean; routeParamsOverrides?: Record<string, string> } = {},
 	): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;
 		}
 
-		let routeData = {};
+		let _routeData = {};
 		if (config.route.link) {
-			routeData = config.route.link(subData);
+			_routeData = config.route.link(subData);
 		} else if (subData?.name) {
-			routeData = {
+			_routeData = {
 				name: subData.name,
 			};
 		} else {
@@ -88,7 +88,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		router.navigate(
 			{
 				pattern: config.route.path ?? '/home',
-				params: routeData,
+				params: { ..._routeData, ...options.routeParamsOverrides },
 				search: queryParams,
 			},
 			options,
@@ -203,7 +203,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return false;
 		}
 
-		return Meteor.absoluteUrl(
+		return absoluteUrl(
 			router.buildRoutePath({
 				name: config.route.name,
 				params: routeData,

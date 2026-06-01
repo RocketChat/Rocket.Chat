@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -31,6 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
+			{ key: { 'externalIds.entityId': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
@@ -47,6 +48,51 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.findOne(query);
+	}
+
+	async findOneVisitorByPhoneOrEmailAndAddExternalId(
+		contactData: { phone: string } | { email: string },
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null> {
+		const query =
+			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
+
+		const visitor = await this.findOne(query);
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id: visitor._id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
+	}
+
+	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null> {
+		return this.findOne({
+			'externalIds.entityId': entityId,
+		});
+	}
+
+	async updateExternalIdById(
+		_id: string,
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null> {
+		const visitor = await this.findOne({ _id });
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
 	}
 
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
@@ -369,7 +415,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.deleteOne({ _id });
 	}
 
-	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
+	async saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
@@ -384,16 +430,27 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		// the only reason we're using $setUnion here instead of $addToSet is because
-		// old visitors might have `visitorEmails` or `phone` as `null` which would cause $addToSet to fail
-		return this.updateOne({ _id }, [
+		// TODO: Lead Capture features: Either create a migration script fixing records or deprecate it
+		// Temporary workaround for legacy data.
+		// Some old records have 'visitorEmails' or 'phone' set to 'null', which breaks the $addToSet below.
+		// Pending Product decision: either run a proper DB migration to fix all nulls,
+		// or deprecate this feature entirely. Remove this once a decision is made.
+		if (saveEmail.length) {
+			await this.updateOne({ _id, visitorEmails: null as any }, { $set: { visitorEmails: [] } });
+		}
+		if (savePhone.length) {
+			await this.updateOne({ _id, phone: null }, { $set: { phone: [] } });
+		}
+
+		return this.updateOne(
+			{ _id },
 			{
-				$set: {
-					...(saveEmail.length && { visitorEmails: { $setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail] } }),
-					...(savePhone.length && { phone: { $setUnion: [{ $ifNull: ['$phone', []] }, savePhone] } }),
+				$addToSet: {
+					...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+					...(savePhone.length && { phone: { $each: savePhone } }),
 				},
 			},
-		]);
+		);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
@@ -449,6 +506,13 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	updateDepartmentById(_id: string, department: string) {
 		return this.findOneAndUpdate({ _id }, { $set: { department } }, { returnDocument: 'after' });
+	}
+
+	findByIds(ids: string[], options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+		const query = {
+			_id: { $in: ids },
+		};
+		return this.find(query, options);
 	}
 }
 

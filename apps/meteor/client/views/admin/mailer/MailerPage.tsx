@@ -12,16 +12,15 @@ import {
 	ButtonGroup,
 	Box,
 } from '@rocket.chat/fuselage';
+import { validateEmail } from '@rocket.chat/tools';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 type SendEmailFormValue = {
 	fromEmail: string;
@@ -176,7 +175,9 @@ const MailerPage = () => {
 									{errors.emailBody.message}
 								</FieldError>
 							)}
-							<FieldHint id={`${emailBodyId}-hint`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Mailer_body_tags')) }} />
+							<FieldHint id={`${emailBodyId}-hint`}>
+								<Trans i18nKey='Mailer_body_tags' components={{ b: <b /> }} />
+							</FieldHint>
 						</Field>
 					</FieldGroup>
 				</Box>

@@ -34,9 +34,6 @@ import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
-/**
- * @extends BaseRaw<ILivechatRoom>
- */
 export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, 'room', trash);
@@ -68,10 +65,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{ key: { 'livechatData.$**': 1 } },
-			// TODO: Remove index on next major
-			// { key: { pdfTranscriptRequested: 1 }, sparse: true },
 			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
-			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
 			{ key: { source: 1, ts: 1 }, partialFilterExpression: { source: { $exists: true }, t: 'l' } },
@@ -80,6 +74,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
 			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 			{ key: { contactId: 1 }, partialFilterExpression: { contactId: { $exists: true }, t: 'l' } },
+			{
+				key: { 'v.token': 1 },
+				unique: true,
+				partialFilterExpression: {
+					t: 'l',
+					open: true,
+					_enforceSingleRoom: true,
+				},
+			},
 		];
 	}
 

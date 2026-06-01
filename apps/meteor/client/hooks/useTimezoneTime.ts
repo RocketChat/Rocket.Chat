@@ -1,11 +1,9 @@
-import moment from 'moment';
 import { useState, useEffect } from 'react';
 
 import { useFormatTime } from './useFormatTime';
 
 export const useTimezoneTime = (offset: number, interval = 1000): string => {
-	const [time, setTime] = useState<moment.Moment>(() => moment().utcOffset(offset));
-
+	const [now, setNow] = useState(() => new Date());
 	const format = useFormatTime();
 
 	useEffect(() => {
@@ -13,17 +11,10 @@ export const useTimezoneTime = (offset: number, interval = 1000): string => {
 			return;
 		}
 
-		const update = (): void => {
-			setTime(moment().utcOffset(offset));
-		};
-
-		const timer = setInterval(update, interval);
-		update();
-
-		return (): void => {
-			clearInterval(timer);
-		};
+		const timer = setInterval(() => setNow(new Date()), interval);
+		return () => clearInterval(timer);
 	}, [offset, interval]);
 
-	return format(time);
+	const shifted = new Date(now.getTime() + offset * 3600000 + now.getTimezoneOffset() * 60000);
+	return format(shifted);
 };

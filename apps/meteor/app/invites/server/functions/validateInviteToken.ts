@@ -1,6 +1,8 @@
 import { Invites, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { settings } from '../../../settings/server';
+
 export const validateInviteToken = async (token: string) => {
 	if (!token || typeof token !== 'string') {
 		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
@@ -20,6 +22,13 @@ export const validateInviteToken = async (token: string) => {
 	const room = await Rooms.findOneById(inviteData.rid);
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'The invite token is invalid.', {
+			method: 'validateInviteToken',
+			field: 'rid',
+		});
+	}
+
+	if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
+		throw new Meteor.Error('error-invalid-room', 'Room is ABAC managed', {
 			method: 'validateInviteToken',
 			field: 'rid',
 		});

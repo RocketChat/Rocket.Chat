@@ -1,4 +1,4 @@
-import type { CallAnswer, CallHangupReason } from '../definition';
+import type { CallAnswer, CallFeature, CallHangupReason } from '../definition';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type {
 	MediaSignalTransport,
@@ -36,8 +36,8 @@ export class MediaSignalTransportWrapper {
 		});
 	}
 
-	public answer(callId: string, answer: CallAnswer) {
-		return this.sendToServer(callId, 'answer', { answer });
+	public answer(callId: string, answer: CallAnswer, extraData: { supportedFeatures?: CallFeature[] } = {}) {
+		return this.sendToServer(callId, 'answer', { answer, ...extraData });
 	}
 
 	public hangup(callId: string, reason: CallHangupReason) {

@@ -34,12 +34,12 @@ export async function migrateVisitorToContactId({
 	// Search for any contact that is not yet associated with any visitor and that have the same email or phone number as this visitor.
 	const existingContact = await LivechatContacts.findContactMatchingVisitor(visitor);
 	if (!existingContact) {
-		logger.debug(`Creating a new contact for existing visitor ${visitor._id}`);
+		logger.debug({ msg: 'Creating a new contact for existing visitor', visitorId: visitor._id });
 		return createContactFromVisitor(visitor, source);
 	}
 
 	// There is already an existing contact with no linked visitors and matching this visitor's phone or email, so let's use it
-	logger.debug(`Adding channel to existing contact ${existingContact._id}`);
+	logger.debug({ msg: 'Adding channel to existing contact', contactId: existingContact._id });
 	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact, source);
 
 	// Update all existing rooms matching the visitor id and source to set the contactId to them

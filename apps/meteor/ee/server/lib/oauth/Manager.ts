@@ -22,7 +22,7 @@ export class OAuthEEManager {
 
 			const userChannelAdmin = await Users.findOneByUsernameIgnoringCase(channelsAdmin);
 			if (!userChannelAdmin) {
-				logger.error(`could not create channel, user not found: ${channelsAdmin}`);
+				logger.error({ msg: 'could not create channel, user not found', channelsAdmin });
 				return;
 			}
 
@@ -38,7 +38,7 @@ export class OAuthEEManager {
 						if (!room) {
 							const createdRoom = await createRoom('c', channel, userChannelAdmin, [], false, false);
 							if (!createdRoom?.rid) {
-								logger.error(`could not create channel ${channel}`);
+								logger.error({ msg: 'could not create channel', channel });
 								return;
 							}
 

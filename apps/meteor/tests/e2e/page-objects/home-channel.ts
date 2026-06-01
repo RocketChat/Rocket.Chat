@@ -1,7 +1,27 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
+import {
+	HomeContent,
+	Navbar,
+	Sidepanel,
+	RoomSidebar,
+	ToastMessages,
+	RoomComposer,
+	ThreadComposer,
+	MembersFlexTab,
+	ChannelsFlexTab,
+	NotificationPreferencesFlexTab,
+	ExportMessagesFlexTab,
+	PruneMessagesFlexTab,
+	SearchMessagesFlexTab,
+	RoomInfoFlexTab,
+	ThreadsFlexTab,
+	EditRoomFlexTab,
+	UserInfoFlexTab,
+	FilesFlexTab,
+} from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
+import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
 
 export class HomeChannel {
@@ -9,15 +29,27 @@ export class HomeChannel {
 
 	readonly content: HomeContent;
 
-	readonly sidenav: HomeSidenav;
-
 	readonly sidebar: RoomSidebar;
 
 	readonly sidepanel: Sidepanel;
 
 	readonly navbar: Navbar;
 
-	readonly tabs: HomeFlextab;
+	readonly userCard: UserCard;
+
+	private _tabs: {
+		members: MembersFlexTab;
+		userInfo: UserInfoFlexTab;
+		room: RoomInfoFlexTab;
+		editRoom: EditRoomFlexTab;
+		channels: ChannelsFlexTab;
+		notificationPreferences: NotificationPreferencesFlexTab;
+		exportMessages: ExportMessagesFlexTab;
+		pruneMessages: PruneMessagesFlexTab;
+		searchMessages: SearchMessagesFlexTab;
+		threads: ThreadsFlexTab;
+		files: FilesFlexTab;
+	};
 
 	readonly roomToolbar: RoomToolbar;
 
@@ -25,53 +57,60 @@ export class HomeChannel {
 
 	readonly toastMessage: ToastMessages;
 
+	readonly composer: RoomComposer;
+
+	readonly threadComposer: ThreadComposer;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
-		this.sidenav = new HomeSidenav(page);
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
-		this.tabs = new HomeFlextab(page);
+		this.userCard = new UserCard(page);
+		this._tabs = {
+			members: new MembersFlexTab(page),
+			userInfo: new UserInfoFlexTab(page),
+			room: new RoomInfoFlexTab(page.getByRole('dialog', { name: 'Channel info' })),
+			editRoom: new EditRoomFlexTab(page.getByRole('dialog', { name: 'Edit channel' })),
+			channels: new ChannelsFlexTab(page),
+			notificationPreferences: new NotificationPreferencesFlexTab(page),
+			exportMessages: new ExportMessagesFlexTab(page),
+			pruneMessages: new PruneMessagesFlexTab(page),
+			searchMessages: new SearchMessagesFlexTab(page),
+			threads: new ThreadsFlexTab(page),
+			files: new FilesFlexTab(page),
+		};
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
 		this.toastMessage = new ToastMessages(page);
+		this.composer = new RoomComposer(page);
+		this.threadComposer = new ThreadComposer(page);
+	}
+
+	get tabs() {
+		return this._tabs;
 	}
 
 	goto() {
 		return this.page.goto('/home');
 	}
 
+	async gotoChannel(name: string) {
+		await this.page.goto(`/channel/${name}`);
+		await this.content.waitForChannel();
+	}
+
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
-	get composer(): Locator {
-		return this.page.locator('textarea[name="msg"]');
-	}
-
-	get composerBoxPopup(): Locator {
-		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
 	}
 
 	get userCardToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
 	}
 
-	get composerToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
-	}
-
-	get composerToolbarActions(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"] button');
-	}
-
 	get roomHeaderFavoriteBtn(): Locator {
 		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
-	}
-
-	get readOnlyFooter(): Locator {
-		return this.page.locator('footer', { hasText: 'This room is read only' });
 	}
 
 	get roomHeaderToolbar(): Locator {
@@ -114,11 +153,41 @@ export class HomeChannel {
 		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
 	}
 
-	get btnJoinRoom(): Locator {
-		return this.page.getByRole('button', { name: 'Join' });
+	get homepageHeader(): Locator {
+		return this.page.locator('main').getByRole('heading', { name: 'Home' });
 	}
 
-	get statusUploadIndicator(): Locator {
-		return this.page.getByRole('main').getByRole('status');
+	get dialogEmojiPicker(): Locator {
+		return this.page.getByRole('dialog', { name: 'Emoji picker' });
+	}
+
+	get scrollerEmojiPicker(): Locator {
+		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
+	}
+
+	get btnJoinChannel() {
+		return this.page.getByRole('button', { name: 'Join channel' });
+	}
+
+	getEmojiPickerTabByName(name: string) {
+		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
+	}
+
+	getEmojiByName(name: string) {
+		return this.dialogEmojiPicker.locator(`role=tabpanel >> role=button[name="${name}"]`);
+	}
+
+	async pickEmoji(emoji: string, section = 'Smileys & People') {
+		await this.composer.btnEmoji.click();
+		await this.getEmojiPickerTabByName(section).click();
+		await this.getEmojiByName(emoji).click();
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.homepageHeader.waitFor({ state: 'visible' });
+	}
+
+	async waitForRoomLoad(): Promise<void> {
+		await this.roomHeaderToolbar.waitFor({ state: 'visible' });
 	}
 }

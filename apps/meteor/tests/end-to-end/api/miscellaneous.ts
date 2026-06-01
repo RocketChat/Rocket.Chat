@@ -1,11 +1,11 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IInstanceStatus, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -228,7 +228,7 @@ describe('miscellaneous', () => {
 			[testChannel, testGroup, teamCreated] = await Promise.all([
 				createRoom({ name: `channel.test.${Date.now()}`, type: 'c' }).then((res) => res.body.channel),
 				createRoom({ name: `group.test.${Date.now()}`, type: 'p' }).then((res) => res.body.group),
-				createTeam(normalUserCredentials, teamName, TEAM_TYPE.PUBLIC),
+				createTeam(normalUserCredentials, teamName, TeamType.PUBLIC),
 			]);
 		});
 
@@ -448,7 +448,7 @@ describe('miscellaneous', () => {
 			await updateSetting('UI_Allow_room_names_with_special_chars', true);
 			testChannelSpecialChars = (await createRoom({ type: 'c', name: fnameSpecialCharsRoom, credentials: userCredentials })).body.channel;
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}`, credentials: userCredentials })).body.channel;
-			testTeam = await createTeam(userCredentials, teamName, TEAM_TYPE.PUBLIC);
+			testTeam = await createTeam(userCredentials, teamName, TeamType.PUBLIC);
 		});
 
 		after(async () => {
@@ -687,178 +687,50 @@ describe('miscellaneous', () => {
 		});
 	});
 
-	describe('[/stdout.queue]', () => {
-		let testUser: TestUser<IUser>;
-		let testUsername: string;
-		let testUserPassword: string;
+	describe('/fingerprint', () => {
+		let unauthorizedUser: TestUser<IUser>;
+		let unauthorizedUserCredentials: Credentials;
+
 		before(async () => {
-			testUser = await createUser();
-			testUsername = testUser.username;
-			testUserPassword = password;
-			await updateSetting('Log_Trace_Methods', true);
-			await updateSetting('Log_Level', '2');
-
-			// populate the logs by sending method calls
-			const populateLogsPromises = [];
-			populateLogsPromises.push(
-				request
-					.post(methodCall('getRoomRoles'))
-					.set(credentials)
-					.set('Cookie', `rc_token=${credentials['X-Auth-Token']}`)
-					.send({
-						message: JSON.stringify({
-							method: 'getRoomRoles',
-							params: ['GENERAL'],
-							id: 'id',
-							msg: 'method',
-						}),
-					}),
-			);
-
-			populateLogsPromises.push(
-				request
-					.post(methodCall('private-settings:get'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'private-settings/get',
-							params: [
-								{
-									$date: new Date().getTime(),
-								},
-							],
-							id: 'id',
-							msg: 'method',
-						}),
-					}),
-			);
-
-			populateLogsPromises.push(
-				request.post(api('login')).send({
-					user: {
-						username: testUsername,
-					},
-					password: testUserPassword,
-				}),
-			);
-
-			await Promise.all(populateLogsPromises);
+			unauthorizedUser = await createUser();
+			unauthorizedUserCredentials = await doLogin(unauthorizedUser.username, password);
 		});
 
 		after(async () => {
-			await Promise.all([updateSetting('Log_Trace_Methods', false), updateSetting('Log_Level', '0'), deleteUser(testUser)]);
+			await deleteUser(unauthorizedUser);
 		});
 
-		it('if log trace enabled, x-auth-token should be redacted', async () => {
-			await request
-				.get(api('stdout.queue'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('queue').that.is.an('array');
+		it('should return 401 when called without authentication', async () => {
+			const res = await request.post(api('fingerprint')).send({ setDeploymentAs: 'updated-configuration' });
 
-					const { queue } = res.body;
-					let foundRedactedToken = false;
-
-					for (const log of queue) {
-						if (log.string.includes("'x-auth-token': '[redacted]'")) {
-							foundRedactedToken = true;
-							break;
-						}
-					}
-
-					expect(foundRedactedToken).to.be.true;
-				});
+			expect(res.status).to.equal(401);
+			expect(res.body).to.have.property('status', 'error');
 		});
 
-		it('if log trace enabled, rc_token should be redacted', async () => {
-			await request
-				.get(api('stdout.queue'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('queue').that.is.an('array');
+		it('should return 403 when a user without the manage-cloud permission tries to acknowledge a deployment configuration change', async () => {
+			const res = await request
+				.post(api('fingerprint'))
+				.set(unauthorizedUserCredentials)
+				.send({ setDeploymentAs: 'updated-configuration' });
 
-					const { queue } = res.body;
-					let foundRedactedCookie = false;
-
-					for (const log of queue) {
-						if (log.string.includes('rc_token=[redacted]')) {
-							foundRedactedCookie = true;
-							break;
-						}
-					}
-
-					expect(foundRedactedCookie).to.be.true;
-				});
+			expect(res.status).to.equal(403);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
 
-		it('should not return user token anywhere in the log stream', async () => {
-			await request
-				.get(api('stdout.queue'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('queue').that.is.an('array');
+		it('should return 403 when a user without the manage-cloud permission tries to deregister the workspace as a new workspace', async () => {
+			const res = await request.post(api('fingerprint')).set(unauthorizedUserCredentials).send({ setDeploymentAs: 'new-workspace' });
 
-					const { queue } = res.body;
-					let foundTokenValue = false;
-
-					for (const log of queue) {
-						if (log.string.includes(credentials['X-Auth-Token'])) {
-							foundTokenValue = true;
-							break;
-						}
-					}
-
-					expect(foundTokenValue).to.be.false;
-				});
+			expect(res.status).to.equal(403);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
 
-		describe('permissions', () => {
-			before(async () => {
-				return updatePermission('view-logs', ['admin']);
-			});
+		it('should return 200 when a user with the manage-cloud permission acknowledges a deployment configuration change', async () => {
+			const res = await request.post(api('fingerprint')).set(credentials).send({ setDeploymentAs: 'updated-configuration' });
 
-			after(async () => {
-				return updatePermission('view-logs', ['admin']);
-			});
-
-			it('should return server logs', async () => {
-				return request
-					.get(api('stdout.queue'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-
-						expect(res.body).to.have.property('queue').and.to.be.an('array').that.is.not.empty;
-						expect(res.body.queue[0]).to.be.an('object');
-						expect(res.body.queue[0]).to.have.property('id').and.to.be.a('string');
-						expect(res.body.queue[0]).to.have.property('string').and.to.be.a('string');
-						expect(res.body.queue[0]).to.have.property('ts').and.to.be.a('string');
-					});
-			});
-
-			it('should not return server logs if user does NOT have the view-logs permission', async () => {
-				await updatePermission('view-logs', []);
-				return request
-					.get(api('stdout.queue'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					});
-			});
+			expect(res.status).to.equal(200);
+			expect(res.body).to.have.property('success', true);
 		});
 	});
 });

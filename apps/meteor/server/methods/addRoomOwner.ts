@@ -7,9 +7,10 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
-import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
+import { beforeChangeRoomRole } from '../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
@@ -107,6 +108,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 
 Meteor.methods<ServerMethods>({
 	async addRoomOwner(rid, userId) {
+		methodDeprecationLogger.method('addRoomOwner', '9.0.0', ['/v1/channels.addOwner', '/v1/groups.addOwner']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

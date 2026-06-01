@@ -1,52 +1,44 @@
-import { IconButton, Sidebar } from '@rocket.chat/fuselage';
-import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement } from 'react';
-import { memo, useState } from 'react';
+import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { memo } from 'react';
+
+import { useDeferredMenuMount } from './useDeferredMenuMount';
 
 type CondensedProps = {
-	title: ReactElement | string;
-	titleIcon?: ReactElement;
-	avatar: ReactElement | boolean;
-	icon?: IconName;
-	actions?: ReactElement;
+	title: ReactNode;
+	titleIcon?: ReactNode;
+	avatar: ReactNode;
+	icon?: ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => ReactElement;
+	menu?: () => ReactNode;
 	menuOptions?: any;
 	selected?: boolean;
-	badges?: ReactElement;
+	badges?: ReactNode;
 	clickable?: boolean;
-};
+} & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const Condensed = ({ icon, title = '', avatar, actions, href, unread, menu, badges, ...props }: CondensedProps) => {
-	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
-	const handleFocus = () => setMenuVisibility(true);
-	const handlePointerEnter = () => setMenuVisibility(true);
+const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: CondensedProps) => {
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<Sidebar.Item {...props} {...({ href } as any)} clickable={!!href} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
-			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
-			<Sidebar.Item.Content>
-				<Sidebar.Item.Wrapper>
-					{icon}
-					<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
-						{title}
-					</Sidebar.Item.Title>
-				</Sidebar.Item.Wrapper>
-				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
-				{menu && (
-					<Sidebar.Item.Menu>
-						{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
-					</Sidebar.Item.Menu>
-				)}
-			</Sidebar.Item.Content>
-			{actions && (
-				<Sidebar.Item.Container>
-					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
-				</Sidebar.Item.Container>
+		<SidebarV2Item title={title} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
+			{icon}
+			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			{badges}
+			{actions}
+			{menu && (
+				<SidebarV2ItemMenu>
+					{menuVisibility ? (
+						menu()
+					) : (
+						<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' onPointerDown={mountNow} />
+					)}
+				</SidebarV2ItemMenu>
 			)}
-		</Sidebar.Item>
+		</SidebarV2Item>
 	);
 };
 

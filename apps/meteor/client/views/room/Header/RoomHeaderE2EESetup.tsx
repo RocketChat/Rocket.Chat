@@ -7,7 +7,7 @@ import { useE2EEState } from '../hooks/useE2EEState';
 
 const RoomToolboxE2EESetup = lazy(() => import('./RoomToolbox/RoomToolboxE2EESetup'));
 
-const RoomHeaderE2EESetup = ({ room, slots = {} }: RoomHeaderProps) => {
+const RoomHeaderE2EESetup = ({ room }: RoomHeaderProps) => {
 	const e2eeState = useE2EEState();
 	const e2eRoomState = useE2EERoomState(room._id);
 
@@ -16,9 +16,7 @@ const RoomHeaderE2EESetup = ({ room, slots = {} }: RoomHeaderProps) => {
 			<RoomHeader
 				room={room}
 				slots={{
-					...slots,
 					toolbox: {
-						...slots.toolbox,
 						content: <RoomToolboxE2EESetup />,
 					},
 				}}
@@ -26,7 +24,7 @@ const RoomHeaderE2EESetup = ({ room, slots = {} }: RoomHeaderProps) => {
 		);
 	}
 
-	return <RoomHeader room={room} slots={slots} />;
+	return <RoomHeader room={room} />;
 };
 
 export default RoomHeaderE2EESetup;

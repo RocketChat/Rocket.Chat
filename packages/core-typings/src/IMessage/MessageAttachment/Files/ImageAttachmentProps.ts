@@ -1,10 +1,12 @@
 import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { Dimensions } from './Dimensions';
 import type { FileAttachmentProps } from './FileAttachmentProps';
 import type { FileProp } from './FileProp';
 
 export type ImageAttachmentProps = {
-	image_dimensions?: Dimensions;
+	image_dimensions?: {
+		width: number;
+		height: number;
+	};
 	image_preview?: string;
 	image_url: string;
 	image_type?: string;

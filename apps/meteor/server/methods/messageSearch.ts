@@ -1,10 +1,11 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -42,7 +43,7 @@ export const messageSearch = async function (
 		};
 	}
 
-	const user = (await Meteor.userAsync()) as IUser | undefined;
+	const user = (await Users.findOneById(userId)) || undefined;
 
 	const { query, options } = parseMessageSearchQuery(text, {
 		user,
@@ -87,6 +88,7 @@ export const messageSearch = async function (
 
 Meteor.methods<ServerMethods>({
 	async messageSearch(text, rid, limit, offset) {
+		methodDeprecationLogger.method('messageSearch', '9.0.0', '/v1/chat.search');
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

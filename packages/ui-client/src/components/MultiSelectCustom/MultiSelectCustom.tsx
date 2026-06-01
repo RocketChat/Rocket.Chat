@@ -1,6 +1,7 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import { useButtonPattern, useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconNames } from '@rocket.chat/icons';
 import type { ComponentPropsWithoutRef, FormEvent, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
@@ -26,6 +27,7 @@ export type OptionProp = {
 	text: string;
 	checked?: boolean;
 	isGroupTitle?: boolean;
+	icon?: { name: IconNames; color?: 'default' | 'danger' | 'warning' };
 };
 
 /**

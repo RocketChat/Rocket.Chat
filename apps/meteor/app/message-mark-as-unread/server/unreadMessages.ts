@@ -4,6 +4,7 @@ import { Messages, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -69,7 +70,10 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		return logger.debug('Provided message is already marked as unread');
 	}
 
-	logger.debug(`Updating unread message of ${originalMessage.ts} as the first unread`);
+	logger.debug({
+		msg: 'Updating unread message as the first unread',
+		timestamp: originalMessage.ts,
+	});
 	const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 	if (setAsUnreadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(originalMessage.rid, userId);
@@ -78,6 +82,7 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 
 Meteor.methods<ServerMethods>({
 	async unreadMessages(firstUnreadMessage, room) {
+		methodDeprecationLogger.method('unreadMessages', '9.0.0', '/v1/subscriptions.unread');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { RateLimiter } from '../../../lib/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { follow } from '../functions';
@@ -18,7 +19,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const followMessage = async (userId: string, { mid }: { mid: IMessage['_id'] }): Promise<false | undefined> => {
+export const followMessage = async (user: IUser, { mid }: { mid: IMessage['_id'] }): Promise<false | undefined> => {
 	if (mid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 	}
@@ -30,34 +31,35 @@ export const followMessage = async (userId: string, { mid }: { mid: IMessage['_i
 		});
 	}
 
-	if (!(await canAccessRoomIdAsync(message.rid, userId))) {
+	if (!(await canAccessRoomIdAsync(message.rid, user._id))) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 	}
 
 	const id = message.tmid || message._id;
 
-	const followResult = await follow({ tmid: id, uid: userId });
+	const followResult = await follow({ tmid: id, uid: user._id });
 
 	void notifyOnMessageChange({
 		id,
 	});
 
 	const isFollowed = true;
-	await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, user, isFollowed);
 
 	return followResult;
 };
 
 Meteor.methods<ServerMethods>({
 	async followMessage({ mid }) {
+		methodDeprecationLogger.method('followMessage', '9.0.0', '/v1/chat.followMessage');
 		check(mid, String);
 
-		const uid = Meteor.userId();
-		if (!uid) {
+		const user = (await Meteor.userAsync()) as IUser;
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'followMessage' });
 		}
 
-		return followMessage(uid, { mid });
+		return followMessage(user, { mid });
 	},
 });
 

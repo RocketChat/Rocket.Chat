@@ -7,7 +7,6 @@ import { hasPermissionAsync } from '../../../../../app/authorization/server/func
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 import { removePersonalAccessTokenOfUser } from './removeToken';
 import { generatePersonalAccessTokenOfUser } from './generateToken';
-
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -44,7 +43,7 @@ export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, use
 };
 
 Meteor.methods<ServerMethods>({
-	'personalAccessTokens:regenerateToken': twoFactorRequired(async function ({ tokenName }) {
+	'personalAccessTokens:regenerateToken': twoFactorRequired(async function ({ tokenName }: { tokenName: string }) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {

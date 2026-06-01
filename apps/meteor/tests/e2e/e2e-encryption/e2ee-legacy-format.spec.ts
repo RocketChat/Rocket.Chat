@@ -53,7 +53,7 @@ test.describe('E2EE Legacy Format', () => {
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -72,7 +72,7 @@ test.describe('E2EE Legacy Format', () => {
 
 		await page.evaluate(
 			async ({ rid, kid, encryptedKey }) => {
-				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path, @typescript-eslint/consistent-type-imports
+				// eslint-disable-next-line import/no-unresolved, import/no-absolute-path
 				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
 				const room = await e2e.getInstanceByRoomId(rid);
 				await room?.importGroupKey(kid + encryptedKey);

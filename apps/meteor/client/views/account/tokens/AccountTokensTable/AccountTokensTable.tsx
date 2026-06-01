@@ -1,23 +1,22 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
-import type { ReactElement, RefObject } from 'react';
-import { useMemo, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import AccountTokensRow from './AccountTokensRow';
-import AddToken from './AddToken';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import {
+	GenericModal,
 	GenericTable,
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
 	GenericTableHeaderCell,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+	usePagination,
+} from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { ReactElement, RefObject } from 'react';
+import { useMemo, useCallback } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
+import AccountTokensRow from './AccountTokensRow';
+import AddToken from './AddToken';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { miscQueryKeys } from '../../../../lib/queryKeys';
 
@@ -27,8 +26,8 @@ const AccountTokensTable = (): ReactElement => {
 	const setModal = useSetModal();
 	const userId = useUserId();
 
-	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
-	const removeToken = useMethod('personalAccessTokens:removeToken');
+	const regenerateToken = useEndpoint('POST', '/v1/users.regeneratePersonalAccessToken');
+	const removeToken = useEndpoint('POST', '/v1/users.removePersonalAccessToken');
 
 	const getPersonalAccessTokens = useEndpoint('GET', '/v1/users.getPersonalAccessTokens');
 	const { isPending, isSuccess, data, isError, error } = useQuery({
@@ -70,20 +69,13 @@ const AccountTokensTable = (): ReactElement => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					setModal(null);
-					const token = await regenerateToken({ tokenName: name });
+					const { token } = await regenerateToken({ tokenName: name });
 
 					setModal(
 						<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={closeModal}>
-							<Box
-								dangerouslySetInnerHTML={{
-									__html: DOMPurify.sanitize(
-										t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-											token,
-											userId,
-										}),
-									),
-								}}
-							/>
+							<Box>
+								<Trans i18nKey='API_Personal_Access_Token_Generated_Text_Token_s_UserId_s' values={{ token, userId }} />
+							</Box>
 						</GenericModal>,
 					);
 
@@ -169,7 +161,7 @@ const AccountTokensTable = (): ReactElement => {
 								filteredTokens &&
 								filteredTokens.map((filteredToken) => (
 									<AccountTokensRow
-										key={filteredToken.createdAt}
+										key={filteredToken.lastTokenPart}
 										onRegenerate={handleRegenerate}
 										onRemove={handleRemove}
 										isMedium={isMedium}

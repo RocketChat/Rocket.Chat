@@ -9,12 +9,10 @@ type CreateRoomParams = {
 	name?: IRoom['name'];
 	type: IRoom['t'];
 	username?: string;
-	token?: string;
-	agentId?: string;
 	members?: string[];
 	credentials?: Credentials;
+	readOnly?: boolean;
 	extraData?: Record<string, any>;
-	voipCallDirection?: 'inbound' | 'outbound';
 	config?: IRequestConfig;
 };
 
@@ -22,12 +20,10 @@ export const createRoom = ({
 	name,
 	type,
 	username,
-	token,
-	agentId,
 	members,
 	credentials: customCredentials,
 	extraData,
-	voipCallDirection = 'inbound',
+	readOnly,
 	config,
 }: CreateRoomParams) => {
 	if (!type) {
@@ -36,15 +32,6 @@ export const createRoom = ({
 
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || customCredentials || credentials;
-
-	if (type === 'v') {
-		/* Special handling for voip type of rooms.
-		 * The endpoints below do not have a way to create
-		 * a voip room. Hence creation of a voip room
-		 * is handled separately here.
-		 */
-		return requestInstance.get(api('voip/room')).query({ token, agentId, direction: voipCallDirection }).set(credentialsInstance).send();
-	}
 
 	if (type === 'd' && !username) {
 		throw new Error('To be able to create DM Room, you must provide the username');
@@ -57,8 +44,6 @@ export const createRoom = ({
 	} as const;
 	const params = type === 'd' ? { username } : { name };
 
-	// Safe assertion because we already checked the type is not 'v'
-	// which is the only case where type is not in the endpoints object
 	const roomType = endpoints[type as keyof typeof endpoints];
 
 	return requestInstance
@@ -67,6 +52,7 @@ export const createRoom = ({
 		.send({
 			...params,
 			...(members && { members }),
+			...(readOnly && { readOnly }),
 			...(extraData && { extraData }),
 		});
 };
@@ -74,7 +60,7 @@ export const createRoom = ({
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
 export type ActionRoomParams = {
 	action: ActionType;
-	type: Exclude<IRoom['t'], 'v' | 'l'>;
+	type: Exclude<IRoom['t'], 'l'>;
 	roomId: IRoom['_id'];
 	overrideCredentials?: Credentials;
 	extraData?: Record<string, any>;
@@ -112,13 +98,20 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
 
-export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials): Promise<ISubscription> =>
-	new Promise((resolve) => {
-		void request
+export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials, req = request): Promise<ISubscription> =>
+	new Promise((resolve, reject) => {
+		void req
 			.get(api('subscriptions.getOne'))
 			.set(userCredentials)
 			.query({ roomId })
-			.end((_err, res) => {
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				if (!res.body?.subscription) {
+					return reject(new Error('Subscription not found'));
+				}
+
 				resolve(res.body.subscription);
 			});
 	});
@@ -136,6 +129,11 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
  * @param config - Optional request configuration for custom domains
  * @returns Promise resolving to the method call response
  */
+// TODO(ddp-removal): swap /api/v1/method.call/addUsersToRoom for the per-type
+// REST endpoints (/v1/channels.invite or /v1/groups.invite). The federation
+// suite still asserts the legacy DDP error shape (`message` field with a
+// stringified `{ error: { error } }`); migrating requires updating those
+// expectations to the REST envelope (`{ success: false, error }`).
 export const addUserToRoom = ({
 	usernames,
 	rid,
@@ -176,6 +174,10 @@ export const addUserToRoom = ({
  * @returns Promise resolving to the method call response
  * @note The slash command expects parameters: { cmd: string, params: string, msg: IMessage, triggerId: string }
  */
+// TODO(ddp-removal): swap /api/v1/method.call/slashCommand for
+// POST /v1/commands.run. Same caveat as addUserToRoom: federation specs
+// inspect the DDP-style `message` payload and need to be ported to the
+// REST envelope first.
 export const addUserToRoomSlashCommand = ({
 	usernames,
 	rid,
@@ -301,10 +303,8 @@ export const findRoomMember = async (
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
 
-	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
 			const membersResponse = await getRoomMembers(roomId, config);
 			const member = membersResponse.members.find((member: IUser) => member.username === username);
 
@@ -313,14 +313,12 @@ export const findRoomMember = async (
 			}
 
 			if (attempt < maxRetries) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		} catch (error) {
 			console.warn(`Attempt ${attempt} to find room member failed:`, error);
 
 			if (attempt < maxRetries) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}

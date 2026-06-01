@@ -21,5 +21,6 @@ export interface IUser {
 	lastLoginAt: Date;
 	settings?: IUserSettings;
 	appId?: string;
+	sipExtension?: string;
 	customFields?: { [key: string]: any };
 }

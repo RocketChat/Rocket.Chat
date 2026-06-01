@@ -1,4 +1,4 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse } from 'node:http';
 
 import type { IUser, IIncomingMessage, IPersonalAccessToken, IRole } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users, Roles } from '@rocket.chat/models';
@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
+import { getSAMLEnvelope } from './getSAMLEnvelope';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -30,14 +31,22 @@ const showErrorMessage = function (res: ServerResponse, err: string): void {
 };
 
 const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_id'][]> => {
-	const roles = (await Roles.findInIdsOrNames(roleNamesOrIds).toArray()).map((role) => role._id);
+	const normalizedRoleNamesOrIds = roleNamesOrIds.map((role) => role.trim()).filter((role) => role.length > 0);
+	if (!normalizedRoleNamesOrIds.length) {
+		throw new Error(`No valid role names or ids provided for conversion: ${roleNamesOrIds.join(', ')}`);
+	}
 
-	if (roles.length !== roleNamesOrIds.length) {
-		SystemLogger.warn(`Failed to convert some role names to ids: ${roleNamesOrIds.join(', ')}`);
+	const roles = (await Roles.findInIdsOrNames(normalizedRoleNamesOrIds).toArray()).map((role) => role._id);
+
+	if (roles.length !== normalizedRoleNamesOrIds.length) {
+		SystemLogger.warn({
+			msg: 'Failed to convert some role names to ids',
+			roles: normalizedRoleNamesOrIds,
+		});
 	}
 
 	if (!roles.length) {
-		throw new Error(`We should have at least one existing role to create the user: ${roleNamesOrIds.join(', ')}`);
+		throw new Error(`We should have at least one existing role to create the user: ${normalizedRoleNamesOrIds.join(', ')}`);
 	}
 
 	return roles;
@@ -66,7 +75,7 @@ export class SAML {
 			case 'logout':
 				return this.processLogoutAction(req, res, service);
 			case 'sloRedirect':
-				return this.processSLORedirectAction(req, res);
+				return this.processSLORedirectAction(req, res, service);
 			case 'authorize':
 				return this.processAuthorizeAction(res, service, samlObject);
 			case 'validate':
@@ -93,14 +102,8 @@ export class SAML {
 	}
 
 	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
-		const {
-			generateUsername,
-			immutableProperty,
-			nameOverwrite,
-			mailOverwrite,
-			channelsAttributeUpdate,
-			defaultUserRole = 'user',
-		} = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole } =
+			SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -142,9 +145,14 @@ export class SAML {
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 		if (!user) {
-			// If we received any role from the mapping, use them - otherwise use the default role for creation.
-			const roleNamesOrIds = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
-			const roles = await convertRoleNamesToIds(roleNamesOrIds);
+			let roleNamesOrIds: string[] = [];
+			if (userObject.roles && userObject.roles.length > 0) {
+				roleNamesOrIds = userObject.roles;
+			} else if (defaultUserRole) {
+				roleNamesOrIds = ensureArray<string>(defaultUserRole.split(','));
+			}
+
+			const roles = roleNamesOrIds.length > 0 ? await convertRoleNamesToIds(roleNamesOrIds) : [];
 
 			const newUser: Record<string, any> = {
 				name: fullName,
@@ -178,7 +186,11 @@ export class SAML {
 				}
 			}
 
-			const userId = await Accounts.insertUserDoc({}, newUser);
+			// only set skipAuthServiceDefaultRoles if SAML is providing its own roles
+			// otherwise, leave it as false to fallback to generic auth service default roles
+			// from Accounts_Registration_AuthenticationServices_Default_Roles
+			const skipAuthServiceDefaultRoles = roleNamesOrIds.length > 0;
+			const userId = await Accounts.insertUserDoc({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
@@ -265,18 +277,28 @@ export class SAML {
 	}
 
 	private static async _logoutRemoveTokens(userId: string): Promise<void> {
-		SAMLUtils.log(`Found user ${userId}`);
+		SAMLUtils.log({ msg: 'Found user', userId });
 
 		await Users.unsetLoginTokens(userId);
 		await Users.removeSamlServiceSession(userId);
 	}
 
 	private static async processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
+		const errorHandler = (err: unknown) => {
+			SystemLogger.error({ err });
+			throw new Meteor.Error('Unable to Validate Logout Request');
+		};
+
+		const envelope = await getSAMLEnvelope(req, 'SAMLRequest', 'HTTP-Redirect').catch(errorHandler);
+		if (!envelope) {
+			errorHandler('No envelope found for SAML Logout Request');
+			return;
+		}
+
 		const serviceProvider = new SAMLServiceProvider(service);
-		await serviceProvider.validateLogoutRequest(req.query.SAMLRequest, async (err, result) => {
+		await serviceProvider.validateLogoutRequest(envelope, async (err, result) => {
 			if (err) {
-				SystemLogger.error({ err });
-				throw new Meteor.Error('Unable to Validate Logout Request');
+				errorHandler(err);
 			}
 
 			if (!result?.nameID || !result?.idpSession) {
@@ -284,7 +306,7 @@ export class SAML {
 			}
 
 			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
-			const redirect = (url?: string | undefined): void => {
+			const redirect = (url?: string): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
 					return;
@@ -331,23 +353,24 @@ export class SAML {
 
 					redirect(url);
 				});
-			} catch (e: any) {
-				SystemLogger.error(e);
+			} catch (err: any) {
+				SystemLogger.error({ err });
 				redirect();
 			}
 		});
 	}
 
 	private static async processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
-		if (!req.query.SAMLResponse) {
-			SAMLUtils.error('Invalid LogoutResponse, missing SAMLResponse', req.query);
+		const envelope = await getSAMLEnvelope(req, 'SAMLResponse', 'HTTP-Redirect');
+		if (!envelope) {
+			SAMLUtils.error({ msg: 'Invalid LogoutResponse received: missing SAMLResponse parameter.', query: req.query });
 			throw new Error('Invalid LogoutResponse received.');
 		}
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		await serviceProvider.validateLogoutResponse(req.query.SAMLResponse, async (err, inResponseTo) => {
+		await serviceProvider.validateLogoutResponse(envelope, async (err, inResponseTo) => {
 			if (err) {
-				return;
+				throw new Error('Logout Response Validation failed');
 			}
 
 			if (!inResponseTo) {
@@ -355,7 +378,7 @@ export class SAML {
 			}
 
 			const logOutUser = async (inResponseTo: string): Promise<void> => {
-				SAMLUtils.log(`Logging Out user via inResponseTo ${inResponseTo}`);
+				SAMLUtils.log({ msg: 'Processing logout for inResponseTo', inResponseTo });
 
 				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
 				if (loggedOutUsers.length > 1) {
@@ -373,18 +396,58 @@ export class SAML {
 				await logOutUser(inResponseTo);
 			} finally {
 				res.writeHead(302, {
-					Location: req.query.RelayState,
+					Location: Meteor.absoluteUrl(),
 				});
 				res.end();
 			}
 		});
 	}
 
-	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse): void {
+	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+		const { idpSLORedirectURL } = service;
+		const userRedirect = req.query.redirect as string;
+
+		if (!idpSLORedirectURL) {
+			res.writeHead(500);
+			res.end('SLO redirect not configured');
+			return;
+		}
+
+		if (!userRedirect || typeof userRedirect !== 'string') {
+			res.writeHead(400);
+			res.end('Missing redirect parameter');
+			return;
+		}
+
+		let configuredURL: URL;
+		let requestURL: URL;
+
+		try {
+			configuredURL = new URL(idpSLORedirectURL);
+			requestURL = new URL(userRedirect);
+		} catch {
+			res.writeHead(400);
+			res.end('Invalid URL format');
+			return;
+		}
+
+		if (configuredURL.origin !== requestURL.origin) {
+			res.writeHead(403);
+			res.end('Unauthorized redirect origin');
+			return;
+		}
+
+		const normalizePath = (p: string): string => p.replace(/\/+$/, '') || '/';
+		if (normalizePath(configuredURL.pathname) !== normalizePath(requestURL.pathname)) {
+			res.writeHead(403);
+			res.end('Unauthorized redirect path');
+			return;
+		}
+
 		res.writeHead(302, {
-			// credentialToken here is the SAML LogOut Request that we'll send back to IDP
-			Location: req.query.redirect,
+			Location: requestURL.toString(),
 		});
+
 		res.end();
 	}
 
@@ -399,8 +462,7 @@ export class SAML {
 		try {
 			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken);
 		} catch (err: any) {
-			SAMLUtils.error('Unable to generate authorize url');
-			SAMLUtils.error(err);
+			SAMLUtils.error({ err, msg: 'Unable to generate authorize url' });
 			url = Meteor.absoluteUrl();
 		}
 
@@ -410,15 +472,29 @@ export class SAML {
 		res.end();
 	}
 
-	private static processValidateAction(
+	private static async processValidateAction(
 		req: IIncomingMessage,
 		res: ServerResponse,
 		service: IServiceProviderOptions,
 		_samlObject: ISAMLAction,
-	): void {
+	): Promise<void> {
+		const redirect = (url?: string) => {
+			res.writeHead(302, {
+				Location: url ?? Meteor.absoluteUrl(),
+			});
+			res.end();
+		};
+
+		const envelope = await getSAMLEnvelope(req, 'SAMLResponse', 'HTTP-POST').catch((err) => SAMLUtils.error(err));
+
+		if (!envelope) {
+			SAMLUtils.error({ msg: 'No envelope found for SAML Response' });
+			return redirect();
+		}
+
 		const serviceProvider = new SAMLServiceProvider(service);
-		SAMLUtils.relayState = req.body.RelayState;
-		serviceProvider.validateResponse(req.body.SAMLResponse, async (err, profile /* , loggedOut*/) => {
+		SAMLUtils.relayState = envelope.relayState ?? null;
+		serviceProvider.validateResponse(envelope, async (err, profile /* , loggedOut*/) => {
 			try {
 				if (err) {
 					SAMLUtils.error(err);
@@ -440,16 +516,10 @@ export class SAML {
 
 				await this.storeCredential(credentialToken, loginResult);
 				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
-				res.writeHead(302, {
-					Location: url,
-				});
-				res.end();
-			} catch (error) {
-				SAMLUtils.error(error);
-				res.writeHead(302, {
-					Location: Meteor.absoluteUrl(),
-				});
-				res.end();
+				redirect(url);
+			} catch (err) {
+				SAMLUtils.error({ err });
+				redirect();
 			}
 		});
 	}
@@ -483,7 +553,7 @@ export class SAML {
 	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for await (let roomName of channels) {
+			for (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;
@@ -510,7 +580,7 @@ export class SAML {
 				}
 			}
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 	}
 }

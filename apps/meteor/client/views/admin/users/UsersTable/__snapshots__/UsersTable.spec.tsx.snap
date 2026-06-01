@@ -42,7 +42,7 @@ exports[`renders Default without crashing 1`] = `
             All_roles
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4unlxe"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1aoxhm7"
             >
               
             </i>
@@ -54,7 +54,7 @@ exports[`renders Default without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-qcmk2x"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+        class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
         data-overlayscrollbars="host"
       >
         <div
@@ -175,7 +175,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="example.user"
@@ -190,6 +190,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--online undefined "
                             height="24"
                             viewBox="0 0 24 24"
@@ -213,7 +214,7 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-16tdyyu"
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
                     >
                       example.user
                     </div>
@@ -259,7 +260,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="john.doe"
@@ -274,6 +275,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--offline undefined "
                             fill="none"
                             height="12"
@@ -302,7 +304,7 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-16tdyyu"
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
                     >
                       john.doe
                     </div>
@@ -348,7 +350,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="sarah.smith"
@@ -363,6 +365,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--away undefined "
                             height="10"
                             viewBox="0 0 10 10"
@@ -388,7 +391,7 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-16tdyyu"
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
                     >
                       sarah.smith
                     </div>
@@ -434,7 +437,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="mike.wilson"
@@ -449,6 +452,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--busy undefined "
                             height="10"
                             viewBox="0 0 10 10"
@@ -474,7 +478,7 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-16tdyyu"
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
                     >
                       mike.wilson
                     </div>
@@ -520,7 +524,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="emma.davis"
@@ -535,6 +539,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--online undefined "
                             height="24"
                             viewBox="0 0 24 24"
@@ -558,7 +563,7 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-16tdyyu"
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
                     >
                       emma.davis
                     </div>
@@ -619,23 +624,27 @@ exports[`renders Default without crashing 1`] = `
       </div>
     </div>
     <nav
-      class="rcx-box rcx-box--full rcx-pagination--divider rcx-pagination"
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
     >
       <div
-        class="rcx-box rcx-box--full rcx-pagination__left"
+        class="rcx-pagination__left"
       >
         <span
-          class="rcx-box rcx-box--full rcx-pagination__label"
+          class="rcx-pagination__label"
+          id=":rb:"
         >
           Items per page:
         </span>
         <ol
+          aria-labelledby=":rb:"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 25 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               disabled=""
               tabindex="-1"
@@ -644,9 +653,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 50 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               tabindex="0"
             >
@@ -654,9 +664,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 100 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               tabindex="0"
             >
@@ -666,20 +677,23 @@ exports[`renders Default without crashing 1`] = `
         </ol>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-pagination__right"
+        class="rcx-pagination__right"
       >
         <span
-          class="rcx-box rcx-box--full rcx-pagination__label"
+          class="rcx-pagination__label"
+          id=":ra:"
         >
           Showing results 1 - 5 of 5
         </span>
         <ol
+          aria-labelledby=":ra:"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Previous page"
               class="rcx-box rcx-box--full rcx-pagination__back"
               disabled=""
             >
@@ -696,9 +710,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Page 1"
               class="rcx-box rcx-box--full rcx-pagination__link"
               disabled=""
             >
@@ -706,9 +721,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Next page"
               class="rcx-box rcx-box--full rcx-pagination__forward"
               disabled=""
             >
@@ -773,7 +789,7 @@ exports[`renders Loading without crashing 1`] = `
             All_roles
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4unlxe"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1aoxhm7"
             >
               
             </i>
@@ -785,7 +801,7 @@ exports[`renders Loading without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-qcmk2x"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+        class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
         data-overlayscrollbars="host"
       >
         <div
@@ -1496,7 +1512,7 @@ exports[`renders NoResults without crashing 1`] = `
             All_roles
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4unlxe"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1aoxhm7"
             >
               
             </i>

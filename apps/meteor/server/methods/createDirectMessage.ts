@@ -9,7 +9,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../lib/callbacks';
 
 export async function createDirectMessage(
 	usernames: IUser['username'][],

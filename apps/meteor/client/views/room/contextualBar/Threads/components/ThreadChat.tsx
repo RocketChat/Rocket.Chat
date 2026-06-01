@@ -1,12 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { ContextualbarContent } from '@rocket.chat/ui-client';
+import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useCallback, useId } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
-import { callbacks } from '../../../../../../lib/callbacks';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../body/DropTargetOverlay';
 import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
@@ -21,7 +20,11 @@ type ThreadChatProps = {
 };
 
 const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const chat = useChat();
+
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
 
@@ -48,7 +51,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		closeTab();
 	}, [closeTab]);
 
-	const chat = useChat();
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat?.messageEditing.toPreviousMessage();
@@ -58,17 +61,10 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		chat?.messageEditing.toNextMessage();
 	}, [chat?.messageEditing]);
 
-	const handleUploadFiles = useCallback(
-		(files: readonly File[]): void => {
-			chat?.flows.uploadFiles(files);
-		},
-		[chat?.flows],
-	);
-
 	const room = useRoom();
 	const readThreads = useMethod('readThreads');
 	useEffect(() => {
-		callbacks.add(
+		clientCallbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
 				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
@@ -77,18 +73,20 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 
 				readThreads(mainMessage._id);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			`thread-${room._id}`,
 		);
 
 		return () => {
-			callbacks.remove('streamNewMessage', `thread-${room._id}`);
+			clientCallbacks.remove('streamNewMessage', `thread-${room._id}`);
 		};
 	}, [mainMessage._id, readThreads, room._id]);
 
 	const subscription = useRoomSubscription();
 	const sendToChannelID = useId();
 	const t = useTranslation();
+
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 
 	return (
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
@@ -105,10 +103,14 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					height='full'
 				>
 					<MessageListErrorBoundary>
-						<ThreadMessageList mainMessage={mainMessage} />
+						<ThreadMessageList
+							mainMessage={mainMessage}
+							shouldJumpToBottom={shouldJumpToBottom}
+							setShouldJumpToBottom={setShouldJumpToBottom}
+						/>
 					</MessageListErrorBoundary>
 
-					<RoomComposer>
+					<RoomComposer aria-label={t('Thread_composer')}>
 						<ComposerContainer
 							tmid={mainMessage._id}
 							subscription={subscription}
@@ -116,7 +118,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 							onEscape={handleComposerEscape}
 							onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 							onNavigateToNextMessage={handleNavigateToNextMessage}
-							onUploadFiles={handleUploadFiles}
 							tshow={sendToChannel}
 						>
 							<Field marginBlock={8}>

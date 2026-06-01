@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajvQuery } from '../Ajv';
 
 export type IntegrationsGetProps = { integrationId: string; createdBy?: string };
 
@@ -19,4 +17,4 @@ const integrationsGetSchema = {
 	required: ['integrationId'],
 };
 
-export const isIntegrationsGetProps = ajv.compile<IntegrationsGetProps>(integrationsGetSchema);
+export const isIntegrationsGetProps = ajvQuery.compile<IntegrationsGetProps>(integrationsGetSchema);

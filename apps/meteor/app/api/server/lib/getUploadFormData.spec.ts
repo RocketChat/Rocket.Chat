@@ -12,6 +12,7 @@ const createMockRequest = (
 		content: string | Buffer;
 		mimetype?: string;
 	},
+	options: { simulateError?: boolean } = {},
 ): Request => {
 	const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
 	const parts: string[] = [];
@@ -40,6 +41,10 @@ const createMockRequest = (
 		},
 		body: new ReadableStream({
 			async pull(controller) {
+				if (options.simulateError) {
+					controller.error(new Error('aborted'));
+					return;
+				}
 				controller.enqueue(buffer);
 				controller.close();
 			},
@@ -175,6 +180,17 @@ describe('getUploadFormData', () => {
 			throw new Error('Expected function to throw');
 		} catch (error) {
 			expect((error as Error).message).to.equal('[error-file-too-large]');
+		}
+	});
+
+	it('should handle an aborted request stream', async () => {
+		const mockRequest = createMockRequest({}, undefined, { simulateError: true });
+
+		try {
+			await getUploadFormData({ request: mockRequest }, { fileOptional: true });
+			throw new Error('Expected function to throw');
+		} catch (error) {
+			expect((error as Error).message).to.equal('aborted');
 		}
 	});
 });

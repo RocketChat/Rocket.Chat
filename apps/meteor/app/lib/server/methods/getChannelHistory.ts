@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server/cached';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
 declare module '@rocket.chat/ddp-client' {
@@ -47,10 +48,6 @@ export const getChannelHistory = async ({
 	showThreadMessages?: boolean;
 }): Promise<false | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }> => {
 	check(rid, String);
-
-	if (!Meteor.userId()) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getChannelHistory' });
-	}
 
 	if (!fromUserId) {
 		return false;
@@ -159,6 +156,7 @@ export const getChannelHistory = async ({
 
 Meteor.methods<ServerMethods>({
 	async getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
+		methodDeprecationLogger.method('getChannelHistory', '9.0.0', '/v1/channels.history');
 		check(rid, String);
 
 		if (!Meteor.userId()) {

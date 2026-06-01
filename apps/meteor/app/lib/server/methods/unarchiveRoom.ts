@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { unarchiveRoom } from '../functions/unarchiveRoom';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,6 +38,7 @@ export const executeUnarchiveRoom = async (userId: string, rid: string) => {
 
 Meteor.methods<ServerMethods>({
 	async unarchiveRoom(rid) {
+		methodDeprecationLogger.method('unarchiveRoom', '9.0.0', '/v1/channels.unarchive');
 		const userId = Meteor.userId();
 
 		if (!userId) {

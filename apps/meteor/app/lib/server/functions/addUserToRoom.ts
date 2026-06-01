@@ -1,16 +1,17 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Team, Room } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { Message, Team, Room } from '@rocket.chat/core-services';
+import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -47,12 +48,6 @@ export const addUserToRoom = async (
 		throw new Meteor.Error('user-not-found');
 	}
 
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription) {
-		return;
-	}
-
 	if (
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
@@ -61,7 +56,10 @@ export const addUserToRoom = async (
 	}
 
 	try {
-		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: (inviter && (await Users.findOneById(inviter._id))) || undefined }, room);
+		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
+		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
+		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
@@ -92,6 +90,23 @@ export const addUserToRoom = async (
 
 		// Keep the current event
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		if (!isBannedSubscription(subscription)) {
+			return true;
+		}
+
+		const deletedSub = await Subscriptions.removeByRoomIdAndUserId(rid, userToBeAdded._id);
+		if (!deletedSub) {
+			return true;
+		}
+		void notifyOnSubscriptionChanged(deletedSub, 'removed');
+
+		if (!skipSystemMessage && inviter) {
+			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username!, inviter, { ts: now });
+		}
 	}
 
 	await Room.createUserSubscription({

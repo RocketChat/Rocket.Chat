@@ -7,7 +7,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -20,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMonitors from '../components/AutoCompleteMonitors';
 
@@ -82,7 +82,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 		handleSubmit,
 		watch,
 	} = useForm<UnitEditFormData>({
-		mode: 'onBlur',
 		values: {
 			name: unitData?.name || '',
 			visibility: unitData?.visibility || '',
@@ -93,36 +92,39 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 
 	const { departments, monitors } = watch();
 
-	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
-		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ name, visibility }: UnitEditFormData) => {
+			const departmentsData = departments.map((department) => ({ departmentId: department.value }));
 
-		const monitorsData = monitors.map((monitor) => ({
-			monitorId: monitor.value,
-			username: monitor.label,
-		}));
+			const monitorsData = monitors.map((monitor) => ({
+				monitorId: monitor.value,
+				username: monitor.label,
+			}));
 
-		const payload = {
-			unitData: { name, visibility },
-			unitMonitors: monitorsData,
-			unitDepartments: departmentsData,
-		};
+			const payload = {
+				unitData: { name, visibility },
+				unitMonitors: monitorsData,
+				unitDepartments: departmentsData,
+			};
 
-		try {
-			if (_id && onUpdate) {
-				await onUpdate(payload);
-			} else {
-				await saveUnit(payload);
+			try {
+				if (_id && onUpdate) {
+					await onUpdate(payload);
+				} else {
+					await saveUnit(payload);
+				}
+
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-units'],
+				});
+				onClose();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries({
-				queryKey: ['livechat-units'],
-			});
-			onClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+		},
+		{ isDirty },
+	);
 
 	const formId = useId();
 	const nameField = useId();
@@ -161,7 +163,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 								/>
 							</FieldRow>
 							{errors?.name && (
-								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+								<FieldError role='alert' id={`${nameField}-error`}>
 									{errors?.name.message}
 								</FieldError>
 							)}
@@ -189,7 +191,11 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 									)}
 								/>
 							</FieldRow>
-							{errors?.visibility && <FieldError id={`${visibilityField}-error`}>{errors?.visibility.message}</FieldError>}
+							{errors?.visibility && (
+								<FieldError role='alert' id={`${visibilityField}-error`}>
+									{errors?.visibility.message}
+								</FieldError>
+							)}
 						</Field>
 						<Field>
 							<FieldLabel id={departmentsField} required>
@@ -218,13 +224,13 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 								/>
 							</FieldRow>
 							{errors?.departments && (
-								<FieldError aria-live='assertive' id={`${departmentsField}-error`}>
+								<FieldError role='alert' id={`${departmentsField}-error`}>
 									{errors?.departments.message}
 								</FieldError>
 							)}
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={monitorsField} required>
+							<FieldLabel id={monitorsField} required>
 								{t('Monitors')}
 							</FieldLabel>
 							<FieldRow>
@@ -234,13 +240,13 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 									rules={{ required: t('Required_field', { field: t('Monitors') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<AutoCompleteMonitors
-											id={monitorsField}
 											name={name}
 											value={value}
 											error={Boolean(errors?.monitors)}
 											aria-describedby={`${monitorsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.monitors)}
+											aria-labelledby={monitorsField}
 											onChange={onChange}
 											onBlur={onBlur}
 										/>
@@ -248,7 +254,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 								/>
 							</FieldRow>
 							{errors?.monitors && (
-								<FieldError aria-live='assertive' id={`${monitorsField}-error`}>
+								<FieldError role='alert' id={`${monitorsField}-error`}>
 									{errors?.monitors.message}
 								</FieldError>
 							)}
@@ -259,7 +265,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} disabled={!isDirty} type='submit' primary>
+					<Button form={formId} type='submit' primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

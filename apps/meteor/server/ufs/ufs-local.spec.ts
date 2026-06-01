@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import { expect } from 'chai';
 import { before, beforeEach, afterEach, describe, it } from 'mocha';
@@ -99,8 +99,8 @@ describe('LocalStore', () => {
 	it('should not throw if file does not exist (ENOENT)', async () => {
 		unlinkStub.rejects(Object.assign(new Error('not found'), { code: 'ENOENT' }));
 		await expect(store.delete('test')).to.be.fulfilled;
-		// Should only call unlink once
-		expect(unlinkStub.calledOnce).to.be.true;
+		// unlink is called twice: once for the temp file, once for the actual file
+		expect(unlinkStub.calledTwice).to.be.true;
 	});
 
 	it('should throw if unlink fails with non-ENOENT error', async () => {

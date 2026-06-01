@@ -1,6 +1,17 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	RoomAdminFieldsType,
+	IUpload,
+	IE2EEMessage,
+	ITeam,
+	ISubscription,
+	RequiredField,
+	MessageTypesValues,
+} from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -17,7 +28,7 @@ const RoomsAutoCompleteChannelAndPrivateSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutoCompleteChannelAndPrivateProps = ajv.compile<RoomsAutoCompleteChannelAndPrivateProps>(
+export const isRoomsAutoCompleteChannelAndPrivateProps = ajvQuery.compile<RoomsAutoCompleteChannelAndPrivateProps>(
 	RoomsAutoCompleteChannelAndPrivateSchema,
 );
 
@@ -50,11 +61,10 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajv.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(
-	RoomsAutocompleteChannelAndPrivateWithPaginationSchema,
-);
+export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps =
+	ajvQuery.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(RoomsAutocompleteChannelAndPrivateWithPaginationSchema);
 
-type RoomsAutocompleteAvailableForTeamsProps = { name: string };
+type RoomsAutocompleteAvailableForTeamsProps = { name?: string };
 
 const RoomsAutocompleteAvailableForTeamsSchema = {
 	type: 'object',
@@ -63,11 +73,11 @@ const RoomsAutocompleteAvailableForTeamsSchema = {
 			type: 'string',
 		},
 	},
-	required: ['name'],
+	required: [],
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutocompleteAvailableForTeamsProps>(
+export const isRoomsAutocompleteAvailableForTeamsProps = ajvQuery.compile<RoomsAutocompleteAvailableForTeamsProps>(
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
 
@@ -84,13 +94,12 @@ const RoomsAutocompleteAdminRoomsPayloadSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocompleteAdminRoomsPayload>(
+export const isRoomsAutocompleteAdminRoomsPayload = ajvQuery.compile<RoomsAutocompleteAdminRoomsPayload>(
 	RoomsAutocompleteAdminRoomsPayloadSchema,
 );
 
 type BaseRoomsProps = { roomId: string } | { roomName: string };
 type RoomsInfoProps = BaseRoomsProps;
-type RoomsLeaveProps = BaseRoomsProps;
 
 const RoomsInfoSchema = {
 	oneOf: [
@@ -140,6 +149,10 @@ const RoomsCreateDiscussionSchema = {
 			nullable: true,
 		},
 		t_name: {
+			type: 'string',
+			nullable: true,
+		},
+		topic: {
 			type: 'string',
 			nullable: true,
 		},
@@ -263,9 +276,11 @@ const RoomsExportSchema = {
 
 export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
 
+type AdminRoomType = 'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams';
+
 type RoomsAdminRoomsProps = PaginatedRequest<{
 	filter?: string;
-	types?: string[];
+	types?: AdminRoomType[];
 }>;
 
 const RoomsAdminRoomsSchema = {
@@ -279,6 +294,7 @@ const RoomsAdminRoomsSchema = {
 			type: 'array',
 			items: {
 				type: 'string',
+				enum: ['c', 'd', 'p', 'l', 'discussions', 'teams'],
 			},
 			nullable: true,
 		},
@@ -303,7 +319,7 @@ const RoomsAdminRoomsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsProps = ajv.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
+export const isRoomsAdminRoomsProps = ajvQuery.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
 
 type RoomsAdminRoomsGetRoomProps = { rid?: string };
 
@@ -319,7 +335,7 @@ const RoomsAdminRoomsGetRoomSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsGetRoomProps = ajv.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
+export const isRoomsAdminRoomsGetRoomProps = ajvQuery.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
 
 type RoomsChangeArchivationStateProps = { rid: string; action?: string };
 
@@ -348,14 +364,17 @@ type RoomsSaveRoomSettingsProps = {
 	roomTopic?: string;
 	roomAnnouncement?: string;
 	roomDescription?: string;
+	roomCustomFields?: Record<string, any>;
 	roomType?: IRoom['t'];
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
+	systemMessages?: MessageTypesValues[];
 	default?: boolean;
+	joinCode?: string;
 	encrypted?: boolean;
 	favorite?: {
-		defaultValue?: boolean;
-		favorite?: boolean;
+		defaultValue: boolean;
+		favorite: boolean;
 	};
 	retentionEnabled?: boolean;
 	retentionMaxAge?: number;
@@ -395,6 +414,10 @@ const RoomsSaveRoomSettingsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		roomCustomFields: {
+			type: 'object',
+			nullable: true,
+		},
 		roomType: {
 			type: 'string',
 			nullable: true,
@@ -407,8 +430,17 @@ const RoomsSaveRoomSettingsSchema = {
 			type: 'boolean',
 			nullable: true,
 		},
+		systemMessages: {
+			type: 'array',
+			items: { type: 'string' },
+			nullable: true,
+		},
 		default: {
 			type: 'boolean',
+			nullable: true,
+		},
+		joinCode: {
+			type: 'string',
 			nullable: true,
 		},
 		encrypted: {
@@ -420,13 +452,12 @@ const RoomsSaveRoomSettingsSchema = {
 			properties: {
 				defaultValue: {
 					type: 'boolean',
-					nullable: true,
 				},
 				favorite: {
 					type: 'boolean',
-					nullable: true,
 				},
 			},
+			required: ['defaultValue', 'favorite'],
 			nullable: true,
 		},
 		retentionEnabled: { type: 'boolean', nullable: true },
@@ -457,7 +488,7 @@ const GETRoomsNameExistsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
+export const isGETRoomsNameExists = ajvQuery.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
 type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId: string });
 
@@ -468,11 +499,14 @@ const RoomsIsMemberPropsSchema = {
 		userId: { type: 'string', minLength: 1 },
 		username: { type: 'string', minLength: 1 },
 	},
-	oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId', 'userId'] },
+		{ type: 'object', required: ['roomId', 'username'] },
+	],
 	additionalProperties: false,
 };
 
-export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
+export const isRoomsIsMemberProps = ajvQuery.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
 
 export type Notifications = {
 	disableNotifications?: string;
@@ -523,6 +557,107 @@ const RoomsMuteUnmuteUserSchema = {
 };
 
 export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
+
+type RoomsBanUserProps = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsBanUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsBanUserProps = ajv.compile<RoomsBanUserProps>(RoomsBanUserSchema);
+
+type RoomsUnbanUserProps = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsUnbanUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsUnbanUserProps = ajv.compile<RoomsUnbanUserProps>(RoomsUnbanUserSchema);
+
+type RoomsBannedUsersProps = { roomId: string; count?: number; offset?: number };
+
+const RoomsBannedUsersSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsBannedUsersProps = ajvQuery.compile<RoomsBannedUsersProps>(RoomsBannedUsersSchema);
+
 export type RoomsImagesProps = {
 	roomId: string;
 	startingFromId?: string;
@@ -552,7 +687,7 @@ const roomsImagesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
+export const isRoomsImagesProps = ajvQuery.compile<RoomsImagesProps>(roomsImagesPropsSchema);
 
 export type RoomsCleanHistoryProps = {
 	roomId: IRoom['_id'];
@@ -638,6 +773,7 @@ type MembersOrderedByRoleProps = {
 export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
 
 const membersOrderedByRoleRolePropsSchema = {
+	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
@@ -664,11 +800,14 @@ const membersOrderedByRoleRolePropsSchema = {
 			type: 'string',
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId'] },
+		{ type: 'object', required: ['roomName'] },
+	],
 	additionalProperties: false,
 };
 
-export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
+export const isRoomsMembersOrderedByRoleProps = ajvQuery.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
 type RoomsHideProps = {
 	roomId: string;
@@ -782,20 +921,6 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.upload/:rid': {
-		POST: (params: {
-			file: File;
-			description?: string;
-			avatar?: string;
-			emoji?: string;
-			alias?: string;
-			groupable?: boolean;
-			msg?: string;
-			tmid?: string;
-			customFields?: string;
-		}) => { message: IMessage | null };
-	};
-
 	'/v1/rooms.media/:rid': {
 		POST: (params: { file: File }) => { file: { url: string } };
 	};
@@ -809,28 +934,14 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
-			customFields?: string;
+			customFields?: Record<string, any>;
 			t?: IMessage['t'];
 			content?: IE2EEMessage['content'];
-		}) => { message: IMessage | null };
-	};
-
-	'/v1/rooms.saveNotification': {
-		POST: (params: { roomId: string; notifications: Notifications }) => void;
-	};
-
-	'/v1/rooms.favorite': {
-		POST: (
-			params:
-				| {
-						roomId: string;
-						favorite: boolean;
-				  }
-				| {
-						roomName: string;
-						favorite: boolean;
-				  },
-		) => void;
+			fileName?: string;
+			fileContent?: IE2EEMessage['content'];
+		}) => {
+			message: IMessage | null;
+		};
 	};
 
 	'/v1/rooms.nameExists': {
@@ -839,19 +950,11 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.delete': {
-		POST: (params: { roomId: string }) => void;
-	};
-
 	'/v1/rooms.get': {
 		GET: (params: { updatedSince: string }) => {
 			update: IRoom[];
 			remove: IRoom[];
 		};
-	};
-
-	'/v1/rooms.leave': {
-		POST: (params: RoomsLeaveProps) => void;
 	};
 
 	'/v1/rooms.getDiscussions': {
@@ -870,6 +973,20 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.unmuteUser': {
 		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.banUser': {
+		POST: (params: RoomsBanUserProps) => void;
+	};
+
+	'/v1/rooms.unbanUser': {
+		POST: (params: RoomsUnbanUserProps) => void;
+	};
+
+	'/v1/rooms.bannedUsers': {
+		GET: (params: RoomsBannedUsersProps) => PaginatedResult<{
+			bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, 'username'>[];
+		}>;
 	};
 
 	'/v1/rooms.images': {

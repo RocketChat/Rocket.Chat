@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from '../abac/AbacAttributes';
 import type { IUser } from '../users';
 import type { RoomType } from './RoomType';
 
@@ -7,6 +8,8 @@ export interface IRoom {
 	slugifiedName: string;
 	type: RoomType;
 	creator: IUser;
+	teamId?: string;
+	isTeamMain?: boolean;
 	/**
 	 * @deprecated usernames will be removed on version 2.0.0
 	 */
@@ -23,4 +26,6 @@ export interface IRoom {
 	customFields?: { [key: string]: any };
 	parentRoom?: IRoom;
 	livechatData?: { [key: string]: any };
+
+	abacAttributes?: IAbacAttributeDefinition[];
 }

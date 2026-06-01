@@ -177,11 +177,12 @@ const ServerContextMock = ({
 			callMethod: _callMethod,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll: () => () => () => undefined,
 			...overrides,
 		};
 	}, [baseURL, callEndpoint, callMethod, overrides, parent]);
 
-	return <ServerContext.Provider children={children} value={value} />;
+	return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
 };
 
 export default ServerContextMock;

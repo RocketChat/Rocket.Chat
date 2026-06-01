@@ -1,6 +1,8 @@
-import { isOAuthUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IMeApiUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
+import semver from 'semver';
 
 import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/rocketchat.info';
 import { getURL } from '../../../utils/server/getURL';
 import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
 
@@ -17,12 +19,29 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
 	const accumulator: Record<string, any> = {};
-	for await (const [key] of allDefaultUserSettings) {
+	for (const [key] of allDefaultUserSettings) {
 		const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
 		accumulator[settingWithoutPrefix] = await getUserPreference(me, settingWithoutPrefix);
 	}
 
 	return accumulator;
+};
+
+const filterOutdatedVersionUpdateBanners = (banners: NonNullable<IUser['banners']>): IUser['banners'] => {
+	return Object.fromEntries(
+		Object.entries(banners).filter(([id]) => {
+			if (!id.startsWith('versionUpdate-')) {
+				return true;
+			}
+
+			const version = id.replace('versionUpdate-', '').replace(/_/g, '.');
+			if (!semver.valid(version) || semver.lte(version, Info.version)) {
+				return false;
+			}
+
+			return true;
+		}),
+	);
 };
 
 /**
@@ -65,33 +84,26 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	return calendarSettings;
 };
 
-export async function getUserInfo(me: IUser): Promise<
-	IUser & {
-		email?: string;
-		avatarUrl: string;
-	}
-> {
+export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IMeApiUser> {
 	const verifiedEmail = isVerifiedEmail(me);
 
 	const userPreferences = me.settings?.preferences ?? {};
 
 	return {
 		...me,
+		...(me.banners && { banners: filterOutdatedVersionUpdateBanners(me.banners) }),
 		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},
-			preferences: {
-				...(await getUserPreferences(me)),
-				...userPreferences,
-			},
+			...(pullPreferences && { preferences: { ...(await getUserPreferences(me)), ...userPreferences } }),
 			calendar: getUserCalendar(verifiedEmail),
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
 		isOAuthUser: isOAuthUser(me),
 		...(me.services && {
 			services: {
-				...(me.services.github && { github: me.services.github }),
-				...(me.services.gitlab && { gitlab: me.services.gitlab }),
+				...(me.services.github && { github: me.services.github as Record<string, unknown> }),
+				...(me.services.gitlab && { gitlab: me.services.gitlab as Record<string, unknown> }),
 				...(me.services.email2fa?.enabled && { email2fa: { enabled: me.services.email2fa.enabled } }),
 				...(me.services.totp?.enabled && { totp: { enabled: me.services.totp.enabled } }),
 				password: {
@@ -100,5 +112,6 @@ export async function getUserInfo(me: IUser): Promise<
 				},
 			},
 		}),
-	};
+		// Cast needed: spread of full IUser produces a superset; runtime response schema validates the actual shape
+	} as IMeApiUser;
 }

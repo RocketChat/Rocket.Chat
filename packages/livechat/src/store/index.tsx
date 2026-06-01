@@ -32,12 +32,6 @@ export type StoreState = {
 			background?: string;
 			hideExpandChat?: boolean;
 			actionLinks?: {
-				webrtc: {
-					actionLinksAlignment: string;
-					i18nLabel: string;
-					label: string;
-					method_id: string;
-				}[];
 				jitsi: {
 					icon: string;
 					i18nLabel: string;
@@ -106,7 +100,6 @@ export type StoreState = {
 	minimized: boolean;
 	unread: any;
 	incomingCallAlert: any;
-	ongoingCall: any;
 	businessUnit: any;
 	openSessionIds?: string[];
 	triggered?: boolean;
@@ -164,7 +157,6 @@ export const initialState = (): StoreState => ({
 	minimized: true,
 	unread: null,
 	incomingCallAlert: null,
-	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 	renderedTriggers: [],
 	customFieldsQueue: {},
@@ -179,7 +171,6 @@ const dontPersist = [
 	'noMoreMessages',
 	'modal',
 	'incomingCallAlert',
-	'ongoingCall',
 	'parentUrl',
 ] as Array<keyof StoreState>;
 

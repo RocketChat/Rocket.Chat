@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import type { ServerResponse, IncomingMessage } from 'http';
+import crypto from 'node:crypto';
+import type { ServerResponse, IncomingMessage } from 'node:http';
 
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
@@ -390,7 +390,7 @@ export async function addAssetToSetting(asset: string, value: IRocketChatAsset, 
 }
 
 void (async () => {
-	for await (const key of Object.keys(assets)) {
+	for (const key of Object.keys(assets)) {
 		const { wizard, settingOptions, ...value } = getAssetByKey(key);
 		await addAssetToSetting(key, value, { ...settingOptions, wizard });
 	}

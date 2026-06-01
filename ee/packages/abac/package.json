@@ -1,0 +1,49 @@
+{
+	"name": "@rocket.chat/abac",
+	"version": "0.2.0",
+	"private": true,
+	"description": "Rocket.Chat - Attribute Based Access Control (ABAC) support utilities",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit --skipLibCheck"
+	},
+	"config": {
+		"mongodbMemoryServer": {
+			"downloadDir": "../../../node_modules/.cache/mongodb-memory-server",
+			"preferGlobalPath": false
+		}
+	},
+	"volta": {
+		"extends": "../../../package.json"
+	},
+	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/server-fetch": "workspace:^",
+		"@rocket.chat/tools": "workspace:^",
+		"mem": "^8.1.1",
+		"mongodb": "6.10.0",
+		"p-limit": "3.1.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"@types/node": "~22.19.17",
+		"eslint": "~9.39.4",
+		"jest": "~30.2.0",
+		"mongodb-memory-server": "^10.2.3",
+		"typescript": "~5.9.3"
+	}
+}

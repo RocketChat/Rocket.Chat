@@ -8,8 +8,8 @@ import { useDolphinOAuth } from './hooks/customOAuth/useDolphinOAuth';
 import { useDrupalOAuth } from './hooks/customOAuth/useDrupalOAuth';
 import { useGitHubEnterpriseOAuth } from './hooks/customOAuth/useGitHubEnterpriseOAuth';
 import { useGitLabOAuth } from './hooks/customOAuth/useGitLabOAuth';
+import { useGithubOAuth } from './hooks/customOAuth/useGithubOAuth';
 import { useNextcloudOAuth } from './hooks/customOAuth/useNextcloudOAuth';
-import { useTokenpassOAuth } from './hooks/customOAuth/useTokenpassOAuth';
 import { useWordPressOAuth } from './hooks/customOAuth/useWordPressOAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
@@ -21,7 +21,9 @@ import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useEmojiOne } from './hooks/useEmojiOne';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
+import { useKeyboardShortcutsHotkey } from './hooks/useKeyboardShortcutsHotkey';
 import { useLivechatEnterprise } from './hooks/useLivechatEnterprise';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
 import { useLoadRoomForAllowedAnonymousRead } from './hooks/useLoadRoomForAllowedAnonymousRead';
@@ -47,6 +49,7 @@ const AppLayout = () => {
 	useGoogleTagManager();
 	useAnalytics();
 	useEscapeKeyStroke();
+	useKeyboardShortcutsHotkey();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotificationPermission();
@@ -56,10 +59,10 @@ const AppLayout = () => {
 	useLivechatEnterprise();
 	useNextcloudOAuth();
 	useGitLabOAuth();
+	useGithubOAuth();
 	useGitHubEnterpriseOAuth();
 	useDrupalOAuth();
 	useDolphinOAuth();
-	useTokenpassOAuth();
 	useAppleOAuth();
 	useWordPressOAuth();
 	useCustomOAuth();
@@ -71,6 +74,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useStartupEvent();
+	useIframeCommands();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

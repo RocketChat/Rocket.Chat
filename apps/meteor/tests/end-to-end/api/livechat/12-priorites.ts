@@ -20,6 +20,7 @@ import {
 	bulkCreateLivechatRooms,
 	startANewLivechatRoomAndTakeIt,
 	makeAgentAvailable,
+	deleteAgent,
 } from '../../../data/livechat/rooms';
 import {
 	addPermissions,
@@ -298,6 +299,9 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		before(async () => {
 			await createAgent();
 			await makeAgentAvailable();
+		});
+		after(async () => {
+			await deleteAgent();
 		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-sla', 'view-l-room', 'manage-livechat-priorities']);

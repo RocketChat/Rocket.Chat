@@ -39,7 +39,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
-			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
+			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',
 		});
 		this.createIndex();
 		const language = settings.get<string>('Language') || 'en';
@@ -76,7 +76,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 	async scheduleInquiry(inquiryId: string, time: Date): Promise<void> {
 		await this.stopInquiry(inquiryId);
-		this.logger.debug(`Scheduling automatic close of inquiry ${inquiryId} at ${time}`);
+		this.logger.debug({ msg: 'Scheduling automatic close of inquiry', inquiryId, scheduledAt: time });
 		const name = this.getName(inquiryId);
 		this.scheduler.define(name, this.bindedCloseRoom);
 
@@ -112,18 +112,18 @@ export class OmnichannelQueueInactivityMonitorClass {
 		const { inquiryId } = data;
 		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
 		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		if (!inquiry || inquiry.status !== 'queued') {
+		if (inquiry?.status !== 'queued') {
 			return;
 		}
 
 		const room = await LivechatRooms.findOneById(inquiry.rid);
 		if (!room) {
-			this.logger.error(`Unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
+			this.logger.error({ msg: 'Unable to find room to close in queue inactivity monitor', inquiryId, roomId: inquiry.rid });
 			return;
 		}
 
 		await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
-		this.logger.info(`Closed room ${inquiry.rid} for inquiry ${inquiryId} due to inactivity`);
+		this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
 	}
 }
 

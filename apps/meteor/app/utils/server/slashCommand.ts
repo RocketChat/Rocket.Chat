@@ -10,6 +10,8 @@ import type {
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
 	callback?: SlashCommand<T>['callback'];
@@ -80,6 +82,7 @@ export const slashCommands = {
 		command: string,
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
+		userId: string,
 	): Promise<SlashCommandPreviews | undefined> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
@@ -90,7 +93,7 @@ export const slashCommands = {
 			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = await cmd.previewer(command, params, message);
+		const previewInfo = await cmd.previewer(command, params, message, userId);
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -108,6 +111,7 @@ export const slashCommands = {
 		params: string,
 		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
+		userId: string,
 		triggerId?: string,
 	) {
 		const cmd = this.commands[command];
@@ -124,7 +128,7 @@ export const slashCommands = {
 			throw new MeteorError('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return cmd.previewCallback(command, params, message, preview, triggerId);
+		return cmd.previewCallback(command, params, message, preview, userId, triggerId);
 	},
 };
 
@@ -137,6 +141,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async slashCommand(command) {
+		methodDeprecationLogger.method('slashCommand', '9.0.0', '/v1/commands.run');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

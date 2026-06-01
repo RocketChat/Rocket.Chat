@@ -22,6 +22,8 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 			method: 'POST',
 			body: regInfo,
 			timeout: 3 * 1000,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 		});
 		if (!response.ok) {
 			throw new Error((await response.json()).error);

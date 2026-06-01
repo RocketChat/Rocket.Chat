@@ -128,6 +128,18 @@ export default (instance: MessageTypes) => {
 	});
 
 	instance.registerType({
+		id: 'user-banned',
+		system: true,
+		text: (t, message) => t('User_has_been_banned', { user_banned: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'user-unbanned',
+		system: true,
+		text: (t, message) => t('User_has_been_unbanned', { user_unbanned: message.msg }),
+	});
+
+	instance.registerType({
 		id: 'subscription-role-added',
 		system: true,
 		text: (t, message) => t('set__username__as__role_', { username: message.msg, role: message.role ?? '' }),
@@ -211,5 +223,11 @@ export default (instance: MessageTypes) => {
 		id: 'message_pinned',
 		system: true,
 		text: (t) => t('Pinned_a_message'),
+	});
+
+	instance.registerType({
+		id: 'abac-removed-user-from-room',
+		system: true,
+		text: (t) => t('abac_removed_user_from_the_room'),
 	});
 };

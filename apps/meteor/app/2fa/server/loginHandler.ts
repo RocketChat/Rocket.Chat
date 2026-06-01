@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { checkCodeForUser } from './code/index';
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 
 const isMeteorError = (error: any): error is Meteor.Error => {
 	return error?.meteorError !== undefined;

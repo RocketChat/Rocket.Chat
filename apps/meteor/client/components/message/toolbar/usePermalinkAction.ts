@@ -16,7 +16,6 @@ export const usePermalinkAction = (
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	// @ts-expect-error - to be implemented
 	const isABACEnabled = !!room.abacAttributes;
 	const encrypted = isE2EEMessage(message);
 	const tooltip = useMemo(() => {

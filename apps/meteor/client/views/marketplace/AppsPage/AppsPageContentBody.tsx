@@ -25,7 +25,6 @@ type AppsPageContentBodyProps = {
 		itemsPerPageLabel: () => string;
 		showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
 	};
-	noErrorsOcurred: boolean;
 };
 
 const AppsPageContentBody = ({
@@ -37,7 +36,6 @@ const AppsPageContentBody = ({
 	onSetItemsPerPage,
 	onSetCurrent,
 	paginationProps,
-	noErrorsOcurred,
 }: AppsPageContentBodyProps) => {
 	const { t } = useTranslation();
 	const scrollableRef = useRef<HTMLDivElement>(null);
@@ -46,12 +44,10 @@ const AppsPageContentBody = ({
 	return (
 		<>
 			<Box display='flex' flexDirection='column' overflow='hidden' height='100%' pi={24}>
-				{noErrorsOcurred && (
-					<Box overflowY='scroll' height='100%' ref={scrollableRef}>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
-						<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
-					</Box>
-				)}
+				<Box overflowY='scroll' height='100%' ref={scrollableRef}>
+					{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
+					<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
+				</Box>
 			</Box>
 			{Boolean(appsResult?.count) && (
 				<Pagination
@@ -64,7 +60,6 @@ const AppsPageContentBody = ({
 						onSetCurrent(value);
 						scrollableRef.current?.scrollTo(0, 0);
 					}}
-					bg='light'
 					{...paginationProps}
 				/>
 			)}

@@ -1,4 +1,4 @@
-import { isOTRAckMessage, isOTRMessage, type IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage,
@@ -31,6 +31,7 @@ import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import Emoji from '../../Emoji';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
@@ -45,10 +46,9 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const { t } = useTranslation();
 
 	const isSelecting = useIsSelecting();
-	const isOTRMsg = isOTRMessage(message) || isOTRAckMessage(message);
 
 	const toggleSelected = useToggleSelect(message._id);
-	const isSelected = useIsSelectedMessage(message._id, isOTRMsg);
+	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
@@ -67,22 +67,19 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
 		}
 
-		if (isOTRMsg) {
-			return;
-		}
-
 		return toggleSelected();
 	};
+
+	const checkboxLabel = getCheckboxLabel(message, t);
 
 	return (
 		<ThreadMessage
 			role='link'
-			aria-roledescription={isOTRMsg ? t('OTR_thread_message_preview') : t('thread_message_preview')}
+			aria-roledescription={t('thread_message_preview')}
 			tabIndex={0}
 			onClick={handleThreadClick}
-			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
+			onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && handleThreadClick()}
 			isSelected={isSelected}
-			data-qa-selected={isSelected}
 			{...props}
 		>
 			{!sequential && (
@@ -123,7 +120,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							size='x18'
 						/>
 					)}
-					{isSelecting && <CheckBox disabled={isOTRMsg} checked={isSelected} onChange={toggleSelected} />}
+					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>

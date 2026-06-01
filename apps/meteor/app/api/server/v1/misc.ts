@@ -1,29 +1,31 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
+	ajv,
 	isShieldSvgProps,
 	isSpotlightProps,
 	isDirectoryProps,
-	isMethodCallProps,
-	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
+	meSuccessResponseSchema,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
+import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
-import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
 import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
-import { getLogs } from '../../../../server/stream/stdout';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -31,7 +33,6 @@ import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFi
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
@@ -172,16 +173,21 @@ import { getUserInfo } from '../helpers/getUserInfo';
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+API.v1.get(
 	'me',
-	{ authRequired: true },
 	{
-		async get() {
-			const userFields = { ...getBaseUserFields(), services: 1 };
-			const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
-
-			return API.v1.success(await getUserInfo(user));
+		authRequired: true,
+		userWithoutUsername: true,
+		response: {
+			200: ajv.compile<MeApiSuccessResponse>(meSuccessResponseSchema),
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const userFields = { ...getBaseUserFields(), services: 1 };
+		const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+
+		return API.v1.success(await getUserInfo(user));
 	},
 );
 
@@ -189,7 +195,12 @@ let onlineCache = 0;
 let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
 
-API.v1.addRoute(
+const shieldSvgResponseSchema = ajv.compile<string>({
+	type: 'string',
+	description: 'SVG image markup',
+});
+
+API.v1.get(
 	'shield.svg',
 	{
 		authRequired: false,
@@ -197,98 +208,99 @@ API.v1.addRoute(
 			numRequestsAllowed: 60,
 			intervalTimeInMS: 60000,
 		},
-		validateParams: isShieldSvgProps,
+		query: isShieldSvgProps,
+		response: {
+			200: shieldSvgResponseSchema,
+			400: validateBadRequestErrorResponse,
+		},
 	},
-	{
-		async get() {
-			const { type, icon } = this.queryParams;
-			let { channel, name } = this.queryParams;
-			if (!settings.get('API_Enable_Shields')) {
-				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
-					route: '/api/v1/shield.svg',
-				});
-			}
+	async function action() {
+		const { type, icon } = this.queryParams;
+		let { channel, name } = this.queryParams;
+		if (!settings.get('API_Enable_Shields')) {
+			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+				route: '/api/v1/shield.svg',
+			});
+		}
 
-			const types = settings.get<string>('API_Shield_Types');
-			if (
-				type &&
-				types !== '*' &&
-				!types
-					.split(',')
-					.map((t: string) => t.trim())
-					.includes(type)
-			) {
-				throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
-					route: '/api/v1/shield.svg',
-				});
-			}
-			const hideIcon = icon === 'false';
-			if (hideIcon && !name?.trim()) {
-				return API.v1.failure('Name cannot be empty when icon is hidden');
-			}
+		const types = settings.get<string>('API_Shield_Types');
+		if (
+			type &&
+			types !== '*' &&
+			!types
+				.split(',')
+				.map((t: string) => t.trim())
+				.includes(type)
+		) {
+			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
+				route: '/api/v1/shield.svg',
+			});
+		}
+		const hideIcon = icon === 'false';
+		if (hideIcon && !name?.trim()) {
+			return API.v1.failure('Name cannot be empty when icon is hidden');
+		}
 
-			let text;
-			let backgroundColor = '#4c1';
-			switch (type) {
-				case 'online':
-					if (Date.now() - onlineCacheDate > cacheInvalid) {
-						onlineCache = await Users.countUsersNotOffline();
-						onlineCacheDate = Date.now();
-					}
+		let text;
+		let backgroundColor = '#4c1';
+		switch (type) {
+			case 'online':
+				if (Date.now() - onlineCacheDate > cacheInvalid) {
+					onlineCache = await Users.countUsersNotOffline();
+					onlineCacheDate = Date.now();
+				}
 
-					text = `${onlineCache} ${i18n.t('Online')}`;
-					break;
-				case 'channel':
-					if (!channel) {
-						return API.v1.failure('Shield channel is required for type "channel"');
-					}
+				text = `${onlineCache} ${i18n.t('Online')}`;
+				break;
+			case 'channel':
+				if (!channel) {
+					return API.v1.failure('Shield channel is required for type "channel"');
+				}
 
-					text = `#${channel}`;
-					break;
-				case 'user':
-					if (settings.get('API_Shield_user_require_auth') && !(await getLoggedInUser(this.request))) {
-						return API.v1.failure('You must be logged in to do this.');
-					}
-					const user = await getUserFromParams(this.queryParams);
+				text = `#${channel}`;
+				break;
+			case 'user':
+				if (settings.get('API_Shield_user_require_auth') && !this.user) {
+					return API.v1.failure('You must be logged in to do this.');
+				}
+				const user = await getUserFromParams(this.queryParams);
 
-					// Respect the server's choice for using their real names or not
-					if (user.name && settings.get('UI_Use_Real_Name')) {
-						text = `${user.name}`;
-					} else {
-						text = `@${user.username}`;
-					}
+				// Respect the server's choice for using their real names or not
+				if (user.name && settings.get('UI_Use_Real_Name')) {
+					text = `${user.name}`;
+				} else {
+					text = `@${user.username}`;
+				}
 
-					switch (user.status) {
-						case 'online':
-							backgroundColor = '#1fb31f';
-							break;
-						case 'away':
-							backgroundColor = '#dc9b01';
-							break;
-						case 'busy':
-							backgroundColor = '#bc2031';
-							break;
-						case 'offline':
-							backgroundColor = '#a5a1a1';
-					}
-					break;
-				default:
-					text = i18n.t('Join_Chat').toUpperCase();
-			}
+				switch (user.status) {
+					case 'online':
+						backgroundColor = '#1fb31f';
+						break;
+					case 'away':
+						backgroundColor = '#dc9b01';
+						break;
+					case 'busy':
+						backgroundColor = '#bc2031';
+						break;
+					case 'offline':
+						backgroundColor = '#a5a1a1';
+				}
+				break;
+			default:
+				text = i18n.t('Join_Chat').toUpperCase();
+		}
 
-			const iconSize = hideIcon ? 7 : 24;
-			const leftSize = name ? name.length * 6 + 7 + iconSize : iconSize;
-			const rightSize = text.length * 6 + 20;
-			const width = leftSize + rightSize;
-			const height = 20;
+		const iconSize = hideIcon ? 7 : 24;
+		const leftSize = name ? name.length * 6 + 7 + iconSize : iconSize;
+		const rightSize = text.length * 6 + 20;
+		const width = leftSize + rightSize;
+		const height = 20;
 
-			channel = escapeHTML(channel);
-			text = escapeHTML(text);
-			name = escapeHTML(name);
+		channel = escapeHTML(channel);
+		text = escapeHTML(text);
+		name = escapeHTML(name);
 
-			return {
-				headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
-				body: `
+		const svgBody = `
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}">
 					<linearGradient id="b" x2="0" y2="100%">
 						<stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
@@ -315,89 +327,174 @@ API.v1.addRoute(
 					</g>
 				</svg>
 			`
-					.trim()
-					.replace(/\>[\s]+\</gm, '><'),
-			} as any;
-		},
+			.trim()
+			.replace(/\>[\s]+\</gm, '><');
+
+		return {
+			statusCode: 200 as const,
+			body: svgBody,
+			headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
+		};
 	},
 );
 
-API.v1.addRoute(
+const spotlightResponseSchema = ajv.compile<{
+	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+	rooms: Pick<IRoom, 't' | 'name' | 'lastMessage' | '_id'>[];
+}>({
+	type: 'object',
+	properties: {
+		users: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					name: { type: 'string' },
+					username: { type: 'string' },
+					status: { type: 'string' },
+					statusText: { type: 'string' },
+					avatarETag: { type: 'string' },
+				},
+				required: ['_id', 'name', 'username', 'status'],
+				additionalProperties: true,
+			},
+		},
+		rooms: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					t: { type: 'string' },
+					name: { type: 'string' },
+					lastMessage: { $ref: '#/components/schemas/IMessage' },
+				},
+				required: ['_id', 't', 'name'],
+				additionalProperties: true,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['users', 'rooms', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'spotlight',
 	{
 		authRequired: true,
-		validateParams: isSpotlightProps,
-	},
-	{
-		async get() {
-			const { query } = this.queryParams;
-
-			const result = await spotlightMethod({ text: query, userId: this.userId });
-
-			return API.v1.success(result);
+		query: isSpotlightProps,
+		response: {
+			200: spotlightResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { query } = this.queryParams;
+
+		const result = await spotlightMethod({ text: query, userId: this.userId });
+
+		return API.v1.success(result);
 	},
 );
 
-API.v1.addRoute(
+const directoryResponseSchema = ajv.compile<{
+	result: (IDirectoryUserResult | IDirectoryChannelResult)[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		result: {
+			type: 'array',
+			items: {
+				oneOf: [{ $ref: '#/components/schemas/IDirectoryUserResult' }, { $ref: '#/components/schemas/IDirectoryChannelResult' }],
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['result', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'directory',
 	{
 		authRequired: true,
-		validateParams: isDirectoryProps,
-	},
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
-			const { text, type, workspace = 'local' } = this.queryParams;
-
-			const filter = {
-				...(query ? { ...query } : {}),
-				...(text ? { text } : {}),
-				...(type ? { type } : {}),
-				...(workspace ? { workspace } : {}),
-			};
-
-			if (sort && Object.keys(sort).length > 1) {
-				return API.v1.failure('This method support only one "sort" parameter');
-			}
-			const sortBy = sort ? Object.keys(sort)[0] : undefined;
-			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
-
-			const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
-			const result = await browseChannelsMethod(
-				{
-					...filter,
-					sortBy,
-					sortDirection,
-					offset: Math.max(0, offset),
-					limit: Math.max(0, count),
-				},
-				user,
-			);
-
-			if (!result) {
-				return API.v1.failure('Please verify the parameters');
-			}
-			return API.v1.success({
-				result: result.results,
-				count: result.results.length,
-				offset,
-				total: result.total,
-			});
+		query: isDirectoryProps,
+		response: {
+			200: directoryResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, query } = await this.parseJsonQuery();
+		const { text, type, workspace = 'local' } = this.queryParams;
+
+		const filter = {
+			...(query ? { ...query } : {}),
+			...(text ? { text } : {}),
+			...(type ? { type } : {}),
+			...(workspace ? { workspace } : {}),
+		};
+
+		if (sort && Object.keys(sort).length > 1) {
+			return API.v1.failure('This method support only one "sort" parameter');
+		}
+		const sortBy = sort ? Object.keys(sort)[0] : undefined;
+		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
+
+		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
+		const result = await browseChannelsMethod(
+			{
+				...filter,
+				sortBy,
+				sortDirection,
+				offset: Math.max(0, offset),
+				limit: Math.max(0, count),
+			},
+			user,
+		);
+
+		if (!result) {
+			return API.v1.failure('Please verify the parameters');
+		}
+		return API.v1.success({
+			result: result.results as (IDirectoryUserResult | IDirectoryChannelResult)[],
+			count: result.results.length,
+			offset,
+			total: result.total,
+		});
 	},
 );
 
-API.v1.addRoute(
+const pwGetPolicyResponseSchema = ajv.compile<{ enabled: boolean; policy: [string, Record<string, number | boolean>?][] }>({
+	type: 'object',
+	properties: {
+		enabled: { type: 'boolean' },
+		policy: { type: 'array', items: { type: 'array' } },
+	},
+	additionalProperties: true,
+});
+
+API.v1.get(
 	'pw.getPolicy',
 	{
 		authRequired: false,
-	},
-	{
-		get() {
-			return API.v1.success(passwordPolicy.getPasswordPolicy());
+		response: {
+			200: pwGetPolicyResponseSchema,
 		},
+	},
+	function action() {
+		return API.v1.success(passwordPolicy.getPasswordPolicy());
 	},
 );
 
@@ -437,15 +534,6 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
-	'stdout.queue',
-	{ authRequired: true, permissionsRequired: ['view-logs'] },
-	{
-		async get() {
-			return API.v1.success({ queue: getLogs() });
-		},
-	},
-);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -458,6 +546,38 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+const methodCallResponseSchema = ajv.compile<{ message: string }>({
+	type: 'object',
+	properties: { message: { type: 'string' }, success: { type: 'boolean', enum: [true] } },
+	required: ['message'],
+	additionalProperties: false,
+});
+
+const methodCallErrorResponseSchema = ajv.compile<{ message: string }>({
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				message: { type: 'string' },
+				success: { type: 'boolean', enum: [false] },
+			},
+			required: ['message', 'success'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				success: { type: 'boolean', enum: [false] },
+				error: { type: 'string' },
+				errorType: { type: 'string' },
+				stack: { type: 'string' },
+				details: { anyOf: [{ type: 'string' }, { type: 'object' }] },
+			},
+			required: ['success'],
+			additionalProperties: false,
+		},
+	],
+});
 
 const mountResult = ({
 	id,
@@ -480,131 +600,164 @@ const mountResult = ({
 
 // had to create two different endpoints for authenticated and non-authenticated calls
 // because restivus does not provide 'this.userId' if 'authRequired: false'
-API.v1.addRoute(
+API.v1.post(
 	'method.call/:method',
 	{
 		authRequired: true,
+		userWithoutUsername: true,
 		rateLimiterOptions: false,
-		validateParams: isMeteorCall,
-	},
-	{
-		async post() {
-			check(this.bodyParams, {
-				message: String,
-			});
-
-			const data = EJSON.parse(this.bodyParams.message);
-
-			if (!isMethodCallProps(data)) {
-				return API.v1.failure('Invalid method call');
-			}
-
-			const { method, params, id } = data;
-
-			const connectionId =
-				this.token ||
-				crypto
-					.createHash('md5')
-					.update(this.requestIp + this.user._id)
-					.digest('hex');
-
-			const rateLimiterInput = {
-				userId: this.userId,
-				clientAddress: this.requestIp,
-				type: 'method',
-				name: method,
-				connectionId,
-			};
-
-			try {
-				DDPRateLimiter._increment(rateLimiterInput);
-				const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-				if (!rateLimitResult.allowed) {
-					throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-						timeToReset: rateLimitResult.timeToReset,
-					});
-				}
-
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
-			} catch (err) {
-				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
-				}
-
-				if (settings.get('Log_Level') === '2') {
-					Meteor._debug(`Exception while invoking method ${method}`, err);
-				}
-				return API.v1.success(mountResult({ id, error: err }));
-			}
+		body: isMeteorCall,
+		applyMeteorContext: true,
+		response: {
+			200: methodCallResponseSchema,
+			400: methodCallErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			429: ajv.compile({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
+				required: ['success'],
+				additionalProperties: true,
+			}),
 		},
 	},
+	async function action() {
+		check(this.bodyParams, {
+			message: String,
+		});
+
+		const data = EJSON.parse(this.bodyParams.message);
+
+		const { method, params, id } = data;
+
+		const connectionId =
+			this.token ||
+			crypto
+				.createHash('md5')
+				.update((this.requestIp ?? '') + this.user._id)
+				.digest('hex');
+
+		const rateLimiterInput = {
+			userId: this.userId,
+			clientAddress: this.requestIp,
+			type: 'method',
+			name: method,
+			connectionId,
+		};
+
+		try {
+			DDPRateLimiter._increment(rateLimiterInput);
+			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
+			if (!rateLimitResult.allowed) {
+				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+					timeToReset: rateLimitResult.timeToReset,
+				});
+			}
+
+			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
+		} catch (err) {
+			if (!(err as any).isClientSafe && !(err as any).meteorError) {
+				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
+			}
+
+			if (settings.get('Log_Level') === '2') {
+				Meteor._debug(`Exception while invoking method ${method}`, err);
+			}
+
+			return API.v1.failure(mountResult({ id, error: err }));
+		}
+	},
 );
-API.v1.addRoute(
+
+API.v1.post(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
+		userWithoutUsername: true,
 		rateLimiterOptions: false,
-		validateParams: isMeteorCall,
-	},
-	{
-		async post() {
-			check(this.bodyParams, {
-				message: String,
-			});
-
-			const data = EJSON.parse(this.bodyParams.message);
-
-			if (!isMethodCallAnonProps(data)) {
-				return API.v1.failure('Invalid method call');
-			}
-
-			const { method, params, id } = data;
-
-			const connectionId = this.token || crypto.createHash('md5').update(this.requestIp).digest('hex');
-
-			const rateLimiterInput = {
-				userId: this.userId || undefined,
-				clientAddress: this.requestIp,
-				type: 'method',
-				name: method,
-				connectionId,
-			};
-
-			try {
-				DDPRateLimiter._increment(rateLimiterInput);
-
-				const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-				if (!rateLimitResult.allowed) {
-					throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-						timeToReset: rateLimitResult.timeToReset,
-					});
-				}
-
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
-			} catch (err) {
-				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
-				}
-				if (settings.get('Log_Level') === '2') {
-					Meteor._debug(`Exception while invoking method ${method}`, err);
-				}
-				return API.v1.success(mountResult({ id, error: err }));
-			}
+		body: isMeteorCall,
+		applyMeteorContext: true,
+		response: {
+			200: methodCallResponseSchema,
+			400: methodCallErrorResponseSchema,
 		},
+	},
+	async function action() {
+		check(this.bodyParams, {
+			message: String,
+		});
+
+		const data = EJSON.parse(this.bodyParams.message);
+
+		const { method, params, id } = data;
+
+		const connectionId =
+			this.token ||
+			crypto
+				.createHash('md5')
+				.update(this.requestIp ?? '')
+				.digest('hex');
+
+		const rateLimiterInput = {
+			userId: this.userId || undefined,
+			clientAddress: this.requestIp,
+			type: 'method',
+			name: method,
+			connectionId,
+		};
+
+		try {
+			DDPRateLimiter._increment(rateLimiterInput);
+
+			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
+			if (!rateLimitResult.allowed) {
+				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+					timeToReset: rateLimitResult.timeToReset,
+				});
+			}
+
+			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
+		} catch (err) {
+			if (!(err as any).isClientSafe && !(err as any).meteorError) {
+				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
+			}
+			if (settings.get('Log_Level') === '2') {
+				Meteor._debug(`Exception while invoking method ${method}`, err);
+			}
+			return API.v1.failure(mountResult({ id, error: err }));
+		}
 	},
 );
 
-API.v1.addRoute(
+const smtpCheckResponseSchema = ajv.compile<{ isSMTPConfigured: boolean }>({
+	type: 'object',
+	properties: {
+		isSMTPConfigured: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['isSMTPConfigured', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'smtp.check',
-	{ authRequired: true },
 	{
-		async get() {
-			return API.v1.success({ isSMTPConfigured: isSMTPConfigured() });
+		authRequired: true,
+		response: {
+			200: smtpCheckResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
+	async function action() {
+		return API.v1.success({ isSMTPConfigured: isSMTPConfigured() });
+	},
 );
+
+const fingerprintResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
 
 /**
  * @openapi
@@ -639,75 +792,80 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+API.v1.post(
 	'fingerprint',
 	{
 		authRequired: true,
-		validateParams: isFingerprintProps,
+		permissionsRequired: ['manage-cloud'],
+		body: isFingerprintProps,
+		response: {
+			200: fingerprintResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			400: validateBadRequestErrorResponse,
+		},
 	},
-	{
-		async post() {
-			check(this.bodyParams, {
-				setDeploymentAs: String,
-			});
+	async function action() {
+		check(this.bodyParams, {
+			setDeploymentAs: String,
+		});
 
-			const settingsIds: string[] = [];
+		const settingsIds: string[] = [];
 
-			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
-				await WorkspaceCredentials.removeAllCredentials();
+		if (this.bodyParams.setDeploymentAs === 'new-workspace') {
+			await WorkspaceCredentials.removeAllCredentials();
 
-				settingsIds.push(
-					'Cloud_Service_Agree_PrivacyTerms',
-					'Cloud_Workspace_Id',
-					'Cloud_Workspace_Name',
-					'Cloud_Workspace_Client_Id',
-					'Cloud_Workspace_Client_Secret',
-					'Cloud_Workspace_Client_Secret_Expires_At',
-					'Cloud_Workspace_Registration_Client_Uri',
-					'Cloud_Workspace_PublicKey',
-					'Cloud_Workspace_License',
-					'Cloud_Workspace_Had_Trial',
-					'uniqueID',
-				);
+			settingsIds.push(
+				'Cloud_Service_Agree_PrivacyTerms',
+				'Cloud_Workspace_Id',
+				'Cloud_Workspace_Name',
+				'Cloud_Workspace_Client_Id',
+				'Cloud_Workspace_Client_Secret',
+				'Cloud_Workspace_Client_Secret_Expires_At',
+				'Cloud_Workspace_Registration_Client_Uri',
+				'Cloud_Workspace_PublicKey',
+				'Cloud_Workspace_License',
+				'Cloud_Workspace_Had_Trial',
+				'uniqueID',
+			);
+		}
+
+		settingsIds.push('Deployment_FingerPrint_Verified');
+
+		const auditSettingOperation = updateAuditedByUser({
+			_id: this.userId,
+			username: this.user.username ?? '',
+			ip: this.requestIp ?? '',
+			useragent: this.request.headers.get('user-agent') ?? '',
+		});
+
+		const promises = settingsIds.map((settingId) => {
+			if (settingId === 'uniqueID') {
+				return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || crypto.randomUUID());
 			}
 
-			settingsIds.push('Deployment_FingerPrint_Verified');
+			if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
+				return auditSettingOperation(Settings.resetValueById, 'Cloud_Workspace_Access_Token_Expires_At', new Date(0));
+			}
 
-			const auditSettingOperation = updateAuditedByUser({
+			if (settingId === 'Deployment_FingerPrint_Verified') {
+				return auditSettingOperation(Settings.updateValueById, 'Deployment_FingerPrint_Verified', true);
+			}
+
+			return resetAuditedSettingByUser({
 				_id: this.userId,
-				username: this.user.username!,
-				ip: this.requestIp,
-				useragent: this.request.headers.get('user-agent') || '',
-			});
+				username: this.user.username ?? '',
+				ip: this.requestIp ?? '',
+				useragent: this.request.headers.get('user-agent') ?? '',
+			})(Settings.resetValueById, settingId);
+		});
 
-			const promises = settingsIds.map((settingId) => {
-				if (settingId === 'uniqueID') {
-					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
-				}
+		(await Promise.all(promises)).forEach((value, index) => {
+			if (value?.modifiedCount) {
+				void notifyOnSettingChangedById(settingsIds[index]);
+			}
+		});
 
-				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
-					return auditSettingOperation(Settings.resetValueById, 'Cloud_Workspace_Access_Token_Expires_At', new Date(0));
-				}
-
-				if (settingId === 'Deployment_FingerPrint_Verified') {
-					return auditSettingOperation(Settings.updateValueById, 'Deployment_FingerPrint_Verified', true);
-				}
-
-				return resetAuditedSettingByUser({
-					_id: this.userId,
-					username: this.user.username!,
-					ip: this.requestIp,
-					useragent: this.request.headers.get('user-agent') || '',
-				})(Settings.resetValueById, settingId);
-			});
-
-			(await Promise.all(promises)).forEach((value, index) => {
-				if (value?.modifiedCount) {
-					void notifyOnSettingChangedById(settingsIds[index]);
-				}
-			});
-
-			return API.v1.success({});
-		},
+		return API.v1.success();
 	},
 );

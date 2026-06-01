@@ -1,26 +1,18 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import type { MutableRefObject } from 'react';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { clientCallbacks } from '@rocket.chat/ui-client';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { callbacks } from '../../../../../lib/callbacks';
-import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useChat } from '../../contexts/ChatContext';
 
 export const useHasNewMessages = (
 	rid: string,
 	uid: string | undefined,
-	atBottomRef: MutableRefObject<boolean>,
-	{
-		sendToBottom,
-		sendToBottomIfNecessary,
-		isAtBottom,
-	}: {
-		sendToBottom: () => void;
-		sendToBottomIfNecessary: () => void;
-		isAtBottom: (threshold?: number) => boolean;
-	},
+	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>,
+	isAtBottom: MutableRefObject<boolean>,
 ) => {
 	const chat = useChat();
 
@@ -31,25 +23,24 @@ export const useHasNewMessages = (
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const handleNewMessageButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		sendToBottomIfNecessary();
+		setShouldJumpToBottom(true);
 		setHasNewMessages(false);
 		chat.composer?.focus();
-	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
+	}, [setShouldJumpToBottom, chat.composer]);
 
-	const handleJumpToRecentButtonClick = useCallback(() => {
-		atBottomRef.current = true;
+	const handleJumpToRecentButtonClick = useCallback(async () => {
 		RoomHistoryManager.clear(rid);
-		RoomHistoryManager.getMoreIfIsEmpty(rid);
-	}, [atBottomRef, rid]);
+		await RoomHistoryManager.getMoreIfIsEmpty(rid);
+		setShouldJumpToBottom(true);
+	}, [setShouldJumpToBottom, rid]);
 
 	const handleComposerResize = useCallback((): void => {
-		sendToBottomIfNecessary();
+		setShouldJumpToBottom(true);
 		setHasNewMessages(false);
-	}, [sendToBottomIfNecessary]);
+	}, [setShouldJumpToBottom]);
 
 	useEffect(() => {
-		callbacks.add(
+		clientCallbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
 				if (rid !== msg.rid || isEditedMessage(msg) || msg.tmid) {
@@ -57,45 +48,50 @@ export const useHasNewMessages = (
 				}
 
 				if (msg.u._id === uid) {
-					sendToBottom();
-					setHasNewMessages(false);
 					return;
 				}
 
-				if (!isAtBottom()) {
+				if (!isAtBottom.current) {
 					setHasNewMessages(true);
 				}
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
+			rid,
+		);
+
+		clientCallbacks.add(
+			'afterSaveMessage',
+			(msg: IMessage) => {
+				if (msg.tmid) {
+					return;
+				}
+				if (msg.u._id === uid) {
+					setShouldJumpToBottom(true);
+					setHasNewMessages(false);
+				}
+			},
+			clientCallbacks.priority.MEDIUM,
 			rid,
 		);
 
 		return () => {
-			callbacks.remove('streamNewMessage', rid);
+			clientCallbacks.remove('streamNewMessage', rid);
+			clientCallbacks.remove('afterSaveMessage', rid);
 		};
-	}, [isAtBottom, rid, sendToBottom, uid]);
+	}, [isAtBottom, rid, setShouldJumpToBottom, uid]);
 
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
+	const debouncedClearNewMessagesOnScroll = useDebouncedCallback(
+		() => {
+			if (isAtBottom.current) {
+				setHasNewMessages(false);
 			}
-
-			node.addEventListener(
-				'scroll',
-				withThrottling({ wait: 100 })(() => {
-					atBottomRef.current && setHasNewMessages(false);
-				}),
-				{
-					passive: true,
-				},
-			);
 		},
-		[atBottomRef],
+		100,
+		[],
 	);
 
 	return {
-		newMessagesScrollRef: ref,
+		debouncedClearNewMessagesOnScroll,
 		handleNewMessageButtonClick,
 		handleJumpToRecentButtonClick,
 		handleComposerResize,

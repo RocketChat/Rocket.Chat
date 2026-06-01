@@ -12,12 +12,8 @@ const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['rol
 	(newRoles.some((item) => !previousRoles.includes(item)) || previousRoles.some((item) => !newRoles.includes(item)));
 const isEditingField = (previousValue?: string, newValue?: string) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
-export const canEditExtension = async (userId: string, newExtension?: string) => {
-	if (!settings.get('VoIP_TeamCollab_Enabled')) {
-		return false;
-	}
-
-	if (!(await hasPermissionAsync(userId, 'manage-voip-extensions'))) {
+export const canEditExtension = async (newExtension?: string) => {
+	if (!settings.get('VoIP_TeamCollab_SIP_Integration_Enabled')) {
 		return false;
 	}
 
@@ -117,7 +113,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 
 	if (
 		isEditingField(user.freeSwitchExtension ?? '', userData.freeSwitchExtension) &&
-		!(await canEditExtension(userId, userData.freeSwitchExtension))
+		!(await canEditExtension(userData.freeSwitchExtension))
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user voice call extension is not allowed', {
 			method: 'insertOrUpdateUser',

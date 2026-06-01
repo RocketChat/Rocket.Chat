@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useSetModal, useToastMessageDispatch, useMethod, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useToastMessageDispatch, useEndpoint, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
@@ -14,7 +14,9 @@ export const useRoomLeave = (room: IRoom) => {
 	const subscription = useUserSubscription(room._id);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const leaveRoom = useMethod('leaveRoom');
+	const leaveChannel = useEndpoint('POST', '/v1/channels.leave');
+	const leaveGroup = useEndpoint('POST', '/v1/groups.leave');
+	const leaveDirect = useEndpoint('POST', '/v1/im.leave');
 	const router = useRouter();
 
 	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && Boolean(subscription);
@@ -22,7 +24,13 @@ export const useRoomLeave = (room: IRoom) => {
 	const handleLeave = useEffectEvent(() => {
 		const leaveAction = async () => {
 			try {
-				await leaveRoom(room._id);
+				if (room.t === 'c') {
+					await leaveChannel({ roomId: room._id });
+				} else if (room.t === 'p') {
+					await leaveGroup({ roomId: room._id });
+				} else if (room.t === 'd') {
+					await leaveDirect({ roomId: room._id });
+				}
 				router.navigate('/home');
 
 				if (room.name) {

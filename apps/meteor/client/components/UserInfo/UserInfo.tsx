@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
@@ -41,6 +41,7 @@ type UserInfoDataProps = Serialized<
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
+		| 'abacAttributes'
 	>
 >;
 
@@ -51,6 +52,7 @@ type UserInfoProps = UserInfoDataProps & {
 	actions: ReactElement;
 	roles: ReactElement[];
 	reason?: string;
+	invitationDate?: string;
 };
 
 const UserInfo = ({
@@ -73,14 +75,16 @@ const UserInfo = ({
 	actions,
 	reason,
 	freeSwitchExtension,
-	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
-	abacAttributes = null,
+	abacAttributes,
+	invitationDate,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
+
+	const usernameId = useId();
 
 	return (
 		<ContextualbarScrollableContent p={24} {...props}>
@@ -126,9 +130,13 @@ const UserInfo = ({
 					)}
 
 					{username && username !== name && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Username')}</InfoPanelLabel>
-							<InfoPanelText data-qa='UserInfoUserName'>{username}</InfoPanelText>
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt' id={usernameId}>
+								{t('Username')}
+							</InfoPanelLabel>
+							<InfoPanelText is='dd' aria-labelledby={usernameId}>
+								{username}
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -189,7 +197,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{abacAttributes?.length > 0 && (
+					{abacAttributes && abacAttributes.length > 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
 							<UserInfoABACAttributes abacAttributes={abacAttributes} />
@@ -205,6 +213,13 @@ const UserInfo = ({
 									</InfoPanelText>
 								</InfoPanelField>
 							),
+					)}
+
+					{invitationDate && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Invitation_date')}</InfoPanelLabel>
+							<InfoPanelText>{timeAgo(invitationDate)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 
 					{createdAt && (

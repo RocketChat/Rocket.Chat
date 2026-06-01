@@ -4,14 +4,13 @@ import { registerGuest } from '@rocket.chat/omni-core';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { setMultipleVisitorCustomFields } from '../../lib/custom-fields';
 import { notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
 import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
-import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -60,7 +59,10 @@ API.v1.addRoute(
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 
-			const visitor = await registerGuest(guest, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
+			const visitor = await registerGuest(guest, {
+				shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+			});
 			if (!visitor) {
 				throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
 					method: 'livechat/visitor',
@@ -152,7 +154,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 				},
 			});
 		} catch (e) {
-			livechatLogger.error(e);
+			livechatLogger.error({ msg: 'Error removing visitor', err: e });
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 	},
@@ -182,25 +184,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
-API.v1.addRoute('livechat/visitor.callStatus', {
-	async post() {
-		check(this.bodyParams, {
-			token: String,
-			callStatus: String,
-			rid: String,
-			callId: String,
-		});
-
-		const { token, callStatus, rid, callId } = this.bodyParams;
-		const guest = await findGuest(token);
-		if (!guest) {
-			throw new Meteor.Error('invalid-token');
-		}
-		await updateCallStatus(callId, rid, callStatus, guest);
-		return API.v1.success({ token, callStatus });
-	},
-});
 
 API.v1.addRoute('livechat/visitor.status', {
 	async post() {

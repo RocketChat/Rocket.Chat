@@ -1,7 +1,6 @@
 import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { ajv } from './Ajv';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
@@ -10,6 +9,7 @@ import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
+import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
@@ -17,10 +17,6 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
@@ -156,7 +152,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.list': {
-		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
+		GET: (params: UsersListParamsGET) => PaginatedResult<{
 			users: DefaultUserInfo[];
 		}>;
 	};
@@ -183,6 +179,8 @@ export type UsersEndpoints = {
 		GET: (params: { fullExport?: 'true' | 'false' }) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
+			url: string | null;
+			pendingOperationsBeforeMyRequest: number;
 		};
 	};
 
@@ -200,6 +198,7 @@ export type UsersEndpoints = {
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
+				| Record<string, never>
 				| {
 						userId: string;
 				  }
@@ -259,20 +258,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.getAvatarSuggestion': {
-		GET: () => {
-			suggestions: Record<
-				string,
-				{
-					blob: string;
-					contentType: string;
-					service: string;
-					url: string;
-				}
-			>;
-		};
-	};
-
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
 			result: boolean;
@@ -286,15 +271,6 @@ export type UsersEndpoints = {
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
-		};
-	};
-
-	'/v1/users.createToken': {
-		POST: (params: { userId?: string; username?: string; user?: string }) => {
-			data: {
-				userId: string;
-				authToken: string;
-			};
 		};
 	};
 
@@ -401,6 +377,7 @@ export * from './users/UserCreateParamsPOST';
 export * from './users/UserSetActiveStatusParamsPOST';
 export * from './users/UserDeactivateIdleParamsPOST';
 export * from './users/UsersInfoParamsGet';
+export * from './users/UsersListParamsGET';
 export * from './users/UsersListStatusParamsGET';
 export * from './users/UsersSendWelcomeEmailParamsPOST';
 export * from './users/UserRegisterParamsPOST';

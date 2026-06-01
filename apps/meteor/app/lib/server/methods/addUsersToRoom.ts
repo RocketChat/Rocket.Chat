@@ -1,14 +1,15 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { beforeAddUsersToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -52,8 +53,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	});
 	const userInRoom = subscription != null;
 
-	// Can't add to direct room ever
-	if (room.t === 'd') {
+	if (room.t === 'd' && !isRoomNativeFederated(room)) {
 		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',
 		});
@@ -97,6 +97,11 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+			if (subscription && isBannedSubscription(subscription)) {
+				throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
+					method: 'addUsersToRoom',
+				});
+			}
 			if (!subscription) {
 				return addUserToRoom(data.rid, newUser, user);
 			}
@@ -118,6 +123,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 Meteor.methods<ServerMethods>({
 	async addUsersToRoom(data) {
+		methodDeprecationLogger.method('addUsersToRoom', '9.0.0', ['/v1/channels.invite', '/v1/groups.invite']);
 		const uid = Meteor.userId();
 		// Validate user and room
 		if (!uid) {

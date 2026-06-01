@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -7,7 +7,8 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
+	forceNew?: boolean;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
@@ -35,9 +36,16 @@ export interface IRoomService {
 			createAsHidden?: boolean;
 		},
 	): Promise<boolean | undefined>;
-	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
 	performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void>;
+	performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
+	performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
+	revokeInvite(room: IRoom, user: IUser): Promise<void>;
+	removeUserFromRoom(
+		roomId: string,
+		user: IUser,
+		options?: { byUser?: Pick<IUser, '_id' | 'username'>; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(
 		roomId: string,
@@ -46,7 +54,7 @@ export interface IRoomService {
 		sendMessage?: boolean,
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
-	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
+	join(param: { room: IRoom; user: Pick<IUser, '_id' | 'federated' | 'federation'>; joinCode?: string }): Promise<boolean | undefined>;
 	beforeLeave(room: IRoom): Promise<void>;
 	beforeUserRemoved(room: IRoom): Promise<void>;
 	beforeNameChange(room: IRoom): Promise<void>;
@@ -62,5 +70,18 @@ export interface IRoomService {
 		skipAlertSound?: boolean;
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
+		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
+	updateDirectMessageRoomName(
+		room: IRoom,
+		ignoreStatusFromSubs?: string[],
+		updatedNames?: AtLeast<IUser, '_id' | 'name' | 'username'>[],
+	): Promise<boolean>;
+	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
+	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
+	unbanAndInviteUser(
+		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void>;
 }

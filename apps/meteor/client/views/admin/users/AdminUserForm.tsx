@@ -19,6 +19,7 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
+import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -29,16 +30,15 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { useVoipExtensionPermission } from './useVoipExtensionPermission';
-import { validateEmail } from '../../../../lib/emailValidator';
+import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
@@ -50,7 +50,7 @@ type AdminUserFormProps = {
 	onReload: () => void;
 	context: string;
 	refetchUserFormData?: () => void;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	roleError: Error | null;
 };
 
@@ -120,10 +120,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
-		mode: 'onBlur',
 	});
 
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
@@ -275,18 +274,26 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									/>
 								</FieldRow>
 								{isVerificationNeeded && !isSmtpEnabled && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 								{!isVerificationNeeded && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{
-											__html: DOMPurify.sanitize(t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' })),
-										}}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Email_verification_isnt_required'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Accounts' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -341,7 +348,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
-					{canManageVoipExtension && (
+					{showVoipExtension && (
 						<Field>
 							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
 							<FieldRow>
@@ -448,11 +455,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint
-										id={`${sendWelcomeEmailId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-										mbs={0}
-									/>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} mbs={0}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
