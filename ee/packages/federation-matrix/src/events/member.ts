@@ -83,8 +83,7 @@ async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 			return user;
 		}
 
-		// TODO improve the check for bridge users
-		if (isLocal && !/_xmpp_/.test(username)) {
+		if (isLocal) {
 			throw new Error(`Local user ${username} not found for Matrix ID: ${userId}`);
 		}
 
