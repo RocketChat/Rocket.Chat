@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 import { useDesktopTelephonyListener } from './useDesktopTelephonyListener';
 import type { PeerInfo, SessionState } from '../context/definitions';
@@ -15,14 +15,13 @@ const baseSession = {
 	supportedFeatures: [],
 } as const;
 
-const emptySession = (state: 'closed' | 'new'): SessionState => ({ ...baseSession, state, callId: undefined });
+const sessionFor = (state: SessionState['state']): SessionState => {
+	if (state === 'closed' || state === 'new') {
+		return { ...baseSession, state, callId: undefined };
+	}
 
-const callSession = (state: 'calling' | 'ringing' | 'ongoing'): SessionState => ({
-	...baseSession,
-	state,
-	callId: 'call-id',
-	peerInfo: { number: '000' },
-});
+	return { ...baseSession, state, callId: 'call-id', peerInfo: { number: '000' } } as SessionState;
+};
 
 type TelephonyCallback = (payload: { phoneNumber: string; rawUri: string }) => void;
 
@@ -40,7 +39,10 @@ const setupDesktopBridge = () => {
 
 	return {
 		onTelephonyCallRequested,
-		fire: (phoneNumber: string) => registered?.({ phoneNumber, rawUri: `tel:${phoneNumber}` }),
+		fire: (phoneNumber: string) =>
+			act(() => {
+				registered?.({ phoneNumber, rawUri: `tel:${phoneNumber}` });
+			}),
 	};
 };
 
@@ -52,11 +54,18 @@ const clearDesktopBridge = () => {
 	});
 };
 
-const renderListener = (sessionState: SessionState) => {
+const renderListener = (initialState: SessionState['state']) => {
 	const toggleWidget = jest.fn();
 	const selectPeer = jest.fn();
-	renderHook(() => useDesktopTelephonyListener({ sessionState, toggleWidget, selectPeer }));
-	return { toggleWidget, selectPeer };
+	const { rerender } = renderHook(
+		({ state }: { state: SessionState['state'] }) => useDesktopTelephonyListener({ sessionState: sessionFor(state), toggleWidget, selectPeer }),
+		{ initialProps: { state: initialState } },
+	);
+	return {
+		toggleWidget,
+		selectPeer,
+		setState: (state: SessionState['state']) => act(() => rerender({ state })),
+	};
 };
 
 afterEach(() => {
@@ -64,15 +73,15 @@ afterEach(() => {
 	jest.clearAllMocks();
 });
 
-it('registers a single telephony callback on mount', () => {
+it('registers a single telephony callback once, at mount', () => {
 	const bridge = setupDesktopBridge();
-	renderListener(emptySession('closed'));
+	renderListener('closed');
 	expect(bridge.onTelephonyCallRequested).toHaveBeenCalledTimes(1);
 });
 
 it('opens the widget pre-filled when the widget is closed', () => {
 	const bridge = setupDesktopBridge();
-	const { toggleWidget, selectPeer } = renderListener(emptySession('closed'));
+	const { toggleWidget, selectPeer } = renderListener('closed');
 
 	bridge.fire('+15551234567');
 
@@ -82,7 +91,7 @@ it('opens the widget pre-filled when the widget is closed', () => {
 
 it('sets the number without re-toggling when the widget is already open and idle', () => {
 	const bridge = setupDesktopBridge();
-	const { toggleWidget, selectPeer } = renderListener(emptySession('new'));
+	const { toggleWidget, selectPeer } = renderListener('new');
 
 	bridge.fire('5551234567');
 
@@ -90,17 +99,47 @@ it('sets the number without re-toggling when the widget is already open and idle
 	expect(toggleWidget).not.toHaveBeenCalled();
 });
 
-it.each(['calling', 'ringing', 'ongoing'] as const)('ignores the request while a call is %s', (state) => {
+it.each(['calling', 'ringing', 'ongoing'] as const)('ignores and drops the request while a call is %s', (state) => {
 	const bridge = setupDesktopBridge();
-	const { toggleWidget, selectPeer } = renderListener(callSession(state));
+	const { toggleWidget, selectPeer, setState } = renderListener(state);
 
 	bridge.fire('5551234567');
 
 	expect(toggleWidget).not.toHaveBeenCalled();
 	expect(selectPeer).not.toHaveBeenCalled();
+
+	// Dropped, not parked: returning to idle must not re-open the widget with the stale number.
+	setState('closed');
+
+	expect(toggleWidget).not.toHaveBeenCalled();
+});
+
+it('applies a number delivered before the widget settles into an idle state', () => {
+	// Cold-start decouple: the number is delivered (stored) while the session may still be
+	// transitioning; the open is driven by the effect once the widget reports an idle state.
+	const bridge = setupDesktopBridge();
+	const { toggleWidget } = renderListener('closed');
+
+	bridge.fire('5551234567');
+
+	expect(toggleWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '5551234567' });
+});
+
+it('does not re-apply the number after it has been handled', () => {
+	const bridge = setupDesktopBridge();
+	const { toggleWidget, selectPeer, setState } = renderListener('closed');
+
+	bridge.fire('5551234567');
+	expect(toggleWidget).toHaveBeenCalledTimes(1);
+
+	// The widget opens (state -> 'new'); the pending number is already cleared, so no re-apply.
+	setState('new');
+
+	expect(toggleWidget).toHaveBeenCalledTimes(1);
+	expect(selectPeer).not.toHaveBeenCalled();
 });
 
 it('does nothing when the desktop bridge is unavailable', () => {
 	clearDesktopBridge();
-	expect(() => renderListener(emptySession('closed'))).not.toThrow();
+	expect(() => renderListener('closed')).not.toThrow();
 });
