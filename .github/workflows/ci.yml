@@ -22,7 +22,8 @@ concurrency:
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   release-versions:
@@ -153,8 +154,6 @@ jobs:
     name: 🚀 Notify external services - draft
     runs-on: ubuntu-24.04-arm
     needs: [release-versions]
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -197,8 +196,6 @@ jobs:
     name: 📦 Build Packages
     needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
     steps:
       - name: Cache build
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -287,8 +284,6 @@ jobs:
     name: 📦 Meteor Build (${{ matrix.type }})
     needs: [release-versions, packages-build]
     runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
 
     strategy:
       fail-fast: false
@@ -313,8 +308,6 @@ jobs:
     name: 🚢 Build Docker
     needs: [build, release-versions]
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
-    permissions:
-      contents: read
 
     env:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}-${{ matrix.arch }}
@@ -412,8 +405,6 @@ jobs:
     name: 🚢 Publish Docker Images (ghcr.io)
     needs: [build-gh-docker, release-versions]
     runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
 
     env:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -510,8 +501,6 @@ jobs:
     needs: [release-versions]
     if: needs.release-versions.outputs.github-actions-changed
     runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
     env:
       ACTIONLINT_VERSION: 1.7.12
     steps:
@@ -700,8 +689,6 @@ jobs:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
     runs-on: ubuntu-24.04
-    permissions:
-      contents: read
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -797,8 +784,6 @@ jobs:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
     needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
-    permissions:
-      contents: read
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -898,8 +883,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker-publish, release-versions]
-    permissions:
-      contents: read
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -951,8 +934,6 @@ jobs:
     name: 🚀 Publish Docker Images (DockerHub)
     runs-on: ubuntu-24.04-arm
     needs: [deploy, release-versions]
-    permissions:
-      contents: read
 
     env:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -1072,8 +1053,6 @@ jobs:
     needs:
       - docker-image-publish
       - release-versions
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
