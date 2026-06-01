@@ -846,7 +846,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -867,7 +867,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -885,7 +885,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -902,7 +902,7 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -921,7 +921,7 @@ describe('[Users]', () => {
 					email: `newuser${Date.now()}@email.com`,
 					name: 'New User',
 					username: `newuser${Date.now()}`,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -955,7 +955,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -1002,7 +1002,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -1025,7 +1025,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 						secret: 'invalid-secret',
 					})
 					.expect('Content-Type', 'application/json')
@@ -1049,7 +1049,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 						secret: 'valid-secret',
 					})
 					.expect('Content-Type', 'application/json')
@@ -1086,7 +1086,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 						reason,
 					})
 					.expect('Content-Type', 'application/json')
@@ -1126,7 +1126,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -1151,7 +1151,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1185,7 +1185,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 						customFields: {
 							customFieldText: '',
 						},
@@ -1213,7 +1213,7 @@ describe('[Users]', () => {
 						email,
 						name: username,
 						username,
-						pass: 'P@ssw0rd1234.!',
+						pass: password,
 						customFields: {
 							customFieldText: 'success',
 						},
