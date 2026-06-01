@@ -17,6 +17,7 @@ import {
 	quote,
 	spoiler,
 	spoilerBlock,
+	link,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum } from './chars';
@@ -290,6 +291,26 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Markdown link
+		if (ch === '[') {
+			const result = tryMarkdownLink(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ']';
+				continue;
+			}
+		}
+
+		// Angle bracket link
+		if (ch === '<') {
+			const result = tryAngleBracketLink(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '>';
+				continue;
+			}
+		}
+
 		// Inline spoiler
 		if (ch === '|') {
 			const result = trySpoiler(scanner, options);
@@ -408,6 +429,26 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 					prevChar = '#';
 					continue;
 				}
+			}
+		}
+
+		// Markdown link
+		if (ch === '[') {
+			const result = tryMarkdownLink(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ']';
+				continue;
+			}
+		}
+
+		// Angle bracket link
+		if (ch === '<') {
+			const result = tryAngleBracketLink(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '>';
+				continue;
 			}
 		}
 
@@ -817,4 +858,105 @@ function tryBlockSpoiler(scanner: Scanner, options: Options): Root[number] | nul
 	// Never found closing "||" → backtrack
 	scanner.restore(start);
 	return null;
+}
+
+function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
+	const start = scanner.save();
+
+	// Must start with '['
+	if (scanner.char() !== '[') {
+		return null;
+	}
+	scanner.advance(); // consume '['
+
+	// Parse title content — stops at ']'
+	const titleNodes = parseInlineContent(scanner, options, ']');
+
+	// Must find ']('
+	if (!scanner.matches('](')) {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.advance(2); // consume ']('
+
+	// Parse URL — stops at ')'
+	const urlStart = scanner.save();
+	let depth = 1;
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		if (scanner.char() === '(') depth++;
+		if (scanner.char() === ')') {
+			depth--;
+			if (depth === 0) break;
+		}
+		scanner.advance();
+	}
+
+	if (!scanner.matches(')')) {
+		scanner.restore(start);
+		return null;
+	}
+
+	const url = scanner.sliceFrom(urlStart);
+	scanner.advance(); // consume ')'
+
+	if (url.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	const title = reducePlainTexts(titleNodes);
+
+	// Empty title → link with no label (defaults to src)
+	if (title.length === 0) {
+		return link(url);
+	}
+
+	return link(url, title as any);
+}
+
+function tryAngleBracketLink(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+
+	// Must start with '<'
+	if (scanner.char() !== '<') {
+		return null;
+	}
+	scanner.advance(); // consume '<'
+
+	// Parse URL — stops at '|' or '>'
+	const urlStart = scanner.save();
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		if (scanner.char() === '|' || scanner.char() === '>') break;
+		scanner.advance();
+	}
+
+	const url = scanner.sliceFrom(urlStart);
+
+	if (url.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Must have '|' separator for angle bracket link
+	if (scanner.char() !== '|') {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.advance(); // consume '|'
+
+	// Parse title — stops at '>'
+	const titleStart = scanner.save();
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '>') {
+		scanner.advance();
+	}
+
+	if (scanner.char() !== '>') {
+		scanner.restore(start);
+		return null;
+	}
+
+	const title = scanner.sliceFrom(titleStart);
+	scanner.advance(); // consume '>'
+
+	return link(url, [plain(title)]);
 }
