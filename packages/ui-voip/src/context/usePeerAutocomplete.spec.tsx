@@ -199,6 +199,56 @@ describe('hook', () => {
 		});
 	});
 
+	describe('number peer edit sync', () => {
+		it('should re-select the number peer when the prefilled filter is manually edited', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+			const peerInfo: PeerInfo = { number: '111' };
+
+			const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+			});
+
+			act(() => {
+				result.current.onChangeFilter('222');
+			});
+
+			expect(result.current.filter).toBe('222');
+			expect(mockOnSelectPeer).toHaveBeenCalledWith({ number: '222' });
+		});
+
+		it('should re-select the number peer when editing via the keypad', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+			const peerInfo: PeerInfo = { number: '11' };
+
+			const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+			});
+
+			act(() => {
+				result.current.onKeypadPress('9');
+			});
+
+			expect(result.current.filter).toBe('119');
+			expect(mockOnSelectPeer).toHaveBeenCalledWith({ number: '119' });
+		});
+
+		it('should not re-select the peer when editing the filter for a userId peer', () => {
+			mockGetAutocompleteOptions.mockResolvedValue([]);
+			const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1' };
+
+			const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
+				wrapper: appRoot(),
+			});
+
+			act(() => {
+				result.current.onChangeFilter('typed');
+			});
+
+			expect(result.current.filter).toBe('typed');
+			expect(mockOnSelectPeer).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('onChangeValue', () => {
 		it('should do nothing if value is an array', async () => {
 			mockGetAutocompleteOptions.mockResolvedValue([]);
