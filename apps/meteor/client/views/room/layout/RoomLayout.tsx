@@ -39,6 +39,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
 	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%';
+	const hideBody = aside && contextualbarSize === '100%';
 
 	const layout = useLayout();
 
@@ -59,7 +60,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 			<Box h='full' w='full' display='flex' flexDirection='column' bg='room' {...props} ref={ref}>
 				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
-					<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
+					<Box display={hideBody ? 'none' : 'flex'} flexDirection='column' flexGrow={1} minWidth={0}>
 						<Box is='div' display='flex' flexDirection='column' flexGrow={1} maxHeight='100%'>
 							<Suspense fallback={null}>{body}</Suspense>
 						</Box>
