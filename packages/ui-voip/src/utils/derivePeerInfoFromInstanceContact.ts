@@ -14,25 +14,37 @@ const deriveExternalPeerInfoFromInstanceContact = (contact: CallContact): Extern
 	};
 };
 
-const deriveInternalPeerInfoFromInstanceContact = (contact: CallContact): Omit<InternalPeerInfo, 'avatarUrl'> | UnknownPeerInfo => {
-	if (!contact.id) {
-		return {
-			type: 'unknown',
-		};
+const deriveUserIdFromInstanceContact = (contact: CallContact): string | null => {
+	if (contact.uid) {
+		return contact.uid;
+	}
+
+	if (contact.type === 'user' && contact.id) {
+		return contact.id;
+	}
+
+	return null;
+};
+
+const deriveInternalPeerInfoFromInstanceContact = (contact: CallContact, userId: string): Omit<InternalPeerInfo, 'avatarUrl'> => {
+	if (!userId) {
+		throw new Error('deriveInternalPeerInfoFromInstanceContact: Contact is not a user contact');
 	}
 
 	return {
-		type: 'user',
+		type: contact.type || 'user',
 		displayName: contact.displayName || 'unknown',
-		userId: contact.id,
+		userId,
 		username: contact.username,
 		callerId: contact.sipExtension,
 	};
 };
 
 export const derivePeerInfoFromInstanceContact = (contact: CallContact) => {
-	if (contact.type === 'user') {
-		return deriveInternalPeerInfoFromInstanceContact(contact);
+	const userId = deriveUserIdFromInstanceContact(contact);
+
+	if (userId) {
+		return deriveInternalPeerInfoFromInstanceContact(contact, userId);
 	}
 
 	if (contact.type === 'sip') {
