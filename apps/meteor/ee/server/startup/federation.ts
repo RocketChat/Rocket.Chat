@@ -96,9 +96,7 @@ export const startFederationService = async (): Promise<void> => {
 
 	slashCommands.add({
 		command: 'xmpp',
-		callback: async ({ params, message, userId }: SlashCommandCallbackParams<'xmpp'>): Promise<void> => {
-			console.log('Joining xmpp room', { params, message, userId });
-
+		callback: async ({ params, message: _message, userId }: SlashCommandCallbackParams<'xmpp'>): Promise<void> => {
 			const user = await Users.findOneById(userId);
 			if (!user) {
 				logger.error({ msg: 'User not found for joining xmpp room', userId });
@@ -110,7 +108,6 @@ export const startFederationService = async (): Promise<void> => {
 		options: {
 			description: 'Join xmpp rooms',
 			params: '#channel',
-			// permission: 'archive-room',
 		},
 	});
 };

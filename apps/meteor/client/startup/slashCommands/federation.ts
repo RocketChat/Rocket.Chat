@@ -24,7 +24,6 @@ slashCommands.add({
 	options: {
 		description: 'Join xmpp rooms',
 		params: '#channel',
-		// permission: 'archive-room',
 	},
 	providesPreview: false,
 });
