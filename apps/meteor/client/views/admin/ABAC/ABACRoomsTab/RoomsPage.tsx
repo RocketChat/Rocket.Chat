@@ -9,7 +9,7 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouter, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
+import { useIsExternalAttributeStore } from '../hooks/useIsExternalAttributeStore';
 
 const RoomsPage = () => {
 	const { t } = useTranslation();
@@ -33,7 +34,7 @@ const RoomsPage = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getRooms = useEndpoint('GET', '/v1/abac/rooms');
 	const isABACAvailable = useIsABACAvailable();
-	const isExternalStore = useSetting('ABAC_Attribute_Store', 'local') !== 'local';
+	const isExternalStore = useIsExternalAttributeStore();
 
 	const handleNewAttribute = useEffectEvent(() => {
 		router.navigate({
