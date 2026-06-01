@@ -1,11 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Palette } from '@rocket.chat/fuselage';
 import type { Ref } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import CallTile from './CallTile';
 import type { RemoteParticipantInfo } from '../../context/MediaCallViewContext';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+import { useTileGridLayout } from '../../providers/useTileGridLayout';
 
 type LocalParticipant = {
 	id: string;
@@ -48,16 +49,30 @@ const spotlightStyles = css`
 	min-height: 0;
 `;
 
-// auto-fit grid: as many columns as fit at min ~180px, tiles share the row
-// height equally. min-height:0 lets tiles shrink in flex parent.
+// Wrapper that fills the available stage area. Its size feeds the
+// ResizeObserver in useTileGridLayout — kept full-size regardless of how
+// large the inner grid actually ends up, so observed dimensions never
+// shrink in response to the grid shrinking (no oscillation).
+const gridMeasureStyles = css`
+	flex: 1 1 0;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`;
+
+// Grid container — explicit cell pixel sizes come from useTileGridLayout
+// based on the wrapper's size + participant count, clamped to the [3:4 ..
+// 16:9] aspect band. When the natural cell aspect would exceed the band
+// the grid is smaller than the wrapper and centers within it; otherwise
+// it fills the wrapper exactly.
 const gridStyles = css`
 	display: grid;
-	width: 100%;
-	min-height: 0;
 	gap: 8px;
-	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-	grid-auto-rows: 1fr;
 `;
+
+const TILE_GAP_PX = 8;
 
 // keep the screen video framed as 16:9 inside the bounding box
 const mainStreamStyles = css`
@@ -193,6 +208,15 @@ const CallStage = ({
 		return all;
 	}, [localParticipant, remoteParticipants, handPositions, reactionsByParticipant, captionsByParticipant]);
 
+	// IMPORTANT: hooks must run unconditionally on every render. Both the
+	// grid layout hook and its companion ref live above any conditional
+	// return — when a screen share starts mid-call featuredScreen flips
+	// non-null and the component takes the spotlight branch; if the
+	// layout hooks were below that branch they'd skip a render and
+	// trigger "Rendered fewer hooks than expected".
+	const measureRef = useRef<HTMLDivElement>(null);
+	const { rows, cols, cellWidth, cellHeight } = useTileGridLayout(measureRef, tiles.length);
+
 	if (featuredScreen) {
 		return (
 			<Box className={stageStyles}>
@@ -215,12 +239,45 @@ const CallStage = ({
 		);
 	}
 
+	// When the last row has fewer tiles than `cols`, we center the orphans at
+	// their natural single-column width using `gridColumnStart` — never spanning.
+	// An earlier version expanded each orphan to fill remaining columns, which
+	// produced ultra-wide tiles (a single trailing tile would stretch 8:1
+	// against the rest of the grid). Empty cells are visually inert: they're
+	// the same dark surface as the grid background, so centered tiles read as
+	// "fewer in this row" rather than "broken layout".
+	const lastRowOrphans = tiles.length % cols;
+	const orphanStart = tiles.length - lastRowOrphans;
+	const firstOrphanCol = lastRowOrphans > 0 ? Math.floor((cols - lastRowOrphans) / 2) + 1 : 1;
+
+	// Pre-compute the grid box total size from the clamped cell dims, so the
+	// grid is exactly cell*N + gap*(N-1) wide/tall. Avoids subpixel rounding
+	// causing a faint border peeking outside the box.
+	const gridWidth = cols > 0 && cellWidth > 0 ? cols * cellWidth + (cols - 1) * TILE_GAP_PX : undefined;
+	const gridHeight = rows > 0 && cellHeight > 0 ? rows * cellHeight + (rows - 1) * TILE_GAP_PX : undefined;
+
 	return (
 		<Box className={stageStyles}>
-			<Box className={gridStyles}>
-				{tiles.map((t) => (
-					<CallTile key={t.id} {...t} />
-				))}
+			<Box ref={measureRef} className={gridMeasureStyles}>
+				<Box
+					className={gridStyles}
+					style={{
+						width: gridWidth,
+						height: gridHeight,
+						gridTemplateColumns: `repeat(${cols}, ${cellWidth}px)`,
+						gridTemplateRows: `repeat(${rows}, ${cellHeight}px)`,
+					}}
+				>
+					{tiles.map((t, i) => {
+						const orphanIndex = lastRowOrphans > 0 && i >= orphanStart ? i - orphanStart : -1;
+						const placement: { gridColumnStart?: number } = orphanIndex >= 0 ? { gridColumnStart: firstOrphanCol + orphanIndex } : {};
+						return (
+							<Box key={t.id} style={placement} minWidth={0} minHeight={0}>
+								<CallTile {...t} />
+							</Box>
+						);
+					})}
+				</Box>
 			</Box>
 		</Box>
 	);

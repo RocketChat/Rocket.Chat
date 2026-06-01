@@ -5,11 +5,13 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
+import FakeParticipantsControl, { initialFakeTilesCount, isFakeTilesEnabled } from './FakeParticipantsControl';
 import { ToggleButton, Timer, DevicePicker, CameraPicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
+import { buildFakeParticipants } from '../../utils/fakeParticipants';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
 // threshold in CallTile so the auto-lower triggers on the same "actually
@@ -217,6 +219,26 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
 
+	// Dev-only: simulate N additional remote participants for grid-layout
+	// testing. Toggled on by `?fakeTiles=N` or `localStorage.RCFakeTiles`.
+	// When off, all the related state stays at 0 / no-op so production
+	// users never see anything.
+	const fakeTilesEnabled = useMemo(() => isFakeTilesEnabled(), []);
+	const [fakeTilesCount, setFakeTilesCount] = useState(() => (isFakeTilesEnabled() ? initialFakeTilesCount() : 0));
+	const fakeRemotes = useMemo(() => (fakeTilesEnabled ? buildFakeParticipants(fakeTilesCount) : []), [fakeTilesEnabled, fakeTilesCount]);
+	const onChangeFakeTiles = useCallback((next: number) => {
+		setFakeTilesCount(next);
+		try {
+			window.localStorage.setItem('RCFakeTiles', String(next));
+		} catch {
+			/* sandboxed window */
+		}
+	}, []);
+	const effectiveRemoteParticipants = useMemo(
+		() => (fakeRemotes.length > 0 ? [...remoteParticipants, ...fakeRemotes] : remoteParticipants),
+		[remoteParticipants, fakeRemotes],
+	);
+
 	// Plays a chime on every client whenever the polled recording state
 	// transitions — ascending for off→on, descending mirror for on→off.
 	// We track the previous value so we don't chime on the initial mount
@@ -404,12 +426,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 			</Box>
 			<CallStage
 				localParticipant={localParticipant}
-				remoteParticipants={remoteParticipants}
+				remoteParticipants={effectiveRemoteParticipants}
 				onStopLocalScreenShare={onToggleScreenSharing}
 				handPositions={handPositions}
 				reactionsByParticipant={reactionsByParticipant}
 				captionsByParticipant={activeCaptions}
 			/>
+			{fakeTilesEnabled && <FakeParticipantsControl count={fakeTilesCount} onChange={onChangeFakeTiles} />}
 			<ActionStrip
 				rightSlot={
 					!hideChatToggle ? (
