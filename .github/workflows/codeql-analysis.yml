@@ -8,6 +8,8 @@ on:
   schedule:
     - cron: '0 13 * * *'
 
+permissions: {}
+
 jobs:
   CodeQL-Build:
     # CodeQL runs on ubuntu-latest and windows-latest
