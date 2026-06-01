@@ -97,6 +97,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
+		// A number peer can be emptied by clearing the dial-pad input; don't request media or
+		// attempt a SIP call with no destination.
+		if ('number' in peerInfo && peerInfo.number.trim() === '') {
+			return;
+		}
+
 		try {
 			const stream = await requestDevice({ actionType: 'outgoing' });
 			stopTracks(stream);
