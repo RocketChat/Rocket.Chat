@@ -1,41 +1,106 @@
 import { CronJobsSvc } from '@rocket.chat/core-services';
+import { ajvQuery, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-API.v1.get('cron.jobs', { authRequired: true }, async function action() {
-	const { offset, count } = await getPaginationItems(this.queryParams);
-	const { jobs, total } = await CronJobsSvc.getCoreJobs({ offset, count });
-
-	return API.v1.success({
-		jobs,
-		count: jobs.length,
-		offset,
-		total,
-	});
+const isCronJobsListParams = ajvQuery.compile<{
+	offset?: number;
+	count?: number;
+}>({
+	type: 'object',
+	properties: {
+		offset: { type: 'number', nullable: true },
+		count: { type: 'number', nullable: true },
+	},
+	additionalProperties: false,
 });
 
-API.v1.get('cron.appjobs', { authRequired: true }, async function action() {
-	const { offset, count } = await getPaginationItems(this.queryParams);
-	const { jobs, total } = await CronJobsSvc.getAppJobs({ offset, count });
-
-	return API.v1.success({
-		jobs,
-		count: jobs.length,
-		offset,
-		total,
-	});
+const isCronJobsHistoryParams = ajvQuery.compile<{
+	jobName: string;
+	offset?: number;
+	count?: number;
+}>({
+	type: 'object',
+	properties: {
+		jobName: { type: 'string' },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+	},
+	required: ['jobName'],
+	additionalProperties: false,
 });
 
-API.v1.get('cron.history', { authRequired: true }, async function action() {
-	const { offset, count } = await getPaginationItems(this.queryParams);
-	const { jobName } = this.queryParams;
-	const { history, total } = await CronJobsSvc.getHistory(jobName, { offset, count });
+const cronJobsEndpoints = API.v1
+	.get(
+		'cron.jobs',
+		{
+			authRequired: true,
+			query: isCronJobsListParams,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { jobs, total } = await CronJobsSvc.getCoreJobs({ offset, count });
 
-	return API.v1.success({
-		history,
-		count: history.length,
-		offset,
-		total,
-	});
-});
+			return API.v1.success({
+				jobs,
+				count: jobs.length,
+				offset,
+				total,
+			});
+		},
+	)
+	.get(
+		'cron.appjobs',
+		{
+			authRequired: true,
+			query: isCronJobsListParams,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { jobs, total } = await CronJobsSvc.getAppJobs({ offset, count });
+
+			return API.v1.success({
+				jobs,
+				count: jobs.length,
+				offset,
+				total,
+			});
+		},
+	)
+	.get(
+		'cron.history',
+		{
+			authRequired: true,
+			query: isCronJobsHistoryParams,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { jobName } = this.queryParams;
+			const { history, total } = await CronJobsSvc.getHistory(jobName, { offset, count });
+
+			return API.v1.success({
+				history,
+				count: history.length,
+				offset,
+				total,
+			});
+		},
+	);
+
+export type CronJobsEndpoints = ExtractRoutesFromAPI<typeof cronJobsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends CronJobsEndpoints {}
+}
