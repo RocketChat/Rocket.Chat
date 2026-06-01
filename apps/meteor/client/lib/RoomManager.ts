@@ -17,7 +17,7 @@ class RoomStore extends Emitter<{
 
 	lm?: Date;
 
-	atBottom = true;
+	atBottom?: boolean;
 
 	constructor(readonly rid: string) {
 		super();
