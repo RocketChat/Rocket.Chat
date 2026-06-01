@@ -142,14 +142,12 @@ describe('MessageList scroll position', () => {
 			update: jest.fn(),
 		};
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
-		mockVirtualizerHandle.findItemIndex.mockReturnValue(4);
 
 		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
 		expect(screen.getByTestId('message-list')).toBeInTheDocument();
-		expect(mockVirtualizerHandle.findItemIndex).toHaveBeenCalledWith(123);
-		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(4, { align: 'start' });
-		expect(mockVirtualizerHandle.scrollTo).not.toHaveBeenCalled();
+		expect(mockVirtualizerHandle.scrollTo).toHaveBeenCalledWith(123);
+		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
 	});
 
 	it('should jump to bottom if atBottom is true', () => {
