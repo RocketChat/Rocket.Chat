@@ -12,8 +12,10 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { useMergedRefsV2 } from '../../../../../hooks/useMergedRefsV2';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
+import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
@@ -74,6 +76,20 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const isAtBottom = useRef<boolean | null>(null);
+
+	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
+	const messagesLength = messages.length;
+	useEffect(() => {
+		setKeepAtBottom(() => {
+			if (virtualizerRef.current) {
+				virtualizerRef.current.scrollToIndex(messagesLength + 1, {
+					align: 'end',
+				});
+			}
+		});
+	}, [messagesLength, setKeepAtBottom]);
+
+	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef);
 
 	const lastScrollSizeRef = useRef(0);
 
@@ -180,7 +196,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomVirtuaScrollbars ref={messageListRef}>
+			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
 					<VList
 						ref={virtualizerRef}
@@ -189,9 +205,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						aria-busy={loading}
 						role='list'
 						keepMounted={keepMountedMessages}
-						onScroll={(offset: number) => {
+						onScroll={(offset) => {
 							const handle = virtualizerRef.current;
 							if (!handle) return;
+
+							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
+							if (handle.scrollSize >= handle.viewportSize) {
+								isAtBottom.current = true;
+							}
 							isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
 
 							const topMessage = items[handle.findItemIndex(handle.scrollOffset)];

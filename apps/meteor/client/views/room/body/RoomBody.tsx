@@ -30,6 +30,7 @@ import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import { useKeepAtBottom } from '../MessageList/hooks/useKeepAtBottom';
 import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
 const RoomBody = (): ReactElement => {
@@ -109,7 +110,9 @@ const RoomBody = (): ReactElement => {
 		debouncedClearNewMessagesOnScroll,
 	} = useHasNewMessages(room._id, user?._id, setShouldJumpToBottom, isAtBottom);
 
-	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef);
+	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
+
+	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -222,6 +225,7 @@ const RoomBody = (): ReactElement => {
 												debouncedClearNewMessagesOnScroll={debouncedClearNewMessagesOnScroll}
 												handleDateScroll={handleDateScroll}
 												debouncedMessageRead={debouncedMessageRead}
+												setKeepAtBottom={setKeepAtBottom}
 											/>
 										</CustomVirtuaScrollbars>
 									</MessageListErrorBoundary>
