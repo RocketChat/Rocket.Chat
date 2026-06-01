@@ -1,4 +1,4 @@
-import fsp from 'fs/promises';
+import fsp from 'node:fs/promises';
 
 import { getContentDisposition } from './helper';
 import { UploadFS } from '../../../../server/ufs';

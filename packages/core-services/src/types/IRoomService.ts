@@ -40,6 +40,7 @@ export interface IRoomService {
 	performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
+	revokeInvite(room: IRoom, user: IUser): Promise<void>;
 	removeUserFromRoom(
 		roomId: string,
 		user: IUser,
@@ -78,4 +79,9 @@ export interface IRoomService {
 	): Promise<boolean>;
 	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
 	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
+	unbanAndInviteUser(
+		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void>;
 }

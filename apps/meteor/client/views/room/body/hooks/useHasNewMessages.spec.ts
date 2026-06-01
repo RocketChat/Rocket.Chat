@@ -19,13 +19,8 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 }));
 
 describe('useHasNewMessages', () => {
-	const mockScrollBehavior = {
-		sendToBottom: jest.fn(),
-		sendToBottomIfNecessary: jest.fn(),
-		isAtBottom: jest.fn(() => true),
-	};
-
-	const atBottomRef = { current: true };
+	const isAtBottom = { current: true };
+	const setShouldJumpToBottom = jest.fn();
 	const rid = 'room-id';
 	const uid = 'current-user-id';
 
@@ -41,7 +36,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when user sends their own message', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, mockScrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const ownMsg: IMessage = {
 			_id: 'msg-1',
@@ -60,12 +55,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when user sends own message during race condition (not at bottom)', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const ownMsg: IMessage = {
 			_id: 'msg-race',
@@ -84,12 +74,9 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should show new messages button when another user sends a message and user is NOT at bottom', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
+			wrapper: mockAppRoot().build(),
+		});
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-2',
@@ -108,7 +95,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when another user sends a message but user IS at bottom', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, mockScrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-3',
@@ -127,12 +114,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should ignore edited messages in streamNewMessage', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const editedMsg: IEditedMessage = {
 			_id: 'msg-4',
@@ -153,12 +135,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should ignore thread messages in streamNewMessage', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const threadMsg: IMessage = {
 			_id: 'msg-5',
@@ -178,12 +155,9 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should clear hasNewMessages when afterSaveMessage fires for current user', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
+			wrapper: mockAppRoot().build(),
+		});
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-6',
@@ -214,6 +188,6 @@ describe('useHasNewMessages', () => {
 			afterSaveCallbacks.forEach((callback) => callback(ownMsg));
 		});
 		expect(result.current.hasNewMessages).toBe(false);
-		expect(mockScrollBehavior.sendToBottom).toHaveBeenCalled();
+		expect(setShouldJumpToBottom).toHaveBeenCalledWith(true);
 	});
 });

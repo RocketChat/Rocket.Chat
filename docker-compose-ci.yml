@@ -13,7 +13,7 @@ services:
         DENO_VERSION: ${DENO_VERSION:-}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
     environment:
-      - TEST_MODE=true
+      - 'TEST_MODE=${TEST_MODE:-true}'
       - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
@@ -162,7 +162,7 @@ services:
         SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
-      - TEST_MODE=true
+      - 'TEST_MODE=${TEST_MODE:-true}'
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
@@ -199,6 +199,18 @@ services:
 
   httpbin:
     image: kong/httpbin
+
+  mock-server:
+    image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
+    profiles:
+      - api
+    ports:
+      - 4000:8080
+    healthcheck:
+      test: ['CMD', '/mock-server', '-healthcheck']
+      interval: 2s
+      timeout: 5s
+      retries: 5
 
   traefik:
     image: traefik:v3.6.6

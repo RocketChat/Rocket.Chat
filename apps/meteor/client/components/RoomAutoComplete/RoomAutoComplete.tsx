@@ -1,11 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
+import { Option, Box } from '@rocket.chat/fuselage';
+import type { AutoCompleteProps } from '@rocket.chat/fuselage';
+import { AutoComplete } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
-import { memo, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import { forwardRef, memo, useMemo, useState } from 'react';
+
+type LabelType = { name: string; avatarETag?: string; type: IRoom['t']; encrypted?: IRoom['encrypted'] };
 
 const generateQuery = (
 	term = '',
@@ -13,7 +17,7 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
 	scope?: 'admin' | 'regular';
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
 	setSelectedRoom?: (room: IRoom | undefined) => void;
@@ -32,7 +36,10 @@ const ROOM_AUTOCOMPLETE_PARAMS = {
 	},
 } as const;
 
-const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, setSelectedRoom, ...props }: RoomAutoCompleteProps) => {
+const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(function RoomAutoComplete(
+	{ value, onChange, scope = 'regular', renderRoomIcon, setSelectedRoom, ...props },
+	ref,
+) {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', ROOM_AUTOCOMPLETE_PARAMS[scope].endpoint);
@@ -57,6 +64,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 	return (
 		<AutoComplete
 			{...props}
+			ref={ref}
 			value={value}
 			onChange={(val) => {
 				onChange(val);
@@ -76,7 +84,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 					<Box margin='none' mi={2}>
 						{label?.name}
 					</Box>
-					{renderRoomIcon?.({ ...label })}
+					{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (
@@ -85,7 +93,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 					label={
 						<>
 							{label?.name}
-							{renderRoomIcon?.({ ...label })}
+							{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
 						</>
 					}
 					avatar={<RoomAvatar size={AVATAR_SIZE} room={{ _id: value, ...label }} />}
@@ -94,6 +102,6 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 			options={options}
 		/>
 	);
-};
+});
 
 export default memo(RoomAutoComplete);

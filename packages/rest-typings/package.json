@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "8.4.0-develop",
+	"version": "8.6.0-develop",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -23,7 +23,7 @@
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},

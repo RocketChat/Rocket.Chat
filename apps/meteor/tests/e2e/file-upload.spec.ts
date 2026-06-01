@@ -130,6 +130,21 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
 	});
 
+	test('should upload file in composer after recording video message', async ({ context }) => {
+		await context.grantPermissions(['camera', 'microphone']);
+		await poHomeChannel.navbar.openChat(targetChannel);
+
+		await test.step('should be able to record a video with text content in composer ', async () => {
+			await poHomeChannel.composer.inputMessage.fill('this is a message with video message');
+			await expect(poHomeChannel.composer.btnVideoMessage).toBeEnabled();
+		});
+
+		await poHomeChannel.composer.btnVideoMessage.click();
+		await poHomeChannel.composer.videoRecorderPopup.record();
+
+		await expect(poHomeChannel.composer.getFileByName('Video record.webm')).toBeVisible();
+	});
+
 	test.describe.serial('thread multiple file upload', () => {
 		test('should be able to remove file from thread composer before sending', async () => {
 			await poHomeChannel.content.sendMessage('this is a message for thread reply');
@@ -187,7 +202,7 @@ test.describe.serial('file-upload', () => {
 				await poHomeChannel.composer.btnSend.click();
 				await fileUploadWarningModal.waitForDisplay();
 
-				await expect(fileUploadWarningModal.getContent('One file failed to upload')).toBeVisible();
+				await expect(fileUploadWarningModal.getContent('1 file failed to upload')).toBeVisible();
 			});
 
 			await test.step('should close modal when clicking "Cancel" button', async () => {

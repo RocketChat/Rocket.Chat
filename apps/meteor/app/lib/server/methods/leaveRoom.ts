@@ -9,6 +9,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { removeUserFromRoom } from '../functions/removeUserFromRoom';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -58,6 +59,7 @@ export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> =
 
 Meteor.methods<ServerMethods>({
 	async leaveRoom(rid) {
+		methodDeprecationLogger.method('leaveRoom', '9.0.0', ['/v1/channels.leave', '/v1/groups.leave', '/v1/im.leave']);
 		check(rid, String);
 
 		if (!Meteor.userId()) {

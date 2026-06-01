@@ -7,6 +7,7 @@ import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import { getUserPreference } from '../../app/utils/server/lib/getUserPreference';
 import { trim } from '../../lib/utils/stringUtils';
@@ -20,6 +21,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async channelsList(filter, channelType, limit, sort) {
+		methodDeprecationLogger.method('channelsList', '9.0.0', '/v1/channels.list');
 		check(filter, String);
 		check(channelType, String);
 		check(limit, Match.Optional(Number));

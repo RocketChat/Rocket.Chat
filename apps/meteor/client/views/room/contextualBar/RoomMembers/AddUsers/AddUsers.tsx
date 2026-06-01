@@ -11,13 +11,14 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
+import BannedUsersUnbanModal from './BannedUsersUnbanModal';
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import { useRoom } from '../../../contexts/RoomContext';
 
@@ -39,8 +40,12 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
 	const isFederated = roomIsFederated && !isFederationBlocked;
 
+	const setModal = useSetModal();
 	const { closeTab } = useRoomToolbox();
-	const saveAction = useMethod('addUsersToRoom');
+	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
+	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
+	const getBannedUsers = useEndpoint('GET', '/v1/rooms.bannedUsers');
+	const unbanUser = useEndpoint('POST', '/v1/rooms.unbanUser');
 
 	const {
 		handleSubmit,
@@ -49,13 +54,57 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting, errors },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
+	const handleSave = useEffectEvent(async ({ users, unbanConfirmed }: { users: string[]; unbanConfirmed?: boolean }) => {
+		if (unbanConfirmed) {
+			const { bannedUsers } = await getBannedUsers({ roomId: rid });
+			const bannedSet = new Set(bannedUsers.map((u) => u.username));
+			const usersToUnban = users.filter((username) => bannedSet.has(username));
+
+			if (usersToUnban.length) {
+				await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
+			}
+		}
+		await Promise.all(
+			users.map((username) => (room.t === 'c' ? inviteToChannel({ roomId: rid, username }) : inviteToGroup({ roomId: rid, username }))),
+		);
+		dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
+		onClickBack();
+		reload();
+	});
+
+	const handleSaveWithBannedCheck = useEffectEvent(async ({ users }: { users: string[] }) => {
 		try {
-			await saveAction({ rid, users });
-			dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
-			onClickBack();
-			reload();
-		} catch (error) {
+			await handleSave({ users });
+		} catch (error: any) {
+			if (error.error === 'error-user-is-banned') {
+				const { bannedUsers } = await getBannedUsers({ roomId: rid });
+				const bannedSet = new Set(bannedUsers.map((u) => u.username));
+				const usersToUnban = users.filter((username) => bannedSet.has(username));
+
+				if (usersToUnban.length) {
+					setModal(
+						<BannedUsersUnbanModal
+							onClose={() => setModal(null)}
+							onConfirm={async () => {
+								await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
+								await Promise.all(
+									users.map((username) =>
+										room.t === 'c' ? inviteToChannel({ roomId: rid, username }) : inviteToGroup({ roomId: rid, username }),
+									),
+								);
+								setModal(null);
+								dispatchToastMessage({
+									type: 'success',
+									message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added'),
+								});
+								onClickBack();
+								reload();
+							}}
+						/>,
+					);
+					return;
+				}
+			}
 			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	});
@@ -114,7 +163,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							</Button>
 						)
 					) : (
-						<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+						<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSaveWithBannedCheck)}>
 							{t('Add_users')}
 						</Button>
 					)}
