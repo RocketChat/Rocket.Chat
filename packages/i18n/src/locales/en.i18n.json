@@ -3123,6 +3123,7 @@
   "Group_mentions_disabled_x_members": "Group mentions `@all` and `@here` have been disabled for rooms with more than {{total}} members.",
   "Group_mentions_only": "Group mentions only",
   "Group_Teams_and_Channels": "Group teams and channels together",
+  "Group_Unlisted_In_Conversations": "Group unlisted rooms in Conversations",
   "Grouping": "Grouping",
   "Guest": "Guest",
   "Hang_up_and_transfer_call": "Hang up and transfer call",

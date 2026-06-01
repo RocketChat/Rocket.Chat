@@ -74,6 +74,7 @@ const emptyArr: any[] = [];
 const getWrapperSettings = ({
 	sidebarGroupByType = false,
 	sidebarGroupTeamsAndChannels = false,
+	sidebarGroupUnlistedInConversations = false,
 	sidebarShowFavorites = true,
 	sidebarShowUnread = false,
 	isDiscussionEnabled = false,
@@ -85,6 +86,7 @@ const getWrapperSettings = ({
 }: {
 	sidebarGroupByType?: boolean;
 	sidebarGroupTeamsAndChannels?: boolean;
+	sidebarGroupUnlistedInConversations?: boolean;
 	sidebarShowFavorites?: boolean;
 	sidebarShowUnread?: boolean;
 	isDiscussionEnabled?: boolean;
@@ -110,6 +112,7 @@ const getWrapperSettings = ({
 		.withSubscriptions([...rooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])
 		.withUserPreference('sidebarGroupByType', sidebarGroupByType)
 		.withUserPreference('sidebarGroupTeamsAndChannels', sidebarGroupTeamsAndChannels)
+		.withUserPreference('sidebarGroupUnlistedInConversations', sidebarGroupUnlistedInConversations)
 		.withUserPreference('sidebarShowFavorites', sidebarShowFavorites)
 		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
 		.withUserPreference('sidebarCategories', sidebarCategories)
@@ -224,6 +227,38 @@ it('should render the merged group even when the saved sidebarSectionsOrder pred
 	});
 
 	expect(groupsListOf(result.current.groups)).toContain('Teams_and_channels');
+});
+
+it('should drop rooms whose group is not in the visible sections (default behavior)', async () => {
+	// Section order without "Direct_Messages": direct messages have nowhere to render.
+	const orderWithoutDM = ['Unread', 'Favorites', 'Teams', 'Discussions', 'Channels', 'Teams_and_channels', 'Conversations'];
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarSectionsOrder: orderWithoutDM }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	expect(groupsList).not.toContain('Direct_Messages');
+	expect(groupsList).not.toContain('Conversations');
+	expect(roomListOf(result.current.groups)).not.toContain(directRooms[0]);
+});
+
+it('should route rooms of an unlisted group into "Conversations" when sidebarGroupUnlistedInConversations is enabled', async () => {
+	const orderWithoutDM = ['Unread', 'Favorites', 'Teams', 'Discussions', 'Channels', 'Teams_and_channels', 'Conversations'];
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarGroupUnlistedInConversations: true,
+			sidebarSectionsOrder: orderWithoutDM,
+		}).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	expect(groupsList).toContain('Conversations');
+	expect(groupsList).not.toContain('Direct_Messages');
+	expect(roomListOf(result.current.groups)).toContain(directRooms[0]);
+
+	const conversationsIndex = groupsList.indexOf('Conversations');
+	expect(result.current.groupsCount[conversationsIndex]).toBeGreaterThanOrEqual(directRooms.length);
 });
 
 it('should group favorites into a "Favorites" group when sidebarShowFavorites is on', async () => {

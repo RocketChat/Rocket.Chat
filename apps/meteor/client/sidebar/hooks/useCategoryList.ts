@@ -11,14 +11,23 @@ type FilterSystemCategoriesOptions = {
 	inquiriesEnabled: boolean;
 	sidebarGroupByType: boolean;
 	mergeTeamsAndChannels: boolean;
+	groupUnlistedInConversations: boolean;
 	favoritesEnabled: boolean;
 	sidebarShowUnread: boolean;
 	isDiscussionEnabled: boolean;
 };
 
 const filterSystemCategories = (categories: readonly string[], options: FilterSystemCategoriesOptions) => {
-	const { showOmnichannel, inquiriesEnabled, sidebarGroupByType, mergeTeamsAndChannels, favoritesEnabled, sidebarShowUnread, isDiscussionEnabled } =
-		options;
+	const {
+		showOmnichannel,
+		inquiriesEnabled,
+		sidebarGroupByType,
+		mergeTeamsAndChannels,
+		groupUnlistedInConversations,
+		favoritesEnabled,
+		sidebarShowUnread,
+		isDiscussionEnabled,
+	} = options;
 	return categories.filter((key) => {
 		switch (key) {
 			case 'Incoming_Livechats':
@@ -37,7 +46,9 @@ const filterSystemCategories = (categories: readonly string[], options: FilterSy
 			case 'Direct_Messages':
 				return sidebarGroupByType;
 			case 'Conversations':
-				return !sidebarGroupByType;
+				// Normally hidden when grouping by type, but kept as a catch-all when routing
+				// rooms of unlisted groups into it.
+				return !sidebarGroupByType || groupUnlistedInConversations;
 			case 'Unread':
 				return sidebarShowUnread;
 			case 'Favorites':
@@ -187,21 +198,29 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
 	const mergeTeamsAndChannels = useUserPreference<boolean>('sidebarGroupTeamsAndChannels') ?? false;
+	const groupUnlistedInConversations = useUserPreference<boolean>('sidebarGroupUnlistedInConversations') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
 	const isDiscussionEnabled = useSetting('Discussion_enabled', true) ?? true;
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false) ?? false;
 
-	// Users with a `sidebarSectionsOrder` saved before the merged group existed won't have the
-	// 'Teams_and_channels' key, so the group would never render. Inject it after 'Channels'.
 	const effectiveSectionsOrder = useMemo<readonly string[]>(() => {
-		if (sidebarSectionsOrder.includes('Teams_and_channels')) {
-			return sidebarSectionsOrder;
-		}
 		const next = [...sidebarSectionsOrder];
-		const channelsIndex = next.indexOf('Channels');
-		next.splice(channelsIndex === -1 ? next.length : channelsIndex + 1, 0, 'Teams_and_channels');
+
+		// Users with a `sidebarSectionsOrder` saved before the merged group existed won't have the
+		// 'Teams_and_channels' key, so the group would never render. Inject it after 'Channels'.
+		if (!next.includes('Teams_and_channels')) {
+			const channelsIndex = next.indexOf('Channels');
+			next.splice(channelsIndex === -1 ? next.length : channelsIndex + 1, 0, 'Teams_and_channels');
+		}
+
+		// When routing unlisted rooms into "Conversations" under group-by-type, make sure the group is
+		// present in the order so it can actually receive them, even if the saved order dropped it.
+		if (sidebarGroupByType && groupUnlistedInConversations && !next.includes('Conversations')) {
+			next.push('Conversations');
+		}
+
 		return next;
-	}, [sidebarSectionsOrder]);
+	}, [sidebarSectionsOrder, sidebarGroupByType, groupUnlistedInConversations]);
 
 	const categoryList = useMemo(() => {
 		if (hasLicenseModule) {
@@ -215,6 +234,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 					inquiriesEnabled,
 					sidebarGroupByType,
 					mergeTeamsAndChannels,
+					groupUnlistedInConversations,
 					favoritesEnabled,
 					sidebarShowUnread,
 					isDiscussionEnabled,
@@ -227,6 +247,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 			inquiriesEnabled,
 			sidebarGroupByType,
 			mergeTeamsAndChannels,
+			groupUnlistedInConversations,
 			favoritesEnabled,
 			sidebarShowUnread,
 			isDiscussionEnabled,
@@ -239,6 +260,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 		inquiriesEnabled,
 		sidebarGroupByType,
 		mergeTeamsAndChannels,
+		groupUnlistedInConversations,
 		favoritesEnabled,
 		sidebarShowUnread,
 		isDiscussionEnabled,
