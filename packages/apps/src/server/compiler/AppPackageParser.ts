@@ -93,8 +93,6 @@ export class AppPackageParser {
 	}
 
 	private getLanguageContent(zip: AdmZip): { [key: string]: object } {
-		// Null-prototype container: prevents a malicious `i18n/__proto__.json` entry
-		// from polluting Object.prototype when the filename is used as a key below.
 		const languageContent: { [key: string]: object } = Object.create(null);
 
 		zip
