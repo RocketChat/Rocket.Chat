@@ -7,7 +7,7 @@ Options:
 -a | --action [link|undo|unlink|link-all|unlink-all|next|latest|next-all|latest-all]
     Specify the action to be performed by the script.
     - link        : Creates a symbolic link for the fuselage package
-    - undo|unlink : Removes the symbolic li nk for the fuselage package
+    - undo|unlink : Removes the symbolic link for the fuselage package
     - link-all    : Creates symbolic links for all packages in ../fuselage/packages
     - unlink-all  : Removes symbolic links for all packages in ../fuselage/packages
     - next        : Update dependencies with the @next npm package version
