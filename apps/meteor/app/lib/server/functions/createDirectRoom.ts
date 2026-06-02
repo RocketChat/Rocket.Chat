@@ -92,8 +92,8 @@ export async function createDirectRoom(
 		msgs: 0,
 		ts: new Date(),
 		uids,
-		...(isReadOnlyForDeactivatedMember && { ro: true, reactWhenReadOnly: false }),
 		...roomExtraData,
+		...(isReadOnlyForDeactivatedMember && { ro: true, reactWhenReadOnly: false }),
 	};
 
 	if (isNewRoom) {
