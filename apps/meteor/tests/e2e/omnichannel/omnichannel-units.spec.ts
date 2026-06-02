@@ -87,7 +87,7 @@ test.describe('OC - Manage Units', () => {
 
 		await test.step('expect to delete unit', async () => {
 			await poOmnichannelUnits.deleteUnit(unitName);
-			await expect(poOmnichannelUnits.table.findRowByName(unitName)).not.toBeVisible();
+			await expect(poOmnichannelUnits.table.findRowByName(unitName)).toHaveCount(0);
 		});
 	});
 
