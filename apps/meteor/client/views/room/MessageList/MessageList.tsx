@@ -112,6 +112,11 @@ export const MessageList = function MessageList({
 			const scrollSize = virtualizerRef.current?.scrollSize ?? 0;
 			const viewportSize = virtualizerRef.current?.viewportSize ?? 0;
 
+			if (hasMoreNextMessages) {
+				isAtBottom.current = false;
+				return;
+			}
+
 			if (scrollSize >= viewportSize) {
 				isAtBottom.current = true;
 			}
@@ -121,7 +126,7 @@ export const MessageList = function MessageList({
 				setShouldJumpToBottom(false);
 			}
 		},
-		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom],
+		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
 	);
 
 	const isRoomInitialized = useRef<boolean>(false);
