@@ -194,6 +194,33 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('error', 'Invalid subscription [error-invalid-subscription]');
 				});
 		});
+
+		describe('max allowed message size', () => {
+			const maxAllowedSize = 10;
+			let originalMaxAllowedSize: SettingValue;
+
+			before(async () => {
+				originalMaxAllowedSize = await getSettingValueById('Message_MaxAllowedSize');
+				await updateSetting('Message_MaxAllowedSize', maxAllowedSize);
+			});
+
+			after(async () => {
+				await updateSetting('Message_MaxAllowedSize', originalMaxAllowedSize);
+			});
+
+			it('should fail when the draft exceeds the maximum allowed message size', async () => {
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft: 'a'.repeat(maxAllowedSize + 1) })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					});
+			});
+		});
 	});
 
 	describe('/rooms.media', () => {
