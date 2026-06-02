@@ -45,6 +45,12 @@ export interface Connection
 	reconnect(): Promise<boolean>;
 
 	close(): void;
+
+	probe(timeoutMs?: number): Promise<boolean>;
+
+	forceReopen(): Promise<boolean>;
+
+	checkAndReopen(probeTimeoutMs?: number): Promise<boolean>;
 }
 
 interface WebSocketConstructor {
@@ -75,6 +81,8 @@ export class ConnectionImpl
 	retryCount = 0;
 
 	private connectPromise?: Promise<boolean>;
+
+	private reopenInFlight: Promise<boolean> | null = null;
 
 	public queue = new Set<string>();
 
@@ -272,6 +280,54 @@ export class ConnectionImpl
 		this.status = 'closed';
 		this.ws?.close();
 		this.emitStatus();
+	}
+
+	probe(timeoutMs = 2000): Promise<boolean> {
+		return new Promise((resolve) => {
+			let settled = false;
+			let off: (() => void) | undefined;
+			const finish = (alive: boolean) => {
+				if (settled) return;
+				settled = true;
+				clearTimeout(timer);
+				off?.();
+				resolve(alive);
+			};
+			const timer = setTimeout(() => finish(false), timeoutMs);
+			try {
+				off = this.client.onMessage((payload) => {
+					if (payload.msg === 'pong') finish(true);
+				});
+				this.client.ping();
+			} catch {
+				finish(false);
+			}
+		});
+	}
+
+	forceReopen(): Promise<boolean> {
+		if (this.reopenInFlight) return this.reopenInFlight;
+		try {
+			this.close();
+		} catch {
+			// ignore — socket is being rebuilt
+		}
+		const p = this.reconnect()
+			.then(Boolean)
+			.catch(() => false);
+		this.reopenInFlight = p;
+		const clear = () => {
+			if (this.reopenInFlight === p) this.reopenInFlight = null;
+		};
+		p.then(clear, clear);
+		return p;
+	}
+
+	async checkAndReopen(probeTimeoutMs = 2000): Promise<boolean> {
+		if (this.status !== 'connected') return this.forceReopen();
+		const alive = await this.probe(probeTimeoutMs);
+		if (alive) return true;
+		return this.forceReopen();
 	}
 
 	static create(

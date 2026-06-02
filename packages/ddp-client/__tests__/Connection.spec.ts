@@ -240,6 +240,125 @@ it('should not surface the retry timer rejection when an external connect won th
 	jest.useRealTimers();
 });
 
+// ─── probe / forceReopen / checkAndReopen ────────────────────────────────────
+
+it('probe() should resolve true when a pong arrives within the timeout', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	await handleConnection(server, connection.connect());
+
+	const probePromise = connection.probe(2000);
+
+	// Consume the ping the client sent, then reply with a pong.
+	await server.nextMessage;
+	server.send('{"msg":"pong"}');
+
+	await expect(probePromise).resolves.toBe(true);
+});
+
+it('probe() should resolve false when no pong arrives before the timeout', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	// Connect with real timers, then switch to fake to control the probe timeout.
+	await handleConnection(server, connection.connect());
+
+	jest.useFakeTimers();
+	const probePromise = connection.probe(1000);
+
+	await jest.advanceTimersByTimeAsync(1001);
+
+	await expect(probePromise).resolves.toBe(false);
+});
+
+it('forceReopen() should close the current socket and reconnect', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	// Replace mock server before forceReopen so the new WebSocket has somewhere to connect.
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+
+	await handleConnection(server, connection.forceReopen());
+	expect(connection.status).toBe('connected');
+});
+
+it('forceReopen() concurrent calls should share the same in-flight promise', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	await handleConnection(server, connection.connect());
+
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+
+	const first = connection.forceReopen();
+	const second = connection.forceReopen();
+
+	expect(first).toBe(second);
+
+	await handleConnection(server, first);
+	expect(connection.status).toBe('connected');
+});
+
+it('checkAndReopen() should forceReopen when status is not connected', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	// Status is 'idle' — never connected.
+	expect(connection.status).toBe('idle');
+
+	await handleConnection(server, connection.checkAndReopen());
+	expect(connection.status).toBe('connected');
+});
+
+it('checkAndReopen() should return true without reopening when connected and probe succeeds', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	await handleConnection(server, connection.connect());
+
+	const checkPromise = connection.checkAndReopen(2000);
+
+	await server.nextMessage; // ping
+	server.send('{"msg":"pong"}');
+
+	await expect(checkPromise).resolves.toBe(true);
+	expect(connection.status).toBe('connected');
+});
+
+it('checkAndReopen() should forceReopen when connected but probe times out (zombie socket)', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 0, retryTime: 0 });
+
+	// Connect first with real timers, then switch to fake to control probe timeout.
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	jest.useFakeTimers();
+
+	// Prepare a fresh server for the reconnect that forceReopen will trigger.
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+
+	const checkPromise = connection.checkAndReopen(1000);
+
+	// Advance past probe timeout — no pong is sent so probe resolves false.
+	await jest.advanceTimersByTimeAsync(1001);
+
+	// Restore real timers and let the reconnect handshake complete.
+	jest.useRealTimers();
+	await handleConnection(server, checkPromise);
+
+	expect(connection.status).toBe('connected');
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 it('should reset retryCount on a successful connection so subsequent drops can retry', async () => {
 	// Regression: retryCount was only ever incremented on disconnect, never
 	// zeroed on successful (re)connect. With default retryCount=1 budget, a
