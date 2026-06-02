@@ -1,6 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ICronJobsService } from '@rocket.chat/core-services';
 import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { CronJobs, CronHistory } from '@rocket.chat/models';
 
 import { deriveStatus } from './deriveStatus';
@@ -88,5 +89,13 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 			offset: pagination?.offset || 0,
 			total,
 		};
+	}
+
+	async enable(jobName: string): Promise<boolean> {
+		return cronJobs.enable(jobName);
+	}
+
+	async disable(jobName: string): Promise<boolean> {
+		return cronJobs.disable(jobName);
 	}
 }

@@ -1,8 +1,7 @@
 import { type Job, Agenda } from '@rocket.chat/agenda';
 import { Logger } from '@rocket.chat/logger';
-import { CronHistory } from '@rocket.chat/models';
+import { CronHistory, CronJobs } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { CronJobs } from '@rocket.chat/models';
 
 import type { Db } from 'mongodb';
 
@@ -190,6 +189,41 @@ export class AgendaCronJobs {
 		}
 
 		return this.scheduler.has({ name: jobName });
+	}
+
+	public async enable(jobName: string): Promise<boolean> {
+		if (!this.scheduler) {
+			return false;
+		}
+
+		const jobs = await this.scheduler.jobs({ name: jobName });
+
+		if (!jobs.length) {
+			return false;
+		}
+
+		const job = jobs[0];
+		job.enable();
+		await job.save();
+
+		return true;
+	}
+
+	public async disable(jobName: string): Promise<boolean> {
+		if (!this.scheduler) {
+			return false;
+		}
+
+		const jobs = await this.scheduler.jobs({ name: jobName });
+		if (!jobs.length) {
+			return false;
+		}
+
+		const job = jobs[0];
+		job.disable();
+		await job.save();
+
+		return true;
 	}
 
 	private async reserve(config: ReservedJob): Promise<void> {

@@ -1,5 +1,5 @@
 import { CronJobsSvc } from '@rocket.chat/core-services';
-import { ajvQuery, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import { ajv, ajvQuery, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -14,6 +14,17 @@ const isCronJobsListParams = ajvQuery.compile<{
 		offset: { type: 'number', nullable: true },
 		count: { type: 'number', nullable: true },
 	},
+	additionalProperties: false,
+});
+
+const isCronJobsActionParams = ajv.compile<{
+	jobName: string;
+}>({
+	type: 'object',
+	properties: {
+		jobName: { type: 'string' },
+	},
+	required: ['jobName'],
 	additionalProperties: false,
 });
 
@@ -95,6 +106,44 @@ const cronJobsEndpoints = API.v1
 				offset,
 				total,
 			});
+		},
+	)
+	.post(
+		'cron.enable',
+		{
+			authRequired: true,
+			body: isCronJobsActionParams,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { jobName } = this.bodyParams;
+			const success = await CronJobsSvc.enable(jobName);
+
+			if (!success) {
+				return API.v1.failure('error-job-not-found');
+			}
+			return API.v1.success();
+		},
+	)
+	.post(
+		'cron.disable',
+		{
+			authRequired: true,
+			body: isCronJobsActionParams,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { jobName } = this.bodyParams;
+			const success = await CronJobsSvc.disable(jobName);
+
+			if (!success) {
+				return API.v1.failure('error-job-not-found');
+			}
+			return API.v1.success();
 		},
 	);
 
