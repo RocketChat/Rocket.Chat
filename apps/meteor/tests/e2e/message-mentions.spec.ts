@@ -169,6 +169,23 @@ test.describe.serial('message-mentions', () => {
 			});
 		});
 
+		test('should show non-member mention warning inside threads', async ({ page }) => {
+			const adminPage = new HomeChannel(page);
+			const mentionText = getMentionText(Users.user2.data.username, 1);
+
+			await test.step('open thread', async () => {
+				await adminPage.navbar.openChat(targetChannel);
+				await adminPage.content.sendMessage('thread parent for non-member mention warning');
+				await adminPage.content.openReplyInThread();
+				await adminPage.content.waitForThread();
+			});
+
+			await test.step('receive bot message inside thread', async () => {
+				await adminPage.content.sendMessageInThread(getMentionText(Users.user2.data.username));
+				await expect(adminPage.content.threadMessageListItems.filter({ hasText: mentionText }).first()).toBeVisible();
+			});
+		});
+
 		test.describe(() => {
 			test.use({ storageState: Users.user1.state });
 

@@ -1,5 +1,5 @@
 import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
-import { useMethod, useStream } from '@rocket.chat/ui-contexts';
+import { useMethod, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
@@ -28,6 +28,8 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
+	const subscribeToNotifyUser = useStream('notify-user');
+	const uid = useUserId();
 
 	const unprocessedReadMessagesEvent = useRef<{ tmid: string; until: Date } | null>(null);
 
@@ -42,6 +44,17 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const processed = await onClientMessageReceived(event);
 			upsertThreadMessageInCache(processed, roomId, tmid, queryClient);
 		});
+
+		const unsubscribeFromUserMessages = uid
+			? subscribeToNotifyUser(`${uid}/message`, async (event) => {
+					if (event.rid !== roomId || event.tmid !== tmid || event._hidden === true) {
+						return;
+					}
+
+					const processed = await onClientMessageReceived(event);
+					upsertThreadMessageInCache(processed, roomId, tmid, queryClient);
+				})
+			: () => undefined;
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${roomId}/deleteMessage`, (event) => {
 			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
@@ -94,11 +107,12 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 
 		return () => {
 			unsubscribeFromRoomMessages();
+			unsubscribeFromUserMessages();
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 			unsubscribeFromMessagesRead();
 		};
-	}, [tmid, roomId, queryClient, subscribeToRoomMessages, subscribeToNotifyRoom]);
+	}, [tmid, roomId, queryClient, subscribeToRoomMessages, subscribeToNotifyRoom, subscribeToNotifyUser, uid]);
 
 	return useQuery({
 		queryKey,
