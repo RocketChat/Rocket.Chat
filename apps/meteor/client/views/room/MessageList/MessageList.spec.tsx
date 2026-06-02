@@ -117,6 +117,7 @@ const defaultProps = {
 	debouncedClearNewMessagesOnScroll: jest.fn(),
 	handleDateScroll: jest.fn(),
 	debouncedMessageRead: jest.fn(),
+	setKeepAtBottom: jest.fn(),
 };
 
 describe('MessageList scroll position', () => {
