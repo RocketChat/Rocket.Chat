@@ -23,7 +23,7 @@ declare module 'meteor/accounts-base' {
 
 		function _generateStampedLoginToken(): { token: string; when: Date };
 
-		function _insertLoginToken(userId: string, token: { token: string; when: Date }): Promise<void>;
+		function _insertLoginToken(userId: string, token: { token: string; when: Date }): void;
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
