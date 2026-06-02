@@ -241,38 +241,55 @@ class MessageSearchQueryParser {
 	/**
 	 * Query in message text
 	 */
-	private consumeMessageText(text: string) {
-		text = text.trim().replace(/\s\s/g, ' ');
+  /**
+ * Query in message text + attachments
+ */
+ private consumeMessageText(text: string) {
+	text = text.trim().replace(/\s\s+/g, ' ');
 
-		if (text === '') {
-			return text;
-		}
-
-		if (/^\/.+\/[imxs]*$/.test(text)) {
-			const r = text.split('/');
-			this.query.msg = {
-				$regex: r[1],
-				$options: r[2],
-			};
-		} else if (this.forceRegex) {
-			this.query.msg = {
-				$regex: text,
-				$options: 'i',
-			};
-		} else {
-			this.query.$text = {
-				$search: text,
-			};
-			this.options.projection = {
-				score: {
-					$meta: 'textScore',
-				},
-			};
-		}
-
-		return text;
+	if (!text || text.length < 2) {
+		delete this.query.$or;
+		delete this.query.$text;
+		return '';
 	}
 
+	const match = text.match(/^\/(.+)\/([imxs]*)$/);
+
+	if (match || this.forceRegex) {
+		let regex: string;
+		let options = 'i';
+
+		if (match) {
+			regex = match[1];
+			options = match[2];
+		} else {
+			regex = text;
+		}
+
+		this.query.$or = [
+			{ msg: { $regex: regex, $options: options } },
+			{ 'attachments.text': { $regex: regex, $options: options } },
+			{ 'attachments.title': { $regex: regex, $options: options } },
+			{ 'attachments.description': { $regex: regex, $options: options } },
+		];
+
+		delete this.query.$text;
+	} else {
+		// ✅ NORMAL SEARCH (NO $text)
+		const escaped = escapeRegExp(text);
+
+		this.query.$or = [
+			{ msg: { $regex: escaped, $options: 'i' } },
+			{ 'attachments.text': { $regex: escaped, $options: 'i' } },
+			{ 'attachments.title': { $regex: escaped, $options: 'i' } },
+			{ 'attachments.description': { $regex: escaped, $options: 'i' } },
+		];
+
+		delete this.query.$text;
+	}
+
+	return text;
+}
 	parse(text: string) {
 		[
 			(input: string) => this.consumeFrom(input),
