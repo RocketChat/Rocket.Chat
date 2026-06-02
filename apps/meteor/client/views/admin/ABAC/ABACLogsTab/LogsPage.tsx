@@ -32,8 +32,8 @@ const LogsPage = () => {
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
-			...(startDate && { start: new Date(`${startDate}T00:00:00.000Z`).toISOString() }),
-			...(endDate && { end: new Date(`${endDate}T23:59:59.999Z`).toISOString() }),
+			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
+			...(endDate && { end: new Date(`${endDate}T23:59:59.999`).toISOString() }),
 			offset: current,
 			count: itemsPerPage,
 		}),

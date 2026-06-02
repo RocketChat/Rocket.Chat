@@ -1,13 +1,12 @@
-import type { OAuthConfiguration } from '@rocket.chat/core-typings';
+import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import passport from 'passport';
 import _ from 'underscore';
 
-import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
-const config: Partial<OAuthConfiguration> = {
+const config: OauthConfig = {
 	serverURL: '',
 	identityPath: '/oauth/me',
 
@@ -18,7 +17,7 @@ const config: Partial<OAuthConfiguration> = {
 	accessTokenParam: 'access_token',
 };
 
-const serviceKey = 'wordpress';
+const WordPress = new CustomOAuth('wordpress', config);
 
 const fillSettings = _.debounce(async (): Promise<void> => {
 	config.serverURL = settings.get('API_Wordpress_URL');
@@ -29,7 +28,11 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 		return;
 	}
 
-	passport.unuse(serviceKey);
+	delete config.identityPath;
+	delete config.identityTokenSentVia;
+	delete config.authorizePath;
+	delete config.tokenPath;
+	delete config.scope;
 
 	const serverType = settings.get('Accounts_OAuth_Wordpress_server_type');
 	switch (serverType) {
@@ -56,7 +59,7 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 		case 'wordpress-com':
 			config.identityPath = 'https://public-api.wordpress.com/rest/v1/me';
-			config.identityTokenSentVia = 'header' as OAuthConfiguration['identityTokenSentVia'];
+			config.identityTokenSentVia = 'header';
 			config.authorizePath = 'https://public-api.wordpress.com/oauth2/authorize';
 			config.tokenPath = 'https://public-api.wordpress.com/oauth2/token';
 			config.scope = 'auth';
@@ -66,13 +69,12 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 	}
 
-	addPassportCustomOAuth(serviceKey, config);
-
+	const result = WordPress.configure(config);
 	const enabled = settings.get('Accounts_OAuth_Wordpress');
 	if (enabled) {
 		await ServiceConfiguration.configurations.upsertAsync(
 			{
-				service: serviceKey,
+				service: 'wordpress',
 			},
 			{
 				$set: config,
@@ -80,9 +82,11 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 		);
 	} else {
 		await ServiceConfiguration.configurations.removeAsync({
-			service: serviceKey,
+			service: 'wordpress',
 		});
 	}
+
+	return result;
 }, 1000);
 
 Meteor.startup(() => {

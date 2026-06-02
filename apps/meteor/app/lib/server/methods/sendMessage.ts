@@ -18,7 +18,6 @@ import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
-
 /**
  *
  * @param uid
