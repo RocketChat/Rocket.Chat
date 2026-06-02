@@ -208,6 +208,31 @@ describe('[Rooms]', () => {
 				await updateSetting('Message_MaxAllowedSize', originalMaxAllowedSize);
 			});
 
+			it('should save a draft with the maximum allowed message size', async () => {
+				const draft = 'a'.repeat(maxAllowedSize);
+
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.have.property('draft', draft);
+					});
+			});
+
 			it('should fail when the draft exceeds the maximum allowed message size', async () => {
 				await request
 					.post(api('rooms.saveDraft'))
