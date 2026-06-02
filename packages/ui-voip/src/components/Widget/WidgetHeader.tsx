@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type WidgetHeaderProps = {
 	title: ReactNode;
@@ -7,7 +7,7 @@ type WidgetHeaderProps = {
 };
 
 // TODO: A11Y - duration/title
-const WidgetHeader = ({ title, children }: WidgetHeaderProps): ReactElement => {
+const WidgetHeader = ({ title, children }: WidgetHeaderProps) => {
 	return (
 		<Box is='header' mi={12} mb={4} display='flex' alignItems='center' justifyContent='space-between'>
 			<Box is='h3' color='titles-labels' fontScale='p1b' id='rcx-media-call-widget-title'>
