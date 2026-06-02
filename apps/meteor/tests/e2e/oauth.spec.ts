@@ -46,7 +46,7 @@ test.describe('OAuth', () => {
 		test('Login Page', async ({ page, api }) => {
 			await test.step('expect OAuth button to be visible', async () => {
 				await expect((await setSettingValueById(api, 'Accounts_OAuth_Google', true)).status()).toBe(200);
-				await expect.poll(() => getOAuthService(api, googleOAuthService)).not.toBeUndefined();
+				await expect.poll(async () => (await getOAuthService(api, googleOAuthService))?.service).toBe(googleOAuthService);
 
 				await page.goto('/home');
 
@@ -55,7 +55,7 @@ test.describe('OAuth', () => {
 
 			await test.step('expect Custom OAuth button to be visible', async () => {
 				await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
-				await expect.poll(() => getOAuthService(api, customOAuthService)).not.toBeUndefined();
+				await expect.poll(async () => (await getOAuthService(api, customOAuthService))?.service).toBe(customOAuthService);
 				await page.goto('/home');
 
 				await expect(poRegistration.btnLoginWithCustomOAuth).toBeVisible();
