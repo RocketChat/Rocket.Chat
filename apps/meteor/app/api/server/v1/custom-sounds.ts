@@ -318,11 +318,11 @@ const customSoundsEndpoints = API.v1
 				await deleteCustomSound(_id);
 
 				return API.v1.success();
-			} catch (error: any) {
-				SystemLogger.error({ error });
+			} catch (error: unknown) {
+				this.logger.error({ error });
 
-				if (error.error === 'Custom_Sound_Error_Invalid_Sound') {
-					return API.v1.failure('Custom Sound not found.');
+				if (error instanceof Meteor.Error && error.error === 'Custom_Sound_Error_Invalid_Sound') {
+					return API.v1.failure(error.error);
 				}
 
 				return API.v1.internalError();
