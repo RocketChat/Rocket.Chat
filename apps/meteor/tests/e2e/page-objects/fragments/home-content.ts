@@ -544,8 +544,12 @@ export class HomeContent {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
-	getMessageActionButton(message: Locator, name: string): Locator {
-		return message.getByRole('button', { name, exact: true });
+	getLastMessageActionButton(name: string): Locator {
+		return this.lastUserMessage.getByRole('button', { name, exact: true });
+	}
+
+	getLastThreadMessageActionButton(name: string): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name, exact: true });
 	}
 
 	getMessageById(id: string): Locator {
