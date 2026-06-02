@@ -83,7 +83,7 @@ export class AccountSecurity extends Account {
 		await this.inputNewPassword.fill(newPassword);
 		await this.inputConfirmPassword.fill(confirmPassword);
 		await this.saveChangesButton.click();
-		await this.enterPasswordModal.enterPassword(currentPassword);
+		await this.enterPasswordModal.enterPassword(currentPassword, { optional: true });
 	}
 
 	async resetE2EEPassword() {

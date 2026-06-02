@@ -2,6 +2,7 @@ import type { Locator, Page } from 'playwright-core';
 
 import { Account } from './account';
 import { ConfirmLogoutModal, DevicesTable } from './fragments';
+import { expect } from '../utils/test';
 
 export class AccountManageDevices extends Account {
 	readonly logoutModal: ConfirmLogoutModal;
@@ -19,7 +20,10 @@ export class AccountManageDevices extends Account {
 	}
 
 	async getNthDeviceId(nth: number): Promise<string> {
-		const deviceId = await this.devicesPageContent.getByRole('row').nth(nth).getAttribute('aria-label');
+		const deviceRows = this.devicesPageContent.locator('tr[aria-label]');
+		await expect.poll(async () => deviceRows.count()).toBeGreaterThanOrEqual(nth);
+
+		const deviceId = await deviceRows.nth(nth - 1).getAttribute('aria-label');
 		if (!deviceId) {
 			throw new Error(`Device ID not found for the device ${nth}`);
 		}

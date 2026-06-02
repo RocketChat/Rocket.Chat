@@ -12,8 +12,7 @@ export class ExportMessagesFlexTab extends FlexTab {
 	}
 
 	async setMethod(optionName: string) {
-		await this.exposeMethods();
-		await this.root.page().getByRole('option', { name: optionName }).click();
+		await this.selectOptionWithRetry(this.method, optionName);
 	}
 
 	async exposeOutputFormats() {
@@ -21,8 +20,7 @@ export class ExportMessagesFlexTab extends FlexTab {
 	}
 
 	async setOutputFormat(optionName: string) {
-		await this.exposeOutputFormats();
-		await this.root.page().getByRole('option', { name: optionName }).click();
+		await this.selectOptionWithRetry(this.outputFormat, optionName);
 	}
 
 	getMethodOptionByName(name: string) {
@@ -31,6 +29,20 @@ export class ExportMessagesFlexTab extends FlexTab {
 
 	getOutputFormatOptionByName(name: string) {
 		return this.root.page().getByRole('option', { name });
+	}
+
+	private async selectOptionWithRetry(trigger: Locator, optionName: string): Promise<void> {
+		const option = this.root.page().getByRole('option', { name: optionName });
+
+		for (let attempt = 0; attempt < 2; attempt++) {
+			await trigger.click();
+			if (await option.isVisible({ timeout: 3_000 }).catch(() => false)) {
+				await option.click();
+				return;
+			}
+		}
+
+		await option.click();
 	}
 
 	async selectAllMessages() {

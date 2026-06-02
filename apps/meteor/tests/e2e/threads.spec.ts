@@ -108,8 +108,8 @@ test.describe.serial('Threads', () => {
 			await expect(page).not.toHaveURL(/.*thread/);
 		});
 		test('expect delete the thread message and keep thread open if has more than one message', async ({ page }) => {
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('another reply message');
-			await page.keyboard.press('Enter');
+			await poHomeChannel.content.sendMessageInThread('another reply message');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('another reply message');
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
 
@@ -174,33 +174,38 @@ test.describe.serial('Threads', () => {
 		test('expect reset the thread composer to original message if user presses escape', async ({ page }) => {
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastUserThreadMessage).toBeVisible();
+			const threadComposerInput = poHomeChannel.threadComposer.inputMessage;
 
-			await expect(page.locator('[name="msg"]').last()).toBeFocused();
-			await page.locator('[name="msg"]').last().fill('message to be edited');
-			await page.keyboard.press('Enter');
-			await page.keyboard.press('ArrowUp');
+			await expect(threadComposerInput).toBeFocused();
+			await threadComposerInput.fill('message to be edited');
+			await threadComposerInput.press('Enter');
+			await threadComposerInput.press('ArrowUp');
 
-			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
-			await page.locator('[name="msg"]').last().fill('this message was edited');
+			await expect(threadComposerInput).toHaveValue('message to be edited');
+			await threadComposerInput.fill('this message was edited');
 
-			await page.keyboard.press('Escape');
-			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
+			await threadComposerInput.press('Escape');
+			await expect(threadComposerInput).toHaveValue('message to be edited');
 			await expect(page).toHaveURL(/.*thread/);
 		});
 
 		test('expect clean composer and keep the thread open if user is editing message and presses escape', async ({ page }) => {
+			const threadComposerInput = poHomeChannel.threadComposer.inputMessage;
+
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastUserThreadMessage).toBeVisible();
-			await expect(page.locator('[name="msg"]').last()).toBeFocused();
+			await expect(threadComposerInput).toBeFocused();
 
-			await page.locator('[name="msg"]').last().fill('message to be edited');
-			await page.keyboard.press('Enter');
+			await threadComposerInput.fill('message to be edited');
+			await threadComposerInput.press('Enter');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('message to be edited');
+			await expect(threadComposerInput).toBeFocused();
 
-			await page.keyboard.press('ArrowUp');
-			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
+			await threadComposerInput.press('ArrowUp');
+			await expect(threadComposerInput).toHaveValue('message to be edited');
 
-			await page.keyboard.press('Escape');
-			await expect(page.locator('[name="msg"]').last()).toHaveValue('');
+			await threadComposerInput.press('Escape');
+			await expect(threadComposerInput).toHaveValue('');
 			await expect(page).toHaveURL(/.*thread/);
 		});
 	});

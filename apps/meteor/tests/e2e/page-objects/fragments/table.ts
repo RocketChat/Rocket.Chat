@@ -30,10 +30,15 @@ export class DevicesTable extends Table {
 	}
 
 	getColumnHeaderByName(name: string): Locator {
-		return this.root.getByRole('cell', { name, exact: true });
+		return this.root
+			.getByRole('columnheader', { name, exact: true })
+			.or(this.root.getByRole('cell', { name, exact: true }))
+			.first();
 	}
 
 	async orderByLastLogin() {
-		await this.getColumnHeaderByName('Last login').click();
+		const lastLoginHeader = this.getColumnHeaderByName('Last login');
+		await expect(lastLoginHeader).toBeVisible();
+		await lastLoginHeader.click();
 	}
 }

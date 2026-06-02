@@ -197,9 +197,12 @@ test.describe.parallel('register', () => {
 			});
 		});
 
-		test('should register a user if the right secret password is provided', async ({ page }) => {
+		test('should register a user if the right secret password is provided', async ({ page, api }) => {
+			await expect(await api.post('/settings/Accounts_RegistrationForm', { value: 'Secret URL' })).toBeOK();
+			await expect(await api.post('/settings/Accounts_RegistrationForm_SecretURL', { value: 'secret' })).toBeOK();
+
 			await page.goto('/register/secret');
-			await page.waitForSelector('role=form');
+			await expect(poRegistration.inputName).toBeVisible({ timeout: 15_000 });
 			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
 			await poRegistration.username.fill(faker.internet.userName());

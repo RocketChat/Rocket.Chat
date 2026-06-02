@@ -49,16 +49,22 @@ test.describe.serial('account-security', () => {
 	});
 
 	test('should be able to change password', async ({ api }) => {
-		await test.step('change password', async () => {
-			await poAccountSecurity.changePassword(RANDOM_PASSWORD, RANDOM_PASSWORD, ADMIN_CREDENTIALS.password);
-			await expect(poAccountSecurity.inputNewPassword).toHaveValue('');
-		});
+		await setSettingValueById(api, 'Accounts_TwoFactorAuthentication_Enabled', false);
 
-		await test.step('change back to the original password', async () => {
-			expect(
-				(await updateOwnUserPassword(api, { newPassword: ADMIN_CREDENTIALS.password, currentPassword: RANDOM_PASSWORD })).status(),
-			).toBe(200);
-		});
+		try {
+			await test.step('change password', async () => {
+				await poAccountSecurity.changePassword(RANDOM_PASSWORD, RANDOM_PASSWORD, ADMIN_CREDENTIALS.password);
+				await expect(poAccountSecurity.inputNewPassword).toHaveValue('');
+			});
+
+			await test.step('change back to the original password', async () => {
+				expect(
+					(await updateOwnUserPassword(api, { newPassword: ADMIN_CREDENTIALS.password, currentPassword: RANDOM_PASSWORD })).status(),
+				).toBe(200);
+			});
+		} finally {
+			await setSettingValueById(api, 'Accounts_TwoFactorAuthentication_Enabled', true);
+		}
 	});
 
 	test.describe('settings disabled', () => {

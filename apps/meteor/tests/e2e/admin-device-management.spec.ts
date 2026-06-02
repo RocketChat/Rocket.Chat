@@ -79,10 +79,10 @@ test.describe('Admin Device Management Page', () => {
 		await poUser2Home.waitForHome();
 
 		await test.step('should list user2 device while user2 is logged in', async () => {
+			await page.reload();
 			await expect(adminDeviceManagement.adminPageContent).toBeVisible();
 			await adminDeviceManagement.searchUserDevice('user2');
-			const rowCount = await adminDeviceManagement.table.countRowsForUsername('user2');
-			expect(rowCount).toBe(1);
+			await expect.poll(() => adminDeviceManagement.table.countRowsForUsername('user2')).toBe(1);
 		});
 
 		await test.step('should log user2 out from the app and redirect to login page', async () => {
@@ -94,8 +94,7 @@ test.describe('Admin Device Management Page', () => {
 			await page.reload();
 			await expect(adminDeviceManagement.adminPageContent).toBeVisible();
 			await adminDeviceManagement.searchUserDevice('user2');
-			const rowCount = await adminDeviceManagement.table.countRowsForUsername('user2');
-			expect(rowCount).toBe(0);
+			await expect.poll(() => adminDeviceManagement.table.countRowsForUsername('user2')).toBe(0);
 		});
 
 		await user2Page.close();

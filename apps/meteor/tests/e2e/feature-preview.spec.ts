@@ -477,7 +477,16 @@ test.describe.serial('feature preview', () => {
 
 			test('should close nav region when opening a room', async ({ page }) => {
 				await page.goto('/home');
-				await poHomeChannel.navbar.btnSidebarToggler().click();
+
+				if (!(await poHomeChannel.sidepanel.sidepanel.isVisible().catch(() => false))) {
+					try {
+						await poHomeChannel.navbar.btnSidebarToggler().click({ timeout: 10_000 });
+					} catch {
+						await poHomeChannel.navbar.btnSidebarToggler(true).click({ timeout: 10_000 });
+						await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
+						await poHomeChannel.navbar.btnSidebarToggler().click({ timeout: 10_000 });
+					}
+				}
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 

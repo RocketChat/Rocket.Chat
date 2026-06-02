@@ -68,6 +68,8 @@ test.describe.serial('message-composer', () => {
 
 		await test.step('mention popup', async () => {
 			await page.keyboard.type('hello composer @all');
+			await expect(poHomeChannel.composer.boxPopup).toBeVisible();
+			await expect(poHomeChannel.composer.boxPopup).toContainText('all');
 
 			await page.keyboard.press('Enter');
 
@@ -78,6 +80,8 @@ test.describe.serial('message-composer', () => {
 
 		await test.step('emoji popup', async () => {
 			await page.keyboard.type('hello composer :flag_br');
+			await expect(poHomeChannel.composer.boxPopup).toBeVisible();
+			await expect(poHomeChannel.composer.boxPopup).toContainText('flag_br');
 
 			await page.keyboard.press('Enter');
 
@@ -88,6 +92,7 @@ test.describe.serial('message-composer', () => {
 
 		await test.step('slash command', async () => {
 			await page.keyboard.type('/gim');
+			await expect(poHomeChannel.composer.inputMessage).toHaveAttribute('aria-activedescendant', /popup-item-gimme/);
 
 			await page.keyboard.press('Enter');
 
