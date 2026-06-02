@@ -11,7 +11,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -42,7 +42,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 
 	const setModal = useSetModal();
 	const { closeTab } = useRoomToolbox();
-	const saveAction = useMethod('addUsersToRoom');
+	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
+	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
 	const getBannedUsers = useEndpoint('GET', '/v1/rooms.bannedUsers');
 	const unbanUser = useEndpoint('POST', '/v1/rooms.unbanUser');
 
@@ -63,7 +64,9 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 				await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
 			}
 		}
-		await saveAction({ rid, users });
+		await Promise.all(
+			users.map((username) => (room.t === 'c' ? inviteToChannel({ roomId: rid, username }) : inviteToGroup({ roomId: rid, username }))),
+		);
 		dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
 		onClickBack();
 		reload();
@@ -84,7 +87,11 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							onClose={() => setModal(null)}
 							onConfirm={async () => {
 								await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
-								await saveAction({ rid, users });
+								await Promise.all(
+									users.map((username) =>
+										room.t === 'c' ? inviteToChannel({ roomId: rid, username }) : inviteToGroup({ roomId: rid, username }),
+									),
+								);
 								setModal(null);
 								dispatchToastMessage({
 									type: 'success',

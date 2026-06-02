@@ -5,6 +5,7 @@ import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
@@ -221,6 +222,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 Meteor.methods<ServerMethods>({
 	async saveUserPreferences(settings) {
+		methodDeprecationLogger.method('saveUserPreferences', '9.0.0', '/v1/users.setPreferences');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveUserPreferences' });

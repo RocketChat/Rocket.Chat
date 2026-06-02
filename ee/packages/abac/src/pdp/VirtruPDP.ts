@@ -6,12 +6,9 @@ import pLimit from 'p-limit';
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { logger } from '../logger';
 import type {
-	Decision,
 	IEntityIdentifier,
 	IPolicyDecisionPoint,
-	IGetDecisionRequest,
 	IGetDecisionBulkRequest,
-	IGetDecisionsResponse,
 	IGetDecisionBulkResponse,
 	IResourceDecision,
 	ITokenCache,
@@ -105,11 +102,13 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 	private async checkAuthorizedAccess(token: string): Promise<void> {
 		try {
-			const response = await serverFetch(`${this.config.baseUrl}/authorization.AuthorizationService/GetDecisions`, {
+			const response = await serverFetch(`${this.config.baseUrl}/authorization.v2.AuthorizationService/GetEntitlements`, {
 				method: 'POST',
 				timeout: HEALTH_CHECK_TIMEOUT,
 				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-				body: JSON.stringify({ decisionRequests: [] }),
+				body: JSON.stringify({
+					entityIdentifier: { entityChain: { entities: [{ id: this.config.clientId }] } },
+				}),
 				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
 			});
@@ -179,16 +178,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}
 
 		return response.json() as Promise<T>;
-	}
-
-	private async getDecision(request: IGetDecisionRequest): Promise<Decision | undefined> {
-		const result = await this.apiCall<IGetDecisionsResponse>('/authorization.AuthorizationService/GetDecisions', {
-			decisionRequests: [request],
-		});
-
-		pdpLogger.debug({ msg: 'GetDecision response', result: result.decisionResponses });
-
-		return result.decisionResponses?.[0]?.decision;
 	}
 
 	private async getDecisionBulk(
@@ -275,21 +264,24 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return { granted: false };
 		}
 
-		const decision = await this.getDecision({
-			actions: [{ standard: 1 }],
-			resourceAttributes: [
-				{
-					resourceAttributesId: room._id,
-					attributeValueFqns: this.buildAttributeFqns(attributes),
+		const responses = await this.getDecisionBulk([
+			{
+				entityIdentifier: {
+					entityChain: {
+						entities: [this.buildEntityIdentifier(entityKey)],
+					},
 				},
-			],
-			entityChains: [
-				{
-					id: 'rc-access-check',
-					entities: [this.buildEntityIdentifier(entityKey)],
-				},
-			],
-		});
+				action: { name: 'read' },
+				resources: [
+					{
+						ephemeralId: room._id,
+						attributeValues: { fqns: this.buildAttributeFqns(attributes) },
+					},
+				],
+			},
+		]);
+
+		const decision = responses[0]?.resourceDecisions?.[0]?.decision;
 
 		if (decision === 'DECISION_PERMIT') {
 			pdpLogger.debug({ msg: 'Virtru PDP canAccessObject: permitted', roomId: room._id, userId: user._id });

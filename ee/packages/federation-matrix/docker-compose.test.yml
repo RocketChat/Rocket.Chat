@@ -101,7 +101,7 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@admin.com
-      TEST_MODE: true
+      TEST_MODE: api
     volumes:
       - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
     networks:

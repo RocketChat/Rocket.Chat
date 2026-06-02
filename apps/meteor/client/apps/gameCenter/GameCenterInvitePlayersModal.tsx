@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -30,14 +31,14 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 		const privateGroupName = `${name.replace(/\s/g, '-')}-${Random.id(10)}`;
 
 		try {
-			const result = await callWithErrorHandling('createPrivateGroup' as any, privateGroupName, users);
+			const { group } = await sdk.rest.post('/v1/groups.create', { name: privateGroupName, members: users });
 
-			roomCoordinator.openRouteLink(result.t, result);
+			roomCoordinator.openRouteLink(group.t, { rid: group._id, name: group.name });
 
-			if (openedRoom === result.rid) {
-				callWithErrorHandling('sendMessage', {
+			if (openedRoom === group._id) {
+				await callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
-					rid: result.rid,
+					rid: group._id,
 					msg: t('Apps_Game_Center_Play_Game_Together', { name }),
 				});
 			}
