@@ -43,6 +43,7 @@ export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
+	pexip: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
@@ -74,6 +75,9 @@ export const API: {
 		useDefaultAuth: true,
 	}),
 	default: createApi({}),
+	pexip: createApi({
+		version: 'pexip',
+	}),
 };
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
@@ -118,6 +122,7 @@ export const startRestAPI = () => {
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(API.v1.router)
+			.use(API.pexip.router)
 			.use(API.default.router).router,
 	);
 };

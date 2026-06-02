@@ -23,6 +23,7 @@ import { createMiscSettings } from './misc';
 import { createMobileSettings } from './mobile';
 import { createOauthSettings } from './oauth';
 import { createOmniSettings } from './omnichannel';
+import { createPexipSettings } from './pexip';
 import { createPushSettings } from './push';
 import { createRateLimitSettings } from './rate';
 import { createRetentionSettings } from './retention-policy';
@@ -61,6 +62,7 @@ await Promise.all([
 	createMobileSettings(),
 	createOauthSettings(),
 	createOmniSettings(),
+	createPexipSettings(),
 	createPushSettings(),
 	createRateLimitSettings(),
 	createRetentionSettings(),
