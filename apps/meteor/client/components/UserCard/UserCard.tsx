@@ -20,7 +20,6 @@ const clampStyle = css`
 	-webkit-box-orient: vertical;
 	word-break: break-word;
 `;
-
 type UserCardProps = {
 	user?: {
 		nickname?: string;
@@ -37,7 +36,6 @@ type UserCardProps = {
 	onOpenUserInfo?: () => void;
 	onClose?: () => void;
 } & ComponentProps<typeof UserCardDialog>;
-
 const UserCard = ({
 	user: { name, username, etag, customStatus, roles, bio, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
@@ -47,7 +45,6 @@ const UserCard = ({
 }: UserCardProps) => {
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
-
 	return (
 		<UserCardDialog title={t('User_card')} {...props}>
 			<div>
@@ -93,5 +90,4 @@ const UserCard = ({
 		</UserCardDialog>
 	);
 };
-
 export default UserCard;
