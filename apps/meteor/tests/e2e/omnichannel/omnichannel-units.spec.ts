@@ -60,7 +60,7 @@ test.describe('OC - Manage Units', () => {
 		await poOmnichannelUnits.sidebar.linkUnits.click();
 	});
 
-	test('OC - Manage Units - Create Unit', async ({ page }) => {
+	test('OC - Manage Units - Create Unit', async () => {
 		const unitName = faker.string.uuid();
 
 		await test.step('expect correct form default state', async () => {
@@ -87,7 +87,7 @@ test.describe('OC - Manage Units', () => {
 
 		await test.step('expect to delete unit', async () => {
 			await poOmnichannelUnits.deleteUnit(unitName);
-			await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
+			await expect(poOmnichannelUnits.table.findRowByName(unitName)).not.toBeVisible();
 		});
 	});
 
