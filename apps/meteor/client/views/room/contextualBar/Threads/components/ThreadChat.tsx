@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useState, useEffect, useCallback, useId } from 'react';
+import { useState, useEffect, useCallback, useId  ,useSyncExternalStore} from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
@@ -25,6 +25,10 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
+	const isEditing = useSyncExternalStore(
+    (callback) => chat.composer?.editing.subscribe(callback) ?? (() => undefined),
+    () => chat.composer?.editing.get() ?? false,
+	);
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
 
@@ -127,6 +131,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 										checked={sendToChannel}
 										onChange={() => setSendToChannel((checked) => !checked)}
 										name='alsoSendThreadToChannel'
+										disabled={isEditing}
 									/>
 									<FieldLabel mis='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 										{t('Also_send_to_channel')}
