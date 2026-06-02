@@ -2,4 +2,4 @@
 '@rocket.chat/desktop-api': minor
 ---
 
-Add `onTelephonyCallRequested(callback)` to the `IRocketChatDesktop` type definition. Desktop clients can expose this method to forward `tel:`/`callto:` deeplink and global-shortcut phone numbers to the media-call widget. Implemented in Rocket.Chat.Electron#3325.
+Adds deeplink and shortcut handling for voice calls by integrating with the desktop app API to allow phone links and global shortcuts triggered outside the app to open the voice widget seamlessly. Related to Rocket.Chat.Electron#3325.
