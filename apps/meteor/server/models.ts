@@ -44,6 +44,7 @@ import {
 	MessagesRaw,
 	MigrationsRaw,
 	ModerationReportsRaw,
+	ModerationAuditLogsRaw,
 	NotificationQueueRaw,
 	NpsRaw,
 	NpsVoteRaw,
@@ -131,6 +132,7 @@ registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
 registerModel('IMigrationsModel', new MigrationsRaw(db));
 registerModel('IModerationReportsModel', new ModerationReportsRaw(db));
+registerModel('IModerationAuditLogsModel', new ModerationAuditLogsRaw(db));
 registerModel('INotificationQueueModel', new NotificationQueueRaw(db));
 registerModel('INpsModel', new NpsRaw(db));
 registerModel('INpsVoteModel', new NpsVoteRaw(db));

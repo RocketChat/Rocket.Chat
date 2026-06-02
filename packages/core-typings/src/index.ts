@@ -1,4 +1,5 @@
 export * from './utils';
+export type * from './IModerationAuditLogs';
 
 export * from './Apps';
 export * from './IRoom';

@@ -38,6 +38,7 @@ import type { Filter } from 'mongodb';
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { logModerationAction } from '../../../../server/lib/moderation/logModerationAction';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
@@ -511,6 +512,15 @@ API.v1.post(
 	async function action() {
 		const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
 		await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
+
+		if (activeStatus === false) {
+			await logModerationAction({
+				moderatorId: this.userId,
+				targetUserId: userId,
+				action: 'deactivate',
+				reason: 'Manually deactivated by administrator',
+			});
+		}
 
 		const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
 		if (!user) {

@@ -6,9 +6,10 @@ import { useCallback } from 'react';
 import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
+import ModerationAuditLogsTable from './ModerationAuditLogsTable';
 import { getPermaLink } from '../../../lib/getPermaLink';
 
-type TabType = 'users' | 'messages';
+type TabType = 'users' | 'messages' | 'audit';
 
 type ModerationConsolePageProps = {
 	tab: TabType;
@@ -49,10 +50,14 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 					<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 						{t('Reported_Users')}
 					</TabsItem>
+					<TabsItem selected={tab === 'audit'} onClick={handleTabClick('audit')}>
+						{t('Audit_Log' as any)}
+					</TabsItem>
 				</Tabs>
 				<PageContent>
 					{tab === 'messages' && <ModerationConsoleTable />}
 					{tab === 'users' && <ModConsoleUsersTable />}
+					{tab === 'audit' && <ModerationAuditLogsTable />}
 				</PageContent>
 			</Page>
 			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} default={tab} />}
