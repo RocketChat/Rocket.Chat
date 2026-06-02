@@ -42,7 +42,7 @@ type MessageListProps = {
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
 	debouncedClearNewMessagesOnScroll: () => void;
-	handleDateScroll: (topMessage: IMessage | undefined) => void;
+	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>;
 	debouncedMessageRead: () => void;
 };
@@ -85,6 +85,9 @@ export const MessageList = function MessageList({
 
 	const handlePrepend = useCallback(
 		(offset: number) => {
+			if (!isRoomInitialized.current) {
+				return;
+			}
 			// If the offset is less than 200, it means the user is reaching the top of the list,
 			// so the prepend need to be enabled for smooth scrolling,
 			// if the prepend is enabled when a new message is added, the list will misalign.
@@ -141,14 +144,7 @@ export const MessageList = function MessageList({
 
 				setShouldJumpToBottom(false);
 
-				const index = virtualizerRef.current?.findItemIndex(store?.scroll);
-				if (index !== undefined) {
-					virtualizerRef.current?.scrollToIndex(index, {
-						align: 'start',
-					});
-				} else {
-					virtualizerRef.current?.scrollTo(store?.scroll);
-				}
+				virtualizerRef.current?.scrollTo(store?.scroll);
 				isAtBottom.current = false;
 				isRoomInitialized.current = true;
 				return;
@@ -253,7 +249,7 @@ export const MessageList = function MessageList({
 						const handle = virtualizerRef.current;
 						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
 						handleTopVisibleMessage(topMessage);
-						handleDateScroll(topMessage);
+						handleDateScroll(topMessage, offset);
 						debouncedMessageRead();
 					}}
 				>

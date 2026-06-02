@@ -7,7 +7,7 @@ import { useRef, useState } from 'react';
 import { useDateListController } from '../providers/DateListProvider';
 
 type useDateScrollReturn = {
-	handleDateScroll: (topMessage: IMessage | undefined) => void;
+	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	bubbleRef: MutableRefObject<HTMLElement | null>;
 	listStyle?: ReturnType<typeof css>;
 } & BubbleDateProps;
@@ -18,6 +18,10 @@ export type BubbleDateProps = {
 	showBubble: boolean;
 	bubbleDateStyle?: CSSProperties;
 };
+
+// The threshold in pixels to consider a date divider as "visible" when scrolling.
+// The divider being a few pixels above the top of the viewport is safe, as it is always contained inside a message
+const DATE_DIVIDER_VISIBILITY_THRESHOLD = 100;
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
 	const [bubbleDate, setBubbleDate] = useSafely(
@@ -43,7 +47,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 	const hideBubbleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const handleDateScroll = useDebouncedCallback(
-		(topMessage: IMessage | undefined) => {
+		(topMessage: IMessage | undefined, offset: number) => {
 			if (hideBubbleTimeoutRef.current) {
 				clearTimeout(hideBubbleTimeoutRef.current);
 				hideBubbleTimeoutRef.current = null;
@@ -54,12 +58,18 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 			type Matched = [string, HTMLElement | undefined, { [key: string]: string | number }?] | [];
 			// Gets the first non visible message date and sets the bubble date to it
 			let matched: Matched = [...list].reduce<Matched>((ret, divider) => {
+				const { top, height } = divider.getBoundingClientRect();
+				// Some dividers might be kept in the DOM if the "new day" message has a file attached
+				// So we check if they are actually visible to avoid showing old dates in the bubble
+				// We also need the parent since it has the actual offset inside the scroll container
+				const parentOffsetTop = divider.parentElement?.offsetTop;
+				const parentSafeOffset = parentOffsetTop !== undefined ? parentOffsetTop + DATE_DIVIDER_VISIBILITY_THRESHOLD : 0;
+
 				// Sanitize elements
-				if (!divider.dataset.id) {
+				if (!divider.dataset.id || parentSafeOffset < offset) {
 					return ret;
 				}
 
-				const { top, height } = divider.getBoundingClientRect();
 				const { id } = divider.dataset;
 
 				// if the bubble if between the divider and the top, position it at the top of the divider

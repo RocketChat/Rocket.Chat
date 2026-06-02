@@ -28,12 +28,10 @@ describe('useHasNewMessages', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		clientCallbacks.remove('streamNewMessage', rid);
-		clientCallbacks.remove('afterSaveMessage', rid);
 	});
 
 	afterEach(() => {
 		clientCallbacks.remove('streamNewMessage', rid);
-		clientCallbacks.remove('afterSaveMessage', rid);
 	});
 
 	it('should NOT show new messages button when user sends their own message', () => {
@@ -155,7 +153,28 @@ describe('useHasNewMessages', () => {
 		expect(result.current.hasNewMessages).toBe(false);
 	});
 
-	it('should clear hasNewMessages when afterSaveMessage fires for current user', () => {
+	it('should NOT jump to bottom when streamNewMessage fires for current user editing their own message', () => {
+		renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+
+		const editedOwnMsg: IEditedMessage = {
+			_id: 'msg-edit',
+			rid,
+			u: { _id: uid, username: 'current-user', name: 'Current User' },
+			msg: 'Edited message',
+			ts: new Date(),
+			_updatedAt: new Date(),
+			editedAt: new Date(),
+			editedBy: { _id: uid, username: 'current-user' },
+		};
+
+		const streamNewMessageCallbacks = clientCallbacks.getCallbacks('streamNewMessage');
+		act(() => {
+			streamNewMessageCallbacks.forEach((callback) => callback(editedOwnMsg));
+		});
+		expect(setShouldJumpToBottom).not.toHaveBeenCalled();
+	});
+
+	it('should clear hasNewMessages when streamNewMessage fires for current users message', () => {
 		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
 			wrapper: mockAppRoot().build(),
 		});
@@ -184,9 +203,9 @@ describe('useHasNewMessages', () => {
 			_updatedAt: new Date(),
 		};
 
-		const afterSaveCallbacks = clientCallbacks.getCallbacks('afterSaveMessage');
+		const streamNewMessageCallbacks = clientCallbacks.getCallbacks('streamNewMessage');
 		act(() => {
-			afterSaveCallbacks.forEach((callback) => callback(ownMsg));
+			streamNewMessageCallbacks.forEach((callback) => callback(ownMsg));
 		});
 		expect(result.current.hasNewMessages).toBe(false);
 		expect(setShouldJumpToBottom).toHaveBeenCalledWith(true);
