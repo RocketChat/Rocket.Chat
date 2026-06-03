@@ -17,7 +17,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -64,7 +64,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!isSelecting) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;
