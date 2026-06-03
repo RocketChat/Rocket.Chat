@@ -226,6 +226,14 @@ const InnerProvider = ({
 	const CAPTION_FINAL_TTL_MS = 5000;
 	const CAPTION_INTERIM_TTL_MS = 8000;
 
+	// Reactive state shared via the LK data channel. Replaces the previous
+	// 5s polling of /recording-status and /transcription.status. Whoever
+	// toggles the feature also broadcasts the change to everyone in the
+	// room, so other participants update within a single round-trip
+	// instead of waiting for the next poll tick.
+	const [liveRecordingActive, setLiveRecordingActive] = useState<{ isRecording: boolean; updatedAt: number } | undefined>();
+	const [liveTranscriptionActive, setLiveTranscriptionActive] = useState<{ enabled: boolean; updatedAt: number } | undefined>();
+
 	useEffect(() => {
 		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
 			let msg: {
@@ -278,6 +286,14 @@ const InnerProvider = ({
 					...prev,
 					[speaker]: { text, isFinal, updatedAt: Date.now() },
 				}));
+				return;
+			}
+			if (msg.type === 'recording-state') {
+				setLiveRecordingActive({ isRecording: Boolean((msg as any).isRecording), updatedAt: Date.now() });
+				return;
+			}
+			if (msg.type === 'transcription-state') {
+				setLiveTranscriptionActive({ enabled: Boolean((msg as any).enabled), updatedAt: Date.now() });
 			}
 		};
 		room.on(RoomEvent.DataReceived, onData);
@@ -419,6 +435,30 @@ const InnerProvider = ({
 		};
 	}, [room]);
 
+	// Broadcast recording / transcription toggles to every participant
+	// over the LK data channel so they all converge to the same UI state
+	// without polling. We use reliable delivery because these are
+	// low-frequency state changes (not real-time captions where loss is
+	// acceptable) and the user-facing meaning of "missed broadcast" is
+	// "your pill stayed wrong for up to a poll interval" — which is the
+	// regression we're fixing in the first place.
+	const broadcastRecordingState = useCallback(
+		(isRecording: boolean) => {
+			const payload = JSON.stringify({ type: 'recording-state', isRecording });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+			setLiveRecordingActive({ isRecording, updatedAt: Date.now() });
+		},
+		[localParticipant],
+	);
+	const broadcastTranscriptionState = useCallback(
+		(enabled: boolean) => {
+			const payload = JSON.stringify({ type: 'transcription-state', enabled });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+			setLiveTranscriptionActive({ enabled, updatedAt: Date.now() });
+		},
+		[localParticipant],
+	);
+
 	// Switch the active camera (videoinput) through the LK Room — LK's
 	// switchActiveDevice republishes the track on the chosen device so no
 	// renegotiation is needed at our level. The method lives on Room (not
@@ -475,6 +515,10 @@ const InnerProvider = ({
 			activeCaptions,
 			onVideoInputChange,
 			currentCameraDeviceId,
+			liveRecordingActive,
+			liveTranscriptionActive,
+			broadcastRecordingState,
+			broadcastTranscriptionState,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -499,6 +543,10 @@ const InnerProvider = ({
 			activeCaptions,
 			onVideoInputChange,
 			currentCameraDeviceId,
+			liveRecordingActive,
+			liveTranscriptionActive,
+			broadcastRecordingState,
+			broadcastTranscriptionState,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

@@ -131,4 +131,42 @@ export interface IMediaCall extends IRocketChatRecord {
 		/** Set after the webhook posts the message in the channel. */
 		messageSent?: boolean;
 	};
+
+	/**
+	 * Per-call "take notes" toggle. When `enabled: true`, the server persists
+	 * finalized transcripts from the agent and posts a summary at end of call.
+	 * Default is off — captions still render live regardless, but persistence
+	 * + AI summarisation are opt-in per call, like recording.
+	 */
+	transcription?: {
+		enabled: boolean;
+		startedAt?: Date;
+		startedBy?: string;
+		endedAt?: Date;
+	};
+
+	/**
+	 * Finalized transcript entries appended by the LiveKit agent worker as it
+	 * receives final utterances from Gemini Live. Each entry is one speaker's
+	 * complete utterance; the array is ordered by `startedAt` and grows
+	 * append-only for the lifetime of the call.
+	 */
+	transcript?: MediaCallTranscriptEntry[];
+
+	/**
+	 * Post-call AI summary metadata. Set by the cleanup cron once the call
+	 * ends and the summary message has been posted, so retries don't double-
+	 * post if the cron runs again on the same call.
+	 */
+	summary?: {
+		generatedAt: Date;
+		messageId?: string;
+	};
 }
+
+export type MediaCallTranscriptEntry = {
+	participantId: string;
+	text: string;
+	startedAt: Date;
+	endedAt: Date;
+};

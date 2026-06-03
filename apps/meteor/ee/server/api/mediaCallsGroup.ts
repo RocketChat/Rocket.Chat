@@ -10,7 +10,21 @@ import {
 
 import { API } from '../../../app/api/server/api';
 import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
+import notifications from '../../../app/notifications/server/lib/Notifications';
 import { settings } from '../../../app/settings/server';
+
+// Broadcast on the `notify-room` streamer so any client subscribed to the
+// room hears about call create/end and refreshes its banner state. Replaces
+// the previous 5s `/media-calls.activeInRoom` polling. The event name is not
+// in the typed StreamerEvents union, so we cast — `notify-room` allows any
+// event for users with access to the room.
+const broadcastMediaCallState = (rid: string, payload: { action: 'started' | 'ended'; callId: string }) => {
+	try {
+		(notifications.notifyRoom as any)(rid, 'media-call-state', payload);
+	} catch {
+		/* notify is best-effort */
+	}
+};
 
 const looseSuccessSchema = ajv.compile<Record<string, unknown>>({ type: 'object', additionalProperties: true });
 const looseSuccessResponse = {
@@ -91,6 +105,7 @@ API.v1.post(
 		};
 
 		await MediaCallsModel.insertOne(doc as any);
+		broadcastMediaCallState(roomId, { action: 'started', callId });
 
 		return API.v1.success({ call: doc, alreadyActive: false });
 	},
@@ -188,6 +203,12 @@ API.v1.post(
 		const stillIn = (updated?.participants ?? []).filter((p: any) => !p.leftAt);
 		if (stillIn.length === 0) {
 			await MediaCallsModel.hangupCallById(callId, { reason: 'all-participants-left' });
+			if (updated?.rid) broadcastMediaCallState(updated.rid, { action: 'ended', callId });
+			// Fire summary generation. Idempotent and self-gated on the
+			// `VoIP_TeamCollab_LiveKit_Summary_Enabled` setting + presence
+			// of transcript entries, so it no-ops when not configured.
+			const { maybeGenerateSummary } = await import('../lib/livekit-agent/summary');
+			void maybeGenerateSummary(callId).catch(() => undefined);
 		}
 
 		return API.v1.success({});

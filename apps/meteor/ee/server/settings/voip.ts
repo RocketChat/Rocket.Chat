@@ -130,6 +130,62 @@ export function addSettings(): Promise<void> {
 						invalidValue: '',
 						enableQuery: [livekitEnabled, recordingEnabled],
 					});
+
+					// Transcription / live captions. Runs as a Meteor-managed
+					// subprocess (worker.mjs) — when Mode = 'embedded' the
+					// server forks it on boot using the LiveKit credentials
+					// above plus the Gemini key below.
+					await this.add('VoIP_TeamCollab_LiveKit_Agent_Mode', 'off', {
+						type: 'select',
+						values: [
+							{ key: 'off', i18nLabel: 'Disabled' },
+							{ key: 'embedded', i18nLabel: 'Embedded' },
+						],
+						invalidValue: 'off',
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Agent_Mode_Description',
+						enableQuery: [livekitEnabled],
+					});
+
+					const agentEmbedded = { _id: 'VoIP_TeamCollab_LiveKit_Agent_Mode', value: 'embedded' };
+
+					await this.add('VoIP_TeamCollab_LiveKit_Agent_Gemini_Api_Key', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Agent_Gemini_Api_Key_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Agent_Gemini_Model', '', {
+						type: 'string',
+						invalidValue: '',
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Agent_Gemini_Model_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Agent_Language_Hint', '', {
+						type: 'string',
+						invalidValue: '',
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Agent_Language_Hint_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					// Post-call summary. Reuses the same Gemini key; flips a
+					// separate switch so admins can persist transcripts for
+					// captions without paying for summary tokens.
+					await this.add('VoIP_TeamCollab_LiveKit_Summary_Enabled', false, {
+						type: 'boolean',
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Summary_Enabled_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VoIP_TeamCollab_LiveKit_Summary_Gemini_Model', 'gemini-2.5-flash', {
+						type: 'string',
+						invalidValue: 'gemini-2.5-flash',
+						i18nDescription: 'VoIP_TeamCollab_LiveKit_Summary_Gemini_Model_Description',
+						enableQuery: [livekitEnabled, agentEmbedded, { _id: 'VoIP_TeamCollab_LiveKit_Summary_Enabled', value: true }],
+					});
 				});
 
 				await this.section('VoIP_TeamCollab_SIP_Integration', async function () {

@@ -1,6 +1,7 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { playCallEndedChime, startRingerChime, startDialerChime } from '@rocket.chat/ui-voip';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
@@ -14,6 +15,12 @@ type CustomSoundProviderProps = {
 
 const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const audioRefs = useRef<HTMLAudioElement[]>([]);
+	// Holds the stop functions returned by the looped synthesized chimes
+	// (ringer + dialer). Stored in a ref so they survive re-renders and
+	// the stop API can reach them. Calling start twice without stopping
+	// first replaces the prior loop — calling the prior stop first.
+	const ringerStopRef = useRef<(() => void) | null>(null);
+	const dialerStopRef = useRef<(() => void) | null>(null);
 
 	const queryClient = useQueryClient();
 	const streamAll = useStream('notify-all');
@@ -82,17 +89,45 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			stopNewRoom: () => stop(newRoomNotification),
 			stopNewMessage: () => stop(newMessageNotification),
 		};
+		// VoIP sounds are now fully synthesized via Web Audio — no MP3 assets,
+		// no licensing concerns, no harsh legacy tones. The looped chimes
+		// (ringer/dialer) return a stop handle which we store in a ref so
+		// the matching stop* call can silence the loop. Calling play* twice
+		// without stopping first silently replaces the prior loop.
+		//
+		// IMPORTANT: playRinger / playDialer must ALSO return their stop fn
+		// directly — useCallSounds (and a few other callers) use it as the
+		// React effect cleanup. Returning undefined here silently leaks the
+		// ringtone past the state transition (e.g. "calling" → "active")
+		// and the loop runs forever.
+		const stopRinger = () => {
+			ringerStopRef.current?.();
+			ringerStopRef.current = null;
+		};
+		const startRinger = () => {
+			ringerStopRef.current?.();
+			ringerStopRef.current = startRingerChime();
+			return stopRinger;
+		};
+		const stopDialer = () => {
+			dialerStopRef.current?.();
+			dialerStopRef.current = null;
+		};
+		const startDialer = () => {
+			dialerStopRef.current?.();
+			dialerStopRef.current = startDialerChime();
+			return stopDialer;
+		};
 		const voipSounds = {
-			playRinger: () => play('telephone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playDialer: () => play('outbound-call-ringing', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playCallEnded: () => play('call-ended', { loop: false, volume: formatVolume(voipRingerVolume) }),
-			stopRinger: () => stop('telephone'),
-			stopDialer: () => stop('outbound-call-ringing'),
-			stopCallEnded: () => stop('call-ended'),
+			playRinger: startRinger,
+			playDialer: startDialer,
+			playCallEnded: () => playCallEndedChime(),
+			stopRinger,
+			stopDialer,
+			stopCallEnded: () => undefined,
 			stopAll: () => {
-				stop('telephone');
-				stop('outbound-call-ringing');
-				stop('call-ended');
+				stopRinger();
+				stopDialer();
 			},
 		};
 		const callSounds = {

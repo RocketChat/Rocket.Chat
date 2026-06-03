@@ -35,5 +35,15 @@ export { default as MediaCallRoomSection } from './views/MediaCallRoomSection/Me
 export { default as MediaCallViewContext, defaultMediaCallContextValue } from './context/MediaCallViewContext';
 export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCallViewContext';
 
-// In-call notification chimes (recording started/stopped, participant joined).
-export { playRecordingChime, playRecordingStopChime, playJoinChime } from './utils/callChimes';
+// In-call notification chimes (recording started/stopped, participant joined,
+// call ended). All synthesized via Web Audio — no asset files. The looped
+// ones (ringer/dialer) return a stop function — caller must invoke it to
+// silence the loop.
+export {
+	playRecordingChime,
+	playRecordingStopChime,
+	playJoinChime,
+	playCallEndedChime,
+	startRingerChime,
+	startDialerChime,
+} from './utils/callChimes';

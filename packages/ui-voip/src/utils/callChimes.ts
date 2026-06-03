@@ -79,3 +79,62 @@ export const playRecordingStopChime = (): void => {
 export const playJoinChime = (): void => {
 	playTone(880, 0, 0.09);
 };
+
+/**
+ * Played on the local client when a call ends (hangup or peer disconnect).
+ * Two descending notes (C5 → A4) — lower and slightly longer than the
+ * recording-stop chime so the two are clearly distinct, and the descending
+ * minor-third pattern reads conventionally as "call ended". Replaces the
+ * legacy `call-ended.mp3` which several users described as harsh.
+ */
+export const playCallEndedChime = (): void => {
+	playTone(523.25, 0, 0.18);
+	playTone(440, 0.15, 0.24);
+};
+
+/**
+ * Internal helper: runs `playOnce` immediately and then again every
+ * `periodMs` milliseconds, until the returned stop function is called.
+ * Used by the looped ring tones (ringer + dialer) below to avoid relying
+ * on AudioContext loop tricks, which behave inconsistently across browsers
+ * for short sequenced tones.
+ */
+const startLoop = (playOnce: () => void, periodMs: number): (() => void) => {
+	let stopped = false;
+	const tick = () => {
+		if (stopped) return;
+		playOnce();
+	};
+	tick();
+	const handle = setInterval(tick, periodMs);
+	return () => {
+		stopped = true;
+		clearInterval(handle);
+	};
+};
+
+/**
+ * Incoming-call ringer. Two ascending notes (E5 → A5) repeated every 2.4s,
+ * with ~1.6s of silence between rings. Modern and pleasant; replaces the
+ * legacy `telephone.mp3` which has the same harshness complaints as the
+ * call-ended tone. Returns a stop function — the caller must invoke it to
+ * stop the loop (typically when the call is answered or cancelled).
+ */
+export const startRingerChime = (): (() => void) => {
+	return startLoop(() => {
+		playTone(659.25, 0, 0.22);
+		playTone(880, 0.2, 0.26);
+	}, 2400);
+};
+
+/**
+ * Outbound-call dialer / ringback. Simple repeating mid-low tone (A4),
+ * shorter on/off cycle than the ringer to feel like "calling out, waiting
+ * for them to pick up" rather than "your phone is ringing". Returns a stop
+ * function.
+ */
+export const startDialerChime = (): (() => void) => {
+	return startLoop(() => {
+		playTone(440, 0, 0.6);
+	}, 1400);
+};

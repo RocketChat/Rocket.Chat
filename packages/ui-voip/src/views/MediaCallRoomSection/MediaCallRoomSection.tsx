@@ -126,6 +126,51 @@ const recordPillStyles = css`
 	}
 `;
 
+// Take-notes pill — visually similar to the recording pill but in a blue
+// accent to signal "this is a different feature". Default state is a
+// pen/pencil glyph + "Take notes". When active, background flips solid
+// blue with the glyph in white; hovering swaps the label to "Stop taking
+// notes" — same affordance pattern as recording.
+const takeNotesPillStyles = css`
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 28px;
+	padding: 0 12px;
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	background-color: transparent;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 12px;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		background-color 120ms ease,
+		color 120ms ease,
+		border-color 120ms ease;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.08);
+		color: white;
+	}
+
+	&:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	&.active {
+		background-color: rgb(38 102 200);
+		border-color: rgb(38 102 200);
+		color: white;
+	}
+
+	&.active:hover:not(:disabled) {
+		background-color: rgb(28 80 165);
+		border-color: rgb(28 80 165);
+	}
+`;
+
 // Visual grouping for "toggle + its device chevron": tightens the gap
 // between the toggle button and its adjacent device picker so they read
 // as one composite control rather than two unrelated buttons. The
@@ -231,6 +276,10 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		onSendReaction,
 		activeReactions,
 		activeCaptions,
+		liveRecordingActive,
+		liveTranscriptionActive,
+		broadcastRecordingState,
+		broadcastTranscriptionState,
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants,
 	} = useMediaCallView();
@@ -249,6 +298,15 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const [recordHover, setRecordHover] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
+
+	// Take-notes state: `available` reflects workspace setting + agent mode
+	// (true if the server has the feature configured), `enabled` is the
+	// per-call toggle. Both come from the polled status endpoint so users
+	// see each other's toggle changes within ~5s.
+	const [notesAvailable, setNotesAvailable] = useState(false);
+	const [notesEnabled, setNotesEnabled] = useState(false);
+	const [notesBusy, setNotesBusy] = useState(false);
+	const [notesHover, setNotesHover] = useState(false);
 
 	// Fullscreen target is the call section's root. We listen to
 	// `fullscreenchange` rather than tracking state purely through the
@@ -331,10 +389,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		return () => document.removeEventListener('pointerdown', onPointerDown);
 	}, [reactionPickerOpen]);
 
+	// One-shot fetch on call join to seed the recording state. After that,
+	// changes propagate over the LK data channel (see liveRecordingActive
+	// sync effect below) — no polling, no 5s lag.
 	useEffect(() => {
 		if (!callId) return;
 		let cancelled = false;
-		const fetchStatus = async () => {
+		void (async () => {
 			try {
 				const res = await fetch(`/api/v1/media-calls.livekit.recording-status?callId=${encodeURIComponent(callId)}`, {
 					headers: {
@@ -346,16 +407,20 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				const data = await res.json();
 				setIsRecording(Boolean(data.recording));
 			} catch {
-				// recording status is best-effort; transient fetch failures are non-fatal
+				/* best-effort */
 			}
-		};
-		void fetchStatus();
-		const interval = setInterval(fetchStatus, 5000);
+		})();
 		return () => {
 			cancelled = true;
-			clearInterval(interval);
 		};
 	}, [callId]);
+
+	// React to recording-state broadcasts from other participants. Whoever
+	// flips the recording pill broadcasts via the LK data channel; the
+	// provider stashes it in liveRecordingActive; we sync local UI.
+	useEffect(() => {
+		if (liveRecordingActive) setIsRecording(liveRecordingActive.isRecording);
+	}, [liveRecordingActive]);
 
 	const onToggleRecording = useCallback(async () => {
 		if (!callId || recordingBusy) return;
@@ -372,12 +437,73 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				body: JSON.stringify({ callId }),
 			});
 			if (res.ok) {
-				setIsRecording(!isRecording);
+				const next = !isRecording;
+				setIsRecording(next);
+				// Tell other participants over the LK data channel so they
+				// flip the pill without waiting for a poll tick.
+				broadcastRecordingState?.(next);
 			}
 		} finally {
 			setRecordingBusy(false);
 		}
-	}, [callId, isRecording, recordingBusy]);
+	}, [callId, isRecording, recordingBusy, broadcastRecordingState]);
+
+	// One-shot fetch on call join to seed transcription state + availability.
+	// `available` is a workspace-level toggle (Summary feature on + agent
+	// embedded) that doesn't change mid-call, so a single fetch is enough.
+	// `enabled` (per-call) is then kept in sync via the data channel.
+	useEffect(() => {
+		if (!callId) return;
+		let cancelled = false;
+		void (async () => {
+			try {
+				const res = await fetch(`/api/v1/media-calls.transcription.status?callId=${encodeURIComponent(callId)}`, {
+					headers: {
+						'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
+						'X-User-Id': localStorage.getItem('Meteor.userId') || '',
+					},
+				});
+				if (!res.ok || cancelled) return;
+				const data = await res.json();
+				setNotesAvailable(Boolean(data.available));
+				setNotesEnabled(Boolean(data.enabled));
+			} catch {
+				/* best-effort */
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, [callId]);
+
+	// React to transcription-state broadcasts from other participants.
+	useEffect(() => {
+		if (liveTranscriptionActive) setNotesEnabled(liveTranscriptionActive.enabled);
+	}, [liveTranscriptionActive]);
+
+	const onToggleTakeNotes = useCallback(async () => {
+		if (!callId || notesBusy) return;
+		setNotesBusy(true);
+		try {
+			const endpoint = notesEnabled ? '/api/v1/media-calls.transcription.stop' : '/api/v1/media-calls.transcription.start';
+			const res = await fetch(endpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
+					'X-User-Id': localStorage.getItem('Meteor.userId') || '',
+				},
+				body: JSON.stringify({ callId }),
+			});
+			if (res.ok) {
+				const next = !notesEnabled;
+				setNotesEnabled(next);
+				broadcastTranscriptionState?.(next);
+			}
+		} finally {
+			setNotesBusy(false);
+		}
+	}, [callId, notesEnabled, notesBusy, broadcastTranscriptionState]);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
@@ -477,6 +603,21 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 						<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
 						<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
 					</Box>
+					{notesAvailable && (
+						<Box
+							is='button'
+							type='button'
+							className={[takeNotesPillStyles, notesEnabled ? 'active' : null]}
+							onClick={onToggleTakeNotes}
+							disabled={notesBusy}
+							onMouseEnter={() => setNotesHover(true)}
+							onMouseLeave={() => setNotesHover(false)}
+							title={notesEnabled ? 'Stop taking notes' : 'Take notes'}
+						>
+							<Icon name='edit' size='x14' />
+							<Box is='span'>{notesEnabled ? (notesHover ? 'Stop taking notes' : 'Taking notes…') : 'Take notes'}</Box>
+						</Box>
+					)}
 					<Box
 						is='button'
 						type='button'

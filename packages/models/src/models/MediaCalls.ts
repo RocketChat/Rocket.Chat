@@ -302,4 +302,58 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	public async markGroupParticipantLeft(callId: string, userId: IUser['_id']): Promise<UpdateResult> {
 		return this.updateOne({ '_id': callId, 'participants.id': userId } as any, { $set: { 'participants.$.leftAt': new Date() } } as any);
 	}
+
+	/**
+	 * Toggle per-call transcription (take notes). When enabled, the agent's
+	 * finals are persisted and a summary is posted at end of call. Stopping
+	 * sets endedAt but does NOT clear the existing transcript entries —
+	 * consistent with recording: pressing stop doesn't delete what's already
+	 * captured.
+	 */
+	public async setTranscriptionEnabled(callId: string, enabled: boolean, byUserId?: string): Promise<UpdateResult> {
+		if (enabled) {
+			return this.updateOne(
+				{ _id: callId },
+				{
+					$set: {
+						transcription: {
+							enabled: true,
+							startedAt: new Date(),
+							...(byUserId && { startedBy: byUserId }),
+						},
+					},
+				},
+			);
+		}
+		return this.updateOne({ _id: callId }, { $set: { 'transcription.enabled': false, 'transcription.endedAt': new Date() } } as any);
+	}
+
+	/**
+	 * Append a finalized transcript entry to a call. Append-only. The agent
+	 * fires one of these per finalized utterance from Gemini Live; the array
+	 * is later read by the summary cron in chronological order.
+	 */
+	public async appendTranscriptEntry(
+		callId: string,
+		entry: { participantId: string; text: string; startedAt: Date; endedAt: Date },
+	): Promise<UpdateResult> {
+		return this.updateOne({ _id: callId }, { $push: { transcript: entry } as any });
+	}
+
+	/**
+	 * Persist post-call summary metadata. Set once the summary message has
+	 * been posted so retries don't double-post on subsequent cron passes.
+	 */
+	public async setSummaryById(callId: string, summary: { generatedAt: Date; messageId?: string }): Promise<UpdateResult> {
+		return this.updateOne({ _id: callId }, { $set: { summary } });
+	}
+
+	public async findEndedCallsAwaitingSummary(): Promise<IMediaCall[]> {
+		return this.find({
+			kind: 'group',
+			ended: true,
+			summary: { $exists: false },
+			transcript: { $exists: true, $not: { $size: 0 } },
+		} as any).toArray();
+	}
 }

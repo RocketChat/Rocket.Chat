@@ -8,8 +8,15 @@ const logger = new Logger('LiveKit/MediaCall/Poller');
 
 const POLL_INTERVAL_MS = 10_000; // 10s — LK egress state is slow-moving
 const MAX_POLL_DURATION_MS = 4 * 60 * 60 * 1000; // 4h hard cap; LK calls themselves expire at 8h
+// If LK reports "no info" for this many consecutive ticks (~1 minute), give
+// up — the egress object has expired from LK's retention or never existed
+// (e.g. credentials switched between dev runs). Without this cap a stale
+// recording.egressId on a call doc would re-spawn the poller on every
+// server restart and emit 404 errors forever.
+const MAX_CONSECUTIVE_MISSES = 6;
 
 const active = new Map<string, NodeJS.Timeout>();
+const missesByEgressId = new Map<string, number>();
 
 function clearPoll(egressId: string) {
 	const handle = active.get(egressId);
@@ -17,6 +24,7 @@ function clearPoll(egressId: string) {
 		clearInterval(handle);
 		active.delete(egressId);
 	}
+	missesByEgressId.delete(egressId);
 }
 
 /**
@@ -52,6 +60,32 @@ export function startRecordingPoll(callId: string, egressId: string): void {
 			}
 			const info = await listEgress(egressId);
 			logger.debug({ msg: 'poll tick', callId, egressId, status: info?.status, elapsedMs: elapsed });
+			if (!info) {
+				const misses = (missesByEgressId.get(egressId) ?? 0) + 1;
+				missesByEgressId.set(egressId, misses);
+				if (misses >= MAX_CONSECUTIVE_MISSES) {
+					// LK consistently doesn't know about this egress. Mark the
+					// recording as abandoned so we don't keep polling on
+					// future restarts. Setting `messageSent: true` is the
+					// right cue: it means "this recording is done from our
+					// perspective, no further action needed" — same flag
+					// the success path uses.
+					logger.warn({ msg: 'recording poll abandoned (egress not found)', callId, egressId, misses });
+					await MediaCallsModel.updateOne(
+						{ _id: callId },
+						{
+							$set: {
+								'recording.endedAt': new Date(),
+								'recording.messageSent': true,
+								'recording.pollAbandonedReason': 'egress-not-found',
+							} as any,
+						},
+					);
+					clearPoll(egressId);
+				}
+				return;
+			}
+			missesByEgressId.delete(egressId);
 			const outcome = await finalizeRecordingFromEgress(callId, info);
 			if (outcome !== 'still-running') {
 				logger.info({ msg: 'poll done', callId, egressId, outcome });

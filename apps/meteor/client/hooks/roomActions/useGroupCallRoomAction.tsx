@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import type { RoomToolboxActionConfig, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useStream } from '@rocket.chat/ui-contexts';
 import { useMediaCallInstance, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
@@ -80,15 +80,28 @@ export const useGroupCallRoomAction = (): RoomToolboxActionConfig | undefined =>
 	const roomId = room?._id;
 	const eligible = room ? supportsGroupCalls(room) : false;
 
-	// Poll the server for active calls in this room. React Query dedupes
-	// across components, so the activity component can use the same query
-	// without a parallel provider.
+	// Reactive: subscribe to the `notify-room` streamer for this room so
+	// the server can push call create/end events instead of us polling
+	// every 5s. The query still has a long fallback interval (60s) in case
+	// the streamer ever drops a message; with the streamer working that
+	// fallback never fires in practice. React Query dedupes across
+	// components so the activity component can read the same data.
+	const queryClient = useQueryClient();
 	const { data: activeCall } = useQuery({
 		queryKey: ['media-calls.activeInRoom', roomId],
 		queryFn: () => (roomId ? fetchActiveCall(roomId) : Promise.resolve(null)),
 		enabled: Boolean(roomId && eligible && livekitEnabled),
-		refetchInterval: 5000,
+		refetchInterval: 60_000,
+		refetchOnWindowFocus: true,
 	});
+
+	const subscribeToNotifyRoom = useStream('notify-room');
+	useEffect(() => {
+		if (!roomId || !eligible || !livekitEnabled) return undefined;
+		return subscribeToNotifyRoom(`${roomId}/media-call-state` as any, () => {
+			void queryClient.invalidateQueries({ queryKey: ['media-calls.activeInRoom', roomId] });
+		});
+	}, [roomId, eligible, livekitEnabled, subscribeToNotifyRoom, queryClient]);
 
 	// "In a call right now in this room?" — derived from session's main call.
 	// usePeekMediaSessionState returns 'ongoing' when there's an active call;
@@ -129,9 +142,14 @@ export const useGroupCallRoomAction = (): RoomToolboxActionConfig | undefined =>
 				alert(`Could not start/join: ${(err as Error).message}`);
 			} finally {
 				setBusy(false);
+				// Refresh local state immediately after a start/join/leave.
+				// The server-side `media-call-state` event covers other
+				// participants but the local invalidation skips the network
+				// round-trip for the user who took the action.
+				void queryClient.invalidateQueries({ queryKey: ['media-calls.activeInRoom', roomId] });
 			}
 		})();
-	}, [session, roomId, busy, inCallHere, activeCall]);
+	}, [session, roomId, busy, inCallHere, activeCall, queryClient]);
 
 	return useMemo<RoomToolboxActionConfig | undefined>(() => {
 		if (!eligible || !livekitEnabled) return undefined;

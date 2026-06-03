@@ -10,3 +10,4 @@ import './audit';
 import './abac';
 import './mediaCallsLiveKit';
 import './mediaCallsGroup';
+import './mediaCallsTranscript';

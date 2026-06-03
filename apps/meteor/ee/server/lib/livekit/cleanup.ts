@@ -4,6 +4,8 @@ import { MediaCalls as MediaCallsModel } from '@rocket.chat/models';
 
 import { getLiveKitConfig, isLiveKitFullyConfigured } from './config';
 import { countRoomParticipants } from './roomService';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
+import { maybeGenerateSummary } from '../livekit-agent/summary';
 
 const logger = new Logger('LiveKit/Cleanup');
 
@@ -42,6 +44,19 @@ export async function reconcileGroupCalls(): Promise<void> {
 
 			logger.info({ msg: 'ending stuck group call (no LK participants)', callId: call._id, rid: call.rid });
 			await MediaCallsModel.hangupCallById(call._id, { reason: 'reconciler-no-participants' });
+			// Notify the room so any subscribed client refreshes its "active
+			// call" state without waiting for a polling tick.
+			if (call.rid) {
+				try {
+					(notifications.notifyRoom as any)(call.rid, 'media-call-state', { action: 'ended', callId: call._id });
+				} catch {
+					/* notify is best-effort */
+				}
+			}
+			// Best-effort summary generation. maybeGenerateSummary is idempotent
+			// (checks feature flag, transcript presence, and !summary.messageId
+			// before doing anything) so it's safe to call unconditionally.
+			void maybeGenerateSummary(call._id).catch((err) => logger.warn({ msg: 'summary post-cleanup failed', err, callId: call._id }));
 		} catch (err) {
 			logger.warn({ msg: 'reconciliation failed for call', err, callId: call._id });
 		}

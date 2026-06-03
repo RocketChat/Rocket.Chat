@@ -39,4 +39,11 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		participant: { type: string; id: string; contractId?: string; displayName?: string; username?: string },
 	): Promise<UpdateResult>;
 	markGroupParticipantLeft(callId: string, userId: IUser['_id']): Promise<UpdateResult>;
+	setTranscriptionEnabled(callId: string, enabled: boolean, byUserId?: string): Promise<UpdateResult>;
+	appendTranscriptEntry(
+		callId: string,
+		entry: { participantId: string; text: string; startedAt: Date; endedAt: Date },
+	): Promise<UpdateResult>;
+	setSummaryById(callId: string, summary: { generatedAt: Date; messageId?: string }): Promise<UpdateResult>;
+	findEndedCallsAwaitingSummary(): Promise<IMediaCall[]>;
 }

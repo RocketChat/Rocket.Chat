@@ -1,0 +1,257 @@
+/* eslint-disable */
+/**
+ * LiveKit transcription worker — runs as a subprocess of the Meteor server.
+ *
+ * Identical responsibilities to the previous standalone apps/livekit-agent
+ * (auto-join every room, stream PCM into Gemini Live per remote speaker,
+ * publish transcripts back on the LK data channel for live captions), plus
+ * one new responsibility: POST every final transcript to the Meteor parent
+ * via HTTP so the post-call summary has a persisted record to work from.
+ *
+ * Lives in private/ so Meteor's bundler ignores it (private/ is treated as
+ * a static-assets directory). The supervisor at
+ * ee/server/lib/livekit-agent/supervisor.ts forks this file with all the
+ * settings-derived values as env vars.
+ *
+ * Env (all set by the supervisor):
+ *   LIVEKIT_URL                 wss URL
+ *   LIVEKIT_API_KEY             LK API key (the worker registers as a worker)
+ *   LIVEKIT_API_SECRET          LK API secret
+ *   GEMINI_API_KEY              Gemini API key
+ *   GEMINI_LIVE_MODEL           optional model override
+ *   STT_LANGUAGE_HINT           optional BCP-47 hint, e.g. "pt-BR"
+ *   AGENT_IDENTITY              optional, default "transcription-agent"
+ *   ROOM_NAME_PREFIX            optional filter, default "mc-"
+ *   METEOR_BASE_URL             where to POST persistence requests
+ *   METEOR_SHARED_SECRET        bearer token for the persistence endpoint
+ */
+
+import { GoogleGenAI, Modality } from '@google/genai';
+import { AutoSubscribe, WorkerOptions, cli, defineAgent } from '@livekit/agents';
+import { AudioStream, TrackKind } from '@livekit/rtc-node';
+
+const log = (level, msg, extra) => {
+	console.log(JSON.stringify({ ts: new Date().toISOString(), level, msg, ...extra }));
+};
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY) {
+	throw new Error('GEMINI_API_KEY is required');
+}
+
+const GEMINI_LIVE_MODEL = process.env.GEMINI_LIVE_MODEL || 'gemini-3.1-flash-live-preview';
+const LANGUAGE_HINT = process.env.STT_LANGUAGE_HINT || '';
+const AGENT_IDENTITY = process.env.AGENT_IDENTITY || 'transcription-agent';
+const ROOM_NAME_PREFIX = process.env.ROOM_NAME_PREFIX ?? 'mc-';
+const METEOR_BASE_URL = process.env.METEOR_BASE_URL || '';
+const METEOR_SHARED_SECRET = process.env.METEOR_SHARED_SECRET || '';
+
+const TARGET_SAMPLE_RATE = 16000;
+
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+/**
+ * Best-effort POST of a finalized utterance to Meteor for persistence. Failures
+ * are logged but never break the live caption stream — the summary is a nice
+ * to have, captions are load-bearing.
+ */
+const postFinalTranscript = async (entry) => {
+	if (!METEOR_BASE_URL || !METEOR_SHARED_SECRET) return;
+	try {
+		const res = await fetch(`${METEOR_BASE_URL.replace(/\/$/, '')}/api/v1/media-calls.transcript.append`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer lkagent:${METEOR_SHARED_SECRET}`,
+			},
+			body: JSON.stringify(entry),
+		});
+		if (!res.ok) {
+			log('warn', 'transcript persist failed', { status: res.status, body: await res.text().catch(() => '') });
+		}
+	} catch (err) {
+		log('warn', 'transcript persist threw', { err: String(err) });
+	}
+};
+
+async function openLiveSession(callbacks) {
+	const systemInstruction = LANGUAGE_HINT
+		? `You only transcribe input audio in ${LANGUAGE_HINT}. Do not respond, do not summarise, do not analyse.`
+		: 'You only transcribe input audio. Do not respond, do not summarise, do not analyse.';
+
+	// Rolling buffer for the current turn's inputTranscription text. Gemini
+	// Live sends multiple inputTranscription updates per turn (each contains
+	// the full rolling transcription so far), then a turnComplete/
+	// generationComplete to mark end-of-turn. We treat each update as
+	// "interim" and the buffer-at-turnComplete as "final".
+	let pendingTranscript = '';
+
+	log('info', 'opening live session', { model: GEMINI_LIVE_MODEL });
+	const session = await ai.live.connect({
+		model: GEMINI_LIVE_MODEL,
+		config: {
+			responseModalities: [Modality.AUDIO],
+			inputAudioTranscription: {},
+			systemInstruction: { parts: [{ text: systemInstruction }] },
+			realtimeInputConfig: {
+				automaticActivityDetection: {
+					silenceDurationMs: 600,
+					prefixPaddingMs: 200,
+				},
+			},
+		},
+		callbacks: {
+			onopen: () => log('info', 'live session open', { model: GEMINI_LIVE_MODEL }),
+			onmessage: (msg) => {
+				// (Diagnostic log removed — was useful when discovering the
+				// shape but the model also emits dozens of `modelTurn`
+				// audio chunks per turn that pollute the log.)
+				// Each Gemini Live "turn" produces:
+				//   1. one or more {serverContent: {inputTranscription: {text}}}
+				//      with the rolling transcription of what the speaker said,
+				//      WITHOUT any isFinal flag,
+				//   2. a {serverContent: {turnComplete: true}} (or generationComplete)
+				//      that marks the end of the turn.
+				// We treat inputTranscription as interim while it streams and
+				// emit a final on turnComplete using the last text we saw. The
+				// API never sets `finished`/`isFinal`/`is_final` on the native-
+				// audio model, so checking for those is futile.
+				const sc = msg?.serverContent;
+				const tx = sc?.inputTranscription;
+				if (tx?.text) {
+					pendingTranscript = tx.text;
+					callbacks.onTranscript(pendingTranscript, false);
+				}
+				if ((sc?.turnComplete || sc?.generationComplete) && pendingTranscript) {
+					log('info', 'transcript finalized', { text: pendingTranscript });
+					callbacks.onTranscript(pendingTranscript, true);
+					pendingTranscript = '';
+				}
+			},
+			onerror: (err) => {
+				log('warn', 'live session error', {
+					message: err?.message ?? String(err),
+					code: err?.code,
+					reason: err?.reason,
+				});
+			},
+			onclose: (ev) => {
+				log('info', 'live session closed', { code: ev?.code, reason: ev?.reason, wasClean: ev?.wasClean });
+				callbacks.onClose();
+			},
+		},
+	});
+	return session;
+}
+
+async function transcribeTrack(ctx, track, participant) {
+	const identity = participant.identity;
+	// Room name convention: `mc-<callId>`. If a room joined doesn't follow
+	// the pattern we skip persistence but still stream captions on the
+	// data channel — useful for non-Rocket.Chat LK projects sharing this
+	// agent worker.
+	const roomName = ctx.room.name || '';
+	const callId = roomName.startsWith(ROOM_NAME_PREFIX) ? roomName.slice(ROOM_NAME_PREFIX.length) : null;
+	log('info', 'starting transcription', { identity, callId, trackSid: track.sid });
+
+	let closed = false;
+	// Each utterance is a "session" of incremental transcripts followed by
+	// a finalized one. We capture the time the first interim arrives so the
+	// persisted entry has an accurate startedAt — wall clock from when the
+	// speaker started, not the moment of finalization.
+	let utteranceStartedAt = null;
+
+	const session = await openLiveSession({
+		onTranscript: (text, isFinal) => {
+			const now = new Date();
+			if (!utteranceStartedAt) utteranceStartedAt = now;
+
+			const payload = JSON.stringify({
+				type: 'transcript',
+				participantId: identity,
+				text,
+				isFinal,
+				ts: now.getTime(),
+			});
+			void ctx.room.localParticipant
+				?.publishData(new TextEncoder().encode(payload), { reliable: false })
+				.catch((err) => log('warn', 'publishData failed', { err: String(err) }));
+
+			if (isFinal) {
+				if (callId) {
+					void postFinalTranscript({
+						callId,
+						participantId: identity,
+						text,
+						startedAt: utteranceStartedAt.toISOString(),
+						endedAt: now.toISOString(),
+					});
+				}
+				utteranceStartedAt = null;
+			}
+		},
+		onClose: () => {
+			closed = true;
+		},
+	});
+
+	const audioStream = new AudioStream(track, { sampleRate: TARGET_SAMPLE_RATE, numChannels: 1 });
+	let framesSent = 0;
+	// Periodic heartbeat — light enough to tail even on busy calls, and the
+	// only way to tell "audio is actually flowing" vs "session is silent but
+	// open" without hooking up real telemetry. 30s cadence keeps it quiet.
+	const frameLog = setInterval(() => {
+		log('info', 'audio frames pumped', { identity, framesSent });
+	}, 30000);
+	try {
+		for await (const frame of audioStream) {
+			if (closed) break;
+			const data = Buffer.from(frame.data.buffer, frame.data.byteOffset, frame.data.byteLength);
+			session.sendRealtimeInput({
+				audio: { data: data.toString('base64'), mimeType: `audio/pcm;rate=${TARGET_SAMPLE_RATE}` },
+			});
+			framesSent += 1;
+		}
+	} catch (err) {
+		log('warn', 'audio pump ended', { identity, err: String(err) });
+	} finally {
+		clearInterval(frameLog);
+		try {
+			await session.close();
+		} catch (err) {
+			log('warn', 'session close failed', { identity, err: String(err) });
+		}
+	}
+}
+
+export default defineAgent({
+	entry: async (ctx) => {
+		log('info', 'job received');
+		await ctx.connect(undefined, AutoSubscribe.AUDIO_ONLY);
+		log('info', 'agent connected', { room: ctx.room.name, model: GEMINI_LIVE_MODEL });
+
+		if (ROOM_NAME_PREFIX && !ctx.room.name?.startsWith(ROOM_NAME_PREFIX)) {
+			log('info', 'skipping non-matching room', { room: ctx.room.name, prefix: ROOM_NAME_PREFIX });
+			try {
+				await ctx.room.disconnect();
+			} catch {
+				/* already disconnecting */
+			}
+			return;
+		}
+
+		ctx.room.on('trackSubscribed', (track, _publication, participant) => {
+			log('info', 'trackSubscribed', { kind: track.kind, identity: participant.identity });
+			if (track.kind !== TrackKind.KIND_AUDIO) return;
+			void transcribeTrack(ctx, track, participant);
+		});
+	},
+});
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+	cli.runApp(
+		new WorkerOptions({
+			agent: new URL(import.meta.url).pathname,
+		}),
+	);
+}
