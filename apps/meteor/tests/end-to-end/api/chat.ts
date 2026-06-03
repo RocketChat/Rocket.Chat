@@ -2614,6 +2614,23 @@ describe('[Chat]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return an empty array of messages with status 200 if the regexp is invalid', (done) => {
+			void request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/*test/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/chat.react]', () => {
