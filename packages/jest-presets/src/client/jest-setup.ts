@@ -46,29 +46,31 @@ Object.defineProperty(global.navigator, 'serviceWorker', {
 	},
 });
 
-globalThis.IntersectionObserver = class IntersectionObserver {
-	root = null;
+globalThis.IntersectionObserver = class implements IntersectionObserver {
+	readonly root: Document | Element | null = null;
 
-	rootMargin = '';
+	readonly rootMargin: string = '';
 
-	thresholds = [];
+	readonly scrollMargin: string = '';
 
-	disconnect() {
-		return null;
+	readonly thresholds: ReadonlyArray<number> = [];
+
+	disconnect(): void {
+		// no-op mock
 	}
 
-	observe() {
-		return null;
+	observe(): void {
+		// no-op mock
 	}
 
-	takeRecords() {
+	takeRecords(): IntersectionObserverEntry[] {
 		return [];
 	}
 
-	unobserve() {
-		return null;
+	unobserve(): void {
+		// no-op mock
 	}
-} as any;
+};
 
 globalThis.TextEncoder = TextEncoder as any;
 globalThis.TextDecoder = TextDecoder as any;
