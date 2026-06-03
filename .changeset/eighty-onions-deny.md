@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes error handling on message search
+Fixes error handling when using invalid regular expressions on message search
