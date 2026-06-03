@@ -13,7 +13,7 @@ import { useChat } from '../../room/contexts/ChatContext';
 type VideoMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	reference: RefObject<HTMLElement>;
+	reference: RefObject<HTMLElement | null>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const videoContainerClass = css`
@@ -114,7 +114,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	}, [dispatchToastMessage, handleCancel, t]);
 
 	return (
-		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
+		<PositionAnimated visible='visible' anchor={reference as RefObject<HTMLElement>} placement='top-end'>
 			<Box role='dialog' aria-label={t('Video_record')} bg='light' padding={4} borderRadius={4} elevation='2'>
 				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />

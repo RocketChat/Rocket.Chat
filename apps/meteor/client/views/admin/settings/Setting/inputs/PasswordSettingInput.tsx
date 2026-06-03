@@ -1,5 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
-import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { EventHandler, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -19,7 +19,7 @@ function PasswordSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: PasswordSettingInputProps): ReactElement {
+}: PasswordSettingInputProps) {
 	const handleChange: EventHandler<SyntheticEvent<HTMLInputElement>> = (event) => {
 		onChangeValue?.(event.currentTarget.value);
 	};

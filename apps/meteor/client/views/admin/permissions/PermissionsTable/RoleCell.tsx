@@ -3,7 +3,6 @@ import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +18,7 @@ type RoleCellProps = {
 	grantedRoles: IRole['_id'][];
 };
 
-const RoleCell = ({ _id, name, description, onChange, permissionId, permissionName, grantedRoles = [] }: RoleCellProps): ReactElement => {
+const RoleCell = ({ _id, name, description, onChange, permissionId, permissionName, grantedRoles = [] }: RoleCellProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const [granted, setGranted] = useState(() => !!grantedRoles.includes(_id));

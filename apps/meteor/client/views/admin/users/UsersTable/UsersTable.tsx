@@ -12,7 +12,7 @@ import {
 import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
+import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -50,7 +50,7 @@ const UsersTable = ({
 	paginationData,
 	sortData,
 	isSeatsCapExceeded,
-}: UsersTableProps): ReactElement | null => {
+}: UsersTableProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const breakpoints = useBreakpoints();

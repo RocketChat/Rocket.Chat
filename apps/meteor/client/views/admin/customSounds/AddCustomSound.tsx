@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGro
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, type UploadResult } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { ReactElement, FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,7 @@ type CustomSoundCreateResult = UploadResult & {
 	};
 };
 
-const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

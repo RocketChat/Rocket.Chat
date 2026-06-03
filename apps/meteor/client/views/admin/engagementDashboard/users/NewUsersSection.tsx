@@ -2,7 +2,6 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { differenceInDays, addDays, format } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +18,7 @@ type NewUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
+const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 

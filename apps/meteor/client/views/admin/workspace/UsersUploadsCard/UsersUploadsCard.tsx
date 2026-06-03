@@ -2,7 +2,6 @@ import type { IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ type UsersUploadsCardProps = {
 	statistics: IStats;
 };
 
-const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement => {
+const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	const { t } = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
 

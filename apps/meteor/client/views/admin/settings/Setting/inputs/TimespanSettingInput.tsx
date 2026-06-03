@@ -1,5 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
-import type { FormEventHandler, Key, ReactElement } from 'react';
+import type { FormEventHandler, Key } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,7 +49,7 @@ function TimespanSettingInput({
 	hasResetButton,
 	onResetButtonClick,
 	packageValue,
-}: TimespanSettingInputProps): ReactElement {
+}: TimespanSettingInputProps) {
 	const { t, i18n } = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value)));

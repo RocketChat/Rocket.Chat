@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ type AudioMessageRecorderProps = {
 	isMicrophoneDenied?: boolean;
 };
 
-const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderProps) => {
 	const { t } = useTranslation();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');

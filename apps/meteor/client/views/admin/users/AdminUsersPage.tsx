@@ -16,7 +16,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
@@ -44,7 +43,7 @@ export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 
 export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
 
-const AdminUsersPage = (): ReactElement => {
+const AdminUsersPage = () => {
 	const t = useTranslation();
 
 	const seatsCap = useSeatsCap();

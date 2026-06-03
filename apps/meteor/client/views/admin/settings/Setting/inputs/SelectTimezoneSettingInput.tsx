@@ -1,6 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { canonicalizeTimezone } from '@rocket.chat/tools';
-import type { ReactElement } from 'react';
 
 import { useTimezoneNameList } from '../../../../../hooks/useTimezoneNameList';
 import ResetSettingButton from '../ResetSettingButton';
@@ -21,7 +20,7 @@ function SelectTimezoneSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: SelectTimezoneSettingInputProps): ReactElement {
+}: SelectTimezoneSettingInputProps) {
 	const timezoneNames = useTimezoneNameList();
 
 	const handleChange = (value: string): void => {

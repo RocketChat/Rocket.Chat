@@ -1,5 +1,5 @@
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import AccountSidebar from './AccountSidebar';
@@ -10,7 +10,7 @@ type AccountRouterProps = {
 	children?: ReactNode;
 };
 
-const AccountRouter = ({ children }: AccountRouterProps): ReactElement => {
+const AccountRouter = ({ children }: AccountRouterProps) => {
 	const router = useRouter();
 
 	useEffect(

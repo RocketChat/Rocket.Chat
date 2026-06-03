@@ -1,7 +1,6 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminUserForm from './AdminUserForm';
@@ -16,7 +15,7 @@ type AdminUserFormWithDataProps = {
 	roleError: Error | null;
 };
 
-const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
+const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps) => {
 	const { t } = useTranslation();
 	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid });
 

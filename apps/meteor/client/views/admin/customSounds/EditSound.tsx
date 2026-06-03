@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldR
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,7 @@ type EditSoundProps = {
 	};
 };
 
-function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
+function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();

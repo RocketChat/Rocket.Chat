@@ -1,5 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
-import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { EventHandler, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -26,7 +26,7 @@ function StringSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: StringSettingInputProps): ReactElement {
+}: StringSettingInputProps) {
 	const handleChange: EventHandler<SyntheticEvent<HTMLInputElement>> = (event) => {
 		onChangeValue?.(event.currentTarget.value);
 	};

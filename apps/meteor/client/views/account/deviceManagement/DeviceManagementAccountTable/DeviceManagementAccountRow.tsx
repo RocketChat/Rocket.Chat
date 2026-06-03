@@ -1,7 +1,6 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
@@ -16,7 +15,7 @@ type DevicesRowProps = {
 	loginAt: string;
 };
 
-const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', deviceOSName, loginAt }: DevicesRowProps): ReactElement => {
+const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', deviceOSName, loginAt }: DevicesRowProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');

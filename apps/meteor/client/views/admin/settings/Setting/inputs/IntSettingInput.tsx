@@ -1,5 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement } from 'react';
+import type { FormEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -21,7 +21,7 @@ function IntSettingInput({
 	onChangeValue,
 	hasResetButton,
 	onResetButtonClick,
-}: IntSettingInputProps): ReactElement {
+}: IntSettingInputProps) {
 	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
 		onChangeValue?.(parseInt(event.currentTarget.value, 10));
 	};

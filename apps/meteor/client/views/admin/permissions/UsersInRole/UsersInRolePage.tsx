@@ -4,7 +4,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo, type ReactElement } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ type UsersInRolePayload = {
 	users: string[];
 };
 
-const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
+const UsersInRolePage = ({ role }: { role: IRole }) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();

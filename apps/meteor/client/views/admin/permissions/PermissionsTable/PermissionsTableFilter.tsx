@@ -1,10 +1,10 @@
 import { TextInput } from '@rocket.chat/fuselage';
 import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { FormEvent, ReactElement } from 'react';
+import type { FormEvent } from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }): ReactElement => {
+const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 500);

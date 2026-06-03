@@ -1,6 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Editor, EditorFromTextArea } from 'codemirror';
-import type { ReactElement } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
@@ -42,7 +41,7 @@ function CodeMirror({
 	defaultValue,
 	onChange,
 	...props
-}: CodeMirrorProps): ReactElement {
+}: CodeMirrorProps) {
 	const [value, setValue] = useState(valueProp || defaultValue);
 	const handleChange = useEffectEvent(onChange);
 

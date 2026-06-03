@@ -3,7 +3,6 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +13,7 @@ type UsersInRoleTableRowProps = {
 	onRemove: (username: IUserInRole['username']) => void;
 };
 
-const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): ReactElement => {
+const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps) => {
 	const { t } = useTranslation();
 	const { _id, name, username, avatarETag } = user;
 	const email = getUserEmailAddress(user);

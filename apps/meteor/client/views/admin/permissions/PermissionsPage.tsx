@@ -2,7 +2,6 @@ import { Margins, Tabs, Button } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,7 @@ import PermissionsContextBar from './PermissionsContextBar';
 import PermissionsTable from './PermissionsTable';
 import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
 
-const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement => {
+const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const canViewPermission = usePermission('access-permissions');

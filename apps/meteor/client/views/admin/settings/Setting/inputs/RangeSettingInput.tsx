@@ -1,5 +1,4 @@
 import { Slider, Field, FieldLabel, FieldRow, FieldHint } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -23,7 +22,7 @@ function RangeSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: RangeSettingInputProps): ReactElement {
+}: RangeSettingInputProps) {
 	return (
 		<Field>
 			<FieldRow>
