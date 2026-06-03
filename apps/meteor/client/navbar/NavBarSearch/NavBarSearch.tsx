@@ -4,7 +4,7 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
@@ -53,6 +53,8 @@ const NavBarSearch = () => {
 		() => (hasIntelligentSearchLicense ? buildAppliedFilterChips(appliedFilters) : []),
 		[appliedFilters, hasIntelligentSearchLicense],
 	);
+	const chipContainerRef = useRef<HTMLElement>(null);
+	const [chipContainerWidth, setChipContainerWidth] = useState(0);
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
@@ -62,6 +64,22 @@ const NavBarSearch = () => {
 	const state = useOverlayTriggerState({});
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
 	delete triggerProps.onPress;
+
+	useLayoutEffect(() => {
+		const element = chipContainerRef.current;
+		if (!element || appliedFilterChips.length === 0) {
+			setChipContainerWidth(0);
+			return;
+		}
+
+		const updateWidth = (): void => setChipContainerWidth(Math.ceil(element.getBoundingClientRect().width));
+		updateWidth();
+
+		const resizeObserver = new ResizeObserver(updateWidth);
+		resizeObserver.observe(element);
+
+		return (): void => resizeObserver.disconnect();
+	}, [appliedFilterChips]);
 
 	const handleKeyDown = useSearchInputNavigation(state);
 	const handleFocus = useSearchFocus(state);
@@ -164,17 +182,25 @@ const NavBarSearch = () => {
 			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} mi={8} position='relative'>
 				{appliedFilterChips.length > 0 && (
 					<Box
+						ref={chipContainerRef}
 						position='absolute'
 						display='flex'
 						alignItems='center'
 						zIndex={1}
 						insetBlockStart='50%'
 						insetInlineStart={8}
-						style={{ gap: 4, transform: 'translateY(-50%)', maxWidth: 300, overflow: 'hidden' }}
+						style={{
+							gap: 4,
+							transform: 'translateY(-50%)',
+							maxWidth: 'min(55%, 360px)',
+							height: 24,
+							overflow: 'hidden',
+							pointerEvents: 'auto',
+						}}
 					>
 						{appliedFilterChips.map((filter) => (
 							<Chip key={filter.key} height='x20' value={filter.label} onClick={() => handleRemoveFilter(filter.key)}>
-								<Box is='span' style={{ maxWidth: 128, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+								<Box is='span' style={{ maxWidth: 132, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
 									{filter.label}
 								</Box>
 							</Chip>
@@ -194,7 +220,7 @@ const NavBarSearch = () => {
 					aria-autocomplete='list'
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
-					style={appliedFilterChips.length > 0 ? { paddingInlineStart: 300 } : undefined}
+					style={chipContainerWidth > 0 ? { paddingInlineStart: chipContainerWidth + 16 } : undefined}
 					addon={
 						<Box display='flex' alignItems='center'>
 							{isDirty ? (

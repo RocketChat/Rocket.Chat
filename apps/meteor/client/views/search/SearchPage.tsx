@@ -74,9 +74,12 @@ const SourceResult = ({ item, index }: { item: IntelligentResult; index: number 
 				{item.u?.username && <Box>@{item.u.username}</Box>}
 				{item.ts && <Box>{formatMessageTime(item.ts)}</Box>}
 			</Box>
-			<Box fontScale='p2' style={{ lineHeight: 1.45, wordBreak: 'break-word' }}>
-				{item.text || t('Intelligent_Search_Result')}
-			</Box>
+			<MarkdownText
+				content={item.text || t('Intelligent_Search_Result')}
+				parseEmoji
+				fontScale='p2'
+				style={{ lineHeight: 1.45, wordBreak: 'break-word' }}
+			/>
 		</Box>
 	);
 };
@@ -231,25 +234,38 @@ const SearchPage = (): ReactElement => {
 	});
 
 	const intelligent = useMemo(() => (result.data?.intelligent as IntelligentResult[] | undefined) ?? [], [result.data?.intelligent]);
+	const answerMessages = useMemo(
+		() =>
+			intelligent.slice(0, 12).map((item) => ({
+				_id: item._id,
+				text: item.text,
+				username: item.u?.username,
+				roomName: item.room?.fname || item.room?.name,
+				ts: item.ts ? new Date(item.ts).toISOString() : undefined,
+				score: item.score,
+			})),
+		[intelligent],
+	);
+	const answerKey = useMemo(
+		() =>
+			JSON.stringify({
+				query: debouncedQuery,
+				messages: answerMessages.map(({ _id, text, username, roomName, ts, score }) => ({ _id, text, username, roomName, ts, score })),
+			}),
+		[answerMessages, debouncedQuery],
+	);
 	const answerMutation = useMutation({
 		mutationFn: () =>
 			generateAnswer({
 				query: debouncedQuery,
-				messages: intelligent.slice(0, 12).map((item) => ({
-					_id: item._id,
-					text: item.text,
-					username: item.u?.username,
-					roomName: item.room?.fname || item.room?.name,
-					ts: item.ts ? new Date(item.ts).toISOString() : undefined,
-					score: item.score,
-				})),
+				messages: answerMessages,
 			}),
 	});
 
 	useEffect(() => {
 		answerMutation.reset();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [debouncedQuery, intelligentCount]);
+	}, [answerKey]);
 
 	const canGenerateAnswer = Boolean(result.data?.meta.answerGenerationConfigured && debouncedQuery && intelligent.length > 0);
 	const answerEmptyReason = useMemo(() => {
