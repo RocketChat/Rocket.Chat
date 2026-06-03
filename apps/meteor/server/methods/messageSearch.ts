@@ -9,6 +9,7 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { SystemLogger } from '../lib/logger/system';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
 
 declare module '@rocket.chat/ddp-client' {
@@ -75,15 +76,24 @@ export const messageSearch = async function (
 		};
 	}
 
-	return {
-		message: {
-			docs: await Messages.find(query, {
-				// @ts-expect-error col.s.db is not typed
-				readPreference: readSecondaryPreferred(Messages.col.s.db),
-				...options,
-			}).toArray(),
-		},
-	};
+	try {
+		return {
+			message: {
+				docs: await Messages.find(query, {
+					// @ts-expect-error col.s.db is not typed
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			},
+		};
+	} catch (error: unknown) {
+		SystemLogger.error({ msg: 'Error while finding messages', error });
+		return {
+			message: {
+				docs: [],
+			},
+		};
+	}
 };
 
 Meteor.methods<ServerMethods>({
