@@ -119,7 +119,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 					)}
 					{items.filterSuggestions.map((item) => (
 						<SidebarV2Item key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item.value)}>
-							<SidebarV2ItemIcon icon={<Icon name='sort' size='x16' />} />
+							<SidebarV2ItemIcon icon={<Icon name={item.icon} size='x16' />} />
 							<SidebarV2ItemTitle>{item.title}</SidebarV2ItemTitle>
 							<Box color='hint' fontScale='c1' flexShrink={0}>
 								{item.description}

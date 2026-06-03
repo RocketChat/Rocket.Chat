@@ -50,6 +50,7 @@ export type SearchFilterSuggestion = {
 	title: string;
 	description: string;
 	value: string;
+	icon: 'hash' | 'user' | 'calendar';
 };
 
 export type SearchFilterChip = {
@@ -263,6 +264,7 @@ const getDateFilterSuggestions = (filterText: string, activeFilter: ActiveFilter
 		title: `${key}:${value}`,
 		description: label,
 		value: applyFilterToken(filterText, activeFilter, key, value),
+		icon: 'calendar',
 	}));
 };
 
@@ -281,6 +283,7 @@ const buildFilterSuggestions = (
 			title: `#${room.fname || room.name}`,
 			description: 'Search in this room',
 			value: applyFilterToken(filterText, activeFilter, 'in', room.name || room.fname || ''),
+			icon: 'hash',
 		}));
 	}
 
@@ -291,6 +294,7 @@ const buildFilterSuggestions = (
 				title: activeFilter.value ? `from:${activeFilter.value.replace(/^@/, '')}` : 'from:username',
 				description: 'Search messages from this username',
 				value: applyFilterToken(filterText, activeFilter, 'from', activeFilter.value.replace(/^@/, '')),
+				icon: 'user',
 			},
 		];
 	}
@@ -316,6 +320,7 @@ const buildUserFilterSuggestions = (
 		title: `@${user.username}`,
 		description: user.name || 'Search messages from this user',
 		value: applyFilterToken(filterText, activeFilter, 'from', user.username),
+		icon: 'user',
 	}));
 };
 
