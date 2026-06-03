@@ -8,7 +8,7 @@ export const useSingleFileInput = (
 	maxSize?: number,
 	onError?: () => void,
 ): [onClick: () => void, reset: () => void] => {
-	const ref = useRef<HTMLInputElement>();
+	const ref = useRef<HTMLInputElement>(undefined);
 
 	useEffect(() => {
 		const fileInput = document.createElement('input');

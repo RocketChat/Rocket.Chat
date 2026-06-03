@@ -1,12 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import GazzodownText from '../components/GazzodownText';
 
-export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>): ReactElement | null {
+export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>) {
 	if (message.msg) {
 		message.msg = filterMarkdown(message.msg);
 		delete message.mentions;
