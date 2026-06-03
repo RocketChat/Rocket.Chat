@@ -1,7 +1,7 @@
 import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +17,7 @@ type TagsProps = {
 	department?: string;
 };
 
-const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
+const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps) => {
 	const { t } = useTranslation();
 	const tagsFieldId = useId();
 
@@ -71,7 +71,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 				{t('Tags')}
 			</FieldLabel>
 
-			{tagsResult?.tags && tagsResult?.tags.length ? (
+			{tagsResult?.tags?.length ? (
 				<FieldRow>
 					<CurrentChatTags
 						id={tagsFieldId}

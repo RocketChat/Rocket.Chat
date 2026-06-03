@@ -3,13 +3,13 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const RemoveManagerButton = ({ _id }: { _id: string }): ReactElement => {
+const RemoveManagerButton = ({ _id }: { _id: string }) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const { mutateAsync: deleteAction } = useEndpointMutation('DELETE', '/v1/livechat/users/manager/:_id', {

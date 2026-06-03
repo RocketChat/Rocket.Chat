@@ -2,7 +2,6 @@ import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, FieldRow, TextInput, Button, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +17,7 @@ export type PriorityEditFormProps = {
 
 type PrioritySaveException = { success: false; error: TranslationKey | undefined };
 
-const PriorityEditForm = ({ data, onSave }: PriorityEditFormProps): ReactElement => {
+const PriorityEditForm = ({ data, onSave }: PriorityEditFormProps) => {
 	const { t } = useTranslation();
 
 	const { name, i18n, dirty } = data;
@@ -79,7 +78,7 @@ const PriorityEditForm = ({ data, onSave }: PriorityEditFormProps): ReactElement
 								required: t('Required_field', { field: t('Name') }),
 								validate: (value: string) => value?.trim() !== '' || t('Required_field', { field: t('Name') }),
 							}}
-							render={({ field: { value, onChange } }): ReactElement => (
+							render={({ field: { value, onChange } }) => (
 								<TextInput
 									id={nameFieldId}
 									value={value}

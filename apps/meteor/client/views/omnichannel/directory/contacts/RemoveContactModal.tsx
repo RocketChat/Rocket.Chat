@@ -3,7 +3,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ type RemoveContactModalProps = {
 	onClose: () => void;
 };
 
-const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContactModalProps): ReactElement => {
+const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContactModalProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState<string>('');
 

@@ -3,7 +3,6 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +18,7 @@ type DepartmentItemMenuProps = {
 	archived: boolean;
 };
 
-const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): ReactElement => {
+const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const setModal = useSetModal();

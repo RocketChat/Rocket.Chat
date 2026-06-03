@@ -51,7 +51,7 @@ const InterchangeableChart = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<chartjs.Chart<'line', number[], string>>();
+	const context = useRef<chartjs.Chart<'line', number[], string>>(undefined);
 
 	const { start, end } = dateRange;
 

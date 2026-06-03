@@ -3,7 +3,6 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RemoveContactModal from './RemoveContactModal';
@@ -15,7 +14,7 @@ type ContactItemMenuProps = {
 	channels: ILivechatContactChannel[];
 };
 
-const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactElement => {
+const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();

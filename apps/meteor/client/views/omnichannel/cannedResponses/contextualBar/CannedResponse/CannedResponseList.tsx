@@ -11,7 +11,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, FormEventHandler, MouseEvent, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -111,7 +111,7 @@ const CannedResponseList = ({
 								endReached={loadMoreItems}
 								overscan={25}
 								data={cannedItems}
-								itemContent={(_index, data): ReactElement => (
+								itemContent={(_index, data) => (
 									<Item
 										data={data}
 										allowUse={!isRoomOverMacLimit}

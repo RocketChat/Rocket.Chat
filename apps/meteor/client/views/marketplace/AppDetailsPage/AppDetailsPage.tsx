@@ -1,10 +1,8 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useMemo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -31,7 +29,7 @@ type AppDetailsPageProps = {
 	id: App['id'];
 };
 
-const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
+const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -92,7 +90,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 			try {
 				await AppClientOrchestratorInstance.setAppSettings(
 					id,
-					(Object.values(settings || {}) as ISetting[]).map((setting) => ({
+					Object.values(settings || {}).map((setting) => ({
 						...setting,
 						value: data[setting.id],
 					})),
