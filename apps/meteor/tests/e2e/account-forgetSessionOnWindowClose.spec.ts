@@ -1,6 +1,7 @@
-import { ADMIN_CREDENTIALS, DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { AccountSecurity, HomeChannel, Login } from './page-objects';
 import { test, expect } from './utils/test';
+import { createTestUser, type ITestUser } from './utils/user-helpers';
 
 test.describe.serial('Forget session on window close setting', () => {
 	let poLogin: Login;
@@ -62,12 +63,21 @@ test.describe.serial('Forget session on window close setting', () => {
 		});
 
 		test.describe('E2EE save password flow', () => {
+			// Dedicated throwaway user: resetE2EEPassword() calls Users.unsetLoginTokens(),
+			// which would invalidate the shared admin login token the `api` fixture
+			// authenticates with — breaking every subsequent admin-authenticated request
+			// in the worker (e.g. the next spec's beforeAll settings changes silently 401).
+			let e2eeUser: ITestUser;
+
 			test.beforeAll(async ({ api }) => {
 				await api.post('/settings/E2E_Enable', { value: true });
 				await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+
+				e2eeUser = await createTestUser(api);
 			});
 
 			test.afterAll(async ({ api }) => {
+				await e2eeUser?.delete();
 				await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 				await api.post('/settings/E2E_Enable', { value: false });
 			});
@@ -76,7 +86,7 @@ test.describe.serial('Forget session on window close setting', () => {
 				const poHomeChannel = new HomeChannel(page);
 				const poAccountSecurity = new AccountSecurity(page);
 
-				await poLogin.login(ADMIN_CREDENTIALS.username, ADMIN_CREDENTIALS.password);
+				await poLogin.login(e2eeUser.data.username, DEFAULT_USER_CREDENTIALS.password);
 				await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 
 				await poAccountSecurity.goto();
@@ -84,7 +94,7 @@ test.describe.serial('Forget session on window close setting', () => {
 
 				await page.locator('role=button[name="Login"]').waitFor();
 
-				await poLogin.login(ADMIN_CREDENTIALS.username, ADMIN_CREDENTIALS.password);
+				await poLogin.login(e2eeUser.data.username, DEFAULT_USER_CREDENTIALS.password);
 				await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 				await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 				await poHomeChannel.bannerSaveEncryptionPassword.click();
