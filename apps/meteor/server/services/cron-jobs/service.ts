@@ -98,4 +98,8 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 	async disable(jobName: string): Promise<boolean> {
 		return cronJobs.disable(jobName);
 	}
+
+	async trigger(jobName: string): Promise<boolean> {
+		return cronJobs.trigger(jobName);
+	}
 }
