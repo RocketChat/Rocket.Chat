@@ -2,6 +2,7 @@
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false,
+		"rootDir": "./src",
 		"outDir": "./dist/ee/apps/omnichannel-transcript/src",
 	},
 	"files": ["./src/service.ts"],

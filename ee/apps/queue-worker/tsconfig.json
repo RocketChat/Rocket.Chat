@@ -2,6 +2,7 @@
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false,
+		"rootDir": "./src",
 		"outDir": "./dist/ee/apps/queue-worker/src",
 	},
 	"files": ["./src/service.ts"],
