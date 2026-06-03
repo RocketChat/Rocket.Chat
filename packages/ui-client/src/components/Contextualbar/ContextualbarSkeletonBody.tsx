@@ -1,9 +1,8 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import ContextualbarHeader from './ContextualbarHeader';
 
-const ContextualbarSkeletonBody = (): ReactElement => (
+const ContextualbarSkeletonBody = () => (
 	<>
 		<ContextualbarHeader>
 			<Skeleton width='100%' />

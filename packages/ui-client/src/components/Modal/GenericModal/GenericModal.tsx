@@ -29,8 +29,8 @@ type GenericModalProps = RequiredModalProps & {
 	children?: ReactNode;
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
-	title?: string | ReactElement;
-	icon?: IconName | ReactElement | null;
+	title?: string | ReactElement<any>;
+	icon?: IconName | ReactElement<any> | null;
 	confirmDisabled?: boolean;
 	confirmLoading?: boolean;
 	tagline?: ReactNode;

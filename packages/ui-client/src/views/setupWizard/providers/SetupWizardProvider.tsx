@@ -11,7 +11,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ContextType } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useInvalidateLicense } from '../../../hooks';
@@ -37,7 +37,11 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
-const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+type SetupWizardProviderProps = {
+	children: ReactNode;
+};
+
+const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const invalidateLicenseQuery = useInvalidateLicense();
 	const t = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);

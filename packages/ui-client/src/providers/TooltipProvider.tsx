@@ -11,7 +11,7 @@ type TooltipProviderProps = {
 };
 
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
-	const lastAnchor = useRef<HTMLElement>();
+	const lastAnchor = useRef<HTMLElement>(undefined);
 	const hasHover = !useMediaQuery('(hover: none)');
 
 	const [tooltip, setTooltip] = useDebouncedState<ReactNode>(null, 300);
