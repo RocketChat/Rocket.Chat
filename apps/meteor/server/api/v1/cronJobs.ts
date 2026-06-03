@@ -145,6 +145,26 @@ const cronJobsEndpoints = API.v1
 			}
 			return API.v1.success();
 		},
+	)
+	.post(
+		'cron.trigger',
+		{
+			authRequired: true,
+			body: isCronJobsActionParams,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { jobName } = this.bodyParams;
+			const success = await CronJobsSvc.trigger(jobName);
+
+			if (!success) {
+				return API.v1.failure('error-job-not-found');
+			}
+
+			return API.v1.success();
+		},
 	);
 
 export type CronJobsEndpoints = ExtractRoutesFromAPI<typeof cronJobsEndpoints>;
