@@ -1,13 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentAutoLoadEmbedMedia } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 import UrlPreviewResolver from './UrlPreviewResolver';
 import { useCollapse } from '../../hooks/useCollapse';
 
-const UrlPreview = (props: UrlPreviewMetadata): ReactElement => {
+const UrlPreview = (props: UrlPreviewMetadata) => {
 	const autoLoadMedia = useAttachmentAutoLoadEmbedMedia();
 	const [collapsed, collapse] = useCollapse(!autoLoadMedia);
 	const { t } = useTranslation();

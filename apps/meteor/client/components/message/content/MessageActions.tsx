@@ -3,7 +3,6 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import MessageAction from './actions/MessageAction';
 import { actionLinks } from '../../../lib/actionLinks';
@@ -22,7 +21,7 @@ type MessageActionsProps = {
 	actions: MessageActionOptions[];
 };
 
-const MessageActions = ({ message, actions }: MessageActionsProps): ReactElement => {
+const MessageActions = ({ message, actions }: MessageActionsProps) => {
 	const runAction = useEffectEvent((action: string) => () => {
 		actionLinks.run(action, message);
 	});

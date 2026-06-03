@@ -20,7 +20,7 @@ type RoomAvatarEditorProps = {
 	onChangeAvatar: (url: string | null) => void;
 };
 
-const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps): ReactElement => {
+const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps): ReactElement<any> => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

@@ -1,6 +1,6 @@
 import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isActionAttachment } from '@rocket.chat/core-typings';
-import type { ReactNode, ComponentProps, ReactElement } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 
 import { ActionAttachment } from './default/ActionAttachtment';
 import FieldsAttachment from './default/FieldsAttachment';
@@ -26,7 +26,7 @@ const applyMarkdownIfRequires = (
 
 type DefaultAttachmentProps = MessageAttachmentDefault;
 
-const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => {
+const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 
 	return (

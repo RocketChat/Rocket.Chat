@@ -1,5 +1,4 @@
 import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
 
 import AttachmentsItem from './attachments/AttachmentsItem';
 
@@ -8,7 +7,7 @@ type AttachmentsProps = {
 	id?: string | undefined;
 };
 
-const Attachments = ({ attachments, id }: AttachmentsProps): ReactElement => {
+const Attachments = ({ attachments, id }: AttachmentsProps) => {
 	return <>{attachments?.map((attachment, index) => <AttachmentsItem key={index} id={id} attachment={{ ...attachment }} />)}</>;
 };
 
