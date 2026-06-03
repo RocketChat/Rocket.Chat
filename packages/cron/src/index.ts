@@ -226,6 +226,20 @@ export class AgendaCronJobs {
 		return true;
 	}
 
+	public async trigger(jobName: string): Promise<boolean> {
+		if (!this.scheduler) {
+			return false;
+		}
+		const jobs = await this.scheduler.jobs({ name: jobName });
+		if (!jobs.length) {
+			return false;
+		}
+
+		await this.scheduler.now(jobName, {});
+
+		return true;
+	}
+
 	private async reserve(config: ReservedJob): Promise<void> {
 		this.reservedJobs = [...this.reservedJobs, config];
 	}

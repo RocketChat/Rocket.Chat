@@ -10,4 +10,5 @@ export interface ICronJobsService extends IServiceClass {
 
 	enable(jobName: string): Promise<boolean>;
 	disable(jobName: string): Promise<boolean>;
+	trigger(jobName: string): Promise<boolean>;
 }
