@@ -1,16 +1,82 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
+import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxContextValue } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MenuActionsProps = {
+import { processRoomActions } from './processRoomActions';
+import type { RoomToolboxBaseAction, RoomToolboxLayoutConfig } from './processRoomActions';
+
+type MenuSection = {
 	id: string;
+	title?: string;
 	items: GenericMenuItemProps[];
-}[];
+};
+
+const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
+	if (!raw) {
+		return null;
+	}
+	try {
+		return JSON.parse(raw) as RoomToolboxLayoutConfig;
+	} catch {
+		return null;
+	}
+};
+
+const actionToMenuItem = (
+	item: RoomToolboxBaseAction,
+	openTab: RoomToolboxContextValue['openTab'],
+	t: (key: string) => string,
+): GenericMenuItemProps => ({
+	...(item as Record<string, unknown>),
+	id: item.id,
+	content: t(item.title as string),
+	onClick:
+		(item.action as (() => void) | undefined) ??
+		((): void => {
+			openTab(item.id);
+		}),
+});
 
 export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxContextValue, 'actions' | 'openTab'>) => {
 	const { t } = useTranslation();
 	const { roomToolboxExpanded } = useLayout();
+	const layoutConfigRaw = useSetting('Room_Toolbox_Layout', '');
+	const isLayoutPreviewEnabled = useFeaturePreview('roomToolboxLayout');
+
+	const layoutConfig = useMemo(() => parseLayoutConfig(layoutConfigRaw), [layoutConfigRaw]);
+
+	if (isLayoutPreviewEnabled && layoutConfig) {
+		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
+
+		if (!roomToolboxExpanded) {
+			const orderedOverflowActions = [...engineVisible, ...engineSections.flatMap((section) => section.items)];
+
+			const hiddenActions = orderedOverflowActions.reduce((acc, item) => {
+				const group = item.type ?? '';
+				const section = acc.find((s) => s.id === group);
+				const menuItem = actionToMenuItem(item, openTab, t);
+				if (section) {
+					section.items.push(menuItem);
+				} else {
+					acc.push({ id: group, title: group === 'apps' ? t('Apps') : '', items: [menuItem] });
+				}
+				return acc;
+			}, [] as MenuSection[]);
+
+			return { featuredActions, visibleActions: [], hiddenActions };
+		}
+
+		const hiddenActions = engineSections.map((section) => ({
+			id: section.id,
+			title: section.id === 'apps' ? t('Apps') : '',
+			items: section.items.map((item) => actionToMenuItem(item, openTab, t)),
+		}));
+
+		return { featuredActions, visibleActions: engineVisible, hiddenActions };
+	}
 
 	const normalActions = actions.filter((action) => !action.featured && action.type !== 'apps');
 	const featuredActions = actions.filter((action) => action.featured);
@@ -40,7 +106,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			acc.push(newSection);
 
 			return acc;
-		}, [] as MenuActionsProps);
+		}, [] as MenuSection[]);
 
 	return { hiddenActions, featuredActions, visibleActions };
 };
