@@ -60,7 +60,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 	const option = options[optionIndex];
 
-	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef();
+	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef(undefined);
 
 	const { queries: items, suspended } = useComposerBoxPopupQueries(filter, option) as {
 		queries: UseQueryResult<T[]>[];

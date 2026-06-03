@@ -1,6 +1,6 @@
 import { Box, PaletteStyleTag, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useThemeMode } from '@rocket.chat/ui-client';
-import type { ErrorInfo, ReactElement } from 'react';
+import type { ErrorInfo } from 'react';
 
 type AppErrorPageProps = {
 	error: Error;
@@ -8,7 +8,7 @@ type AppErrorPageProps = {
 	clearError: () => void;
 };
 
-const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
+const AppErrorPage = (_props: AppErrorPageProps) => {
 	const [, , theme] = useThemeMode();
 
 	return (

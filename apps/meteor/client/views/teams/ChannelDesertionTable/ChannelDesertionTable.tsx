@@ -1,7 +1,6 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody, useSort } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,10 +39,7 @@ const ChannelDesertionTable = ({
 
 		const direction = sortDirection === 'asc' ? 1 : -1;
 
-		return rooms.sort((a, b) =>
-			// eslint-disable-next-line no-nested-ternary
-			a[sortBy] && b[sortBy] ? (a[sortBy]?.localeCompare(b[sortBy] ?? '') ?? 1) * direction : direction,
-		);
+		return rooms.sort((a, b) => (a[sortBy] && b[sortBy] ? (a[sortBy]?.localeCompare(b[sortBy] ?? '') ?? 1) * direction : direction));
 	}, [rooms, sortBy, sortDirection]);
 
 	return (
@@ -61,17 +57,15 @@ const ChannelDesertionTable = ({
 					</GenericTableHeaderCell>
 				</GenericTableHeader>
 				<GenericTableBody>
-					{results?.map(
-						(room, key): ReactElement => (
-							<ChannelDesertionTableRow
-								key={key}
-								room={room}
-								onChange={onChangeRoomSelection}
-								selected={'_id' in room && room._id ? !!selectedRooms[room._id] : false}
-								lastOwnerWarning={lastOwnerWarning}
-							/>
-						),
-					)}
+					{results?.map((room, key) => (
+						<ChannelDesertionTableRow
+							key={key}
+							room={room}
+							onChange={onChangeRoomSelection}
+							selected={'_id' in room && room._id ? !!selectedRooms[room._id] : false}
+							lastOwnerWarning={lastOwnerWarning}
+						/>
+					))}
 				</GenericTableBody>
 			</GenericTable>
 		</Box>

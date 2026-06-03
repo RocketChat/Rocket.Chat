@@ -2,7 +2,6 @@ import type { ITeam } from '@rocket.chat/core-typings';
 import { GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 
 import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';
 
@@ -12,7 +11,7 @@ type LeaveTeamWithDataProps = {
 	onConfirm: () => void;
 };
 
-const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataProps): ReactElement => {
+const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataProps) => {
 	const userId = useUserId();
 
 	if (!userId) {

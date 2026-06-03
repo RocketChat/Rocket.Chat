@@ -15,7 +15,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
+import type { FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
 import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
@@ -70,7 +70,7 @@ const RoomMembers = ({
 	isDirect,
 	reload,
 	isABACRoom = false,
-}: RoomMembersProps): ReactElement => {
+}: RoomMembersProps) => {
 	const { t } = useTranslation();
 	const membersListId = useId();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
@@ -196,10 +196,10 @@ const RoomMembers = ({
 										}}
 										overscan={50}
 										groupCounts={counts}
-										groupContent={(index): ReactElement => titles[index]}
+										groupContent={(index) => titles[index]}
 										// eslint-disable-next-line react/no-multi-comp
 										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-										itemContent={(index): ReactElement => (
+										itemContent={(index) => (
 											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
 										)}
 									/>

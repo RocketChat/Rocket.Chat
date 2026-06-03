@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +9,7 @@ type UploadProgressIndicatorProps = {
 	uploads: readonly Upload[];
 };
 
-const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): ReactElement | null => {
+const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps) => {
 	const { t } = useTranslation();
 
 	const { percentage, count } = useMemo(() => {

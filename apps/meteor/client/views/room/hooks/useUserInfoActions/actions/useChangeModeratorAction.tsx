@@ -14,7 +14,6 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -28,7 +27,7 @@ const getWarningModalForFederatedRooms = (
 	title: string,
 	confirmText: string,
 	bodyText: string,
-): ReactElement => (
+) => (
 	<GenericModal
 		variant='warning'
 		onClose={closeModalFn}

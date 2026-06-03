@@ -1,5 +1,4 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 import DisableE2EEModal from './DisableE2EEModal';
@@ -18,13 +17,7 @@ type BaseDisableE2EEModalProps = {
 	canResetRoomKey: boolean;
 };
 
-const BaseDisableE2EEModal = ({
-	onConfirm,
-	onClose,
-	roomType,
-	roomId,
-	canResetRoomKey,
-}: BaseDisableE2EEModalProps): ReactElement | null => {
+const BaseDisableE2EEModal = ({ onConfirm, onClose, roomType, roomId, canResetRoomKey }: BaseDisableE2EEModalProps) => {
 	const [step, setStep] = useState(STEPS.DISABLE_E2EE);
 
 	const onResetRoomKey = useEffectEvent(() => {

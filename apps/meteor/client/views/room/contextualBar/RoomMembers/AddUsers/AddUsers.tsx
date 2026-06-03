@@ -13,7 +13,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +29,7 @@ type AddUsersProps = {
 	reload: () => void;
 };
 
-const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => {
+const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();

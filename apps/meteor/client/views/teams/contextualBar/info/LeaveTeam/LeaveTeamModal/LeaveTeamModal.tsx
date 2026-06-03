@@ -1,6 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useState, useCallback, useMemo } from 'react';
 
 import LeaveTeamModalChannels from './LeaveTeamModalChannels';
@@ -17,7 +16,7 @@ type LeaveTeamModalProps = {
 	onConfirm: () => void;
 };
 
-const LeaveTeamModal = ({ rooms, onCancel, onConfirm }: LeaveTeamModalProps): ReactElement => {
+const LeaveTeamModal = ({ rooms, onCancel, onConfirm }: LeaveTeamModalProps) => {
 	const memoizedRooms = useMemo(() => rooms, [rooms]);
 	const [step, setStep] = useState(memoizedRooms.length === 0 ? LEAVE_TEAM_STEPS.CONFIRM_LEAVE : LEAVE_TEAM_STEPS.LIST_ROOMS);
 

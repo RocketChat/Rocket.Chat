@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -106,7 +106,7 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
-}: MessageBoxProps): ReactElement => {
+}: MessageBoxProps) => {
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();

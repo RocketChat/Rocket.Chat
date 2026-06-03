@@ -32,7 +32,7 @@ type UiKitContextualBarProps = {
 	initialView: UiKit.ContextualBarView;
 };
 
-const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Element => {
+const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, values, updateValues, state } = useUiKitView(initialView);
 	const room = useRoom();

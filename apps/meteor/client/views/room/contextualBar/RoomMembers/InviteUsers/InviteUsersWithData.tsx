@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useState, useEffect } from 'react';
 
 import InviteUsers from './InviteUsers';
@@ -16,7 +15,7 @@ type InviteUsersWithDataProps = {
 	onClickBack: () => void;
 };
 
-const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): ReactElement => {
+const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [

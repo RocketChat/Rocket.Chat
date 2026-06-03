@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { DragEvent, ReactElement, ReactNode } from 'react';
+import type { DragEvent, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,7 @@ type DropTargetOverlayProps = {
 	onDismiss?: () => void;
 };
 
-function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps): ReactElement | null {
+function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps) {
 	const { t } = useTranslation();
 
 	const handleDragLeave = useEffectEvent((event: DragEvent) => {

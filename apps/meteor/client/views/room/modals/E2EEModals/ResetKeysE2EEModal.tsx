@@ -1,7 +1,6 @@
 import { Box, ModalFooterAnnotation, ModalIcon } from '@rocket.chat/fuselage';
 import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { links } from '../../../../lib/links';
@@ -15,7 +14,7 @@ type ResetKeysE2EEModalProps = {
 	onCancel: () => void;
 };
 
-const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalProps): ReactElement => {
+const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalProps) => {
 	const { t } = useTranslation();
 	const resetRoomKeyMutation = useE2EEResetRoomKey();
 
