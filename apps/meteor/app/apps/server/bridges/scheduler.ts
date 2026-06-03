@@ -4,11 +4,13 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { SchedulerBridge } from '@rocket.chat/apps/dist/server/bridges/SchedulerBridge';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
+import { CronHistory } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 
 function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
-	return (job) => {
+	return async (job) => {
 		const data = job?.attrs?.data || {};
 
 		// This field is for internal use, no need to leak to app processor
@@ -16,13 +18,43 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 
 		data.jobId = job.attrs._id.toString();
 
-		return (processor as (jobContext: IJobContext) => Promise<void>)(data).then(async () => {
+		const { insertedId } = await CronHistory.insertOne({
+			_id: Random.id(),
+			intendedAt: new Date(),
+			name: job.attrs.name,
+			startedAt: new Date(),
+			type: 'app',
+		});
+
+		try {
+			await (processor as (jobContext: IJobContext) => Promise<void>)(data);
+
+			await CronHistory.updateOne(
+				{ _id: insertedId },
+				{
+					$set: {
+						finishedAt: new Date(),
+					},
+				},
+			);
+
 			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
 			// as Agenda does not remove it from the DB
 			if (job.attrs.type === 'normal') {
 				await job.agenda.cancel({ _id: job.attrs._id });
 			}
-		});
+		} catch (error: any) {
+			await CronHistory.updateOne(
+				{ _id: insertedId },
+				{
+					$set: {
+						finishedAt: new Date(),
+						error: error?.stack ? error.stack : error,
+					},
+				},
+			);
+			throw error;
+		}
 	};
 }
 
