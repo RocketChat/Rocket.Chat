@@ -26,7 +26,7 @@ import { createRoom } from '../../../server/lib/rooms';
 
 const logger = new Logger('SMS');
 
-const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
+const getUploadFile = async (details: Omit<IUpload, '_id' | '_updatedAt'>, fileUrl: string) => {
 	const response = await fetch(fileUrl, {
 		ignoreSsrfValidation: false,
 		allowList: settings.get<string>('SSRF_Allowlist'),
@@ -73,7 +73,8 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const livechatVisitor = await registerGuest(data, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
+	const livechatVisitor = await registerGuest(data, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+  shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents')});
 
 	if (!livechatVisitor) {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');

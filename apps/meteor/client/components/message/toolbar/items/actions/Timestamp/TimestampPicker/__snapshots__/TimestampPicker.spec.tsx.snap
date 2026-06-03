@@ -106,6 +106,28 @@ exports[`Story Tests renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Preview
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <div
+                      data-testid="mock-gazzodown-text"
+                    >
+                      Mocked GazzodownText
+                    </div>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
                     for=":r2:"
                   >
                     Date
@@ -190,6 +212,56 @@ exports[`Story Tests renders Default without crashing 1`] = `
                   <span
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
+                    <div
+                      aria-hidden="true"
+                      data-a11y-ignore="aria-hidden-focus"
+                      data-react-aria-prevent-focus="true"
+                      data-testid="hidden-select-container"
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      <label>
+                        <select
+                          tabindex="-1"
+                        >
+                          <option />
+                          <option
+                            value="t"
+                          >
+                            t
+                          </option>
+                          <option
+                            value="T"
+                          >
+                            T
+                          </option>
+                          <option
+                            value="d"
+                          >
+                            d
+                          </option>
+                          <option
+                            value="D"
+                          >
+                            D
+                          </option>
+                          <option
+                            value="f"
+                          >
+                            f
+                          </option>
+                          <option
+                            value="F"
+                          >
+                            F
+                          </option>
+                          <option
+                            value="R"
+                          >
+                            R
+                          </option>
+                        </select>
+                      </label>
+                    </div>
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
@@ -197,56 +269,6 @@ exports[`Story Tests renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       type="button"
                     >
-                      <div
-                        aria-hidden="true"
-                        data-a11y-ignore="aria-hidden-focus"
-                        data-react-aria-prevent-focus="true"
-                        data-testid="hidden-select-container"
-                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                      >
-                        <label>
-                          <select
-                            tabindex="-1"
-                          >
-                            <option />
-                            <option
-                              value="t"
-                            >
-                              t
-                            </option>
-                            <option
-                              value="T"
-                            >
-                              T
-                            </option>
-                            <option
-                              value="d"
-                            >
-                              d
-                            </option>
-                            <option
-                              value="D"
-                            >
-                              D
-                            </option>
-                            <option
-                              value="f"
-                            >
-                              f
-                            </option>
-                            <option
-                              value="F"
-                            >
-                              F
-                            </option>
-                            <option
-                              value="R"
-                            >
-                              R
-                            </option>
-                          </select>
-                        </label>
-                      </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-e3nij6"
                         id="react-aria-:rb:"
@@ -275,8 +297,158 @@ exports[`Story Tests renders Default without crashing 1`] = `
                     Timezone
                   </label>
                   <span
+                    class="rcx-box rcx-box--full rcx-field__description"
+                  >
+                    Timezone_picker_description
+                  </span>
+                  <span
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
+                    <div
+                      aria-hidden="true"
+                      data-a11y-ignore="aria-hidden-focus"
+                      data-react-aria-prevent-focus="true"
+                      data-testid="hidden-select-container"
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      <label>
+                        <select
+                          tabindex="-1"
+                        >
+                          <option />
+                          <option
+                            value="local"
+                          >
+                            local
+                          </option>
+                          <option
+                            value="UTC-12"
+                          >
+                            UTC-12
+                          </option>
+                          <option
+                            value="UTC-11"
+                          >
+                            UTC-11
+                          </option>
+                          <option
+                            value="UTC-10"
+                          >
+                            UTC-10
+                          </option>
+                          <option
+                            value="UTC-9"
+                          >
+                            UTC-9
+                          </option>
+                          <option
+                            value="UTC-8"
+                          >
+                            UTC-8
+                          </option>
+                          <option
+                            value="UTC-7"
+                          >
+                            UTC-7
+                          </option>
+                          <option
+                            value="UTC-6"
+                          >
+                            UTC-6
+                          </option>
+                          <option
+                            value="UTC-5"
+                          >
+                            UTC-5
+                          </option>
+                          <option
+                            value="UTC-4"
+                          >
+                            UTC-4
+                          </option>
+                          <option
+                            value="UTC-3"
+                          >
+                            UTC-3
+                          </option>
+                          <option
+                            value="UTC-2"
+                          >
+                            UTC-2
+                          </option>
+                          <option
+                            value="UTC-1"
+                          >
+                            UTC-1
+                          </option>
+                          <option
+                            value="UTC"
+                          >
+                            UTC
+                          </option>
+                          <option
+                            value="UTC+1"
+                          >
+                            UTC+1
+                          </option>
+                          <option
+                            value="UTC+2"
+                          >
+                            UTC+2
+                          </option>
+                          <option
+                            value="UTC+3"
+                          >
+                            UTC+3
+                          </option>
+                          <option
+                            value="UTC+4"
+                          >
+                            UTC+4
+                          </option>
+                          <option
+                            value="UTC+5"
+                          >
+                            UTC+5
+                          </option>
+                          <option
+                            value="UTC+6"
+                          >
+                            UTC+6
+                          </option>
+                          <option
+                            value="UTC+7"
+                          >
+                            UTC+7
+                          </option>
+                          <option
+                            value="UTC+8"
+                          >
+                            UTC+8
+                          </option>
+                          <option
+                            value="UTC+9"
+                          >
+                            UTC+9
+                          </option>
+                          <option
+                            value="UTC+10"
+                          >
+                            UTC+10
+                          </option>
+                          <option
+                            value="UTC+11"
+                          >
+                            UTC+11
+                          </option>
+                          <option
+                            value="UTC+12"
+                          >
+                            UTC+12
+                          </option>
+                        </select>
+                      </label>
+                    </div>
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
@@ -284,151 +456,6 @@ exports[`Story Tests renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       type="button"
                     >
-                      <div
-                        aria-hidden="true"
-                        data-a11y-ignore="aria-hidden-focus"
-                        data-react-aria-prevent-focus="true"
-                        data-testid="hidden-select-container"
-                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                      >
-                        <label>
-                          <select
-                            tabindex="-1"
-                          >
-                            <option />
-                            <option
-                              value="local"
-                            >
-                              local
-                            </option>
-                            <option
-                              value="UTC-12"
-                            >
-                              UTC-12
-                            </option>
-                            <option
-                              value="UTC-11"
-                            >
-                              UTC-11
-                            </option>
-                            <option
-                              value="UTC-10"
-                            >
-                              UTC-10
-                            </option>
-                            <option
-                              value="UTC-9"
-                            >
-                              UTC-9
-                            </option>
-                            <option
-                              value="UTC-8"
-                            >
-                              UTC-8
-                            </option>
-                            <option
-                              value="UTC-7"
-                            >
-                              UTC-7
-                            </option>
-                            <option
-                              value="UTC-6"
-                            >
-                              UTC-6
-                            </option>
-                            <option
-                              value="UTC-5"
-                            >
-                              UTC-5
-                            </option>
-                            <option
-                              value="UTC-4"
-                            >
-                              UTC-4
-                            </option>
-                            <option
-                              value="UTC-3"
-                            >
-                              UTC-3
-                            </option>
-                            <option
-                              value="UTC-2"
-                            >
-                              UTC-2
-                            </option>
-                            <option
-                              value="UTC-1"
-                            >
-                              UTC-1
-                            </option>
-                            <option
-                              value="UTC"
-                            >
-                              UTC
-                            </option>
-                            <option
-                              value="UTC+1"
-                            >
-                              UTC+1
-                            </option>
-                            <option
-                              value="UTC+2"
-                            >
-                              UTC+2
-                            </option>
-                            <option
-                              value="UTC+3"
-                            >
-                              UTC+3
-                            </option>
-                            <option
-                              value="UTC+4"
-                            >
-                              UTC+4
-                            </option>
-                            <option
-                              value="UTC+5"
-                            >
-                              UTC+5
-                            </option>
-                            <option
-                              value="UTC+6"
-                            >
-                              UTC+6
-                            </option>
-                            <option
-                              value="UTC+7"
-                            >
-                              UTC+7
-                            </option>
-                            <option
-                              value="UTC+8"
-                            >
-                              UTC+8
-                            </option>
-                            <option
-                              value="UTC+9"
-                            >
-                              UTC+9
-                            </option>
-                            <option
-                              value="UTC+10"
-                            >
-                              UTC+10
-                            </option>
-                            <option
-                              value="UTC+11"
-                            >
-                              UTC+11
-                            </option>
-                            <option
-                              value="UTC+12"
-                            >
-                              UTC+12
-                            </option>
-                          </select>
-                        </label>
-                      </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-e3nij6"
                         id="react-aria-:rj:"
@@ -443,27 +470,10 @@ exports[`Story Tests renders Default without crashing 1`] = `
                       </i>
                     </button>
                   </span>
-                </div>
-              </div>
-              <div
-                class="rcx-box rcx-box--full rcx-css-1bjg207"
-              >
-                <div
-                  class="rcx-box rcx-box--full rcx-field"
-                >
-                  <label
-                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  >
-                    Preview
-                  </label>
                   <span
-                    class="rcx-box rcx-box--full rcx-field__row"
+                    class="rcx-box rcx-box--full rcx-field__hint"
                   >
-                    <div
-                      data-testid="mock-gazzodown-text"
-                    >
-                      Mocked GazzodownText
-                    </div>
+                    Timezone_picker_hint
                   </span>
                 </div>
               </div>

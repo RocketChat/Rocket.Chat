@@ -15,7 +15,6 @@ import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoom
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
 import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAction';
-import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useMediaCallRoomAction } from './hooks/roomActions/useMediaCallRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
@@ -52,7 +51,6 @@ export const roomActionHooks = [
 	useE2EERoomAction,
 	useExportMessagesRoomAction,
 	useGameCenterRoomAction,
-	useKeyboardShortcutListRoomAction,
 	useBannedUsersRoomAction,
 	useMembersListRoomAction,
 	useMentionsRoomAction,

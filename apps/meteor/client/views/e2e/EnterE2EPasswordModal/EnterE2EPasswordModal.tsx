@@ -1,19 +1,23 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
 
+const isInvalidE2EEPasswordError = (error: unknown): boolean => error instanceof DOMException && error.name === 'OperationError';
+
 type EnterE2EPasswordModalProps = {
-	onConfirm: (password: string) => void;
+	onConfirm: (password: string) => void | Promise<void>;
 	onClose: () => void;
 	onCancel: () => void;
 };
 
 const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswordModalProps) => {
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const [confirmResetPassword, setConfirmResetPassword] = useState(false);
 	const resetE2EPassword = useResetE2EPasswordMutation({ options: { onSettled: () => onClose() } });
 
@@ -21,11 +25,25 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 		handleSubmit,
 		control,
 		setFocus,
+		setError,
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
 			password: '',
 		},
+	});
+
+	const handleValidatePassword = handleSubmit(async ({ password }) => {
+		try {
+			await onConfirm(password);
+		} catch (error) {
+			if (isInvalidE2EEPasswordError(error)) {
+				setError('password', { message: t('Incorrect_encryption_password') });
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+			onClose();
+		}
 	});
 
 	const passwordInputId = useId();
@@ -52,7 +70,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(({ password }) => onConfirm(password))} {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleValidatePassword} {...props} />}
 			variant='warning'
 			title={t('Enter_E2E_password')}
 			icon='warning'

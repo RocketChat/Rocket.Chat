@@ -1,7 +1,7 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 import * as z from 'zod';
 
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import { IRocketChatRecordSchema, type IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 import { TimestampSchema } from './utils';
 
@@ -10,9 +10,7 @@ export enum BannerPlatform {
 	Mobile = 'mobile',
 }
 
-export const IBannerSchema = z.object({
-	_id: z.string(),
-	_updatedAt: TimestampSchema.optional(),
+export const IBannerSchema = IRocketChatRecordSchema.extend({
 	platform: z.array(z.enum(BannerPlatform)), // pĺatforms a banner could be shown
 	expireAt: TimestampSchema, // date when banner should not be shown anymore
 	startAt: TimestampSchema, // start date a banner should be presented
@@ -34,7 +32,7 @@ export const IBannerSchema = z.object({
 	surface: z.enum(['banner', 'modal']),
 });
 
-export interface IBanner extends z.infer<typeof IBannerSchema> {}
+export interface IBanner extends z.infer<typeof IBannerSchema>, IRocketChatRecord {}
 
 export type InactiveBanner = IBanner & {
 	active: false;

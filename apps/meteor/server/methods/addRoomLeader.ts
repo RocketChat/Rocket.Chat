@@ -6,6 +6,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
@@ -88,6 +89,7 @@ export const addRoomLeader = async (fromUserId: IUser['_id'], rid: IRoom['_id'],
 
 Meteor.methods<ServerMethods>({
 	async addRoomLeader(rid, userId) {
+		methodDeprecationLogger.method('addRoomLeader', '9.0.0', ['/v1/channels.addLeader', '/v1/groups.addLeader']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

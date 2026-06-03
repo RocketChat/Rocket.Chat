@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
+import { Messages, Subscriptions, NotificationQueue } from '@rocket.chat/models';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import {
@@ -41,10 +41,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
-	const promises = [
-		ReadReceipts.setAsThreadById(tmid),
-		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions),
-	];
+	const promises = [Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions)];
 
 	if (mentionedUsers.length) {
 		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, { userMention: true }));

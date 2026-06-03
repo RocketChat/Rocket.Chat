@@ -1,20 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
 import UploadProgressIndicator from './UploadProgress';
@@ -32,11 +28,9 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
-import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
-import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
+import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -52,7 +46,13 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(false);
+	const isAtBottom = useRef<boolean>(true);
+	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
+
 	const retentionPolicy = useRetentionPolicy(room);
+
+	useTryToJumpToThreadMessage();
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -82,40 +82,18 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
-
-	const { jumpToRef: surroundingMessagesJumpTpRef } = useLoadSurroundingMessages();
-
 	const {
-		wrapperRef,
-		innerRef: unreadBarInnerRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
 		counter: [unread],
+		setUnreadCount,
+		setLastMessageDate,
+		debouncedMessageRead,
 	} = useHandleUnread(room, subscription);
 
-	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
+	const { handleDateScroll, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const {
-		innerRef: isAtBottomInnerRef,
-		atBottomRef,
-		sendToBottom,
-		sendToBottomIfNecessary,
-		isAtBottom,
-		jumpToRef: jumpToRefIsAtBottom,
-	} = useListIsAtBottom();
-
-	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
-
-	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
-
-	const jumpToRef = useMergedRefsV2(
-		jumpToRefIsAtBottom,
-		jumpToRefGetMore,
-		jumpToRefRestoreScrollPosition,
-		jumpToRefGetMoreImperative,
-		surroundingMessagesJumpTpRef,
-	);
+	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 	const { uploads, isUploading } = useFileUpload();
@@ -123,24 +101,15 @@ const RoomBody = (): ReactElement => {
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
-	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
-		useHasNewMessages(room._id, user?._id, atBottomRef, {
-			sendToBottom,
-			sendToBottomIfNecessary,
-			isAtBottom,
-		});
+	const {
+		handleNewMessageButtonClick,
+		handleJumpToRecentButtonClick,
+		handleComposerResize,
+		hasNewMessages,
+		debouncedClearNewMessagesOnScroll,
+	} = useHasNewMessages(room._id, user?._id, setShouldJumpToBottom, isAtBottom);
 
-	const innerRef = useMergedRefsV2(
-		dateScrollInnerRef,
-		restoreScrollPositionInnerRef,
-		isAtBottomInnerRef,
-		newMessagesScrollRef,
-		unreadBarInnerRef,
-		getMoreInnerRef,
-		selectAndScrollRef,
-		messageListRef,
-		jumpToRefGetMoreImperativeInnerRef,
-	);
+	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -197,7 +166,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
 								{isUploading && <UploadProgressIndicator uploads={uploads} />}
@@ -233,26 +202,28 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef} key={room._id}>
-											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-												{canPreview ? (
-													<>
-														{hasMorePreviousMessages ? (
-															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-														) : (
-															<li>
-																<RoomForeword user={user} room={room} />
-																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-															</li>
-														)}
-													</>
-												) : null}
-												<MessageList rid={room._id} messageListRef={jumpToRef} />
-												{hasMoreNextMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-												) : null}
-											</ul>
-										</CustomScrollbars>
+										<CustomVirtuaScrollbars ref={innerRef} key={room._id}>
+											<MessageList
+												rid={room._id}
+												shouldJumpToBottom={shouldJumpToBottom}
+												setShouldJumpToBottom={setShouldJumpToBottom}
+												isAtBottom={isAtBottom}
+												isJumpingToMessage={isJumpingToMessage}
+												setIsJumpingToMessage={setIsJumpingToMessage}
+												canPreview={canPreview}
+												hasMorePreviousMessages={hasMorePreviousMessages}
+												isLoadingMoreMessages={isLoadingMoreMessages}
+												user={user}
+												room={room}
+												retentionPolicy={retentionPolicy}
+												hasMoreNextMessages={hasMoreNextMessages}
+												setUnreadCount={setUnreadCount}
+												setLastMessageDate={setLastMessageDate}
+												debouncedClearNewMessagesOnScroll={debouncedClearNewMessagesOnScroll}
+												handleDateScroll={handleDateScroll}
+												debouncedMessageRead={debouncedMessageRead}
+											/>
+										</CustomVirtuaScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>

@@ -177,6 +177,7 @@ const ServerContextMock = ({
 			callMethod: _callMethod,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll: () => () => () => undefined,
 			...overrides,
 		};
 	}, [baseURL, callEndpoint, callMethod, overrides, parent]);

@@ -120,7 +120,7 @@ Meteor.startup(async () => {
 			}
 			await businessHourManager.stopManager();
 		},
-		process.env.TEST_MODE === 'true'
+		process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api'
 			? {
 					debounce: 10,
 				}

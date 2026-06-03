@@ -1,4 +1,3 @@
-import type { FunctionalComponent } from 'preact';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import { route } from 'preact-router';
@@ -11,7 +10,7 @@ import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
 import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
@@ -26,7 +25,11 @@ type FormPayloadCustomField = { [key: string]: string };
 
 export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
 
-export const Register: FunctionalComponent<{ path: string }> = () => {
+type RegisterProps = {
+	path: string;
+};
+
+export const Register = (_: RegisterProps) => {
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);
@@ -61,9 +64,9 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 	const defaultTitle = t('need_help');
 	const defaultMessage = t('please_tell_us_some_information_to_start_the_chat');
 
-	const registerCustomFields = (customFields = {}) => {
+	const registerCustomFields = (customFields: Record<string, unknown> = {}) => {
 		Object.entries(customFields).forEach(([key, value]) => {
-			if (!value || value === '') {
+			if (!value || typeof value !== 'string' || value === '') {
 				return;
 			}
 
@@ -93,7 +96,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({
+			dispatch({
 				user,
 				...(user.contactManager && { agent: user.contactManager }),
 			} as Omit<StoreState['user'], 'ts'>);
@@ -126,7 +129,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 	return (
 		<Screen title={title || defaultTitle} className={createClassName(styles, 'register')}>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
-				<Screen.Content full>
+				<ScreenContent full>
 					<Form
 						id='register'
 						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
@@ -190,13 +193,13 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 						{customFields && <CustomFieldsForm customFields={customFields} loading={loading} control={control} errors={errors} />}
 						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
 					</Form>
-				</Screen.Content>
+				</ScreenContent>
 			</FormScrollShadow>
-			<Screen.Footer>
+			<ScreenFooter>
 				<Button loading={loading} form='register' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 					{t('start_chat')}
 				</Button>
-			</Screen.Footer>
+			</ScreenFooter>
 		</Screen>
 	);
 };

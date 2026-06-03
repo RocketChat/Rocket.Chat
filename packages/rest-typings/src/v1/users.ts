@@ -179,6 +179,8 @@ export type UsersEndpoints = {
 		GET: (params: { fullExport?: 'true' | 'false' }) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
+			url: string | null;
+			pendingOperationsBeforeMyRequest: number;
 		};
 	};
 
@@ -196,6 +198,7 @@ export type UsersEndpoints = {
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
+				| Record<string, never>
 				| {
 						userId: string;
 				  }

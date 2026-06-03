@@ -1,5 +1,5 @@
-import dns from 'dns';
-import * as util from 'util';
+import dns from 'node:dns';
+import * as util from 'node:util';
 
 import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';

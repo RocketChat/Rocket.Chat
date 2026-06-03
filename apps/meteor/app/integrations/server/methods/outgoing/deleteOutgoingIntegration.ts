@@ -3,6 +3,7 @@ import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChangedById } from '../../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -48,6 +49,7 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 
 Meteor.methods<ServerMethods>({
 	async deleteOutgoingIntegration(integrationId) {
+		methodDeprecationLogger.method('deleteOutgoingIntegration', '9.0.0', '/v1/integrations.remove');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
