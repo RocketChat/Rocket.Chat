@@ -159,6 +159,7 @@ export const createFileUploadSettings = () =>
 			});
 			await this.add('FileUpload_S3_Region', '', {
 				type: 'string',
+				i18nDescription: 'FileUpload_S3_Region_desc',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
 					value: 'AmazonS3',
