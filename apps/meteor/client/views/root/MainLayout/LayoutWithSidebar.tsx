@@ -8,7 +8,7 @@ import AccessibilityShortcut from './AccessibilityShortcut';
 import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import SecondaryPanel from './SecondaryPanel';
-import { USE_SIDEBAR_RAIL } from './sidebarRailFlag';
+import { isSidebarRailEnabled } from './sidebarRailFlag';
 import NavBar from '../../../navbar';
 import SidebarRail from '../../../sidebar/SidebarRail';
 import SidebarRailCallRouteSync from '../../../sidebar/SidebarRail/SidebarRailCallRouteSync';
@@ -20,7 +20,7 @@ export type LayoutWithSidebarProps = { children: ReactNode };
 
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	const { isEmbedded: embeddedLayout, isMobile } = useLayout();
-	const showSidebarRail = USE_SIDEBAR_RAIL && !embeddedLayout && !isMobile;
+	const showSidebarRail = isSidebarRailEnabled() && !embeddedLayout && !isMobile;
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
