@@ -49,7 +49,9 @@ describe('generateAccessToken', () => {
 	it('should throw if caller targets another user and lacks user-generate-access-token permission', async () => {
 		hasPermissionStub.resolves(false);
 
-		await expect(generateAccessToken('targetId', 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7', { _id: 'callerId' })).to.be.rejectedWith('Not authorized');
+		await expect(generateAccessToken('targetId', 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7', { _id: 'callerId' })).to.be.rejectedWith(
+			'Not authorized',
+		);
 		sinon.assert.calledOnceWithExactly(hasPermissionStub, { _id: 'callerId' }, 'user-generate-access-token');
 	});
 
