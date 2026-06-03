@@ -41,6 +41,7 @@ export * from './models/NpsVote';
 export * from './models/OAuthAccessTokens';
 export * from './models/OAuthApps';
 export * from './models/OAuthAuthCodes';
+export * from './models/LoginCodes';
 export * from './models/OAuthRefreshTokens';
 export * from './models/OEmbedCache';
 export * from './models/Permissions';

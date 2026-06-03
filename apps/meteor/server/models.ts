@@ -50,6 +50,7 @@ import {
 	OAuthAccessTokensRaw,
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
+	LoginCodesRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -138,6 +139,7 @@ registerModel('INpsVoteModel', new NpsVoteRaw(db));
 registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
+registerModel('ILoginCodesModel', new LoginCodesRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
