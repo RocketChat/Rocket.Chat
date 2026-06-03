@@ -4,6 +4,7 @@
 		"target": "es2024",
 		"module": "esnext",
 		"lib": ["ES2023"],
+		"types": ["jest"],
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,

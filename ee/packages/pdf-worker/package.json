@@ -47,7 +47,7 @@
 		"jest": "~30.2.0",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.18",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"volta": {
 		"extends": "../../../package.json"

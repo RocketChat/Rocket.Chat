@@ -85,7 +85,7 @@
 		"rimraf": "^6.0.1",
 		"storybook": "^8.6.18",
 		"storybook-dark-mode": "^4.0.2",
-		"typescript": "~5.9.3",
+		"typescript": "~6.0.3",
 		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {

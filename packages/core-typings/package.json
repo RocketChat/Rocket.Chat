@@ -21,7 +21,7 @@
 		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
+		"typia": "~12.1.1",
 		"zod": "~4.3.6"
 	},
 	"devDependencies": {
@@ -32,8 +32,8 @@
 		"npm-run-all": "~4.1.5",
 		"prettier": "~3.3.3",
 		"rimraf": "^6.0.1",
-		"ts-patch": "^3.3.0",
-		"typescript": "~5.9.3"
+		"ts-patch": "^4.0.1",
+		"typescript": "~6.0.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

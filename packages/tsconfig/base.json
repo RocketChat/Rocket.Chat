@@ -1,6 +1,8 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
+		"ignoreDeprecations": "6.0",
+		"noUncheckedSideEffectImports": false,
 		"target": "es5",
 		"module": "commonjs",
 

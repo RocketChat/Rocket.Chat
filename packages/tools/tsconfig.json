@@ -4,7 +4,8 @@
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"lib": ["es2022"]
+		"lib": ["es2022", "dom"],
+		"types": ["node"]
 	},
 	"include": ["./src/**/*"]
 }

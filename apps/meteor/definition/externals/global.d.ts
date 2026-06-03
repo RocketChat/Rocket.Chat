@@ -1,3 +1,4 @@
+/// <reference types="meteor" />
 import type { Server } from 'net';
 
 declare global {

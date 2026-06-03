@@ -301,7 +301,7 @@
 		"tweetnacl": "^1.0.3",
 		"twilio": "~5.4.5",
 		"twitter-api-v2": "^1.29.0",
-		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
+		"typia": "~12.1.1",
 		"ua-parser-js": "~1.0.41",
 		"underscore": "^1.13.8",
 		"universal-perf-hooks": "^1.0.1",
@@ -454,7 +454,7 @@
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
 		"tsx": "~4.21.0",
-		"typescript": "~5.9.3",
+		"typescript": "~6.0.3",
 		"webpack": "~5.104.1"
 	},
 	"volta": {

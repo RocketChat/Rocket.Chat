@@ -24,7 +24,7 @@
 		"@types/node": "~22.19.17",
 		"esbuild": "~0.25.10",
 		"eslint": "~9.39.4",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"packageManager": "yarn@4.12.0",
 	"volta": {
