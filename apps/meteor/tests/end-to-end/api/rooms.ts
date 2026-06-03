@@ -105,6 +105,162 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('[/rooms.saveDraft]', () => {
+		let testChannel: IRoom;
+		let userWithoutSubscription: TestUser<IUser>;
+		let userWithoutSubscriptionCredentials: Credentials;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `rooms.saveDraft.test.${Date.now()}-${Math.random()}` })).body.channel;
+			userWithoutSubscription = await createUser({ joinDefaultChannels: false });
+			userWithoutSubscriptionCredentials = await login(userWithoutSubscription.username, password);
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), deleteUser(userWithoutSubscription)]));
+
+		it('should save a draft on the user subscription', async () => {
+			const draft = `draft-${Date.now()}`;
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('draft', draft);
+				});
+		});
+
+		it('should clear the draft from the user subscription', async () => {
+			const draft = `draft-to-clear-${Date.now()}`;
+
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft }).expect(200);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('draft', draft);
+				});
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft: '' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.not.have.property('draft');
+				});
+		});
+
+		it('should fail when the user does not have a subscription for the room', async () => {
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(userWithoutSubscriptionCredentials)
+				.send({ rid: testChannel._id, draft: `draft-${Date.now()}` })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+					expect(res.body).to.have.property('error', 'Invalid subscription [error-invalid-subscription]');
+				});
+		});
+
+		describe('max allowed message size', () => {
+			const maxAllowedSize = 10;
+			let originalMaxAllowedSize: SettingValue;
+
+			before(async () => {
+				originalMaxAllowedSize = await getSettingValueById('Message_MaxAllowedSize');
+				await updateSetting('Message_MaxAllowedSize', maxAllowedSize);
+			});
+
+			after(async () => {
+				await updateSetting('Message_MaxAllowedSize', originalMaxAllowedSize);
+			});
+
+			it('should save a draft with the maximum allowed message size', async () => {
+				const draft = 'a'.repeat(maxAllowedSize);
+
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.have.property('draft', draft);
+					});
+			});
+
+			it('should fail when the draft exceeds the maximum allowed message size', async () => {
+				await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '' }).expect(200);
+
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft: 'a'.repeat(maxAllowedSize + 1) })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.not.have.property('draft');
+					});
+			});
+		});
+	});
+
 	describe('/rooms.media', () => {
 		let testChannel: IRoom;
 		let user: TestUser<IUser>;

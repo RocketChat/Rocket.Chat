@@ -472,16 +472,6 @@ exports[`renders ExternalContact without crashing 1`] = `
                         </i>
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1rtu0k9"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1bepdyv"
-                        >
-                          
-                        </i>
-                      </div>
-                      <div
                         class="rcx-box rcx-box--full"
                       >
                         1234567890
