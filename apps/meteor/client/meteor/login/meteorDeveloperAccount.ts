@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 // eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
+import { Random } from 'meteor/random';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';

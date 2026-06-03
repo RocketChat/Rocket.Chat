@@ -3,6 +3,8 @@ import * as util from 'node:util';
 
 import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';

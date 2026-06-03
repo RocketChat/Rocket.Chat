@@ -27,7 +27,7 @@ import {
 	ajv,
 } from '@rocket.chat/rest-typings';
 import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
