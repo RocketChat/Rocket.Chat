@@ -1,15 +1,15 @@
 import { SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 type NavBarSearchItemProps = {
 	title: string;
-	avatar: ReactElement;
+	avatar: ReactNode;
 	icon: ReactNode;
-	actions?: ReactElement;
+	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
 	selected?: boolean;
-	badges?: ReactElement;
+	badges?: ReactNode;
 	clickable?: boolean;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
