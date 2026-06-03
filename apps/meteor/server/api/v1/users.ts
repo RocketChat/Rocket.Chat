@@ -1031,7 +1031,7 @@ const usersEndpoints = API.v1
 		async function action() {
 			const user = await getUserFromParams(this.bodyParams);
 
-			const data = await generateAccessToken(user._id, this.bodyParams.secret, this.userId);
+			const data = await generateAccessToken(user._id, this.bodyParams.secret, this.user);
 
 			return API.v1.success({ data });
 		},
