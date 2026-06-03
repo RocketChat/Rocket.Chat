@@ -13,6 +13,7 @@ const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobNam
 		intendedAt: new Date(),
 		name: jobName,
 		startedAt: new Date(),
+		type: 'system',
 	});
 	try {
 		const result = await fn();
