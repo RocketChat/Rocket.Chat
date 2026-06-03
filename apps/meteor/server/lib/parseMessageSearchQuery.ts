@@ -251,7 +251,8 @@ class MessageSearchQueryParser {
 		if (/^\/.+\/[imxs]*$/.test(text)) {
 			const r = text.split('/');
 
-			new RegExp(r[1], r[2]);
+			// We remove the 'x' flag that JS does not support but Mongo does
+			new RegExp(r[1], r[2].replace(/x/g, ''));
 
 			this.query.msg = {
 				$regex: r[1],
