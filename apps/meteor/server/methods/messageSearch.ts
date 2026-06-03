@@ -1,5 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -9,8 +10,9 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
-import { SystemLogger } from '../lib/logger/system';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
+
+const logger = new Logger('MessageSearch');
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -46,12 +48,25 @@ export const messageSearch = async function (
 
 	const user = (await Users.findOneById(userId)) || undefined;
 
-	const { query, options } = parseMessageSearchQuery(text, {
-		user,
-		offset,
-		limit,
-		forceRegex: settings.get('Message_AlwaysSearchRegExp'),
-	});
+	let parsedQuery: ReturnType<typeof parseMessageSearchQuery>;
+
+	try {
+		parsedQuery = parseMessageSearchQuery(text, {
+			user,
+			offset,
+			limit,
+			forceRegex: settings.get('Message_AlwaysSearchRegExp'),
+		});
+	} catch (error: unknown) {
+		if (error instanceof SyntaxError) {
+			logger.debug({ msg: 'Invalid regex gracefully caught' });
+			return { message: { docs: [] } };
+		}
+		logger.error({ msg: 'Critical error while parsing message search query', error });
+		throw error;
+	}
+
+	const { query, options } = parsedQuery;
 
 	if (Object.keys(query).length === 0) {
 		return {
@@ -76,29 +91,15 @@ export const messageSearch = async function (
 		};
 	}
 
-	try {
-		return {
-			message: {
-				docs: await Messages.find(query, {
-					// @ts-expect-error col.s.db is not typed
-					readPreference: readSecondaryPreferred(Messages.col.s.db),
-					...options,
-				}).toArray(),
-			},
-		};
-	} catch (error: unknown) {
-		if (error instanceof Error) {
-			const mongoError = error as Error & { code: number };
-
-			if (mongoError.code === 51091) {
-				SystemLogger.debug({ msg: 'Invalid regex gracefully caught at DB level', text });
-				return { message: { docs: [] } };
-			}
-		}
-
-		SystemLogger.error({ msg: 'Critical error while finding messages', error });
-		throw error;
-	}
+	return {
+		message: {
+			docs: await Messages.find(query, {
+				// @ts-expect-error col.s.db is not typed
+				readPreference: readSecondaryPreferred(Messages.col.s.db),
+				...options,
+			}).toArray(),
+		},
+	};
 };
 
 Meteor.methods<ServerMethods>({

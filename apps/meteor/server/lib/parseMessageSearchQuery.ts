@@ -250,11 +250,16 @@ class MessageSearchQueryParser {
 
 		if (/^\/.+\/[imxs]*$/.test(text)) {
 			const r = text.split('/');
+
+			new RegExp(r[1], r[2]);
+
 			this.query.msg = {
 				$regex: r[1],
 				$options: r[2],
 			};
 		} else if (this.forceRegex) {
+			new RegExp(text, 'i');
+
 			this.query.msg = {
 				$regex: text,
 				$options: 'i',
