@@ -1,4 +1,3 @@
-/// <reference types="jest" />
 import type { WizardAPI } from '../WizardContext';
 import StepsLinkedList from '../lib/StepsLinkedList';
 
