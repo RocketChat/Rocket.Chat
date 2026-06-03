@@ -21,7 +21,7 @@ export type BubbleDateProps = {
 
 // The threshold in pixels to consider a date divider as "visible" when scrolling.
 // The divider being a few pixels above the top of the viewport is safe, as it is always contained inside a message
-const DATE_DIVIDER_VISIBILITY_THRESHOLD = 100;
+const DATE_DIVIDER_VISIBILITY_THRESHOLD = 50;
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
 	const [bubbleDate, setBubbleDate] = useSafely(
@@ -83,6 +83,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 							left: ' 50%',
 							translate: '-50%',
 							zIndex: 11,
+							opacity: 0,
 						},
 					];
 				}
@@ -155,7 +156,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		5,
 		[list, margin, setBubbleDate],
 	);
-	// TODO: Make the chip "gliding" work with the new sistem.
+	// TODO: Make the chip "gliding" work with the new system.
 	// const listStyle =
 	// 	bubbleDate.show && bubbleDate.date
 	// 		? css`
