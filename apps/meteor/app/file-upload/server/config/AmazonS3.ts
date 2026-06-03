@@ -3,7 +3,6 @@ import https from 'node:https';
 
 import _ from 'underscore';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { forceDownload } from './helper';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
@@ -73,10 +72,10 @@ const configure = _.debounce(() => {
 	const AWSAccessKeyId = settings.get<string>('FileUpload_S3_AWSAccessKeyId');
 	const AWSSecretAccessKey = settings.get<string>('FileUpload_S3_AWSSecretAccessKey');
 	const URLExpiryTimeSpan = settings.get<number>('FileUpload_S3_URLExpiryTimeSpan');
-	const trimmedRegion = settings.get<string>('FileUpload_S3_Region')?.trim() ?? '';
+	const Region = settings.get<string>('FileUpload_S3_Region');
 	const ForcePathStyle = settings.get<boolean>('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	const trimmedBucketURL = settings.get<string>('FileUpload_S3_BucketURL')?.trim() ?? '';
+	const BucketURL = settings.get<string>('FileUpload_S3_BucketURL');
 
 	if (!Bucket) {
 		return;
@@ -94,18 +93,8 @@ const configure = _.debounce(() => {
 		URLExpiryTimeSpan,
 	};
 
-	let resolvedRegion: string | undefined;
-	if (trimmedRegion) {
-		resolvedRegion = trimmedRegion;
-	} else if (trimmedBucketURL) {
-		resolvedRegion = 'us-east-1';
-		SystemLogger.info({
-			msg: "S3 Region not set, falling back to 'us-east-1' for custom endpoint",
-		});
-	}
-
-	if (resolvedRegion) {
-		config.connection.region = resolvedRegion;
+	if (Region) {
+		config.connection.region = Region;
 	}
 
 	// Back-compat: AWS SDK v2 defaulted unset region to us-east-1; v3 throws.
