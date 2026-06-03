@@ -78,6 +78,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.manageUnit.selectVisibility('public');
 			await poOmnichannelUnits.manageUnit.selectDepartment(department.data.name);
 			await poOmnichannelUnits.manageUnit.selectMonitor('user2');
+			await expect(poOmnichannelUnits.manageUnit.findMonitorChipOption('user2')).toBeVisible();
 			await poOmnichannelUnits.manageUnit.btnSave.click();
 			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
