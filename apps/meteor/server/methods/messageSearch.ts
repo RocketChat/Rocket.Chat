@@ -87,12 +87,17 @@ export const messageSearch = async function (
 			},
 		};
 	} catch (error: unknown) {
-		SystemLogger.error({ msg: 'Error while finding messages', error });
-		return {
-			message: {
-				docs: [],
-			},
-		};
+		if (error instanceof Error) {
+			const mongoError = error as Error & { code: number };
+
+			if (mongoError.code === 51091) {
+				SystemLogger.debug({ msg: 'Invalid regex gracefully caught at DB level', text });
+				return { message: { docs: [] } };
+			}
+		}
+
+		SystemLogger.error({ msg: 'Critical error while finding messages', error });
+		throw error;
 	}
 };
 
