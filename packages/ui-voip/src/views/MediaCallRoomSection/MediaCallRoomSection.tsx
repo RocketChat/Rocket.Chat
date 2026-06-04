@@ -1,17 +1,14 @@
-/* eslint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
-import FakeParticipantsControl, { initialFakeTilesCount, isFakeTilesEnabled } from './FakeParticipantsControl';
 import { ToggleButton, Timer, DevicePicker, CameraPicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
-import { buildFakeParticipants } from '../../utils/fakeParticipants';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
 // threshold in CallTile so the auto-lower triggers on the same "actually
@@ -82,56 +79,13 @@ const callHeaderTimerStyles = css`
 	font-variant-numeric: tabular-nums;
 `;
 
-// Recording pill — default state shows a static red dot + "Start recording".
-// While recording, background flips to red and the dot blinks against white.
-// Hovering during recording swaps the label to "Stop recording" so the
-// affordance is obvious without an extra "stop" control.
-const recordPillStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	height: 28px;
-	padding: 0 12px;
-	border-radius: 14px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	background-color: transparent;
-	color: rgba(255, 255, 255, 0.9);
-	font-size: 12px;
-	line-height: 1;
-	cursor: pointer;
-	transition:
-		background-color 120ms ease,
-		color 120ms ease,
-		border-color 120ms ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-		color: white;
-	}
-
-	&:disabled {
-		opacity: 0.55;
-		cursor: not-allowed;
-	}
-
-	&.recording {
-		background-color: rgb(200 54 45);
-		border-color: rgb(200 54 45);
-		color: white;
-	}
-
-	&.recording:hover:not(:disabled) {
-		background-color: rgb(168 41 33);
-		border-color: rgb(168 41 33);
-	}
-`;
-
-// Take-notes pill — visually similar to the recording pill but in a blue
-// accent to signal "this is a different feature". Default state is a
-// pen/pencil glyph + "Take notes". When active, background flips solid
-// blue with the glyph in white; hovering swaps the label to "Stop taking
-// notes" — same affordance pattern as recording.
-const takeNotesPillStyles = css`
+// Shared "pill" styling for the recording + take-notes header actions. The
+// active-state colour is supplied via the --active-bg / --active-bg-hover
+// CSS variables on the consuming element. The hover-label swap (e.g.
+// "Recording…" → "Stop recording") is purely CSS — the parent renders both
+// the active and hover labels in sibling <span> elements and `:hover`
+// toggles which is visible. Avoids two pieces of React state.
+const pillStyles = css`
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
@@ -160,14 +114,26 @@ const takeNotesPillStyles = css`
 	}
 
 	&.active {
-		background-color: rgb(38 102 200);
-		border-color: rgb(38 102 200);
+		background-color: var(--rcx-pill-active-bg);
+		border-color: var(--rcx-pill-active-bg);
 		color: white;
 	}
 
 	&.active:hover:not(:disabled) {
-		background-color: rgb(28 80 165);
-		border-color: rgb(28 80 165);
+		background-color: var(--rcx-pill-active-bg-hover);
+		border-color: var(--rcx-pill-active-bg-hover);
+	}
+
+	/* Hover-label swap: parent renders both the idle and hover labels as
+	   children of [data-hover-swap]; CSS toggles which is visible. */
+	[data-hover-swap] > [data-hover] {
+		display: none;
+	}
+	&:hover [data-hover-swap] > [data-hover] {
+		display: inline;
+	}
+	&:hover [data-hover-swap] > [data-idle] {
+		display: none;
 	}
 `;
 
@@ -300,7 +266,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingBusy, setRecordingBusy] = useState(false);
-	const [recordHover, setRecordHover] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
 
@@ -311,7 +276,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const [notesAvailable, setNotesAvailable] = useState(false);
 	const [notesEnabled, setNotesEnabled] = useState(false);
 	const [notesBusy, setNotesBusy] = useState(false);
-	const [notesHover, setNotesHover] = useState(false);
 
 	// Fullscreen target is the call section's root. We listen to
 	// `fullscreenchange` rather than tracking state purely through the
@@ -334,26 +298,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		if (!node) return;
 		void node.requestFullscreen().catch(() => undefined);
 	}, []);
-
-	// Dev-only: simulate N additional remote participants for grid-layout
-	// testing. Toggled on by `?fakeTiles=N` or `localStorage.RCFakeTiles`.
-	// When off, all the related state stays at 0 / no-op so production
-	// users never see anything.
-	const fakeTilesEnabled = useMemo(() => isFakeTilesEnabled(), []);
-	const [fakeTilesCount, setFakeTilesCount] = useState(() => (isFakeTilesEnabled() ? initialFakeTilesCount() : 0));
-	const fakeRemotes = useMemo(() => (fakeTilesEnabled ? buildFakeParticipants(fakeTilesCount) : []), [fakeTilesEnabled, fakeTilesCount]);
-	const onChangeFakeTiles = useCallback((next: number) => {
-		setFakeTilesCount(next);
-		try {
-			window.localStorage.setItem('RCFakeTiles', String(next));
-		} catch {
-			/* sandboxed window */
-		}
-	}, []);
-	const effectiveRemoteParticipants = useMemo(
-		() => (fakeRemotes.length > 0 ? [...remoteParticipants, ...fakeRemotes] : remoteParticipants),
-		[remoteParticipants, fakeRemotes],
-	);
 
 	// Plays a chime on every client whenever the polled recording state
 	// transitions — ascending for off→on, descending mirror for on→off.
@@ -605,30 +549,48 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 						<Box
 							is='button'
 							type='button'
-							className={[recordPillStyles, isRecording ? 'recording' : null]}
+							className={[pillStyles, isRecording ? 'active' : null]}
+							style={{ '--rcx-pill-active-bg': 'rgb(200 54 45)', '--rcx-pill-active-bg-hover': 'rgb(168 41 33)' } as React.CSSProperties}
 							onClick={onToggleRecording}
 							disabled={recordingBusy}
-							onMouseEnter={() => setRecordHover(true)}
-							onMouseLeave={() => setRecordHover(false)}
 							title={isRecording ? t('Stop_recording') : t('Start_recording')}
 						>
 							<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
-							<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
+							{isRecording ? (
+								<Box is='span' data-hover-swap>
+									<Box is='span' data-idle>{`${t('Recording')}…`}</Box>
+									<Box is='span' data-hover>
+										{t('Stop_recording')}
+									</Box>
+								</Box>
+							) : (
+								<Box is='span'>{t('Start_recording')}</Box>
+							)}
 						</Box>
 					)}
 					{notesAvailable && (
 						<Box
 							is='button'
 							type='button'
-							className={[takeNotesPillStyles, notesEnabled ? 'active' : null]}
+							className={[pillStyles, notesEnabled ? 'active' : null]}
+							style={{ '--rcx-pill-active-bg': 'rgb(38 102 200)', '--rcx-pill-active-bg-hover': 'rgb(28 80 165)' } as React.CSSProperties}
 							onClick={onToggleTakeNotes}
 							disabled={notesBusy}
-							onMouseEnter={() => setNotesHover(true)}
-							onMouseLeave={() => setNotesHover(false)}
 							title={notesEnabled ? 'Stop taking notes' : 'Take notes'}
 						>
 							<Icon name='edit' size='x14' />
-							<Box is='span'>{notesEnabled ? (notesHover ? 'Stop taking notes' : 'Taking notes…') : 'Take notes'}</Box>
+							{notesEnabled ? (
+								<Box is='span' data-hover-swap>
+									<Box is='span' data-idle>
+										Taking notes…
+									</Box>
+									<Box is='span' data-hover>
+										Stop taking notes
+									</Box>
+								</Box>
+							) : (
+								<Box is='span'>Take notes</Box>
+							)}
 						</Box>
 					)}
 					<Box
@@ -645,13 +607,12 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 			</Box>
 			<CallStage
 				localParticipant={localParticipant}
-				remoteParticipants={effectiveRemoteParticipants}
+				remoteParticipants={remoteParticipants}
 				onStopLocalScreenShare={onToggleScreenSharing}
 				handPositions={handPositions}
 				reactionsByParticipant={reactionsByParticipant}
 				captionsByParticipant={activeCaptions}
 			/>
-			{fakeTilesEnabled && <FakeParticipantsControl count={fakeTilesCount} onChange={onChangeFakeTiles} />}
 			<ActionStrip
 				rightSlot={
 					!hideChatToggle ? (
