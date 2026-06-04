@@ -1,4 +1,5 @@
 import { isThreadMessage, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -50,6 +51,9 @@ export const MessageListItem = ({
 					ref={ref}
 					data-id={message.ts}
 					role='listitem'
+					className={css`
+						transition: opacity 0.2s ease-out;
+					`}
 					{...(newDay && {
 						'data-time': new Date(message.ts)
 							.toISOString()
