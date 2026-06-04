@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, lstatSync, symlinkSync } from 'fs';
 import path from 'path';
 
 import { settings } from '../../../../app/settings/server';
@@ -78,6 +78,58 @@ const collectAncestorNodeModules = (start: string): string[] => {
 	return dirs;
 };
 
+// Find the npm-installed deps dir Meteor produces at build time — i.e.
+// `programs/server/npm/node_modules`. That's where Meteor stashes the
+// runtime npm deps the app uses, INCLUDING the worker's pure-ESM imports
+// (@google/genai, @livekit/agents, @livekit/rtc-node, plus their transitive
+// trees). The catch: this directory is NOT on the ESM resolver's parent
+// chain when it walks up from the worker file in
+// `assets/app/livekit-agent/`, so without help the worker can't find any
+// of those packages. We solve that by symlinking the worker dir's
+// `node_modules` to this location once at supervisor startup. Walk up from
+// the worker location looking for `npm/node_modules` to handle the various
+// places Meteor lays this out in dev vs prod.
+const findMeteorNpmNodeModules = (workerPath: string): string | null => {
+	const probes = [path.dirname(workerPath), process.cwd(), __dirname];
+	for (const probe of probes) {
+		let cur = probe;
+		for (let i = 0; i < 20; i += 1) {
+			const candidate = path.join(cur, 'npm', 'node_modules');
+			if (existsSync(candidate)) return candidate;
+			const parent = path.dirname(cur);
+			if (parent === cur) break;
+			cur = parent;
+		}
+	}
+	return null;
+};
+
+// Make sure the worker's directory has a `node_modules` entry pointing at
+// the meteor bundle's npm/node_modules so the ESM resolver finds the
+// worker's bare-specifier imports. Idempotent — if a directory or symlink
+// already exists (local dev, repeat starts), leaves it alone.
+const ensureWorkerDepsSymlink = (workerPath: string): void => {
+	const workerDir = path.dirname(workerPath);
+	const link = path.join(workerDir, 'node_modules');
+	try {
+		lstatSync(link);
+		return; // already exists (real dir, symlink, etc.) — don't touch
+	} catch {
+		/* not present, proceed */
+	}
+	const target = findMeteorNpmNodeModules(workerPath);
+	if (!target) {
+		SystemLogger.warn({ msg: '[livekit-agent] meteor npm/node_modules not found; worker may fail to resolve imports', workerDir });
+		return;
+	}
+	try {
+		symlinkSync(target, link, 'dir');
+		SystemLogger.info({ msg: '[livekit-agent] linked worker deps', link, target });
+	} catch (err) {
+		SystemLogger.warn({ msg: '[livekit-agent] failed to symlink worker deps; worker may fail', err: String(err), link, target });
+	}
+};
+
 const computeEnv = (workerPath: string): Record<string, string> | null => {
 	const lk = getLiveKitConfig();
 	const geminiKey = settings.get<string>('VideoConf_LiveKit_Agent_Gemini_Api_Key') || '';
@@ -137,6 +189,7 @@ const spawnWorker = (): void => {
 		SystemLogger.warn('[livekit-agent] worker.mjs not found in expected locations; not starting');
 		return;
 	}
+	ensureWorkerDepsSymlink(workerPath);
 	const env = computeEnv(workerPath);
 	if (!env) {
 		SystemLogger.warn('[livekit-agent] missing required settings (LK / Gemini); not starting');
@@ -152,13 +205,22 @@ const spawnWorker = (): void => {
 	const startedAt = Date.now();
 
 	const tag = `[livekit-agent:${child.pid}]`;
+	// Watch stderr for an unrecoverable native-binding load failure (musl
+	// host without a compatible glibc compat layer, missing platform
+	// binary, etc.). Respawning a worker that can't even dlopen its NAPI
+	// dep loops forever — flip `desired` to false instead.
+	let sawDlopenFailure = false;
 	child.stdout?.on('data', (buf: Buffer) => {
 		const text = buf.toString().trimEnd();
 		if (text) SystemLogger.info(`${tag} ${text}`);
 	});
 	child.stderr?.on('data', (buf: Buffer) => {
 		const text = buf.toString().trimEnd();
-		if (text) SystemLogger.warn(`${tag} ${text}`);
+		if (!text) return;
+		if (text.includes('ERR_DLOPEN_FAILED') || text.includes('Cannot find native binding')) {
+			sawDlopenFailure = true;
+		}
+		SystemLogger.warn(`${tag} ${text}`);
 	});
 
 	// After STABLE_RUN_MS of uptime we consider the spawn a success and
@@ -174,6 +236,13 @@ const spawnWorker = (): void => {
 		state.stableTimer = null;
 		state.child = null;
 		if (!state.desired) return;
+		if (sawDlopenFailure) {
+			SystemLogger.warn({
+				msg: '[livekit-agent] worker failed to load its native binding; not respawning. Install a glibc-compatible runtime (e.g. sgerrand alpine-pkg-glibc) or switch to the Debian image.',
+			});
+			state.desired = false;
+			return;
+		}
 		const delay = BACKOFF_STEPS_MS[Math.min(state.restarts, BACKOFF_STEPS_MS.length - 1)];
 		state.restarts += 1;
 		SystemLogger.info(`[livekit-agent] respawning in ${delay}ms (attempt ${state.restarts})`);

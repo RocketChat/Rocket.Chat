@@ -1,3 +1,149 @@
+# =============================================================================
+# LiveKit FFI binding — built from source for musl.
+# =============================================================================
+# @livekit/rtc-ffi-bindings (used by the in-call transcription agent) only
+# publishes glibc Linux binaries on npm. To avoid running glibc-only binaries
+# through a compat layer on Alpine, we compile the binding natively against
+# musl from the upstream source for whichever arch buildx is producing.
+#
+# Output: rtc-node.linux-<x64|arm64>-musl.node, copied into
+# `@livekit/rtc-ffi-bindings/` later. The NAPI loader's first lookup picks
+# it up — no platform-specific package install needed at runtime.
+#
+# Pinned to ${LK_FFI_VER} which must match the version Meteor resolves into
+# `programs/server/npm/node_modules/`. Bump both together when LiveKit
+# upgrades.
+FROM rust:1-alpine3.20 AS lk-ffi-build
+
+ARG LK_FFI_VER=0.12.60
+
+# Build deps:
+#   git/curl   — fetch the upstream source
+#   build-base — gcc, make, libc-dev (musl)
+#   protobuf-dev / protoc — the FFI crate generates protobuf code
+#   clang/lld  — some webrtc-rs sub-crates expect a C++ toolchain
+#   clang17-libclang — `libclang.so` for bindgen (yuv-sys uses bindgen);
+#                      on alpine 3.20 the `clang` meta-package is clang17,
+#                      so the matching libclang is `clang17-libclang`.
+#   openssl-dev pkgconfig — TLS deps
+#   perl       — openssl build script needs it
+#   cmake / ninja / nasm / yasm — webrtc / x264 / opus build scripts
+#   glib-dev   — glib-sys via webrtc-rs's desktop audio/IPC integration
+#   dbus-dev   — webrtc-rs's session-bus access on Linux
+#   alsa-lib-dev pulseaudio-dev — webrtc audio backends
+#   linux-headers — kernel headers some -sys crates probe
+RUN apk add --no-cache \
+    git curl \
+    build-base \
+    protobuf protobuf-dev \
+    clang clang17-libclang lld \
+    openssl-dev pkgconfig \
+    perl cmake ninja nasm yasm \
+    glib-dev dbus-dev \
+    alsa-lib-dev pulseaudio-dev \
+    linux-headers
+
+WORKDIR /src
+
+# LiveKit's monorepo tags the FFI crate as `livekit-ffi/v<VERSION>` (the
+# slash + v prefix is the modern convention; older versions used
+# `rust-sdks/livekit-ffi@<VERSION>`). We try both and bail explicitly if
+# neither resolves so a future format change is loud, not silent.
+#
+# `--recurse-submodules --shallow-submodules` pulls `yuv-sys/libyuv` and
+# `livekit-protocol/protocol`, which the respective build scripts read at
+# compile time. Without this, `yuv-sys` panics on a missing libyuv source.
+RUN set -e ; \
+    for ref in \
+        "livekit-ffi/v${LK_FFI_VER}" \
+        "rust-sdks/livekit-ffi@${LK_FFI_VER}" ; do \
+        if git -c advice.detachedHead=false clone \
+            --depth 1 --branch "$ref" \
+            --recurse-submodules --shallow-submodules \
+            https://github.com/livekit/rust-sdks.git . 2>&1 | tee /tmp/clone.log ; then \
+            if [ -d livekit-ffi-node-bindings ]; then \
+                echo "Cloned tag: $ref" ; \
+                break ; \
+            fi ; \
+        fi ; \
+        echo "Failed for $ref; cleaning and trying next…" ; \
+        rm -rf -- ./* ./.* 2>/dev/null || true ; \
+    done ; \
+    test -d livekit-ffi-node-bindings \
+        || (echo "no LK source dir found for ${LK_FFI_VER}" >&2 ; cat /tmp/clone.log >&2 ; exit 1) ; \
+    test -n "$(ls -A yuv-sys/libyuv 2>/dev/null)" \
+        || (echo "yuv-sys/libyuv submodule is empty after clone" >&2 ; exit 1)
+
+WORKDIR /src/livekit-ffi-node-bindings
+
+# alpine's rust toolchain targets musl natively, so a plain `cargo build`
+# already produces the musl variant. Use the network-via-CLI form so cargo
+# survives behind buildx's network setup.
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+# Fortify-source stubs. webrtc-sys downloads a prebuilt `libwebrtc.a` from
+# LiveKit's GH releases compiled against glibc with `_FORTIFY_SOURCE=2`,
+# which embeds calls to `__memcpy_chk`, `__vsnprintf_chk`, and `__fdelt_chk`.
+# musl doesn't ship these. Rather than maintain a fork, swap libc, or
+# compile webrtc from source (multi-hour Chromium build), we provide
+# trivial pass-through stubs and link them into the final cdylib so the
+# loader can resolve them at startup.
+#
+# The stubs intentionally skip the runtime length-check fortify is supposed
+# to do — but that protection is already absent on musl by design (musl
+# considers fortify a glibc-ism), and the prebuilt webrtc is the only thing
+# relying on these symbols, so we lose nothing we had.
+RUN mkdir -p /opt/shims && cat > /opt/shims/fortify-stubs.c <<'EOF'
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+
+void *__memcpy_chk(void *dest, const void *src, size_t len, size_t destlen) {
+    (void)destlen;
+    return memcpy(dest, src, len);
+}
+
+int __vsnprintf_chk(char *str, size_t maxlen, int flag, size_t strlen,
+                    const char *format, va_list args) {
+    (void)flag; (void)strlen;
+    return vsnprintf(str, maxlen, format, args);
+}
+
+long int __fdelt_chk(long int d) {
+    return d;
+}
+EOF
+RUN gcc -c -fPIC -O2 -o /opt/shims/fortify-stubs.o /opt/shims/fortify-stubs.c
+
+# Disable static-CRT linking — Alpine's rustc defaults to linking musl
+# statically into every output, which makes the cdylib crate-type illegal
+# (you can't have a shared library with a statically-linked libc). With
+# `-crt-static` musl is dynamically linked, cdylib output is allowed, and
+# the resulting .so is the standard musl-dynamic shape we want.
+#
+# `link-arg` pulls in the fortify stub object at the final link step.
+ENV RUSTFLAGS="-C target-feature=-crt-static -C link-arg=/opt/shims/fortify-stubs.o"
+RUN cargo build --release
+
+# Find the produced shared library and rename to NAPI's expected filename.
+# Cargo names cdylibs `lib<name>.so` from the crate's `lib.name` (defaults to
+# the package name with `-` → `_`); `find` makes us robust to either form.
+# The repo is a cargo workspace, so output lands in the workspace `target/`
+# at `/src/target/release`, not under the crate dir.
+# Mapping apk arch → Node arch: x86_64→x64, aarch64→arm64.
+RUN ARCH_TAG="$(apk --print-arch | sed 's/x86_64/x64/;s/aarch64/arm64/')" \
+    && so="$(find /src/target/release -maxdepth 1 -type f -name '*.so' | head -n1)" \
+    && if [ -z "$so" ]; then \
+         echo 'no .so produced by cargo build' >&2 ; \
+         ls -la /src/target/release >&2 || true ; \
+         exit 1 ; \
+       fi \
+    && cp "$so" "/rtc-node.linux-${ARCH_TAG}-musl.node" \
+    && echo "Produced /rtc-node.linux-${ARCH_TAG}-musl.node from $so"
+
+# =============================================================================
+# Main builder — meteor bundle prep
+# =============================================================================
 FROM node:22.22.3-alpine3.23 AS builder
 
 ENV LANG=C.UTF-8
@@ -20,6 +166,16 @@ RUN cd /app/bundle/programs/server \
     && find /app/bundle/programs/server/npm/node_modules -type f -name '*.map' -delete \
     && find /app/bundle/programs/web.browser -type f -name '*.map' -delete
 
+# Drop the freshly-built musl native binding into @livekit/rtc-ffi-bindings/.
+# The NAPI loader's first lookup is `./rtc-node.linux-<arch>-musl.node` in
+# the package dir, so this satisfies it without involving the platform-
+# specific sibling packages at all.
+COPY --from=lk-ffi-build /rtc-node.linux-*-musl.node \
+    /app/bundle/programs/server/npm/node_modules/@livekit/rtc-ffi-bindings/
+
+# =============================================================================
+# Runtime image
+# =============================================================================
 FROM node:22.22.3-alpine3.23
 
 LABEL maintainer="buildmaster@rocket.chat"
@@ -38,7 +194,11 @@ ENV LANG=C.UTF-8
 # and more complex or security conscious daemons run as dedicated users.
 # The daemon user is also handy for locally installed daemons.
 # """
-RUN apk add --no-cache shadow deno ttf-dejavu \
+# glib + libstdc++ are runtime deps of the musl-built LiveKit FFI binding:
+# the prebuilt libwebrtc.a it embeds links against gio/gobject/glib (used by
+# its desktop/audio code paths) and the C++ runtime. Both are tiny enough
+# that we add them unconditionally rather than gate on the LK feature.
+RUN apk add --no-cache shadow deno ttf-dejavu glib libstdc++ \
     # Update OpenSSL
     # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     && apk upgrade --no-cache openssl \

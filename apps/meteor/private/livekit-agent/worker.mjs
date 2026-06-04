@@ -34,6 +34,42 @@ const log = (level, msg, extra) => {
 	console.log(JSON.stringify({ ts: new Date().toISOString(), level, msg, ...extra }));
 };
 
+// Bootstrap-time visibility: which build of @livekit/rtc-node loaded, and
+// what node + arch we're on. If the musl-built FFI binding is misbehaving
+// (no events fire, AudioStream never yields, etc.) the first thing we want
+// to confirm is which library file was actually dlopen'd.
+try {
+	const fs = await import('node:fs/promises');
+	const path = await import('node:path');
+	const resolveUrl = (spec) => {
+		try {
+			return import.meta.resolve(spec);
+		} catch {
+			return '';
+		}
+	};
+	const stripFile = (u) => String(u || '').replace(/^file:\/\//, '');
+	const rtcNodeMain = stripFile(resolveUrl('@livekit/rtc-node'));
+	const ffiUrl = resolveUrl('@livekit/rtc-ffi-bindings');
+	const bindingsDir = ffiUrl ? path.dirname(stripFile(ffiUrl)) : '';
+	const bindings = bindingsDir
+		? await fs
+				.readdir(bindingsDir)
+				.then((entries) => entries.filter((e) => e.endsWith('.node')))
+				.catch(() => [])
+		: [];
+	log('info', 'worker boot', {
+		nodeVersion: process.version,
+		platform: process.platform,
+		arch: process.arch,
+		rtcNodeMain,
+		bindingsDir,
+		bindings,
+	});
+} catch (err) {
+	log('warn', 'boot diag failed', { err: String(err) });
+}
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_API_KEY) {
 	throw new Error('GEMINI_API_KEY is required');
@@ -214,14 +250,38 @@ function startTranscribeTrack(ctx, track, identity, languageLabel) {
 			languageLabel,
 		);
 
-		const audioStream = new AudioStream(track, { sampleRate: TARGET_SAMPLE_RATE, numChannels: 1 });
+		let audioStream;
+		try {
+			audioStream = new AudioStream(track, { sampleRate: TARGET_SAMPLE_RATE, numChannels: 1 });
+			log('info', 'AudioStream constructed', { identity, trackSid: track.sid });
+		} catch (err) {
+			log('warn', 'AudioStream construct failed', { identity, err: String(err) });
+			throw err;
+		}
 		let framesSent = 0;
 		const frameLog = setInterval(() => {
 			log('info', 'audio frames pumped', { identity, framesSent });
 		}, 30000);
+		// If we don't see a first frame within 5s of subscribing, the FFI
+		// binding is producing the AudioStream object but not feeding it
+		// any RTP — a tell-tale sign of a broken native binding.
+		const firstFrameTimer = setTimeout(() => {
+			if (framesSent === 0) {
+				log('warn', 'no audio frames after 5s', { identity, trackSid: track.sid });
+			}
+		}, 5000);
 		try {
 			for await (const frame of audioStream) {
 				if (closed) break;
+				if (framesSent === 0) {
+					log('info', 'first audio frame', {
+						identity,
+						bytes: frame.data.byteLength,
+						sampleRate: frame.sampleRate,
+						channels: frame.channels,
+					});
+					clearTimeout(firstFrameTimer);
+				}
 				const data = Buffer.from(frame.data.buffer, frame.data.byteOffset, frame.data.byteLength);
 				session.sendRealtimeInput({
 					audio: { data: data.toString('base64'), mimeType: `audio/pcm;rate=${TARGET_SAMPLE_RATE}` },
@@ -231,6 +291,7 @@ function startTranscribeTrack(ctx, track, identity, languageLabel) {
 		} catch (err) {
 			log('warn', 'audio pump ended', { identity, err: String(err) });
 		} finally {
+			clearTimeout(firstFrameTimer);
 			clearInterval(frameLog);
 			closed = true;
 			try {
@@ -247,18 +308,6 @@ function startTranscribeTrack(ctx, track, identity, languageLabel) {
 export default defineAgent({
 	entry: async (ctx) => {
 		log('info', 'job received');
-		await ctx.connect(undefined, AutoSubscribe.AUDIO_ONLY);
-		log('info', 'agent connected', { room: ctx.room.name, model: GEMINI_LIVE_MODEL });
-
-		if (ROOM_NAME_PREFIX && !ctx.room.name?.startsWith(ROOM_NAME_PREFIX)) {
-			log('info', 'skipping non-matching room', { room: ctx.room.name, prefix: ROOM_NAME_PREFIX });
-			try {
-				await ctx.room.disconnect();
-			} catch {
-				/* already disconnecting */
-			}
-			return;
-		}
 
 		// Transcription is gated on TWO independent signals:
 		//   - `captions-request` from any client (per-user: someone wants
@@ -309,6 +358,46 @@ export default defineAgent({
 				activeTranscribers.delete(identity);
 			}
 		};
+
+		ctx.room.on('participantConnected', (participant) => {
+			log('info', 'participantConnected', {
+				identity: participant.identity,
+				kind: participant.kind,
+				numPublications: participant.trackPublications?.size ?? 0,
+			});
+		});
+
+		ctx.room.on('trackPublished', (publication, participant) => {
+			log('info', 'trackPublished', {
+				identity: participant.identity,
+				kind: publication.kind,
+				sid: publication.sid,
+				subscribed: !!publication.track,
+			});
+			// AutoSubscribe.AUDIO_ONLY only subscribes to tracks that
+			// exist at ctx.connect() time — the framework iterates the
+			// remoteParticipants snapshot once and calls setSubscribed on
+			// existing audio pubs. Tracks published AFTER the agent joins
+			// (e.g. a user that joined the call after the agent did) are
+			// announced via `trackPublished` but never subscribed. We
+			// patch the gap by subscribing here.
+			//   ref: node_modules/@livekit/agents/dist/job.js (JobContext.connect)
+			if (publication.kind === TrackKind.KIND_AUDIO && !publication.track) {
+				try {
+					publication.setSubscribed?.(true);
+					log('info', 'manual subscribe requested', {
+						identity: participant.identity,
+						sid: publication.sid,
+					});
+				} catch (err) {
+					log('warn', 'manual subscribe failed', {
+						identity: participant.identity,
+						sid: publication.sid,
+						err: String(err),
+					});
+				}
+			}
+		});
 
 		ctx.room.on('trackSubscribed', (track, _publication, participant) => {
 			if (track.kind !== TrackKind.KIND_AUDIO) return;
@@ -396,6 +485,61 @@ export default defineAgent({
 				}
 			}
 		});
+
+		// Connect AFTER handlers are registered. ctx.connect() joins the
+		// room and (with AutoSubscribe.AUDIO_ONLY) triggers subscription
+		// to existing audio tracks; those `trackSubscribed` events fire
+		// synchronously during the join handshake. If we registered the
+		// handler after connect, we'd miss every track that was already
+		// being published when the agent joined — leaving
+		// `subscribedAudio` empty and silently transcribing nothing.
+		await ctx.connect(undefined, AutoSubscribe.AUDIO_ONLY);
+		log('info', 'agent connected', { room: ctx.room.name, model: GEMINI_LIVE_MODEL });
+
+		if (ROOM_NAME_PREFIX && !ctx.room.name?.startsWith(ROOM_NAME_PREFIX)) {
+			log('info', 'skipping non-matching room', { room: ctx.room.name, prefix: ROOM_NAME_PREFIX });
+			try {
+				await ctx.room.disconnect();
+			} catch {
+				/* already disconnecting */
+			}
+			return;
+		}
+
+		// Snapshot of room state right after join. Lets us tell from the
+		// log whether the SDK believes anyone is publishing audio at all —
+		// distinguishes "no peers" / "peers but no audio publications" /
+		// "audio publications but not subscribed" without re-reproducing.
+		try {
+			const snapshot = [];
+			for (const participant of ctx.room.remoteParticipants.values()) {
+				const pubs = [];
+				for (const pub of participant.trackPublications.values()) {
+					pubs.push({ kind: pub.kind, sid: pub.sid, subscribed: !!pub.track });
+				}
+				snapshot.push({ identity: participant.identity, kind: participant.kind, pubs });
+			}
+			log('info', 'room snapshot', {
+				numRemote: ctx.room.remoteParticipants.size,
+				remote: snapshot,
+			});
+		} catch (err) {
+			log('warn', 'room snapshot failed', { err: String(err) });
+		}
+
+		// Belt + suspenders: enumerate the room's current remote tracks
+		// in case any subscribed before our handler was reached on the
+		// event loop. This is the same logic the handler runs, just
+		// driven by the SDK's authoritative view.
+		for (const participant of ctx.room.remoteParticipants.values()) {
+			for (const pub of participant.trackPublications.values()) {
+				if (pub.track?.kind === TrackKind.KIND_AUDIO && !subscribedAudio.has(participant.identity)) {
+					log('info', 'trackSubscribed (initial sync)', { identity: participant.identity });
+					subscribedAudio.set(participant.identity, pub.track);
+					if (shouldTranscribe()) ensureTranscriberForIdentity(participant.identity);
+				}
+			}
+		}
 	},
 });
 
