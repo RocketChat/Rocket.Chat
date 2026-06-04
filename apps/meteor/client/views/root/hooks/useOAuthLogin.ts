@@ -32,13 +32,13 @@ export const useOAuthLogin = () => {
 				}
 
 				await loginWithToken(loginToken);
-			} catch (error) {
-				console.error('Failed to redeem login code for client redirect', error);
-				router.navigate('/login', { replace: true });
-			} finally {
+
 				timeout = setTimeout(() => {
 					router.navigate('/home', { replace: true });
 				}, 0);
+			} catch (error) {
+				console.error('Failed to redeem login code for client redirect', error);
+				router.navigate('/login', { replace: true });
 			}
 		};
 

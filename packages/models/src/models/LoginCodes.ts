@@ -29,8 +29,8 @@ export class LoginCodesRaw extends BaseRaw<ILoginCode> implements ILoginCodesMod
 		return code;
 	}
 
-	findOneNotExpiredByCode(code: string): Promise<ILoginCode | null> {
-		return this.findOne({
+	findOneNotExpiredByCodeAndDelete(code: string): Promise<ILoginCode | null> {
+		return this.findOneAndDelete({
 			_id: code,
 			expireAt: { $gt: new Date() },
 		});
