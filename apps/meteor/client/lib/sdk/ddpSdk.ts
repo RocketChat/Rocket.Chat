@@ -3,7 +3,7 @@ import EJSON from 'ejson';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { createMeteorBackedSdk } from './meteorBackedSdk';
+import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
 import { getRootUrl } from '../meteorRuntimeConfig';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from './storage';
@@ -53,6 +53,14 @@ export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
 			instance = DDPSDK.create(computeDdpUrl());
+			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
+			try {
+				instance.storage = createMeteorBackedStorage();
+			} catch (error) {
+				// DDPSDK.create may return a sealed/frozen instance under strict mode; failing
+				// to attach the storage hook must not abort SDK bootstrap.
+				console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
+			}
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
