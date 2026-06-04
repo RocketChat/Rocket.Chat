@@ -1429,14 +1429,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
+	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string , alert: boolean): Promise<UpdateResult | Document> {
 		const query = { rid: roomId };
 
 		const update: UpdateFilter<ISubscription> = {
 			$set: {
 				name,
 				fname,
-				alert: true,
+				alert,
 			},
 		};
 

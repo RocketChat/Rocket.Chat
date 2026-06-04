@@ -246,7 +246,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findArchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	findArchivedByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	unarchiveByIds(ids: string[]): Promise<UpdateResult | Document>;
-	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
+	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string, alert: boolean): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
