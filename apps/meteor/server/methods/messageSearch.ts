@@ -58,11 +58,10 @@ export const messageSearch = async function (
 			forceRegex: settings.get('Message_AlwaysSearchRegExp'),
 		});
 	} catch (error: unknown) {
+		logger.error({ msg: 'Error while parsing message search query', error });
 		if (error instanceof SyntaxError) {
-			logger.debug({ msg: 'Invalid regex gracefully caught' });
 			return { message: { docs: [] } };
 		}
-		logger.error({ msg: 'Critical error while parsing message search query', error });
 		throw error;
 	}
 
