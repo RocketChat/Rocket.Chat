@@ -90,15 +90,20 @@ export const messageSearch = async function (
 		};
 	}
 
-	return {
-		message: {
-			docs: await Messages.find(query, {
-				// @ts-expect-error col.s.db is not typed
-				readPreference: readSecondaryPreferred(Messages.col.s.db),
-				...options,
-			}).toArray(),
-		},
-	};
+	try {
+		return {
+			message: {
+				docs: await Messages.find(query, {
+					// @ts-expect-error col.s.db is not typed
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			},
+		};
+	} catch (error) {
+		logger.error({ msg: 'Error while finding messages', error });
+		throw new Error('error-while-finding-messages', { cause: error });
+	}
 };
 
 Meteor.methods<ServerMethods>({
