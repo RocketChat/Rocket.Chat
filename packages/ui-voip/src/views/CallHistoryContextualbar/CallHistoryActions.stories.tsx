@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Decorator, Meta, StoryObj } from '@storybook/react';
 
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
@@ -37,8 +37,8 @@ const getArgs = (index: number) => {
 	return Object.fromEntries(actionList.slice(0, index).map((action) => [action, noop])) as HistoryActionCallbacks;
 };
 
-const getDecorator = (state: State) => {
-	return (Story: StoryFn) => (
+const getDecorator = (state: State): Decorator => {
+	return (Story) => (
 		<MockedMediaCallProvider state={state}>
 			<Story />
 		</MockedMediaCallProvider>

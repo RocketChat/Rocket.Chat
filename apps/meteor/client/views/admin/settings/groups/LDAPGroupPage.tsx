@@ -3,7 +3,7 @@ import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.cha
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +53,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 		try {
 			await testConnection();
 			let username = '';
-			const handleChangeUsername = (event: FormEvent<HTMLInputElement>): void => {
+			const handleChangeUsername = (event: ChangeEvent<HTMLInputElement>): void => {
 				username = event.currentTarget.value;
 			};
 
@@ -71,7 +71,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					wrapperFunction={(props) => (
 						<Box
 							is='form'
-							onSubmit={(e: FormEvent) => {
+							onSubmit={(e) => {
 								e.preventDefault();
 								confirmSearch();
 							}}

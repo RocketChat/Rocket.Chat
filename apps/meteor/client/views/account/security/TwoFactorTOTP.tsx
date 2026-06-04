@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
-import type { ComponentPropsWithoutRef, FormEvent } from 'react';
+import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
 import { useState, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -92,7 +92,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
 	});
 
-	const handleToggleTotp = useEffectEvent(async (e: FormEvent<HTMLInputElement>) => {
+	const handleToggleTotp = useEffectEvent(async (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.currentTarget?.checked) {
 			void enableTotp();
 		} else {

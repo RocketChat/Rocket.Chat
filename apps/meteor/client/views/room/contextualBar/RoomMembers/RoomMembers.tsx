@@ -15,7 +15,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
+import type { ChangeEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
 import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
@@ -34,7 +34,7 @@ type RoomMembersProps = {
 	isSuccess: boolean;
 	text: string;
 	type: string;
-	setText: FormEventHandler<HTMLInputElement>;
+	setText: ChangeEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
 	members: RoomMember[];
 	total: number;

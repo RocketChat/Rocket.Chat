@@ -1,5 +1,5 @@
 import { Box, Field, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
-import type { SyntheticEvent } from 'react';
+import type { ChangeEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -18,7 +18,7 @@ function BooleanSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: BooleanSettingInputProps) {
-	const handleChange = (event: SyntheticEvent<HTMLInputElement>): void => {
+	const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		const value = event.currentTarget.checked;
 		onChangeValue?.(value);
 	};

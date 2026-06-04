@@ -20,7 +20,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ComponentProps, FormEvent } from 'react';
+import type { ChangeEvent, ComponentProps } from 'react';
 import { useState, useCallback, useId } from 'react';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
@@ -76,7 +76,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
 				<Box
 					is='form'
-					onSubmit={(e: FormEvent) => {
+					onSubmit={(e) => {
 						e.preventDefault();
 						handleSaveStatus();
 					}}

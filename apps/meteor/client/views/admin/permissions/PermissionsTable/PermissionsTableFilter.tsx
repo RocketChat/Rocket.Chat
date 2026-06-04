@@ -1,6 +1,6 @@
 import { TextInput } from '@rocket.chat/fuselage';
 import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,7 @@ const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: stri
 		onChange(debouncedFilter);
 	}, [debouncedFilter, onChange]);
 
-	const handleFilter = useEffectEvent(({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => {
+	const handleFilter = useEffectEvent(({ currentTarget: { value } }: ChangeEvent<HTMLInputElement>) => {
 		setFilter(value);
 	});
 

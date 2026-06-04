@@ -2,7 +2,7 @@ import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
-import type { ComponentProps, SetStateAction, FormEvent } from 'react';
+import type { ComponentProps, SetStateAction, ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -130,11 +130,11 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps) =>
 		onChange?.(newRange);
 	});
 
-	const handleChangeStart = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleChangeStart = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		dispatch({ newStart: currentTarget.value });
 	});
 
-	const handleChangeEnd = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleChangeEnd = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		dispatch({ newEnd: currentTarget.value });
 	});
 

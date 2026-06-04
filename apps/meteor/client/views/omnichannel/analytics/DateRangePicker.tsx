@@ -2,7 +2,7 @@ import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselag
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
-import type { ComponentProps, FormEvent } from 'react';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -39,7 +39,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 
 	const { start, end } = range;
 
-	const handleStart = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleStart = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		const rangeObj = {
 			start: currentTarget.value,
 			end: range.end,
@@ -48,7 +48,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleEnd = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleEnd = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		const rangeObj = {
 			end: currentTarget.value,
 			start: range.start,

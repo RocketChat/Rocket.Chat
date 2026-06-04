@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGro
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, type UploadResult } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -86,7 +86,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					<FieldRow>
 						<TextInput
 							value={name}
-							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
 					</FieldRow>

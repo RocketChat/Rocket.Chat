@@ -1,5 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { FormEventHandler } from 'react';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -22,7 +22,7 @@ function GenericSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: GenericSettingInputProps) {
-	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event): void => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 
