@@ -266,7 +266,10 @@ export const MessageList = function MessageList({
 						debouncedClearNewMessagesOnScroll();
 
 						const handle = virtualizerRef.current;
-						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
+						const viewportTopPadding = 21; // TODO: we should derive this value from somewhere else.
+						const topMessage = handle
+							? messages[handle.findItemIndex(handle.scrollOffset - viewportTopPadding) - (canPreview ? 1 : 0)]
+							: undefined;
 						handleTopVisibleMessage(topMessage);
 						handleDateScroll(topMessage, offset);
 						debouncedMessageRead();
