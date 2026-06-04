@@ -27,7 +27,6 @@ import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
-import type { LoginCodeEndpoints } from './v1/loginCode';
 import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
 import type { MiscEndpoints } from './v1/misc';
@@ -93,7 +92,6 @@ export interface Endpoints
 		ImportEndpoints,
 		ServerEventsEndpoints,
 		TwoFactorChallengesEndpoints,
-		LoginCodeEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -269,7 +267,6 @@ export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
 export * from './v1/twoFactorChallenges';
-export * from './v1/loginCode';
 
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';

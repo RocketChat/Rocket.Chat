@@ -1,12 +1,9 @@
 import { LoginCodes } from '@rocket.chat/models';
-import {
-	ajv,
-	isLoginCodeRedeemParamsPOST,
-	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
-} from '@rocket.chat/rest-typings';
+import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 const loginCodeRedeemResponse = ajv.compile<{ loginToken: string; userId: string }>({
@@ -20,7 +17,20 @@ const loginCodeRedeemResponse = ajv.compile<{ loginToken: string; userId: string
 	additionalProperties: false,
 });
 
-API.v1.post(
+type LoginCodeRedeemParams = { code: string };
+
+const LoginCodeRedeemSchema: JSONSchemaType<LoginCodeRedeemParams> = {
+	type: 'object',
+	properties: {
+		code: { type: 'string', minLength: 64, maxLength: 64 },
+	},
+	required: ['code'],
+	additionalProperties: false,
+};
+
+const isLoginCodeRedeemParamsPOST = ajv.compile<LoginCodeRedeemParams>(LoginCodeRedeemSchema);
+
+const loginCodeEndpoints = API.v1.post(
 	'loginCode.redeem',
 	{
 		authRequired: false,
@@ -38,7 +48,7 @@ API.v1.post(
 		const loginCode = await LoginCodes.findOneNotExpiredByCodeAndDelete(code);
 
 		if (!loginCode) {
-			throw new Meteor.Error('error-invalid-code', 'Invalid or expired login code');
+			return API.v1.failure('error-invalid-code');
 		}
 
 		const { userId } = loginCode;
@@ -52,3 +62,10 @@ API.v1.post(
 		});
 	},
 );
+
+type LoginCodeEndpoints = ExtractRoutesFromAPI<typeof loginCodeEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LoginCodeEndpoints {}
+}

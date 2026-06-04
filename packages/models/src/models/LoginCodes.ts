@@ -6,7 +6,7 @@ import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-const CODE_TTL_SECONDS = 60;
+const CODE_TTL_MS = 60 * 1000;
 
 export class LoginCodesRaw extends BaseRaw<ILoginCode> implements ILoginCodesModel {
 	constructor(db: Db) {
@@ -24,7 +24,7 @@ export class LoginCodesRaw extends BaseRaw<ILoginCode> implements ILoginCodesMod
 			_id: code,
 			userId,
 			createdAt: now,
-			expireAt: new Date(now.getTime() + CODE_TTL_SECONDS * 1000),
+			expireAt: new Date(now.getTime() + CODE_TTL_MS),
 		});
 		return code;
 	}

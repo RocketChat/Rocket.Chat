@@ -15,7 +15,7 @@ export const useOAuthLogin = () => {
 			return;
 		}
 
-		let timeout: ReturnType<typeof setTimeout>;
+		let timeout: NodeJS.Timeout;
 
 		const handleLogin = async () => {
 			try {

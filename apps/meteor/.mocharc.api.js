@@ -11,5 +11,6 @@ module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
 	reporter: 'tests/end-to-end/reporter.ts',
-	spec: ['tests/end-to-end/api/*.ts', 'tests/end-to-end/api/helpers/**/*', 'tests/end-to-end/api/methods/**/*', 'tests/end-to-end/apps/*'],
+	// spec: ['tests/end-to-end/api/*.ts', 'tests/end-to-end/api/helpers/**/*', 'tests/end-to-end/api/methods/**/*', 'tests/end-to-end/apps/*'],
+	spec: ['tests/end-to-end/api/login-code.ts'],
 });

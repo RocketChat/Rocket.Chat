@@ -12,19 +12,22 @@ import { URL_MONGODB } from '../../e2e/config/constants';
 
 const CODE_TTL_MS = 60 * 1000;
 
-async function insertLoginCode(connection: MongoClient, userId: string): Promise<string> {
+async function insertLoginCode(connection: MongoClient, userId: string, insertExpiredToken: boolean = false): Promise<string> {
 	const now = new Date();
 	const code = randomBytes(32).toString('hex');
 
-	await connection
-		.db()
-		.collection<ILoginCode>('rocketchat_login_codes')
-		.insertOne({
-			_id: code,
-			userId,
-			createdAt: now,
-			expireAt: new Date(now.getTime() + CODE_TTL_MS),
-		});
+	let expireAt = new Date(now.getTime() + CODE_TTL_MS);
+
+	if (insertExpiredToken) {
+		expireAt = new Date(now.getTime() - 1);
+	}
+
+	await connection.db().collection<ILoginCode>('rocketchat_login_codes').insertOne({
+		_id: code,
+		userId,
+		createdAt: now,
+		expireAt,
+	});
 
 	return code;
 }
@@ -53,27 +56,25 @@ describe('[Login Codes]', () => {
 			await deleteUser(testUser);
 		});
 
-		it('should fail when code does not exist in the database', (done) => {
-			void request
+		it('should fail when code does not exist in the database', async () => {
+			await request
 				.post(api('loginCode.redeem'))
 				.send({ code: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2' })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail when code is an empty string', (done) => {
-			void request
+		it('should fail when code is an empty string', async () => {
+			await request
 				.post(api('loginCode.redeem'))
 				.send({ code: '' })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-code');
-				})
-				.end(done);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
 		});
 
 		it('should return a loginToken and userId for a valid code', async () => {
@@ -101,7 +102,7 @@ describe('[Login Codes]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-code');
+					expect(res.body).to.have.property('error', 'error-invalid-code');
 				});
 		});
 
@@ -120,6 +121,19 @@ describe('[Login Codes]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('_id', testUser._id);
+				});
+		});
+
+		it('should fail when code is expired', async () => {
+			const code = await insertLoginCode(connection, testUser._id, true);
+
+			await request
+				.post(api('loginCode.redeem'))
+				.send({ code })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-invalid-code');
 				});
 		});
 	});
