@@ -18,6 +18,11 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+function isCJKCharacter(text: string): boolean {
+	const cjkRegex = /[\u3040-\u30ff\u3100-\u312f\u31a0-\u31bf\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/;
+	return cjkRegex.test(text);
+}
+
 export const messageSearch = async function (
 	userId: string,
 	text: string,
@@ -49,7 +54,7 @@ export const messageSearch = async function (
 		user,
 		offset,
 		limit,
-		forceRegex: settings.get('Message_AlwaysSearchRegExp'),
+		forceRegex: isCJKCharacter(text) ? true : settings.get('Message_AlwaysSearchRegExp'),
 	});
 
 	if (Object.keys(query).length === 0) {
