@@ -1,5 +1,19 @@
 # @rocket.chat/meteor
 
+## 8.5.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40635](https://github.com/RocketChat/Rocket.Chat/pull/40635) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes the Chat Limits locking mechanism to allow bot agents to skip the lock as they aren't limited
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.3
+  - @rocket.chat/rest-typings@8.5.0-rc.3
+  </details>
+
 ## 8.5.0-rc.2
 
 ### Patch Changes
