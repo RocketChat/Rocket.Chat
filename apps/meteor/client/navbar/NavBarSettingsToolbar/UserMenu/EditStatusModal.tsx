@@ -18,7 +18,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ComponentProps } from 'react';
 import { useState, useCallback, useId } from 'react';
@@ -46,7 +46,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
-	const handleStatusText = useEffectEvent((e: ChangeEvent<HTMLInputElement>): void => {
+	const handleStatusText = useStableCallback((e: ChangeEvent<HTMLInputElement>): void => {
 		setStatusText(e.currentTarget.value);
 
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {

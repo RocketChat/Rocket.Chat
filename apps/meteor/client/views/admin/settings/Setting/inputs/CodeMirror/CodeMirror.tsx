@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -43,7 +43,7 @@ function CodeMirror({
 	...props
 }: CodeMirrorProps) {
 	const [value, setValue] = useState(valueProp || defaultValue);
-	const handleChange = useEffectEvent(onChange);
+	const handleChange = useStableCallback(onChange);
 
 	const editorRef = useRef<EditorFromTextArea | null>(null);
 	const textAreaRef = useCallback(

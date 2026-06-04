@@ -1,5 +1,5 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
@@ -34,7 +34,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		initialData: defaultSounds,
 	});
 
-	const play = useEffectEvent((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
+	const play = useStableCallback((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
 		stop(soundId);
 
 		const item = list?.find(({ _id }) => _id === soundId);
@@ -56,7 +56,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		};
 	});
 
-	const pause = useEffectEvent((soundId: ICustomSound['_id']) => {
+	const pause = useStableCallback((soundId: ICustomSound['_id']) => {
 		const current = audioRefs.current?.find(({ id }) => id === soundId);
 		if (current) {
 			current.pause();
@@ -64,7 +64,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		}
 	});
 
-	const stop = useEffectEvent((soundId: ICustomSound['_id']) => {
+	const stop = useStableCallback((soundId: ICustomSound['_id']) => {
 		const current = audioRefs.current?.find(({ id }) => id === soundId);
 		if (current) {
 			current.load();

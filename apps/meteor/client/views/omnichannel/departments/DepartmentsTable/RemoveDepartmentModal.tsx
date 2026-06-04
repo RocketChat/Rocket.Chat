@@ -1,5 +1,5 @@
 import { Box, Input } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, FormEvent } from 'react';
@@ -20,7 +20,7 @@ const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartm
 	const removeDepartment = useEndpoint('DELETE', '/v1/livechat/department/:_id', { _id });
 	const dispatchToast = useToastMessageDispatch();
 
-	const onSubmit = useEffectEvent(async (e: FormEvent) => {
+	const onSubmit = useStableCallback(async (e: FormEvent) => {
 		e.preventDefault();
 
 		try {

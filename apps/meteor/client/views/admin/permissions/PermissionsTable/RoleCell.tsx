@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState, memo } from 'react';
@@ -27,7 +27,7 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 	const isRestrictedForRole = AuthorizationUtils.isPermissionRestrictedForRole(permissionId, _id);
 	const shouldDisplayConfirmation = confirmationRequiredPermissions.includes(permissionId) && grantedRoles.length === 1 && granted;
 
-	const handleChange = useEffectEvent(() => {
+	const handleChange = useStableCallback(() => {
 		if (shouldDisplayConfirmation) {
 			const handleSubmit = () => {
 				handleConfirmChange();
@@ -44,7 +44,7 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 		return handleConfirmChange();
 	});
 
-	const handleConfirmChange = useEffectEvent(async () => {
+	const handleConfirmChange = useStableCallback(async () => {
 		setLoading(true);
 		const result = await onChange(_id, granted);
 		setGranted(result);

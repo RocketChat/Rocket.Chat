@@ -22,7 +22,7 @@ import {
 	TextAreaInput,
 	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -152,7 +152,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleArchive = useArchiveRoom(room);
 
 	// TODO: add payload validation
-	const handleUpdateRoomData = useEffectEvent(
+	const handleUpdateRoomData = useStableCallback(
 		async ({
 			hideSysMes,
 			joinCodeRequired,
@@ -195,7 +195,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		},
 	);
 
-	const handleSave = useEffectEvent((data: EditRoomInfoFormData) =>
+	const handleSave = useStableCallback((data: EditRoomInfoFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 

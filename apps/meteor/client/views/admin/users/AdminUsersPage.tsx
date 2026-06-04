@@ -1,6 +1,6 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import {
 	ExternalLink,
@@ -96,7 +96,7 @@ const AdminUsersPage = () => {
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
-	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/users'));
+	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/users'));
 
 	useEffect(() => {
 		prevSearchTerm.current = searchTerm;

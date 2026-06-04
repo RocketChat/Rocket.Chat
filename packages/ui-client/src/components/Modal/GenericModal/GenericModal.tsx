@@ -12,7 +12,7 @@ import {
 	ModalTagline,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
@@ -103,22 +103,22 @@ const GenericModal = ({
 
 	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
 
-	const handleConfirm = useEffectEvent(() => {
+	const handleConfirm = useStableCallback(() => {
 		dismissedRef.current = false;
 		void onConfirm?.();
 	});
 
-	const handleCancel = useEffectEvent(() => {
+	const handleCancel = useStableCallback(() => {
 		dismissedRef.current = false;
 		void onCancel?.();
 	});
 
-	const handleCloseButtonClick = useEffectEvent(() => {
+	const handleCloseButtonClick = useStableCallback(() => {
 		dismissedRef.current = true;
 		void onClose?.();
 	});
 
-	const handleDismiss = useEffectEvent(() => {
+	const handleDismiss = useStableCallback(() => {
 		dismissedRef.current = true;
 		void onDismiss?.();
 	});

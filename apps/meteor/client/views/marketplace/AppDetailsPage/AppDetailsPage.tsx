@@ -1,6 +1,6 @@
 import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
@@ -41,7 +41,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 	const appData = useAppInfo(id, context || '');
 	const compactMode = useCompactMode();
 
-	const handleReturn = useEffectEvent((): void => {
+	const handleReturn = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}
@@ -52,7 +52,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 		});
 	});
 
-	const handleReturnToLogs = useEffectEvent((): void => {
+	const handleReturnToLogs = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}

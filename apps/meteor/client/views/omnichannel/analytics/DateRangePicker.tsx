@@ -1,5 +1,5 @@
 import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 import type { ComponentProps, ChangeEvent } from 'react';
@@ -39,7 +39,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 
 	const { start, end } = range;
 
-	const handleStart = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
+	const handleStart = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		const rangeObj = {
 			start: currentTarget.value,
 			end: range.end,
@@ -48,7 +48,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleEnd = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
+	const handleEnd = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		const rangeObj = {
 			end: currentTarget.value,
 			start: range.start,
@@ -57,7 +57,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleRange = useEffectEvent((range: { start: string; end: string }) => {
+	const handleRange = useStableCallback((range: { start: string; end: string }) => {
 		setRange(range);
 		onChange(range);
 	});

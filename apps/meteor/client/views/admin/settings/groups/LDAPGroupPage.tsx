@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -24,7 +24,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 	const testSearch = useEndpoint('POST', '/v1/ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal());
+	const closeModal = useStableCallback(() => setModal());
 	const handleSyncNow = useLdapSync();
 
 	const handleLinkClick = useExternalLink();

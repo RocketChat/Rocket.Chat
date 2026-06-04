@@ -1,4 +1,4 @@
-import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ContextType } from 'react';
 import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
@@ -27,7 +27,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
 	);
 
-	const setQuickReactions = useEffectEvent(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
+	const setQuickReactions = useStableCallback(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
 	const [sub, getSnapshot] = useMemo(() => {
 		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
 	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);

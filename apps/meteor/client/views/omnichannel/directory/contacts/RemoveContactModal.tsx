@@ -1,5 +1,5 @@
 import { Box, Input } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -23,7 +23,7 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 	const dispatchToast = useToastMessageDispatch();
 	const contactDeleteModalId = useId();
 
-	const handleSubmit = useEffectEvent((event: FormEvent<HTMLFormElement>): void => {
+	const handleSubmit = useStableCallback((event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
 		removeContactMutation.mutate();
 	});

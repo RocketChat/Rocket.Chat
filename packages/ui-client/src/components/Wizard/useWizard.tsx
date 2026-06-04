@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMemo, useState } from 'react';
 
 import type { WizardAPI } from './WizardContext';
@@ -25,7 +25,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 	 * Registers a new step in the wizard.
 	 * If a step with the same ID already exists, it updates the existing step.
 	 */
-	const register = useEffectEvent((stepMetadata: StepMetadata) => {
+	const register = useStableCallback((stepMetadata: StepMetadata) => {
 		const step = steps.append(stepMetadata);
 		return () => steps.remove(step.id);
 	});
@@ -36,7 +36,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 	 *
 	 * @param {StepNode} step - The step to navigate to.
 	 */
-	const goTo = useEffectEvent(async (step: StepNode) => {
+	const goTo = useStableCallback(async (step: StepNode) => {
 		if (step.disabled) {
 			return;
 		}
@@ -48,7 +48,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 	 * Navigates to the next step in the wizard.
 	 * If there is no next step, it does nothing.
 	 */
-	const next = useEffectEvent(async () => {
+	const next = useStableCallback(async () => {
 		if (!currentStep?.next) {
 			return;
 		}
@@ -61,7 +61,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 	 * Navigates to the previous step in the wizard.
 	 * If there is no previous step, it does nothing.
 	 */
-	const previous = useEffectEvent(async () => {
+	const previous = useStableCallback(async () => {
 		if (!currentStep?.prev) {
 			return;
 		}
@@ -74,7 +74,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 	 * Resets the next steps in the wizard.
 	 * It disables all steps that come after the current step.
 	 */
-	const resetNextSteps = useEffectEvent(() => {
+	const resetNextSteps = useStableCallback(() => {
 		if (!currentStep) {
 			return;
 		}

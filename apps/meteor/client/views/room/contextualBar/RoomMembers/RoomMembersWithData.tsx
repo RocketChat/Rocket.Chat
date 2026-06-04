@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	useUserRoom,
 	useAtLeastOnePermission,
@@ -73,7 +73,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const openUserInfo = useEffectEvent((e: MouseEvent<HTMLElement>) => {
+	const openUserInfo = useStableCallback((e: MouseEvent<HTMLElement>) => {
 		const { userid: userId, invitationdate: invitationDate } = e.currentTarget.dataset;
 		setState({
 			tab: ROOM_MEMBERS_TABS.INFO,
@@ -81,15 +81,15 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
 		});
 	});
 
-	const openInvite = useEffectEvent(() => {
+	const openInvite = useStableCallback(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.INVITE });
 	});
 
-	const openAddUser = useEffectEvent(() => {
+	const openAddUser = useStableCallback(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.ADD });
 	});
 
-	const handleBack = useEffectEvent(() => {
+	const handleBack = useStableCallback(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.LIST });
 	});
 

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
@@ -45,7 +45,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const showMic = Boolean(data?.capabilities?.mic);
 	const showCam = Boolean(data?.capabilities?.cam);
 
-	const handleJoinCall = useEffectEvent(() => {
+	const handleJoinCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});

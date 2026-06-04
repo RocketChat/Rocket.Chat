@@ -1,5 +1,5 @@
 import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
 import type { ComponentProps, SetStateAction, ChangeEvent } from 'react';
@@ -125,16 +125,16 @@ type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange
 const minDate = (a: Date, b: Date) => (a.getTime() < b.getTime() ? a : b);
 
 const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps) => {
-	const dispatch = useEffectEvent((action: DateRangeAction): void => {
+	const dispatch = useStableCallback((action: DateRangeAction): void => {
 		const newRange = dateRangeReducer(value ?? { start: undefined, end: undefined }, action);
 		onChange?.(newRange);
 	});
 
-	const handleChangeStart = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
+	const handleChangeStart = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		dispatch({ newStart: currentTarget.value });
 	});
 
-	const handleChangeEnd = useEffectEvent(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
+	const handleChangeEnd = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		dispatch({ newEnd: currentTarget.value });
 	});
 

@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,10 +21,10 @@ const RemoveManagerButton = ({ _id }: { _id: string }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleRemoveClick = useEffectEvent(async () => {
+	const handleRemoveClick = useStableCallback(async () => {
 		await deleteAction();
 	});
-	const handleDelete = useEffectEvent((e: MouseEvent) => {
+	const handleDelete = useStableCallback((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteManager = async (): Promise<void> => {
 			try {

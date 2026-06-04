@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
@@ -22,7 +22,7 @@ type MessageActionsProps = {
 };
 
 const MessageActions = ({ message, actions }: MessageActionsProps) => {
-	const runAction = useEffectEvent((action: string) => () => {
+	const runAction = useStableCallback((action: string) => () => {
 		actionLinks.run(action, message);
 	});
 

@@ -1,6 +1,6 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
 import AdminUserForm from './AdminUserForm';
@@ -19,7 +19,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 	const { t } = useTranslation();
 	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid });
 
-	const handleReload = useEffectEvent(() => {
+	const handleReload = useStableCallback(() => {
 		onReload();
 		refetch();
 	});

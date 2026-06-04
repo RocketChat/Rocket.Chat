@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
 import { useEffect, useRef } from 'react';
@@ -57,7 +57,7 @@ const InterchangeableChart = ({
 
 	const loadData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts-data');
 
-	const draw = useEffectEvent(
+	const draw = useStableCallback(
 		async (params: {
 			daterange: {
 				from: string;

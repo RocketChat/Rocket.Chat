@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -37,7 +37,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		},
 	});
 
-	const handleManageUsers = useEffectEvent(() => {
+	const handleManageUsers = useStableCallback(() => {
 		if (role?._id) {
 			usersInRoleRouter.push({
 				context: 'users-in-role',
@@ -46,7 +46,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleSave = useEffectEvent(async (data: EditRolePageFormData) => {
+	const handleSave = useStableCallback(async (data: EditRolePageFormData) => {
 		try {
 			if (data.roleId) {
 				await updateRole(data);
@@ -62,7 +62,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleDelete = useEffectEvent(async () => {
+	const handleDelete = useStableCallback(async () => {
 		if (!role?._id) {
 			return;
 		}

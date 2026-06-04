@@ -1,6 +1,6 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
@@ -57,7 +57,7 @@ const SettingsGroupPage = ({
 
 	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
 
-	const save = useEffectEvent(async () => {
+	const save = useStableCallback(async () => {
 		const changes = changedEditableSettings.map((setting) => {
 			if (isColorSetting(setting)) {
 				return {
@@ -87,7 +87,7 @@ const SettingsGroupPage = ({
 
 	const dispatchToEditing = useEditableSettingsDispatch();
 
-	const cancel = useEffectEvent(() => {
+	const cancel = useStableCallback(() => {
 		const settingsToDispatch = changedEditableSettings
 			.map(({ _id }) => originalSettings.find((setting) => setting._id === _id))
 			.map((setting) => {

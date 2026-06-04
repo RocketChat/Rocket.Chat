@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useState, useCallback, useMemo } from 'react';
 
 import LeaveTeamModalChannels from './LeaveTeamModalChannels';
@@ -36,7 +36,7 @@ const LeaveTeamModal = ({ rooms, onCancel, onConfirm }: LeaveTeamModalProps) => 
 		});
 	}, []);
 
-	const onToggleAllRooms = useEffectEvent(() => {
+	const onToggleAllRooms = useStableCallback(() => {
 		setSelectedRooms((selectedRooms) => {
 			if (Object.values(selectedRooms).filter(Boolean).length === 0) {
 				return Object.fromEntries(rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room._id, room]));

@@ -1,6 +1,6 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -67,7 +67,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
-	const handleOpenUserInfo = useEffectEvent(() => {
+	const handleOpenUserInfo = useStableCallback(() => {
 		onOpenUserInfo();
 		onClose();
 	});

@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import {
 	useToastMessageDispatch,
@@ -167,7 +167,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const registerServer: HandleRegisterServer = useEffectEvent(
+	const registerServer: HandleRegisterServer = useStableCallback(
 		async ({ email, resend = false }: { email: string; resend?: boolean }): Promise<void> => {
 			try {
 				const { intentData } = await createRegistrationIntent({ resend, email });
@@ -187,7 +187,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 		},
 	);
 
-	const completeSetupWizard = useEffectEvent(async (): Promise<void> => {
+	const completeSetupWizard = useStableCallback(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
 	});

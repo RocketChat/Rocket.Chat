@@ -1,5 +1,5 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,7 +21,7 @@ const ChatsTableFilter = () => {
 
 	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter, textInputRef } = useChatsContext();
 
-	const handleRemoveAllClosed = useEffectEvent(async () => {
+	const handleRemoveAllClosed = useStableCallback(async () => {
 		const onDeleteAll = async () => {
 			try {
 				await removeClosedRooms();
