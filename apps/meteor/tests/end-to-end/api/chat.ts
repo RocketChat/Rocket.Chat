@@ -2539,6 +2539,7 @@ describe('[Chat]', () => {
 			await sendMessage('msg1');
 			await sendMessage('msg1');
 			await sendMessage('msg1');
+			await sendMessage('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!');
 		});
 
 		it('should return a list of messages when execute successfully', (done) => {
@@ -2615,8 +2616,8 @@ describe('[Chat]', () => {
 				.end(done);
 		});
 
-		it('should return an empty array of messages with status 200 if the regexp is invalid', (done) => {
-			void request
+		it('should return an empty array of messages with status 200 if the regexp is invalid', async () => {
+			await request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -2628,8 +2629,23 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should not cause catastrophic backtracking when using a malicious regexp', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/(a+)+$/',
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
 		});
 	});
 
