@@ -74,6 +74,10 @@ export const MessageList = function MessageList({
 	const isPrepend = useRef<boolean>(false);
 	useLayoutEffect(() => {
 		isPrepend.current = false;
+		// FIXME: isAtBottom should be better calculated, as it does no alwas represent the correct value
+		if (hasMoreNextMessages) {
+			isAtBottom.current = false;
+		}
 	});
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
