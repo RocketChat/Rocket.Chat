@@ -19,7 +19,7 @@ import {
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
-import { adminEmail, password } from '../../data/user';
+import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
@@ -4161,17 +4161,14 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		describe('GET /abac/audit query filters', () => {
 			it('scopes events to the actor passed in the query', async () => {
-				const me = await request.get(`${v1}/me`).set(credentials).expect(200);
-				const adminId = me.body._id;
-
 				const mine = await request
 					.get(`${v1}/abac/audit`)
 					.set(credentials)
-					.query({ count: 100, actor: { _id: adminId } })
+					.query({ count: 100, actor: { username: adminUsername } })
 					.expect(200);
 				expect(mine.body.events).to.be.an('array').that.is.not.empty;
-				(mine.body.events as Array<{ actor?: { _id?: string } }>).forEach((e) => {
-					expect(e.actor?._id).to.equal(adminId);
+				(mine.body.events as Array<{ actor?: { username?: string } }>).forEach((e) => {
+					expect(e.actor?.username).to.equal(adminUsername);
 				});
 
 				const other = await request
