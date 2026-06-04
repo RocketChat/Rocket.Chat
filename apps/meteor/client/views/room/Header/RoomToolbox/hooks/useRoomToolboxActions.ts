@@ -19,7 +19,34 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 		return null;
 	}
 	try {
-		return JSON.parse(raw) as RoomToolboxLayoutConfig;
+		const parsed = JSON.parse(raw) as Record<string, unknown>;
+		if (typeof parsed !== 'object' || parsed === null) {
+			return null;
+		}
+		if (parsed.items !== undefined && !Array.isArray(parsed.items)) {
+			return null;
+		}
+		if (Array.isArray(parsed.items)) {
+			const items = parsed.items as unknown[];
+			const validItems = items.every((item: unknown): boolean => {
+				if (typeof item !== 'object' || item === null) {
+					return false;
+				}
+				const candidate = item as Record<string, unknown>;
+				return (
+					typeof candidate.id === 'string' &&
+					(candidate.featured === undefined || typeof candidate.featured === 'boolean') &&
+					(candidate.order === undefined || typeof candidate.order === 'number')
+				);
+			});
+			if (!validItems) {
+				return null;
+			}
+		}
+		if (parsed.maxVisibleNormal !== undefined && typeof parsed.maxVisibleNormal !== 'number') {
+			return null;
+		}
+		return parsed as RoomToolboxLayoutConfig;
 	} catch {
 		return null;
 	}
@@ -49,33 +76,37 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const layoutConfig = useMemo(() => parseLayoutConfig(layoutConfigRaw), [layoutConfigRaw]);
 
 	if (isLayoutPreviewEnabled && layoutConfig) {
-		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
+		try {
+			const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
 
-		if (!roomToolboxExpanded) {
-			const orderedOverflowActions = [...engineVisible, ...engineSections.flatMap((section) => section.items)];
+			if (!roomToolboxExpanded) {
+				const orderedOverflowActions = [...engineVisible, ...engineSections.flatMap((section) => section.items)];
 
-			const hiddenActions = orderedOverflowActions.reduce((acc, item) => {
-				const group = item.type ?? '';
-				const section = acc.find((s) => s.id === group);
-				const menuItem = actionToMenuItem(item, openTab, t);
-				if (section) {
-					section.items.push(menuItem);
-				} else {
-					acc.push({ id: group, title: group === 'apps' ? t('Apps') : '', items: [menuItem] });
-				}
-				return acc;
-			}, [] as MenuSection[]);
+				const hiddenActions = orderedOverflowActions.reduce((acc, item) => {
+					const group = item.type ?? '';
+					const section = acc.find((s) => s.id === group);
+					const menuItem = actionToMenuItem(item, openTab, t);
+					if (section) {
+						section.items.push(menuItem);
+					} else {
+						acc.push({ id: group, title: group === 'apps' ? t('Apps') : '', items: [menuItem] });
+					}
+					return acc;
+				}, [] as MenuSection[]);
 
-			return { featuredActions, visibleActions: [], hiddenActions };
+				return { featuredActions, visibleActions: [], hiddenActions };
+			}
+
+			const hiddenActions = engineSections.map((section) => ({
+				id: section.id,
+				title: section.id === 'apps' ? t('Apps') : '',
+				items: section.items.map((item) => actionToMenuItem(item, openTab, t)),
+			}));
+
+			return { featuredActions, visibleActions: engineVisible, hiddenActions };
+		} catch (error) {
+			console.error('Error processing room toolbox layout', error);
 		}
-
-		const hiddenActions = engineSections.map((section) => ({
-			id: section.id,
-			title: section.id === 'apps' ? t('Apps') : '',
-			items: section.items.map((item) => actionToMenuItem(item, openTab, t)),
-		}));
-
-		return { featuredActions, visibleActions: engineVisible, hiddenActions };
 	}
 
 	const normalActions = actions.filter((action) => !action.featured && action.type !== 'apps');

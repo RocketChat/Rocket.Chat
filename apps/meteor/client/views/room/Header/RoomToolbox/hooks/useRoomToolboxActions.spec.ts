@@ -84,6 +84,32 @@ describe('useRoomToolboxActions', () => {
 			expect(result.current.visibleActions.length).toBe(6);
 		});
 
+		it('should fall back to legacy behavior if config has non-array items', () => {
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout', JSON.stringify({ items: {} }))
+					.build(),
+			});
+
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+			expect(result.current.visibleActions.length).toBe(6);
+		});
+
+		it('should fall back to legacy behavior if config has items with invalid item types', () => {
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout', JSON.stringify({ items: [null] }))
+					.build(),
+			});
+
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+			expect(result.current.visibleActions.length).toBe(6);
+		});
+
 		it('should fall back to legacy behavior if feature preview is disabled', () => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
 				wrapper: mockAppRoot()
