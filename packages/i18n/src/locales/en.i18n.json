@@ -31,6 +31,8 @@
   "ABAC_Attribute_Store_Local": "Local",
   "ABAC_Attribute_Store_Virtru": "Virtru",
   "ABAC_Attribute_Store_Switch_Alert": "Switching the attribute store permanently clears all existing room attribute assignments. This cannot be undone. No users are removed from any room, and rooms remain private.",
+  "ABAC_Attribute_Store_Switch_Confirm": "Switch store",
+  "ABAC_Attribute_Store_Switch_Title": "Switch attribute store",
   "ABAC_Attribute_Store_Switched": "Attribute store switched",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} room affected",
