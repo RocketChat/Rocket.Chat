@@ -9,6 +9,7 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
+import { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE } from '../../utils/callLanguages';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
 // threshold in CallTile so the auto-lower triggers on the same "actually
@@ -54,6 +55,51 @@ const reactionButtonStyles = css`
 
 	&:hover {
 		background-color: rgba(255, 255, 255, 0.1);
+	}
+`;
+
+// Language picker popover — anchored to its pill in the header. `top: 100%`
+// puts it just below the pill; `right: 0` aligns its right edge to the
+// pill so the menu hangs left into the call surface (the pill sits near
+// the right end of the header).
+const languagePickerWrapStyles = css`
+	position: relative;
+`;
+
+const languagePickerMenuStyles = css`
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	min-width: 180px;
+	padding: 4px;
+	background-color: rgba(20, 20, 25, 0.97);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+`;
+
+const languageMenuItemStyles = css`
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: none;
+	background: transparent;
+	color: white;
+	font-size: 13px;
+	line-height: 1.2;
+	cursor: pointer;
+	text-align: left;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.08);
+	}
+
+	&.selected {
+		background-color: rgba(255, 255, 255, 0.12);
 	}
 `;
 // Header bar above the tiles: transparent strip carrying the call elapsed
@@ -242,6 +288,10 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		onSendReaction,
 		activeReactions,
 		activeCaptions,
+		captionsEnabledLocally,
+		onToggleCaptions,
+		callLanguage,
+		onChangeCallLanguage,
 		liveRecordingActive,
 		liveTranscriptionActive,
 		broadcastRecordingState,
@@ -268,6 +318,12 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const [recordingBusy, setRecordingBusy] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
+
+	const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
+	const languagePickerRef = useRef<HTMLDivElement>(null);
+	const currentLanguage = callLanguage
+		? (CALL_LANGUAGES.find((l) => l.code === callLanguage.code) ?? DEFAULT_CALL_LANGUAGE)
+		: DEFAULT_CALL_LANGUAGE;
 
 	// Take-notes state: `available` reflects workspace setting + agent mode
 	// (true if the server has the feature configured), `enabled` is the
@@ -337,6 +393,19 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		document.addEventListener('pointerdown', onPointerDown);
 		return () => document.removeEventListener('pointerdown', onPointerDown);
 	}, [reactionPickerOpen]);
+
+	// Same click-outside dismissal for the language picker.
+	useEffect(() => {
+		if (!languagePickerOpen) return undefined;
+		const onPointerDown = (e: PointerEvent) => {
+			const node = languagePickerRef.current;
+			if (node && !node.contains(e.target as Node)) {
+				setLanguagePickerOpen(false);
+			}
+		};
+		document.addEventListener('pointerdown', onPointerDown);
+		return () => document.removeEventListener('pointerdown', onPointerDown);
+	}, [languagePickerOpen]);
 
 	// One-shot fetch on call join to seed the recording state. After that,
 	// changes propagate over the LK data channel (see liveRecordingActive
@@ -416,6 +485,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				const data = await res.json();
 				setNotesAvailable(Boolean(data.available));
 				setNotesEnabled(Boolean(data.enabled));
+				// Seed the data-channel-synced state so the agent (which
+				// only learns via data channel) sees take-notes-on for
+				// late joiners. broadcastTranscriptionState publishes AND
+				// updates the local liveTranscriptionActive on the LK
+				// provider, which in turn drives the ParticipantConnected
+				// rebroadcast so future joiners pick it up.
+				if (data.enabled) broadcastTranscriptionState?.(true);
 			} catch {
 				/* best-effort */
 			}
@@ -423,7 +499,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		return () => {
 			cancelled = true;
 		};
-	}, [callId]);
+	}, [callId, broadcastTranscriptionState]);
 
 	// React to transcription-state broadcasts from other participants.
 	useEffect(() => {
@@ -590,6 +666,66 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 								</Box>
 							) : (
 								<Box is='span'>Take notes</Box>
+							)}
+						</Box>
+					)}
+					{/* Captions toggle — per-user opt-in. Off by default; when
+					    the local user turns it on, the LiveKit provider also
+					    broadcasts a captions-request signal so the agent
+					    starts transcribing (and stops once nobody wants
+					    captions). Other participants stay unaffected. */}
+					{onToggleCaptions && (
+						<Box
+							is='button'
+							type='button'
+							className={[pillStyles, captionsEnabledLocally ? 'active' : null]}
+							style={{ '--rcx-pill-active-bg': 'rgb(67 122 178)', '--rcx-pill-active-bg-hover': 'rgb(50 96 142)' } as React.CSSProperties}
+							onClick={onToggleCaptions}
+							title={captionsEnabledLocally ? 'Hide captions' : 'Show captions'}
+						>
+							<Icon name='quote' size='x14' />
+							<Box is='span'>{captionsEnabledLocally ? 'Captions on' : 'Captions'}</Box>
+						</Box>
+					)}
+					{/* Call-language pill — abbreviation only ("US", "BR", …) to
+					    save space; full label in the dropdown. Broadcasts the
+					    choice over the LK data channel so the agent restarts
+					    active Gemini sessions with the new language. Hidden
+					    on 1:1 VoIP (provider doesn't supply
+					    onChangeCallLanguage). */}
+					{onChangeCallLanguage && (
+						<Box className={languagePickerWrapStyles} ref={languagePickerRef}>
+							<Box
+								is='button'
+								type='button'
+								className={pillStyles}
+								onClick={() => setLanguagePickerOpen((p) => !p)}
+								title={`Call language: ${currentLanguage.label}`}
+								aria-label={`Call language: ${currentLanguage.label}`}
+							>
+								<Icon name='globe' size='x14' />
+								<Box is='span'>{currentLanguage.abbr}</Box>
+							</Box>
+							{languagePickerOpen && (
+								<Box className={languagePickerMenuStyles}>
+									{CALL_LANGUAGES.map((lang) => (
+										<Box
+											key={lang.code}
+											is='button'
+											type='button'
+											className={[languageMenuItemStyles, lang.code === currentLanguage.code ? 'selected' : null]}
+											onClick={() => {
+												onChangeCallLanguage(lang.code);
+												setLanguagePickerOpen(false);
+											}}
+										>
+											<Box is='span' style={{ width: 28, opacity: 0.7, fontSize: 11 }}>
+												{lang.abbr}
+											</Box>
+											<Box is='span'>{lang.label}</Box>
+										</Box>
+									))}
+								</Box>
 							)}
 						</Box>
 					)}

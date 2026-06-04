@@ -81,6 +81,26 @@ type MediaCallViewContextValue = {
 	 */
 	activeCaptions?: Record<string, { text: string; isFinal: boolean; updatedAt: number }>;
 	/**
+	 * Whether the local user has opted in to see live captions. Per-user
+	 * (does NOT propagate to other participants' UIs). When true, the
+	 * provider also broadcasts a "captions-request" signal so the agent
+	 * starts transcribing — captions are only processed + transmitted while
+	 * at least one participant in the call has captions enabled.
+	 */
+	captionsEnabledLocally?: boolean;
+	/** Toggle the local user's caption opt-in. */
+	onToggleCaptions?: () => void;
+	/**
+	 * Selected call language (BCP-47 code + English label). Shared across
+	 * all participants via the LK data channel — when any participant flips
+	 * it the agent restarts active transcribers with the new language so
+	 * captions and persisted transcripts both stay consistent. Defaults to
+	 * English (US).
+	 */
+	callLanguage?: { code: string; label: string };
+	/** Change the call's language. Broadcasts to peers + agent. */
+	onChangeCallLanguage?: (code: string) => void;
+	/**
 	 * Switch the active camera input (videoinput device). Only meaningful when
 	 * the underlying transport supports live device switching — currently
 	 * wired by the LiveKit provider. P2P providers may leave this undefined,

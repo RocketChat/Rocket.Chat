@@ -41,3 +41,8 @@ export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCal
 // (ringer/dialer/call-ended) intentionally still go through the MP3 path
 // in CustomSoundProvider.
 export { playRecordingChime, playRecordingStopChime, playJoinChime } from './utils/callChimes';
+
+// Per-call language selection — shared list of choices + helpers used by
+// both the picker UI and the LK provider that synchronises the state.
+export { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE, findCallLanguage } from './utils/callLanguages';
+export type { CallLanguage } from './utils/callLanguages';

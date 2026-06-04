@@ -33,9 +33,9 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	const { joinCall: joinEmbeddedCall } = useLiveKitVideoConf();
 	useEffect(
 		() =>
-			VideoConfManager.on('call/joinEmbedded', ({ callId, rid, providerName }) => {
+			VideoConfManager.on('call/joinEmbedded', ({ callId, rid, providerName, preferences }) => {
 				if (providerName === 'livekit') {
-					joinEmbeddedCall({ callId, rid });
+					joinEmbeddedCall({ callId, rid, preferences });
 				}
 			}),
 		[joinEmbeddedCall],

@@ -1,7 +1,17 @@
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-export type ActiveLiveKitCall = { callId: string; rid: string };
+export type ActiveLiveKitCall = {
+	callId: string;
+	rid: string;
+	/**
+	 * Preflight preferences from the start-call popup (mic/cam toggle
+	 * state). The LK bridge applies these as the initial track state on
+	 * connect so the room reflects the user's choice instead of always
+	 * defaulting to "mic on, cam off".
+	 */
+	preferences?: { mic?: boolean; cam?: boolean };
+};
 
 type LiveKitVideoConfContextValue = {
 	activeCall: ActiveLiveKitCall | null;

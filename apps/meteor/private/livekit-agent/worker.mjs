@@ -74,9 +74,14 @@ const postFinalTranscript = async (entry) => {
 	}
 };
 
-async function openLiveSession(callbacks) {
-	const systemInstruction = LANGUAGE_HINT
-		? `You only transcribe input audio in ${LANGUAGE_HINT}. Do not respond, do not summarise, do not analyse.`
+async function openLiveSession(callbacks, languageLabel) {
+	// languageLabel takes precedence over the legacy STT_LANGUAGE_HINT env
+	// var: it's the per-call choice broadcast by clients via the LK data
+	// channel. When neither is set we fall back to "no instruction" so
+	// Gemini auto-detects.
+	const effectiveLang = languageLabel || LANGUAGE_HINT;
+	const systemInstruction = effectiveLang
+		? `You only transcribe input audio in ${effectiveLang}. Do not respond, do not summarise, do not analyse.`
 		: 'You only transcribe input audio. Do not respond, do not summarise, do not analyse.';
 
 	// Rolling buffer for the current turn's inputTranscription text. Gemini
@@ -144,8 +149,11 @@ async function openLiveSession(callbacks) {
 	return session;
 }
 
-async function transcribeTrack(ctx, track, participant) {
-	const identity = participant.identity;
+// Spawns a transcriber for a single track. Returns a controller with a
+// `stop()` method so the supervisor (entry point) can tear it down when
+// the last captions-request goes away or the participant leaves. The
+// returned promise resolves after the audio loop exits cleanly.
+function startTranscribeTrack(ctx, track, identity, languageLabel) {
 	// Room name convention: `mc-<callId>`. If a room joined doesn't follow
 	// the pattern we skip persistence but still stream captions on the
 	// data channel — useful for non-Rocket.Chat LK projects sharing this
@@ -155,73 +163,85 @@ async function transcribeTrack(ctx, track, participant) {
 	log('info', 'starting transcription', { identity, callId, trackSid: track.sid });
 
 	let closed = false;
-	// Each utterance is a "session" of incremental transcripts followed by
-	// a finalized one. We capture the time the first interim arrives so the
-	// persisted entry has an accurate startedAt — wall clock from when the
-	// speaker started, not the moment of finalization.
 	let utteranceStartedAt = null;
+	let session = null;
 
-	const session = await openLiveSession({
-		onTranscript: (text, isFinal) => {
-			const now = new Date();
-			if (!utteranceStartedAt) utteranceStartedAt = now;
-
-			const payload = JSON.stringify({
-				type: 'transcript',
-				participantId: identity,
-				text,
-				isFinal,
-				ts: now.getTime(),
-			});
-			void ctx.room.localParticipant
-				?.publishData(new TextEncoder().encode(payload), { reliable: false })
-				.catch((err) => log('warn', 'publishData failed', { err: String(err) }));
-
-			if (isFinal) {
-				if (callId) {
-					void postFinalTranscript({
-						callId,
-						participantId: identity,
-						text,
-						startedAt: utteranceStartedAt.toISOString(),
-						endedAt: now.toISOString(),
-					});
-				}
-				utteranceStartedAt = null;
-			}
-		},
-		onClose: () => {
-			closed = true;
-		},
-	});
-
-	const audioStream = new AudioStream(track, { sampleRate: TARGET_SAMPLE_RATE, numChannels: 1 });
-	let framesSent = 0;
-	// Periodic heartbeat — light enough to tail even on busy calls, and the
-	// only way to tell "audio is actually flowing" vs "session is silent but
-	// open" without hooking up real telemetry. 30s cadence keeps it quiet.
-	const frameLog = setInterval(() => {
-		log('info', 'audio frames pumped', { identity, framesSent });
-	}, 30000);
-	try {
-		for await (const frame of audioStream) {
-			if (closed) break;
-			const data = Buffer.from(frame.data.buffer, frame.data.byteOffset, frame.data.byteLength);
-			session.sendRealtimeInput({
-				audio: { data: data.toString('base64'), mimeType: `audio/pcm;rate=${TARGET_SAMPLE_RATE}` },
-			});
-			framesSent += 1;
-		}
-	} catch (err) {
-		log('warn', 'audio pump ended', { identity, err: String(err) });
-	} finally {
-		clearInterval(frameLog);
+	const stop = async () => {
+		if (closed) return;
+		closed = true;
 		try {
-			await session.close();
+			await session?.close();
 		} catch (err) {
 			log('warn', 'session close failed', { identity, err: String(err) });
 		}
-	}
+	};
+
+	const done = (async () => {
+		session = await openLiveSession(
+			{
+			onTranscript: (text, isFinal) => {
+				const now = new Date();
+				if (!utteranceStartedAt) utteranceStartedAt = now;
+
+				const payload = JSON.stringify({
+					type: 'transcript',
+					participantId: identity,
+					text,
+					isFinal,
+					ts: now.getTime(),
+				});
+				void ctx.room.localParticipant
+					?.publishData(new TextEncoder().encode(payload), { reliable: false })
+					.catch((err) => log('warn', 'publishData failed', { err: String(err) }));
+
+				if (isFinal) {
+					if (callId) {
+						void postFinalTranscript({
+							callId,
+							participantId: identity,
+							text,
+							startedAt: utteranceStartedAt.toISOString(),
+							endedAt: now.toISOString(),
+						});
+					}
+					utteranceStartedAt = null;
+				}
+			},
+			onClose: () => {
+				closed = true;
+			},
+		},
+			languageLabel,
+		);
+
+		const audioStream = new AudioStream(track, { sampleRate: TARGET_SAMPLE_RATE, numChannels: 1 });
+		let framesSent = 0;
+		const frameLog = setInterval(() => {
+			log('info', 'audio frames pumped', { identity, framesSent });
+		}, 30000);
+		try {
+			for await (const frame of audioStream) {
+				if (closed) break;
+				const data = Buffer.from(frame.data.buffer, frame.data.byteOffset, frame.data.byteLength);
+				session.sendRealtimeInput({
+					audio: { data: data.toString('base64'), mimeType: `audio/pcm;rate=${TARGET_SAMPLE_RATE}` },
+				});
+				framesSent += 1;
+			}
+		} catch (err) {
+			log('warn', 'audio pump ended', { identity, err: String(err) });
+		} finally {
+			clearInterval(frameLog);
+			closed = true;
+			try {
+				await session?.close();
+			} catch (err) {
+				log('warn', 'session close on exit failed', { identity, err: String(err) });
+			}
+		}
+	})();
+
+	return { stop, done };
 }
 
 export default defineAgent({
@@ -240,10 +260,141 @@ export default defineAgent({
 			return;
 		}
 
+		// Transcription is gated on TWO independent signals:
+		//   - `captions-request` from any client (per-user: someone wants
+		//     to see live captions). Ref-counted by identity.
+		//   - `transcription-state` from any client (per-call: take-notes
+		//     is on, the server is persisting finalized transcripts for
+		//     the post-call summary). A boolean — last broadcast wins.
+		// While EITHER is active we transcribe; when both go away we close
+		// the Gemini sessions. `trackSubscribed` just caches the track
+		// until one of those signals arrives.
+		const captionRequesters = new Set();
+		let transcriptionEnabled = false;
+		// Current call language label, picked up from `call-language` data
+		// channel broadcasts. Defaults to the legacy STT_LANGUAGE_HINT env
+		// var (which the original deployment relied on) and falls back to
+		// English (US) so the agent always has SOMETHING to feed Gemini.
+		let currentLanguageLabel = LANGUAGE_HINT || 'English (US)';
+		const subscribedAudio = new Map(); // identity -> track
+		const activeTranscribers = new Map(); // identity -> { stop, done }
+
+		const shouldTranscribe = () => captionRequesters.size > 0 || transcriptionEnabled;
+
+		const ensureTranscriberForIdentity = (identity) => {
+			if (activeTranscribers.has(identity)) return;
+			const track = subscribedAudio.get(identity);
+			if (!track) return;
+			const ctrl = startTranscribeTrack(ctx, track, identity, currentLanguageLabel);
+			activeTranscribers.set(identity, ctrl);
+		};
+
+		const startAllTranscribers = () => {
+			for (const identity of subscribedAudio.keys()) {
+				ensureTranscriberForIdentity(identity);
+			}
+		};
+
+		const stopAllTranscribers = () => {
+			for (const [, ctrl] of activeTranscribers) {
+				void ctrl.stop();
+			}
+			activeTranscribers.clear();
+		};
+
+		const stopTranscriberFor = (identity) => {
+			const ctrl = activeTranscribers.get(identity);
+			if (ctrl) {
+				void ctrl.stop();
+				activeTranscribers.delete(identity);
+			}
+		};
+
 		ctx.room.on('trackSubscribed', (track, _publication, participant) => {
-			log('info', 'trackSubscribed', { kind: track.kind, identity: participant.identity });
 			if (track.kind !== TrackKind.KIND_AUDIO) return;
-			void transcribeTrack(ctx, track, participant);
+			const identity = participant.identity;
+			log('info', 'trackSubscribed', { kind: track.kind, identity });
+			subscribedAudio.set(identity, track);
+			// Only start transcribing if at least one of the two gates is
+			// open. Otherwise the track sits cached and the transcriber
+			// starts as soon as one is opened.
+			if (shouldTranscribe()) ensureTranscriberForIdentity(identity);
+		});
+
+		ctx.room.on('trackUnsubscribed', (track, _publication, participant) => {
+			if (track.kind !== TrackKind.KIND_AUDIO) return;
+			const identity = participant.identity;
+			subscribedAudio.delete(identity);
+			stopTranscriberFor(identity);
+		});
+
+		ctx.room.on('participantDisconnected', (participant) => {
+			const identity = participant.identity;
+			subscribedAudio.delete(identity);
+			stopTranscriberFor(identity);
+			// Drop their captions-request too — without this a peer that
+			// crashed mid-call would leave the requester set permanently
+			// non-empty and we'd keep transcribing for nobody. Only stop
+			// transcribers if BOTH gates are now closed.
+			const wasIdle = !shouldTranscribe();
+			captionRequesters.delete(identity);
+			if (!wasIdle && !shouldTranscribe()) {
+				log('info', 'last captions requester left; stopping transcribers');
+				stopAllTranscribers();
+			}
+		});
+
+		ctx.room.on('dataReceived', (payload, participant) => {
+			if (!participant) return;
+			let msg;
+			try {
+				msg = JSON.parse(new TextDecoder().decode(payload));
+			} catch {
+				return;
+			}
+			const identity = participant.identity;
+			if (msg?.type === 'captions-request') {
+				const wasIdle = !shouldTranscribe();
+				if (msg.requested) {
+					captionRequesters.add(identity);
+				} else {
+					captionRequesters.delete(identity);
+				}
+				if (wasIdle && shouldTranscribe()) {
+					log('info', 'first captions requester; starting transcribers');
+					startAllTranscribers();
+				} else if (!wasIdle && !shouldTranscribe()) {
+					log('info', 'last captions requester opted out; stopping transcribers');
+					stopAllTranscribers();
+				}
+				return;
+			}
+			if (msg?.type === 'transcription-state') {
+				const wasIdle = !shouldTranscribe();
+				transcriptionEnabled = Boolean(msg.enabled);
+				if (wasIdle && shouldTranscribe()) {
+					log('info', 'take-notes enabled; starting transcribers');
+					startAllTranscribers();
+				} else if (!wasIdle && !shouldTranscribe()) {
+					log('info', 'take-notes disabled and no caption requesters; stopping transcribers');
+					stopAllTranscribers();
+				}
+				return;
+			}
+			if (msg?.type === 'call-language' && typeof msg.label === 'string' && msg.label) {
+				if (msg.label === currentLanguageLabel) return;
+				log('info', 'call language changed', { from: currentLanguageLabel, to: msg.label });
+				currentLanguageLabel = msg.label;
+				// Restart any active Gemini sessions with the new language —
+				// `systemInstruction` is fixed at session creation. The gap
+				// is ~one Gemini round-trip; acceptable for a deliberate
+				// user action. Cached tracks pick up the new language the
+				// moment transcription starts.
+				if (activeTranscribers.size > 0) {
+					stopAllTranscribers();
+					if (shouldTranscribe()) startAllTranscribers();
+				}
+			}
 		});
 	},
 });

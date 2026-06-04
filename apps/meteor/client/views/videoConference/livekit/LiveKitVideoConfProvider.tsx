@@ -1,7 +1,15 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { MediaCallViewContext, defaultMediaCallContextValue, playJoinChime, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
+import {
+	MediaCallViewContext,
+	defaultMediaCallContextValue,
+	playJoinChime,
+	DEFAULT_CALL_LANGUAGE,
+	findCallLanguage,
+	type CallLanguage,
+	type RemoteParticipantInfo,
+} from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -221,6 +229,26 @@ const InnerProvider = ({
 	const CAPTION_FINAL_TTL_MS = 5000;
 	const CAPTION_INTERIM_TTL_MS = 8000;
 
+	// Per-user caption opt-in. The local toggle is purely a personal pref —
+	// it doesn't propagate as "captions on for the room". What DOES propagate
+	// is a `captions-request` signal: the agent only spins up Gemini sessions
+	// while at least one participant has requested captions. The agent
+	// publishes transcripts to everyone over the data channel; here we drop
+	// incoming transcript frames when the local user hasn't opted in, so
+	// caption overlays are gated client-side too.
+	const [captionsEnabledLocally, setCaptionsEnabledLocally] = useState(false);
+
+	// Shared call language. Any participant can change it; the agent
+	// restarts active Gemini sessions with the new language so both live
+	// captions and the persisted transcript stay consistent.
+	const [callLanguage, setCallLanguage] = useState<CallLanguage>(DEFAULT_CALL_LANGUAGE);
+	// Ref mirror so the (stable-deps) data-channel handler can read the
+	// current opt-in without re-binding on every toggle.
+	const captionsEnabledRef = useRef(false);
+	useEffect(() => {
+		captionsEnabledRef.current = captionsEnabledLocally;
+	}, [captionsEnabledLocally]);
+
 	// Reactive state shared via the LK data channel. Replaces the previous
 	// 5s polling of /recording-status and /transcription.status. Whoever
 	// toggles the feature also broadcasts the change to everyone in the
@@ -270,13 +298,17 @@ const InnerProvider = ({
 				return;
 			}
 			if (msg.type === 'transcript' && msg.text && msg.participantId) {
+				// Per-user opt-in: agent broadcasts transcripts to everyone
+				// over the data channel; we only render them when the local
+				// user has captions turned on. Reading the latest state via
+				// the ref so closing over a stale closure doesn't matter.
+				if (!captionsEnabledRef.current) return;
 				// The agent supplies the speaker's identity in `participantId`
 				// (since the data message itself comes from the agent, not the
 				// speaker, `participant?.identity` would be the agent's id).
 				const speaker = msg.participantId;
 				const { text } = msg;
 				const isFinal = Boolean(msg.isFinal);
-				console.debug('[Captions]', speaker, isFinal ? 'final' : 'interim', text);
 				setActiveCaptions((prev) => ({
 					...prev,
 					[speaker]: { text, isFinal, updatedAt: Date.now() },
@@ -289,6 +321,12 @@ const InnerProvider = ({
 			}
 			if (msg.type === 'transcription-state') {
 				setLiveTranscriptionActive({ enabled: Boolean((msg as any).enabled), updatedAt: Date.now() });
+				return;
+			}
+			if (msg.type === 'call-language') {
+				const code = (msg as any).code as string | undefined;
+				if (!code) return;
+				setCallLanguage(findCallLanguage(code));
 			}
 		};
 		room.on(RoomEvent.DataReceived, onData);
@@ -372,6 +410,82 @@ const InnerProvider = ({
 			room.off(RoomEvent.ParticipantConnected, rebroadcast);
 		};
 	}, [room, localParticipant, localHandRaised]);
+
+	// Toggle local captions opt-in. Side effects:
+	// - Publish a `captions-request` signal so the agent can ref-count and
+	//   start/stop Gemini sessions on the room's behalf. Reliable delivery —
+	//   missing one of these would leave the agent in the wrong state.
+	// - Clear the local activeCaptions map when turning off so the overlay
+	//   disappears immediately instead of waiting for the TTL sweep.
+	const onToggleCaptions = useCallback(() => {
+		setCaptionsEnabledLocally((prev) => {
+			const next = !prev;
+			const payload = JSON.stringify({ type: 'captions-request', requested: next });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch((err) => {
+				console.warn('captions-request publish failed', err);
+			});
+			if (!next) setActiveCaptions({});
+			return next;
+		});
+	}, [localParticipant]);
+
+	// Late-join rebroadcast: the agent (or other late-joining peers) need to
+	// know our captions-request state if it was set before they connected.
+	// Mirrors the raise-hand rebroadcast above.
+	useEffect(() => {
+		if (!captionsEnabledLocally) return undefined;
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'captions-request', requested: true });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, captionsEnabledLocally]);
+
+	// Same shape, for the take-notes (transcription) state. Without this,
+	// an agent that restarts mid-call — or any participant joining after
+	// the original toggle broadcast — has no way to learn that take-notes
+	// is on. Whoever locally sees the state as enabled rebroadcasts.
+	useEffect(() => {
+		if (!liveTranscriptionActive?.enabled) return undefined;
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'transcription-state', enabled: true });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, liveTranscriptionActive?.enabled]);
+
+	const onChangeCallLanguage = useCallback(
+		(code: string) => {
+			const next = findCallLanguage(code);
+			setCallLanguage(next);
+			const payload = JSON.stringify({ type: 'call-language', code: next.code, label: next.label });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch((err) => {
+				console.warn('call-language publish failed', err);
+			});
+		},
+		[localParticipant],
+	);
+
+	// Late-join rebroadcast for the call language so the agent (and any
+	// late peer) converges on the same choice as the rest of the room.
+	// Rebroadcast unconditionally — even the default is broadcast so the
+	// agent doesn't sit at its own default if it differs.
+	useEffect(() => {
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'call-language', code: callLanguage.code, label: callLanguage.label });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, callLanguage]);
 
 	const onToggleHand = useCallback(() => {
 		const raised = !localHandRaised;
@@ -508,6 +622,10 @@ const InnerProvider = ({
 			onSendReaction,
 			activeReactions,
 			activeCaptions,
+			captionsEnabledLocally,
+			onToggleCaptions,
+			callLanguage,
+			onChangeCallLanguage,
 			onVideoInputChange,
 			currentCameraDeviceId,
 			liveRecordingActive,
@@ -536,6 +654,10 @@ const InnerProvider = ({
 			onSendReaction,
 			activeReactions,
 			activeCaptions,
+			captionsEnabledLocally,
+			onToggleCaptions,
+			callLanguage,
+			onChangeCallLanguage,
 			onVideoInputChange,
 			currentCameraDeviceId,
 			liveRecordingActive,
@@ -639,7 +761,19 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 			<FloatingGroupCallWidget />
 			{lkActive && creds && callId && lkPortalTarget
 				? createPortal(
-						<LiveKitRoom token={creds.token} serverUrl={creds.serverUrl} connect={true} audio={true} video={false} onDisconnected={onLeave}>
+						// Apply preflight mic/cam preferences from the VC
+						// popup as the initial `audio` / `video` flags so the
+						// LiveKitRoom publishes (or skips) tracks according
+						// to what the user chose. Defaults match the legacy
+						// behaviour: mic on, camera off.
+						<LiveKitRoom
+							token={creds.token}
+							serverUrl={creds.serverUrl}
+							connect={true}
+							audio={activeCall?.preferences?.mic ?? true}
+							video={activeCall?.preferences?.cam ?? false}
+							onDisconnected={onLeave}
+						>
 							<InnerProvider callId={callId} onLeave={onLeave} onContextChange={setCtxValue} />
 							<RoomAudioRenderer />
 						</LiveKitRoom>,

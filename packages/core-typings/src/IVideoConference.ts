@@ -100,7 +100,10 @@ export type IVideoConferenceTranscriptEntry = {
 
 export type IVideoConferenceSummary = {
 	generatedAt: Date;
+	/** Message id of the posted AI summary (thread reply under the call message). */
 	messageId?: IMessage['_id'];
+	/** Message id of the raw transcript posted as a .md file in the same thread. */
+	transcriptMessageId?: IMessage['_id'];
 };
 
 export interface IVideoConference extends IRocketChatRecord {

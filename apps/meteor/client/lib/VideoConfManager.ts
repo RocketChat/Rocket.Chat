@@ -33,6 +33,10 @@ type CurrentEmbeddedCallParams = {
 	callId: string;
 	rid: string;
 	providerName: string;
+	// Preflight mic/cam preferences from the start-call popup so the
+	// embedded provider can connect with the right initial track state
+	// instead of always defaulting to "mic on, cam off".
+	preferences?: { mic?: boolean; cam?: boolean };
 };
 
 type VideoConfEvents = {
@@ -381,7 +385,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// distinct event so the URL-handling code path doesn't run.
 		if (!url && providerName && rid) {
 			this.debugLog(`[VideoConf] Joining embedded ${providerName} call ${callId} in room ${rid}.`);
-			this.emit('call/joinEmbedded', { callId, rid, providerName });
+			this.emit('call/joinEmbedded', {
+				callId,
+				rid,
+				providerName,
+				// Forward the same prefs the server received so the
+				// embedded provider can publish/skip mic + camera tracks
+				// according to the preflight popup's toggle state.
+				preferences: { ...this._preferences },
+			});
 			return;
 		}
 
