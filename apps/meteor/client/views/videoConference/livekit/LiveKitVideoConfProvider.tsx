@@ -1,13 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import {
-	MediaCallViewContext,
-	defaultMediaCallContextValue,
-	playJoinChime,
-	useMediaCallInstance,
-	type RemoteParticipantInfo,
-} from '@rocket.chat/ui-voip';
+import { MediaCallViewContext, defaultMediaCallContextValue, playJoinChime, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -15,6 +9,7 @@ import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import FloatingGroupCallWidget from './FloatingGroupCallWidget';
+import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
 
 const headersOf = () => ({
 	'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
@@ -24,7 +19,7 @@ const headersOf = () => ({
 type LKCreds = { serverUrl: string; token: string; roomName: string };
 
 const fetchTransportConfig = async (callId: string): Promise<LKCreds | null> => {
-	const res = await fetch(`/api/v1/media-calls.transport.config?callId=${encodeURIComponent(callId)}`, {
+	const res = await fetch(`/api/v1/video-conference.livekit.transport.config?callId=${encodeURIComponent(callId)}`, {
 		headers: headersOf(),
 	});
 	if (!res.ok) return null;
@@ -42,7 +37,7 @@ const fetchTransportConfig = async (callId: string): Promise<LKCreds | null> => 
  */
 const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
 	try {
-		void fetch('/api/v1/media-calls.leaveGroup', {
+		void fetch('/api/v1/video-conference.livekit.leave', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', ...headersOf() },
 			body: JSON.stringify({ callId }),
@@ -562,17 +557,21 @@ const InnerProvider = ({
 };
 
 /**
- * App-level host for the LiveKit group-call connection. Always renders children
- * in the same React tree position (no remount on call start/end). When a group
- * call is active, the LK Room mounts into a sibling portal and an inner bridge
- * pushes the populated MediaCallViewContext value upward via state. The result:
- * the per-room MediaCallRoomActivity (rendered with provider={null}) sees the
+ * App-level bridge for the LiveKit group-call connection. Always renders
+ * children in the same React tree position (no remount on call start/end).
+ * When a group call is active (per `useLiveKitVideoConf().activeCall`), the
+ * LK Room mounts into a sibling portal and an inner bridge pushes the
+ * populated MediaCallViewContext value upward via state. The result: the
+ * per-room MediaCallRoomActivity (rendered with provider={null}) sees the
  * live LK context, and navigating between channels doesn't tear down LK.
+ *
+ * Note: this is a Video Conference feature and has zero dependency on the
+ * VoIP MediaSignalingSession. Active-call state is owned by the sibling
+ * LiveKitVideoConfProvider context.
  */
-const LiveKitMediaCallProvider = ({ children }: { children: ReactNode }) => {
-	const { instance: session } = useMediaCallInstance();
-	const call = session?.getState(false)?.call as any;
-	const callId = call?.callId as string | undefined;
+const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
+	const { activeCall, leaveCall } = useLiveKitVideoConf();
+	const callId = activeCall?.callId;
 	const [creds, setCreds] = useState<LKCreds | null>(null);
 	const [ctxValue, setCtxValue] = useState<unknown>(defaultMediaCallContextValue);
 
@@ -595,8 +594,8 @@ const LiveKitMediaCallProvider = ({ children }: { children: ReactNode }) => {
 		if (callId) {
 			requestLeaveGroup(callId);
 		}
-		session?.leaveGroupCall();
-	}, [session, callId]);
+		leaveCall();
+	}, [leaveCall, callId]);
 
 	// Tab close / refresh / browser kill: fire the leave REST with keepalive so
 	// the server clears this user from participants[] before the connection
@@ -651,4 +650,4 @@ const LiveKitMediaCallProvider = ({ children }: { children: ReactNode }) => {
 	);
 };
 
-export default LiveKitMediaCallProvider;
+export default LiveKitVideoConfBridge;

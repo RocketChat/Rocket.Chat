@@ -1,5 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel, Uploads, Users } from '@rocket.chat/models';
+import { VideoConference as VideoConferenceModel, Uploads, Users } from '@rocket.chat/models';
 
 import type { EgressInfo, EgressFileResult } from './egress';
 import { sendFileMessage } from '../../../../app/file-upload/server/methods/sendFileMessage';
@@ -37,7 +37,7 @@ export async function finalizeRecordingFromEgress(callId: string, egress: Egress
 	const { status } = egress;
 	logger.debug({ msg: 'finalize: evaluating', callId, egressId, status });
 
-	const call = await MediaCallsModel.findOneById(callId);
+	const call = await VideoConferenceModel.findOneById(callId);
 	if (!call) {
 		logger.warn({ msg: 'finalize: call not found', callId });
 		return 'no-call';
@@ -51,7 +51,7 @@ export async function finalizeRecordingFromEgress(callId: string, egress: Egress
 	if (!terminal) return 'still-running';
 
 	if (status !== 'EGRESS_COMPLETE') {
-		await MediaCallsModel.updateOne({ _id: call._id }, { $set: { 'recording.endedAt': new Date() } });
+		await VideoConferenceModel.updateRecordingById(call._id, { endedAt: new Date() });
 		logger.warn({ msg: 'finalize: egress ended unsuccessfully', status, error: egress.error, callId });
 		return 'failed';
 	}
@@ -64,7 +64,7 @@ export async function finalizeRecordingFromEgress(callId: string, egress: Egress
 
 	if (!uploadId || !uploadKey || !filename) {
 		logger.warn({ msg: 'finalize: missing upload metadata; cannot post file message', callId });
-		await MediaCallsModel.updateOne({ _id: call._id }, { $set: { 'recording.endedAt': new Date() } });
+		await VideoConferenceModel.updateRecordingById(call._id, { endedAt: new Date() });
 		return 'missing-data';
 	}
 	if (!call.rid) {
@@ -72,7 +72,7 @@ export async function finalizeRecordingFromEgress(callId: string, egress: Egress
 		return 'missing-data';
 	}
 
-	const authorUserId = call.createdBy?.id || 'rocket.cat';
+	const authorUserId = call.createdBy?._id || 'rocket.cat';
 	const author = (await Users.findOneById(authorUserId)) || (await Users.findOneById('rocket.cat'));
 	if (!author) {
 		logger.warn({ msg: 'finalize: no author user found', callId, authorUserId });
@@ -98,17 +98,29 @@ export async function finalizeRecordingFromEgress(callId: string, egress: Egress
 			uploadedAt: new Date(),
 			AmazonS3: { path: uploadKey },
 		} as any);
+		// Post the recording as a thread reply under the call's "Call ongoing"
+		// block message so the channel stays tidy: one top-level entry per
+		// call, with recording + summary tucked inside its thread.
+		const parentMessageId = call.messages?.started;
 		await sendFileMessage(author._id, {
 			roomId: call.rid,
 			file: { _id: uploadId, name: filename, type: 'video/mp4', size: fileSize },
-			msgData: { msg: call.createdBy?.displayName ? `${call.createdBy.displayName} — call recording` : 'Call recording' },
+			msgData: {
+				msg: call.createdBy?.name ? `${call.createdBy.name} — call recording` : 'Call recording',
+				...(parentMessageId && { tmid: parentMessageId }),
+			},
 		});
 	} catch (err) {
 		logger.error({ msg: 'finalize: upload/sendFileMessage failed; falling back to plain link', err, callId });
 		// Best-effort fallback so the user at least gets a URL when LK provides one.
 		if (fileUrl) {
 			try {
-				await executeSendMessage(author, { rid: call.rid, msg: `Call recording is ready\n${fileUrl}` });
+				const parentMessageId = call.messages?.started;
+				await executeSendMessage(author, {
+					rid: call.rid,
+					msg: `Call recording is ready\n${fileUrl}`,
+					...(parentMessageId && { tmid: parentMessageId }),
+				} as any);
 			} catch (e) {
 				logger.error({ msg: 'finalize: link fallback also failed', err: e, callId });
 				return 'failed';
@@ -118,16 +130,11 @@ export async function finalizeRecordingFromEgress(callId: string, egress: Egress
 		}
 	}
 
-	await MediaCallsModel.updateOne(
-		{ _id: call._id },
-		{
-			$set: {
-				'recording.endedAt': new Date(),
-				'recording.messageSent': true,
-				...(fileUrl && { 'recording.fileUrl': fileUrl }),
-			},
-		},
-	);
+	await VideoConferenceModel.updateRecordingById(call._id, {
+		endedAt: new Date(),
+		messageSent: true,
+		...(fileUrl && { fileUrl }),
+	});
 	logger.info({ msg: 'finalize: done', callId });
 	return 'posted';
 }

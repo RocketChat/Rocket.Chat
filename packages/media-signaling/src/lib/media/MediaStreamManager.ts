@@ -5,60 +5,31 @@ import type { IMediaSignalLogger } from '../../definition';
 import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager';
 import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification';
 
-// Canonical stream tags. Aligned with LiveKit's Track.Source enum:
-//   Track.Source.Microphone  → 'microphone'
-//   Track.Source.Camera      → 'camera'
-//   Track.Source.ScreenShare → 'screen-share'
-//
-// The 'main' tag is a deprecated alias for 'microphone' kept for back-compat
-// during the rename pass; getLocalStreamByTag/getRemoteStreamByTag normalize it.
-const TAG_MICROPHONE = 'microphone';
-const TAG_CAMERA = 'camera';
-const TAG_SCREEN_SHARE = 'screen-share';
-
-const normalizeTag = (tag: string): string => (tag === 'main' ? TAG_MICROPHONE : tag);
-
 export class MediaStreamManager implements IMediaStreamManager {
 	public readonly emitter: Emitter<MediaStreamManagerEvents>;
 
-	public readonly microphoneLocal: MediaStreamWrapper;
+	public readonly mainLocal: MediaStreamWrapper;
 
 	public readonly screenShareLocal: MediaStreamWrapper;
 
-	public readonly cameraLocal: MediaStreamWrapper;
-
-	public readonly microphoneRemote: MediaStreamWrapper;
+	public readonly mainRemote: MediaStreamWrapper;
 
 	public readonly screenShareRemote: MediaStreamWrapper;
 
-	public readonly cameraRemote: MediaStreamWrapper;
-
 	constructor(
-		protected readonly peer: RTCPeerConnection | null,
+		protected readonly peer: RTCPeerConnection,
 		protected readonly logger?: IMediaSignalLogger,
 	) {
 		this.emitter = new Emitter();
-		this.microphoneLocal = this.createStream(false, TAG_MICROPHONE);
-		this.screenShareLocal = this.createStream(false, TAG_SCREEN_SHARE);
-		this.cameraLocal = this.createStream(false, TAG_CAMERA);
-		this.microphoneRemote = this.createStream(true, TAG_MICROPHONE);
-		this.screenShareRemote = this.createStream(true, TAG_SCREEN_SHARE);
-		this.cameraRemote = this.createStream(true, TAG_CAMERA);
-	}
-
-	// Deprecated aliases — prefer microphoneLocal/microphoneRemote.
-	public get mainLocal(): MediaStreamWrapper {
-		return this.microphoneLocal;
-	}
-
-	public get mainRemote(): MediaStreamWrapper {
-		return this.microphoneRemote;
+		this.mainLocal = this.createStream(false, 'main');
+		this.screenShareLocal = this.createStream(false, 'screen-share');
+		this.mainRemote = this.createStream(true, 'main');
+		this.screenShareRemote = this.createStream(true, 'screen-share');
 	}
 
 	public stopRemoteStreams(): void {
-		this.microphoneRemote.stop();
+		this.mainRemote.stop();
 		this.screenShareRemote.stop();
-		this.cameraRemote.stop();
 	}
 
 	public setRemoteIds(streams: MediaStreamIdentification[]): void {
@@ -95,25 +66,23 @@ export class MediaStreamManager implements IMediaStreamManager {
 	}
 
 	public getLocalStreams(): MediaStreamWrapper[] {
-		return [this.microphoneLocal, this.screenShareLocal, this.cameraLocal];
+		return [this.mainLocal, this.screenShareLocal];
 	}
 
 	public getRemoteStreams(): MediaStreamWrapper[] {
-		return [this.microphoneRemote, this.screenShareRemote, this.cameraRemote];
+		return [this.mainRemote, this.screenShareRemote];
 	}
 
 	public getLocalStreamByTag(tag: string): MediaStreamWrapper | null {
-		const normalized = normalizeTag(tag);
-		return this.getLocalStreams().find((stream) => stream.tag === normalized) || null;
+		return this.getLocalStreams().find((stream) => stream.tag === tag) || null;
 	}
 
 	public getRemoteStreamByTag(tag: string): MediaStreamWrapper | null {
-		const normalized = normalizeTag(tag);
-		return this.getRemoteStreams().find((stream) => stream.tag === normalized) || null;
+		return this.getRemoteStreams().find((stream) => stream.tag === tag) || null;
 	}
 
 	public hasAllRequiredTracks(): boolean {
-		return this.microphoneLocal.hasAudio();
+		return this.mainLocal.hasAudio();
 	}
 
 	private findStreamWrappersForRemoteTrack(track: MediaStreamTrack, streams: readonly MediaStream[]): MediaStreamWrapper[] {
@@ -126,10 +95,10 @@ export class MediaStreamManager implements IMediaStreamManager {
 			return streamWrappers;
 		}
 
-		// If no streams have been found by id and it's an audio track, this is probably an external call so assume the microphone stream
+		// If no streams have been found by id and it's an audio track, this is probably an external call so assume the main stream
 		if (track.kind === 'audio') {
-			this.logger?.debug('default audio to microphone track');
-			return [this.microphoneRemote];
+			this.logger?.debug('default audio to main track');
+			return [this.mainRemote];
 		}
 
 		// A video track for an unidentified stream, let's ignore it

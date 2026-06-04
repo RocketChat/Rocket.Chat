@@ -49,7 +49,9 @@ type MediaCallViewContextValue = {
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
-	onToggleCamera: () => void;
+	// Camera toggling is a Video Conference feature (LiveKit). The 1:1 VoIP
+	// path doesn't supply this, so consumers must handle undefined.
+	onToggleCamera?: () => void;
 	/**
 	 * Toggle the local user's "raise hand" state. Group calls broadcast this
 	 * over the LK data channel; direct calls only track it locally.
@@ -106,12 +108,11 @@ type MediaCallViewContextValue = {
 	broadcastTranscriptionState?: (enabled: boolean) => void;
 	streams: MediaCallStreams;
 	/**
-	 * Remote participants in the call. Always present (possibly empty when the
-	 * call is pre-ongoing or you're alone in a group). MediaCallRoomSection
-	 * iterates this to render PeerCards — 1:1 calls populate length 1, group
-	 * calls populate N.
+	 * Remote participants in the call. Populated by the VC LiveKit bridge for
+	 * group calls (length N). The 1:1 VoIP path doesn't supply this; consumers
+	 * default to an empty array.
 	 */
-	remoteParticipants: RemoteParticipantInfo[];
+	remoteParticipants?: RemoteParticipantInfo[];
 	widgetPositionTracker?: {
 		onChangePosition: (position: LastKnownPosition | null) => void;
 		getRestorePosition: () => LastKnownPosition | null;

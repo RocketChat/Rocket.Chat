@@ -1,5 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel } from '@rocket.chat/models';
+import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import { listEgress } from './egress';
 import { finalizeRecordingFromEgress } from './finalizeRecording';
@@ -52,10 +52,7 @@ export function startRecordingPoll(callId: string, egressId: string): void {
 			if (elapsed > MAX_POLL_DURATION_MS) {
 				logger.warn({ msg: 'recording poll timed out', callId, egressId, elapsedMs: elapsed });
 				clearPoll(egressId);
-				await MediaCallsModel.updateOne(
-					{ _id: callId },
-					{ $set: { 'recording.endedAt': new Date(), 'recording.pollTimedOut': true } as any },
-				);
+				await VideoConferenceModel.updateRecordingById(callId, { endedAt: new Date(), pollTimedOut: true } as any);
 				return;
 			}
 			const info = await listEgress(egressId);
@@ -71,16 +68,11 @@ export function startRecordingPoll(callId: string, egressId: string): void {
 					// perspective, no further action needed" — same flag
 					// the success path uses.
 					logger.warn({ msg: 'recording poll abandoned (egress not found)', callId, egressId, misses });
-					await MediaCallsModel.updateOne(
-						{ _id: callId },
-						{
-							$set: {
-								'recording.endedAt': new Date(),
-								'recording.messageSent': true,
-								'recording.pollAbandonedReason': 'egress-not-found',
-							} as any,
-						},
-					);
+					await VideoConferenceModel.updateRecordingById(callId, {
+						endedAt: new Date(),
+						messageSent: true,
+						pollAbandonedReason: 'egress-not-found',
+					} as any);
 					clearPoll(egressId);
 				}
 				return;
@@ -110,10 +102,7 @@ export function startRecordingPoll(callId: string, egressId: string): void {
  */
 export async function resumeActiveRecordingPollers(): Promise<void> {
 	try {
-		const calls = await MediaCallsModel.find(
-			{ 'recording.egressId': { $exists: true } as any, 'recording.messageSent': { $ne: true } as any },
-			{ projection: { _id: 1, recording: 1 } },
-		).toArray();
+		const calls = await VideoConferenceModel.findActiveEmbeddedWithRecording();
 		logger.info({ msg: 'resuming pollers', count: calls.length });
 		for (const call of calls) {
 			const egressId = call.recording?.egressId;

@@ -281,8 +281,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		broadcastRecordingState,
 		broadcastTranscriptionState,
 		streams: { localScreen, localCamera, localMicrophone },
-		remoteParticipants,
+		remoteParticipants: remoteParticipantsRaw,
 	} = useMediaCallView();
+
+	// Optional on the context — only the VC LiveKit bridge populates it. The
+	// 1:1 VoIP path doesn't render this component so the fallback to [] is
+	// purely defensive.
+	const remoteParticipants = remoteParticipantsRaw ?? [];
 
 	const { muted, held, connectionState, startedAt, callId } = sessionState;
 	const isOneOnOne = remoteParticipants.length === 1;
@@ -397,7 +402,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		let cancelled = false;
 		void (async () => {
 			try {
-				const res = await fetch(`/api/v1/media-calls.livekit.recording-status?callId=${encodeURIComponent(callId)}`, {
+				const res = await fetch(`/api/v1/video-conference.livekit.recording.status?callId=${encodeURIComponent(callId)}`, {
 					headers: {
 						'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
 						'X-User-Id': localStorage.getItem('Meteor.userId') || '',
@@ -426,7 +431,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		if (!callId || recordingBusy) return;
 		setRecordingBusy(true);
 		try {
-			const endpoint = isRecording ? '/api/v1/media-calls.livekit.stop-recording' : '/api/v1/media-calls.livekit.start-recording';
+			const endpoint = isRecording ? '/api/v1/video-conference.livekit.recording.stop' : '/api/v1/video-conference.livekit.recording.start';
 			const res = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
@@ -457,7 +462,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		let cancelled = false;
 		void (async () => {
 			try {
-				const res = await fetch(`/api/v1/media-calls.transcription.status?callId=${encodeURIComponent(callId)}`, {
+				const res = await fetch(`/api/v1/video-conference.livekit.transcription.status?callId=${encodeURIComponent(callId)}`, {
 					headers: {
 						'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
 						'X-User-Id': localStorage.getItem('Meteor.userId') || '',
@@ -485,7 +490,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		if (!callId || notesBusy) return;
 		setNotesBusy(true);
 		try {
-			const endpoint = notesEnabled ? '/api/v1/media-calls.transcription.stop' : '/api/v1/media-calls.transcription.start';
+			const endpoint = notesEnabled
+				? '/api/v1/video-conference.livekit.transcription.stop'
+				: '/api/v1/video-conference.livekit.transcription.start';
 			const res = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
@@ -590,19 +597,25 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 					<Timer startAt={startedAt} />
 				</Box>
 				<Box className={headerActionsRowStyles}>
-					<Box
-						is='button'
-						type='button'
-						className={[recordPillStyles, isRecording ? 'recording' : null]}
-						onClick={onToggleRecording}
-						disabled={recordingBusy}
-						onMouseEnter={() => setRecordHover(true)}
-						onMouseLeave={() => setRecordHover(false)}
-						title={isRecording ? t('Stop_recording') : t('Start_recording')}
-					>
-						<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
-						<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
-					</Box>
+					{/* Recording is a Video Conference (LiveKit) feature — the
+					    pill only renders when the upstream provider supplies a
+					    broadcastRecordingState. 1:1 VoIP calls (which have no
+					    recording backend in this branch) skip it. */}
+					{broadcastRecordingState && (
+						<Box
+							is='button'
+							type='button'
+							className={[recordPillStyles, isRecording ? 'recording' : null]}
+							onClick={onToggleRecording}
+							disabled={recordingBusy}
+							onMouseEnter={() => setRecordHover(true)}
+							onMouseLeave={() => setRecordHover(false)}
+							title={isRecording ? t('Stop_recording') : t('Start_recording')}
+						>
+							<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
+							<Box is='span'>{isRecording ? (recordHover ? t('Stop_recording') : `${t('Recording')}…`) : t('Start_recording')}</Box>
+						</Box>
+					)}
 					{notesAvailable && (
 						<Box
 							is='button'
@@ -654,18 +667,20 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 						<DevicePicker chevron />
 					</Box>
 				</Box>
-				<Box className={controlGroupStyles}>
-					<ToggleButton
-						label={t('Camera')}
-						icons={['video', 'video-off']}
-						titles={[t('Stop_camera'), t('Start_camera')]}
-						pressed={!(localCamera?.active ?? false)}
-						onToggle={onToggleCamera}
-					/>
-					<Box className={chevronWrapStyles}>
-						<CameraPicker />
+				{onToggleCamera && (
+					<Box className={controlGroupStyles}>
+						<ToggleButton
+							label={t('Camera')}
+							icons={['video', 'video-off']}
+							titles={[t('Stop_camera'), t('Start_camera')]}
+							pressed={!(localCamera?.active ?? false)}
+							onToggle={onToggleCamera}
+						/>
+						<Box className={chevronWrapStyles}>
+							<CameraPicker />
+						</Box>
 					</Box>
-				</Box>
+				)}
 				{!isLiveKitCall && (
 					<ToggleButton
 						label={t('Hold')}

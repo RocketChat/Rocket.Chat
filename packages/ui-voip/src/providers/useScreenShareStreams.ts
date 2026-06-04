@@ -16,20 +16,13 @@ const getStreamWrappers = (instance?: MediaSignalingSession) => {
 
 		const { localParticipant, remoteParticipant } = instanceState;
 
-		const localScreen = localParticipant.getMediaStream('screen-share');
-		const remoteScreen = remoteParticipant.getMediaStream('screen-share');
-		const localCamera = localParticipant.getMediaStream('camera');
-		const remoteCamera = remoteParticipant.getMediaStream('camera');
-		const localMicrophone = localParticipant.getMediaStream('microphone');
-		const remoteMicrophone = remoteParticipant.getMediaStream('microphone');
+		const localStream = localParticipant.getMediaStream('screen-share');
+
+		const remoteStream = remoteParticipant.getMediaStream('screen-share');
 
 		return {
-			localScreen: localScreen ?? undefined,
-			remoteScreen: remoteScreen ?? undefined,
-			localCamera: localCamera ?? undefined,
-			remoteCamera: remoteCamera ?? undefined,
-			localMicrophone: localMicrophone ?? undefined,
-			remoteMicrophone: remoteMicrophone ?? undefined,
+			localScreen: localStream ?? undefined,
+			remoteScreen: remoteStream ?? undefined,
 		};
 	} catch (error) {
 		console.error('MediaCall: useMediaStream - Error getting local media stream', error);
@@ -47,21 +40,18 @@ const areStreamsEqual = (a?: IMediaStreamWrapper, b?: IMediaStreamWrapper) => {
 	return a.stream.id === b.stream.id;
 };
 
-const emptyStreams: MediaCallStreams = {
-	remoteScreen: undefined,
-	localScreen: undefined,
-	remoteCamera: undefined,
-	localCamera: undefined,
-	localMicrophone: undefined,
-	remoteMicrophone: undefined,
-};
-
 export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
-	const [streams, setStreams] = useState<MediaCallStreams>(emptyStreams);
+	const [streams, setStreams] = useState<MediaCallStreams>({
+		remoteScreen: undefined,
+		localScreen: undefined,
+	});
 
 	useEffect(() => {
 		if (!instance) {
-			setStreams(emptyStreams);
+			setStreams({
+				remoteScreen: undefined,
+				localScreen: undefined,
+			});
 			return;
 		}
 
@@ -69,16 +59,12 @@ export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
 			const next = getStreamWrappers(instance);
 			setStreams((oldStreams) => {
 				if (!next) {
-					return emptyStreams;
+					return {
+						remoteScreen: undefined,
+						localScreen: undefined,
+					};
 				}
-				if (
-					areStreamsEqual(oldStreams.localScreen, next.localScreen) &&
-					areStreamsEqual(oldStreams.remoteScreen, next.remoteScreen) &&
-					areStreamsEqual(oldStreams.localCamera, next.localCamera) &&
-					areStreamsEqual(oldStreams.remoteCamera, next.remoteCamera) &&
-					areStreamsEqual(oldStreams.localMicrophone, next.localMicrophone) &&
-					areStreamsEqual(oldStreams.remoteMicrophone, next.remoteMicrophone)
-				) {
+				if (areStreamsEqual(oldStreams.localScreen, next.localScreen) && areStreamsEqual(oldStreams.remoteScreen, next.remoteScreen)) {
 					return oldStreams;
 				}
 				return next;

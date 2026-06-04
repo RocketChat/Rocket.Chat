@@ -59,13 +59,13 @@ const resolveWorkerPath = (): string | null => {
 
 const computeEnv = (): Record<string, string> | null => {
 	const lk = getLiveKitConfig();
-	const geminiKey = settings.get<string>('VoIP_TeamCollab_LiveKit_Agent_Gemini_Api_Key') || '';
+	const geminiKey = settings.get<string>('VideoConf_LiveKit_Agent_Gemini_Api_Key') || '';
 	const missing: string[] = [];
-	if (!lk.enabled) missing.push('VoIP_TeamCollab_LiveKit_Enabled');
-	if (!lk.url) missing.push('VoIP_TeamCollab_LiveKit_Url');
-	if (!lk.apiKey) missing.push('VoIP_TeamCollab_LiveKit_Api_Key');
-	if (!lk.apiSecret) missing.push('VoIP_TeamCollab_LiveKit_Api_Secret');
-	if (!geminiKey) missing.push('VoIP_TeamCollab_LiveKit_Agent_Gemini_Api_Key');
+	if (!lk.enabled) missing.push('VideoConf_LiveKit_Enabled');
+	if (!lk.url) missing.push('VideoConf_LiveKit_Url');
+	if (!lk.apiKey) missing.push('VideoConf_LiveKit_Api_Key');
+	if (!lk.apiSecret) missing.push('VideoConf_LiveKit_Api_Secret');
+	if (!geminiKey) missing.push('VideoConf_LiveKit_Agent_Gemini_Api_Key');
 	if (missing.length > 0) {
 		SystemLogger.warn({ msg: '[livekit-agent] required settings missing', missing });
 		return null;
@@ -80,9 +80,9 @@ const computeEnv = (): Record<string, string> | null => {
 		METEOR_BASE_URL: settings.get<string>('Site_Url') || 'http://localhost:3000',
 		METEOR_SHARED_SECRET: lk.apiSecret,
 	};
-	const model = settings.get<string>('VoIP_TeamCollab_LiveKit_Agent_Gemini_Model');
+	const model = settings.get<string>('VideoConf_LiveKit_Agent_Gemini_Model');
 	if (model) env.GEMINI_LIVE_MODEL = model;
-	const lang = settings.get<string>('VoIP_TeamCollab_LiveKit_Agent_Language_Hint');
+	const lang = settings.get<string>('VideoConf_LiveKit_Agent_Language_Hint');
 	if (lang) env.STT_LANGUAGE_HINT = lang;
 	return env;
 };
@@ -160,7 +160,7 @@ const stopWorker = (): void => {
  * whether the worker should be running and starts/stops accordingly.
  */
 export const startLiveKitAgentSupervisor = (): void => {
-	const mode = settings.get<string>('VoIP_TeamCollab_LiveKit_Agent_Mode') || 'off';
+	const mode = settings.get<string>('VideoConf_LiveKit_Agent_Mode') || 'off';
 	SystemLogger.info({ msg: '[livekit-agent] supervisor invoked', mode });
 	if (mode === 'embedded') {
 		if (state.desired) return;
@@ -190,7 +190,7 @@ export const installLiveKitAgentSettingsWatchers = (): void => {
 	if (watchersInstalled) return;
 	watchersInstalled = true;
 	settings.watchByRegex(
-		/^VoIP_TeamCollab_LiveKit_(Agent_(Mode|Gemini_Api_Key|Gemini_Model|Language_Hint)|Enabled|Url|Api_Key|Api_Secret)$/,
+		/^VideoConf_LiveKit_(Agent_(Mode|Gemini_Api_Key|Gemini_Model|Language_Hint)|Enabled|Url|Api_Key|Api_Secret)$/,
 		() => {
 			// If the worker is already up, recycle it so it picks up the new env.
 			if (state.desired && state.child) {

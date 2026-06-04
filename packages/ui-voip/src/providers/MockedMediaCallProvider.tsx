@@ -157,20 +157,7 @@ const MockedMediaCallProvider = ({
 		onToggleWidget,
 		onSelectPeer,
 		streams: {},
-		remoteParticipants:
-			peerInfo && 'userId' in peerInfo && widgetState === 'ongoing'
-				? [
-						{
-							id: peerInfo.userId,
-							displayName: peerInfo.displayName,
-							avatarUrl: peerInfo.avatarUrl,
-							muted: remoteMuted,
-							held: remoteHeld,
-						},
-					]
-				: [],
 		onToggleScreenSharing: () => undefined,
-		onToggleCamera: () => undefined,
 	};
 
 	const instanceContextValue = {

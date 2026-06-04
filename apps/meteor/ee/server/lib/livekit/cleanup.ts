@@ -1,6 +1,7 @@
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel } from '@rocket.chat/models';
+import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import { getLiveKitConfig, isLiveKitFullyConfigured } from './config';
 import { countRoomParticipants } from './roomService';
@@ -29,7 +30,7 @@ const livekitRoomNameFor = (callId: string) => `mc-${callId}`;
 export async function reconcileGroupCalls(): Promise<void> {
 	if (!isLiveKitFullyConfigured()) return;
 
-	const calls = await MediaCallsModel.findActiveGroupCalls().toArray();
+	const calls = await VideoConferenceModel.findActiveExpiredEmbedded(0, 'livekit');
 	if (calls.length === 0) return;
 
 	const now = Date.now();
@@ -43,12 +44,13 @@ export async function reconcileGroupCalls(): Promise<void> {
 			if (present !== 0) continue;
 
 			logger.info({ msg: 'ending stuck group call (no LK participants)', callId: call._id, rid: call.rid });
-			await MediaCallsModel.hangupCallById(call._id, { reason: 'reconciler-no-participants' });
+			await VideoConferenceModel.setEndedById(call._id, undefined, new Date());
+			await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.ENDED);
 			// Notify the room so any subscribed client refreshes its "active
 			// call" state without waiting for a polling tick.
 			if (call.rid) {
 				try {
-					(notifications.notifyRoom as any)(call.rid, 'media-call-state', { action: 'ended', callId: call._id });
+					(notifications.notifyRoom as any)(call.rid, 'video-conference-state', { action: 'ended', callId: call._id });
 				} catch {
 					/* notify is best-effort */
 				}

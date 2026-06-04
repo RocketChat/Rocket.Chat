@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
+import { useLiveKitVideoConf } from '../views/videoConference/livekit/LiveKitVideoConfContext';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
@@ -24,6 +25,20 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 				handleOpenCall(props.url, props.providerName);
 			}),
 		[handleOpenCall],
+	);
+
+	// Embedded providers (LiveKit) don't open a URL — they mount their UI
+	// inline. We forward the join into the embedded provider's React context
+	// here so the manager singleton doesn't need a direct dependency on it.
+	const { joinCall: joinEmbeddedCall } = useLiveKitVideoConf();
+	useEffect(
+		() =>
+			VideoConfManager.on('call/joinEmbedded', ({ callId, rid, providerName }) => {
+				if (providerName === 'livekit') {
+					joinEmbeddedCall({ callId, rid });
+				}
+			}),
+		[joinEmbeddedCall],
 	);
 
 	useEffect(

@@ -8,7 +8,7 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
@@ -19,7 +19,7 @@ import { useScreenShareStreams } from './useScreenShareStreams';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
 import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
-import MediaCallViewContext, { type RemoteParticipantInfo } from '../context/MediaCallViewContext';
+import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
@@ -209,32 +209,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.toggleScreenSharing();
 	};
 
-	const onToggleCamera = () => {
-		controls.toggleCamera();
-	};
-
 	const streams = useScreenShareStreams(instance);
-
-	// WebRTC P2P calls have exactly one remote peer (or zero before connect).
-	// Build a participants array so the room section can iterate uniformly with
-	// group calls. peerInfo can be undefined or external (SIP, no userId); we
-	// only surface internal peers as participant cards.
-	const remoteParticipants = useMemo<RemoteParticipantInfo[]>(() => {
-		const { peerInfo, remoteMuted, remoteHeld } = sessionState;
-		if (!peerInfo || 'number' in peerInfo) return [];
-		return [
-			{
-				id: peerInfo.userId,
-				displayName: peerInfo.displayName,
-				avatarUrl: peerInfo.avatarUrl,
-				muted: remoteMuted,
-				held: remoteHeld,
-				cameraStream: streams.remoteCamera?.stream,
-				screenStream: streams.remoteScreen?.active ? streams.remoteScreen.stream : undefined,
-				audioStream: streams.remoteMicrophone?.stream,
-			},
-		];
-	}, [sessionState, streams.remoteCamera, streams.remoteScreen, streams.remoteMicrophone]);
 
 	useWidgetExternalControlSignalListener(
 		'toggleWidget',
@@ -267,9 +242,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onAccept,
 		onSelectPeer,
 		onToggleScreenSharing,
-		onToggleCamera,
 		streams,
-		remoteParticipants,
 		widgetPositionTracker: {
 			onChangePosition,
 			getRestorePosition,

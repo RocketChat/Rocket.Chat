@@ -26,6 +26,15 @@ type CurrentCallParams = {
 	providerName?: string;
 };
 
+// Emitted for embedded-SFU providers (e.g. LiveKit) — there's no URL to open,
+// the call is rendered inline by the embedded provider's React tree. Consumers
+// of this event dispatch the join into the corresponding provider context.
+type CurrentEmbeddedCallParams = {
+	callId: string;
+	rid: string;
+	providerName: string;
+};
+
 type VideoConfEvents = {
 	// We gave up on calling a remote user or they rejected our call
 	'direct/cancel': DirectCallParams;
@@ -60,6 +69,10 @@ type VideoConfEvents = {
 
 	// When join call
 	'call/join': CurrentCallParams;
+
+	// When join call for an embedded (no-URL) provider like LiveKit. Consumers
+	// route this to the provider's React context (e.g. LiveKitVideoConf).
+	'call/joinEmbedded': CurrentEmbeddedCallParams;
 
 	'error': { error: string };
 
@@ -355,12 +368,22 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url, providerName } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
+		const { url, providerName, rid } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			console.error(`[VideoConf] Failed to join call ${callId}`, e);
 			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-join-failed');
 
 			return Promise.reject(e);
 		});
+
+		// Embedded providers (e.g. LiveKit) intentionally return an empty
+		// url + a rid — the call is mounted inline by their React provider
+		// instead of opened in a popup. Dispatch to that provider via a
+		// distinct event so the URL-handling code path doesn't run.
+		if (!url && providerName && rid) {
+			this.debugLog(`[VideoConf] Joining embedded ${providerName} call ${callId} in room ${rid}.`);
+			this.emit('call/joinEmbedded', { callId, rid, providerName });
+			return;
+		}
 
 		if (!url) {
 			this.emitError('error-videoconf-missing-url');

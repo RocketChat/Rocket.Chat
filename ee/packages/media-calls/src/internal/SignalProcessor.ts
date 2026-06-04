@@ -71,17 +71,6 @@ export class GlobalSignalProcessor {
 				throw new Error('invalid-call');
 			}
 
-			// Group calls don't use this signal pipeline. Their lifecycle runs
-			// through the REST API (startGroup/joinGroup/leaveGroup) and the
-			// media path is owned by LiveKit, so SDP/ICE/hangup/local-state
-			// signals from individual participants have no server-side meaning.
-			// Critically, the caller/callee fields on a group-call doc are
-			// placeholder-set to the creator — anyone else hitting the role
-			// check below would fail with "invalid-call". Just no-op.
-			if (call.kind === 'group') {
-				return;
-			}
-
 			const isCaller = call.caller.type === 'user' && call.caller.id === uid;
 			const isCallee = call.callee.type === 'user' && call.callee.id === uid;
 

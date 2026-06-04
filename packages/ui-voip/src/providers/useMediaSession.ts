@@ -124,16 +124,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				return;
 			}
 
-			// Group calls are surfaced via LiveKitMediaCallProvider, not the DM
-			// widget. The widget needs a peerInfo with username/userId which
-			// group calls don't have — exposing them here causes a brief flash
-			// while the bootstrap completes, and a crash inside the widget
-			// switch (`'username' in peerInfo`) when peerInfo is undefined.
-			if ((instanceState as { call?: { rid?: string } }).call?.rid) {
-				dispatch({ type: 'reset' });
-				return;
-			}
-
 			const {
 				state: callState,
 				localParticipant: { role, muted, held },

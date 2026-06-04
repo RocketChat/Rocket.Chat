@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { MediaStreamIdentification } from '../../../media/MediaStreamIdentification';
+import type { MediaStreamIdentification } from '../../media/MediaStreamIdentification';
 
 /** Client is sending the local session description to the server */
 export type ClientMediaSignalLocalSDP = {

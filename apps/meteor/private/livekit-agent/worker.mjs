@@ -58,7 +58,7 @@ const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 const postFinalTranscript = async (entry) => {
 	if (!METEOR_BASE_URL || !METEOR_SHARED_SECRET) return;
 	try {
-		const res = await fetch(`${METEOR_BASE_URL.replace(/\/$/, '')}/api/v1/media-calls.transcript.append`, {
+		const res = await fetch(`${METEOR_BASE_URL.replace(/\/$/, '')}/api/v1/video-conference.livekit.transcript.append`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

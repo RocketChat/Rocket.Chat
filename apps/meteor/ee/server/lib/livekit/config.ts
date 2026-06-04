@@ -24,23 +24,23 @@ function getRecordingS3(): LiveKitConfig['recording']['s3'] {
 	return {
 		bucket: settings.get<string>('FileUpload_S3_Bucket') || '',
 		region: settings.get<string>('FileUpload_S3_Region') || 'us-east-1',
-		accessKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Access_Key') || '',
-		secretKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_S3_Secret_Key') || '',
+		accessKey: settings.get<string>('VideoConf_LiveKit_Recording_S3_Access_Key') || '',
+		secretKey: settings.get<string>('VideoConf_LiveKit_Recording_S3_Secret_Key') || '',
 		endpoint: settings.get<string>('FileUpload_S3_BucketURL') || '',
 	};
 }
 
 export function getLiveKitConfig(): LiveKitConfig {
 	return {
-		enabled: settings.get<boolean>('VoIP_TeamCollab_LiveKit_Enabled'),
-		mode: (settings.get<string>('VoIP_TeamCollab_LiveKit_Mode') as 'self_hosted' | 'cloud') || 'self_hosted',
-		url: settings.get<string>('VoIP_TeamCollab_LiveKit_Url') || '',
-		apiKey: settings.get<string>('VoIP_TeamCollab_LiveKit_Api_Key') || '',
-		apiSecret: settings.get<string>('VoIP_TeamCollab_LiveKit_Api_Secret') || '',
+		enabled: settings.get<boolean>('VideoConf_LiveKit_Enabled'),
+		mode: (settings.get<string>('VideoConf_LiveKit_Mode') as 'self_hosted' | 'cloud') || 'self_hosted',
+		url: settings.get<string>('VideoConf_LiveKit_Url') || '',
+		apiKey: settings.get<string>('VideoConf_LiveKit_Api_Key') || '',
+		apiSecret: settings.get<string>('VideoConf_LiveKit_Api_Secret') || '',
 		recording: {
-			enabled: settings.get<boolean>('VoIP_TeamCollab_LiveKit_Recording_Enabled'),
-			storage: (settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_Storage') as LiveKitConfig['recording']['storage']) || 's3',
-			localPath: settings.get<string>('VoIP_TeamCollab_LiveKit_Recording_Local_Path') || '/out',
+			enabled: settings.get<boolean>('VideoConf_LiveKit_Recording_Enabled'),
+			storage: (settings.get<string>('VideoConf_LiveKit_Recording_Storage') as LiveKitConfig['recording']['storage']) || 's3',
+			localPath: settings.get<string>('VideoConf_LiveKit_Recording_Local_Path') || '/out',
 			s3: getRecordingS3(),
 		},
 	};

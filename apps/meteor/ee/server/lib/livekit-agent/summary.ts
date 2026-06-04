@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel, Users as UsersModel } from '@rocket.chat/models';
+import { VideoConference as VideoConferenceModel, Users as UsersModel } from '@rocket.chat/models';
 
 import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
 import { settings } from '../../../../app/settings/server';
@@ -104,14 +104,14 @@ const callGemini = async (model: string, apiKey: string, transcript: string): Pr
  * if skipped (already done, no transcript, summary disabled, etc.).
  */
 export const maybeGenerateSummary = async (callId: string): Promise<boolean> => {
-	if (!settings.get<boolean>('VoIP_TeamCollab_LiveKit_Summary_Enabled')) return false;
-	const apiKey = settings.get<string>('VoIP_TeamCollab_LiveKit_Agent_Gemini_Api_Key') || '';
+	if (!settings.get<boolean>('VideoConf_LiveKit_Summary_Enabled')) return false;
+	const apiKey = settings.get<string>('VideoConf_LiveKit_Agent_Gemini_Api_Key') || '';
 	if (!apiKey) {
 		logger.warn({ msg: 'summary enabled but no Gemini key; skipping', callId });
 		return false;
 	}
 
-	const call = await MediaCallsModel.findOneById(callId);
+	const call = await VideoConferenceModel.findOneById(callId);
 	if (!call) return false;
 	if (call.summary?.messageId) return false; // already posted
 	if (!call.transcript || call.transcript.length === 0) return false;
@@ -122,7 +122,7 @@ export const maybeGenerateSummary = async (callId: string): Promise<boolean> => 
 	// opted-in call doesn't get summarised even if the worker mis-posted).
 	if (!call.transcription?.startedAt) return false;
 
-	const adminId = call.createdBy?.id;
+	const adminId = call.createdBy?._id;
 	const admin = adminId ? await UsersModel.findOneById(adminId) : null;
 	if (!admin) {
 		logger.warn({ msg: 'no admin/creator user to post summary as', callId });
@@ -134,7 +134,7 @@ export const maybeGenerateSummary = async (callId: string): Promise<boolean> => 
 		.sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime());
 
 	const { transcript } = await stitchTranscript(sortedEntries);
-	const model = settings.get<string>('VoIP_TeamCollab_LiveKit_Summary_Gemini_Model') || DEFAULT_MODEL;
+	const model = settings.get<string>('VideoConf_LiveKit_Summary_Gemini_Model') || DEFAULT_MODEL;
 
 	let body: string;
 	try {
@@ -144,7 +144,7 @@ export const maybeGenerateSummary = async (callId: string): Promise<boolean> => 
 		return false;
 	}
 
-	const startedAt = call.activatedAt || call.createdAt;
+	const startedAt = call.createdAt;
 	const endedAt = call.endedAt || new Date();
 	const duration = formatDuration(endedAt.getTime() - startedAt.getTime());
 
@@ -152,8 +152,18 @@ export const maybeGenerateSummary = async (callId: string): Promise<boolean> => 
 	const msg = `${header}\n\n${body}`;
 
 	try {
-		const sent = await executeSendMessage(admin._id, { rid: call.rid, msg } as any);
-		await MediaCallsModel.setSummaryById(callId, { generatedAt: new Date(), messageId: sent?._id });
+		// Thread the summary under the call's "Call ongoing" block message
+		// (same parent as the recording reply) so the channel only shows the
+		// single call entry at top level; recording + summary live inside its
+		// thread. Falls back to a top-level post if the parent id is missing
+		// for any reason (e.g. message expired or never persisted).
+		const parentMessageId = call.messages?.started;
+		const sent = await executeSendMessage(admin._id, {
+			rid: call.rid,
+			msg,
+			...(parentMessageId && { tmid: parentMessageId }),
+		} as any);
+		await VideoConferenceModel.setSummaryById(callId, { generatedAt: new Date(), messageId: sent?._id });
 		logger.info({ msg: 'summary posted', callId });
 		return true;
 	} catch (err) {
@@ -168,9 +178,9 @@ export const maybeGenerateSummary = async (callId: string): Promise<boolean> => 
  * pattern in recordingPoller's resumeActiveRecordingPollers.
  */
 export const generatePendingSummaries = async (): Promise<void> => {
-	if (!settings.get<boolean>('VoIP_TeamCollab_LiveKit_Summary_Enabled')) return;
+	if (!settings.get<boolean>('VideoConf_LiveKit_Summary_Enabled')) return;
 	try {
-		const calls = await MediaCallsModel.findEndedCallsAwaitingSummary();
+		const calls = await VideoConferenceModel.findEndedAwaitingSummary();
 		for (const call of calls) {
 			await maybeGenerateSummary(call._id);
 		}

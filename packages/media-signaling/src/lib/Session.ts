@@ -219,20 +219,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return;
 		}
 
-		// Group calls only enter knownCalls via an explicit Session.joinGroupCall()
-		// from the UI button. If the server pushes a 'new' for a group call we
-		// haven't actively joined (typically: server still thinks we're in it
-		// because a previous tab closed before the leave REST landed), ignore it
-		// permanently — otherwise it lands in knownCalls and blocks the next
-		// real join with "Already on a call." Stale server-side participant
-		// entries get cleared the next time the user explicitly joins (the
-		// model's addGroupParticipant pulls + pushes), or expire via expiresAt.
-		if (signal.type === 'new' && signal.kind === 'group' && !this.knownCalls.has(signal.callId)) {
-			this.config.logger?.debug('MediaSignalingSession.processCallSignal: ignoring unsolicited group call', signal.callId);
-			this.ignoredCalls.add(signal.callId);
-			return;
-		}
-
 		const call = this.getOrCreateCallBySignal(signal);
 
 		if (signal.type === 'notification' && signal.signedContractId) {
@@ -279,30 +265,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const call = this.createCall(callId);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
-	}
-
-	/**
-	 * Bootstrap a group call locally with a callId already created server-side.
-	 * The caller (UI layer) is expected to have hit the appropriate REST
-	 * endpoint to start/join the call and obtained the callId + roomId.
-	 * Skips the contract/accept/SDP dance.
-	 */
-	public joinGroupCall({ callId, rid }: { callId: string; rid: string }): void {
-		this.config.logger?.debug('MediaSignalingSession.joinGroupCall', callId);
-		if (this.getMainCall(false)) {
-			throw new Error(`Already on a call.`);
-		}
-		const call = this.createCall(callId);
-		call.bootstrapAsGroupCall({ rid });
-	}
-
-	public leaveGroupCall(): void {
-		this.config.logger?.debug('MediaSignalingSession.leaveGroupCall');
-		const call = this.getMainCall(false);
-		if (!call?.rid) {
-			return;
-		}
-		call.hangup();
 	}
 
 	public setIceGatheringTimeout(newTimeout: number): void {
@@ -662,7 +624,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
 		call.emitter.on('screenShareRequestChange', (requested: boolean) => this.onScreenShareRequestChange(call, requested));
-		call.emitter.on('cameraRequestChange', (requested: boolean) => this.onCameraRequestChange(call, requested));
 		call.emitter.on('streamChange', () => this.onSessionStateChange());
 
 		return call;
@@ -734,49 +695,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		this.onSessionStateChange();
-	}
-
-	private async onCameraRequestChange(call: ClientMediaCall, requested: boolean): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.onCameraRequestChange');
-
-		if (!requested) {
-			await this.endCameraSharing(call);
-		} else {
-			await this.startCameraSharing(call);
-		}
-
-		this.onSessionStateChange();
-	}
-
-	private async setCameraVideoTrack(newVideoTrack: MediaStreamTrack | null, call: ClientMediaCall): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.setCameraVideoTrack', Boolean(newVideoTrack));
-		await call.setCameraVideoTrack(newVideoTrack);
-	}
-
-	private async startCameraVideoTrack(): Promise<MediaStreamTrack | void> {
-		this.config.logger?.debug('MediaSignalingSession.startCameraVideoTrack');
-		const userMedia = await this.config.mediaStreamFactory({ video: true, audio: false }).catch(() => null);
-		if (!userMedia) {
-			this.config.logger?.error('MediaSignalingSession.startCameraVideoTrack.failed');
-			throw new Error('Failed to get camera media');
-		}
-		const tracks = userMedia.getVideoTracks();
-		if (!tracks.length) {
-			throw new Error('Failed to get camera video tracks');
-		}
-		return tracks[0];
-	}
-
-	private async startCameraSharing(call: ClientMediaCall): Promise<void> {
-		const track = await this.startCameraVideoTrack();
-		if (!track) {
-			return;
-		}
-		await this.setCameraVideoTrack(track, call);
-	}
-
-	private async endCameraSharing(call: ClientMediaCall): Promise<void> {
-		await this.setCameraVideoTrack(null, call);
 	}
 
 	private onSessionStateChange(): void {

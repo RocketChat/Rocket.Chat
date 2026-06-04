@@ -41,11 +41,13 @@ const startResponseSchema = ajv.compile<{ data: VideoConferenceInstructions & { 
 	additionalProperties: false,
 });
 
-const joinResponseSchema = ajv.compile<{ url: string; providerName: string }>({
+const joinResponseSchema = ajv.compile<{ url: string; providerName: string; callId?: string; rid?: string }>({
 	type: 'object',
 	properties: {
 		url: { type: 'string' },
 		providerName: { type: 'string' },
+		callId: { type: 'string' },
+		rid: { type: 'string' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['url', 'providerName', 'success'],
@@ -206,13 +208,19 @@ API.v1.post(
 			}
 		}
 
-		if (!url) {
+		// Embedded providers (LiveKit) intentionally return an empty url —
+		// they're rendered inline rather than opened as an external popup.
+		// Include rid so the client can route the join into its embedded
+		// provider context without an extra round-trip to look it up.
+		if (!url && !call.providerName) {
 			return API.v1.failure('failed-to-get-url');
 		}
 
 		return API.v1.success({
-			url,
+			url: url ?? '',
 			providerName: call.providerName,
+			callId: call._id,
+			rid: call.rid,
 		});
 	},
 );

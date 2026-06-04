@@ -19,7 +19,10 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.join': {
-		POST: (params: VideoConfJoinProps) => { url: string; providerName: string };
+		// Embedded providers (e.g. LiveKit) return an empty `url` and include
+		// `callId` + `rid` instead — the client routes the join into the
+		// embedded provider's React context rather than opening a popup URL.
+		POST: (params: VideoConfJoinProps) => { url: string; providerName: string; callId?: string; rid?: string };
 	};
 
 	'/v1/video-conference.cancel': {

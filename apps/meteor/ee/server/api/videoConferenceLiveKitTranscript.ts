@@ -1,11 +1,11 @@
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel } from '@rocket.chat/models';
+import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../app/api/server/api';
 import { settings } from '../../../app/settings/server';
 
-const logger = new Logger('MediaCalls/Transcript/API');
+const logger = new Logger('VideoConference/LiveKit/Transcript/API');
 
 const successSchema = ajv.compile<{ success: true }>({
 	type: 'object',
@@ -47,10 +47,10 @@ const bodySchema = ajv.compile<{
  *
  * Endpoint is intentionally minimal: it validates, looks up the call,
  * appends a TranscriptEntry, and returns. The downstream summary job
- * reads `IMediaCall.transcript` once the call has ended.
+ * reads `IVideoConference.transcript` once the call has ended.
  */
 API.v1.post(
-	'media-calls.transcript.append',
+	'video-conference.livekit.transcript.append',
 	{
 		authRequired: false,
 		body: bodySchema,
@@ -59,13 +59,13 @@ API.v1.post(
 	},
 	async function action() {
 		const auth = this.request.headers.get('authorization') || '';
-		const expected = `Bearer lkagent:${settings.get<string>('VoIP_TeamCollab_LiveKit_Api_Secret') || ''}`;
+		const expected = `Bearer lkagent:${settings.get<string>('VideoConf_LiveKit_Api_Secret') || ''}`;
 		if (!auth || auth !== expected) {
 			return API.v1.unauthorized();
 		}
 
 		const { callId, participantId, text, startedAt, endedAt } = this.bodyParams;
-		const call = await MediaCallsModel.findOneById(callId);
+		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) {
 			return API.v1.failure('invalid-call');
 		}
@@ -80,7 +80,7 @@ API.v1.post(
 		}
 
 		try {
-			await MediaCallsModel.appendTranscriptEntry(callId, {
+			await VideoConferenceModel.appendTranscriptEntryById(callId, {
 				participantId,
 				text,
 				startedAt: new Date(startedAt),
@@ -94,6 +94,8 @@ API.v1.post(
 		return API.v1.success({ success: true });
 	},
 );
+
+// --- Per-call "take notes" toggle (transcription on/off) ---
 
 const toggleBodySchema = ajv.compile<{ callId: string }>({
 	type: 'object',
@@ -109,20 +111,21 @@ const statusQuerySchema = ajv.compile<{ callId: string }>({
 	additionalProperties: true,
 });
 
-const isCallMember = async (call: any, userId: string): Promise<boolean> => {
-	if (call.kind === 'group') {
-		const { Rooms } = await import('@rocket.chat/models');
-		const { canAccessRoomAsync } = await import('../../../app/authorization/server/functions/canAccessRoom');
-		if (!call.rid) return false;
-		const room = await Rooms.findOneById(call.rid);
-		return Boolean(room && (await canAccessRoomAsync(room, { _id: userId })));
-	}
-	return call.caller?.id === userId || call.callee?.id === userId;
+// Membership check for an embedded VC: the user must be able to access the
+// room the call belongs to. The transcription endpoints don't gate by
+// "must have already joined the call" — the take-notes flag is a property
+// of the call, not the participant.
+const isCallMember = async (call: { rid?: string }, userId: string): Promise<boolean> => {
+	if (!call.rid) return false;
+	const { Rooms } = await import('@rocket.chat/models');
+	const { canAccessRoomAsync } = await import('../../../app/authorization/server/functions/canAccessRoom');
+	const room = await Rooms.findOneById(call.rid);
+	return Boolean(room && (await canAccessRoomAsync(room, { _id: userId })));
 };
 
 /** Turn on per-call transcription (take notes). Idempotent. */
 API.v1.post(
-	'media-calls.transcription.start',
+	'video-conference.livekit.transcription.start',
 	{
 		authRequired: true,
 		body: toggleBodySchema,
@@ -130,21 +133,25 @@ API.v1.post(
 		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60_000 },
 	},
 	async function action() {
-		if (!settings.get<boolean>('VoIP_TeamCollab_LiveKit_Summary_Enabled')) {
+		if (!settings.get<boolean>('VideoConf_LiveKit_Summary_Enabled')) {
 			return API.v1.failure('transcription-not-enabled');
 		}
 		const { callId } = this.bodyParams;
-		const call = await MediaCallsModel.findOneById(callId);
+		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) return API.v1.failure('invalid-call');
 		if (!(await isCallMember(call, this.userId))) return API.v1.unauthorized();
-		await MediaCallsModel.setTranscriptionEnabled(callId, true, this.userId);
+		await VideoConferenceModel.setTranscriptionById(callId, {
+			enabled: true,
+			startedAt: new Date(),
+			startedBy: this.userId,
+		});
 		return API.v1.success({ success: true });
 	},
 );
 
 /** Turn off per-call transcription. Existing transcript entries are preserved. */
 API.v1.post(
-	'media-calls.transcription.stop',
+	'video-conference.livekit.transcription.stop',
 	{
 		authRequired: true,
 		body: toggleBodySchema,
@@ -153,17 +160,25 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId } = this.bodyParams;
-		const call = await MediaCallsModel.findOneById(callId);
+		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) return API.v1.failure('invalid-call');
 		if (!(await isCallMember(call, this.userId))) return API.v1.unauthorized();
-		await MediaCallsModel.setTranscriptionEnabled(callId, false);
+		// Preserve startedAt/startedBy from prior transcription block so the
+		// summary job can still attribute who turned it on for this call.
+		const prev = call.transcription;
+		await VideoConferenceModel.setTranscriptionById(callId, {
+			enabled: false,
+			startedAt: prev?.startedAt,
+			startedBy: prev?.startedBy,
+			endedAt: new Date(),
+		});
 		return API.v1.success({ success: true });
 	},
 );
 
-/** Current per-call transcription state — drives the pill UI. */
+/** Current per-call transcription state — drives the "take notes" pill UI. */
 API.v1.get(
-	'media-calls.transcription.status',
+	'video-conference.livekit.transcription.status',
 	{
 		authRequired: true,
 		query: statusQuerySchema,
@@ -172,12 +187,11 @@ API.v1.get(
 	},
 	async function action() {
 		const { callId } = this.queryParams;
-		const call = await MediaCallsModel.findOneById(callId);
+		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) return API.v1.failure('invalid-call');
 		if (!(await isCallMember(call, this.userId))) return API.v1.unauthorized();
 		const transcriptionFeatureEnabled = Boolean(
-			settings.get<boolean>('VoIP_TeamCollab_LiveKit_Summary_Enabled') &&
-				settings.get<string>('VoIP_TeamCollab_LiveKit_Agent_Mode') === 'embedded',
+			settings.get<boolean>('VideoConf_LiveKit_Summary_Enabled') && settings.get<string>('VideoConf_LiveKit_Agent_Mode') === 'embedded',
 		);
 		return API.v1.success({
 			success: true,

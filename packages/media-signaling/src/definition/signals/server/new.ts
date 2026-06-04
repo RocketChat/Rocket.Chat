@@ -6,7 +6,7 @@ export type ServerMediaSignalNewCall = {
 	type: 'new';
 
 	service: CallService;
-	kind: 'direct' | 'group';
+	kind: 'direct';
 	role: CallRole;
 	self: CallContact;
 	contact: CallContact;

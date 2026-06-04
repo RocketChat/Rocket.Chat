@@ -30,10 +30,6 @@ export const loggerMiddleware =
 
 		await next();
 
-		if (process.env.SUPPRESS_API_LOGS) {
-			return;
-		}
-
 		log.http({
 			status: c.res.status,
 			responseTime: Date.now() - startTime,

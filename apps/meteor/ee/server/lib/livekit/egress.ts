@@ -56,7 +56,7 @@ function toHttpUrl(input: string): string {
 async function twirp<T>(method: string, body: Record<string, unknown>): Promise<T> {
 	const cfg = getLiveKitConfig();
 	if (!cfg.url) {
-		throw new Error('LiveKit URL is not configured (VoIP_TeamCollab_LiveKit_Url)');
+		throw new Error('LiveKit URL is not configured (VideoConf_LiveKit_Url)');
 	}
 	const token = await createLiveKitApiToken({ roomRecord: true, roomAdmin: true });
 

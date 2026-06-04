@@ -8,9 +8,9 @@ import type {
 } from './IClientMediaCallParticipant';
 import type { CallActorType } from './common';
 
-export type CallService = 'webrtc' | 'livekit';
+export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'video'] as const;
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -97,10 +97,6 @@ export interface IClientMediaCall {
 	setScreenVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
 	hasScreenVideoTrack(): boolean;
 	canHaveScreenVideoTrack(): boolean;
-	requestCamera(requested: boolean): void;
-	setCameraVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
-	hasCameraVideoTrack(): boolean;
-	canHaveCameraVideoTrack(): boolean;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;

@@ -577,6 +577,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
+		// Embedded (built-in) providers like LiveKit are registered by core
+		// only when their prerequisites are satisfied (e.g. VideoConf_LiveKit_
+		// Enabled + URL + API key + secret). Their presence in the registry
+		// IS the "fully configured" signal. Going through the apps-engine
+		// manager would fail because there's no app behind them.
+		if (videoConfProviders.getProviderCapabilities(providerName)?.embedded) {
+			return;
+		}
 		const manager = await this.getProviderManager();
 		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
 		if (!configured) {
@@ -758,8 +766,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (!call) {
 			throw new Error('failed-to-create-direct-call');
 		}
-		const url = await this.generateNewUrl(call);
-		await VideoConferenceModel.setUrlById(callId, url);
+		// Embedded providers (LiveKit) don't have an external URL to open —
+		// the call is rendered inline. Skip URL generation for them.
+		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+		if (!isEmbedded) {
+			const url = await this.generateNewUrl(call);
+			await VideoConferenceModel.setUrlById(callId, url);
+		}
 
 		const messageId = await this.createMessage(call, user);
 		call.messages.started = messageId;
@@ -834,16 +847,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-group-call');
 		}
 
-		const url = await this.generateNewUrl(call);
-		await VideoConferenceModel.setUrlById(callId, url);
-
-		call.url = url;
+		// Embedded providers (LiveKit) render the call inline in Rocket.Chat —
+		// no URL handoff. Skip both URL generation and ringing notifications:
+		// the call shows up as an "active call" banner in the room and other
+		// participants tap to join. No incoming-call sound/modal.
+		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+		if (!isEmbedded) {
+			const url = await this.generateNewUrl(call);
+			await VideoConferenceModel.setUrlById(callId, url);
+			call.url = url;
+		}
 
 		const messageId = await this.createMessage(call, useAppUser ? undefined : user);
 		call.messages.started = messageId;
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
-		if (call.ringing) {
+		if (call.ringing && !isEmbedded) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
 		}
 
@@ -893,6 +912,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		void callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
+
+		// Embedded providers (LiveKit) don't return a URL — the client mounts
+		// the call inline via the embedded provider's React tree. We still
+		// track the per-participant join time so the cleanup cron + the
+		// raise-hand queue have something to work with. Returning an empty
+		// string tells the client there's no URL to open.
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			if (user) {
+				await VideoConferenceModel.addEmbeddedParticipant(call._id, {
+					id: user._id,
+					username: user.username,
+					displayName: user.name,
+					joinedAt: new Date(),
+				});
+			}
+			return '';
+		}
 
 		return this.getUrl(call, user, options);
 	}
@@ -1026,6 +1062,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
+		// Embedded (built-in) providers have no apps-engine app behind them,
+		// so the provider-manager dispatch would be a no-op at best and
+		// throw at worst. Skip the lifecycle hook for them.
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			return;
+		}
+
 		return (await this.getProviderManager()).onNewVideoConference(call.providerName, call);
 	}
 
@@ -1044,6 +1087,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			return;
+		}
+
 		return (await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call);
 	}
 
@@ -1060,6 +1107,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
+		}
+
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			return;
 		}
 
 		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);

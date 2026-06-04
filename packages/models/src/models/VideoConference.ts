@@ -6,6 +6,11 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	IVideoConferenceParticipant,
+	IVideoConferenceRecording,
+	IVideoConferenceSummary,
+	IVideoConferenceTranscription,
+	IVideoConferenceTranscriptEntry,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
@@ -301,5 +306,92 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				},
 			},
 		);
+	}
+
+	// --- Embedded SFU (LiveKit) helpers ---
+	// URL-based providers (Jitsi/Meet/Zoom) never call these. The data shape
+	// is described in the IVideoConference{Participant,Recording,Transcription,
+	// TranscriptEntry,Summary} types in core-typings.
+
+	public async findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null> {
+		// "active" means the call is open (not ENDED/EXPIRED/DECLINED). Embedded
+		// providers use the standard VideoConferenceStatus lifecycle.
+		return this.findOne({
+			rid,
+			providerName,
+			status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
+		});
+	}
+
+	public async findActiveEmbeddedWithRecording(): Promise<VideoConference[]> {
+		// Used by the recording-poller resume-on-boot path: pick up any calls
+		// whose recording.egressId was set but whose recording.messageSent
+		// hasn't been flipped, regardless of call lifecycle (the file might
+		// finish uploading after the call ends).
+		return this.find({
+			'recording.egressId': { $exists: true },
+			'recording.messageSent': { $ne: true },
+		}).toArray();
+	}
+
+	public async findEndedAwaitingSummary(): Promise<VideoConference[]> {
+		// Used by the summary backfill path: ended calls that have a
+		// transcript but no summary message id yet.
+		return this.find({
+			'status': VideoConferenceStatus.ENDED,
+			'transcript.0': { $exists: true },
+			'summary.messageId': { $exists: false },
+		}).toArray();
+	}
+
+	public async findActiveExpiredEmbedded(maxAgeMs: number, providerName: string): Promise<VideoConference[]> {
+		// Used by the cron reconciler: any embedded call that's been open
+		// longer than maxAgeMs (typically 8h) and is still "active" on our
+		// side is probably zombie state from a crashed client. The
+		// reconciler hangs them up after verifying LK presence.
+		const threshold = new Date(Date.now() - maxAgeMs);
+		return this.find({
+			providerName,
+			status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
+			createdAt: { $lt: threshold },
+		}).toArray();
+	}
+
+	public async addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void> {
+		// Pull any prior entry for this user first so a re-join doesn't
+		// leave a leftAt'd ghost in the array alongside the fresh entry.
+		await this.updateOne({ _id: callId }, { $pull: { participants: { id: participant.id } } } as any);
+		await this.updateOne({ _id: callId }, {
+			$push: { participants: { ...participant, joinedAt: participant.joinedAt ?? new Date() } },
+		} as any);
+	}
+
+	public async markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id']): Promise<void> {
+		await this.updateOne({ '_id': callId, 'participants.id': userId }, { $set: { 'participants.$.leftAt': new Date() } } as any);
+	}
+
+	public async setRecordingById(callId: VideoConference['_id'], recording: IVideoConferenceRecording): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { recording } });
+	}
+
+	public async updateRecordingById(callId: VideoConference['_id'], partial: Partial<IVideoConferenceRecording>): Promise<void> {
+		const set = Object.fromEntries(Object.entries(partial).map(([k, v]) => [`recording.${k}`, v]));
+		await this.updateOne({ _id: callId }, { $set: set });
+	}
+
+	public async unsetRecordingById(callId: VideoConference['_id']): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { recording: 1 } });
+	}
+
+	public async setTranscriptionById(callId: VideoConference['_id'], transcription: IVideoConferenceTranscription): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { transcription } });
+	}
+
+	public async appendTranscriptEntryById(callId: VideoConference['_id'], entry: IVideoConferenceTranscriptEntry): Promise<void> {
+		await this.updateOne({ _id: callId }, { $push: { transcript: entry } } as any);
+	}
+
+	public async setSummaryById(callId: VideoConference['_id'], summary: IVideoConferenceSummary): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { summary } });
 	}
 }

@@ -16,7 +16,7 @@ export interface IMediaService {
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum,
+		fit?: keyof sharp.FitEnum | undefined,
 	): Promise<ResizeResult>;
 	resizeFromStream(
 		input: Readable,
@@ -25,7 +25,7 @@ export interface IMediaService {
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum,
+		fit?: keyof sharp.FitEnum | undefined,
 	): Promise<ResizeResult>;
 	isImage(buff: Buffer): Promise<boolean>;
 	stripExifFromImageStream(stream: Stream): Readable;

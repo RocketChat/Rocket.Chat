@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import { Logger } from '@rocket.chat/logger';
-import { MediaCalls as MediaCallsModel } from '@rocket.chat/models';
+import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import { getLiveKitConfig } from './config';
 import { startRoomCompositeEgress, stopEgress } from './egress';
@@ -62,7 +62,7 @@ export async function startMediaCallRecording(callId: string): Promise<{ egressI
 		throw new Error('recording-not-enabled');
 	}
 
-	const existing = await MediaCallsModel.findOneById(callId);
+	const existing = await VideoConferenceModel.findOneById(callId);
 	if (existing?.recording?.egressId && !existing.recording.endedAt) {
 		logger.info({ msg: 'startMediaCallRecording: already recording, returning existing', callId, egressId: existing.recording.egressId });
 		// Idempotent: already recording.
@@ -70,7 +70,7 @@ export async function startMediaCallRecording(callId: string): Promise<{ egressI
 	}
 
 	const rid = existing?.rid;
-	const userId = existing?.createdBy?.id;
+	const userId = existing?.createdBy?._id;
 	if (!rid || !userId) {
 		logger.error({
 			msg: 'startMediaCallRecording: missing rid/userId on call doc',
@@ -100,23 +100,16 @@ export async function startMediaCallRecording(callId: string): Promise<{ egressI
 			filepath: target.s3Key,
 		});
 		logger.info({ msg: 'startMediaCallRecording: egress started', callId, egressId: egress.egressId, status: egress.status });
-		await MediaCallsModel.updateOne(
-			{ _id: callId },
-			{
-				$set: {
-					recording: {
-						egressId: egress.egressId,
-						startedAt: new Date(),
-						storage: cfg.recording.storage,
-						// Persist so the webhook can insert the Uploads row + post
-						// the message even after a server restart.
-						uploadId: target.uploadId,
-						uploadKey: target.s3Key,
-						filename: target.filename,
-					} as any,
-				},
-			},
-		);
+		await VideoConferenceModel.setRecordingById(callId, {
+			egressId: egress.egressId,
+			startedAt: new Date(),
+			storage: cfg.recording.storage,
+			// Persist so the webhook can insert the Uploads row + post
+			// the message even after a server restart.
+			uploadId: target.uploadId,
+			uploadKey: target.s3Key,
+			filename: target.filename,
+		} as any);
 		logger.debug({ msg: 'startMediaCallRecording: persisted recording metadata to call doc', callId });
 		// Start polling LK for the egress's terminal state. The poller calls
 		// finalizeRecording on completion so the chat message gets posted
@@ -131,19 +124,19 @@ export async function startMediaCallRecording(callId: string): Promise<{ egressI
 }
 
 export async function stopMediaCallRecording(callId: string): Promise<void> {
-	const call = await MediaCallsModel.findOneById(callId);
+	const call = await VideoConferenceModel.findOneById(callId);
 	const egressId = call?.recording?.egressId;
 	if (!egressId) return;
 
 	try {
 		await stopEgress(egressId);
 	} finally {
-		await MediaCallsModel.updateOne({ _id: callId }, { $set: { 'recording.endedAt': new Date() } });
+		await VideoConferenceModel.updateRecordingById(callId, { endedAt: new Date() });
 	}
 }
 
 export async function getMediaCallRecordingState(callId: string): Promise<{ recording: boolean; egressId?: string }> {
-	const call = await MediaCallsModel.findOneById(callId);
+	const call = await VideoConferenceModel.findOneById(callId);
 	const rec = call?.recording;
 	if (!rec?.egressId || rec.endedAt) {
 		return { recording: false };

@@ -2,11 +2,12 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Palette } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useGoToRoom, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { MediaCallRoomSection, useMediaCallInstance, useMediaCallView, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
+import { MediaCallRoomSection, useMediaCallView } from '@rocket.chat/ui-voip';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useRoomInfoEndpoint } from '../../../../hooks/useRoomInfoEndpoint';
-import { useOpenedRoom } from '../../../../lib/RoomManager';
+import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
+import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
+import { useOpenedRoom } from '../../../lib/RoomManager';
 
 const DEFAULT_WIDTH = 480;
 const DEFAULT_HEIGHT = 360;
@@ -70,15 +71,14 @@ const clampToViewport = (x: number, y: number, w: number, h: number) => {
  * navigated away from the call's room. Reuses MediaCallRoomSection (same UI as
  * the in-room view) so all controls / participant tiles / speaking indicators
  * / raise-hand work identically — they share the app-level MediaCallViewContext
- * supplied by LiveKitMediaCallProvider.
+ * supplied by LiveKitVideoConfBridge.
  *
  * Visibility is driven by `useOpenedRoom()` (which reflects the currently-open
  * room from the route, not the React tree), so MediaCallRoomSection's own
  * useRoomView() can't cause a mount/unmount feedback loop.
  */
 const FloatingGroupCallWidget = () => {
-	const { instance: session } = useMediaCallInstance();
-	const sessionState = usePeekMediaSessionState();
+	const { activeCall } = useLiveKitVideoConf();
 	const { sessionState: viewSession } = useMediaCallView();
 	const openedRoomId = useOpenedRoom();
 	const goToRoom = useGoToRoom();
@@ -86,8 +86,8 @@ const FloatingGroupCallWidget = () => {
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
 	const getUserAvatarPath = useUserAvatarPath();
 
-	const rid = (session?.getState(false)?.call as { rid?: string } | undefined)?.rid;
-	const shouldShow = sessionState === 'ongoing' && Boolean(rid) && rid !== openedRoomId && viewSession.state === 'ongoing';
+	const rid = activeCall?.rid;
+	const shouldShow = Boolean(rid) && rid !== openedRoomId && viewSession.state === 'ongoing';
 
 	const ownUser = useMemo(
 		() => ({

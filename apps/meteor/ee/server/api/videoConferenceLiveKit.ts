@@ -1,6 +1,5 @@
-import { randomUUID } from 'crypto';
-
-import { MediaCalls as MediaCallsModel, Rooms } from '@rocket.chat/models';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { VideoConference as VideoConferenceModel, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
 	validateBadRequestErrorResponse,
@@ -15,12 +14,12 @@ import { settings } from '../../../app/settings/server';
 
 // Broadcast on the `notify-room` streamer so any client subscribed to the
 // room hears about call create/end and refreshes its banner state. Replaces
-// the previous 5s `/media-calls.activeInRoom` polling. The event name is not
-// in the typed StreamerEvents union, so we cast — `notify-room` allows any
-// event for users with access to the room.
-const broadcastMediaCallState = (rid: string, payload: { action: 'started' | 'ended'; callId: string }) => {
+// the previous 5s polling. The event name is not in the typed StreamerEvents
+// union, so we cast — `notify-room` allows any event for users with access
+// to the room.
+const broadcastVideoConferenceState = (rid: string, payload: { action: 'started' | 'ended'; callId: string }) => {
 	try {
-		(notifications.notifyRoom as any)(rid, 'media-call-state', payload);
+		(notifications.notifyRoom as any)(rid, 'video-conference-state', payload);
 	} catch {
 		/* notify is best-effort */
 	}
@@ -35,13 +34,12 @@ const looseSuccessResponse = {
 };
 
 /**
- * Starts a new group call in a room. Idempotent: if there's already an active
- * group call in this room, returns it instead of creating a new one. The
- * starter is automatically added as the first participant. Other room members
- * discover the active call via the activeInRoom polling endpoint.
+ * Starts a new LiveKit group call in a room. Idempotent: if there's already
+ * an active LiveKit call in this room, returns it instead of creating a new
+ * one. The starter is automatically added as the first participant.
  */
 API.v1.post(
-	'media-calls.startGroup',
+	'video-conference.livekit.start',
 	{
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
@@ -62,61 +60,56 @@ API.v1.post(
 
 		// Group calls require an SFU (LiveKit). The P2P-mesh path is a future
 		// enhancement; for now, group only works when LK is configured.
-		if (!settings.get<boolean>('VoIP_TeamCollab_LiveKit_Enabled')) {
+		if (!settings.get<boolean>('VideoConf_LiveKit_Enabled')) {
 			return API.v1.failure('group-calls-require-livekit');
 		}
 
 		// Idempotent: piggy-back on an existing active call if one's there.
-		const existing = await MediaCallsModel.findActiveGroupCallInRoom(roomId);
+		const existing = await VideoConferenceModel.findActiveEmbeddedInRoom(roomId, 'livekit');
 		if (existing) {
 			return API.v1.success({ call: existing, alreadyActive: true });
 		}
 
 		const { user } = this;
 		const createdBy = {
-			type: 'user' as const,
+			_id: userId,
+			name: user?.name || user?.username || userId,
+			username: user?.username || userId,
+		};
+
+		const callId = await VideoConferenceModel.createGroup({
+			rid: roomId,
+			title: room.name || '',
+			createdBy,
+			providerName: 'livekit',
+		} as any);
+
+		// LK-specific transport details live under providerData.livekit.
+		const roomName = `mc-${callId}`;
+		await VideoConferenceModel.setProviderDataById(callId, { livekit: { roomName } });
+
+		// Seed the participants list with the creator so the call is non-empty.
+		await VideoConferenceModel.addEmbeddedParticipant(callId, {
 			id: userId,
 			displayName: user?.name,
 			username: user?.username,
-		};
-		// Group calls don't really have a caller/callee distinction. We populate
-		// both with the creator as a placeholder so the existing signals/agents
-		// code that reads call.caller/call.callee keeps working. The real
-		// participant list lives in `participants`.
-		const creatorAsSignedContact = { ...createdBy, contractId: 'group-call-placeholder' };
+			joinedAt: new Date(),
+		});
 
-		const now = new Date();
-		const callId = randomUUID();
-		const doc = {
-			_id: callId,
-			service: 'livekit' as const,
-			kind: 'group' as const,
-			state: 'active' as const,
-			createdBy,
-			createdAt: now,
-			caller: creatorAsSignedContact,
-			callee: createdBy,
-			rid: roomId,
-			participants: [{ ...createdBy, joinedAt: now }],
-			uids: [userId],
-			ended: false,
-			expiresAt: new Date(now.getTime() + 8 * 60 * 60 * 1000), // 8h max-life cap
-			features: ['audio', 'video', 'screen-share'],
-		};
+		const call = await VideoConferenceModel.findOneById(callId);
+		broadcastVideoConferenceState(roomId, { action: 'started', callId });
 
-		await MediaCallsModel.insertOne(doc as any);
-		broadcastMediaCallState(roomId, { action: 'started', callId });
-
-		return API.v1.success({ call: doc, alreadyActive: false });
+		return API.v1.success({ call, alreadyActive: false });
 	},
 );
 
 /**
- * Join an active group call. Adds the user to participants[] and returns the
- * full call doc. If the user already left and rejoins, their leftAt is cleared.
+ * Join an active LiveKit group call. Adds the user to participants[] and
+ * returns the full call doc. If the user already left and rejoins, their
+ * leftAt is cleared.
  */
 API.v1.post(
-	'media-calls.joinGroup',
+	'video-conference.livekit.join',
 	{
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
@@ -127,8 +120,9 @@ API.v1.post(
 		if (!callId) return API.v1.failure('invalid-params');
 
 		const { userId } = this;
-		const call = await MediaCallsModel.findOneById(callId);
-		if (call?.kind !== 'group' || call.ended) return API.v1.failure('invalid-call');
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (!call || call.providerName !== 'livekit') return API.v1.failure('invalid-call');
+		if (call.endedAt) return API.v1.failure('invalid-call');
 		if (!call.rid) return API.v1.failure('invalid-call');
 
 		// Permission: must have room access.
@@ -138,25 +132,26 @@ API.v1.post(
 		}
 
 		const { user } = this;
-		await MediaCallsModel.addGroupParticipant(callId, {
-			type: 'user',
+		await VideoConferenceModel.addEmbeddedParticipant(callId, {
 			id: userId,
 			displayName: user?.name,
 			username: user?.username,
+			joinedAt: new Date(),
 		});
 
-		const updated = await MediaCallsModel.findOneById(callId);
+		const updated = await VideoConferenceModel.findOneById(callId);
 		return API.v1.success({ call: updated });
 	},
 );
 
 /**
- * Returns the active group call in a room (if any) so the channel-header
- * banner can render "Active call — Join". Polled by the room view; ideally
- * we'd push state via a stream, but polling is fine for the MVP.
+ * Returns the active LiveKit group call in a room (if any) so the
+ * channel-header banner can render "Active call — Join". Polled by the room
+ * view; ideally we'd push state via a stream, but polling is fine for the
+ * MVP.
  */
 API.v1.get(
-	'media-calls.activeInRoom',
+	'video-conference.livekit.activeInRoom',
 	{
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 },
@@ -172,17 +167,17 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
-		const call = await MediaCallsModel.findActiveGroupCallInRoom(roomId);
+		const call = await VideoConferenceModel.findActiveEmbeddedInRoom(roomId, 'livekit');
 		return API.v1.success({ call: call ?? null });
 	},
 );
 
 /**
- * Mark the current user as having left an active group call. The call itself
- * stays open until the last participant leaves or it expires.
+ * Mark the current user as having left an active LiveKit group call. The
+ * call itself stays open until the last participant leaves or it expires.
  */
 API.v1.post(
-	'media-calls.leaveGroup',
+	'video-conference.livekit.leave',
 	{
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
@@ -193,19 +188,20 @@ API.v1.post(
 		if (!callId) return API.v1.failure('invalid-params');
 
 		const { userId } = this;
-		const call = await MediaCallsModel.findOneById(callId);
-		if (call?.kind !== 'group') return API.v1.failure('invalid-call');
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (!call || call.providerName !== 'livekit') return API.v1.failure('invalid-call');
 
-		await MediaCallsModel.markGroupParticipantLeft(callId, userId);
+		await VideoConferenceModel.markEmbeddedParticipantLeft(callId, userId);
 
 		// If every participant has leftAt set, end the call.
-		const updated = await MediaCallsModel.findOneById(callId);
-		const stillIn = (updated?.participants ?? []).filter((p: any) => !p.leftAt);
+		const updated = await VideoConferenceModel.findOneById(callId);
+		const stillIn = (updated?.participants ?? []).filter((p) => !p.leftAt);
 		if (stillIn.length === 0) {
-			await MediaCallsModel.hangupCallById(callId, { reason: 'all-participants-left' });
-			if (updated?.rid) broadcastMediaCallState(updated.rid, { action: 'ended', callId });
+			await VideoConferenceModel.setEndedById(callId, undefined, new Date());
+			await VideoConferenceModel.setStatusById(callId, VideoConferenceStatus.ENDED);
+			if (updated?.rid) broadcastVideoConferenceState(updated.rid, { action: 'ended', callId });
 			// Fire summary generation. Idempotent and self-gated on the
-			// `VoIP_TeamCollab_LiveKit_Summary_Enabled` setting + presence
+			// `VideoConf_LiveKit_Summary_Enabled` setting + presence
 			// of transcript entries, so it no-ops when not configured.
 			const { maybeGenerateSummary } = await import('../lib/livekit-agent/summary');
 			void maybeGenerateSummary(callId).catch(() => undefined);

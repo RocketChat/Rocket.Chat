@@ -3,14 +3,14 @@ import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
 import {
 	MediaCallRoomActivity,
-	useMediaCallInstance,
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
 } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 
+import { useLiveKitVideoConf } from '../../videoConference/livekit/LiveKitVideoConfContext';
 import { useRoom } from '../contexts/RoomContext';
 
 const isOneToOneDirectCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
@@ -29,9 +29,9 @@ type MediaCallRoomProps = {
  * in the current room. Three modes:
  *  - 1:1 DM call: MediaCallRoomActivity with the default session-driven provider
  *  - Group call in this room: MediaCallRoomActivity reading from the app-level
- *    LiveKitMediaCallProvider (mounted in MediaCallProvider.tsx). The LK
- *    connection lives above the room router so it survives navigation to
- *    other channels — without that, switching channels mid-call disconnects.
+ *    LiveKitVideoConfBridge (mounted in MeteorProvider.tsx). The LK connection
+ *    lives above the room router so it survives navigation to other channels —
+ *    without that, switching channels mid-call disconnects.
  *  - No call: pass-through
  */
 const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
@@ -39,17 +39,13 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const peerInfo = usePeekMediaSessionPeerInfo();
 	const features = usePeekMediaSessionFeatures();
 	const room = useRoom();
-	const { instance: session } = useMediaCallInstance();
+	const { activeCall: activeLkCall } = useLiveKitVideoConf();
 
 	const screenShareEnabled = features.includes('screen-share');
 
-	// Group-call detection: the session has a main call whose rid matches this
-	// room. Set by Session.joinGroupCall via bootstrapAsGroupCall.
-	const isGroupCallHere = useMemo(() => {
-		if (state !== 'ongoing' || !session) return false;
-		const call = session.getState(false)?.call as any;
-		return Boolean(call && call.rid === room?._id);
-	}, [state, session, room?._id]);
+	// Group-call detection: the LiveKit context owns the active LK call's rid
+	// (set by useGroupCallRoomAction.joinCall). Decoupled from VoIP entirely.
+	const isGroupCallHere = activeLkCall?.rid === room?._id;
 
 	if (isGroupCallHere) {
 		return <MediaCallRoomActivity provider={null}>{children}</MediaCallRoomActivity>;

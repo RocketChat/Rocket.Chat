@@ -3,6 +3,11 @@ import type {
 	ILivechatVideoConference,
 	IRoom,
 	IUser,
+	IVideoConferenceParticipant,
+	IVideoConferenceRecording,
+	IVideoConferenceSummary,
+	IVideoConferenceTranscription,
+	IVideoConferenceTranscriptEntry,
 	VideoConference,
 	VideoConferenceStatus,
 	IVoIPVideoConference,
@@ -70,4 +75,33 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
+
+	// --- Embedded SFU (LiveKit) helpers ---
+	// These mirror the per-participant + recording + transcription bookkeeping
+	// that URL-based providers don't need. URL providers (Jitsi/Meet/Zoom)
+	// never call these.
+
+	findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null>;
+
+	findActiveEmbeddedWithRecording(): Promise<VideoConference[]>;
+
+	findEndedAwaitingSummary(): Promise<VideoConference[]>;
+
+	findActiveExpiredEmbedded(maxAgeMs: number, providerName: string): Promise<VideoConference[]>;
+
+	addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void>;
+
+	markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id']): Promise<void>;
+
+	setRecordingById(callId: VideoConference['_id'], recording: IVideoConferenceRecording): Promise<void>;
+
+	updateRecordingById(callId: VideoConference['_id'], partial: Partial<IVideoConferenceRecording>): Promise<void>;
+
+	unsetRecordingById(callId: VideoConference['_id']): Promise<void>;
+
+	setTranscriptionById(callId: VideoConference['_id'], transcription: IVideoConferenceTranscription): Promise<void>;
+
+	appendTranscriptEntryById(callId: VideoConference['_id'], entry: IVideoConferenceTranscriptEntry): Promise<void>;
+
+	setSummaryById(callId: VideoConference['_id'], summary: IVideoConferenceSummary): Promise<void>;
 }
