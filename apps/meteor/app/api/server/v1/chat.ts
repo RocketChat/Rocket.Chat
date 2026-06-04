@@ -838,11 +838,12 @@ const chatEndpoints = API.v1
 			}
 
 			// Checks for control characters in the message and removes them
-			if (this.bodyParams.message && typeof this.bodyParams.message.msg === 'string') {
-				const range = '\\u0000-\\u001F\\u007F-\\u009F';
-				const controlCharsRegex = new RegExp(`[${range}]`, 'g');
+			if (this.bodyParams.message) {
+				const msg = typeof this.bodyParams.message.msg === 'string' ? this.bodyParams.message.msg : '';
+				// eslint-disable-next-line no-control-regex
+				const controlCharsRegex = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g;
 
-				this.bodyParams.message.msg = this.bodyParams.message.msg.replace(controlCharsRegex, '');
+				this.bodyParams.message.msg = msg.replace(controlCharsRegex, '');
 
 				const hasText = this.bodyParams.message.msg.trim() !== '';
 				const attachmentCount = this.bodyParams.message.attachments ? this.bodyParams.message.attachments.length : 0;
