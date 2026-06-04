@@ -57,7 +57,28 @@ const resolveWorkerPath = (): string | null => {
 	return found || null;
 };
 
-const computeEnv = (): Record<string, string> | null => {
+// Walk up the directory tree from `start` collecting every node_modules dir
+// we find. Used to build NODE_PATH for the spawned worker so it can resolve
+// the npm packages it imports (@google/genai, @livekit/agents, @livekit/
+// rtc-node). Those deps live next to the running meteor process — in dev
+// at apps/meteor/node_modules (plus hoisted root node_modules in the
+// monorepo), in prod at /app/bundle/programs/server/node_modules. The
+// worker .mjs file itself sits inside private/ / assets/ and has no
+// node_modules of its own.
+const collectAncestorNodeModules = (start: string): string[] => {
+	const dirs: string[] = [];
+	let cur = start;
+	for (let i = 0; i < 20; i += 1) {
+		const candidate = path.join(cur, 'node_modules');
+		if (existsSync(candidate)) dirs.push(candidate);
+		const parent = path.dirname(cur);
+		if (parent === cur) break;
+		cur = parent;
+	}
+	return dirs;
+};
+
+const computeEnv = (workerPath: string): Record<string, string> | null => {
 	const lk = getLiveKitConfig();
 	const geminiKey = settings.get<string>('VideoConf_LiveKit_Agent_Gemini_Api_Key') || '';
 	const missing: string[] = [];
@@ -71,8 +92,28 @@ const computeEnv = (): Record<string, string> | null => {
 		return null;
 	}
 
+	// Build NODE_PATH so the worker resolves its npm deps from the meteor
+	// bundle (or the dev tree). The worker.mjs sits inside private/ /
+	// assets/ which has no node_modules of its own, so without this the
+	// `@google/genai`, `@livekit/agents`, `@livekit/rtc-node` imports fail
+	// at module-resolution time. Walk up both from the worker location and
+	// from cwd (covers prod where meteor runs from programs/server/) and
+	// from the running process's __dirname (covers monorepo dev).
+	const ancestorNodeModules = [
+		...collectAncestorNodeModules(path.dirname(workerPath)),
+		...collectAncestorNodeModules(process.cwd()),
+		...collectAncestorNodeModules(__dirname),
+	];
+	if (ancestorNodeModules.length === 0) {
+		SystemLogger.warn({ msg: '[livekit-agent] no node_modules dir discovered; worker may fail to resolve imports', workerPath });
+	}
+	const dedupedNodePath = Array.from(
+		new Set([...(process.env.NODE_PATH ? process.env.NODE_PATH.split(path.delimiter) : []), ...ancestorNodeModules]),
+	).join(path.delimiter);
+
 	const env: Record<string, string> = {
 		...(process.env as Record<string, string>),
+		NODE_PATH: dedupedNodePath,
 		LIVEKIT_URL: lk.url,
 		LIVEKIT_API_KEY: lk.apiKey,
 		LIVEKIT_API_SECRET: lk.apiSecret,
@@ -96,13 +137,13 @@ const spawnWorker = (): void => {
 		SystemLogger.warn('[livekit-agent] worker.mjs not found in expected locations; not starting');
 		return;
 	}
-	const env = computeEnv();
+	const env = computeEnv(workerPath);
 	if (!env) {
 		SystemLogger.warn('[livekit-agent] missing required settings (LK / Gemini); not starting');
 		return;
 	}
 
-	SystemLogger.info({ msg: '[livekit-agent] spawning worker', path: workerPath });
+	SystemLogger.info({ msg: '[livekit-agent] spawning worker', path: workerPath, nodePath: env.NODE_PATH });
 	const child = spawn(process.execPath, [workerPath, 'start'], {
 		env,
 		stdio: ['ignore', 'pipe', 'pipe'],
