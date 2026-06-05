@@ -69,7 +69,7 @@ function SettingField({ className = undefined, settingId, sectionChanged, render
 
 	const onChangeValue = useCallback(
 		(newValue: SettingValue) => {
-			if (renderConfirmModal && newValue !== value) {
+			if (renderConfirmModal && JSON.stringify(newValue) !== JSON.stringify(value)) {
 				setModal(
 					renderConfirmModal({
 						onConfirm: () => {

@@ -83,7 +83,7 @@ describe('SettingField', () => {
 
 		await act(async () => {
 			confirmProps?.onConfirm();
-			jest.advanceTimersByTime(300);
+			jest.runOnlyPendingTimers();
 		});
 
 		await waitFor(() => {
@@ -111,7 +111,7 @@ describe('SettingField', () => {
 
 		await act(async () => {
 			confirmProps?.onCancel();
-			jest.advanceTimersByTime(300);
+			jest.runOnlyPendingTimers();
 		});
 
 		expect(dispatchMock).not.toHaveBeenCalled();
