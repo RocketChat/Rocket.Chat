@@ -58,13 +58,14 @@ const renderListener = (initialState: SessionState['state']) => {
 	const toggleWidget = jest.fn();
 	const selectPeer = jest.fn();
 	const { rerender } = renderHook(
-		({ state }: { state: SessionState['state'] }) => useDesktopTelephonyListener({ sessionState: sessionFor(state), toggleWidget, selectPeer }),
+		({ state }: { state: SessionState['state'] }) =>
+			useDesktopTelephonyListener({ sessionState: sessionFor(state), toggleWidget, selectPeer }),
 		{ initialProps: { state: initialState } },
 	);
 	return {
 		toggleWidget,
 		selectPeer,
-		setState: (state: SessionState['state']) => act(() => rerender({ state })),
+		setState: (state: SessionState['state']) => rerender({ state }),
 	};
 };
 
