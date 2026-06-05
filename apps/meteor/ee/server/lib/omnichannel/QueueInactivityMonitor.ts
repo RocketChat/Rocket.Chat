@@ -1,7 +1,8 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
-import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
+import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users, CronHistory } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';
@@ -108,22 +109,47 @@ export class OmnichannelQueueInactivityMonitorClass {
 		});
 	}
 
-	async closeRoom({ attrs: { data } }: any = {}): Promise<void> {
+	async closeRoom({ attrs: { data, name } }: any = {}): Promise<void> {
 		const { inquiryId } = data;
+
+		const { insertedId } = await CronHistory.insertOne({
+			_id: Random.id(),
+			intendedAt: new Date(),
+			name,
+			startedAt: new Date(),
+			type: 'omnichannel',
+		});
 		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
-		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		if (inquiry?.status !== 'queued') {
-			return;
-		}
+		try {
+			const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
+			if (inquiry?.status !== 'queued') {
+				await CronHistory.updateOne({ _id: insertedId }, { $set: { finishedAt: new Date() } });
+				return;
+			}
 
-		const room = await LivechatRooms.findOneById(inquiry.rid);
-		if (!room) {
-			this.logger.error({ msg: 'Unable to find room to close in queue inactivity monitor', inquiryId, roomId: inquiry.rid });
-			return;
-		}
+			const room = await LivechatRooms.findOneById(inquiry.rid);
+			if (!room) {
+				this.logger.error({ msg: 'Unable to find room to close in queue inactivity monitor', inquiryId, roomId: inquiry.rid });
+				await CronHistory.updateOne({ _id: insertedId }, { $set: { finishedAt: new Date() } });
+				return;
+			}
 
-		await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
-		this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
+			await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
+			this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
+
+			await CronHistory.updateOne({ _id: insertedId }, { $set: { finishedAt: new Date() } });
+		} catch (error: any) {
+			await CronHistory.updateOne(
+				{ _id: insertedId },
+				{
+					$set: {
+						finishedAt: new Date(),
+						error: error?.stack ? error.stack : error,
+					},
+				},
+			);
+			throw error;
+		}
 	}
 }
 
