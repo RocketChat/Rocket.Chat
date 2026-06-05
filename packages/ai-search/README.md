@@ -14,4 +14,3 @@ Current responsibilities:
 - Intelligent Search pipeline request construction.
 - Pipeline filter construction.
 - Pipeline response normalization and similarity score handling.
-

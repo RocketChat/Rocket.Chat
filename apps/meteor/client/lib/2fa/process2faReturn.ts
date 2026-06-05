@@ -18,7 +18,7 @@ const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFact
 const hasRequiredTwoFactorMethod = (
 	error: MeteorErrorLike,
 ): error is MeteorErrorLike & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
-	const details = error.details as unknown;
+	const { details } = error;
 
 	return (
 		typeof details === 'object' &&
