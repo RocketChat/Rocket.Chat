@@ -83,9 +83,14 @@ const OngoingCall = () => {
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 
 					{isPopout && (
-						<Button onClick={onClosePopout} icon='arrow-from-cross-box' medium w='full'>
-							{t('Show_call_here')}
-						</Button>
+						<Box display='flex' flexDirection='column' gap={4}>
+							<Button onClick={onClosePopout} icon='arrow-from-cross-box' medium w='full'>
+								{t('Show_call_here')}
+							</Button>
+							{localScreen?.active && (
+								<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
+							)}
+						</Box>
 					)}
 
 					{!isPopout && (
