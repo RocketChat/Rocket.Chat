@@ -1,15 +1,15 @@
 import { SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 
 import NavBarSearchItem from './NavBarSearchItem';
+import type { SearchRenderableItem } from './hooks/useSearchItems';
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type NavBarSearchUserRowProps = {
-	room: SubscriptionWithRoom;
+	room: SearchRenderableItem;
 	id: string;
 	AvatarTemplate: ReactElement;
 } & Partial<ComponentProps<typeof NavBarSearchItem>>;
