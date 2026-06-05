@@ -1,14 +1,18 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../stores';
-import { getUserId } from '../user';
-
-export const getUidDirectMessage = (rid: IRoom['_id'], uid: IUser['_id'] | undefined = getUserId() ?? undefined): string | undefined => {
-	const room = Rooms.state.get(rid);
-
-	if (!room || room.t !== 'd' || !room.uids || room.uids.length > 2) {
+export const getUidDirectMessage = (room: Pick<IRoom, 't' | 'uids' | 'usernames'>, uid?: IUser['_id']): string | undefined => {
+	if (room.t !== 'd' || !room.uids?.length || room.uids.length > 2) {
 		return undefined;
 	}
 
-	return room.uids.filter((_uid) => _uid !== uid)[0];
+	const partner = room.uids.find((_uid) => _uid !== uid);
+	if (partner) {
+		return partner;
+	}
+
+	if (room.uids.length === 1 && room.usernames?.length === 1) {
+		return uid;
+	}
+
+	return undefined;
 };

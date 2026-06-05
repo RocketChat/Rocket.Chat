@@ -9,21 +9,31 @@ export type AccountProfileFormValues = {
 	avatar: AvatarObject;
 	url: string;
 	statusText: string;
-	statusType: string;
+	statusType: IUser['status'];
+	statusDuration: string;
+	statusCustomDate: string;
+	statusCustomTime: string;
 	bio: string;
 	customFields: Record<string, string>;
 	nickname: string;
 };
 
-export const getProfileInitialValues = (user: IUser | null): AccountProfileFormValues => ({
-	email: user ? getUserEmailAddress(user) || '' : '',
-	name: user?.name ?? '',
-	username: user?.username ?? '',
-	avatar: '' as AvatarObject,
-	url: '',
-	statusText: user?.statusText ?? '',
-	statusType: user?.status ?? '',
-	bio: user?.bio ?? '',
-	customFields: user?.customFields ?? {},
-	nickname: user?.nickname ?? '',
-});
+export const getProfileInitialValues = (user: IUser | null): AccountProfileFormValues => {
+	const expiration = user?.statusExpiresAt && new Date(user.statusExpiresAt) > new Date() ? new Date(user.statusExpiresAt) : null;
+	const date = expiration ?? new Date();
+	return {
+		email: user ? getUserEmailAddress(user) || '' : '',
+		name: user?.name ?? '',
+		username: user?.username ?? '',
+		avatar: '' as AvatarObject,
+		url: '',
+		statusText: user?.statusText ?? '',
+		statusType: user?.status,
+		statusDuration: expiration ? 'custom' : '',
+		statusCustomDate: date.toLocaleDateString('en-CA'),
+		statusCustomTime: date.toTimeString().slice(0, 5),
+		bio: user?.bio ?? '',
+		customFields: user?.customFields ?? {},
+		nickname: user?.nickname ?? '',
+	};
+};

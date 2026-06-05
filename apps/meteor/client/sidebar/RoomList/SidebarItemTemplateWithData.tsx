@@ -1,13 +1,15 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useUserId } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
+import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
@@ -69,6 +71,8 @@ const SidebarItemTemplateWithData = ({
 	videoConfActions,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
+	const dmUserId = getUidDirectMessage(room, useUserId());
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId);
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
@@ -139,6 +143,7 @@ const SidebarItemTemplateWithData = ({
 						)
 					: undefined
 			}
+			{...dmStatusTooltipHandlers}
 		/>
 	);
 };

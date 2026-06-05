@@ -8,7 +8,6 @@ import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
 import { adminUsername } from '../../data/user';
 import { getUserByUsername } from '../../data/users.helper';
-import { adminUsername } from '../../data/user';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Apps - Presence State Bridge', () => {
