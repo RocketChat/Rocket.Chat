@@ -8,10 +8,10 @@ import PreviewSkeleton from './PreviewSkeleton';
 type ImagePreviewProps = {
 	url: string;
 	file: File;
-	alt?: string;
+	altText?: string;
 };
 
-const ImagePreview = ({ url, file, alt = '' }: ImagePreviewProps): ReactElement => {
+const ImagePreview = ({ url, file, altText = '' }: ImagePreviewProps): ReactElement => {
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(true);
 
@@ -31,7 +31,7 @@ const ImagePreview = ({ url, file, alt = '' }: ImagePreviewProps): ReactElement 
 			<Box
 				is='img'
 				src={url}
-				alt={alt}
+				alt={altText}
 				maxWidth='full'
 				objectFit='contain'
 				onLoad={handleLoad}

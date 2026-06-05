@@ -41,14 +41,14 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 
 type FilePreviewProps = {
 	file: File;
-	description?: string;
+	altText?: string;
 };
 
-const FilePreview = ({ file, description }: FilePreviewProps): ReactElement => {
+const FilePreview = ({ file, altText }: FilePreviewProps): ReactElement => {
 	const fileType = getFileType(file.type);
 
 	if (shouldShowMediaPreview(file, fileType)) {
-		return <MediaPreview file={file} fileType={fileType as FilePreviewType} description={description} />;
+		return <MediaPreview file={file} fileType={fileType as FilePreviewType} altText={altText} />;
 	}
 
 	return <GenericPreview file={file} />;
