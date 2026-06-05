@@ -84,6 +84,7 @@ export const permissions = [
 	{ _id: 'view-privileged-setting', roles: ['admin'] },
 	{ _id: 'view-room-administration', roles: ['admin'] },
 	{ _id: 'view-statistics', roles: ['admin'] },
+	{ _id: 'manage-scheduled-jobs', roles: ['admin'] },
 	{ _id: 'view-user-administration', roles: ['admin'] },
 	{ _id: 'preview-c-room', roles: ['admin', 'user', 'federated-external', 'anonymous'] },
 	{ _id: 'view-outside-room', roles: ['admin', 'owner', 'moderator', 'user', 'federated-external'] },

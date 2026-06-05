@@ -48,6 +48,7 @@ const cronJobsEndpoints = API.v1
 		'cron.jobs',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
 			query: isCronJobsListParams,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -69,6 +70,7 @@ const cronJobsEndpoints = API.v1
 		'cron.appjobs',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
 			query: isCronJobsListParams,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -90,6 +92,7 @@ const cronJobsEndpoints = API.v1
 		'cron.history',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
 			query: isCronJobsHistoryParams,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -112,6 +115,7 @@ const cronJobsEndpoints = API.v1
 		'cron.enable',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
 			body: isCronJobsActionParams,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -131,6 +135,7 @@ const cronJobsEndpoints = API.v1
 		'cron.disable',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
 			body: isCronJobsActionParams,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -150,6 +155,7 @@ const cronJobsEndpoints = API.v1
 		'cron.trigger',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
 			body: isCronJobsActionParams,
 			response: {
 				401: validateUnauthorizedErrorResponse,
