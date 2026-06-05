@@ -283,7 +283,12 @@ export class ConnectionImpl
 	}
 
 	probe(timeoutMs = 2000): Promise<boolean> {
+		if (!this.ws || this.status !== 'connected' || this.ws.readyState !== this.ws.OPEN) {
+			return Promise.resolve(false);
+		}
+
 		return new Promise((resolve) => {
+			const probeId = `probe-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 			let settled = false;
 			let off: (() => void) | undefined;
 			const finish = (alive: boolean) => {
@@ -296,9 +301,9 @@ export class ConnectionImpl
 			const timer = setTimeout(() => finish(false), timeoutMs);
 			try {
 				off = this.client.onMessage((payload) => {
-					if (payload.msg === 'pong') finish(true);
+					if (payload.msg === 'pong' && payload.id === probeId) finish(true);
 				});
-				this.client.ping();
+				this.client.ping(probeId);
 			} catch {
 				finish(false);
 			}
