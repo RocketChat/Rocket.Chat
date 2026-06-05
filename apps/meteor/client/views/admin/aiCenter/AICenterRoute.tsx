@@ -49,7 +49,6 @@ const AICenterOverview = (): ReactElement => {
 	const router = useRouter();
 	const { data: hasAILicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const threadSummarizationEnabled = useSetting('AI_Thread_Summarization_Enabled', false);
 
 	let premiumStatus = <Tag>{t('Disabled')}</Tag>;
 	if (!hasAILicense) {
@@ -88,36 +87,12 @@ const AICenterOverview = (): ReactElement => {
 							onClick={() => router.navigate('/admin/ai-center/search')}
 						/>
 						<CapabilityCard
-							icon='thread'
-							title={t('Thread_Summarization')}
-							description={t('AI_Center_Thread_Summarization_card_description')}
-							status={threadSummarizationEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>}
-							actionLabel={t('Configure')}
-							onClick={() => router.navigate('/admin/ai-center/thread-summarization')}
-						/>
-						<CapabilityCard
-							icon='user'
-							title={t('AI_Center_Agents')}
-							description={t('AI_Center_Agents_card_description')}
-							status={<Tag>{t('Coming_soon')}</Tag>}
-							actionLabel={t('Manage')}
-							disabled
-						/>
-						<CapabilityCard
 							icon='smart'
-							title={t('AI_Center_LLM_Providers')}
-							description={t('AI_Center_LLM_Providers_card_description')}
+							title={t('AI_Center_LLM_Provider')}
+							description={t('AI_Center_LLM_Provider_card_description')}
 							status={<Tag>{t('Available')}</Tag>}
 							actionLabel={t('Manage')}
 							onClick={() => router.navigate('/admin/ai-center/llm-providers')}
-						/>
-						<CapabilityCard
-							icon='link'
-							title={t('AI_Center_MCP_Connections')}
-							description={t('AI_Center_MCP_Connections_card_description')}
-							status={<Tag>{t('Coming_soon')}</Tag>}
-							actionLabel={t('Manage')}
-							disabled
 						/>
 					</CardGrid>
 				</Box>
@@ -126,17 +101,12 @@ const AICenterOverview = (): ReactElement => {
 	);
 };
 
-const AISettingsSection = ({
-	section,
-}: {
-	section: 'Intelligent_Search' | 'AI_Thread_Summarization' | 'AI_LLM_Providers';
-}): ReactElement => {
+const AISettingsSection = ({ section }: { section: 'Intelligent_Search' | 'AI_LLM_Provider' }): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const titleBySection = {
 		Intelligent_Search: 'Intelligent_Search',
-		AI_LLM_Providers: 'AI_Center_LLM_Providers',
-		AI_Thread_Summarization: 'Thread_Summarization',
+		AI_LLM_Provider: 'AI_Center_LLM_Provider',
 	} as const;
 	const title = titleBySection[section];
 
@@ -170,11 +140,11 @@ const AICenterRoute = (): ReactElement => {
 	}
 
 	if (section === 'thread-summarization') {
-		return <AISettingsSection section='AI_Thread_Summarization' />;
+		return <AICenterOverview />;
 	}
 
 	if (section === 'llm-providers') {
-		return <AISettingsSection section='AI_LLM_Providers' />;
+		return <AISettingsSection section='AI_LLM_Provider' />;
 	}
 
 	return <AICenterOverview />;

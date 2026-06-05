@@ -196,8 +196,10 @@ const SearchPage = (): ReactElement => {
 		[parsedSearch.filters, selectedRooms],
 	);
 	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
+	const aiSearchFeatureEnabled = useSetting('AI_Intelligent_Search_Feature_Enabled', false);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const generateAnswer = useEndpoint('POST', '/v1/search.answer');
 
@@ -211,6 +213,7 @@ const SearchPage = (): ReactElement => {
 			debouncedQuery,
 			resolvedFilters,
 			hasIntelligentSearchLicense,
+			aiSearchFeatureEnabled,
 			intelligentSearchEnabled,
 			intelligentCount,
 		],
@@ -221,7 +224,7 @@ const SearchPage = (): ReactElement => {
 				includeSpotlight: false,
 				intelligentCount,
 				includeMessages: false,
-				includeIntelligent: Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled),
+				includeIntelligent: Boolean(canUseAISearch && intelligentSearchEnabled),
 				rid: resolvedFilters.rid,
 				rids: resolvedFilters.rids.join(','),
 				roomNames: resolvedFilters.roomNames.join(','),
@@ -230,7 +233,7 @@ const SearchPage = (): ReactElement => {
 				startDate: resolvedFilters.startDate,
 				endDate: resolvedFilters.endDate,
 			}),
-		enabled: Boolean(debouncedQuery),
+		enabled: Boolean(debouncedQuery && canUseAISearch && intelligentSearchEnabled),
 	});
 
 	const intelligent = useMemo(() => (result.data?.intelligent as IntelligentResult[] | undefined) ?? [], [result.data?.intelligent]);
@@ -327,12 +330,17 @@ const SearchPage = (): ReactElement => {
 							{t('Intelligent_Search_upsell_description')}
 						</Callout>
 					)}
-					{hasIntelligentSearchLicense && !intelligentSearchEnabled && (
+					{hasIntelligentSearchLicense && !aiSearchFeatureEnabled && (
+						<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')} mbe={16}>
+							{t('AI_Search_feature_disabled_description')}
+						</Callout>
+					)}
+					{canUseAISearch && !intelligentSearchEnabled && (
 						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} mbe={16}>
 							{t('Intelligent_Search_disabled_description')}
 						</Callout>
 					)}
-					{hasIntelligentSearchLicense && intelligentSearchEnabled && result.data && !result.data.meta.intelligentSearchConfigured && (
+					{canUseAISearch && intelligentSearchEnabled && result.data && !result.data.meta.intelligentSearchConfigured && (
 						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} mbe={16}>
 							{t('Intelligent_Search_missing_configuration_description')}
 						</Callout>

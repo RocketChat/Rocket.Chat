@@ -4,7 +4,7 @@ const AI_LICENSE_MODULE = 'chat.rocket.rc-ai' as const;
 
 export const createAISettings = () =>
 	settingsRegistry.addGroup('AI_Center', async function () {
-		await this.section('AI_LLM_Providers', async function () {
+		await this.section('AI_LLM_Provider', async function () {
 			await this.add('AI_LLM_OpenAI_Base_URL', 'https://api.openai.com/v1', {
 				type: 'string',
 				i18nLabel: 'AI_LLM_OpenAI_Base_URL',
@@ -35,6 +35,14 @@ export const createAISettings = () =>
 		});
 
 		await this.section('Intelligent_Search', async function () {
+			await this.add('AI_Intelligent_Search_Feature_Enabled', false, {
+				type: 'boolean',
+				i18nLabel: 'AI_Intelligent_Search_Feature_Enabled',
+				public: true,
+				invalidValue: false,
+				i18nDescription: 'AI_Intelligent_Search_Feature_Enabled_Description',
+			});
+
 			await this.add('AI_Intelligent_Search_Enabled', false, {
 				type: 'boolean',
 				i18nLabel: 'AI_Intelligent_Search_Enabled',

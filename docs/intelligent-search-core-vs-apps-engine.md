@@ -223,14 +223,14 @@ they silently fall back to their invalid value when the license module is inacti
 
 | Section | Settings |
 |---|---|
-| `AI_LLM_Providers` | Base URL, API key, model (lookup type — live dropdown from `/v1/ai.llm.models`) |
-| `Intelligent_Search` | Enabled (public), Show in top bar (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, Answer system prompt |
+| `AI_LLM_Provider` | OpenAI-compatible base URL, API key, model (lookup type — live dropdown from `/v1/ai.llm.models`) |
+| `Intelligent_Search` | AI Search experience flag (public), Enabled (public), Show in top bar (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, Answer system prompt |
 | `AI_Thread_Summarization` | Enabled (public) |
 
 **AI Center admin page (`AICenterRoute.tsx`)**
 
 Route `/admin/ai-center` with an overview of all AI capabilities as feature cards (Intelligent
-Search, Thread Summarization, AI Agents, LLM Providers, MCP Connections) and sub-routes into the
+AI Search and OpenAI-compatible LLM configuration) and sub-routes into the
 relevant settings sections, rendered via the standard `GenericGroupPage` component.
 
 ---
@@ -438,7 +438,7 @@ predictable.
 | **Result cards** | Numbered, room label, `@username`, date, message text | UIKit PreviewBlock / SectionBlock |
 | **LLM answer** | Auto-triggered inline, Skeleton loading, Markdown rendered | Thread reply posted when LLM finishes; user navigates away to read |
 | **Pagination** | Inline "Show more" button, no reload | Prev/Next buttons in thread |
-| **Admin settings** | Integrated into AI Center alongside LLM Providers and Thread Summarization | Isolated under `Apps > Intelligent Search` |
+| **Admin settings** | Integrated into AI Center alongside OpenAI-compatible LLM configuration | Isolated under `Apps > Intelligent Search` |
 | **License gating** | Module-level control; Locked/Disabled/Enabled tags; upsell modal | Always visible; no tiering |
 | **Workspace management** | Not yet implemented | Full Workspace Manager modal (connector, room selection, backfill, pipeline config) |
 | **Deep linking** | URL carries full search state | No URL; state lost on close |
@@ -476,8 +476,8 @@ two separate implementations.
 
 **Integration with the AI Center family**
 
-Thread Summarization, LLM Providers, AI Agents, and MCP Connections all live in the same
-`AI_Center` settings group under the same `chat.rocket.rc-ai` license module. Keeping IS in the
+AI Search and OpenAI-compatible LLM configuration live in the same `AI_Center` settings group under
+the same `chat.rocket.rc-ai` license module. Keeping IS in the
 same family means consistent settings management, consistent license gating, and a coherent admin
 experience across all AI capabilities.
 

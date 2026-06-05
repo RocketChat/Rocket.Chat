@@ -3,7 +3,7 @@ import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -33,10 +33,16 @@ const NavBarSearch = () => {
 	const shortcut = getShortcutLabel();
 	const router = useRouter();
 	const setModal = useSetModal();
+	const aiSearchFeatureEnabled = useSetting('AI_Intelligent_Search_Feature_Enabled', false);
+	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
+	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const { handleTalkToSales } = useUpsellActions(hasIntelligentSearchLicense);
+	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
+	const canSearchWithAIFromTopBar = Boolean(canUseAISearch && intelligentSearchEnabled && showIntelligentSearch);
 
-	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
+	const searchLabel = canSearchWithAIFromTopBar ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
+	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
 
 	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
 	const {
@@ -50,8 +56,8 @@ const NavBarSearch = () => {
 	} = methods;
 	const { filterText, appliedFilters } = watch();
 	const appliedFilterChips = useMemo(
-		() => (hasIntelligentSearchLicense ? buildAppliedFilterChips(appliedFilters) : []),
-		[appliedFilters, hasIntelligentSearchLicense],
+		() => (canUseAISearch ? buildAppliedFilterChips(appliedFilters) : []),
+		[appliedFilters, canUseAISearch],
 	);
 	const chipContainerRef = useRef<HTMLElement>(null);
 	const [chipContainerWidth, setChipContainerWidth] = useState(0);
@@ -143,7 +149,7 @@ const NavBarSearch = () => {
 	}, [getValues, handleTalkToSales, hasIntelligentSearchLicense, router, setModal, state, t]);
 
 	useEffect(() => {
-		if (!hasIntelligentSearchLicense || !filterText) {
+		if (!canUseAISearch || !filterText) {
 			return;
 		}
 
@@ -154,7 +160,7 @@ const NavBarSearch = () => {
 
 		setValue('appliedFilters', mergeSearchFilters(appliedFilters, filters), { shouldDirty: true });
 		setValue('filterText', searchText, { shouldDirty: true });
-	}, [appliedFilters, filterText, hasIntelligentSearchLicense, setValue]);
+	}, [appliedFilters, canUseAISearch, filterText, setValue]);
 
 	useEffect(() => {
 		const unsubscribe = tinykeys(window, {
@@ -179,7 +185,7 @@ const NavBarSearch = () => {
 
 	return (
 		<FormProvider {...methods}>
-			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} mi={8} position='relative'>
+			<Box width='100%' maxWidth='x622' role='search' aria-label={searchLabel} mi={8} position='relative'>
 				{appliedFilterChips.length > 0 && (
 					<Box
 						ref={chipContainerRef}
@@ -199,7 +205,7 @@ const NavBarSearch = () => {
 						}}
 					>
 						{appliedFilterChips.map((filter) => (
-							<Chip key={filter.key} height='x20' value={filter.label} onClick={() => handleRemoveFilter(filter.key)}>
+							<Chip key={filter.key} height='x20' value={filter.label} onClick={() => handleRemoveFilter(filter.key)} title={filter.label}>
 								<Box is='span' style={{ maxWidth: 132, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
 									{filter.label}
 								</Box>
@@ -228,13 +234,15 @@ const NavBarSearch = () => {
 							) : (
 								<Icon name='magnifier' size='x16' aria-label={t('Search')} />
 							)}
-							<IconButton
-								mini
-								icon='stars'
-								aria-label={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Intelligent_Search_locked')}
-								title={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Contact_sales_for_Intelligent_Search')}
-								onClick={handleIntelligentSearchClick}
-							/>
+							{aiSearchFeatureEnabled && (
+								<IconButton
+									mini
+									icon='stars'
+									aria-label={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Intelligent_Search_locked')}
+									title={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Contact_sales_for_Intelligent_Search')}
+									onClick={handleIntelligentSearchClick}
+								/>
+							)}
 						</Box>
 					}
 				/>

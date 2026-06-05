@@ -47,6 +47,7 @@ export type NavBarSearchFormValues = {
 
 export type SearchFilterSuggestion = {
 	key: string;
+	group: 'rooms' | 'users' | 'dates';
 	title: string;
 	description: string;
 	value: string;
@@ -261,6 +262,7 @@ const getDateFilterSuggestions = (filterText: string, activeFilter: ActiveFilter
 		{ label: 'Last 7 days', value: formatDate(lastWeek) },
 	].map(({ label, value }) => ({
 		key: `${key}-${value}`,
+		group: 'dates',
 		title: `${key}:${value}`,
 		description: label,
 		value: applyFilterToken(filterText, activeFilter, key, value),
@@ -280,6 +282,7 @@ const buildFilterSuggestions = (
 	if (activeFilter.key === 'in') {
 		return rooms.slice(0, 5).map((room) => ({
 			key: `in-${room.rid || room._id}`,
+			group: 'rooms',
 			title: `#${room.fname || room.name}`,
 			description: 'Search in this room',
 			value: applyFilterToken(filterText, activeFilter, 'in', room.name || room.fname || ''),
@@ -291,6 +294,7 @@ const buildFilterSuggestions = (
 		return [
 			{
 				key: 'from-current',
+				group: 'users',
 				title: activeFilter.value ? `from:${activeFilter.value.replace(/^@/, '')}` : 'from:username',
 				description: 'Search messages from this username',
 				value: applyFilterToken(filterText, activeFilter, 'from', activeFilter.value.replace(/^@/, '')),
@@ -317,6 +321,7 @@ const buildUserFilterSuggestions = (
 
 	return users.slice(0, 5).map((user) => ({
 		key: `from-${user._id}`,
+		group: 'users',
 		title: `@${user.username}`,
 		description: user.name || 'Search messages from this user',
 		value: applyFilterToken(filterText, activeFilter, 'from', user.username),
@@ -353,28 +358,24 @@ export const useSearchItems = (
 	const getSpotlight = useMethod('spotlight');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
+	const aiSearchFeatureEnabled = useSetting('AI_Intelligent_Search_Feature_Enabled', false);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const { searchText, filters } = useMemo(() => {
-		if (!hasIntelligentSearchLicense) {
+		if (!canUseAISearch) {
 			return { searchText: filterText, filters: emptySearchFilters() };
 		}
 
 		const parsed = parseSearchFilterText(filterText);
 		return { searchText: parsed.searchText, filters: mergeSearchFilters(appliedSearchFilters, parsed.filters) };
-	}, [appliedSearchFilters, filterText, hasIntelligentSearchLicense]);
-	const appliedFilters = useMemo(
-		() => (hasIntelligentSearchLicense ? buildAppliedFilterChips(filters) : []),
-		[filters, hasIntelligentSearchLicense],
-	);
+	}, [appliedSearchFilters, canUseAISearch, filterText]);
+	const appliedFilters = useMemo(() => (canUseAISearch ? buildAppliedFilterChips(filters) : []), [canUseAISearch, filters]);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
-	const activeFilter = useMemo(
-		() => (hasIntelligentSearchLicense ? getActiveFilter(filterText) : undefined),
-		[filterText, hasIntelligentSearchLicense],
-	);
+	const activeFilter = useMemo(() => (canUseAISearch ? getActiveFilter(filterText) : undefined), [canUseAISearch, filterText]);
 	const roomLookupText = useMemo(() => {
-		if (!hasIntelligentSearchLicense) {
+		if (!canUseAISearch) {
 			return '';
 		}
 
@@ -383,7 +384,7 @@ export const useSearchItems = (
 		}
 
 		return filters.roomNames[filters.roomNames.length - 1] || '';
-	}, [activeFilter, filters.roomNames, hasIntelligentSearchLicense]);
+	}, [activeFilter, canUseAISearch, filters.roomNames]);
 	const query = useMemo(() => buildRoomSearchQuery(name, mention), [name, mention]);
 	const roomLookupQuery = useMemo(
 		() => (roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : emptySubscriptionQuery),
@@ -411,8 +412,8 @@ export const useSearchItems = (
 		[filters, selectedRooms],
 	);
 	const filterSuggestions = useMemo(
-		() => (hasIntelligentSearchLicense ? buildFilterSuggestions(filterText, activeFilter, roomFilterRooms) : []),
-		[activeFilter, filterText, hasIntelligentSearchLicense, roomFilterRooms],
+		() => (canUseAISearch ? buildFilterSuggestions(filterText, activeFilter, roomFilterRooms) : []),
+		[activeFilter, canUseAISearch, filterText, roomFilterRooms],
 	);
 
 	const usernamesFromClient = localRooms.map(({ t, name }) => (t === 'd' ? name : null)).filter(Boolean) as string[];
@@ -441,6 +442,7 @@ export const useSearchItems = (
 			usernamesFromClient,
 			type,
 			hasIntelligentSearchLicense,
+			aiSearchFeatureEnabled,
 			intelligentSearchEnabled,
 			showIntelligentSearch,
 			localRooms.map(({ _id, name }) => _id + name),
@@ -449,7 +451,7 @@ export const useSearchItems = (
 		queryFn: async () => {
 			let intelligent: UnifiedSearchIntelligentResult[] = [];
 			const shouldSearchIntelligent = Boolean(
-				name.trim() && !mention && hasIntelligentSearchLicense && intelligentSearchEnabled && showIntelligentSearch,
+				name.trim() && !mention && canUseAISearch && intelligentSearchEnabled && showIntelligentSearch,
 			);
 			if (shouldSearchIntelligent) {
 				const result = await unifiedSearch({

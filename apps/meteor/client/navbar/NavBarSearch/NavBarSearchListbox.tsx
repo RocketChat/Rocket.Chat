@@ -5,14 +5,14 @@ import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks'
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
-import type { NavBarSearchFormValues } from './hooks/useSearchItems';
+import type { NavBarSearchFormValues, SearchFilterSuggestion } from './hooks/useSearchItems';
 import { mergeSearchFilters, parseSearchFilterText, serializeSearchQuery, useSearchItems } from './hooks/useSearchItems';
 import { useListboxNavigation } from './hooks/useSearchNavigation';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
@@ -20,6 +20,26 @@ import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
+};
+
+const filterSuggestionGroupLabels = {
+	rooms: 'Search_filter_rooms',
+	users: 'Search_filter_users',
+	dates: 'Search_filter_dates',
+} as const;
+
+const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchFilterSuggestion['group'], SearchFilterSuggestion[]][] => {
+	const grouped = suggestions.reduce<Record<SearchFilterSuggestion['group'], SearchFilterSuggestion[]>>(
+		(result, suggestion) => {
+			result[suggestion.group].push(suggestion);
+			return result;
+		},
+		{ rooms: [], users: [], dates: [] },
+	);
+
+	return (Object.keys(grouped) as SearchFilterSuggestion['group'][])
+		.map((group) => [group, grouped[group]] as [SearchFilterSuggestion['group'], SearchFilterSuggestion[]])
+		.filter(([, groupSuggestions]) => groupSuggestions.length > 0);
 };
 
 const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
@@ -54,6 +74,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		isFetching,
 	} = useSearchItems(debouncedFilter, appliedFilters);
 	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
+	const filterSuggestionGroups = useMemo(() => groupFilterSuggestions(items.filterSuggestions), [items.filterSuggestions]);
 
 	const handleOpenAISearch = useCallback(() => {
 		const query = serializeSearchQuery(filterText, appliedFilters);
@@ -117,14 +138,21 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 							</Box>
 						</Box>
 					)}
-					{items.filterSuggestions.map((item) => (
-						<SidebarV2Item key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item.value)}>
-							<SidebarV2ItemIcon icon={<Icon name={item.icon} size='x16' />} />
-							<SidebarV2ItemTitle>{item.title}</SidebarV2ItemTitle>
-							<Box color='hint' fontScale='c1' flexShrink={0}>
-								{item.description}
+					{filterSuggestionGroups.map(([group, suggestions]) => (
+						<Box key={group} display='flex' flexDirection='column' pbs={8}>
+							<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
+								{t(filterSuggestionGroupLabels[group])}
 							</Box>
-						</SidebarV2Item>
+							{suggestions.map((item) => (
+								<SidebarV2Item key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item.value)}>
+									<SidebarV2ItemIcon icon={<Icon name={item.icon} size='x16' />} />
+									<SidebarV2ItemTitle>{item.title}</SidebarV2ItemTitle>
+									<Box color='hint' fontScale='c1' flexShrink={0}>
+										{item.description}
+									</Box>
+								</SidebarV2Item>
+							))}
+						</Box>
 					))}
 					{itemCount === 0 && !isLoading && !isFetching && <NavBarSearchNoResults />}
 					{items.rooms.length > 0 && (
