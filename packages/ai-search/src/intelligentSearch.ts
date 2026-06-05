@@ -9,6 +9,10 @@ import type {
 
 type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
 
+// Keep explicit room filters exact, but avoid sending unbounded room-id lists for broad searches.
+// The caller must still post-filter normalized results by the user's accessible room IDs.
+const MAX_PIPELINE_ROOM_FILTER_VALUES = 1000;
+
 const asRecord = (value: unknown): Record<string, unknown> =>
 	value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
 
@@ -152,19 +156,21 @@ export const buildIntelligentSearchPipelineFilters = (
 	userRoomIds: string[],
 	{ rid, rids, fromUsername, fromUsernames, startDate, endDate }: Omit<IntelligentSearchFilters, 'roomNames'>,
 ): IntelligentSearchPipelineFilters | undefined => {
-	const requestedRoomIds = [...new Set([...(rids || []), ...(rid ? [rid] : [])])];
-	let accessibleRoomIds = userRoomIds;
-	if (requestedRoomIds.length) {
-		accessibleRoomIds = requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId));
-	}
-
-	if (!accessibleRoomIds.length) {
+	if (!userRoomIds.length) {
 		return undefined;
 	}
 
-	const filters: IntelligentSearchPipelineFilters = {
-		room_id: accessibleRoomIds.length === 1 ? { $eq: accessibleRoomIds[0] } : { $in: accessibleRoomIds },
-	};
+	const requestedRoomIds = [...new Set([...(rids || []), ...(rid ? [rid] : [])])];
+	const accessibleRoomIds = requestedRoomIds.length ? requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId)) : userRoomIds;
+	const filters: IntelligentSearchPipelineFilters = {};
+
+	if (requestedRoomIds.length && !accessibleRoomIds.length) {
+		return undefined;
+	}
+
+	if (requestedRoomIds.length || accessibleRoomIds.length <= MAX_PIPELINE_ROOM_FILTER_VALUES) {
+		filters.room_id = accessibleRoomIds.length === 1 ? { $eq: accessibleRoomIds[0] } : { $in: accessibleRoomIds };
+	}
 
 	const usernames = [
 		...new Set([...(fromUsernames || []), ...(fromUsername ? [fromUsername] : [])].map((username) => username.replace(/^@/, ''))),
@@ -201,7 +207,8 @@ export const searchIntelligentPipeline = async ({
 	logger?.debug?.({
 		msg: 'Intelligent search request',
 		url,
-		formattedQuery,
+		queryLength: formattedQuery.length,
+		hasQueryTemplate: Boolean(config.queryTemplate),
 		filterKeys: Object.keys(pipelineFilters),
 		classificationCount: classifications.length,
 		threshold: getSemanticDistanceThreshold(minimumSimilarity),
@@ -240,7 +247,7 @@ export const searchIntelligentPipeline = async ({
 
 	if (!response.ok) {
 		const body = await response.text().catch(() => '');
-		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, body });
+		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, body: body.slice(0, 500) });
 		return [];
 	}
 

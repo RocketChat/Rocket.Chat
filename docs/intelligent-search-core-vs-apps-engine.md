@@ -117,15 +117,19 @@ Inside `AISearchService.search()`:
 3. Room-name filters are resolved via `Rooms.findOneByNameOrFname()` for each unique room name and
    intersected with the user's subscription room IDs.
 4. `buildIntelligentSearchPipelineFilters()` constructs the pipeline filter object
-   (`room_id`, `username`, `timestamp`).
+   (`room_id`, `username`, `timestamp`). Explicit room filters are always intersected with the
+   user's subscriptions. Broad searches include the room-id filter only while the caller's room set is
+   below the bounded payload limit; larger broad searches rely on mandatory post-filtering after the
+   pipeline response.
 5. `getUserClassifications(userId)` returns `['user', ...roles]`; these classifications are sent
    to the pipeline for role-based access policies.
 6. `searchIntelligentPipeline()` posts to `{baseUrl}/pipelines/{id}/search` with the query
    (optionally formatted via `AI_Intelligent_Search_Query_Template`), classifications, filters, and
    similarity params. Timeout: **10 seconds**.
-7. `normalizeIntelligentResults()` handles multiple pipeline response shapes, drops results outside
-   the user's subscriptions, batch-fetches visible messages via `Messages.findVisibleByIds(msgIds)`,
-   and fetches room labels via `Rooms.findByIds(roomIds)`.
+7. `normalizeIntelligentResults()` handles multiple pipeline response shapes, batch-fetches visible
+   messages via `Messages.findVisibleByIds(msgIds)`, resolves each result's room from the pipeline or
+   DB message, drops anything outside the user's subscriptions, and fetches room labels via
+   `Rooms.findByIds(roomIds)`.
 
 **Server: `POST /v1/search.answer`**
 

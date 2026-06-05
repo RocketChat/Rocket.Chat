@@ -409,6 +409,7 @@ API.v1.get(
 const MAX_UNIFIED_SEARCH_RESULTS = 10;
 const AI_SEARCH_PAGE_SIZE = 5;
 const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
+const MAX_UNIFIED_SEARCH_FILTER_VALUES = 25;
 
 const unifiedSearchResponseSchema = ajv.compile<{
 	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
@@ -500,7 +501,25 @@ const parseCommaList = (value: string | undefined): string[] =>
 	String(value ?? '')
 		.split(',')
 		.map((item) => item.trim())
-		.filter(Boolean);
+		.filter(Boolean)
+		.slice(0, MAX_UNIFIED_SEARCH_FILTER_VALUES);
+
+const parseQueryBoolean = (value: unknown, defaultValue = false): boolean => {
+	if (value === undefined || value === null) {
+		return defaultValue;
+	}
+
+	return value === true || value === 'true';
+};
+
+const parseQueryDate = (value: string | undefined): Date | undefined => {
+	if (!value) {
+		return undefined;
+	}
+
+	const date = new Date(value);
+	return Number.isNaN(date.getTime()) ? undefined : date;
+};
 
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
@@ -539,9 +558,11 @@ API.v1.get(
 		const roomNames = parseCommaList(this.queryParams.roomNames);
 		const fromUsername = this.queryParams.fromUsername || undefined;
 		const fromUsernames = parseCommaList(this.queryParams.fromUsernames);
-		const startDate = this.queryParams.startDate ? new Date(this.queryParams.startDate) : undefined;
-		const endDate = this.queryParams.endDate ? new Date(this.queryParams.endDate) : undefined;
-		const includeSpotlight = this.queryParams.includeSpotlight !== false;
+		const startDate = parseQueryDate(this.queryParams.startDate);
+		const endDate = parseQueryDate(this.queryParams.endDate);
+		const includeSpotlight = parseQueryBoolean(this.queryParams.includeSpotlight, true);
+		const includeMessages = parseQueryBoolean(this.queryParams.includeMessages);
+		const includeIntelligent = parseQueryBoolean(this.queryParams.includeIntelligent);
 
 		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
 		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
@@ -570,7 +591,7 @@ API.v1.get(
 
 		let messages: UnifiedSearchMessageResult[] = [];
 		// Room-specific search is always allowed; global search requires the setting
-		if (this.queryParams.includeMessages && (rid || globalMessagesEnabled)) {
+		if (includeMessages && (rid || globalMessagesEnabled)) {
 			const searchResult = await messageSearch(this.userId, query, rid, limit, 0, filters);
 			const docs = searchResult && searchResult.message ? await normalizeMessagesForUser(searchResult.message.docs, this.userId) : [];
 			const rooms = await getRoomMap(docs.map((message: IMessage) => message.rid));
@@ -586,7 +607,7 @@ API.v1.get(
 
 		let intelligent: UnifiedSearchIntelligentResult[] = [];
 		if (
-			this.queryParams.includeIntelligent &&
+			includeIntelligent &&
 			aiSearchStatus.hasIntelligentSearchLicense &&
 			aiSearchStatus.intelligentSearchEnabled &&
 			aiSearchStatus.intelligentSearchConfigured
@@ -615,7 +636,7 @@ API.v1.get(
 		} else {
 			SystemLogger.debug({
 				msg: 'AI search skipped at endpoint',
-				includeIntelligent: this.queryParams.includeIntelligent,
+				includeIntelligent,
 				hasIntelligentSearchLicense: aiSearchStatus.hasIntelligentSearchLicense,
 				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
 				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
@@ -682,6 +703,10 @@ API.v1.post(
 	{
 		authRequired: true,
 		body: isSearchAnswerProps,
+		rateLimiterOptions: {
+			numRequestsAllowed: 10,
+			intervalTimeInMS: 60000,
+		},
 		response: {
 			200: ajv.compile<{
 				answer: string;

@@ -65,7 +65,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 
 	if (!response.ok) {
 		const body = await response.text().catch(() => '');
-		logger?.warn?.({ msg: 'Search answer LLM provider returned error', status: response.status, body });
+		logger?.warn?.({ msg: 'Search answer LLM provider returned error', status: response.status, body: body.slice(0, 500) });
 		throw new Error('error-ai-provider-request-failed');
 	}
 

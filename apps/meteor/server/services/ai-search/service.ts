@@ -29,6 +29,7 @@ import { SystemLogger } from '../../lib/logger/system';
 const AI_SEARCH_PAGE_SIZE = 5;
 const MAX_SEARCH_ANSWER_MESSAGES = 12;
 const MAX_SEARCH_ANSWER_TEXT_LENGTH = 1600;
+const MAX_SEARCH_FILTER_VALUES = 25;
 
 const aiServiceFetch: AIServiceFetch = (url, options) => fetch(url, options as Parameters<typeof fetch>[1]);
 
@@ -51,12 +52,15 @@ const toDate = (value?: string | Date): Date | undefined => {
 	return Number.isNaN(date.getTime()) ? undefined : date;
 };
 
+const limitFilterValues = (values: string[] | undefined): string[] | undefined =>
+	values?.filter(Boolean).slice(0, MAX_SEARCH_FILTER_VALUES);
+
 const normalizeFilters = (filters: AISearchFilters = {}): IntelligentSearchFilters => ({
 	rid: filters.rid,
-	rids: filters.rids,
-	roomNames: filters.roomNames,
+	rids: limitFilterValues(filters.rids),
+	roomNames: limitFilterValues(filters.roomNames),
 	fromUsername: filters.fromUsername,
-	fromUsernames: filters.fromUsernames,
+	fromUsernames: limitFilterValues(filters.fromUsernames),
 	startDate: toDate(filters.startDate),
 	endDate: toDate(filters.endDate),
 });
@@ -171,22 +175,31 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			SystemLogger.debug({ msg: 'AI search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
 		}
 
-		const rooms = await this.getRoomMap(candidates.map(({ rid }) => rid).filter((rid): rid is string => Boolean(rid)));
+		const rooms = await this.getRoomMap([
+			...candidates.map(({ rid }) => rid).filter((rid): rid is string => Boolean(rid)),
+			...Array.from(messageMap.values()).map(({ rid }) => rid),
+		]);
+		const userRoomIdSet = new Set(userRoomIds);
 
-		return candidates.map((result) => {
+		return candidates.flatMap((result) => {
 			const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
 			const rid = dbMessage?.rid || result.rid;
+			if (!rid || !userRoomIdSet.has(rid)) {
+				return [];
+			}
 
-			return {
-				_id: result.msgId || result._id,
-				rid,
-				msgId: result.msgId,
-				text: dbMessage?.msg || result.pipelineText || '',
-				ts: dbMessage?.ts,
-				u: dbMessage?.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
-				...(Number.isFinite(result.score) && { score: result.score }),
-				...(rid && rooms.has(rid) && { room: rooms.get(rid) }),
-			};
+			return [
+				{
+					_id: result.msgId || result._id,
+					rid,
+					msgId: result.msgId,
+					text: dbMessage?.msg || result.pipelineText || '',
+					ts: dbMessage?.ts,
+					u: dbMessage?.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
+					...(Number.isFinite(result.score) && { score: result.score }),
+					...(rid && rooms.has(rid) && { room: rooms.get(rid) }),
+				},
+			];
 		});
 	}
 
@@ -268,14 +281,15 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {
-		const [hasIntelligentSearchLicense, intelligentSearchEnabled, provider, systemPromptSetting] = await Promise.all([
+		const [hasIntelligentSearchLicense, intelligentSearchEnabled, pipelineConfig, provider, systemPromptSetting] = await Promise.all([
 			License.hasModule('chat.rocket.rc-ai'),
 			Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
+			this.getPipelineConfig(),
 			this.getAnswerProviderConfig(),
 			Settings.get<string>('AI_Intelligent_Search_Answer_System_Prompt'),
 		]);
 
-		if (!hasIntelligentSearchLicense || intelligentSearchEnabled !== true) {
+		if (!hasIntelligentSearchLicense || intelligentSearchEnabled !== true || !pipelineConfig) {
 			throw new Error('error-ai-not-enabled');
 		}
 
