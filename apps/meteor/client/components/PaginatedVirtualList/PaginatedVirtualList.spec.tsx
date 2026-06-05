@@ -5,7 +5,7 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import * as React from 'react';
 import { Children, forwardRef, isValidElement } from 'react';
 
-import PaginatedVirtualList from './VirtualList';
+import PaginatedVirtualList from './PaginatedVirtualList';
 
 const mockVirtualizerHandle = {
 	scrollToIndex: jest.fn(),

@@ -18,8 +18,8 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
+import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
-import { PaginatedVirtualList } from '../../../../components/VirtualList';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 type DiscussionsListProps = {
@@ -101,7 +101,7 @@ function DiscussionsList({
 									totalCount={itemCount}
 									overscan={25}
 									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion) => (
+									renderItem={(discussion: ID) => (
 										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
 									)}
 								/>
