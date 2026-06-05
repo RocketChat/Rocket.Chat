@@ -1,5 +1,5 @@
 import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
-import { Abac } from '@rocket.chat/core-services';
+import { Abac, LDAPEnterprise } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents, Users } from '@rocket.chat/models';
@@ -30,7 +30,6 @@ import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
-import { LDAPEE } from '../../sdk';
 
 const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 	user?._id
@@ -226,7 +225,7 @@ const abacEndpoints = API.v1
 
 			const { usernames, ids, emails, ldapIds } = this.bodyParams;
 
-			await LDAPEE.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds }));
+			await LDAPEnterprise.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds }));
 
 			return API.v1.success();
 		},
