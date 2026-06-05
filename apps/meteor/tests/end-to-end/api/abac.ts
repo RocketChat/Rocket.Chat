@@ -1455,7 +1455,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request
 					.post(`${v1}/abac/users/sync`)
 					.set(credentials)
-					.send({ usernames: [] })
+					.send({ ids: ['no-such-user-id'] })
 					.expect(400)
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-not-enabled');
@@ -1852,11 +1852,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await updateSetting('ABAC_Enabled', false);
 		});
 
-		it('responds 200 with success:true when ABAC_Enabled=true and PDP type=local (empty usernames)', async () => {
+		it('responds 200 with success:true when ABAC_Enabled=true and PDP type=local (no-match id)', async () => {
 			await request
 				.post(`${v1}/abac/users/sync`)
 				.set(credentials)
-				.send({ usernames: [] })
+				.send({ ids: ['no-such-user-id'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
