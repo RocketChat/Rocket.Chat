@@ -1,11 +1,12 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
+import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { logger } from '../logger';
-import type { IPolicyDecisionPoint, IGetDecisionBulkRequest, IGetDecisionBulkResponse, IResourceDecision } from './types';
+import type { IPolicyDecisionPoint, IGetDecisionBulkRequest, IGetDecisionBulkResponse, IResourceDecision, ReevaluationUser } from './types';
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
@@ -348,6 +349,34 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		});
 
 		return nonCompliant;
+	}
+
+	async reevaluateUsers(
+		users: ReevaluationUser[],
+	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
+		const roomIds = [...new Set(users.flatMap((u) => u.__rooms ?? []))];
+		if (!roomIds.length) {
+			return [];
+		}
+
+		const abacRooms = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
+			projection: { _id: 1, abacAttributes: 1 },
+		}).toArray();
+
+		const abacRoomById = Object.fromEntries(abacRooms.map((room) => [room._id, room]));
+
+		const entries = users
+			.map((user) => {
+				const rooms = (user.__rooms ?? []).map((rid) => abacRoomById[rid]).filter(Boolean);
+				return rooms.length ? { user, rooms } : null;
+			})
+			.filter(isTruthy);
+
+		if (!entries.length) {
+			return [];
+		}
+
+		return this.evaluateUserRooms(entries);
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {
