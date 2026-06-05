@@ -133,4 +133,4 @@ const html = `<!DOCTYPE html>
 </html>`;
 
 writeFileSync(`${__dirname}/voice-call-popup.html`, html, 'utf-8');
-console.log('Generated dist/landing-view.html');
+console.log('Generated dist/voice-call-popup.html');
