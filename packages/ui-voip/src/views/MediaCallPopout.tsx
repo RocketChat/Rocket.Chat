@@ -23,7 +23,7 @@ const MediaCallPopout = () => {
 	useEffect(() => {
 		if (currentViews.includes('popout')) {
 			// TODO: Fix this title
-			openPopoutWindow('Call with Peer X');
+			void openPopoutWindow('Call with Peer X');
 			return;
 		}
 		closePopoutWindow();
