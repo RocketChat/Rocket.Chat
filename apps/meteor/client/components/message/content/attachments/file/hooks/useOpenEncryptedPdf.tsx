@@ -33,7 +33,7 @@ export const useOpenEncryptedPdf = () => {
 		format: string,
 		openDocumentViewer: (url: string, format: string, options: any) => void,
 	) => {
-		if (size && size > pdfPreviewSizeLimitInBytes) {
+		if (size === undefined || size > pdfPreviewSizeLimitInBytes) {
 			registerDownloadForUid(uid, t, title);
 			forAttachmentDownload(uid, link);
 			return;
