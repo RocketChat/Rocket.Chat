@@ -7,7 +7,7 @@ import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
-import { createAgent } from '../utils/omnichannel/agents';
+import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -41,9 +41,12 @@ test.describe('OC - Routing to Idle Agents', () => {
 
 	test.beforeEach(async ({ page, browser, api }) => {
 		visitor = createFakeVisitor();
+		await expect(await makeAgentAvailable(api, agent.data._id)).toBeOK();
+
 		poHomeOmnichannel = new HomeOmnichannel(page);
 		await poHomeOmnichannel.page.goto('/');
 		await poHomeOmnichannel.waitForHome();
+		await expect(poHomeOmnichannel.navbar.getUserStatusBadge('online')).toBeVisible();
 
 		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 		poLivechat = new OmnichannelLiveChat(livechatPage, api);
