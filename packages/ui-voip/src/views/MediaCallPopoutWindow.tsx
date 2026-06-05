@@ -1,6 +1,6 @@
 import { Box, OwnerDocument as FuselageOwnerDocument } from '@rocket.chat/fuselage';
 import { OwnerDocument as StyledOwnerDocument } from '@rocket.chat/styled';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { TooltipProvider, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -44,22 +44,24 @@ const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWind
 		void requestFullScreen();
 	}, [ownerDocument, fullscreen]);
 
-	const contextValue = useMemo(() => ({ document: ownerDocument || document }), [ownerDocument]);
+	const contextValue = useMemo(() => ({ document: ownerDocument }), [ownerDocument]);
 
 	return (
 		<FuselageOwnerDocument.Provider value={contextValue}>
 			<StyledOwnerDocument.Provider value={contextValue}>
-				{createPortal(
-					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
-						<MediaCallPopoutView
-							user={ownUser}
-							onClickClosePopout={onClosePopout}
-							onClickFullscreen={onClickFullscreen}
-							fullscreen={fullscreen}
-						/>
-					</Box>,
-					root,
-				)}
+				<TooltipProvider ownerDocument={ownerDocument}>
+					{createPortal(
+						<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
+							<MediaCallPopoutView
+								user={ownUser}
+								onClickClosePopout={onClosePopout}
+								onClickFullscreen={onClickFullscreen}
+								fullscreen={fullscreen}
+							/>
+						</Box>,
+						root,
+					)}
+				</TooltipProvider>
 			</StyledOwnerDocument.Provider>
 		</FuselageOwnerDocument.Provider>
 	);
