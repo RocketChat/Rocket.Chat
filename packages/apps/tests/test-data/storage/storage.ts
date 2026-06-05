@@ -21,7 +21,7 @@ export class TestsAppStorage extends AppMetadataStorage {
 			}
 		}
 
-		const stored = { ...item, createdAt: new Date(), updatedAt: new Date() };
+		const stored = { ...item, _id: item._id ?? item.id, createdAt: new Date(), updatedAt: new Date() };
 		this.db.set(stored.id, stored);
 		return Promise.resolve(stored);
 	}
@@ -57,13 +57,14 @@ export class TestsAppStorage extends AppMetadataStorage {
 		item: Partial<IAppStorageItem>,
 		_options?: { unsetPermissionsGranted?: boolean },
 	): Promise<IAppStorageItem> {
-		if (!item.id) {
+		const lookupId = item.id ?? item._id;
+		if (!lookupId) {
 			return Promise.reject(new Error('Cannot update: item has no id.'));
 		}
 
-		const existing = this.db.get(item.id);
+		const existing = this.db.get(lookupId);
 		if (!existing) {
-			return Promise.reject(new Error(`App not found: ${item.id}`));
+			return Promise.reject(new Error(`App not found: ${lookupId}`));
 		}
 
 		const updated = { ...existing, ...item, updatedAt: new Date() };
