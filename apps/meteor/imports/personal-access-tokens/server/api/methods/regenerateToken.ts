@@ -7,7 +7,6 @@ import { hasPermissionAsync } from '../../../../../app/authorization/server/func
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 import { removePersonalAccessTokenOfUser } from './removeToken';
 import { generatePersonalAccessTokenOfUser } from './generateToken';
-
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {

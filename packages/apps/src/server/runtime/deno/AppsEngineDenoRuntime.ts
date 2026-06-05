@@ -1,8 +1,8 @@
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import { type Readable, EventEmitter } from 'stream';
-import { inspect as utilInspect } from 'util';
+import * as child_process from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { type Readable, EventEmitter } from 'node:stream';
+import { inspect as utilInspect } from 'node:util';
 
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';

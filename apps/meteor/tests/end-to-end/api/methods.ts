@@ -2802,6 +2802,7 @@ describe('Meteor.methods', () => {
 		let testUserCredentials: Credentials;
 		let dmId: IRoom['_id'];
 		let dmTestId: IRoom['_id'];
+		let dmWithDeactivatedId: IRoom['_id'];
 
 		before(async () => {
 			testUser = await createUser();
@@ -2857,6 +2858,7 @@ describe('Meteor.methods', () => {
 			Promise.all([
 				deleteRoom({ type: 'd', roomId: dmId }),
 				deleteRoom({ type: 'd', roomId: dmTestId }),
+				...(dmWithDeactivatedId ? [deleteRoom({ type: 'd', roomId: dmWithDeactivatedId })] : []),
 				deleteUser(testUser),
 				deleteUser(testUser2),
 			]),
@@ -2995,6 +2997,41 @@ describe('Meteor.methods', () => {
 						});
 				})
 				.catch(done);
+		});
+
+		it('should create a new direct conversation as readonly when the target user is already deactivated', async () => {
+			const createRes = await request
+				.post(methodCall('createDirectMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				});
+
+			const createResult = JSON.parse(createRes.body.message);
+			expect(createResult.result).to.be.an('object');
+			expect(createResult.result).to.have.property('rid').that.is.an('string');
+			dmWithDeactivatedId = createResult.result.rid;
+
+			const roomRes = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmWithDeactivatedId],
+						id: 'id',
+						msg: 'method',
+					}),
+				});
+
+			expect(roomRes.body.success).to.equal(true);
+			const result = JSON.parse(roomRes.body.message);
+			expect(result.result.ro).to.equal(true);
 		});
 
 		it('should activate another user', (done) => {

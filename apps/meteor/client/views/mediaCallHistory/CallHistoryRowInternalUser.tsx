@@ -1,14 +1,14 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { CallHistoryTableRow, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
-import type { CallHistoryTableRowProps, CallHistoryTableInternalContact, PeekMediaSessionStateReturn } from '@rocket.chat/ui-voip';
+import type { CallHistoryTableRowProps, CallHistoryInternalContact, PeekMediaSessionStateReturn } from '@rocket.chat/ui-voip';
 import type { TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMediaCallInternalHistoryActions } from './useMediaCallInternalHistoryActions';
 
-type CallHistoryRowInternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryTableInternalContact>, 'onClick' | 'menu'> & {
+type CallHistoryRowInternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryInternalContact>, 'onClick' | 'menu'> & {
 	messageId?: string;
 	rid: string;
 	onClickUserInfo?: (userId: string, rid: string) => void;

@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import debugInitializer from 'debug';
 import humanInterval from 'human-interval';
@@ -969,7 +969,7 @@ export class Agenda extends EventEmitter {
 		if (!extraJob) {
 			// Go through each jobName set in 'Agenda.process' and fill the queue with the next jobs
 			for (jobName in this._definitions) {
-				if (this._definitions.hasOwnProperty(jobName)) {
+				if (Object.hasOwn(this._definitions, jobName)) {
 					debug('queuing up job to process: [%s]', jobName);
 					void this._jobQueueFilling(jobName);
 				}

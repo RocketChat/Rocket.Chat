@@ -2,18 +2,6 @@ import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.ch
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
-export interface IGetDecisionRequest {
-	actions: Array<{ standard: number }>;
-	resourceAttributes: Array<{
-		resourceAttributesId: string;
-		attributeValueFqns: string[];
-	}>;
-	entityChains: Array<{
-		id: string;
-		entities: IEntityIdentifier[];
-	}>;
-}
-
 export interface IGetDecisionBulkRequest {
 	entityIdentifier: {
 		entityChain: {
@@ -32,12 +20,6 @@ export type Decision = 'DECISION_PERMIT' | 'DECISION_DENY' | 'DECISION_UNSPECIFI
 export interface IResourceDecision {
 	decision?: Decision;
 	ephemeralResourceId?: string;
-}
-
-export interface IGetDecisionsResponse {
-	decisionResponses?: Array<{
-		decision?: Decision;
-	}>;
 }
 
 export interface IGetDecisionBulkResponse {
@@ -85,4 +67,22 @@ export interface IVirtruPDPConfig {
 export interface ITokenCache {
 	accessToken: string;
 	expiresAt: number;
+}
+
+export interface IGetEntitlementsRequest {
+	entityIdentifier: {
+		entityChain: {
+			entities: IEntityIdentifier[];
+		};
+	};
+	withComprehensiveHierarchy: boolean;
+}
+
+export interface IEntityEntitlements {
+	ephemeralId?: string;
+	actionsPerAttributeValueFqn: Record<string, unknown>;
+}
+
+export interface IGetEntitlementsResponse {
+	entitlements?: IEntityEntitlements[];
 }

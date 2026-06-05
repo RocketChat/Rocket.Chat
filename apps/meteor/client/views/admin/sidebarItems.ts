@@ -68,7 +68,14 @@ export const {
 		href: '/admin/ABAC',
 		i18nLabel: 'ABAC',
 		icon: 'team-lock',
-		permissionGranted: (): boolean => hasPermission('abac-management'),
+		permissionGranted: (): boolean =>
+			hasPermission('abac-management') &&
+			hasAtLeastOnePermission([
+				'manage-abac-admin-settings',
+				'manage-abac-admin-room-attributes',
+				'manage-abac-admin-rooms',
+				'view-abac-admin-audit',
+			]),
 	},
 	{
 		href: '/admin/device-management',

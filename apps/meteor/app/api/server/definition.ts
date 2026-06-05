@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'node:http';
 
 import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
@@ -362,7 +362,7 @@ type Results<TResponse extends TypedOptions['response']> = {
 						: K extends 404
 							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes
-								? InternalError<InferResult<TResponse[500]>, K>
+								? InternalError<InferNon200Result<TResponse[K]>, K>
 								: never;
 }[keyof TResponse] & {
 	headers?: Record<string, string>;

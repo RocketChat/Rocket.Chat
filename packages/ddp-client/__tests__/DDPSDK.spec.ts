@@ -1,4 +1,4 @@
-import util from 'util';
+import util from 'node:util';
 
 import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
