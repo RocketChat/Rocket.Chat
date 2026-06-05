@@ -19,7 +19,7 @@ import {
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
-import { adminEmail, password } from '../../data/user';
+import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
@@ -47,7 +47,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	const updatedKey = `${initialKey}_renamed`;
 	const anotherKey = `${initialKey}_another`;
 	let attributeId: string;
-	let paginationBase: string;
 	let page1AttributeIds: string[] = [];
 
 	before((done) => getCredentials(done));
@@ -328,7 +327,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('GET should paginate attributes (page 1)', async () => {
-			paginationBase = `pg_${Date.now()}`;
+			const paginationBase = `pg_${Date.now()}`;
 			await Promise.all(
 				['a', 'b', 'c'].map((suffix) =>
 					request
@@ -453,39 +452,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('key', updatedKey);
-				});
-		});
-
-		it('PUT should update key only (key-updated)', async () => {
-			const testKey = `${initialKey}_update_test`;
-			await request
-				.post(`${v1}/abac/attributes`)
-				.set(credentials)
-				.send({ key: testKey, values: ['val1', 'val2'] })
-				.expect(200);
-
-			const listRes = await request.get(`${v1}/abac/attributes`).query({ key: testKey }).set(credentials).expect(200);
-
-			const attr = listRes.body.attributes.find((a: any) => a.key === testKey);
-			expect(attr).to.exist;
-			const attrId = attr._id;
-
-			const newKey = `${initialKey}_update_test_renamed`;
-			await request
-				.put(`${v1}/abac/attributes/${attrId}`)
-				.set(credentials)
-				.send({ key: newKey })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.get(`${v1}/abac/attributes/${attrId}`)
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('key', newKey);
 				});
 		});
 	});
@@ -1350,13 +1316,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		describe('Room attribute limits (max 10 attribute keys)', () => {
-			const tempAttrKeys: string[] = [];
 			it('Reset room attributes before limit test and populate with 10 keys', async () => {
 				await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).expect(200);
 
 				const timestamp = Date.now();
 				const keys = Array.from({ length: 10 }, (_, i) => `limitk_${timestamp}_${i}`);
-				tempAttrKeys.push(...keys);
 				await Promise.all(
 					keys.map((k) =>
 						request
@@ -1474,6 +1438,16 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(400)
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-not-enabled');
+					});
+			});
+
+			it('DELETE /abac/rooms/:rid/attributes/:key succeeds while disabled (endpoint has no enabled-check)', async () => {
+				await request
+					.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/never_added_${Date.now()}`)
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
 					});
 			});
 
@@ -3497,6 +3471,19 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				message: 'ABAC_PDP_Health_IdP_Failed',
 			});
 		});
+
+		it('returns 200 ABAC_PDP_Health_OK when platform, IdP, and authorization all succeed', async () => {
+			await seedDefaultMocks();
+			await seedGetEntitlements({});
+
+			const res = await request.get('/api/v1/abac/pdp/health').set(credentials).expect(200);
+
+			expect(res.body).to.deep.include({
+				success: true,
+				available: true,
+				message: 'ABAC_PDP_Health_OK',
+			});
+		});
 	});
 
 	describe('users.info abacAttributes visibility', () => {
@@ -3526,12 +3513,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		const v1 = '/api/v1';
 		const NS = 'example.com';
 		const fqn = (key: string, value: string) => `https://${NS}/attr/${key}/value/${value}`;
-		const adminPassword = password;
 		let storeConnection: MongoClient;
 
 		const makeAdmin = async (slug: string) => {
 			const u = await createUser({ roles: ['admin'], username: `vstore-${slug}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` });
-			const creds = await login(u.username, adminPassword);
+			const creds = await login(u.username, password);
 			return { user: u, creds };
 		};
 
@@ -4170,6 +4156,45 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(switched?.data.find((d) => d.key === 'from')?.value, 'from value visible').to.be.a('string');
 				expect(switched?.data.find((d) => d.key === 'to')?.value, 'to value visible').to.be.a('string');
 				expect(switched?.data.find((d) => d.key === 'roomsAffected')?.value, 'roomsAffected visible').to.be.a('number');
+			});
+		});
+
+		describe('GET /abac/audit query filters', () => {
+			it('scopes events to the actor passed in the query', async () => {
+				const mine = await request
+					.get(`${v1}/abac/audit`)
+					.set(credentials)
+					.query({ count: 100, actor: { username: adminUsername } })
+					.expect(200);
+				expect(mine.body.events).to.be.an('array').that.is.not.empty;
+				(mine.body.events as Array<{ actor?: { username?: string } }>).forEach((e) => {
+					expect(e.actor?.username).to.equal(adminUsername);
+				});
+
+				const other = await request
+					.get(`${v1}/abac/audit`)
+					.set(credentials)
+					.query({ count: 100, actor: { _id: 'no-such-actor-xyz' } })
+					.expect(200);
+				expect(other.body.events).to.be.an('array').that.is.empty;
+				expect(other.body.total).to.equal(0);
+			});
+
+			it('returns no events when start is in the future', async () => {
+				const future = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+				const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100, start: future }).expect(200);
+				expect(res.body.events).to.be.an('array').that.is.empty;
+				expect(res.body.total).to.equal(0);
+			});
+
+			it('returns no events when end precedes all events', async () => {
+				const res = await request
+					.get(`${v1}/abac/audit`)
+					.set(credentials)
+					.query({ count: 100, end: new Date(1).toISOString() })
+					.expect(200);
+				expect(res.body.events).to.be.an('array').that.is.empty;
+				expect(res.body.total).to.equal(0);
 			});
 		});
 

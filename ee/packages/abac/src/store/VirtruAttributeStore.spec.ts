@@ -104,6 +104,27 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(apiCall).toHaveBeenCalledTimes(1);
 	});
 
+	it('validateAssignable rejects (fail-closed) with PdpUnavailable when Virtru is unreachable', async () => {
+		const apiCall = jest.fn();
+		const store = new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false), apiCall }));
+		await expect(store.validateAssignable([{ key: 'clearance', values: ['secret'] }], actor)).rejects.toMatchObject({
+			code: 'error-pdp-unavailable',
+		});
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('validateAssignable propagates (fail-closed, never silently assigns) when the GetEntitlements call fails', async () => {
+		const apiCall = jest.fn().mockRejectedValue(new Error('entitlements down'));
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+		await expect(store.validateAssignable([{ key: 'clearance', values: ['secret'] }], actor)).rejects.toThrow('entitlements down');
+	});
+
+	it('list propagates when the GetEntitlements call fails', async () => {
+		const apiCall = jest.fn().mockRejectedValue(new Error('entitlements down'));
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+		await expect(store.list(actor)).rejects.toThrow('entitlements down');
+	});
+
 	it('failed fetch is NOT cached: second call after PDP recovery succeeds', async () => {
 		const isAvailable = jest.fn().mockResolvedValue(false);
 		const apiCall = jest.fn().mockResolvedValue({
