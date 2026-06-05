@@ -1451,6 +1451,17 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					});
 			});
 
+			it('POST /abac/users/sync should fail with error-abac-not-enabled', async () => {
+				await request
+					.post(`${v1}/abac/users/sync`)
+					.set(credentials)
+					.send({ usernames: [] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.include('error-abac-not-enabled');
+					});
+			});
+
 			after(async () => {
 				await updateSetting('ABAC_Enabled', true);
 			});
@@ -1829,6 +1840,27 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await deleteRoom({ type: 'p', roomId: plainRoomId });
 				await deleteRoom({ type: 'p', roomId: managedRoomId });
 			});
+		});
+	});
+
+	describe('POST /abac/users/sync (strategy-agnostic)', () => {
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+		});
+
+		after(async () => {
+			await updateSetting('ABAC_Enabled', false);
+		});
+
+		it('responds 200 with success:true when ABAC_Enabled=true and PDP type=local (empty usernames)', async () => {
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({ usernames: [] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 	});
 
