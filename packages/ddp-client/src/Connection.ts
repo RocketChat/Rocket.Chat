@@ -278,7 +278,19 @@ export class ConnectionImpl
 
 	close() {
 		this.status = 'closed';
-		this.ws?.close();
+		if (this.ws) {
+			// Sever all handlers before closing so a dying socket cannot deliver
+			// late messages or fire onclose against the live connection state.
+			try {
+				this.ws.onopen = null;
+				this.ws.onmessage = null;
+				this.ws.onerror = null;
+				this.ws.onclose = null;
+			} catch {
+				// some WebSocket impls throw on null assignment — safe to ignore
+			}
+			this.ws.close();
+		}
 		this.emitStatus();
 	}
 
