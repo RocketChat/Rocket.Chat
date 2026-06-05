@@ -68,3 +68,21 @@ export interface ITokenCache {
 	accessToken: string;
 	expiresAt: number;
 }
+
+export interface IGetEntitlementsRequest {
+	entityIdentifier: {
+		entityChain: {
+			entities: IEntityIdentifier[];
+		};
+	};
+	withComprehensiveHierarchy: boolean;
+}
+
+export interface IEntityEntitlements {
+	ephemeralId?: string;
+	actionsPerAttributeValueFqn: Record<string, unknown>;
+}
+
+export interface IGetEntitlementsResponse {
+	entitlements?: IEntityEntitlements[];
+}

@@ -1,6 +1,7 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import {
 	type IRoom,
+	type IRoomAbacRedaction,
 	type IUpload,
 	type RequiredField,
 	type RoomAdminFieldsType,
@@ -89,6 +90,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
+import { scopeAdminRoomsForAbac } from '../lib/scopeAdminRoomsForAbac';
 
 export async function findRoomByIdOrName({
 	params,
@@ -712,10 +714,15 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAdminRoomsProps,
 		response: {
-			200: ajv.compile<{ rooms: IRoom[]; count: number; offset: number; total: number }>({
+			200: ajv.compile<{
+				rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
+				count: number;
+				offset: number;
+				total: number;
+			}>({
 				type: 'object',
 				properties: {
-					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields
+					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields + optional ABAC redaction
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -785,10 +792,17 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAdminRoomsGetRoomProps,
 		response: {
-			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType>>({
+			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>({
 				allOf: [
 					{ $ref: '#/components/schemas/IRoomAdmin' },
-					{ type: 'object', properties: { success: { type: 'boolean', enum: [true] } }, required: ['success'] },
+					{
+						type: 'object',
+						properties: {
+							success: { type: 'boolean', enum: [true] },
+							abacAttributesRedacted: { type: 'boolean' },
+						},
+						required: ['success'],
+					},
 				],
 			}),
 			400: validateBadRequestErrorResponse,
@@ -1447,7 +1461,7 @@ export const roomEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				403: validateUnauthorizedErrorResponse,
 				200: ajv.compile<{
-					rooms: IRoom[];
+					rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
 					count: number;
 					offset: number;
 					total: number;
@@ -1485,7 +1499,7 @@ export const roomEndpoints = API.v1
 			const [rooms, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
 
 			return API.v1.success({
-				rooms,
+				rooms: await scopeAdminRoomsForAbac(rooms, this.userId),
 				count: rooms.length,
 				offset,
 				total,

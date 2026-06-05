@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import AdminABACPage from './AdminABACPage';
 import type { ABACTab } from './hooks/useABACTabPermissions';
 import { ABAC_TAB_ORDER, useABACTabPermissions } from './hooks/useABACTabPermissions';
+import { useIsExternalAttributeStore } from './hooks/useIsExternalAttributeStore';
 import ABACUpsellModal from '../../../components/ABAC/ABACUpsellModal/ABACUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -22,8 +23,12 @@ const AdminABACRoute = (): ReactElement => {
 	const tab = useRouteParameter('tab');
 	const router = useRouter();
 	const tabPermissions = useABACTabPermissions();
-	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t]);
-	const isAllowedTab = (ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') && tabPermissions[tab as ABACTab];
+	const isExternalStore = useIsExternalAttributeStore();
+	const firstAllowedTab = ABAC_TAB_ORDER.find((t) => tabPermissions[t] && !(t === 'room-attributes' && isExternalStore));
+	const isAllowedTab =
+		(ABAC_TAB_ORDER as readonly string[]).includes(tab ?? '') &&
+		tabPermissions[tab as ABACTab] &&
+		!(tab === 'room-attributes' && isExternalStore);
 
 	const ABACEnabledSetting = useSettingStructure('ABAC_Enabled');
 
