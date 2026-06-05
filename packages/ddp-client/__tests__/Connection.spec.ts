@@ -250,9 +250,9 @@ it('probe() should resolve true when a pong arrives within the timeout', async (
 
 	const probePromise = connection.probe(2000);
 
-	// Consume the ping the client sent, then reply with a pong.
-	await server.nextMessage;
-	server.send('{"msg":"pong"}');
+	// Consume the ping the client sent, echo the id back in the pong.
+	const pingMsg = JSON.parse((await server.nextMessage) as string);
+	server.send(JSON.stringify({ msg: 'pong', id: pingMsg.id }));
 
 	await expect(probePromise).resolves.toBe(true);
 });
@@ -324,8 +324,9 @@ it('checkAndReopen() should return true without reopening when connected and pro
 
 	const checkPromise = connection.checkAndReopen(2000);
 
-	await server.nextMessage; // ping
-	server.send('{"msg":"pong"}');
+	// Echo the ping's id back so probe() can correlate the response.
+	const pingMsg = JSON.parse((await server.nextMessage) as string);
+	server.send(JSON.stringify({ msg: 'pong', id: pingMsg.id }));
 
 	await expect(checkPromise).resolves.toBe(true);
 	expect(connection.status).toBe('connected');
