@@ -351,9 +351,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return nonCompliant;
 	}
 
-	async reevaluateUsers(
-		users: ReevaluationUser[],
-	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
+	async reevaluateUsers(users: ReevaluationUser[]): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
 		const roomIds = [...new Set(users.flatMap((u) => u.__rooms ?? []))];
 		if (!roomIds.length) {
 			return [];
