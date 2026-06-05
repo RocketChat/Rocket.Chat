@@ -42,16 +42,20 @@ export type CallHangupReason =
 	| 'unknown' // One of the call's signed users reported they don't know this call
 	| 'another-client'; // One of the call's users requested a hangup from a different client session than the one where the call is happening
 
-export type CallAnswer =
-	| 'accept' // actor accepts the call
-	| 'reject' // actor rejects the call
-	| 'ack' // agent confirms the actor is reachable
-	| 'unavailable'; // agent reports the actor is unavailable
+export const callAnswerList = [
+	'accept', // actor accepts the call
+	'reject', // actor rejects the call
+	'ack', // agent confirms the actor is reachable
+	'unavailable', // agent reports the actor is unavailable
+] as const;
+
+export type CallAnswer = (typeof callAnswerList)[number];
 
 export type CallNotification =
 	| 'accepted' // notify that the call has been accepted by both actors
 	| 'active' // notify that call activity was confirmed
-	| 'hangup'; // notify that the call is over;
+	| 'hangup' // notify that the call is over;
+	| 'trying'; // notify that the other client is connecting but still need more time
 
 export type CallRejectedReason =
 	| 'invalid-call-id' // the call id can't be used for a new call

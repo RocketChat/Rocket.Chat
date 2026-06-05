@@ -7,6 +7,7 @@ import {
 	LivechatRooms,
 	Messages,
 	ReadReceipts,
+	ReadReceiptsArchive,
 	Subscriptions,
 	LivechatContacts,
 	Users,
@@ -120,6 +121,7 @@ async function cleanGuestHistory(_id: string) {
 			FileUpload.removeFilesByRoomId(room._id),
 			Messages.removeByRoomId(room._id),
 			ReadReceipts.removeByRoomId(room._id),
+			ReadReceiptsArchive.removeByRoomId(room._id),
 		]);
 	}
 

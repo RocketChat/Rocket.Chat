@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, render, screen } from '@testing-library/react';
 import type { ForwardedRef, ReactElement } from 'react';
@@ -11,7 +12,9 @@ import { imperativeModal } from '../../helpers/imperativeModal';
 
 const renderWithSuspense = (ui: ReactElement) =>
 	render(ui, {
-		wrapper: ({ children }) => <Suspense fallback={null}>{children}</Suspense>,
+		wrapper: mockAppRoot()
+			.wrap((children) => <Suspense fallback={null}>{children}</Suspense>)
+			.build(),
 	});
 
 describe('via useSetModal', () => {

@@ -7,7 +7,7 @@ import type { AllHTMLAttributes, RefObject } from 'react';
 import { useRef, useEffect, useState } from 'react';
 
 import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
-import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
+import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
 type VideoMessageRecorderProps = {
@@ -45,7 +45,8 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
-	const sendButtonDisabled = !(VideoRecorder.cameraStarted.get() && !(recordingState === 'recording'));
+	const cameraStarted = useVideoRecorderCameraStarted();
+	const sendButtonDisabled = !(cameraStarted && !isRecording);
 
 	const chat = useChat();
 

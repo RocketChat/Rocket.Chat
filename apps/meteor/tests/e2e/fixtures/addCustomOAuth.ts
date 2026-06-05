@@ -8,7 +8,7 @@ export default async function addCustomOAuth(): Promise<void> {
 
 	const headers = {
 		'X-Auth-Token': Users.admin.data.loginToken,
-		'X-User-Id': Users.admin.data.username,
+		'X-User-Id': Users.admin.data._id,
 	};
 
 	await api.post(`${BASE_API_URL}/settings.addCustomOAuth`, { data: { name: 'Test' }, headers });

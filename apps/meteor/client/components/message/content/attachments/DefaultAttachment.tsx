@@ -96,7 +96,9 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 								})}
 							/>
 						)}
-						{attachment.image_url && <AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} />}
+						{attachment.image_url && (
+							<AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} alt={attachment.description || ''} />
+						)}
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
 					</>

@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -128,6 +129,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 Meteor.methods<ServerMethods>({
 	async removeUserFromRoom(data) {
+		methodDeprecationLogger.method('removeUserFromRoom', '9.0.0', ['/v1/channels.kick', '/v1/groups.kick']);
 		check(
 			data,
 			Match.ObjectIncluding({

@@ -1,7 +1,9 @@
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 import type {
 	IServerEventAbacActionPerformed,
 	IServerEventAbacAttributeChanged,
+	IServerEventAbacAttributeStoreSwitched,
 	IServerEventAbacObjectAttributeChanged,
 	IServerEventAbacObjectAttributesRemoved,
 	IServerEventAbacSubjectAttributeChanged,
@@ -14,8 +16,7 @@ export enum ServerEventType {
 	LOGIN = 'login',
 }
 
-export interface IServerEvent {
-	_id: string;
+export interface IServerEvent extends IRocketChatRecord {
 	t: ServerEventType | keyof IServerEvents;
 	ts: Date;
 
@@ -72,6 +73,7 @@ export interface IServerEvents {
 	'abac.attribute.changed': IServerEventAbacAttributeChanged;
 	'abac.action.performed': IServerEventAbacActionPerformed;
 	'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
+	'abac.attribute.store.switched': IServerEventAbacAttributeStoreSwitched;
 	'settings.changed': IServerEventSettingsChanged;
 	'user.changed': IServerEventUserChanged;
 }

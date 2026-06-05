@@ -2539,6 +2539,7 @@ describe('[Chat]', () => {
 			await sendMessage('msg1');
 			await sendMessage('msg1');
 			await sendMessage('msg1');
+			await sendMessage('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!');
 		});
 
 		it('should return a list of messages when execute successfully', (done) => {
@@ -2613,6 +2614,70 @@ describe('[Chat]', () => {
 					expect(res.body.messages.length).to.equal(0);
 				})
 				.end(done);
+		});
+
+		it('should return an empty array of messages with status 200 if the regexp starts with an invalid quantifier', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/*test/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should return an empty array of messages with status 200 if the regexp has an unclosed parenthesis', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/(test/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should return an empty array of messages with status 200 if the regexp has an unclosed character class', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/[a-z/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should not cause catastrophic backtracking when using a malicious regexp', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/(a+)+$/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
 		});
 	});
 
@@ -3416,7 +3481,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
@@ -3475,7 +3540,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
@@ -3676,7 +3741,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 					expect(res.body.error).to.include(`must have required property 'roomId'`);
 				})
 				.end(done);
@@ -3736,7 +3801,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 					expect(res.body.error).to.include('must be equal to one of the allowed values');
 				})
 				.end(done);
@@ -4111,7 +4176,7 @@ describe('Threads', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4127,7 +4192,7 @@ describe('Threads', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4310,7 +4375,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4328,7 +4393,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4347,7 +4412,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4568,7 +4633,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4586,7 +4651,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4605,7 +4670,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});

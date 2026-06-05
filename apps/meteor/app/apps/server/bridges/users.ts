@@ -1,6 +1,6 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { UserBridge } from '@rocket.chat/apps/dist/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
-import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
@@ -41,7 +41,13 @@ export class AppUserBridge extends UserBridge {
 			return;
 		}
 
-		const user = await Users.findOneByAppId(appId, {});
+		const user = await Users.findOneByAppId(appId);
+
+		return this.orch.getConverters()?.get('users').convertToApp(user);
+	}
+
+	protected async getBySipExtension(extension: string, _appId: string): Promise<IUser | undefined> {
+		const user = await Users.findOneByFreeSwitchExtension(extension);
 
 		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}

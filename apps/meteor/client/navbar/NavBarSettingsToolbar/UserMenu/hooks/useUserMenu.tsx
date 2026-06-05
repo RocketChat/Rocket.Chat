@@ -6,18 +6,29 @@ import { useTranslation } from 'react-i18next';
 
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
+import { useKeyboardShortcutsModalHandler } from './useKeyboardShortcutsModalHandler';
 import { useStatusItems } from './useStatusItems';
+import { useUserDropdownAppsActionButtons } from '../../../../hooks/useUserDropdownAppsActionButtons';
 
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const appBoxItems = useUserDropdownAppsActionButtons();
+	const handleKeyboardShortcuts = useKeyboardShortcutsModalHandler();
 
 	const logout = useLogout();
 	const handleLogout = useEffectEvent(() => {
 		logout();
 	});
+
+	const keyboardShortcutsItem: GenericMenuItemProps = {
+		id: 'keyboardShortcuts',
+		icon: 'keyboard',
+		content: t('Keyboard_Shortcuts_Title'),
+		onClick: handleKeyboardShortcuts,
+	};
 
 	const logoutItem: GenericMenuItemProps = {
 		id: 'logout',
@@ -39,6 +50,10 @@ export const useUserMenu = (user: IUser) => {
 			title: t('Account'),
 			items: accountItems,
 		},
+		{
+			items: [keyboardShortcutsItem],
+		},
+		...(appBoxItems.isSuccess && appBoxItems.data?.length ? [{ title: t('Apps'), items: appBoxItems.data }] : []),
 		{
 			items: [logoutItem],
 		},

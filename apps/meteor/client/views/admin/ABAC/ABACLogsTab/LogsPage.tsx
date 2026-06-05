@@ -32,8 +32,8 @@ const LogsPage = () => {
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
-			...(startDate && { start: new Date(`${startDate}T00:00:00.000Z`).toISOString() }),
-			...(endDate && { end: new Date(`${endDate}T23:59:59.999Z`).toISOString() }),
+			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
+			...(endDate && { end: new Date(`${endDate}T23:59:59.999`).toISOString() }),
 			offset: current,
 			count: itemsPerPage,
 		}),
@@ -113,6 +113,14 @@ const LogsPage = () => {
 									?.value?.map((item) => item.key)
 									.join(', ') ?? t('Empty'),
 							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					case 'abac.attribute.store.switched':
+						return {
+							...eventInfo,
+							element: t('ABAC_Attribute_Store'),
+							action: t('ABAC_Attribute_Store_Switched'),
+							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
 						};
 					default:
 						return null;

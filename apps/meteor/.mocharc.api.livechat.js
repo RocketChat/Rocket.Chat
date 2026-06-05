@@ -10,5 +10,6 @@ module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	bail: true,
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
+	reporter: 'tests/end-to-end/reporter.ts',
 	spec: ['tests/end-to-end/api/livechat/**/*'],
 });

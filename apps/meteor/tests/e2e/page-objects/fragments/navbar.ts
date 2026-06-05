@@ -268,4 +268,8 @@ export class Navbar {
 		const newStatus = await this.btnSwitchOmnichannelStatus.getAttribute('title');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
+
+	getUserStatusBadge(status: 'online' | 'away' | 'busy' | 'offline'): Locator {
+		return this.btnUserMenu.locator(`svg[class*="${status}"]`);
+	}
 }
