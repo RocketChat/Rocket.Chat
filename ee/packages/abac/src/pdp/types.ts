@@ -28,6 +28,8 @@ export interface IGetDecisionBulkResponse {
 	}>;
 }
 
+export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
+
 export interface IPolicyDecisionPoint {
 	isAvailable(): Promise<boolean>;
 
@@ -52,6 +54,10 @@ export interface IPolicyDecisionPoint {
 			user: Pick<IUser, '_id' | 'emails' | 'username'>;
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
+	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+
+	reevaluateUsers(
+		users: ReevaluationUser[],
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
 }
 
