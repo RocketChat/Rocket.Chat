@@ -1,5 +1,6 @@
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useMethod, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
@@ -358,7 +359,7 @@ export const useSearchItems = (
 	const getSpotlight = useMethod('spotlight');
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
-	const aiSearchFeatureEnabled = useSetting('AI_Intelligent_Search_Feature_Enabled', false);
+	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');

@@ -18,14 +18,14 @@ The feature is integrated directly into the Rocket.Chat shell.
 
 **Entry point — NavBar search bar (`NavBarSearch.tsx`)**
 
-The global search bar (`⌘K`) is always visible. A `stars` icon button is labelled
-**Search with AI** for licensed workspaces and navigates to `/search?q=<query>`. If the
-`chat.rocket.rc-ai` add-on is missing, the same control opens the platform upsell modal instead
-of navigating away. As the user types, the dropdown shows:
+The global search bar (`⌘K`) is always visible. When the user opts into the AI Search Feature
+Preview, a `stars` icon button is labelled **Search with AI** and navigates to
+`/search?q=<query>`. If the `chat.rocket.rc-ai` add-on is missing, the same control opens the
+platform upsell modal instead of navigating away. As the user types, the dropdown shows:
 
 | Dropdown section | Content |
 |---|---|
-| Applied filters | Removable `Chip` components for completed filter tokens (licensed workspaces only) |
+| Applied filters | Removable `Chip` components for completed filter tokens (AI Search Feature Preview and licensed workspaces only) |
 | AI Search preview | Up to 3 semantic results from the pipeline, with a `stars` icon and room label |
 | Filter suggestions | Context-aware completions: room names for `in:`, users for `from:`, date shortcuts for `after:`/`before:` |
 | Rooms / recent | Standard subscription results |
@@ -224,7 +224,7 @@ they silently fall back to their invalid value when the license module is inacti
 | Section | Settings |
 |---|---|
 | `AI_LLM_Provider` | OpenAI-compatible base URL, API key, model (lookup type — live dropdown from `/v1/ai.llm.models`) |
-| `Intelligent_Search` | AI Search experience flag (public), Enabled (public), Show in top bar (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, Answer system prompt |
+| `Intelligent_Search` | Enabled (public), Show in top bar (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, Answer system prompt |
 | `AI_Thread_Summarization` | Enabled (public) |
 
 **AI Center admin page (`AICenterRoute.tsx`)**

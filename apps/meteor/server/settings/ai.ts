@@ -35,14 +35,6 @@ export const createAISettings = () =>
 		});
 
 		await this.section('Intelligent_Search', async function () {
-			await this.add('AI_Intelligent_Search_Feature_Enabled', false, {
-				type: 'boolean',
-				i18nLabel: 'AI_Intelligent_Search_Feature_Enabled',
-				public: true,
-				invalidValue: false,
-				i18nDescription: 'AI_Intelligent_Search_Feature_Enabled_Description',
-			});
-
 			await this.add('AI_Intelligent_Search_Enabled', false, {
 				type: 'boolean',
 				i18nLabel: 'AI_Intelligent_Search_Enabled',

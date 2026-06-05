@@ -2,7 +2,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -196,7 +196,7 @@ const SearchPage = (): ReactElement => {
 		[parsedSearch.filters, selectedRooms],
 	);
 	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
-	const aiSearchFeatureEnabled = useSetting('AI_Intelligent_Search_Feature_Enabled', false);
+	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);

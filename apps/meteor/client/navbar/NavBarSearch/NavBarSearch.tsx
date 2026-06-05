@@ -3,6 +3,7 @@ import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -33,7 +34,7 @@ const NavBarSearch = () => {
 	const shortcut = getShortcutLabel();
 	const router = useRouter();
 	const setModal = useSetModal();
-	const aiSearchFeatureEnabled = useSetting('AI_Intelligent_Search_Feature_Enabled', false);
+	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
