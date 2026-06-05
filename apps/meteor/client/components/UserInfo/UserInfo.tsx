@@ -22,6 +22,7 @@ import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
+import { UserStatusText } from '../UserStatusText';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
 
@@ -38,6 +39,7 @@ type UserInfoDataProps = Serialized<
 		| 'phone'
 		| 'createdAt'
 		| 'statusText'
+		| 'statusExpiresAt'
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
@@ -70,6 +72,7 @@ const UserInfo = ({
 	createdAt,
 	status,
 	statusText,
+	statusExpiresAt,
 	customFields,
 	canViewAllInfo,
 	actions,
@@ -102,7 +105,7 @@ const UserInfo = ({
 
 					{statusText && (
 						<InfoPanelText>
-							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
+							<UserStatusText statusText={statusText} statusExpiresAt={statusExpiresAt} />
 						</InfoPanelText>
 					)}
 				</InfoPanelSection>

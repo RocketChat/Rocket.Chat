@@ -39,16 +39,21 @@ const UserStatusMenu = ({
 
 		const statuses: Array<[value: UserStatusType, label: ReactNode]> = [
 			[UserStatusType.ONLINE, renderOption(UserStatusType.ONLINE, t('Online'))],
-			[UserStatusType.AWAY, renderOption(UserStatusType.AWAY, t('Away'))],
 			[UserStatusType.BUSY, renderOption(UserStatusType.BUSY, t('Busy'))],
 		];
+
+		// Away is no longer manually selectable, but surface it if the user is currently on it
+		// (e.g., set in a previous version or auto-applied by the server) so they can switch off.
+		if (status === UserStatusType.AWAY) {
+			statuses.push([UserStatusType.AWAY, renderOption(UserStatusType.AWAY, t('Away'))]);
+		}
 
 		if (allowInvisibleStatus) {
 			statuses.push([UserStatusType.OFFLINE, renderOption(UserStatusType.OFFLINE, t('Offline'))]);
 		}
 
 		return statuses;
-	}, [t, allowInvisibleStatus]);
+	}, [t, allowInvisibleStatus, status]);
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
 		setStatus(selected);

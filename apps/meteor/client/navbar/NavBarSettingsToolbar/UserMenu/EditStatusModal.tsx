@@ -1,122 +1,243 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
+import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
-	TextInput,
-	FieldGroup,
-	Modal,
-	Button,
-	Box,
 	FieldLabel,
 	FieldRow,
 	FieldError,
 	FieldHint,
+	TextInput,
+	InputBox,
+	Select,
+	Margins,
+	Modal,
+	Button,
+	Box,
 	ModalHeader,
-	ModalIcon,
 	ModalTitle,
 	ModalClose,
 	ModalContent,
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ComponentProps } from 'react';
-import { useState, useCallback, useId } from 'react';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
+import { useId, useMemo } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
 
 type EditStatusModalProps = {
 	onClose: () => void;
-	userStatus: IUser['status'];
-	userStatusText: IUser['statusText'];
 };
 
-const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps) => {
+type StatusFormValues = {
+	statusText: string;
+	statusType: UserStatusType;
+	duration: string;
+	customDate: string;
+	customTime: string;
+};
+
+const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
+	const user = useUser();
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [customStatus, setCustomStatus] = useLocalStorage<string>('Local_Custom_Status', '');
-	const initialStatusText = customStatus || userStatusText || '';
+	const initialStatusText = user?.statusText ?? customStatus ?? '';
 
 	const t = useTranslation();
 	const modalId = useId();
-	const [statusText, setStatusText] = useState(initialStatusText);
-	const [statusType, setStatusType] = useState(userStatus);
-	const [statusTextError, setStatusTextError] = useState<string | undefined>();
+
+	const initialExpiration = user?.statusExpiresAt && new Date(user.statusExpiresAt) > new Date() ? new Date(user.statusExpiresAt) : null;
+	const initialDate = initialExpiration ?? new Date();
+
+	const {
+		control,
+		handleSubmit,
+		setError,
+		clearErrors,
+		formState: { errors },
+	} = useForm<StatusFormValues>({
+		mode: 'onChange',
+		defaultValues: {
+			statusText: initialStatusText,
+			statusType: user?.status ?? UserStatusType.ONLINE,
+			duration: initialExpiration ? 'custom' : '',
+			customDate: initialDate.toLocaleDateString('en-CA'),
+			customTime: initialDate.toTimeString().slice(0, 5),
+		},
+	});
+
+	const duration = useWatch({ control, name: 'duration' });
+	const statusType = useWatch({ control, name: 'statusType' });
 
 	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
-	const handleStatusText = useStableCallback((e: ChangeEvent<HTMLInputElement>): void => {
-		setStatusText(e.currentTarget.value);
+	const defaultStatusLabel = `${t(statusType)} (${t('Default')})`;
 
-		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
-			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
+	const durationOptions: SelectOption[] = useMemo(() => STATUS_DURATION_OPTIONS.map(({ value, labelKey }) => [value, t(labelKey)]), [t]);
+
+	const handleSaveStatus = async ({ statusText, statusType, duration, customDate, customTime }: StatusFormValues): Promise<void> => {
+		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === duration)?.getExpiresAt?.({
+			now: new Date(),
+			customDate,
+			customTime,
+		});
+		if (duration === 'custom') {
+			if (!expiresAt) {
+				setError('duration', { message: t('Status_choose_date_and_time') });
+				return;
+			}
+			if (expiresAt <= new Date()) {
+				setError('duration', { message: t('Status_expiration_must_be_future') });
+				return;
+			}
 		}
-
-		return setStatusTextError(undefined);
-	});
-
-	const handleStatusType = (type: IUser['status']): void => setStatusType(type);
-
-	const handleSaveStatus = useCallback(async () => {
+		clearErrors('duration');
 		try {
-			await setUserStatus({ message: statusText, status: statusType });
+			await setUserStatus({
+				message: statusText,
+				status: statusType,
+				...(expiresAt && { expiresAt: expiresAt.toISOString() }),
+			});
 			setCustomStatus(statusText);
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-
-		onClose();
-	}, [onClose, setUserStatus, statusText, statusType, setCustomStatus, dispatchToastMessage, t]);
+	};
 
 	return (
 		<Modal
 			aria-labelledby={`${modalId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box
-					is='form'
-					onSubmit={(e) => {
-						e.preventDefault();
-						handleSaveStatus();
-					}}
-					{...props}
-				/>
-			)}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSaveStatus)} {...props} />}
 		>
 			<ModalHeader>
-				<ModalIcon name='info' />
-				<ModalTitle id={`${modalId}-title`}>{t('Edit_Status')}</ModalTitle>
+				<ModalTitle id={`${modalId}-title`}>{t('Status_set_your_status')}</ModalTitle>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
-				<FieldGroup>
+				<Box display='flex' flexDirection='column' rowGap={12}>
 					<Field>
-						<FieldLabel htmlFor={`${modalId}-status-message`}>{t('StatusMessage')}</FieldLabel>
+						<FieldLabel htmlFor={`${modalId}-status-message`}>{t('Status')}</FieldLabel>
 						<FieldRow>
-							<TextInput
-								id={`${modalId}-status-message`}
-								aria-label={t('StatusMessage')}
-								error={statusTextError}
-								disabled={!allowUserStatusMessageChange}
-								flexGrow={1}
-								value={statusText}
-								onChange={handleStatusText}
-								placeholder={t('StatusMessage_Placeholder')}
-								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
+							<Controller
+								control={control}
+								name='statusText'
+								rules={{
+									maxLength: {
+										value: USER_STATUS_TEXT_MAX_LENGTH,
+										message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+									},
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={`${modalId}-status-message`}
+										aria-label={t('Status')}
+										error={errors.statusText?.message}
+										disabled={!allowUserStatusMessageChange}
+										flexGrow={1}
+										placeholder={defaultStatusLabel}
+										className={css`
+											align-items: center;
+
+											& > .rcx-input-box__addon {
+												order: -1;
+												margin-inline-end: 0.5rem;
+											}
+										`}
+										addon={
+											<Controller
+												control={control}
+												name='statusType'
+												render={({ field: { value, onChange } }) => (
+													<UserStatusMenu margin='none' initialStatus={value} onChange={onChange} placement='bottom-start' />
+												)}
+											/>
+										}
+									/>
+								)}
 							/>
 						</FieldRow>
-						{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
-						<FieldError>{statusTextError}</FieldError>
+						<FieldHint>{t(allowUserStatusMessageChange ? 'Status_you_can_use_emoji' : 'StatusMessage_Change_Disabled')}</FieldHint>
+						{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					</Field>
-				</FieldGroup>
+					<Field>
+						<FieldLabel htmlFor={`${modalId}-clear-after`}>{t('Status_clear_after')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='duration'
+								render={({ field: { value, onChange } }) => (
+									<Select
+										id={`${modalId}-clear-after`}
+										value={value}
+										options={durationOptions}
+										onChange={(next) => {
+											onChange(String(next));
+											clearErrors('duration');
+										}}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{duration === 'custom' && (
+							<Box display='flex' mi='neg-x4' mbs={8}>
+								<Margins inline={4}>
+									<Controller
+										control={control}
+										name='customDate'
+										render={({ field: { value, onChange } }) => (
+											<InputBox
+												aria-label={t('Status_expiration_date')}
+												type='date'
+												flexGrow={1}
+												value={value}
+												onChange={(e: ChangeEvent<HTMLInputElement>) => {
+													onChange(e.currentTarget.value);
+													clearErrors('duration');
+												}}
+												min={new Date().toLocaleDateString('en-CA')}
+											/>
+										)}
+									/>
+									<Controller
+										control={control}
+										name='customTime'
+										render={({ field: { value, onChange } }) => (
+											<InputBox
+												aria-label={t('Status_expiration_time')}
+												type='time'
+												flexGrow={1}
+												value={value}
+												onChange={(e: ChangeEvent<HTMLInputElement>) => {
+													onChange(e.currentTarget.value);
+													clearErrors('duration');
+												}}
+											/>
+										)}
+									/>
+								</Margins>
+							</Box>
+						)}
+						{errors.duration && <FieldError>{errors.duration.message}</FieldError>}
+						<FieldHint>{t('Status_new_status_warning')}</FieldHint>
+					</Field>
+				</Box>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary type='submit' disabled={!!statusTextError}>
+					<Button primary type='submit' disabled={!!errors.statusText}>
 						{t('Save')}
 					</Button>
 				</ModalFooterControllers>

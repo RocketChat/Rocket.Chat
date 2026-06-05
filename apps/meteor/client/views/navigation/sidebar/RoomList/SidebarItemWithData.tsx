@@ -2,13 +2,16 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
 import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
+import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';
 import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../../contexts/RoomsNavigationContext';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
@@ -31,6 +34,9 @@ type RoomListRowProps = {
 const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
+
+	const dmUserId = getUidDirectMessage(room, useUserId());
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId);
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -76,6 +82,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			room={room}
 			actions={actions}
 			{...buttonProps}
+			{...dmStatusTooltipHandlers}
 		/>
 	);
 };
