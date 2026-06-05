@@ -168,7 +168,7 @@ const MockedMediaCallProvider = ({
 			getState: () => null,
 			on: () => undefined,
 		} as unknown as MediaSignalingSession,
-		currentViews: [] as AvailableViews[],
+		currentViews: ['widget'] as AvailableViews[],
 		registerView: (_view: AvailableViews) => undefined,
 		unregisterView: (_view: AvailableViews) => undefined,
 		signalEmitter: new Emitter<Signals>(),
