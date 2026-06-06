@@ -1,5 +1,5 @@
 import { Box, Flex, Grid, GridItem } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
@@ -28,7 +28,7 @@ const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps):
 			<GridItem>
 				{text && (
 					<Box is='span' fontScale='p2' color='default'>
-						{surfaceRenderer.renderTextObject(text, 0)}
+						{surfaceRenderer.renderTextObject(text, 0, UiKit.BlockContext.NONE)}
 					</Box>
 				)}
 				{fields && <Fields fields={fields} surfaceRenderer={surfaceRenderer} />}
