@@ -1279,7 +1279,7 @@
   "Confirm_your_password": "Confirm your password",
   "Confirm_contact_removal": "Confirm Contact Removal",
   "Confirm_Mass_Mention_Button": "Send Mention",
-  "Confirm_Mass_Mention_Message": "You are about to mention everyone in this channel ({{count}} members). Are you sure you want to proceed?",
+  "Confirm_Mass_Mention_Message": "You are about to send a mass mention in this channel ({{count}} members). Are you sure you want to proceed?",
   "Confirm_Mass_Mention_Title": "Confirm Mass Mention",
   "Confirmation": "Confirmation",
   "Conflicts_found": "Conflicts found",
