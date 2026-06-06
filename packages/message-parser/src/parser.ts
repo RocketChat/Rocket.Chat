@@ -21,6 +21,8 @@ import {
 	unorderedList,
 	listItem,
 	orderedList,
+	katex,
+	inlineKatex,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
@@ -58,6 +60,12 @@ export function parse(input: string, options: Options = {}): Root {
 			}
 		} else {
 			scanner.restore(start);
+
+			const katexBlockNode: any = tryKatexBlock(scanner, options);
+			if (katexBlockNode !== null) {
+				root.push(katexBlockNode);
+				continue;
+			}
 
 			// Try block-level rules first
 			const codeFenceNode: any = tryCodeFence(scanner);
@@ -227,6 +235,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		const ch = scanner.char();
 
+		// KaTeX inline — $ or \(
+		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
+			const result = tryKatexInline(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ch;
+				continue;
+			}
+		}
+
 		// Escape sequences
 		if (ch === '\\') {
 			const next = scanner.charAt(1);
@@ -377,6 +395,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 		if (stopChar && scanner.matches(stopChar)) break;
 
 		const ch = scanner.char();
+
+		// KaTeX inline — $ or \(
+		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
+			const result = tryKatexInline(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ch;
+				continue;
+			}
+		}
 
 		// Escape sequences
 		if (ch === '\\') {
@@ -1199,4 +1227,77 @@ function tryOrderedList(scanner: Scanner, options: Options): Root[number] | null
 	}
 
 	return orderedList(items);
+}
+
+function tryKatexBlock(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	let openDelim: string;
+	let closeDelim: string;
+
+	if (options.katex?.dollarSyntax && scanner.matches('$$')) {
+		openDelim = '$$';
+		closeDelim = '$$';
+	} else if (options.katex?.parenthesisSyntax && scanner.matches('\\[')) {
+		openDelim = '\\[';
+		closeDelim = '\\]';
+	} else {
+		return null;
+	}
+
+	scanner.advance(openDelim.length);
+
+	// Collect content until closing delimiter
+	const contentStart = scanner.save();
+	while (!scanner.isEnd()) {
+		if (scanner.matches(closeDelim)) break;
+		scanner.advance();
+	}
+
+	if (!scanner.matches(closeDelim)) {
+		scanner.restore(start);
+		return null;
+	}
+
+	const content = scanner.sliceFrom(contentStart);
+	scanner.advance(closeDelim.length);
+
+	return katex(content);
+}
+
+function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
+	const start = scanner.save();
+
+	let openDelim: string;
+	let closeDelim: string;
+
+	if (options.katex?.dollarSyntax && scanner.matches('$') && !scanner.matches('$$')) {
+		openDelim = '$';
+		closeDelim = '$';
+	} else if (options.katex?.parenthesisSyntax && scanner.matches('\\(')) {
+		openDelim = '\\(';
+		closeDelim = '\\)';
+	} else {
+		return null;
+	}
+
+	scanner.advance(openDelim.length);
+
+	const contentStart = scanner.save();
+
+	// Inline katex: no newlines allowed inside
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		if (scanner.matches(closeDelim)) break;
+		scanner.advance();
+	}
+
+	if (!scanner.matches(closeDelim)) {
+		scanner.restore(start);
+		return null;
+	}
+
+	const content = scanner.sliceFrom(contentStart);
+	scanner.advance(closeDelim.length);
+
+	return inlineKatex(content);
 }
