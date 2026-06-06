@@ -165,7 +165,7 @@ export const createMessageSettings = () =>
 			type: 'int',
 			public: true,
 		});
-		await this.add('Message_ConfirmAll', true, {
+		await this.add('Message_ConfirmAll', false, {
 			type: 'boolean',
 			public: true,
 		});

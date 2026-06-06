@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 
 import { t } from '../../../../app/utils/lib/i18n';
@@ -17,10 +17,17 @@ export const processConfirmMassMention = async (chat: ChatAPI, { msg }: Pick<IMe
 		return false;
 	}
 
-	const room = await chat.data.getRoom();
+	let room: IRoom;
+	try {
+		room = await chat.data.getRoom();
+	} catch (error) {
+		console.error('Failed to get room data for mass mention confirmation:', error);
+		return false;
+	}
+
 	const minMembers = settings.peek<number>('Message_ConfirmAll_MinMembers') ?? 0;
 
-	if (room.usersCount < minMembers) {
+	if (!room || (room.usersCount ?? 0) < minMembers) {
 		return false;
 	}
 
@@ -39,7 +46,7 @@ export const processConfirmMassMention = async (chat: ChatAPI, { msg }: Pick<IMe
 			component: GenericModal,
 			props: {
 				title: t('Confirm_Mass_Mention_Title'),
-				children: t('Confirm_Mass_Mention_Message', { count: room.usersCount }),
+				children: t('Confirm_Mass_Mention_Message', { count: room.usersCount ?? 0 }),
 				onConfirm,
 				onClose,
 				onCancel: onClose,
