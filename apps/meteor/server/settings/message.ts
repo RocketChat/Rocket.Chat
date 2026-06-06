@@ -165,6 +165,15 @@ export const createMessageSettings = () =>
 			type: 'int',
 			public: true,
 		});
+		await this.add('Message_ConfirmAll', true, {
+			type: 'boolean',
+			public: true,
+		});
+		await this.add('Message_ConfirmAll_MinMembers', 10, {
+			type: 'int',
+			public: true,
+			enableQuery: { _id: 'Message_ConfirmAll', value: true },
+		});
 		await this.add('Message_MaxAllowedSize', 5000, {
 			type: 'int',
 			public: true,
