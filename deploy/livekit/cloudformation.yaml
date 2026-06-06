@@ -1,0 +1,431 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Self-hosted LiveKit server + Egress on a single EC2 instance with managed
+  TLS via Caddy. Single-AZ, single-instance — for development / testing.
+  Provisions: VPC + public subnet, security group, Elastic IP, S3 bucket
+  for egress recordings, IAM role for S3 access, EC2 with user-data that
+  installs Docker + Compose and brings up the LiveKit stack.
+
+Parameters:
+  Domain:
+    Type: String
+    Description: >
+      Hostname browsers will connect to (e.g. livekit.example.com). After
+      stack creation, point an A record at the EIP shown in Outputs; Caddy
+      will then provision a Let's Encrypt cert automatically (~1 min).
+    AllowedPattern: ^[a-zA-Z0-9.-]+$
+
+  AdminEmail:
+    Type: String
+    Description: Contact email for Let's Encrypt registration.
+    AllowedPattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+
+  LiveKitApiKey:
+    Type: String
+    NoEcho: true
+    Description: >
+      LK API key clients will use. Generate with `openssl rand -hex 16`.
+      Has to match what Rocket.Chat sends in its mint-token calls.
+    MinLength: 16
+
+  LiveKitApiSecret:
+    Type: String
+    NoEcho: true
+    Description: >
+      LK API secret. Generate with `openssl rand -hex 32`. Server validates
+      JWTs signed with this secret.
+    MinLength: 32
+
+  InstanceType:
+    Type: String
+    Default: t4g.large
+    AllowedValues:
+      - t4g.large
+      - t4g.xlarge
+      - t3a.large
+      - t3a.xlarge
+      - m5.large
+      - m5.xlarge
+      - c5.xlarge
+      - c5.2xlarge
+    Description: >
+      Egress (Chromium-based recording) is the heavy tenant. m5.large is
+      OK for 1 concurrent recording; bump to c5.xlarge+ for several.
+
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 key pair name for SSH access.
+
+  AllowedSSHCIDR:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: >
+      CIDR allowed to reach SSH (22/tcp). Default open — narrow to your
+      office IP for anything resembling production.
+    AllowedPattern: ^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$
+
+  # Existing-VPC reuse — leave both blank to provision a fresh VPC.
+  # Useful when you're at the AWS per-region VPC quota (default 5).
+  ExistingVpcId:
+    Type: String
+    Default: ''
+    Description: >
+      Optional. Pass a VPC ID (vpc-xxxx) to skip VPC/IGW/subnet/route-table
+      creation and place the instance inside an existing VPC. Must be paired
+      with ExistingPublicSubnetId.
+  ExistingPublicSubnetId:
+    Type: String
+    Default: ''
+    Description: >
+      Optional. A subnet within ExistingVpcId that routes 0.0.0.0/0 to an
+      internet gateway (i.e. a "public" subnet). The instance will get a
+      public IP via the EIP.
+
+  # AL2023 latest AMI for each arch. The actual one used is picked at deploy
+  # time from InstanceType (see `UseArm64Ami` condition + `Instance.ImageId`),
+  # so you never need to override these unless you're pinning to an old AMI.
+  AmiX8664:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: Used for non-Graviton instance types (t3a / m5 / c5).
+  AmiArm64:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+    Description: Used for Graviton instance types (t4g).
+
+  LiveKitServerVersion:
+    Type: String
+    Default: v1.12
+    Description: Docker tag for livekit/livekit-server.
+
+  LiveKitEgressVersion:
+    Type: String
+    Default: latest
+    Description: Docker tag for livekit/egress.
+
+Conditions:
+  # CFN can't pick an SSM parameter via FindInMap, so we materialize both
+  # arch-specific AMIs and choose at deploy time based on InstanceType.
+  # Extend this list when adding more Graviton instance types to AllowedValues.
+  UseArm64Ami: !Or
+    - !Equals [!Ref InstanceType, t4g.large]
+    - !Equals [!Ref InstanceType, t4g.xlarge]
+
+  # Create a new VPC + subnet + IGW unless the user wired an existing one in.
+  CreateVpc: !Equals [!Ref ExistingVpcId, '']
+
+Resources:
+  # ---------------------------------------------------------------------------
+  # Networking — provisioned only when ExistingVpcId is blank. Otherwise the
+  # instance is dropped into the existing VPC + subnet you passed in.
+  # ---------------------------------------------------------------------------
+  VPC:
+    Type: AWS::EC2::VPC
+    Condition: CreateVpc
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-vpc
+
+  IGW:
+    Type: AWS::EC2::InternetGateway
+    Condition: CreateVpc
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-igw
+
+  IGWAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Condition: CreateVpc
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref IGW
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Condition: CreateVpc
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.42.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-public
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Condition: CreateVpc
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Condition: CreateVpc
+    DependsOn: IGWAttach
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+
+  PublicSubnetRTAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateVpc
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # ---------------------------------------------------------------------------
+  # Security group — LK protocol + Caddy + SSH.
+  #   80/443  : Caddy (HTTP-01 challenge + HTTPS / WSS reverse proxy)
+  #   7881    : LiveKit TCP fallback for clients on UDP-hostile networks
+  #   50000-60000/udp : WebRTC media. LK randomly assigns within this range.
+  # ---------------------------------------------------------------------------
+  SG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: LiveKit server + Egress
+      VpcId: !If [CreateVpc, !Ref VPC, !Ref ExistingVpcId]
+      SecurityGroupIngress:
+        - { IpProtocol: tcp, FromPort: 22,    ToPort: 22,    CidrIp: !Ref AllowedSSHCIDR, Description: SSH }
+        - { IpProtocol: tcp, FromPort: 80,    ToPort: 80,    CidrIp: 0.0.0.0/0,           Description: HTTP (LE) }
+        - { IpProtocol: tcp, FromPort: 443,   ToPort: 443,   CidrIp: 0.0.0.0/0,           Description: HTTPS / WSS }
+        - { IpProtocol: tcp, FromPort: 7881,  ToPort: 7881,  CidrIp: 0.0.0.0/0,           Description: LK TCP fallback }
+        - { IpProtocol: udp, FromPort: 50000, ToPort: 60000, CidrIp: 0.0.0.0/0,           Description: WebRTC media }
+
+  # ---------------------------------------------------------------------------
+  # IAM role / instance profile — only SSM Session Manager access. S3 creds
+  # are passed per-egress by the caller (Rocket.Chat), so the instance itself
+  # doesn't need bucket access.
+  # ---------------------------------------------------------------------------
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ec2.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref InstanceRole]
+
+  # ---------------------------------------------------------------------------
+  # Elastic IP — stable address so the DNS A record survives instance replace.
+  # ---------------------------------------------------------------------------
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  EIPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt EIP.AllocationId
+      InstanceId: !Ref Instance
+
+  # ---------------------------------------------------------------------------
+  # EC2 — user-data bootstraps everything.
+  # ---------------------------------------------------------------------------
+  Instance:
+    Type: AWS::EC2::Instance
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT10M
+    Properties:
+      ImageId: !If [UseArm64Ami, !Ref AmiArm64, !Ref AmiX8664]
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      IamInstanceProfile: !Ref InstanceProfile
+      SubnetId: !If [CreateVpc, !Ref PublicSubnet, !Ref ExistingPublicSubnetId]
+      SecurityGroupIds: [!Ref SG]
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 30
+            VolumeType: gp3
+            DeleteOnTermination: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-livekit
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euxo pipefail
+          exec > >(tee -a /var/log/user-data.log) 2>&1
+
+          dnf update -y
+          dnf install -y docker
+          systemctl enable --now docker
+          usermod -aG docker ec2-user
+
+          # Install docker compose plugin (AL2023 ships docker without it).
+          mkdir -p /usr/libexec/docker/cli-plugins
+          COMPOSE_VER=v2.30.3
+          ARCH=$(uname -m)
+          case "$ARCH" in
+            x86_64)  COMPOSE_ARCH=x86_64 ;;
+            aarch64) COMPOSE_ARCH=aarch64 ;;
+          esac
+          curl -fsSL \
+            "https://github.com/docker/compose/releases/download/${!COMPOSE_VER}/docker-compose-linux-${!COMPOSE_ARCH}" \
+            -o /usr/libexec/docker/cli-plugins/docker-compose
+          chmod +x /usr/libexec/docker/cli-plugins/docker-compose
+
+          mkdir -p /opt/livekit
+          cd /opt/livekit
+
+          # -------------------------------------------------------------------
+          # livekit-server config. `use_external_ip: true` makes LK probe its
+          # own public IP via STUN and advertise it in ICE — required when
+          # behind a NAT (which EC2 effectively is from a WebRTC view).
+          # -------------------------------------------------------------------
+          cat > livekit.yaml <<'YAML'
+          port: 7880
+          bind_addresses:
+            - ""
+          rtc:
+            tcp_port: 7881
+            port_range_start: 50000
+            port_range_end: 60000
+            use_external_ip: true
+          redis:
+            address: 127.0.0.1:6379
+          keys:
+            __LK_API_KEY__: __LK_API_SECRET__
+          log_level: info
+          YAML
+          sed -i "s|__LK_API_KEY__|${LiveKitApiKey}|; s|__LK_API_SECRET__|${LiveKitApiSecret}|" livekit.yaml
+
+          # -------------------------------------------------------------------
+          # Egress config. No default S3 here — output destination (incl. S3
+          # creds + bucket) is passed in each StartEgress request by the
+          # caller (Rocket.Chat).
+          #
+          # `cpu_cost` overrides egress's per-job-type CPU requirements. The
+          # default for room_composite / web is 3, which causes egress to
+          # refuse those jobs on any 2-vCPU instance (t4g.large / t3a.large).
+          # We cap to 2 so the box accepts the job. Quality risk on busy
+          # rooms — acceptable for dev/test, bump to 4-vCPU for real use.
+          # -------------------------------------------------------------------
+          cat > egress.yaml <<YAML
+          api_key: ${LiveKitApiKey}
+          api_secret: ${LiveKitApiSecret}
+          ws_url: wss://${Domain}
+          redis:
+            address: 127.0.0.1:6379
+          insecure: false
+          log_level: info
+          cpu_cost:
+            room_composite_cpu_cost: 2
+            web_cpu_cost: 2
+          YAML
+
+          # -------------------------------------------------------------------
+          # Caddy reverse proxy + automatic Let's Encrypt.
+          # Caddy listens on 80/443, proxies HTTPS → LK's plain HTTP/WS on
+          # localhost:7880. WebRTC media on 7881/tcp + 50000-60000/udp bypass
+          # Caddy entirely — they're direct host ports.
+          # -------------------------------------------------------------------
+          cat > Caddyfile <<CADDY
+          {
+            email ${AdminEmail}
+          }
+          ${Domain} {
+            reverse_proxy host.docker.internal:7880
+          }
+          CADDY
+
+          # -------------------------------------------------------------------
+          # docker-compose: LK + Egress + Redis on host network (LK needs
+          # the UDP port range exposed without docker-proxy overhead); Caddy
+          # on bridge with host-gateway alias so it can reach LK's 7880.
+          # -------------------------------------------------------------------
+          cat > docker-compose.yml <<YAML
+          services:
+            redis:
+              image: redis:7-alpine
+              network_mode: host
+              restart: unless-stopped
+              command: ["redis-server", "--bind", "127.0.0.1", "--protected-mode", "yes"]
+
+            livekit-server:
+              image: livekit/livekit-server:${LiveKitServerVersion}
+              network_mode: host
+              restart: unless-stopped
+              volumes:
+                - ./livekit.yaml:/etc/livekit.yaml:ro
+              command: ["--config", "/etc/livekit.yaml"]
+              depends_on: [redis]
+
+            egress:
+              image: livekit/egress:${LiveKitEgressVersion}
+              network_mode: host
+              restart: unless-stopped
+              cap_add:
+                - SYS_ADMIN
+              environment:
+                EGRESS_CONFIG_FILE: /egress.yaml
+              volumes:
+                - ./egress.yaml:/egress.yaml:ro
+              depends_on: [redis, livekit-server]
+
+            caddy:
+              image: caddy:2-alpine
+              restart: unless-stopped
+              ports:
+                - "80:80"
+                - "443:443"
+              extra_hosts:
+                - "host.docker.internal:host-gateway"
+              volumes:
+                - ./Caddyfile:/etc/caddy/Caddyfile:ro
+                - caddy_data:/data
+                - caddy_config:/config
+
+          volumes:
+            caddy_data:
+            caddy_config:
+          YAML
+
+          # Pull and start.
+          docker compose pull
+          docker compose up -d
+
+          # Signal CloudFormation that the bootstrap completed.
+          dnf install -y aws-cfn-bootstrap || \
+            python3 -m pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+          /opt/aws/bin/cfn-signal -e $? \
+            --stack ${AWS::StackName} \
+            --resource Instance \
+            --region ${AWS::Region}
+
+Outputs:
+  PublicIP:
+    Description: Elastic IP — set a DNS A record from your Domain to this address.
+    Value: !Ref EIP
+
+  Domain:
+    Description: Hostname clients should connect to (after DNS is in place).
+    Value: !Sub wss://${Domain}
+
+  NextSteps:
+    Description: What to do after the stack reaches CREATE_COMPLETE.
+    Value: !Sub |
+      1) Create DNS A record:  ${Domain}  →  ${EIP}
+      2) Wait ~60s for Caddy to issue the Let's Encrypt cert
+         (tail logs:  ssh ec2-user@${EIP} sudo docker logs -f livekit-caddy-1)
+      3) Verify:  curl -sf https://${Domain}/   (should hit LK's HTTP endpoint)
+      4) Use these in your client config:
+            LIVEKIT_URL=wss://${Domain}
+            LIVEKIT_API_KEY=<the key you passed>
+            LIVEKIT_API_SECRET=<the secret you passed>
