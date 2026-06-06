@@ -18,9 +18,12 @@ import {
 	spoiler,
 	spoilerBlock,
 	link,
+	unorderedList,
+	listItem,
+	orderedList,
 } from './utils';
 import { Scanner } from './scanner';
-import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum } from './chars';
+import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -72,6 +75,18 @@ export function parse(input: string, options: Options = {}): Root {
 			const blockquoteNode: any = tryBlockquote(scanner, options);
 			if (blockquoteNode !== null) {
 				root.push(blockquoteNode);
+				continue;
+			}
+
+			const unorderedListNode: any = tryUnorderedList(scanner, options);
+			if (unorderedListNode !== null) {
+				root.push(unorderedListNode);
+				continue;
+			}
+
+			const orderedListNode: any = tryOrderedList(scanner, options);
+			if (orderedListNode !== null) {
+				root.push(orderedListNode);
 				continue;
 			}
 
@@ -1056,4 +1071,132 @@ function tryBareUrl(scanner: Scanner): Inlines | null {
 	}
 
 	return link('//' + raw, [plain(raw)]);
+}
+
+function tryUnorderedList(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	// Detect which marker this list uses: '-' or '*'
+	const marker = scanner.char();
+	if (marker !== '-' && marker !== '*') {
+		return null;
+	}
+
+	// Must be followed by space/tab
+	if (!isSpace(scanner.charAt(1))) {
+		return null;
+	}
+
+	const items: ReturnType<typeof listItem>[] = [];
+
+	while (!scanner.isEnd()) {
+		const ch = scanner.char();
+
+		// Stop if marker changes or no longer a list item
+		if (ch !== marker) break;
+		if (!isSpace(scanner.charAt(1))) break;
+
+		scanner.advance(); // consume marker
+
+		// Skip spaces/tabs
+		while (isSpace(scanner.char())) {
+			scanner.advance();
+		}
+
+		// Parse item content as inline
+		const inlines = parseInline(scanner, options);
+		items.push(listItem(inlines));
+
+		// Consume newline
+		if (!scanner.isEnd()) {
+			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+				scanner.advance(2);
+			} else if (isNewline(scanner.char())) {
+				scanner.advance(1);
+			}
+		}
+	}
+
+	if (items.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return unorderedList(items);
+}
+
+function tryOrderedList(scanner: Scanner, options: Options): Root[number] | null {
+	const start = scanner.save();
+
+	// Must start with a digit
+	if (!isDigit(scanner.char())) {
+		return null;
+	}
+
+	// Peek ahead to confirm pattern: digits + '.' + space
+	const peekStart = scanner.save();
+	while (!scanner.isEnd() && isDigit(scanner.char())) {
+		scanner.advance();
+	}
+	if (scanner.char() !== '.') {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.advance(); // consume '.'
+	if (!isSpace(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.restore(peekStart);
+
+	const items: ReturnType<typeof listItem>[] = [];
+
+	while (!scanner.isEnd()) {
+		// Must start with digit
+		if (!isDigit(scanner.char())) break;
+
+		// Collect digits
+		const numStart = scanner.save();
+		while (!scanner.isEnd() && isDigit(scanner.char())) {
+			scanner.advance();
+		}
+		const numStr = scanner.sliceFrom(numStart);
+
+		// Must be followed by '.' then space
+		if (scanner.char() !== '.') {
+			scanner.restore(start);
+			return null;
+		}
+		scanner.advance(); // consume '.'
+
+		if (!isSpace(scanner.char())) {
+			scanner.restore(start);
+			return null;
+		}
+
+		// Skip spaces/tabs
+		while (isSpace(scanner.char())) {
+			scanner.advance();
+		}
+
+		// Parse item content
+		const inlines = parseInline(scanner, options);
+		items.push(listItem(inlines, parseInt(numStr, 10)));
+
+		// Consume newline
+		if (!scanner.isEnd()) {
+			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+				scanner.advance(2);
+			} else if (isNewline(scanner.char())) {
+				scanner.advance(1);
+			}
+		}
+	}
+
+	if (items.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return orderedList(items);
 }
