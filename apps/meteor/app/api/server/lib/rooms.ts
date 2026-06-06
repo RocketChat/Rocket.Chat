@@ -1,7 +1,8 @@
-import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomAbacRedaction, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
+import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
@@ -17,7 +18,7 @@ export async function findAdminRooms({
 	types: Array<RoomType | 'discussions' | 'teams'>;
 	pagination: { offset: number; count: number; sort: Sort };
 }): Promise<{
-	rooms: IRoom[];
+	rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
 	count: number;
 	offset: number;
 	total: number;
@@ -49,14 +50,20 @@ export async function findAdminRooms({
 	]);
 
 	return {
-		rooms,
+		rooms: await scopeAdminRoomsForAbac(rooms, uid),
 		count: rooms.length,
 		offset,
 		total,
 	};
 }
 
-export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<Pick<IRoom, RoomAdminFieldsType> | null> {
+export async function findAdminRoom({
+	uid,
+	rid,
+}: {
+	uid: string;
+	rid: string;
+}): Promise<(Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction) | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -65,7 +72,9 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 	if (!room) {
 		return null;
 	}
-	return stripABACManagedFieldsForAdmin(room);
+
+	const [scoped] = await scopeAdminRoomsForAbac([stripABACManagedFieldsForAdmin(room)], uid);
+	return scoped ?? null;
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{

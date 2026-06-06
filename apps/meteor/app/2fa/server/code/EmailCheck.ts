@@ -10,7 +10,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
 export class EmailCheck implements ICodeCheck {
-	public readonly name: string = 'email';
+	public readonly name = 'email';
 
 	private getUserVerifiedEmails(user: IUser): string[] {
 		if (!Array.isArray(user.emails)) {
@@ -145,6 +145,6 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 	public async maxFaildedAttemtpsReached(user: IUser) {
 		const maxAttempts = settings.get<number>('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts');
-		return Users.maxInvalidEmailCodeAttemptsReached(user._id, maxAttempts);
+		return (await Users.maxInvalidEmailCodeAttemptsReached(user._id, maxAttempts)) as boolean;
 	}
 }

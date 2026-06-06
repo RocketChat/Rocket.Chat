@@ -9,6 +9,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import { settings } from '../settings';
 import { getUserId } from '../user';
+import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 import { prependReplies } from '../utils/prependReplies';
 import { upsertThreadMessageInCache } from '../utils/threadMessageUtils';
 
@@ -34,7 +35,8 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
-		Messages.state.find((record) => record._id === mid && record._hidden !== true) ?? sdk.call('getSingleMessage', mid);
+		Messages.state.find((record) => record._id === mid && record._hidden !== true) ??
+		sdk.rest.get('/v1/chat.getMessage', { msgId: mid }).then((response) => mapMessageFromApi(response.message));
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);
@@ -68,14 +70,14 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = (settings.peek('Message_AllowEditing') as boolean | undefined) ?? false;
+		const editAllowed = settings.peek('Message_AllowEditing') ?? false;
 		const editOwn = message?.u && message.u._id === getUserId();
 
 		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
 		}
 
-		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
+		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes');
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 		const elapsedMinutes = differenceInMinutes(new Date(), message.ts);
@@ -206,7 +208,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return true;
 		}
 
-		const deletionEnabled = settings.peek('Message_AllowDeleting') as boolean | undefined;
+		const deletionEnabled = settings.peek('Message_AllowDeleting');
 		if (!deletionEnabled) {
 			return false;
 		}
@@ -219,7 +221,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
+		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes');
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 		const elapsedMinutes = differenceInMinutes(new Date(), message.ts);
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;

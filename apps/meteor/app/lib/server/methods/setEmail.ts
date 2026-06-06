@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import { setEmail } from '../functions/setEmail';
 import { RateLimiter } from '../lib';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,7 +25,7 @@ export const setEmailFunction = async (email: string, user: Meteor.User | IUser)
 		});
 	}
 
-	if (user.emails?.[0] && user.emails[0].address === email) {
+	if (user.emails?.[0]?.address === email) {
 		return email;
 	}
 
@@ -39,6 +40,7 @@ export const setEmailFunction = async (email: string, user: Meteor.User | IUser)
 
 Meteor.methods<ServerMethods>({
 	async setEmail(email) {
+		methodDeprecationLogger.method('setEmail', '9.0.0', '/v1/users.updateOwnBasicInfo');
 		const user = await Meteor.userAsync();
 
 		if (!user) {

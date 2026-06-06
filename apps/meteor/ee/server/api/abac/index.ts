@@ -1,4 +1,4 @@
-import { getPdpHealthErrorCode } from '@rocket.chat/abac';
+import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
@@ -40,6 +40,12 @@ const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 				name: user.name,
 			}
 		: undefined;
+
+const assertLocalAttributeStore = async (): Promise<void> => {
+	if (await Abac.isExternalAttributeStore()) {
+		throw new AbacAttributeStoreExternalError();
+	}
+};
 
 const abacEndpoints = API.v1
 	.post(
@@ -244,6 +250,8 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			await assertLocalAttributeStore();
+
 			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -269,6 +277,8 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			await assertLocalAttributeStore();
+
 			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -288,6 +298,9 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+
+			await assertLocalAttributeStore();
+
 			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success(result);
 		},
@@ -307,6 +320,9 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+
+			await assertLocalAttributeStore();
+
 			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -326,6 +342,9 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { key } = this.urlParams;
+
+			await assertLocalAttributeStore();
+
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });
 		},
@@ -414,7 +433,13 @@ const abacEndpoints = API.v1
 						$lte: end ? new Date(end) : new Date(),
 					},
 					t: {
-						$in: ['abac.attribute.changed', 'abac.object.attribute.changed', 'abac.object.attributes.removed', 'abac.action.performed'],
+						$in: [
+							'abac.attribute.changed',
+							'abac.object.attribute.changed',
+							'abac.object.attributes.removed',
+							'abac.action.performed',
+							'abac.attribute.store.switched',
+						],
 					},
 				},
 				{
@@ -433,6 +458,7 @@ const abacEndpoints = API.v1
 					| IServerEvents['abac.attribute.changed']
 					| IServerEvents['abac.object.attribute.changed']
 					| IServerEvents['abac.object.attributes.removed']
+					| IServerEvents['abac.attribute.store.switched']
 				)[],
 				count: events.length,
 				offset,

@@ -21,6 +21,11 @@ export class OmnichannelManager extends OmnichannelAdmin {
 		this.listbox = new Listbox(page);
 	}
 
+	async goto() {
+		await this.page.goto('/omnichannel/managers');
+		await this.btnAddManager.waitFor({ state: 'visible' });
+	}
+
 	get inputUsername(): Locator {
 		return this.page.getByRole('main').getByLabel('Username');
 	}

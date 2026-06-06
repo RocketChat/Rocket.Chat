@@ -22,10 +22,13 @@ const RoomsContextualBarWithData = ({ id, onClose }: RoomsContextualBarWithDataP
 		return <ContextualbarSkeletonBody />;
 	}
 
+	const redacted = data?.abacAttributesRedacted === true;
+
 	return (
 		<RoomsContextualBar
 			roomInfo={{ rid: id, name: data?.fname || data?.name || id }}
 			attributesData={data?.abacAttributes}
+			redacted={redacted}
 			onClose={onClose}
 		/>
 	);

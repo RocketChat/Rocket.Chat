@@ -2,7 +2,7 @@ import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import mem from 'mem';
 
 export const getAgentOverviewDataCached = mem(OmnichannelAnalytics.getAgentOverviewData, {
-	maxAge: process.env.TEST_MODE === 'true' ? 1 : 60000,
+	maxAge: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? 1 : 60000,
 	cacheKey: JSON.stringify,
 });
 // Agent overview data on realtime is cached for 5 seconds
@@ -12,6 +12,6 @@ export const getAnalyticsOverviewDataCached = mem(OmnichannelAnalytics.getAnalyt
 	cacheKey: JSON.stringify,
 });
 export const getAnalyticsOverviewDataCachedForRealtime = mem(OmnichannelAnalytics.getAnalyticsOverviewData, {
-	maxAge: process.env.TEST_MODE === 'true' ? 1 : 5000,
+	maxAge: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? 1 : 5000,
 	cacheKey: JSON.stringify,
 });
