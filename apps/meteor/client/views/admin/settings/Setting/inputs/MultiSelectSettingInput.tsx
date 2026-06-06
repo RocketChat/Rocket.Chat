@@ -8,56 +8,57 @@ import type { SettingInputProps } from './types';
 
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
 type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
-	values: valuesOption[];
+    values: valuesOption[];
 };
 
 function MultiSelectSettingInput({
-	_id,
-	label,
-	value,
-	hint,
-	placeholder,
-	readonly,
-	disabled,
-	required,
-	values = [],
-	hasResetButton,
-	onChangeValue,
-	onResetButtonClick,
-	autocomplete,
+    _id,
+    label,
+    value,
+    hint,
+    placeholder,
+    readonly,
+    disabled,
+    required,
+    values = [],
+    hasResetButton,
+    onChangeValue,
+    onResetButtonClick,
+    autocomplete,
 }: MultiSelectSettingInputProps): ReactElement {
-	const { t } = useTranslation();
-
-	const handleChange = (value: string[]): void => {
-		onChangeValue?.(value);
-		// onChangeValue && onChangeValue([...event.currentTarget.querySelectorAll('option')].filter((e) => e.selected).map((el) => el.value));
-	};
-	const Component = autocomplete ? MultiSelectFiltered : MultiSelect;
-	return (
-		<Field>
-			<FieldRow>
-				<FieldLabel htmlFor={_id} title={_id} required={required}>
-					{label}
-				</FieldLabel>
-				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
-			</FieldRow>
-			<FieldRow>
-				<Component
-					max-width='full'
-					id={_id}
-					value={value}
-					placeholder={placeholder}
-					disabled={disabled}
-					readOnly={readonly}
-					// autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={handleChange}
-					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
-					aria-label={_id} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
-				/>
-			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
-		</Field>
-	);
+    const { t } = useTranslation();
+    const labelId = `${_id}-label`;
+    const handleChange = (value: string[]): void => {
+        onChangeValue?.(value);
+        // onChangeValue && onChangeValue([...event.currentTarget.querySelectorAll('option')].filter((e) => e.selected).map((el) => el.value));
+    };
+    const Component = autocomplete ? MultiSelectFiltered : MultiSelect;
+    return (
+        <Field>
+            <FieldRow>
+                <FieldLabel
+                id={labelId} htmlFor={_id} title={_id} required={required}>
+                    {label}
+                </FieldLabel>
+                {hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
+            </FieldRow>
+            <FieldRow>
+                <Component
+                    max-width='full'
+                    id={_id}
+                    value={value}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    readOnly={readonly}
+                    // autoComplete={autocomplete === false ? 'off' : undefined}
+                    onChange={handleChange}
+                    options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
+                    aria-label={labelId} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
+                />
+            </FieldRow>
+            {hint && <FieldHint>{hint}</FieldHint>}
+        </Field>
+    );
 }
 
 export default MultiSelectSettingInput;
