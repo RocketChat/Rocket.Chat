@@ -321,6 +321,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Bare URL (word.word style)
+		if (isAlpha(ch)) {
+			const result = tryBareUrl(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ch;
+				continue;
+			}
+		}
+
 		// Plain run
 		if (isPlainChar(ch)) {
 			const start = scanner.save();
@@ -462,6 +472,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// Bare URL
+		if (isAlpha(ch)) {
+			const result = tryBareUrl(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ch;
+				continue;
+			}
+		}
+
 		// Plain run
 		if (isPlainChar(ch)) {
 			const start = scanner.save();
@@ -536,6 +556,11 @@ function tryItalic(scanner: Scanner, options: Options): Inlines | null {
 	if (skipItalic) return null;
 
 	const start = scanner.save();
+
+	if (scanner.matches('___')) {
+		scanner.advance(1);
+		return plain('_');
+	}
 
 	const isDouble = scanner.matches('__');
 	const delimiter = isDouble ? '__' : '_';
@@ -959,4 +984,76 @@ function tryAngleBracketLink(scanner: Scanner): Inlines | null {
 	scanner.advance(); // consume '>'
 
 	return link(url, [plain(title)]);
+}
+
+// ─── Bare URL ─────────────────────────────────────────────────────────────────
+
+function tryBareUrl(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+
+	// Collect leading word (alphanumeric + hyphen)
+	if (!isAlpha(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	while (!scanner.isEnd() && (isAlphaNum(scanner.char()) || scanner.char() === '-')) {
+		scanner.advance();
+	}
+
+	// Must hit a '.'
+	if (scanner.isEnd() || scanner.char() !== '.') {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.advance(); // consume '.'
+
+	// Must have alphanumeric after '.'
+	if (scanner.isEnd() || !isAlphaNum(scanner.char())) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Consume the rest of the URL-like token (no spaces/newlines)
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		const ch = scanner.char();
+		if (
+			isAlphaNum(ch) ||
+			ch === '.' ||
+			ch === '-' ||
+			ch === '_' ||
+			ch === '/' ||
+			ch === '?' ||
+			ch === '#' ||
+			ch === '=' ||
+			ch === '&' ||
+			ch === ':' ||
+			ch === '@' ||
+			ch === '!' ||
+			ch === '+' ||
+			ch === ',' ||
+			ch === ';' ||
+			ch === '~' ||
+			ch === "'" ||
+			ch === '(' ||
+			ch === ')' ||
+			ch === '*' ||
+			ch === '$'
+		) {
+			scanner.advance();
+		} else {
+			break;
+		}
+	}
+
+	const raw = scanner.sliceFrom(start);
+
+	// Sanity check: must contain a dot not at start or end
+	const dotIdx = raw.indexOf('.');
+	if (dotIdx <= 0 || dotIdx === raw.length - 1) {
+		scanner.restore(start);
+		return null;
+	}
+
+	return link('//' + raw, [plain(raw)]);
 }
