@@ -3,6 +3,7 @@ import './callbacks';
 import { startCronJobs } from './cron';
 import { ensureMessagesTextIndex } from './ensureMessagesTextIndex';
 import './initialData';
+import './importantMessageMarkerRole';
 import './serverRunning';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';

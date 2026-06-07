@@ -61,6 +61,7 @@ export type * from './models/IUploadsModel';
 export type * from './models/IUserDataFilesModel';
 export type * from './models/IUsersModel';
 export type * from './models/IUsersSessionsModel';
+export type * from './models/IUserRoomCategoriesModel';
 export type * from './models/IVideoConferenceModel';
 export type * from './models/IWebdavAccountsModel';
 export type * from './models/ICalendarEventModel';

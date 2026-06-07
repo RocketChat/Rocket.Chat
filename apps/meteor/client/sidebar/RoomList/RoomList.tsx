@@ -10,11 +10,12 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
+import UserRoomCategoryGroupMenu from './UserRoomCategoryGroupMenu';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { useRoomList } from '../hooks/useRoomList';
+import { SIDEBAR_BUILTIN_GROUP_KEYS, useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
@@ -52,15 +53,42 @@ const RoomList = () => {
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupsCount}
-					groupContent={(index) => (
-						<RoomListCollapser
-							collapsedGroups={collapsedGroups}
-							onClick={() => handleClick(groupsList[index])}
-							onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-							groupTitle={groupsList[index]}
-							unreadCount={groupedUnreadInfo[index]}
-						/>
-					)}
+					groupContent={(index) => {
+						const groupTitle = groupsList[index];
+						const isBuiltin = SIDEBAR_BUILTIN_GROUP_KEYS.has(groupTitle);
+						const headerActions = !isAnonymous && !isBuiltin ? <UserRoomCategoryGroupMenu categoryName={groupTitle} /> : undefined;
+						const ariaTitle = isBuiltin ? t(groupTitle) : groupTitle;
+						const displayTitle = headerActions ? (
+							<Box display='flex' alignItems='center' justifyContent='space-between' width='full'>
+								<Box is='span' flexGrow={1} flexShrink={1} style={{ minWidth: 0 }}>
+									{ariaTitle}
+								</Box>
+								<Box
+									is='span'
+									flexGrow={0}
+									flexShrink={0}
+									onClickCapture={(e) => e.stopPropagation()}
+									onMouseDownCapture={(e) => e.stopPropagation()}
+								>
+									{headerActions}
+								</Box>
+							</Box>
+						) : (
+							ariaTitle
+						);
+
+						return (
+							<RoomListCollapser
+								collapsedGroups={collapsedGroups}
+								onClick={() => handleClick(groupsList[index])}
+								onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
+								groupTitle={groupTitle}
+								displayTitle={displayTitle}
+								ariaTitle={ariaTitle}
+								unreadCount={groupedUnreadInfo[index]}
+							/>
+						);
+					}}
 					{...(roomList.length > 0 && {
 						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
 					})}

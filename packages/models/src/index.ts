@@ -61,6 +61,7 @@ import type {
 	IUserDataFilesModel,
 	IUsersSessionsModel,
 	IUsersModel,
+	IUserRoomCategoriesModel,
 	IVideoConferenceModel,
 	IWebdavAccountsModel,
 	ICalendarEventModel,
@@ -104,6 +105,7 @@ import {
 	TeamRaw,
 	UsersRaw,
 	UsersSessionsRaw,
+	UserRoomCategoriesRaw,
 	AbacAttributesRaw,
 	ServerEventsRaw,
 } from './modelClasses';
@@ -195,6 +197,7 @@ export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
+export const UserRoomCategories = proxify<IUserRoomCategoriesModel>('IUserRoomCategoriesModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
@@ -211,6 +214,7 @@ export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesMode
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));
+	registerModel('IUserRoomCategoriesModel', () => new UserRoomCategoriesRaw(db));
 
 	registerModel('IRolesModel', () => new RolesRaw(db));
 	registerModel('IRoomsModel', () => new RoomsRaw(db));

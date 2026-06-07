@@ -86,6 +86,74 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result?.total || 0;
 	}
 
+	countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number> {
+		const query: Filter<ISubscription> = {
+			rid,
+			archived: { $ne: true },
+			ls: { $gte: messageTs },
+			'u._id': {
+				...(excludeUserId ? { $ne: excludeUserId } : {}),
+				$exists: true,
+			},
+		};
+
+		return this.countDocuments(query);
+	}
+
+	async findReaderUsersByRoomIdAndMessageTs(
+		rid: string,
+		messageTs: Date,
+		excludeUserId: string | undefined,
+		limit: number,
+	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>> {
+		const safeLimit = Math.min(Math.max(limit, 1), 100);
+
+		const pipeline = [
+			{
+				$match: {
+					rid,
+					archived: { $ne: true },
+					ls: { $gte: messageTs },
+					'u._id': {
+						...(excludeUserId ? { $ne: excludeUserId } : {}),
+						$exists: true,
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'u._id',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{ $unwind: '$user' },
+			{
+				$match: {
+					'user.active': true,
+				},
+			},
+			{
+				$sort: {
+					'user.username': 1,
+				},
+			},
+			{
+				$limit: safeLimit,
+			},
+			{
+				$project: {
+					_id: '$user._id',
+					name: '$user.name',
+					username: '$user.username',
+				},
+			},
+		];
+
+		return this.col.aggregate<Pick<IUser, '_id' | 'name' | 'username'>>(pipeline).toArray();
+	}
+
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOptions<ISubscription> = {}): Promise<ISubscription | null> {
 		const query = {
 			rid,

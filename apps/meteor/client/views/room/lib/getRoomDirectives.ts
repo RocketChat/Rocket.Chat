@@ -7,6 +7,7 @@ type getRoomDirectiesType = {
 	roomCanSetOwner: boolean;
 	roomCanSetLeader: boolean;
 	roomCanSetModerator: boolean;
+	roomCanSetImportantMessageMarker: boolean;
 	roomCanIgnore: boolean;
 	roomCanBlock: boolean;
 	roomCanMute: boolean;
@@ -30,6 +31,7 @@ export const getRoomDirectives = ({
 		roomCanSetOwner,
 		roomCanSetLeader,
 		roomCanSetModerator,
+		roomCanSetImportantMessageMarker,
 		roomCanIgnore,
 		roomCanBlock,
 		roomCanMute,
@@ -41,6 +43,7 @@ export const getRoomDirectives = ({
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_IMPORTANT_MESSAGE_MARKER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE, showingUserId, userSubscription),
@@ -55,6 +58,7 @@ export const getRoomDirectives = ({
 		roomCanSetOwner,
 		roomCanSetLeader,
 		roomCanSetModerator,
+		roomCanSetImportantMessageMarker,
 		roomCanIgnore,
 		roomCanBlock,
 		roomCanMute,

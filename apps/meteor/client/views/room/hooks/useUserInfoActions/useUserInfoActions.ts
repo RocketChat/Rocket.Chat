@@ -12,6 +12,7 @@ import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
+import { useChangeImportantMessageMarkerAction } from './actions/useChangeImportantMessageMarkerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
@@ -52,7 +53,7 @@ export type UserMenuAction = {
 }[];
 
 type UserInfoActionsParams = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension' | 'roles'>;
 	rid: IRoom['_id'];
 	reload?: () => void;
 	size?: number;
@@ -77,6 +78,7 @@ export const useUserInfoActions = ({
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
 	const changeModerator = useChangeModeratorAction(user, rid);
+	const changeImportantMessageMarker = useChangeImportantMessageMarkerAction(user, rid);
 	const openModerationConsole = useRedirectModerationConsole(user._id);
 	const changeOwner = useChangeOwnerAction(user, rid);
 	const openDirectMessage = useDirectMessageAction(user, rid);
@@ -99,6 +101,7 @@ export const useUserInfoActions = ({
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
 			...(isMember && changeModerator && { changeModerator }),
+			...(isMember && changeImportantMessageMarker && { changeImportantMessageMarker }),
 			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
 			...(isMember && muteUser && { muteUser }),
@@ -115,6 +118,7 @@ export const useUserInfoActions = ({
 			changeOwner,
 			changeLeader,
 			changeModerator,
+			changeImportantMessageMarker,
 			ignoreUser,
 			muteUser,
 			blockUser,
@@ -160,3 +164,4 @@ export const useUserInfoActions = ({
 
 	return actionSpread;
 };
+
