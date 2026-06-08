@@ -383,6 +383,15 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
+		await this.section('Issue_Links', async function () {
+			await this.add('IssueLinks_LinkTemplate', '', {
+				type: 'string',
+				public: true,
+				i18nDescription: 'IssueLinks_LinkTemplate_Description',
+				alert: 'IssueLinks_Incompatible',
+			});
+		});
+
 		await this.section('Katex', async function () {
 			const enableQuery = {
 				_id: 'Katex_Enabled',

@@ -24,6 +24,7 @@ type MarkupInteractionContextValue = {
 	showMentionSymbol?: boolean;
 	triggerProps?: AriaButtonProps<'button'>;
 	language?: string;
+	issueLinksTemplate?: string;
 };
 
 export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({});
