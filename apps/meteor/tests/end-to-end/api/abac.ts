@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
-import { getCredentials, request, credentials, methodCall } from '../../data/api-data';
+import { api, getCredentials, request, credentials, methodCall } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
 	mockServerHealthy,
@@ -190,7 +190,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				it('POST /abac/users/sync should return 403', async () => {
 					await request
-						.post('/api/v1/abac/users/sync')
+						.post(api('abac/users/sync'))
 						.set(credentials)
 						.send({ usernames: ['x'] })
 						.expect(403);
@@ -1453,7 +1453,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			it('POST /abac/users/sync should fail with error-abac-not-enabled', async () => {
 				await request
-					.post('/api/v1/abac/users/sync')
+					.post(api('abac/users/sync'))
 					.set(credentials)
 					.send({ ids: ['no-such-user-id'] })
 					.expect(400)
@@ -1854,7 +1854,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('responds 200 with success:true when ABAC_Enabled=true and PDP type=local (no-match id)', async () => {
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({ ids: ['no-such-user-id'] })
 				.expect(200)
@@ -2535,7 +2535,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should sync ABAC attributes for SOME users via /abac/users/sync', async () => {
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({
 					usernames: ['david.scott', 'gene.cernan'],
@@ -2565,7 +2565,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('should fail /abac/users/sync when more than 100 usernames are provided', async () => {
 			const usernames = Array.from({ length: 101 }, (_, i) => `user_${i}@example.com`);
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({
 					usernames,
@@ -2579,7 +2579,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('should fail /abac/users/sync when more than 100 ids are provided', async () => {
 			const ids = Array.from({ length: 101 }, (_, i) => `id_${i}`);
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({
 					ids,
@@ -2593,7 +2593,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('should fail /abac/users/sync when more than 100 emails are provided', async () => {
 			const emails = Array.from({ length: 101 }, (_, i) => `user_${i}@example.com`);
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({
 					emails,
@@ -2607,7 +2607,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('should fail /abac/users/sync when more than 100 ldapIds are provided', async () => {
 			const ldapIds = Array.from({ length: 101 }, (_, i) => `ldap_${i}`);
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({
 					ldapIds,
@@ -2621,7 +2621,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('should succeed /abac/users/sync when exactly 100 usernames are provided (boundary)', async () => {
 			const usernames = Array.from({ length: 100 }, (_, i) => `boundary_user_${i}`);
 			await request
-				.post('/api/v1/abac/users/sync')
+				.post(api('abac/users/sync'))
 				.set(credentials)
 				.send({
 					usernames,
@@ -2699,7 +2699,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(sergeiInitialAttrs[0].values).to.include(initialDept);
 
 				await request
-					.post('/api/v1/abac/users/sync')
+					.post(api('abac/users/sync'))
 					.set(credentials)
 					.send({
 						usernames: ['david.scott', 'sergei.krikalev'],
@@ -3469,7 +3469,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				user = await createUser({ username, email });
 				room = (await createRoom({ type: 'p', name: `extpdp-sync-deny-${Date.now()}` })).body.group;
 				await request
-					.post('/api/v1/groups.invite')
+					.post(api('groups.invite'))
 					.set(credentials)
 					.send({ roomId: room._id, usernames: [user.username] })
 					.expect(200);
@@ -3479,7 +3479,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
 
 				await request
-					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.post(api(`abac/rooms/${room._id}/attributes/${attrKey}`))
 					.set(credentials)
 					.send({ values: ['alpha'] })
 					.expect(200);
@@ -3490,7 +3490,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('keeps the user before re-evaluation', async () => {
-				const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+				const res = await request.get(api('groups.members')).set(credentials).query({ roomId: room._id }).expect(200);
 				const usernames = res.body.members.map((m: IUser) => m.username);
 				expect(usernames).to.include(user.username);
 			});
@@ -3501,18 +3501,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await seedBulkDecisionByEntity([adminEmail], 'DECISION_DENY');
 
 				await request
-					.post('/api/v1/abac/users/sync')
+					.post(api('abac/users/sync'))
 					.set(credentials)
 					.send({ usernames: [user.username] })
 					.expect(200);
 
-				const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+				const res = await request.get(api('groups.members')).set(credentials).query({ roomId: room._id }).expect(200);
 				const usernames = res.body.members.map((m: IUser) => m.username);
 				expect(usernames).to.not.include(user.username);
 			});
 
 			it('keeps the room creator (permitted) after re-evaluation', async () => {
-				const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+				const res = await request.get(api('groups.members')).set(credentials).query({ roomId: room._id }).expect(200);
 				const memberIds = res.body.members.map((m: IUser) => m._id);
 				expect(memberIds).to.include(credentials['X-User-Id']);
 			});
@@ -3530,7 +3530,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				user = await createUser({ username, email });
 				room = (await createRoom({ type: 'p', name: `extpdp-sync-permit-${Date.now()}` })).body.group;
 				await request
-					.post('/api/v1/groups.invite')
+					.post(api('groups.invite'))
 					.set(credentials)
 					.send({ roomId: room._id, usernames: [user.username] })
 					.expect(200);
@@ -3540,7 +3540,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
 
 				await request
-					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.post(api(`abac/rooms/${room._id}/attributes/${attrKey}`))
 					.set(credentials)
 					.send({ values: ['alpha'] })
 					.expect(200);
@@ -3556,12 +3556,12 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
 
 				await request
-					.post('/api/v1/abac/users/sync')
+					.post(api('abac/users/sync'))
 					.set(credentials)
 					.send({ usernames: [user.username] })
 					.expect(200);
 
-				const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+				const res = await request.get(api('groups.members')).set(credentials).query({ roomId: room._id }).expect(200);
 				const usernames = res.body.members.map((m: IUser) => m.username);
 				expect(usernames).to.include(user.username);
 			});
@@ -4089,7 +4089,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			it('POST /abac/users/sync is NOT blocked by external attribute store (no error-abac-attribute-store-external)', async () => {
 				const res = await request
-					.post('/api/v1/abac/users/sync')
+					.post(api('abac/users/sync'))
 					.set(credentials)
 					.send({ usernames: ['no-such-user-vstore'] });
 				expect(res.body?.error).to.not.equal('error-abac-attribute-store-external');
