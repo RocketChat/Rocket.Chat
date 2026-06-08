@@ -12,10 +12,11 @@ type MessageCollapsibleProps = {
 	link?: string;
 	size?: number;
 	isCollapsed?: boolean;
+	attachmentId? : string ; // 
 };
 
-const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps): ReactElement => {
-	const [collapsed, collapse] = useCollapse(isCollapsed);
+const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed, attachmentId }: MessageCollapsibleProps): ReactElement => {
+	const [collapsed, collapse] = useCollapse(attachmentId,isCollapsed); // 
 
 	return (
 		<>

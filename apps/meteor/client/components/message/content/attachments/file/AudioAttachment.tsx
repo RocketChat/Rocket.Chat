@@ -7,6 +7,7 @@ import { useReloadOnError } from './hooks/useReloadOnError';
 import MessageCollapsible from '../../../MessageCollapsible';
 
 const AudioAttachment = ({
+	id,
 	title,
 	audio_url: url,
 	audio_type: type,
@@ -21,7 +22,7 @@ const AudioAttachment = ({
 
 	return (
 		<>
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed} attachmentId={id}>
 				<AudioPlayer src={src} type={type} ref={mediaRef} />
 			</MessageCollapsible>
 		</>
