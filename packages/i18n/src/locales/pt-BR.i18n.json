@@ -34,7 +34,7 @@
   "ABAC_Attribute_Store_Switched": "Armazenamento de atributos comutado",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} sala afetada",
-    "other": "{{count}} sala afetadas"
+    "other": "{{count}} salas afetadas"
   },
   "Abac_Cache_Decision_Time_Seconds": "Tempo de decisão do cache ABAC (segundos)",
   "Abac_Cache_Decision_Time_Seconds_Description": "Tempo em segundos para armazenar em cache as decisões de controle de acesso. A definição desse valor como 0 desabilitará o armazenamento em cache.",
