@@ -1,0 +1,13 @@
+import { addDataMigration } from '../../lib/dataMigrations';
+
+addDataMigration({
+	order: {{ order }},
+	id: '{{ id }}',
+	description: '{{ description }}',
+	strategy: 'once',
+	direction: 'upgrade',
+	requiresManualReversion: false,
+	async run() {
+		//
+	},
+});

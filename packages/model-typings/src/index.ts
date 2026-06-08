@@ -73,6 +73,8 @@ export type * from './models/IFederationRoomEventsModel';
 export type * from './models/IAuditLogModel';
 export type * from './models/ICronHistoryModel';
 export type * from './models/IMigrationsModel';
+export type * from './models/IDataMigrationsModel';
+export type * from './models/ISystemLocksModel';
 export type * from './models/IModerationReportsModel';
 export type * from './models/IMediaCallsModel';
 export type * from './models/IMediaCallChannelsModel';

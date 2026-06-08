@@ -25,6 +25,7 @@
 /apps/meteor/server @RocketChat/backend
 /packages/models @RocketChat/Architecture
 apps/meteor/server/startup/migrations @RocketChat/Architecture
+/apps/meteor/server/startup/dataMigrations @RocketChat/Architecture
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
 /apps/meteor/server/features/EmailInbox @RocketChat/omnichannel
 /apps/meteor/ee/app/canned-responses @RocketChat/omnichannel

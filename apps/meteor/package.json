@@ -41,6 +41,7 @@
 		"ha:start": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/run-ha.ts main",
 		"lint": "yarn stylelint && meteor lint && yarn eslint .",
 		"migration:add": "ts-node-transpile-only --skip-project .scripts/make-migration.ts",
+		"data-migration:add": "ts-node-transpile-only --skip-project .scripts/make-data-migration.ts",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} meteor npm run dev",
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"prepare": "node playwright.prepare.mjs",
