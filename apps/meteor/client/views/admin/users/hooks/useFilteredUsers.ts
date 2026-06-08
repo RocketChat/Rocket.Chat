@@ -29,8 +29,7 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			all: {},
 			pending: {
 				type: 'user',
-				status: 'deactivated',
-				inactiveReason: ['pending_approval'],
+				hasLoggedIn: false,
 			},
 			active: {
 				status: 'active',

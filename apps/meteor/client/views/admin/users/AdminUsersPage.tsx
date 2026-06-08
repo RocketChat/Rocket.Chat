@@ -16,6 +16,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
@@ -67,6 +68,7 @@ const AdminUsersPage = (): ReactElement => {
 
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
+	const queryClient = useQueryClient();
 
 	const [tab, setTab] = useState<AdminUsersTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
@@ -83,11 +85,12 @@ const AdminUsersPage = (): ReactElement => {
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
 	});
 
-	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
+	const pendingUsersCount = usePendingUsersCount();
 
 	const handleReload = (): void => {
 		seatsCap?.reload();
 		filteredUsersQueryResult?.refetch();
+		void queryClient.invalidateQueries({ queryKey: ['pendingUsersCount'] });
 	};
 
 	const handleTabChange = (tab: AdminUsersTab) => {
