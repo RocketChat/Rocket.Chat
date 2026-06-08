@@ -635,12 +635,6 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
-		// Account locked by "Draft-behera-ldap-password-policy"
-		if (ldapUser.pwdAccountLockedTime) {
-			mapLogger.debug('User account is locked by password policy (attribute pwdAccountLockedTime)');
-			return true;
-		}
-
 		// EDirectory: Account manually disabled by an admin
 		if (ldapUser.loginDisabled) {
 			mapLogger.debug('User account was manually disabled by an admin (attribute loginDisabled)');

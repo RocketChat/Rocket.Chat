@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes an issue where temporary Active Directory account lockouts incorrectly deactivated users.
+Fixes an issue where temporary AD/LDAP lockouts would deactivate users on rocket.chat.
