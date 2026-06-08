@@ -1,5 +1,5 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
-import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useUserId, useSessionDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,19 @@ const InvitePage = (): ReactElement => {
 	const tokenRef = useRef('');
 
 	const getInviteRoomMutation = useInviteTokenMutation();
+
+	const registrationForm = useSetting('Accounts_RegistrationForm');
+	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
+
+	useEffect(() => {
+		if (validateInvite.isSuccess && validateInvite.data && token) {
+			if (registrationForm !== 'Disabled') {
+				setLoginDefaultState('invite-register');
+			} else {
+				setLoginDefaultState('login');
+			}
+		}
+	}, [validateInvite.isSuccess, validateInvite.data, token, registrationForm, setLoginDefaultState]);
 
 	useEffect(() => {
 		// TODO: this is so hacky, get from the url and set the storage
