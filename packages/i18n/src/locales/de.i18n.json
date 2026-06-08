@@ -33,6 +33,7 @@
   "ABAC_Attribute_Store_Switch_Alert": "Durch den Wechsel des Attributspeichers werden alle bestehenden Raumattribut-Zuordnungen dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden. Es werden keine Benutzer aus einem Raum entfernt, und Räume bleiben privat.",
   "ABAC_Attribute_Store_Switched": "Attributspeicher geschaltet",
   "ABAC_Rooms_Affected": {
+    "one": "{{count}} betroffener Raum",
     "other": "{{count}} betroffene Räume"
   },
   "Abac_Cache_Decision_Time_Seconds": "ABAC-Cache-Entscheidungszeit (Sekunden)",
@@ -607,7 +608,7 @@
   "App_Installation": "App-Installation",
   "App_Installation_Deprecation": "Apps von URL installieren ist veraltet und wird in der nächsten Hauptversion entfernt.",
   "App_Installation_Deprecation_Title": "Warnung vor Veralterung",
-  "App_Request_Admin_Message": "Hallo {{admin_name}}, {{user_name}} hat eine Anfrage zur Installation der Anwendung {{app_name}} auf diesem Arbeitsbereich eingereicht.  \n  \n Dies ist die Nachricht, die sie beigefügt haben:  \n&gt{{message}} \n  \n Um mehr zu erfahren und die App {{app_name}} zu installieren, [klicken Sie hier]({{learn_more}}).",
+  "App_Request_Admin_Message": "Hallo {{admin_name}}, {{user_name}} hat eine Anfrage zur Installation der Anwendung {{app_name}} auf diesem Arbeitsbereich eingereicht.\n\nDies ist die Nachricht, die sie beigefügt haben:\n> {{message}} \n\nUm mehr zu erfahren und die App {{app_name}} zu installieren, [klicken Sie hier]({{learn_more}}).",
   "App_Settings_Saved_Successfully": "{{appName}} erfolgreich gespeichert",
   "App_Store": "App Store",
   "App_Url_to_Install_From": "Von URL installieren",
@@ -615,6 +616,7 @@
   "App_author_homepage": "Seite des Autors",
   "App_cannot_be_enabled_without_add-on": "App kann ohne Add-on nicht aktiviert werden.",
   "App_has_been_disabled_addon_message": {
+    "one": "Die App {{appNames}} wurde aufgrund eines ungültigen Add-ons deaktiviert. Um sie wieder zu aktivieren, ist ein gültiges Add-on-Abonnement erforderlich",
     "other": "Die Apps {{appNames}} wurden aufgrund von ungültigen Add-ons deaktiviert. Um sie wieder zu aktivieren, ist ein gültiges Add-on-Abonnement erforderlich"
   },
   "App_id": "App-Id",
@@ -623,7 +625,7 @@
   "App_name": "App-Name",
   "App_not_enabled": "App nicht aktiviert",
   "App_not_found": "Anwendung nicht gefunden",
-  "App_request_enduser_message": "Die von Ihnen angeforderte Anwendung {{appName}} wurde soeben auf diesem Arbeitsbereich installiert.  \n [Klicken Sie hier]({{learnmore}}), um mehr über die App zu erfahren.",
+  "App_request_enduser_message": "Die von Ihnen angeforderte Anwendung {{appName}} wurde soeben auf diesem Arbeitsbereich installiert.\n [Klicken Sie hier]({{learnmore}}), um mehr über die App zu erfahren.",
   "App_requests_by_workspace": "App-Anfragen von Mitgliedern des Arbeitsbereichs erscheinen hier",
   "App_status_auto_enabled": "Aktiviert",
   "App_status_constructed": "Konstruiert",
@@ -638,8 +640,8 @@
   "App_support_url": "Support-URL",
   "App_user_not_allowed_to_login": "Anwendungs-Benutzer dürfen sich nicht direkt anmelden.",
   "App_version_incompatible_tooltip": "App nicht kompatibel mit Rocket.Chat-Version",
-  "App_will_lose_grandfathered_status": "**Diese App verliert ihre Ausnahme von der App-Limit-Richtlinie  \n  \nIn Arbeitsbereichen auf Community können bis zu {{limit}} Anwendungen aktiviert sein. Wenn Sie diese App deinstallieren, verliert sie ihre Ausnahmegenehmigung.",
-  "App_will_lose_grandfathered_status_private": "**Diese App verliert ihre Ausnahme von der App-Limit-Richtlinie  \n  \nDa Community-Arbeitsbereiche keine privaten Apps aktivieren können, ist für diesen Arbeitsbereich ein Premium-Tarif erforderlich, um diese App in Zukunft wieder zu aktivieren.",
+  "App_will_lose_grandfathered_status": "**Diese App verliert ihre Ausnahme von der App-Limit-Richtlinie.**\n\nIn Arbeitsbereichen auf Community können bis zu {{limit}} Anwendungen aktiviert sein. Wenn Sie diese App deinstallieren, verliert sie ihre Ausnahmegenehmigung.",
+  "App_will_lose_grandfathered_status_private": "**Diese App verliert ihre Ausnahme von der App-Limit-Richtlinie.**\n\nDa Community-Arbeitsbereiche keine privaten Apps aktivieren können, ist für diesen Arbeitsbereich ein Premium-Tarif erforderlich, um diese App in Zukunft wieder zu aktivieren.",
   "Appearance": "Erscheinungsbild",
   "Application_Name": "Name der Anwendung",
   "Application_added": "Die Anwendung wurde hinzugefügt.",
@@ -651,6 +653,7 @@
   "Apps": "Anwendungen",
   "Apps_Cannot_Be_Updated": "App kann nicht aktualisiert werden",
   "Apps_Count_Enabled": {
+    "one": "{{count}} app aktiviert",
     "other": "{{count}} apps aktiviert"
   },
   "Apps_Count_Enabled_tooltip": "Gemeinschaftsarbeitsbereiche können bis zu {{number}} {{context}} Anwendungen ermöglichen",
@@ -2041,8 +2044,8 @@
   "Enable_business_hours": "Geschäftszeiten freigeben",
   "Enable_encryption": "Verschlüsselung einschalten",
   "Enable_inquiry_fetch_by_stream": "Aktivieren des Abrufs von Abfragedaten vom Server über einen Datenstrom",
-  "Enable_of_limit_apps_currently_enabled": "**{{enabled}} von {{limit}} {{context}} apps derzeit aktiviert.**  \n  \nIn den Arbeitsbereichen der Community können bis zu {{limit}} {{context}} Anwendungen aktiviert sein.  \n  \n**{{appName}} ist standardmäßig deaktiviert. ** Deaktivieren Sie eine andere {{context}} App oder aktualisieren Sie auf Premium, um diese App zu aktivieren.",
-  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} von {{limit}} {{context}} apps derzeit aktiviert.**  \n  \nDas Limit für Community-Apps wurde überschritten.  \n  \nIn Arbeitsbereichen auf Community können bis zu {{limit}} {{context}} Apps aktiviert sein.  \n  \n**{{appName}} ist standardmäßig deaktiviert. ** Um diese App zu aktivieren, müssen Sie mindestens {{exceed}} andere {{context}} Apps deaktivieren oder ein Upgrade auf einen Premium-Tarif durchführen.",
+  "Enable_of_limit_apps_currently_enabled": "**{{enabled}} von {{limit}} {{context}} apps derzeit aktiviert.**\n\nIn den Arbeitsbereichen der Community können bis zu {{limit}} {{context}} Anwendungen aktiviert sein.\n\n**{{appName}} ist standardmäßig deaktiviert. ** Deaktivieren Sie eine andere {{context}} App oder aktualisieren Sie auf Premium, um diese App zu aktivieren.",
+  "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} von {{limit}} {{context}} apps derzeit aktiviert.**\n\nDas Limit für Community-Apps wurde überschritten.\n\nIn Arbeitsbereichen auf Community können bis zu {{limit}} {{context}} Apps aktiviert sein.\n\n**{{appName}} ist standardmäßig deaktiviert. ** Um diese App zu aktivieren, müssen Sie mindestens {{exceed}} andere {{context}} Apps deaktivieren oder ein Upgrade auf einen Premium-Tarif durchführen.",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Automatisches Schließen von Räumen, die vom Besucher verlassen werden, aktivieren",
   "Enable_to_bypass_email_verification": "Aktivieren, um die E-Mail-Verifizierung zu umgehen",
   "Enable_two-factor_authentication": "Zwei-Faktor-Authentifizierung aktivieren",
@@ -2441,6 +2444,7 @@
   "Follow_message": "Nachricht folgen",
   "Follow_social_profiles": "Folgen Sie uns in sozialen Netzwerken, forken Sie uns auf GitHub und teilen Sie Ihre Meinung und Gedanken über die Rocket.Chat-App auf unserem Trello-Board.",
   "Follower": {
+    "one": "Follower",
     "other": "Follower"
   },
   "Following": "Sie folgen dieser Nachricht",
@@ -4245,7 +4249,7 @@
   "Premium_cap_description": "Bei den Premium-Tarifen gibt es keine Begrenzung der Anwesenheitspflicht.",
   "Premium_capabilities": "Premium-Fähigkeiten",
   "Premium_capability": "Premiumfähigkeit",
-  "Premium_omnichannel_capabilities": "Premium-Funktionen omnichannel ",
+  "Premium_omnichannel_capabilities": "Premium-Funktionen omnichannel",
   "Premium_only": "Nur Prämie",
   "Please_provide_a_name_for_your_token": "Bitte geben Sie einen Namen für Ihren Token an",
   "Preparing_data_for_import_process": "Daten werden für den Importvorgang vorbereitet",
@@ -4274,6 +4278,7 @@
   "Private": "Privat",
   "Private_Apps": "Private Apps",
   "Private_Apps_Count_Enabled": {
+    "one": "{{count}} private App aktiviert",
     "other": "{{count}} private Anwendungen aktiviert"
   },
   "Private_Channel": "Privater Channel",
@@ -5573,7 +5578,7 @@
   "Unread": "Ungelesen",
   "Unread_Count": "Anzahl ungelesener Nachrichten",
   "Unread_Count_DM": "Anzahl ungelesener Direktnachrichten",
-  "Unread_Count_Omni": "Anzahl ungelesener Chats für omnichannel ",
+  "Unread_Count_Omni": "Anzahl ungelesener Chats für Omnichannel",
   "Unread_Messages": "Ungelesene Nachrichten",
   "Unread_Requested_First": "Ungelesenes zuerst angefordert",
   "Unread_Requested_Last": "Ungelesen zuletzt angefordert",
@@ -5634,6 +5639,7 @@
   "Upload_user_avatar": "Avatar hochladen",
   "Uploading_file": "Datei wird hochgeladen...",
   "Uploading__count__file": {
+    "one": "Hochladen {{count}} Datei",
     "other": "Hochladen von {{count}} Dateien"
   },
   "Uploads": "Uploads",
@@ -5878,7 +5884,7 @@
   "VoIP_TeamCollab_Ice_Gathering_Timeout": "ICE-Sammelzeitüberschreitung",
   "VoIP_TeamCollab_Ice_Gathering_Timeout_Description": "Zeit, die gewartet wird, bis das ICE Gathering abgeschlossen ist, bevor gesendet wird. Niedrige Werte können die Verwendung von Ice Servern verhindern, während hohe Werte den Beginn von VoIP-Anrufen verzögern können, wenn ein ungültiger Ice Server angegeben wird.",
   "VoIP_TeamCollab_Ice_Servers": "ICE-Server",
-  "VoIP_TeamCollab_Ice_Servers_Description": "Eine Liste von Eisservern (STUN und/oder TURN), getrennt durch ein Komma.  \n Benutzername, Passwort und Port sind im Format `Benutzername:Passwort@stun:host:port` oder `Benutzername:Passwort@turn:host:port` zulässig.  \n Sowohl der Benutzername als auch das Passwort können html-kodiert sein.",
+  "VoIP_TeamCollab_Ice_Servers_Description": "Eine Liste von Eisservern (STUN und/oder TURN), getrennt durch ein Komma.\n Benutzername, Passwort und Port sind im Format `Benutzername:Passwort@stun:host:port` oder `Benutzername:Passwort@turn:host:port` zulässig.\n Sowohl der Benutzername als auch das Passwort können html-kodiert sein.",
   "VoIP_TeamCollab_WebRTC": "WebRTC-Einstellungen",
   "VoIP_TeamCollab_SIP_Integration": "SIP-Integration",
   "VoIP_TeamCollab_SIP_Integration_Enabled": "SIP-Integration Aktiviert",
@@ -6023,6 +6029,7 @@
   "You_can_search_using_RegExp_eg": "Sie können einen <a href=\"https://en.wikipedia.org/wiki/Regular_expression\" target=\"_blank\">regulären Ausdruck</a> zum Suchen verwenden. z.B. <code class=\"code-colors inline\">/^text$/i</code>",
   "You_can_try_to": "Sie können Folgendes versuchen",
   "You_cant_upload_more_than__count__files": {
+    "one": "Sie können nicht mehr als {{count}} Dateien auf einmal hochladen.",
     "other": "Sie können nicht mehr als {{count}} Dateien auf einmal hochladen."
   },
   "You_can_use_an_emoji_as_avatar": "Sie können auch einen Emoji als Profilbild verwenden",
@@ -6523,6 +6530,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "Sie haben keine öffentliche E-Mail-Adresse in Ihrem GitHub-Account.",
   "group_mentions_counter": {
+    "one": "{{count}} gruppenerwähnung",
     "other": "{{count}} gruppenerwähnungen"
   },
   "hours": "Stunden",
@@ -6646,6 +6654,7 @@
   "mention-here": "Hier erwähnen",
   "mention-here_description": "Berechtigung um Erwähnungen mit @hier zu nutzen",
   "mentions_counter": {
+    "one": "{{count}} erwähnen",
     "other": "{{count}} erwähnt"
   },
   "message": "Nachricht",
@@ -6846,7 +6855,7 @@
   "registration.component.login.userNotFound": "Der Benutzer konnte nicht gefunden werden",
   "registration.component.resetPassword": "Passwort zurücksetzen",
   "registration.component.switchLanguage": "Wechseln zu <2>{{name}}</2>",
-  "registration.component.welcome": "Willkommen im Arbeitsbereich <1>von Rocket.Chat</1> ",
+  "registration.component.welcome": "Willkommen im Arbeitsbereich <1>von Rocket.Chat</1>",
   "registration.page.emailVerification.sent": "Verifizierungs-E-Mail gesendet, bitte überprüfen Sie Ihren Posteingang.",
   "registration.page.emailVerification.subTitle": "Dieser Server erfordert verifizierte E-Mail-Adressen. Bitte prüfen Sie Ihren E-Mail-Posteingang auf einen Verifizierungslink.",
   "registration.page.guest.chooseHowToJoin": "Wählen Sie, wie Sie beitreten möchten",
@@ -6883,7 +6892,7 @@
   "removed__username__as__role_": "{{username}} als {{role}} entfernt",
   "request": "anfrage",
   "request-pdf-transcript": "PDF-Transkript anfordern",
-  "request-pdf-transcript_description": "Erlaubnis zur Anforderung einer PDF-Abschrift für einen bestimmten Raum omnichannel ",
+  "request-pdf-transcript_description": "Erlaubnis zur Anforderung einer PDF-Abschrift für einen bestimmten Raum Omnichannel",
   "requests": "anfragen",
   "required": "angefordert",
   "reset-other-user-e2e-key": "Ende-zu-Ende-Verschlüsselungsschlüssel eines anderen Nutzers zurücksetzen",
@@ -6954,9 +6963,11 @@
   "subscription.callout.allPremiumCapabilitiesDisabled": "Alle Premium-Funktionen deaktiviert",
   "subscription.callout.capabilitiesDisabled": "Funktionen deaktiviert",
   "subscription.callout.description.limitsExceeded": {
+    "one": "Ihr Arbeitsbereich hat die <1>{{val}}</1> lizenzgrenze überschritten. <3>Verwalten Sie Ihr Abonnement</3>, um die Limits zu erhöhen.",
     "other": "Ihr Arbeitsbereich hat die <1>{{val, list}}</1> lizenzgrenzen überschritten. <3>Verwalten Sie Ihr Abonnement</3>, um die Limits zu erhöhen."
   },
   "subscription.callout.description.limitsReached": {
+    "one": "Ihr Arbeitsbereich hat die <1>{{val}}</1> lizenzgrenze erreicht. <3>Verwalten Sie Ihr Abonnement</3>, um das Limit zu erhöhen.",
     "other": "Ihr Arbeitsbereich hat die <1>{{val, list}}</1> lizenzgrenze erreicht. <3>Verwalten Sie Ihr Abonnement</3>, um die Limits zu erhöhen."
   },
   "subscription.callout.guestUsers": "gäste",
@@ -7032,6 +7043,7 @@
   "thread_messages": "thread-Nachrichten",
   "thread_message_preview": "vorschau auf Gewindenachrichten",
   "threads_counter": {
+    "one": "{{count}} ungelesene threaded message",
     "other": "{{count}} ungelesene Thread-Nachrichten"
   },
   "to_see_more_details_on_how_to_integrate": "um weitere Informationen zur Integration zu sehen",
@@ -7049,9 +7061,10 @@
   "unarchive-room": "Room aus dem Archiv holen",
   "unarchive-room_description": "Berechtigung, einen Raum aus dem Archiv holen",
   "unauthorized": "Nicht berechtigt",
-  "unblock-livechat-contact": "Freigeben des Kontaktkanals omnichannel ",
+  "unblock-livechat-contact": "Freigeben des Kontaktkanals Omnichannel",
   "unpinning-not-allowed": "Lösen ist nicht zulässig",
   "unread_messages_counter": {
+    "one": "{{count}} ungelesene Nachricht",
     "other": "{{count}} ungelesene Nachrichten"
   },
   "update-livechat-contact": "Aktualisierung der omnichannel Kontakte",
@@ -7180,13 +7193,16 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} leere Räume werden automatisch entfernt.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> leere Räume werden automatisch entfernt:<br/> {{rooms}}.",
   "__count__file_pruned": {
+    "one": "{{count}} datei beschnitten",
     "other": "{{count}} beschnittene Dateien"
   },
   "__count__files_failed_to_upload": {
+    "one": "{{count}} datei konnte nicht hochgeladen werden und wird nicht gesendet: {{name}}",
     "other": "{{count}} die Dateien konnten nicht hochgeladen werden und werden nicht gesendet."
   },
   "__count__follower": {
-    "other": "+{{count}} Follower"
+    "one": "+{{count}} follower",
+    "other": "+{{count}} follower"
   },
   "__count__message_pruned": {
     "one": "{{count}} Nachricht gelöscht",
@@ -7196,6 +7212,7 @@
   "__count__replies": "{{count}} antwortet",
   "__count__replies__date__": "{{count}} antworten, {{date}}",
   "__count__result_found": {
+    "one": "{{count}} ergebnis gefunden",
     "other": "{{count}} ergebnisse gefunden"
   },
   "__count__tags__and__count__conversations__period__": "{{count}} tags und {{conversations}} Konversationen, {{period}}",
