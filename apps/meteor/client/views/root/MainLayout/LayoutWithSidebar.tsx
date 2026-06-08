@@ -11,7 +11,6 @@ import SecondaryPanel from './SecondaryPanel';
 import { isSidebarRailEnabled } from './sidebarRailFlag';
 import NavBar from '../../../navbar';
 import SidebarRail from '../../../sidebar/SidebarRail';
-import SidebarRailCallRouteSync from '../../../sidebar/SidebarRail/SidebarRailCallRouteSync';
 import SidebarRailHeader from '../../../sidebar/SidebarRail/SidebarRailHeader';
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
@@ -64,7 +63,6 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }) => {
 			>
 				<MainLayoutStyleTags />
 				{showSidebarRail && <SidebarRail />}
-				{showSidebarRail && <SidebarRailCallRouteSync currentRoutePath={currentRoutePath} />}
 				{!removeSidenav && <SecondaryPanel showSidebarRail={showSidebarRail} currentRoutePath={currentRoutePath} />}
 				<MainContent>{children}</MainContent>
 			</Box>
