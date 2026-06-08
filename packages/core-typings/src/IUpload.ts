@@ -47,9 +47,6 @@ export interface IUpload extends IRocketChatRecord {
 	googleCloudStorage?: {
 		path: string;
 	};
-	Webdav?: {
-		path: string;
-	};
 	content?: EncryptedContent;
 	encryption?: {
 		iv: string;
