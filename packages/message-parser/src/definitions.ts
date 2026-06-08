@@ -17,6 +17,8 @@ export type ListItem = {
 	type: 'LIST_ITEM';
 	value: Inlines[];
 	number?: number;
+	indent?: number;
+	children?: ListItem[];
 };
 
 export type Tasks = {

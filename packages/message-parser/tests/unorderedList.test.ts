@@ -45,10 +45,15 @@ test.each([
 * *Fourth item*
 `.trim(),
 		[
-			unorderedList([listItem([plain('First item')])]),
-			unorderedList([listItem([plain('Second item')]), listItem([plain('Third item')]), listItem([bold([plain('Fourth item')])])]),
+			unorderedList([
+				listItem([plain('First item')]),
+				listItem([plain('Second item')]),
+				listItem([plain('Third item')]),
+				listItem([bold([plain('Fourth item')])]),
+			]),
 		],
 	],
+	[`* A * B`, [unorderedList([listItem([plain('A ')]), listItem([plain('B')])])]],
 	//   [
 	//     `
 	// * First item

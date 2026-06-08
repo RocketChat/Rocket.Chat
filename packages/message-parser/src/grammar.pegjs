@@ -42,6 +42,26 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
+
+function buildNestedList(flatItems) {
+  const root = [];
+  const stack = [{ level: -1, children: root }];
+
+  for (const item of flatItems) {
+    const level = item.indent ?? 0;
+
+    // Pop stack until we find a parent whose level < current
+    while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+      stack.pop();
+    }
+
+    const node = { ...item, children: [] };
+    stack[stack.length - 1].children.push(node);
+    stack.push({ level, children: node.children });
+  }
+
+  return root;
+}
 }}
 
 Start
@@ -174,30 +194,44 @@ TaskFlag = "x" { return true; } / " " { return false; }
  *  3. Item Three
  *
  */
-OrderedList = items:OrderedListItem+ { return orderedList(items); }
-
-OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, parseInt(number, 10)); }
 
 /**
- *
- * Unordered List
+ * Ordered List (with nesting support)
  * e.g:
- *  - Item One
- *  - Item Two
- *  * Item Three
- *  * Item Four
- *
+ *  1. Item One
+ *     1. Nested Item
  */
-UnorderedList = items:(UnorderedListHyphenItem+ / UnorderedListAsteriskItem+) { return unorderedList(items); }
+OrderedList = items:OrderedListItem+ { return orderedList(buildNestedList(items)); }
 
-UnorderedListHyphenItem = "-" [ \t]+ text:Inline { return listItem(text); }
+OrderedListItem
+  = indent:$([ \t]*) number:Digits "." [ \t]+ text:Inline
+    { return listItem(text, parseInt(number, 10), indent.length); }
 
-UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return listItem(text); }
+/**
+ * Unordered List (with nesting support)
+ */
+UnorderedList = items:(UnorderedListHyphenItem / UnorderedListAsteriskItem)+
+  { return unorderedList(buildNestedList(items)); }
 
-UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
+UnorderedListHyphenItem
+  = indent:$([ \t]*) "-" [ \t]+ text:Inline
+    { return listItem(text, undefined, indent.length); }
 
-UnorderedListItemContentItem = InlineItemPattern / !"*" @Any
+UnorderedListAsteriskItem
+  = indent:$([ \t]*) "*" [ \t]+ text:UnorderedListAsteriskItemContent
+    &{ 
+      const plainText = text.map((item) => item.value ?? '').join('');
+      return plainText !== '*' && !(plainText.endsWith('*') && !plainText.startsWith('*'));
+    }
+    { return listItem(text, undefined, indent.length); }
 
+UnorderedListAsteriskItemContent
+  = value:UnorderedListAsteriskContentItem+ EndOfLine?
+    { return reducePlainTexts(value); }
+
+UnorderedListAsteriskContentItem
+  = !EndOfLine !("*" [ \t]) @InlineItemPattern
+  / !EndOfLine !("*" [ \t]) @Any
 /**
  *
  * KaTex

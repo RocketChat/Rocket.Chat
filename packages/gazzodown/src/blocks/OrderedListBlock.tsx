@@ -7,11 +7,23 @@ type OrderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 
+const renderChildren = (children: MessageParser.ListItem[]): ReactElement => (
+	<ol style={{ paddingInlineStart: '1.5rem' }}>
+		{children.map((item, index) => (
+			<li key={index} value={item.number}>
+				<InlineElements>{item.value}</InlineElements>
+				{item.children?.length ? renderChildren(item.children) : null}
+			</li>
+		))}
+	</ol>
+);
+
 const OrderedListBlock = ({ items }: OrderedListBlockProps): ReactElement => (
-	<ol>
-		{items.map(({ value, number }, index) => (
-			<li key={index} value={number}>
-				<InlineElements>{value}</InlineElements>
+	<ol style={{ paddingInlineStart: '1.5rem' }}>
+		{items.map((item, index) => (
+			<li key={index} value={item.number}>
+				<InlineElements>{item.value}</InlineElements>
+				{item.children?.length ? renderChildren(item.children) : null}
 			</li>
 		))}
 	</ol>

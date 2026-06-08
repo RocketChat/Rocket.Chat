@@ -131,10 +131,12 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[], number?: number): ListItem => ({
+export const listItem = (text: Inlines[], number?: number, indent = 0): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+	indent,
+	children: [],
 });
 
 export const mentionUser = (() => {
@@ -191,7 +193,7 @@ export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value']
 	let needsSlowPath = false;
 	for (let i = 0; i < flattenableValues.length; i++) {
 		const v = flattenableValues[i];
-		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+		if (Array.isArray(v) || v.type === 'EMOJI') {
 			needsSlowPath = true;
 			break;
 		}
