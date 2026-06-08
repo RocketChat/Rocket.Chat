@@ -662,6 +662,33 @@ export class LDAPEEManager extends LDAPManager {
 		return false;
 	}
 
+	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
+		if (!ldapUser) {
+			return;
+		}
+
+		const syncUserState = settings.get('LDAP_Sync_User_Active_State');
+		if (syncUserState === 'none') {
+			return;
+		}
+
+		const deleted = this.isUserDeactivated(ldapUser);
+		if (deleted === userData.deleted) {
+			return;
+		}
+
+		if (syncUserState === 'disable' && !deleted) {
+			return;
+		}
+
+		if (syncUserState === 'enable' && deleted) {
+			return;
+		}
+
+		userData.deleted = deleted;
+		logger.info({ msg: 'Switching user status', name: userData.name, username: userData.username, active: !deleted });
+	}
+
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
 		return copyCustomFieldsLDAP(
 			{
