@@ -1,118 +1,104 @@
-import type { AppScreenshot } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useCallback, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-
-import ScreenshotCarousel from './ScreenshotCarousel';
 
 type ScreenshotCarouselAnchorProps = {
-	screenshots: AppScreenshot[];
+	screenshots: { id: string; accessUrl: string; altText?: string }[];
 };
 
-type voidFunction = () => void;
-
-const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps): ReactElement => {
+const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps) => {
 	const [viewCarousel, setViewCarousel] = useState(false);
+	const [currentIndex, setCurrentIndex] = useState(0);
 
-	const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+	const goToPrev = useCallback(() => {
+		setCurrentIndex((prev) => (prev === 0 ? screenshots.length - 1 : prev - 1));
+	}, [screenshots.length]);
 
-	const [currentPreviewIndex, setCurrentPreviewIndex] = useState(0);
+	const goToNext = useCallback(() => {
+		setCurrentIndex((prev) => (prev === screenshots.length - 1 ? 0 : prev + 1));
+	}, [screenshots.length]);
 
-	const { length } = screenshots;
-
-	const isFirstSlide = currentSlideIndex === 0;
-	const isLastSlide = currentSlideIndex === length - 1;
-
-	const isCarouselVisible = viewCarousel && screenshots?.length;
-
-	const handleNextSlide = (): void => {
-		setCurrentSlideIndex(currentSlideIndex + 1);
-	};
-
-	const handlePrevSlide = (): void => {
-		setCurrentSlideIndex(currentSlideIndex - 1);
-	};
-
-	const handleKeyboardKey = useCallback(
-		(onKeyDownEvent: KeyboardEvent): void => {
-			const keysObject: Record<string, voidFunction> = {
-				ArrowLeft: () => setCurrentSlideIndex((prevSlideIndex) => (prevSlideIndex !== 0 ? prevSlideIndex - 1 : 0)),
-				ArrowRight: () => setCurrentSlideIndex((prevSlideIndex) => (prevSlideIndex !== length - 1 ? prevSlideIndex + 1 : length - 1)),
-				Escape: () => setViewCarousel(false),
-			};
-
-			keysObject[onKeyDownEvent.key]();
-		},
-		[length],
-	);
+	const closeCarousel = useCallback(() => {
+		setViewCarousel(false);
+	}, []);
 
 	useEffect(() => {
-		const intervalId = setInterval(() => {
-			setCurrentPreviewIndex((prevIndex) => {
-				if (prevIndex === length - 1) return 0;
+		if (!viewCarousel) return;
 
-				return prevIndex + 1;
-			});
-		}, 5000);
+		const keysObject: Record<string, () => void> = {
+			ArrowLeft: goToPrev,
+			ArrowRight: goToNext,
+			Escape: closeCarousel,
+		};
+
+		const handleKeyboardKey = (event: KeyboardEvent): void => {
+			const handler = keysObject[event.key];
+			if (!handler) return;
+			handler();
+		};
 
 		document.addEventListener('keydown', handleKeyboardKey);
 
-		return (): void => {
-			clearInterval(intervalId);
+		return () => {
 			document.removeEventListener('keydown', handleKeyboardKey);
 		};
-	}, [handleKeyboardKey, length]);
+	}, [viewCarousel, goToPrev, goToNext, closeCarousel]);
 
-	const carouselPortal = createPortal(
-		<ScreenshotCarousel
-			AppScreenshots={screenshots}
-			setViewCarousel={setViewCarousel}
-			handleNextSlide={handleNextSlide}
-			handlePrevSlide={handlePrevSlide}
-			isFirstSlide={isFirstSlide}
-			isLastSlide={isLastSlide}
-			currentSlideIndex={currentSlideIndex}
-		/>,
-		document.body,
-	);
+	const currentScreenshot = screenshots[currentIndex];
 
 	return (
 		<>
 			<Box
-				onClick={(): void => setViewCarousel(true)}
-				display='flex'
-				flexDirection='column'
-				maxWidth='x640'
-				width='100%'
-				style={{
-					cursor: 'pointer',
-				}}
-				tabIndex={0}
+				is='button'
+				type='button'
+				onClick={() => setViewCarousel(true)}
+				aria-label='Open screenshot carousel'
+				style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
 			>
-				<Box
-					is='img'
-					src={screenshots[currentPreviewIndex]?.accessUrl}
-					alt='App preview image'
-					className={[
-						css`
-							transition: filter 0.2s ease;
-							&:hover {
-								filter: brightness(90%);
-							}
-						`,
-					]}
-				/>
+				<Box is='img' src={screenshots[0]?.accessUrl} alt={screenshots[0]?.altText ?? 'App screenshot'} width='100%' />
+			</Box>
 
-				<Box display='flex' flexDirection='row' bg='tint' pi={16} pb={10} alignItems='center'>
-					<Icon name='image' size='x24' mie={8} />{' '}
-					<Box is='span' fontScale='p2m' color='default'>
-						{currentPreviewIndex + 1} of {screenshots.length}
+			{viewCarousel && currentScreenshot && (
+				<Box
+					role='dialog'
+					aria-modal='true'
+					aria-label='Screenshot carousel'
+					display='flex'
+					flexDirection='column'
+					alignItems='center'
+					justifyContent='center'
+					position='fixed'
+					inset={0}
+					zIndex={9999}
+					backgroundColor='rgba(0,0,0,0.85)'
+					onClick={closeCarousel}
+				>
+					<Box onClick={(e: React.MouseEvent) => e.stopPropagation()} display='flex' flexDirection='column' alignItems='center'>
+						<Box
+							is='img'
+							src={currentScreenshot.accessUrl}
+							alt={currentScreenshot.altText ?? `Screenshot ${currentIndex + 1}`}
+							maxWidth='90vw'
+							maxHeight='80vh'
+						/>
+
+						<Box display='flex' alignItems='center' justifyContent='center' marginBlockStart='x16'>
+							<ButtonGroup align='center'>
+								<Button small onClick={goToPrev} aria-label='Previous screenshot' disabled={screenshots.length <= 1}>
+									&#8249;
+								</Button>
+
+								<Box is='span' fontScale='p2' color='default' marginInline='x8' aria-live='polite' aria-atomic='true'>
+									{currentIndex + 1} / {screenshots.length}
+								</Box>
+
+								<Button small onClick={goToNext} aria-label='Next screenshot' disabled={screenshots.length <= 1}>
+									&#8250;
+								</Button>
+							</ButtonGroup>
+						</Box>
 					</Box>
 				</Box>
-			</Box>
-			{isCarouselVisible && carouselPortal}
+			)}
 		</>
 	);
 };
