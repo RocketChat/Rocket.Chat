@@ -5408,7 +5408,7 @@
   "timestamps.relativeTime": "Relativ",
   "timestamps.shortTimeDescription": "12:00 UHR",
   "timestamps.longTimeDescription": "12:00:00 UHR",
-  "timestamps.shortDateDescription": "12/31/2020",
+  "timestamps.shortDateDescription": "31.12.2020",
   "timestamps.longDateDescription": "31.12.2020, 12:00 UHR",
   "timestamps.fullDateTimeDescription": "Donnerstag, 31. Dezember 2020, 12:00 UHR",
   "timestamps.fullDateTimeLongDescription": "Donnerstag, Dezember 31, 2020 12:00:00 AM",
