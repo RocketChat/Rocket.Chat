@@ -66,6 +66,7 @@ describe('CannedResponseList', () => {
 			setType: jest.fn(),
 			isRoomOverMacLimit: false,
 			onClickItem: jest.fn(),
+			onClickBack: jest.fn(),
 			onClickCreate: jest.fn(),
 			onClickUse: jest.fn(),
 			reload: jest.fn(),
