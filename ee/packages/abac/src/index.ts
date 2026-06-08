@@ -978,6 +978,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 		} catch (err) {
 			logger.error({ msg: 'Failed to reevaluate users', err });
+			throw err;
 		}
 	}
 }
