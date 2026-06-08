@@ -6,7 +6,7 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
-import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useMediaUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,7 @@ const GenericFileAttachment = ({
 	const uid = useId();
 	const { t } = useTranslation();
 	const openEncryptedPdf = useOpenEncryptedPdf();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleTitleClick = async (event: UIEvent): Promise<void> => {
 		if (!link) {
@@ -41,24 +42,28 @@ const GenericFileAttachment = ({
 
 		const isEncrypted = link.includes('/file-decrypt/');
 
-		if (format === 'PDF' && openDocumentViewer) {
-			event.preventDefault();
+		try {
+			if (format === 'PDF' && openDocumentViewer) {
+				event.preventDefault();
 
-			if (isEncrypted) {
-				openEncryptedPdf(link, title, size, format, openDocumentViewer);
+				if (isEncrypted) {
+					await openEncryptedPdf(link, title, size, format, openDocumentViewer);
+					return;
+				}
+
+				const url = new URL(getURL(link), window.location.origin);
+				url.searchParams.set('contentDisposition', 'inline');
+				openDocumentViewer(url.toString(), format, '');
 				return;
 			}
 
-			const url = new URL(getURL(link), window.location.origin);
-			url.searchParams.set('contentDisposition', 'inline');
-			openDocumentViewer(url.toString(), format, '');
-			return;
-		}
-
-		if (isEncrypted) {
-			event.preventDefault();
-			registerDownloadForUid(uid, t, title);
-			forAttachmentDownload(uid, link);
+			if (isEncrypted) {
+				event.preventDefault();
+				registerDownloadForUid(uid, t, title);
+				forAttachmentDownload(uid, link);
+			}
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('FileUpload_Error_Trying_To_Open_File') });
 		}
 	};
 
