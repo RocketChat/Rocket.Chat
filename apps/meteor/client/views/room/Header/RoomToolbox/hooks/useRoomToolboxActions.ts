@@ -20,7 +20,7 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 	}
 	try {
 		const parsed = JSON.parse(raw) as Record<string, unknown>;
-		if (typeof parsed !== 'object' || parsed === null) {
+		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
 			return null;
 		}
 		if (parsed.items !== undefined && !Array.isArray(parsed.items)) {
@@ -36,14 +36,17 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 				return (
 					typeof candidate.id === 'string' &&
 					(candidate.featured === undefined || typeof candidate.featured === 'boolean') &&
-					(candidate.order === undefined || typeof candidate.order === 'number')
+					(candidate.order === undefined || (typeof candidate.order === 'number' && Number.isFinite(candidate.order)))
 				);
 			});
 			if (!validItems) {
 				return null;
 			}
 		}
-		if (parsed.maxVisibleNormal !== undefined && typeof parsed.maxVisibleNormal !== 'number') {
+		if (
+			parsed.maxVisibleNormal !== undefined &&
+			(typeof parsed.maxVisibleNormal !== 'number' || !Number.isFinite(parsed.maxVisibleNormal))
+		) {
 			return null;
 		}
 		return parsed as RoomToolboxLayoutConfig;
@@ -82,17 +85,22 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			if (!roomToolboxExpanded) {
 				const orderedOverflowActions = [...engineVisible, ...engineSections.flatMap((section) => section.items)];
 
-				const hiddenActions = orderedOverflowActions.reduce((acc, item) => {
+				const sectionsMap = new Map<string, MenuSection>();
+				for (const item of orderedOverflowActions) {
 					const group = item.type ?? '';
-					const section = acc.find((s) => s.id === group);
 					const menuItem = actionToMenuItem(item, openTab, t);
-					if (section) {
-						section.items.push(menuItem);
+					const existing = sectionsMap.get(group);
+					if (existing) {
+						existing.items.push(menuItem);
 					} else {
-						acc.push({ id: group, title: group === 'apps' ? t('Apps') : '', items: [menuItem] });
+						sectionsMap.set(group, {
+							id: group,
+							title: group === 'apps' ? t('Apps') : '',
+							items: [menuItem],
+						});
 					}
-					return acc;
-				}, [] as MenuSection[]);
+				}
+				const hiddenActions = Array.from(sectionsMap.values());
 
 				return { featuredActions, visibleActions: [], hiddenActions };
 			}
@@ -105,7 +113,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 
 			return { featuredActions, visibleActions: engineVisible, hiddenActions };
 		} catch (error) {
-			console.error('Error processing room toolbox layout', error);
+			// Fallback silently to legacy layout behavior to prevent console noise on render
 		}
 	}
 

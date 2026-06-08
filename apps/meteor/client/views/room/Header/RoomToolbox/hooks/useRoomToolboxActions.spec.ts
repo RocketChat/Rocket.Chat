@@ -80,8 +80,23 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.length).toBe(6);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
+		});
+
+		it('should fall back to legacy behavior if config is a JSON array', () => {
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout', '[]')
+					.build(),
+			});
+
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
 		});
 
 		it('should fall back to legacy behavior if config has non-array items', () => {
@@ -93,8 +108,9 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.length).toBe(6);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
 		});
 
 		it('should fall back to legacy behavior if config has items with invalid item types', () => {
@@ -106,8 +122,9 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.length).toBe(6);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
 		});
 
 		it('should fall back to legacy behavior if feature preview is disabled', () => {
@@ -119,8 +136,9 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.length).toBe(6);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
 		});
 
 		it('should handle unexpanded layout properly (roomToolboxExpanded = false)', () => {
