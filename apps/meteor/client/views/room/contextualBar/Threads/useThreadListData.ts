@@ -1,0 +1,131 @@
+import type { IMessage, ISubscription, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { FormEvent } from 'react';
+import { useMemo, useState, useCallback } from 'react';
+
+import { useThreadsList } from './hooks/useThreadsList';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useGoToThread } from '../../hooks/useGoToThread';
+
+type ThreadType = 'all' | 'following' | 'unread';
+
+export type ThreadListData = {
+	searchText: string;
+	handleSearchTextChange: (event: FormEvent<HTMLInputElement>) => void;
+	typeOptions: (readonly [type: ThreadType, label: string])[];
+	type: ThreadType;
+	handleTypeChange: (type: string) => void;
+	handleTabBarCloseButtonClick: () => void;
+	isPending: boolean;
+	error: Error | null;
+	isSuccess: boolean;
+	items: IThreadMainMessage[];
+	itemCount: number;
+	fetchNextPage: () => void;
+	handleThreadClick: (tmid: IMessage['_id']) => void;
+	subscription: ISubscription | undefined;
+};
+
+export const useThreadListData = (): ThreadListData => {
+	const t = useTranslation();
+	const { closeTab } = useRoomToolbox();
+
+	const handleTabBarCloseButtonClick = useCallback(() => {
+		closeTab();
+	}, [closeTab]);
+
+	const [searchText, setSearchText] = useState('');
+
+	const handleSearchTextChange = useCallback(
+		(event: FormEvent<HTMLInputElement>) => {
+			setSearchText(event.currentTarget.value);
+		},
+		[setSearchText],
+	);
+
+	const typeOptions: (readonly [type: ThreadType, label: string])[] = useMemo(
+		() => [
+			['all', t('All')],
+			['following', t('Following')],
+			['unread', t('Unread')],
+		],
+		[t],
+	);
+
+	const [type, setType] = useLocalStorage<ThreadType>('thread-list-type', 'all');
+	const effectiveType = typeOptions.find(([storedType]) => storedType === type)?.[0] ?? 'all';
+
+	const handleTypeChange = useCallback(
+		(type: string) => {
+			const typeOption = typeOptions.find(([t]) => t === type);
+			if (typeOption) setType(typeOption[0]);
+		},
+		[setType, typeOptions],
+	);
+
+	const room = useRoom();
+	const rid = room._id;
+	const subscription = useRoomSubscription();
+	const subscribed = !!subscription;
+	const uid = useUserId();
+	const tunread = subscription?.tunread?.length ? [...subscription.tunread].sort().join(',') : undefined;
+	const text = useDebouncedValue(searchText, 400);
+	const options = useDebouncedValue(
+		useMemo(() => {
+			if (effectiveType === 'all' || !subscribed || !uid) {
+				return {
+					rid,
+					text,
+				};
+			}
+			switch (effectiveType) {
+				case 'following':
+					return {
+						rid,
+						text,
+						type: effectiveType,
+						uid,
+					};
+				case 'unread':
+					return {
+						rid,
+						text,
+						type: effectiveType,
+						...(tunread ? { tunread: tunread.split(',') } : {}),
+					};
+			}
+		}, [effectiveType, rid, subscribed, text, tunread, uid]),
+		300,
+	);
+
+	const { isPending, error, isSuccess, data, fetchNextPage } = useThreadsList(options);
+
+	const items = data?.items || [];
+	const itemCount = data?.itemCount ?? 0;
+
+	const goToThread = useGoToThread({ replace: true });
+	const handleThreadClick = useCallback(
+		(tmid: IMessage['_id']) => {
+			goToThread({ rid, tmid });
+		},
+		[rid, goToThread],
+	);
+
+	return {
+		searchText,
+		handleSearchTextChange,
+		typeOptions,
+		type: effectiveType,
+		handleTypeChange,
+		handleTabBarCloseButtonClick,
+		isPending,
+		error,
+		isSuccess,
+		items,
+		itemCount,
+		fetchNextPage,
+		handleThreadClick,
+		subscription,
+	};
+};
