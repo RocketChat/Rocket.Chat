@@ -6,10 +6,9 @@ import { getCredentials, request, credentials } from '../../data/api-data';
 import { appPresenceStateTest } from '../../data/apps/app-packages';
 import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
+import { adminUsername } from '../../data/user';
 import { getUserByUsername } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
-
-const ADMIN_USERNAME = 'rocketchat.internal.admin.test';
 
 (IS_EE ? describe : describe.skip)('Apps - Presence State Bridge', () => {
 	let app: App;
@@ -25,7 +24,7 @@ const ADMIN_USERNAME = 'rocketchat.internal.admin.test';
 
 	describe('[setActiveState]', () => {
 		it('should set the user presence with status text and source', async () => {
-			const user = await getUserByUsername(ADMIN_USERNAME);
+			const user = await getUserByUsername(adminUsername);
 
 			await request
 				.post(apps(`/public/${app.id}/set-active-state`))
@@ -38,7 +37,7 @@ const ADMIN_USERNAME = 'rocketchat.internal.admin.test';
 				})
 				.expect(200);
 
-			const updatedUser = await getUserByUsername(ADMIN_USERNAME);
+			const updatedUser = await getUserByUsername(adminUsername);
 			expect(updatedUser.statusText).to.equal('In a meeting');
 			expect(updatedUser.statusSource).to.equal('internal');
 		});
@@ -46,7 +45,7 @@ const ADMIN_USERNAME = 'rocketchat.internal.admin.test';
 
 	describe('[endActiveState]', () => {
 		it('should restore the user presence to previous state', async () => {
-			const user = await getUserByUsername(ADMIN_USERNAME);
+			const user = await getUserByUsername(adminUsername);
 
 			// First set an active state
 			await request
@@ -67,7 +66,7 @@ const ADMIN_USERNAME = 'rocketchat.internal.admin.test';
 				.send({ userId: user._id })
 				.expect(200);
 
-			const updatedUser = await getUserByUsername(ADMIN_USERNAME);
+			const updatedUser = await getUserByUsername(adminUsername);
 			expect(updatedUser.statusText).to.not.equal('On a call');
 			expect(updatedUser.statusSource).to.not.equal('internal');
 		});

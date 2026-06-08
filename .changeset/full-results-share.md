@@ -1,9 +1,9 @@
 ---
-'@rocket.chat/presence-service': patch
+'@rocket.chat/presence-service': minor
 '@rocket.chat/core-services': patch
 '@rocket.chat/model-typings': patch
 '@rocket.chat/core-typings': patch
-'@rocket.chat/presence': patch
+'@rocket.chat/presence': minor
 '@rocket.chat/models': patch
 ---
 
