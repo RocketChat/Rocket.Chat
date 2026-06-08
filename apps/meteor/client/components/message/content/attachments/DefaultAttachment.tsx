@@ -27,7 +27,8 @@ const applyMarkdownIfRequires = (
 type DefaultAttachmentProps = MessageAttachmentDefault;
 
 const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => {
-	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
+	const storageKey = attachment.id || undefined;
+	const [collapsed, collapse] = useCollapse(!!attachment.collapsed, storageKey);
 
 	return (
 		<AttachmentBlock
