@@ -164,7 +164,7 @@ describe('useOpenEncryptedPdf', () => {
 				wrapper: mockAppRoot().build(),
 			});
 
-			const exceededSize = 11 * 1024 * 1024; // 11 MB (supera los 10MB del fallback)
+			const exceededSize = 11 * 1024 * 1024; // 11 MB
 
 			await act(async () => {
 				await result.current(link, title, exceededSize, format, mockOpenDocumentViewer);
