@@ -114,8 +114,9 @@ const configure = _.debounce(() => {
 
 	// Back-compat: AWS SDK v2 accepted scheme-less endpoints; v3 throws.
 	if (BucketURL) {
-		config.connection.endpoint = hasScheme(BucketURL) ? BucketURL : `https://${BucketURL}`;
-		if (!hasScheme(BucketURL)) {
+		const isValidScheme = hasScheme(BucketURL);
+		config.connection.endpoint = isValidScheme ? BucketURL : `https://${BucketURL}`;
+		if (!isValidScheme) {
 			SystemLogger.warn(`FileUpload_S3_BucketURL "${BucketURL}" has no scheme; defaulting to "https://${BucketURL}".`);
 		}
 	}
