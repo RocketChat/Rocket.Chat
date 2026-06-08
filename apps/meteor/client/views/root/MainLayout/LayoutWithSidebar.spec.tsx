@@ -13,7 +13,6 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 jest.mock('../../../navbar', () => () => <div>NavBar</div>);
 jest.mock('../../../sidebar/SidebarRail', () => () => <div>SidebarRail</div>);
 jest.mock('../../../sidebar/SidebarRail/SidebarRailHeader', () => () => <div>SidebarRailHeader</div>);
-jest.mock('../../../sidebar/SidebarRail/SidebarRailCallRouteSync', () => () => <div>SidebarRailCallRouteSync</div>);
 jest.mock('./SecondaryPanel', () => () => <div>SecondaryPanel</div>);
 jest.mock('./AccessibilityShortcut', () => () => <div>AccessibilityShortcut</div>);
 
