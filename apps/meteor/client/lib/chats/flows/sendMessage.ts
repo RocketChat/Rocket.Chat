@@ -63,7 +63,8 @@ export const sendMessage = async (
 		tshow,
 		previewUrls,
 		isSlashCommandAllowed,
-	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; tmid?: IMessage['tmid'] },
+		isImportant,
+	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; isImportant?: boolean; tmid?: IMessage['tmid'] },
 ): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
 		try {
@@ -95,8 +96,10 @@ export const sendMessage = async (
 			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
 		});
 
-		// When editing an encrypted message with files, preserve the original attachments/files
-		// This ensures they're included in the re-encryption process
+		if (isImportant) {
+			message.isImportant = true;
+		}
+
 		if (mid) {
 			const originalMessage = await chat.data.findMessageByID(mid);
 

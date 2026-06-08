@@ -34,6 +34,7 @@ export const RoomMemberActions = {
 	SET_AS_OWNER: 'setAsOwner',
 	SET_AS_LEADER: 'setAsLeader',
 	SET_AS_MODERATOR: 'setAsModerator',
+	SET_AS_IMPORTANT_MESSAGE_MARKER: 'setAsImportantMessageMarker',
 	LEAVE: 'leave',
 	REMOVE_USER: 'removeUser',
 	JOIN: 'join',

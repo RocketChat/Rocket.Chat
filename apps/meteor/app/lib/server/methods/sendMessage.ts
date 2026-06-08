@@ -152,6 +152,7 @@ Meteor.methods<ServerMethods>({
 			federation: Match.Maybe(Object),
 			groupable: Match.Maybe(Boolean),
 			sentByEmail: Match.Maybe(Boolean),
+			isImportant: Match.Maybe(Boolean),
 		});
 
 		const user = (await Meteor.userAsync()) as IUser;
@@ -159,6 +160,20 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendMessage',
 			});
+		}
+
+		if (message.isImportant) {
+			if (!message.rid) {
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+					method: 'sendMessage',
+				});
+			}
+
+			if (!(await hasPermissionAsync(user._id, 'mark-message-as-important', message.rid))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+					method: 'sendMessage',
+				});
+			}
 		}
 
 		if (MessageTypes.isSystemMessage(message)) {

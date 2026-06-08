@@ -170,6 +170,7 @@ export type ChatAPI = {
 			tshow?: boolean;
 			previewUrls?: string[];
 			isSlashCommandAllowed?: boolean;
+			isImportant?: boolean;
 			tmid?: IMessage['tmid'];
 		}) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
