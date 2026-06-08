@@ -72,5 +72,21 @@ yarn test:integration --image rocketchat/rocket.chat:latest --keep-running --ele
 
 - **Rocket.Chat**: https://rc1
 - **Synapse**: https://hs1  
+- **XMPP appservice test bridge**: http://localhost:3300
 - **MongoDB**: localhost:27017
 - **Element**: https://element (when using --element flag)
+
+### XMPP Appservice Test Bridge
+
+The integration environment includes a Matrix appservice test bridge for XMPP contract tests. It is intentionally not a real XMPP server. It implements the appservice endpoints Rocket.Chat needs for XMPP room alias queries, transaction delivery, and ping checks.
+
+The bridge is started by the `test` Docker Compose profile and is used by the XMPP federation Jest spec.
+
+Useful test-control endpoints:
+
+- `GET /__health`: bridge health and config
+- `POST /__reset`: reset in-memory rooms, transactions, registered test users, and failures
+- `GET /__rooms`: list test rooms created by alias queries
+- `GET /__transactions`: inspect Matrix appservice transactions delivered by Rocket.Chat
+- `POST /__rooms/:alias/messages`: inject a test XMPP participant message into a bridged room
+- `POST /__rooms/:alias/failure`: make a room alias query fail for rejection-path tests

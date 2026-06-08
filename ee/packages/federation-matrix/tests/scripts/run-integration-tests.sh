@@ -131,6 +131,11 @@ docker_logs() {
     docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" logs rc1
 
     echo ""
+    echo "XMPP APPSERVICE TEST BRIDGE LOGS:"
+    echo "----------------------------------------"
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" logs xmpp-appservice-test-bridge
+
+    echo ""
     echo "SYNAPSE (hs1) LOGS:"
     echo "----------------------------------------"
     docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" logs hs1
@@ -163,6 +168,7 @@ cleanup() {
         log_info "Services are available at:"
         log_info "  - Rocket.Chat: https://rc1"
         log_info "  - Synapse: https://hs1"
+        log_info "  - XMPP appservice test bridge: http://localhost:3300"
         log_info "  - MongoDB: localhost:27017"
         if [ "$INCLUDE_ELEMENT" = true ]; then
             log_info "  - Element: https://element"
@@ -344,6 +350,13 @@ if [ "$START_CONTAINERS" = true ]; then
     if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; then
         log_error "Last 50 lines of hs1 logs:"
         docker compose -f "$DOCKER_COMPOSE_FILE" logs --tail 50 hs1
+        exit 1
+    fi
+
+    # Wait for XMPP appservice test bridge
+    if ! wait_for_service "http://localhost:3300/__health" "XMPP appservice test bridge" "localhost"; then
+        log_error "Last 50 lines of xmpp-appservice-test-bridge logs:"
+        docker compose -f "$DOCKER_COMPOSE_FILE" logs --tail 50 xmpp-appservice-test-bridge
         exit 1
     fi
 fi

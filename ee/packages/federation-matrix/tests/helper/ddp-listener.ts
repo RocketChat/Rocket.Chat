@@ -16,6 +16,10 @@ export class DDPListener {
 
 	private ephemeralMessages: IMessage[] = [];
 
+	private roomUserActivities: Array<{ roomId: string; username: string; activities: string[] }> = [];
+
+	private stopHandlers: Array<() => void> = [];
+
 	private timeoutId: NodeJS.Timeout | null = null;
 
 	private serverUrl: string;
@@ -73,6 +77,17 @@ export class DDPListener {
 		}
 	}
 
+	listenForRoomUserActivity(roomId: string): void {
+		if (!this.sdk) {
+			throw new Error('DDP listener must be connected before subscribing to room activity');
+		}
+
+		const { stop } = this.sdk.stream('notify-room', `${roomId}/user-activity`, (username: string, activities: string[]) => {
+			this.roomUserActivities.push({ roomId, username, activities });
+		});
+		this.stopHandlers.push(stop);
+	}
+
 	/**
 	 * Wait for an ephemeral message with a specific content
 	 * @param expectedContent - The expected message content (partial match)
@@ -127,6 +142,44 @@ export class DDPListener {
 		});
 	}
 
+	async waitForRoomUserActivity(
+		predicate: (activity: { roomId: string; username: string; activities: string[] }) => boolean,
+		timeoutMs = 5000,
+	): Promise<{ roomId: string; username: string; activities: string[] }> {
+		return new Promise((resolve, reject) => {
+			const existingActivity = this.roomUserActivities.find(predicate);
+			if (existingActivity) {
+				resolve(existingActivity);
+				return;
+			}
+
+			let interval: NodeJS.Timeout | null = null;
+
+			this.timeoutId = setTimeout(() => {
+				if (interval) {
+					clearInterval(interval);
+				}
+				reject(new Error('Timeout waiting for room user activity'));
+			}, timeoutMs);
+
+			const checkActivities = () => {
+				const activity = this.roomUserActivities.find(predicate);
+				if (activity) {
+					if (this.timeoutId) {
+						clearTimeout(this.timeoutId);
+						this.timeoutId = null;
+					}
+					if (interval) {
+						clearInterval(interval);
+					}
+					resolve(activity);
+				}
+			};
+
+			interval = setInterval(checkActivities, 100);
+		});
+	}
+
 	/**
 	 * Get all captured ephemeral messages
 	 */
@@ -139,6 +192,7 @@ export class DDPListener {
 	 */
 	clearMessages(): void {
 		this.ephemeralMessages = [];
+		this.roomUserActivities = [];
 	}
 
 	/**
@@ -149,6 +203,11 @@ export class DDPListener {
 			clearTimeout(this.timeoutId);
 			this.timeoutId = null;
 		}
+
+		for (const stop of this.stopHandlers) {
+			stop();
+		}
+		this.stopHandlers = [];
 
 		if (this.sdk) {
 			this.sdk.connection.close();
