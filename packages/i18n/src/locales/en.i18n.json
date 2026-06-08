@@ -2316,6 +2316,7 @@
   "FileUpload_Enabled": "File Uploads Enabled",
   "FileUpload_Enabled_Direct": "File Uploads Enabled in Direct Messages ",
   "FileUpload_Error": "File Upload Error",
+  "FileUpload_Error_Trying_To_Open_File": "Error trying to open file",
   "FileUpload_FileSystemPath": "System Path",
   "FileUpload_File_Empty": "File empty",
   "FileUpload_Canceled": "Upload canceled",
