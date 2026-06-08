@@ -101,7 +101,7 @@ function DiscussionsList({
 									totalCount={itemCount}
 									overscan={25}
 									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion: ID) => (
+									renderItem={(discussion) => (
 										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
 									)}
 								/>

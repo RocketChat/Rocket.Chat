@@ -36,10 +36,6 @@ function PaginatedVirtualList<T extends { _id: string }>({
 	const firstItemId = items[0]?._id ?? '';
 	const lastItemId = items[items.length - 1]?._id ?? '';
 
-	useLayoutEffect(() => {
-		isEndReachedLockedRef.current = false;
-	}, [firstItemId, items.length, lastItemId, totalCount]);
-
 	const checkEndReached = useCallback(
 		(offset: number) => {
 			const handle = virtualizerRef.current;
@@ -86,6 +82,8 @@ function PaginatedVirtualList<T extends { _id: string }>({
 	);
 
 	useLayoutEffect(() => {
+		isEndReachedLockedRef.current = false;
+
 		const handle = virtualizerRef.current;
 		if (!handle) {
 			return;
