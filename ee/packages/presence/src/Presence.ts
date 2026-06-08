@@ -1,15 +1,16 @@
+import { setTimeout, clearTimeout } from 'node:timers';
+
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { cronJobs } from '@rocket.chat/cron';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
 import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
 
 const MAX_CONNECTIONS = 200;
-const EXPIRATION_JOB_NAME = 'presence-status-expiration';
+const MAX_TIMEOUT_DELAY_MS = 2 ** 31 - 1;
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
@@ -29,6 +30,8 @@ export class Presence extends ServiceClass implements IPresence {
 	private peakConnections = 0;
 
 	private reaper: PresenceReaper;
+
+	private expirationTimeout?: NodeJS.Timeout;
 
 	constructor() {
 		super();
@@ -104,6 +107,9 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async processExpiredStatuses(batchSize = 100): Promise<void> {
+		// TODO: in microservices mode every presence-service instance fires its own timer and runs this in parallel.
+		// It's safe (idempotent update, duplicate broadcasts are harmless) but redundant.
+		// Consider electing a single processor (e.g. findOneAndUpdate claim, distributed lock, or per-user lease).
 		const expiredUsers = await Users.findExpiredStatuses(batchSize).toArray();
 
 		if (expiredUsers.length === 0) {
@@ -121,16 +127,23 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async setupNextExpiration(): Promise<void> {
-		if (await cronJobs.has(EXPIRATION_JOB_NAME)) {
-			await cronJobs.remove(EXPIRATION_JOB_NAME);
-		}
+		clearTimeout(this.expirationTimeout);
+		this.expirationTimeout = undefined;
 
 		const next = await Users.findNextStatusExpiration();
 		if (!next?.statusExpiresAt) {
 			return;
 		}
 
-		await cronJobs.addAtTimestamp(EXPIRATION_JOB_NAME, next.statusExpiresAt, () => this.handleExpirationJob());
+		// Node coerces any setTimeout delay > 2^31-1 ms (~24.8 days) to 1ms, firing on the next tick.
+		// See https://nodejs.org/api/timers.html#settimeoutcallback-delay-args
+		// "When delay is larger than 2147483647 [...] the delay will be set to 1".
+		// Cap at the limit so far-future expirations reschedule on each wake instead of misfiring immediately.
+		const delay = Math.min(Math.max(next.statusExpiresAt.getTime() - Date.now(), 0), MAX_TIMEOUT_DELAY_MS);
+		this.expirationTimeout = setTimeout(() => {
+			this.expirationTimeout = undefined;
+			this.handleExpirationJob().catch((err) => console.error('[Presence] Error handling status expiration:', err));
+		}, delay);
 	}
 
 	private async handleExpirationJob(): Promise<void> {
@@ -157,12 +170,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 	override async stopped(): Promise<void> {
 		this.reaper.stop();
-		if (await cronJobs.has(EXPIRATION_JOB_NAME)) {
-			await cronJobs.remove(EXPIRATION_JOB_NAME);
-		}
-		if (!this.lostConTimeout) {
-			return;
-		}
+		clearTimeout(this.expirationTimeout);
 		clearTimeout(this.lostConTimeout);
 	}
 

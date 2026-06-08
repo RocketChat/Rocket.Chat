@@ -18,7 +18,6 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"mongodb": "6.16.0"
 	},
