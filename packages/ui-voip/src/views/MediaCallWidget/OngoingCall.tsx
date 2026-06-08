@@ -27,9 +27,9 @@ const OngoingCall = () => {
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
 	const { inline } = useMediaCallWidgetSlot();
 
-	// Floating widget keeps the collapsible DTMF toggle for external (SIP) calls.
-	// The inline (sidebar rail) dialpad is rendered by <MediaCallDialpad /> in the content instead.
-	const showDialpad = !!peerInfo && 'number' in peerInfo;
+	// The floating widget keeps its collapsible DTMF toggle for every ongoing call.
+	// The inline (sidebar rail) dialpad is rendered by <MediaCallDialpad /> in the content instead,
+	// so the toggle is only suppressed while inline to avoid showing both.
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
 	const slots = useInfoSlots(muted, held, connectionState);
@@ -63,9 +63,7 @@ const OngoingCall = () => {
 			<WidgetFooter>
 				{keypad}
 				<ButtonGroup large>
-					{showDialpad && !inline && (
-						<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
-					)}
+					{!inline && <ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					<ToggleButton
 						label={t('Hold')}

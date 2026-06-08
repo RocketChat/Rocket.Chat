@@ -72,17 +72,17 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 };
 
 describe('Ongoing call dialpad (DMV-16)', () => {
-	it('does not render the dialpad for internal (non-SIP) calls', () => {
-		renderView(OngoingCall, { peerInfo: internalPeer });
+	it('renders the collapsible dialpad toggle for any floating ongoing call (internal included)', () => {
+		renderView(OngoingCall, { peerInfo: internalPeer, inline: false });
 
-		expect(screen.queryByRole('button', { name: 'Dialpad' })).not.toBeInTheDocument();
+		// floating: toggle present for every call, keypad collapsed by default
+		expect(screen.getByRole('button', { name: 'Dialpad' })).toBeInTheDocument();
 		expect(screen.queryByRole('button', { name: '#' })).not.toBeInTheDocument();
 	});
 
-	it('renders a collapsible dialpad toggle for external (SIP) calls when floating', () => {
+	it('renders the collapsible dialpad toggle for external (SIP) calls when floating', () => {
 		renderView(OngoingCall, { peerInfo: externalPeer, inline: false });
 
-		// floating: toggle button present, keypad collapsed by default
 		expect(screen.getByRole('button', { name: 'Dialpad' })).toBeInTheDocument();
 		expect(screen.queryByRole('button', { name: '#' })).not.toBeInTheDocument();
 	});
@@ -90,9 +90,16 @@ describe('Ongoing call dialpad (DMV-16)', () => {
 	it('renders the dialpad expanded (no toggle) for external calls when inline', () => {
 		renderView(OngoingCall, { peerInfo: externalPeer, inline: true });
 
-		// inline: no toggle, the expanded keypad is mounted (the '#' key proves it)
+		// inline: no floating toggle, the expanded keypad is mounted (the '#' key proves it)
 		expect(screen.queryByRole('button', { name: 'Dialpad' })).not.toBeInTheDocument();
 		expect(screen.getByRole('button', { name: '#' })).toBeInTheDocument();
+	});
+
+	it('does not render the inline dialpad for internal (non-SIP) calls', () => {
+		renderView(OngoingCall, { peerInfo: internalPeer, inline: true });
+
+		expect(screen.queryByRole('button', { name: 'Dialpad' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: '#' })).not.toBeInTheDocument();
 	});
 });
 
