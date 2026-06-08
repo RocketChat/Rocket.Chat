@@ -14,6 +14,9 @@ const styles = StyleSheet.create({
 		fontWeight: 700,
 		marginHorizontal: 4,
 	},
+	nested: {
+		marginLeft: 16,
+	},
 });
 
 type OrderedListBlockProps = {
@@ -22,10 +25,17 @@ type OrderedListBlockProps = {
 
 const OrderedListBlock = ({ items }: OrderedListBlockProps) => (
 	<View style={styles.wrapper} wrap>
-		{items.map(({ value, number }, index) => (
-			<Text style={styles.list} key={index}>
-				<Text style={styles.number}>{number}.</Text> <InlineElements>{value}</InlineElements>
-			</Text>
+		{items.map(({ value, number, children }, index) => (
+			<View key={index}>
+				<Text style={styles.list}>
+					<Text style={styles.number}>{number}.</Text> <InlineElements>{value}</InlineElements>
+				</Text>
+				{children?.length && (
+					<View style={styles.nested}>
+						<OrderedListBlock items={children} />
+					</View>
+				)}
+			</View>
 		))}
 	</View>
 );

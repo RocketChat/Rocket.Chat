@@ -5,13 +5,19 @@ import InlineElements from '../elements/InlineElements';
 
 type OrderedListBlockProps = {
 	items: MessageParser.ListItem[];
+	nested?: boolean;
 };
 
-const OrderedListBlock = ({ items }: OrderedListBlockProps): ReactElement => (
-	<ol>
-		{items.map(({ value, number }, index) => (
+const nestedListStyle = {
+	paddingInlineStart: '1.5rem',
+} as const;
+
+const OrderedListBlock = ({ items, nested = false }: OrderedListBlockProps): ReactElement => (
+	<ol style={nested ? nestedListStyle : undefined}>
+		{items.map(({ value, number, children }, index) => (
 			<li key={index} value={number}>
 				<InlineElements>{value}</InlineElements>
+				{children?.length && <OrderedListBlock items={children} nested />}
 			</li>
 		))}
 	</ol>
