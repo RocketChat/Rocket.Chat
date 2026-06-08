@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, IconButton, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -12,12 +12,13 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
-import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
+import { useMutationOutlookCalendarSync, useOutlookCalendarList } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
 type OutlookEventsListProps = {
@@ -34,7 +35,17 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 
 	const syncOutlookCalendar = useMutationOutlookCalendarSync();
 
-	const calendarListResult = useOutlookCalendarListForToday();
+	const [currentDate, setCurrentDate] = useState(() => new Date());
+
+	const handlePrevDay = useCallback(() => {
+		setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() - 1));
+	}, []);
+
+	const handleNextDay = useCallback(() => {
+		setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() + 1));
+	}, []);
+
+	const calendarListResult = useOutlookCalendarList(currentDate);
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -53,6 +64,13 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} color='default'>
+				<Box display='flex' justifyContent='space-between' alignItems='center' pi={24} pb={16}>
+					<IconButton icon='chevron-left' title={t('Previous')} onClick={handlePrevDay} />
+					<Box fontScale='p2' fontWeight={600}>
+						{new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(currentDate)}
+					</Box>
+					<IconButton icon='chevron-right' title={t('Next')} onClick={handleNextDay} />
+				</Box>
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={ref}>
 					{calendarListResult.isPending && <Throbber size='x12' />}
 					{calendarListResult.isError && (
