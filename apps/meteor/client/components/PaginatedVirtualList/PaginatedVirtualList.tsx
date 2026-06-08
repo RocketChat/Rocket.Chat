@@ -37,18 +37,19 @@ function PaginatedVirtualList<T extends { _id: string }>({
 	const lastItemId = items[items.length - 1]?._id ?? '';
 
 	const checkEndReached = useCallback(
-		(offset: number) => {
+		async (offset: number) => {
+			if (isEndReachedLockedRef.current) {
+				return;
+			}
+
 			const handle = virtualizerRef.current;
+
 			if (!handle || !onEndReached) {
 				return;
 			}
 
 			const { scrollSize, viewportSize } = handle;
-			if (viewportSize <= 0) {
-				return;
-			}
-
-			if (items.length >= totalCount) {
+			if (viewportSize <= 0 || items.length >= totalCount) {
 				return;
 			}
 
@@ -57,15 +58,10 @@ function PaginatedVirtualList<T extends { _id: string }>({
 				return;
 			}
 
-			if (isEndReachedLockedRef.current) {
-				return;
-			}
 			isEndReachedLockedRef.current = true;
 
 			try {
-				void onEndReached().catch(() => {
-					isEndReachedLockedRef.current = false;
-				});
+				await onEndReached();
 			} catch {
 				isEndReachedLockedRef.current = false;
 			}
