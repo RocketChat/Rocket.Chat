@@ -17,8 +17,8 @@ import { useMemo, useState, useCallback, useId } from 'react';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
-import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
+import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
