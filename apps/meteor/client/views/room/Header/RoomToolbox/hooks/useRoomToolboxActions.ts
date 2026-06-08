@@ -112,8 +112,8 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			}));
 
 			return { featuredActions, visibleActions: engineVisible, hiddenActions };
-		} catch (error) {
-			// Fallback silently to legacy layout behavior to prevent console noise on render
+		} catch {
+			// fallback silently
 		}
 	}
 
