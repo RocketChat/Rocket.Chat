@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import MediaCallDialpad from './MediaCallDialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -81,6 +82,8 @@ const OngoingCall = () => {
 			<WidgetContent>
 				<CardWidgetContainer>
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+
+					<MediaCallDialpad />
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
