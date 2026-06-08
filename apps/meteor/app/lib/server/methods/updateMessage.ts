@@ -9,6 +9,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
+import { assertNoRestrictedEmojis } from '../lib/validateRestrictedEmojis';
 import { updateMessage } from '../functions/updateMessage';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions'];
@@ -85,6 +86,8 @@ export async function executeUpdateMessage(
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 	}
 	await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
+
+	await assertNoRestrictedEmojis(uid, message.msg, 'updateMessage');
 
 	message.u = originalMessage.u;
 

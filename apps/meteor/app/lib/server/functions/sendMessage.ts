@@ -12,6 +12,7 @@ import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
+import { assertNoRestrictedEmojis } from '../lib/validateRestrictedEmojis';
 
 export type SendMessageOptions = {
 	upsert?: boolean;
@@ -185,6 +186,8 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 			messageCustomFields: settings.get<string>('Message_CustomFields'),
 		});
 	}
+
+	await assertNoRestrictedEmojis(user._id, message.msg, 'sendMessage');
 };
 
 export function prepareMessageObject(
