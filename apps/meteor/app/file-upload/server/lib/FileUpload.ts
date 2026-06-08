@@ -1,13 +1,13 @@
-import { Buffer } from 'buffer';
-import type { WriteStream } from 'fs';
-import fs from 'fs';
-import { unlink, rename, writeFile } from 'fs/promises';
-import type * as http from 'http';
-import type * as https from 'https';
-import stream from 'stream';
-import { finished } from 'stream/promises';
-import URL from 'url';
-import { isArrayBufferView } from 'util/types';
+import { Buffer } from 'node:buffer';
+import type { WriteStream } from 'node:fs';
+import fs from 'node:fs';
+import { unlink, rename, writeFile } from 'node:fs/promises';
+import type * as http from 'node:http';
+import type * as https from 'node:https';
+import stream from 'node:stream';
+import { finished } from 'node:stream/promises';
+import URL from 'node:url';
+import { isArrayBufferView } from 'node:util/types';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
@@ -284,7 +284,7 @@ export const FileUpload = {
 		);
 	},
 
-	async resizeImagePreview(fileParam: IUpload) {
+	async resizeImagePreview(fileParam: Pick<IUpload, '_id'>) {
 		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
@@ -302,7 +302,7 @@ export const FileUpload = {
 		return sharp(await FileUpload.getBuffer(file)).metadata();
 	},
 
-	async createImageThumbnail(fileParam: IUpload) {
+	async createImageThumbnail(fileParam: Pick<IUpload, '_id' | 'identify'>) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
@@ -836,7 +836,7 @@ export class FileUploadClass {
 	}
 
 	private async _validateFile(
-		fileData: OptionalId<IUpload>,
+		fileData: Omit<OptionalId<IUpload>, '_updatedAt'>,
 		content: stream.Readable | Buffer | string,
 	): Promise<stream.Readable | Buffer | string> {
 		const filter = this.store.getFilter();
@@ -863,7 +863,7 @@ export class FileUploadClass {
 	}
 
 	async _doInsert(
-		fileData: OptionalId<IUpload>,
+		fileData: Omit<OptionalId<IUpload>, '_updatedAt'>,
 		content: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {
@@ -888,7 +888,7 @@ export class FileUploadClass {
 	}
 
 	async insert(
-		fileData: OptionalId<IUpload>,
+		fileData: Omit<OptionalId<IUpload>, '_updatedAt'>,
 		streamOrBuffer: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {

@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { RocketChatImportFileInstance } from '../startup/store';
 
@@ -64,6 +65,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async uploadImportFile(binaryContent, contentType, fileName, importerKey) {
+		methodDeprecationLogger.method('uploadImportFile', '9.0.0', '/v1/uploadImportFile');
 		const userId = Meteor.userId();
 
 		if (!userId) {

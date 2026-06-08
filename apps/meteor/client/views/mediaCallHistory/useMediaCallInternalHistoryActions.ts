@@ -1,20 +1,11 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { useWidgetExternalControls, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
+import { useWidgetExternalControls, usePeekMediaSessionState, type CallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
-export type InternalCallHistoryContact = {
-	_id: string;
-	name?: string;
-	username: string;
-	displayName?: string;
-	voiceCallExtension?: string;
-	avatarUrl?: string;
-};
-
 type UseMediaCallInternalHistoryActionsBaseOptions = {
-	contact: InternalCallHistoryContact;
+	contact: CallHistoryInternalContact;
 	messageId?: string;
 	openRoomId?: string;
 	messageRoomId?: string;

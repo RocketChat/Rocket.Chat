@@ -15,7 +15,6 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -88,19 +87,27 @@ const RoomMessage = ({
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
-	const messageRef = useJumpToMessage(message._id);
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!selecting) return;
+
+		if (!(e.code === 'Space' || e.code === 'Enter')) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
 
 	const checkboxLabel = getCheckboxLabel(message, t);
 
 	return (
 		<Message
-			ref={messageRef}
 			id={message._id}
 			role='listitem'
-			aria-roledescription={t('message')}
 			tabIndex={0}
+			aria-roledescription={t('message')}
 			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
 			onClick={selecting ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}

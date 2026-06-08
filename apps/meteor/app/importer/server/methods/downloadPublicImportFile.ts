@@ -1,6 +1,6 @@
-import fs from 'fs';
-import http from 'http';
-import https from 'https';
+import fs from 'node:fs';
+import http from 'node:http';
+import https from 'node:https';
 
 import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { RocketChatImportFileInstance } from '../startup/store';
 
@@ -84,6 +85,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async downloadPublicImportFile(fileUrl: string, importerKey: string) {
+		methodDeprecationLogger.method('downloadPublicImportFile', '9.0.0', '/v1/downloadPublicImportFile');
 		const userId = Meteor.userId();
 
 		if (!userId) {

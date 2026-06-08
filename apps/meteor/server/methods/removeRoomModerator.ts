@@ -7,6 +7,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { beforeChangeRoomRole } from '../lib/callbacks/beforeChangeRoomRole';
@@ -101,6 +102,7 @@ export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['
 
 Meteor.methods<ServerMethods>({
 	async removeRoomModerator(rid, userId) {
+		methodDeprecationLogger.method('removeRoomModerator', '9.0.0', ['/v1/channels.removeModerator', '/v1/groups.removeModerator']);
 		const uid = Meteor.userId();
 
 		if (!uid) {

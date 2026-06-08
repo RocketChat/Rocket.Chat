@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { clientCallbacks } from '@rocket.chat/ui-client';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { settings } from '../../../../client/lib/settings';
@@ -50,6 +49,4 @@ export const runOptimisticSendMessage = async (
 	if (processed.tmid) {
 		upsertThreadMessageInCache(processed, processed.rid, processed.tmid);
 	}
-
-	await clientCallbacks.run('afterSaveMessage', processed, { room, user });
 };

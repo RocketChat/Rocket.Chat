@@ -1,4 +1,4 @@
-import { getPdpHealthErrorCode } from '@rocket.chat/abac';
+import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
@@ -41,12 +41,18 @@ const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 			}
 		: undefined;
 
+const assertLocalAttributeStore = async (): Promise<void> => {
+	if (await Abac.isExternalAttributeStore()) {
+		throw new AbacAttributeStoreExternalError();
+	}
+};
+
 const abacEndpoints = API.v1
 	.post(
 		'abac/rooms/:rid/attributes',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: POSTRoomAbacAttributesBodySchema,
 			response: {
 				200: GenericSuccessSchema,
@@ -74,7 +80,7 @@ const abacEndpoints = API.v1
 		'abac/rooms/:rid/attributes',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -97,7 +103,7 @@ const abacEndpoints = API.v1
 		'abac/rooms/:rid/attributes/:key',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			license: ['abac'],
 			body: POSTSingleRoomAbacAttributeBodySchema,
 			response: {
@@ -124,7 +130,7 @@ const abacEndpoints = API.v1
 		'abac/rooms/:rid/attributes/:key',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: PUTRoomAbacAttributeValuesBodySchema,
 			response: {
 				200: GenericSuccessSchema,
@@ -151,7 +157,7 @@ const abacEndpoints = API.v1
 		'abac/rooms/:rid/attributes/:key',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -172,7 +178,7 @@ const abacEndpoints = API.v1
 		'abac/attributes',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			query: GETAbacAttributesQuerySchema,
 			response: {
 				200: GETAbacAttributesResponseSchema,
@@ -203,7 +209,7 @@ const abacEndpoints = API.v1
 		'abac/users/sync',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac', 'ldap-enterprise'],
 			body: POSTAbacUsersSyncBodySchema,
 			response: {
@@ -229,7 +235,7 @@ const abacEndpoints = API.v1
 		'abac/attributes',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
 			body: POSTAbacAttributeDefinitionSchema,
 			response: {
@@ -244,6 +250,8 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			await assertLocalAttributeStore();
+
 			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -253,7 +261,7 @@ const abacEndpoints = API.v1
 		'abac/attributes/:_id',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
 			body: PUTAbacAttributeUpdateBodySchema,
 			response: {
@@ -269,6 +277,8 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			await assertLocalAttributeStore();
+
 			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -278,7 +288,7 @@ const abacEndpoints = API.v1
 		'abac/attributes/:_id',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
 				200: GETAbacAttributeByIdResponseSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -288,6 +298,9 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+
+			await assertLocalAttributeStore();
+
 			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success(result);
 		},
@@ -297,7 +310,7 @@ const abacEndpoints = API.v1
 		'abac/attributes/:_id',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -307,6 +320,9 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+
+			await assertLocalAttributeStore();
+
 			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success();
 		},
@@ -316,7 +332,7 @@ const abacEndpoints = API.v1
 		'abac/attributes/:key/is-in-use',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
 				200: GETAbacAttributeIsInUseResponseSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -326,6 +342,9 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { key } = this.urlParams;
+
+			await assertLocalAttributeStore();
+
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });
 		},
@@ -334,7 +353,7 @@ const abacEndpoints = API.v1
 		'abac/rooms',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
 				200: GETAbacRoomsResponseValidator,
 				401: validateUnauthorizedErrorResponse,
@@ -364,7 +383,7 @@ const abacEndpoints = API.v1
 		'abac/pdp/health',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'manage-abac-admin-settings'],
 			rateLimiterOptions: {
 				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
@@ -396,7 +415,7 @@ const abacEndpoints = API.v1
 			},
 			query: GETAbacAuditEventsQuerySchema,
 			authRequired: true,
-			permissionsRequired: ['abac-management'],
+			permissionsRequired: ['abac-management', 'view-abac-admin-audit'],
 			license: ['abac', 'auditing'],
 		},
 		async function action() {
@@ -414,7 +433,13 @@ const abacEndpoints = API.v1
 						$lte: end ? new Date(end) : new Date(),
 					},
 					t: {
-						$in: ['abac.attribute.changed', 'abac.object.attribute.changed', 'abac.object.attributes.removed', 'abac.action.performed'],
+						$in: [
+							'abac.attribute.changed',
+							'abac.object.attribute.changed',
+							'abac.object.attributes.removed',
+							'abac.action.performed',
+							'abac.attribute.store.switched',
+						],
 					},
 				},
 				{
@@ -433,6 +458,7 @@ const abacEndpoints = API.v1
 					| IServerEvents['abac.attribute.changed']
 					| IServerEvents['abac.object.attribute.changed']
 					| IServerEvents['abac.object.attributes.removed']
+					| IServerEvents['abac.attribute.store.switched']
 				)[],
 				count: events.length,
 				offset,

@@ -1,5 +1,6 @@
-export interface IEmailInbox {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IEmailInbox extends IRocketChatRecord {
 	active: boolean;
 	name: string;
 	email: string;
@@ -26,7 +27,6 @@ export interface IEmailInbox {
 		_id: string;
 		username?: string;
 	} | null;
-	_updatedAt: Date;
 }
 
 export type IEmailInboxPayload = Omit<IEmailInbox, '_createdAt' | '_createdBy' | '_updatedAt'>;

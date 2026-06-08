@@ -19,6 +19,7 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
+import { useIsExternalAttributeStore } from '../hooks/useIsExternalAttributeStore';
 
 const RoomsPage = () => {
 	const { t } = useTranslation();
@@ -33,6 +34,7 @@ const RoomsPage = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getRooms = useEndpoint('GET', '/v1/abac/rooms');
 	const isABACAvailable = useIsABACAvailable();
+	const isExternalStore = useIsExternalAttributeStore();
 
 	const handleNewAttribute = useEffectEvent(() => {
 		router.navigate({
@@ -62,6 +64,7 @@ const RoomsPage = () => {
 	const { data, isLoading } = useQuery({
 		queryKey: ABACQueryKeys.rooms.list(query),
 		queryFn: () => getRooms(query),
+		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
 	return (
@@ -116,10 +119,14 @@ const RoomsPage = () => {
 									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
 									<GenericTableCell withTruncatedText>
-										{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
+										{room.abacAttributesRedacted
+											? t('ABAC_Redacted_Placeholder')
+											: room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>
-										{room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}
+										{room.abacAttributesRedacted
+											? t('ABAC_Redacted_Placeholder')
+											: room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}
 									</GenericTableCell>
 									<GenericTableCell>
 										<RoomMenu room={{ rid: room._id, name: room.fname || room.name || room._id }} />

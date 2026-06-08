@@ -150,7 +150,7 @@ let registerUserRuleId = RateLimiter.limitMethod(
 
 settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
 	// When running on testMode, there's no rate limiting added, so this function throws an error
-	if (process.env.TEST_MODE === 'true') {
+	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		return;
 	}
 

@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { validateLicenseUrl } from './validateLicenseUrl';
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';

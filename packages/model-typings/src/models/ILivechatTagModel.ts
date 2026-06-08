@@ -9,6 +9,6 @@ export interface ILivechatTagModel extends IBaseModel<ILivechatTag> {
 		_id: string | undefined,
 		{ name, description }: { name: string; description?: string },
 		departments?: string[],
-	): Promise<ILivechatTag>;
+	): Promise<Omit<ILivechatTag, '_updatedAt'>>;
 	removeById(_id: string): Promise<DeleteResult>;
 }
