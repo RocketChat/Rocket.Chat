@@ -1,35 +1,136 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
-
 import { useFeaturePreview } from './useFeaturePreview';
+import { usePreferenceFeaturePreviewList } from './usePreferenceFeaturePreviewList';
 
-it('should return false if featurePreviewEnabled is false', () => {
-	const { result } = renderHook(() => useFeaturePreview('secondarySidebar'), {
-		wrapper: mockAppRoot().withSetting('Accounts_AllowFeaturePreview', false).build(),
+jest.mock('./usePreferenceFeaturePreviewList');
+
+const mockUsePreferenceFeaturePreviewList = usePreferenceFeaturePreviewList as jest.Mock;
+
+describe('useFeaturePreview', () => {
+	beforeEach(() => {
+		mockUsePreferenceFeaturePreviewList.mockReset();
 	});
 
-	expect(result.current).toBe(false);
-});
+	it('should return false if feature does not exist in the list', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({ features: [] });
 
-// TODO: fix this test
-it('should return false if featurePreviewEnabled is true but feature is not in userPreferences', () => {
-	const { result } = renderHook(() => useFeaturePreview('secondarySidebar'), {
-		wrapper: mockAppRoot()
-			.withSetting('Accounts_AllowFeaturePreview', false)
-			.withUserPreference('featuresPreview', [{ name: 'secondarySidebar', value: true }])
-			.build(),
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
 	});
 
-	expect(result.current).toBe(false);
-});
+	it('should return true if feature is enabled and has no special rules', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [{ name: 'secondarySidebar', value: true }],
+		});
 
-it('should return true if featurePreviewEnabled is true and feature is in userPreferences', () => {
-	const { result } = renderHook(() => useFeaturePreview('secondarySidebar'), {
-		wrapper: mockAppRoot()
-			.withSetting('Accounts_AllowFeaturePreview', true)
-			.withUserPreference('featuresPreview', [{ name: 'secondarySidebar', value: true }])
-			.build(),
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(true);
 	});
 
-	expect(result.current).toBe(true);
+	it('should return false if feature is explicitly disabled (logic check)', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [{ name: 'secondarySidebar', value: true, disabled: true }],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if dependency rule is not met', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [
+				{
+					name: 'secondarySidebar',
+					value: true,
+					enableQuery: { name: 'newNavigation', value: true },
+				},
+				{
+					name: 'newNavigation',
+					value: false,
+				},
+			],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return true if dependency rule IS met', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [
+				{
+					name: 'secondarySidebar',
+					value: true,
+					enableQuery: { name: 'newNavigation', value: true },
+				},
+				{
+					name: 'newNavigation',
+					value: true,
+				},
+			],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(true);
+	});
+
+	it('should return false if dependency feature is disabled (even if value matches)', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [
+				{
+					name: 'secondarySidebar',
+					value: true,
+					enableQuery: { name: 'newNavigation', value: true },
+				},
+				{
+					name: 'newNavigation',
+					value: true,
+					disabled: true,
+				},
+			],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if the dependency feature is completely missing from the list', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [
+				{
+					name: 'secondarySidebar',
+					value: true,
+					enableQuery: { name: 'newNavigation', value: true },
+				},
+			],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if feature exists but value is false', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [{ name: 'secondarySidebar', value: false }],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if features list is undefined', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({ features: undefined });
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
 });
