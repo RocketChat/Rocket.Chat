@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ElementType, HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
 const MessageFooterCallout = forwardRef<
@@ -10,7 +10,7 @@ const MessageFooterCallout = forwardRef<
 		variant?: 'default' | 'error';
 		dashed?: boolean;
 	}
->(function MessageFooterCallout({ dashed, ...props }, ref): ReactElement {
+>(function MessageFooterCallout({ dashed, ...props }, ref) {
 	return (
 		<Box
 			ref={ref}

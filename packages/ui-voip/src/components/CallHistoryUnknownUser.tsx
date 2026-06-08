@@ -1,7 +1,7 @@
 import { Box, FramedIcon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-const CallHistoryTableUnknownContact = () => {
+const CallHistoryUnknownUser = () => {
 	const { t } = useTranslation();
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
@@ -13,4 +13,4 @@ const CallHistoryTableUnknownContact = () => {
 	);
 };
 
-export default CallHistoryTableUnknownContact;
+export default CallHistoryUnknownUser;

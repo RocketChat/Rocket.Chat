@@ -2,6 +2,7 @@ import type {
 	IAbacAttributeDefinition,
 	IAbacAttribute,
 	IRoom,
+	IRoomAbacRedaction,
 	IUser,
 	AbacAccessOperation,
 	AbacObjectType,
@@ -29,7 +30,8 @@ export interface IAbacService {
 			filterType?: 'all' | 'roomName' | 'attribute' | 'value';
 		},
 		actor?: AbacActor,
-	): Promise<{ rooms: IRoom[]; offset: number; count: number; total: number }>;
+	): Promise<{ rooms: Array<IRoom & IRoomAbacRedaction>; offset: number; count: number; total: number }>;
+	scopeRoomsForAdmin<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(rooms: T[], actor: AbacActor): Promise<Array<T & IRoomAbacRedaction>>;
 	updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor | undefined): Promise<void>;
 	deleteAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<void>;
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
@@ -48,4 +50,5 @@ export interface IAbacService {
 	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>, actor: AbacActor | undefined): Promise<void>;
 	evaluateRoomMembership(): Promise<void>;
 	getPDPHealth(): Promise<void>;
+	isExternalAttributeStore(): Promise<boolean>;
 }

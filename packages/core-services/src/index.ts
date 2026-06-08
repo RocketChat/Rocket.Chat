@@ -8,6 +8,7 @@ import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
+import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
@@ -143,6 +144,7 @@ export type {
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,
+	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
@@ -178,6 +180,7 @@ export const DeviceManagement = proxify<IDeviceManagementService>('device-manage
 export const VideoConf = proxify<IVideoConfService>('video-conference');
 export const Upload = proxify<IUploadService>('upload');
 export const Calendar = proxify<ICalendarService>('calendar');
+export const CallHistory = proxify<ICallHistoryService>('call-history');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
