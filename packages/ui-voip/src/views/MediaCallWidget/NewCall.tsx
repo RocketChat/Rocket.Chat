@@ -43,7 +43,7 @@ const NewCall = () => {
 				)}
 				{inline && (
 					<Box display='flex' justifyContent='center' mbs={12}>
-						<Keypad onKeyPress={autocomplete.onKeypadPress} />
+						<Keypad autoFocus={false} onKeyPress={autocomplete.onKeypadPress} />
 					</Box>
 				)}
 			</WidgetContent>
