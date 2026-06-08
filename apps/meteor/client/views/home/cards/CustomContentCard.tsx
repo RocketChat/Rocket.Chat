@@ -59,7 +59,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 					</Tag>
 				</CardHeader>
 				<CardBody>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</CardBody>
-				<CardControls>
+				<CardControls style={{ flexWrap: 'wrap', rowGap: '8px' }}>
 					<Button medium onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
 						{t('Customize_Content')}
 					</Button>
