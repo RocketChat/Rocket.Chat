@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
+import { readFileAsDataURL } from './UserAvatarEditor/readFileAsDataURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
@@ -25,16 +26,17 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleChangeAvatar = useEffectEvent(async (file: File) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onloadend = async (): Promise<void> => {
-			const { result } = reader;
-			if (typeof result === 'string' && (await isValidImageFormat(result))) {
-				onChangeAvatar(result);
-				return;
+		try {
+			const dataURL = await readFileAsDataURL(file);
+
+			if (await isValidImageFormat(dataURL)) {
+				onChangeAvatar(dataURL);
+			} else {
+				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 			}
-			dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-		};
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('FileUpload_Error') });
+		}
 	});
 
 	const [clickUpload, reset] = useSingleFileInput(handleChangeAvatar);
