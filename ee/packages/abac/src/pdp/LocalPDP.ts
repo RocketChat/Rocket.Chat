@@ -82,9 +82,8 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		throw new Error('evaluateUserRooms is not implemented for LocalPDP');
 	}
 
-	async reevaluateUsers(users: ReevaluationUser[]): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
+	async reevaluateUsers(users: ReevaluationUser[]): Promise<void> {
 		await LDAPEnterprise.syncUsersAbacAttributesByIds(users.map((user) => user._id));
-		return [];
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {

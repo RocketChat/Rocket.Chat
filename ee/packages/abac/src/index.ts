@@ -973,7 +973,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		try {
 			const nonCompliant = await this.pdp.reevaluateUsers(users);
-			await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'api'))));
+			if (Array.isArray(nonCompliant) && nonCompliant.length) {
+				await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'api'))));
+			}
 		} catch (err) {
 			logger.error({ msg: 'Failed to reevaluate users', err });
 		}

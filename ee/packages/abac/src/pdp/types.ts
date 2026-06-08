@@ -56,7 +56,7 @@ export interface IPolicyDecisionPoint {
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
 
-	reevaluateUsers(users: ReevaluationUser[]): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+	reevaluateUsers(users: ReevaluationUser[]): Promise<void | Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
 }
 
 export interface IVirtruPDPConfig {
