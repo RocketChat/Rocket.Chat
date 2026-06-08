@@ -145,18 +145,15 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		5,
 		[list, margin, setBubbleDate],
 	);
-	// TODO: Make the chip "gliding" work with the new sistem.
-	// const listStyle =
-	// 	bubbleDate.show && bubbleDate.date
-	// 		? css`
-	// 				position: relative;
-	// 				& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
-	// 					opacity: 0;
-	// 				}
-	// 			`
-	// 		: undefined;
-
-	const listStyle = undefined;
+	const listStyle =
+	bubbleDate.show && bubbleDate.date
+		? css`
+				position: relative;
+				& [data-id='${new Date(bubbleDate.date).getTime()}'] {
+					opacity: 0;
+				}
+			`
+		: undefined;
 
 	return {
 		handleDateScroll,
