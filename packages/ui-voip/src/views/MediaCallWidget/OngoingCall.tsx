@@ -1,6 +1,7 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import MediaCallDialpad from './MediaCallDialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -17,13 +18,18 @@ import {
 	useInfoSlots,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
 	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
+	const { inline } = useMediaCallWidgetSlot();
 
+	// Floating widget keeps the collapsible DTMF toggle for external (SIP) calls.
+	// The inline (sidebar rail) dialpad is rendered by <MediaCallDialpad /> in the content instead.
+	const showDialpad = !!peerInfo && 'number' in peerInfo;
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
 	const slots = useInfoSlots(muted, held, connectionState);
@@ -51,12 +57,15 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				<MediaCallDialpad />
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{keypad}
 				<ButtonGroup large>
-					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
+					{showDialpad && !inline && (
+						<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
+					)}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					<ToggleButton
 						label={t('Hold')}
