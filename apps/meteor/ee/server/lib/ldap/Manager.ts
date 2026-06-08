@@ -342,7 +342,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = (await Roles.find(
+		const roles = await Roles.find(
 			{},
 			{
 				projection: {
@@ -350,7 +350,7 @@ export class LDAPEEManager extends LDAPManager {
 					name: 1,
 				},
 			},
-		).toArray()) as Array<IRole>;
+		).toArray();
 
 		if (!roles) {
 			return;
@@ -653,26 +653,6 @@ export class LDAPEEManager extends LDAPManager {
 			return true;
 		}
 
-		// Active Directory - Account locked automatically by security policies
-		if (ldapUser.lockoutTime && ldapUser.lockoutTime !== '0') {
-			const lockoutTimeValue = Number(ldapUser.lockoutTime);
-			if (lockoutTimeValue && !isNaN(lockoutTimeValue)) {
-				// Automatic unlock is disabled
-				if (!ldapUser.lockoutDuration) {
-					mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
-					return true;
-				}
-
-				const lockoutTime = new Date(lockoutTimeValue);
-				lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
-				// Account has not unlocked itself yet
-				if (lockoutTime.valueOf() > Date.now()) {
-					mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
-					return true;
-				}
-			}
-		}
-
 		// Active Directory - Account disabled by an Admin
 		if (ldapUser.userAccountControl && (ldapUser.userAccountControl & 2) === 2) {
 			mapLogger.debug('User account disabled by an admin (attribute userAccountControl)');
@@ -680,33 +660,6 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		return false;
-	}
-
-	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		if (!ldapUser) {
-			return;
-		}
-
-		const syncUserState = settings.get('LDAP_Sync_User_Active_State');
-		if (syncUserState === 'none') {
-			return;
-		}
-
-		const deleted = this.isUserDeactivated(ldapUser);
-		if (deleted === userData.deleted) {
-			return;
-		}
-
-		if (syncUserState === 'disable' && !deleted) {
-			return;
-		}
-
-		if (syncUserState === 'enable' && deleted) {
-			return;
-		}
-
-		userData.deleted = deleted;
-		logger.info({ msg: 'Switching user status', name: userData.name, username: userData.username, active: !deleted });
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {

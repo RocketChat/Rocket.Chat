@@ -103,7 +103,6 @@ Meteor.startup(async () => {
 				}
 
 				LDAPEEManager.copyCustomFields(ldapUser, userData);
-				LDAPEEManager.copyActiveState(ldapUser, userData);
 			},
 			callbacks.priority.MEDIUM,
 			'mapLDAPCustomFields',
