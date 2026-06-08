@@ -278,9 +278,9 @@ describe('useOpenEncryptedPdf', () => {
 				wrapper: mockAppRoot().build(),
 			});
 
-			await act(async () => {
+			await expect(async () => {
 				await result.current(link, title, allowedSize, format, mockOpenDocumentViewer);
-			});
+			}).rejects.toThrow('Failed to fetch encrypted PDF: 404');
 
 			await waitFor(() => {
 				expect(consoleErrorSpy).toHaveBeenCalledWith(
