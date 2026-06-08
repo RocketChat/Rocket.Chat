@@ -23,6 +23,7 @@ import {
 	orderedList,
 	katex,
 	inlineKatex,
+	autoLink,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
@@ -364,6 +365,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Auto-link URL — try when we see alpha chars that could be a domain/url
+		if (isAlpha(ch) || isDigit(ch)) {
+			const result = tryAutoLinkUrl(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
+				continue;
+			}
+		}
+
 		// Plain run
 		if (isPlainChar(ch)) {
 			const start = scanner.save();
@@ -521,6 +532,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			if (result !== null) {
 				nodes.push(result);
 				prevChar = ch;
+				continue;
+			}
+		}
+
+		// Auto-link URL — try when we see alpha chars that could be a domain/url
+		if (isAlpha(ch) || isDigit(ch)) {
+			const result = tryAutoLinkUrl(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
 				continue;
 			}
 		}
@@ -1300,4 +1321,53 @@ function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
 	scanner.advance(closeDelim.length);
 
 	return inlineKatex(content);
+}
+
+function tryAutoLinkUrl(scanner: Scanner, options: Options): Inlines | null {
+	const start = scanner.save();
+
+	// Collect the full URL token — everything until whitespace or end
+	const tokenStart = scanner.save();
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		scanner.advance();
+	}
+
+	const token = scanner.sliceFrom(tokenStart);
+	if (token.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Must contain '://' or '.' to be worth trying
+	if (!token.includes('://') && !token.includes('.')) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Strip trailing punctuation that shouldn't be part of URL
+	// e.g. "rocket.chat." → "rocket.chat"
+	let url = token;
+	while (url.length > 0 && '.,!?;:)'.includes(url[url.length - 1])) {
+		url = url.slice(0, -1);
+	}
+
+	if (url.length === 0) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// Restore scanner to end of actual url (not trailing punct)
+	scanner.restore(tokenStart);
+	scanner.advance(url.length);
+
+	// Use autoLink from utils which validates via tldts
+	const result = autoLink(url, options.customDomains);
+
+	// autoLink returns plain() if domain is invalid
+	if (result.type === 'PLAIN_TEXT') {
+		scanner.restore(start);
+		return null;
+	}
+
+	return result;
 }

@@ -47,3 +47,15 @@ export function isPlainChar(ch: string): boolean {
 export function matchesAt(input: string, i: number, literal: string): boolean {
 	return input.startsWith(literal, i);
 }
+
+export function isUrlSchemeChar(ch: string): boolean {
+	return isAlphaNum(ch) || ch === '+' || ch === '-' || ch === '.';
+}
+
+export function isDomainChar(ch: string): boolean {
+	return isAlphaNum(ch) || ch === '-' || ch === '.';
+}
+
+export function isUrlBodyChar(ch: string): boolean {
+	return ch !== '' && !isWhitespace(ch) && ch !== '"' && ch !== "'" && ch !== '<' && ch !== '>' && ch !== '`';
+}
