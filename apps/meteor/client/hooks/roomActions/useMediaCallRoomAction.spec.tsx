@@ -10,7 +10,7 @@ import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../..
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
-	useUserAvatarPath: jest.fn((_args: any) => 'avatar-url'),
+	useUserAvatarPath: jest.fn(() => (_args: any) => 'avatar-url'),
 }));
 
 jest.mock('@rocket.chat/ui-voip', () => ({
