@@ -21,6 +21,7 @@ export default {
 	webpackFinal: async (config) => {
 		// Those aliases are needed because dependencies in the monorepo use another
 		// dependencies that are not hoisted on this workspace
+		const swiperRoot = dirname(require.resolve('swiper/package.json'));
 		config.resolve = {
 			...config.resolve,
 			alias: {
@@ -29,6 +30,14 @@ export default {
 				// 'react/jsx-runtime': require.resolve('../../../node_modules/react/jsx-runtime'),
 				'@tanstack/react-query': require.resolve('../../../node_modules/@tanstack/react-query'),
 				'@rocket.chat/fuselage$': require.resolve('../../../node_modules/@rocket.chat/fuselage'),
+				// Meteor's bundler ignores the `exports` field, so source code reaches
+				// into swiper's internals via deep file paths. Webpack honors `exports`
+				// and rejects them, so map each subpath to the actual file.
+				'swiper/swiper-react.mjs$': join(swiperRoot, 'swiper-react.mjs'),
+				'swiper/swiper-react$': join(swiperRoot, 'swiper-react.d.ts'),
+				'swiper/modules/index.mjs$': join(swiperRoot, 'modules/index.mjs'),
+				'swiper/swiper.css$': join(swiperRoot, 'swiper.css'),
+				'swiper/modules/zoom.css$': join(swiperRoot, 'modules/zoom.css'),
 			},
 			// This is only needed because of Fontello
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
