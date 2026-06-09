@@ -65,6 +65,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusSource: 'manual', status: UserStatus.BUSY }),
 				expect.any(Array),
+				undefined,
 			);
 		});
 
@@ -94,6 +95,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE, statusDefault: UserStatus.BUSY }),
 				expect.any(Array),
+				undefined,
 			);
 		});
 
@@ -109,7 +111,7 @@ describe('Presence class', () => {
 				statusExpiresAt: expiresAt,
 			});
 
-			expect(updatePresenceMock).toHaveBeenCalledWith('u1', expect.objectContaining({ statusExpiresAt: expiresAt }), undefined);
+			expect(updatePresenceMock).toHaveBeenCalledWith('u1', expect.objectContaining({ statusExpiresAt: expiresAt }), undefined, undefined);
 		});
 	});
 
@@ -130,6 +132,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusSource: 'external', statusText: 'Meeting' }),
 				expect.arrayContaining(['previousState']),
+				undefined,
 			);
 		});
 	});
@@ -145,6 +148,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.ONLINE, statusText: '', status: UserStatus.ONLINE }),
 				expect.arrayContaining(['statusSource', 'previousState']),
+				undefined,
 			);
 		});
 	});
@@ -161,6 +165,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusSource: 'manual' }),
 				expect.any(Array),
+				undefined,
 			);
 		});
 
@@ -174,6 +179,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.ONLINE }),
 				expect.arrayContaining(['statusSource', 'previousState']),
+				undefined,
 			);
 		});
 
@@ -187,6 +193,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.ONLINE }),
 				expect.arrayContaining(['statusSource', 'previousState']),
+				undefined,
 			);
 		});
 
@@ -200,6 +207,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.ONLINE, statusSource: 'manual', statusText: 'brb' }),
 				expect.any(Array),
+				undefined,
 			);
 		});
 
@@ -213,6 +221,7 @@ describe('Presence class', () => {
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusText: '' }),
 				expect.any(Array),
+				undefined,
 			);
 		});
 

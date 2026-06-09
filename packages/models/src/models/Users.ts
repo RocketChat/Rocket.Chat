@@ -1097,10 +1097,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	findExpiredStatuses(limit: number) {
+	findExpiredStatuses() {
 		return this.find<Pick<IUser, '_id'>>(
 			{ statusExpiresAt: { $lt: new Date() } },
-			{ projection: { _id: 1 }, sort: { statusExpiresAt: 1 }, limit },
+			{ projection: { _id: 1 }, sort: { statusExpiresAt: 1 } },
 		);
 	}
 
@@ -1111,10 +1111,22 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[]) {
+	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[], extraFilter?: Filter<IUser>) {
 		const $unset = clear?.length ? Object.fromEntries(clear.map((field) => [field, '' as const])) : undefined;
 
-		return this.findOneAndUpdate({ _id: userId }, { $set: values, ...($unset && { $unset }) }, { returnDocument: 'after' });
+		return this.findOneAndUpdate(
+			{
+				...extraFilter,
+				_id: userId,
+			},
+			{
+				$set: values,
+				...($unset && { $unset }),
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
 	}
 
 	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {

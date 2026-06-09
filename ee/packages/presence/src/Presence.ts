@@ -106,23 +106,12 @@ export class Presence extends ServiceClass implements IPresence {
 		await this.handleExpirationJob();
 	}
 
-	private async processExpiredStatuses(batchSize = 100): Promise<void> {
-		// TODO: in microservices mode every presence-service instance fires its own timer and runs this in parallel.
-		// It's safe (idempotent update, duplicate broadcasts are harmless) but redundant.
-		// Consider electing a single processor (e.g. findOneAndUpdate claim, distributed lock, or per-user lease).
-		const expiredUsers = await Users.findExpiredStatuses(batchSize).toArray();
-
-		if (expiredUsers.length === 0) {
-			return;
-		}
-
-		// Use updateUserPresence directly instead of updatePresenceAndReschedule to avoid rescheduling per user;
-		// the caller (setupNextExpiration) handles rescheduling after the full batch is processed.
-		const results = await Promise.allSettled(expiredUsers.map(({ _id }) => this.updateUserPresence(_id, { type: 'endActive' })));
-		const successful = results.filter((result) => result.status === 'fulfilled').length;
-
-		if (expiredUsers.length === batchSize && successful > 0) {
-			return this.processExpiredStatuses();
+	private async processExpiredStatuses(): Promise<void> {
+		// TODO: in MS mode every instance runs this independently.
+		// Add a job-level lock to avoid redundant cross-instance reads.
+		const expiredCursor = Users.findExpiredStatuses();
+		for await (const { _id } of expiredCursor) {
+			await this.updateUserPresence(_id, { type: 'endActive' });
 		}
 	}
 
@@ -385,7 +374,17 @@ export class Presence extends ServiceClass implements IPresence {
 			return false;
 		}
 
-		const updatedUser = await Users.updatePresenceAndStatus(uid, result.values, result.clear);
+		// Only apply this update if statusExpiresAt and previousState haven't changed since we read them.
+		// Prevents two presence instances from processing the same expiration and overwriting each other.
+		const guard =
+			claimUpdate?.type === 'endActive' && user.statusExpiresAt
+				? {
+						statusExpiresAt: user.statusExpiresAt,
+						...(user.previousState ? { previousState: user.previousState } : { previousState: { $exists: false } }),
+					}
+				: undefined;
+
+		const updatedUser = await Users.updatePresenceAndStatus(uid, result.values, result.clear, guard);
 		if (updatedUser) {
 			this.broadcast(updatedUser, user.status);
 		}
