@@ -1,4 +1,4 @@
-import type { LicenseInfo, Cloud } from '@rocket.chat/core-typings';
+import type { LicenseInfo, LicenseValidationResult, Cloud } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 
@@ -36,6 +36,23 @@ const licensesInfoPropsSchema = {
 
 export const isLicensesInfoProps = ajvQuery.compile<licensesInfoProps>(licensesInfoPropsSchema);
 
+type licensesValidateProps = {
+	license: string;
+};
+
+const licensesValidatePropsSchema = {
+	type: 'object',
+	properties: {
+		license: {
+			type: 'string',
+		},
+	},
+	required: ['license'],
+	additionalProperties: false,
+};
+
+export const isLicensesValidateProps = ajv.compile<licensesValidateProps>(licensesValidatePropsSchema);
+
 export type LicensesEndpoints = {
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
@@ -45,6 +62,9 @@ export type LicensesEndpoints = {
 	};
 	'/v1/licenses.add': {
 		POST: (params: licensesAddProps) => void;
+	};
+	'/v1/licenses.validate': {
+		POST: (params: licensesValidateProps) => { validation: LicenseValidationResult };
 	};
 	'/v1/licenses.maxActiveUsers': {
 		GET: () => { maxActiveUsers: number | null; activeUsers: number };

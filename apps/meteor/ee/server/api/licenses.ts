@@ -1,6 +1,6 @@
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
-import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
+import { isLicensesInfoProps, isLicensesValidateProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
@@ -67,6 +67,20 @@ API.v1.addRoute(
 				void notifyOnSettingChangedById('Enterprise_License');
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'licenses.validate',
+	{ authRequired: true, permissionsRequired: ['edit-privileged-setting'], validateParams: isLicensesValidateProps },
+	{
+		async post() {
+			const { license } = this.bodyParams;
+
+			const validation = await License.validateLicenseForPreview(license);
+
+			return API.v1.success({ validation });
 		},
 	},
 );

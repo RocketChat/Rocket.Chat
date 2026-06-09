@@ -8,6 +8,7 @@ import type {
 	LicenseBehavior,
 	LicenseInfo,
 	LicenseValidationOptions,
+	LicenseValidationResult,
 	LimitContext,
 	LicenseModule,
 } from '@rocket.chat/core-typings';
@@ -51,6 +52,15 @@ import { validateFormat } from './validation/validateFormat';
 import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
+
+// The behaviors that decide whether (and how) a license is installed. Shared between the actual
+// validation performed on apply and the dry-run preview so both stay in sync if a behavior is added.
+const licenseValidationBehaviors: LicenseBehavior[] = [
+	'invalidate_license',
+	'start_fair_policy',
+	'prevent_installation',
+	'disable_modules',
+];
 
 export abstract class LicenseManager extends Emitter<LicenseEvents> {
 	abstract validateFormat: typeof validateFormat;
@@ -267,7 +277,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		const validationResult = await runValidation.call(this, this._license, {
-			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules'],
+			behaviors: licenseValidationBehaviors,
 			...options,
 		});
 
@@ -310,6 +320,61 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		) {
 			this.emit('sync');
 		}
+	}
+
+	/**
+	 * Validates a license against the current workspace state without applying it.
+	 *
+	 * This decrypts and verifies the license string, then runs the same validation pipeline
+	 * used when a license is set (URL, periods and limits), but does not mutate any internal
+	 * state nor emit any events. It is meant to power a preview of what would happen if the
+	 * license were applied — e.g. before committing to it from the admin UI.
+	 */
+	public async validateLicenseForPreview(encryptedLicense: string): Promise<LicenseValidationResult> {
+		const workspaceUrl = this.getWorkspaceUrl();
+
+		let license: ILicenseV3;
+		try {
+			await validateFormat(encryptedLicense);
+
+			const decrypted = JSON.parse(await decrypt(encryptedLicense));
+			license = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+		} catch (err) {
+			logger.error({ msg: 'Invalid license provided for validation preview', err });
+			return {
+				isFormatValid: false,
+				isValid: false,
+				workspaceUrl,
+				grantedModules: [],
+				validationErrors: [],
+			};
+		}
+
+		// Run the full validation pipeline against the current workspace state. Unlike `validateLicense`,
+		// this does not store the license, change validity, replace modules/tags nor emit events.
+		// In addition to the behaviors that determine installation, also surface `prevent_action` so the
+		// preview can report limits that are already exceeded by the current workspace.
+		const validationResult = await runValidation.call(this, license, {
+			behaviors: [...licenseValidationBehaviors, 'prevent_action'],
+			isNewLicense: true,
+			suppressLog: true,
+		});
+
+		const isValid = !isBehaviorsInResult(validationResult, ['invalidate_license', 'prevent_installation']);
+
+		const disabledModules = getModulesToDisable(validationResult);
+		const grantedModules = license.grantedModules
+			.filter(({ module }) => !disabledModules.includes(module))
+			.map(({ module }) => module);
+
+		return {
+			isFormatValid: true,
+			isValid,
+			license,
+			workspaceUrl,
+			grantedModules,
+			validationErrors: validationResult,
+		};
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
