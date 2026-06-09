@@ -4,13 +4,13 @@ import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-ser
 import { MongoInternals } from 'meteor/mongo';
 
 import { isRunningMs } from '../lib/isRunningMs';
-import { AISearchService } from './ai-search/service';
-import { CronJobsService } from './cron-jobs/service';
+import { AISearchService } from './ai-search/service'
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
 import { CallHistoryService } from './call-history/service';
+import { CronJobsService } from './cron-jobs/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
