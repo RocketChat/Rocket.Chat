@@ -17,9 +17,9 @@ import { useTranslation } from 'react-i18next';
 
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
+import GenericError from '../../../components/GenericError';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-// TODO: Missing error state
 const ModerationConsoleTable = () => {
 	const [text, setText] = useState('');
 	const router = useRouter();
@@ -54,7 +54,7 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
 		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
 		queryFn: async () => getReports(query),
 		meta: {
@@ -98,6 +98,10 @@ const ModerationConsoleTable = () => {
 		],
 		[sortDirection, sortBy, setSort, t],
 	);
+
+	if (isError) {
+		return <GenericError buttonAction={refetch} />;
+	}
 
 	return (
 		<>
