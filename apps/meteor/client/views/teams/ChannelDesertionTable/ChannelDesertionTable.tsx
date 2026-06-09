@@ -39,7 +39,20 @@ const ChannelDesertionTable = ({
 
 		const direction = sortDirection === 'asc' ? 1 : -1;
 
-		return rooms.sort((a, b) => (a[sortBy] && b[sortBy] ? (a[sortBy]?.localeCompare(b[sortBy] ?? '') ?? 1) * direction : direction));
+		return rooms.toSorted((a, b) => {
+			const aValue = a[sortBy] ?? '';
+			const bValue = b[sortBy] ?? '';
+			if (!aValue && !bValue) {
+				return 0;
+			}
+			if (!aValue) {
+				return 1;
+			}
+			if (!bValue) {
+				return -1;
+			}
+			return aValue.localeCompare(bValue) * direction;
+		});
 	}, [rooms, sortBy, sortDirection]);
 
 	return (
