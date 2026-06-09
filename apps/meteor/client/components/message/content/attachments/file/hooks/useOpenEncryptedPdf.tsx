@@ -68,7 +68,7 @@ export const useOpenEncryptedPdf = () => {
 		} catch (error: any) {
 			if (error.name !== 'AbortError') {
 				console.error('Error opening preview of encrypted PDF', error);
-        throw error;
+				throw error;
 			}
 		}
 	};
