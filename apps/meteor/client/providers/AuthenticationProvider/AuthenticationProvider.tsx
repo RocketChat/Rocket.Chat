@@ -3,7 +3,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
@@ -57,7 +57,7 @@ const subscribeLoggingIn = (cb: () => void): (() => void) => {
 
 const getLoggingInSnapshot = (): boolean => Accounts.loggingIn();
 
-const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
+const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 

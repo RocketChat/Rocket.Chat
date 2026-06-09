@@ -2,7 +2,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Device, DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useEffect, useState, useMemo } from 'react';
 
 import { isSetSinkIdAvailable } from './lib/isSetSinkIdAvailable';
@@ -28,7 +28,7 @@ const defaultDevices = {
 
 const devicesQueryKey = ['media-devices-list'];
 
-export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
+export const DeviceProvider = ({ children }: DeviceProviderProps) => {
 	const [enabled] = useState(typeof isSecureContext && isSecureContext);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device | undefined>(undefined);
 	const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState<Device | undefined>(undefined);

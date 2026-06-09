@@ -1,5 +1,5 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
@@ -512,7 +512,7 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, status?: 0 | 1 | 2 | 3, statusText?: string]): void {
+	sendPresence(uid: string, ...args: [username: string, status?: PresenceStatusCode, statusText?: string]): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}

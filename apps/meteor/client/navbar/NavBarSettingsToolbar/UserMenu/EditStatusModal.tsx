@@ -20,7 +20,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
+import type { ChangeEvent, ComponentProps, FormEvent } from 'react';
 import { useState, useCallback, useId } from 'react';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
@@ -32,7 +32,7 @@ type EditStatusModalProps = {
 	userStatusText: IUser['statusText'];
 };
 
-const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
+const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps) => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [customStatus, setCustomStatus] = useLocalStorage<string>('Local_Custom_Status', '');

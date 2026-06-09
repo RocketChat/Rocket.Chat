@@ -1,5 +1,5 @@
 import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode, ReactElement, ContextType } from 'react';
+import type { ReactNode, ContextType } from 'react';
 import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
@@ -12,8 +12,8 @@ const DEFAULT_ITEMS_LIMIT = 90;
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
 
-const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElement => {
-	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
+const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
+	const [emojiPicker, setEmojiPicker] = useState<ReactNode>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
 	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
