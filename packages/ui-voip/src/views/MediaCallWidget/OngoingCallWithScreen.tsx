@@ -16,6 +16,7 @@ import {
 	useInfoSlots,
 	CardWidgetContainer,
 	StreamCard,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
@@ -25,6 +26,8 @@ const OngoingCall = () => {
 
 	const {
 		sessionState,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onMute,
 		onHold,
 		onForward,
@@ -34,7 +37,7 @@ const OngoingCall = () => {
 		onToggleScreenSharing,
 		widgetPositionTracker,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -49,6 +52,7 @@ const OngoingCall = () => {
 
 	const transferDisabled = !supportedFeatures.includes('transfer');
 	const holdDisabled = !supportedFeatures.includes('hold');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -84,6 +88,10 @@ const OngoingCall = () => {
 							</StreamCard>
 							<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
 						</Box>
+					)}
+
+					{videoConfAvailable && (
+						<VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />
 					)}
 				</CardWidgetContainer>
 			</WidgetContent>
