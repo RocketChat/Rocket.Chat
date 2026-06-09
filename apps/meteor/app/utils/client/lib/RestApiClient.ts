@@ -34,7 +34,7 @@ APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
  * The original rest api code throws the Response object, which is very useful
  * for the client sometimes, if the developer wants to access more information about the error
  * unfortunately/fortunately Rocket.Chat expects an error object (from Response.json()
- * This middleware will throw the error object instead
+ * This middleware will throw the error object instead.
  * */
 
 APIClient.use(async (request, next) => {

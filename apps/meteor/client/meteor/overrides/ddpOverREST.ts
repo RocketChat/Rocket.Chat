@@ -109,7 +109,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 					(typeof e.message === 'string' && e.message === 'You must be logged in to do this.') ||
 					(typeof e.reason === 'string' && e.reason === 'You must be logged in to do this.');
 
-				if (isExpiredSessionError && message.method !== 'login' && message.method !== 'logout') {
+				if (isExpiredSessionError) {
 					console.warn('[ddpOverREST] Expired session detected, clearing credentials', { method: message.method, error });
 					try {
 						localStorage.removeItem('Meteor.userId');
