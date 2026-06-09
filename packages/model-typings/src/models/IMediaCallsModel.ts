@@ -37,4 +37,5 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
 	setRemoteLegCallId(callId: string, remoteLegCallId: string): Promise<UpdateResult>;
+	flagAsEscalatedByCallId(callId: string): Promise<UpdateResult>;
 }

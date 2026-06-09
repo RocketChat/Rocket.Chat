@@ -30,7 +30,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	createGroup({
 		providerName,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string>;
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
+		Pick<IGroupVideoConference, 'mediaCallIds'>): Promise<string>;
 
 	createLivechat({
 		providerName,
@@ -70,4 +71,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
+
+	findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null>;
 }

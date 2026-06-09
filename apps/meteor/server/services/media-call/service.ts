@@ -1,4 +1,4 @@
-import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, type IMediaCallService, Authorization, VideoConf } from '@rocket.chat/core-services';
 import type {
 	IMediaCall,
 	IUser,
@@ -6,6 +6,7 @@ import type {
 	IInternalMediaCallHistoryItem,
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
+	VideoConference,
 } from '@rocket.chat/core-typings';
 import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
 import type {
@@ -17,7 +18,7 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
+import { CallHistory, MediaCalls, Rooms, Users, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
 import { logger } from './logger';
@@ -434,6 +435,126 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (err) {
 			logger.error({ msg: 'Failed to parse client signal', err });
 			throw err;
+		}
+	}
+
+	public async escalateCall(uid: IUser['_id'], params: { callId: string }): Promise<string> {
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Error('internal-error');
+		}
+		// TODO: validate user is on the call
+		const { callId } = params;
+
+		const call = await MediaCalls.findOneById(callId);
+		if (!call?.acceptedAt) {
+			throw new Error('not-found');
+		}
+		// if (!call.features.includes('conference-escalation')) {
+		// 	throw new Error('feature-not-available');
+		// }
+
+		const url = await this.escalateVoiceCallToConference(user, call);
+		return url;
+	}
+
+	private async escalateVoiceCallToConference(user: IUser, call: IMediaCall): Promise<string> {
+		const conference = await this.getOrCreateConferenceForEscalatingCall(call, user);
+		if (conference?.type !== 'videoconference') {
+			logger.error({ msg: 'Failed to create conference for voice call escalation', type: conference?.type });
+			throw new Error('internal-error');
+		}
+
+		void this.flagAsEscalated(call).catch((err) => {
+			logger.error({ msg: 'Unexpected error while flagging call as escalated', err });
+		});
+
+		const result = await VideoConf.joinCall(conference, user, { mic: true, cam: false });
+
+		return result;
+	}
+
+	private async findExistingConferenceForCall(call: IMediaCall): Promise<VideoConference | null> {
+		const existingConference = await VideoConferenceModel.findOneByMediaCallId(call._id);
+		if (existingConference || !call.remoteLegCallId) {
+			return existingConference;
+		}
+
+		return VideoConferenceModel.findOneByMediaCallId(call.remoteLegCallId);
+	}
+
+	private async getOrCreateConferenceForEscalatingCall(call: IMediaCall, user: IUser): Promise<VideoConference | null> {
+		const existingConference = await this.findExistingConferenceForCall(call);
+		if (existingConference) {
+			return existingConference;
+		}
+
+		// If the call is already flagged as escalated but no conference for it exists, don't create a new conference - some other process might still be running
+		if (call.escalatedAt) {
+			throw new Error('pre-escalated-conference-not-found');
+		}
+
+		const mediaCallIds = [call._id, call.remoteLegCallId].filter((callId): callId is string => Boolean(callId));
+
+		const conferenceId = await this.createConferenceForEscalatingCall(user, mediaCallIds);
+		return VideoConferenceModel.findOneById(conferenceId);
+	}
+
+	private async createConferenceForEscalatingCall(user: IUser, mediaCallIds: string[]): Promise<string> {
+		const rid = 'GENERAL';
+
+		const callId = await VideoConferenceModel.createGroup({
+			rid,
+			title: 'Escalated Media Call',
+			createdBy: {
+				_id: user._id,
+				name: user.name as string,
+				username: user.username as string,
+			},
+			providerName: 'core.pexip',
+			mediaCallIds,
+		});
+
+		return callId;
+	}
+
+	public async getUsersFromCall(call: IMediaCall): Promise<IMediaCall['uids']> {
+		const remoteCall = call.remoteLegCallId && (await MediaCalls.findOneById(call.remoteLegCallId, { projection: { uids: 1 } }));
+
+		if (!remoteCall) {
+			return call.uids;
+		}
+
+		return [...new Set([...call.uids, ...remoteCall.uids])];
+	}
+
+	private async flagAsEscalated(call: IMediaCall): Promise<void> {
+		if (call.escalatedAt) {
+			return;
+		}
+
+		const updateResult = await MediaCalls.flagAsEscalatedByCallId(call._id);
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+		const remoteUpdateResult = call.remoteLegCallId && (await MediaCalls.flagAsEscalatedByCallId(call.remoteLegCallId));
+		const remoteLegCallId = remoteUpdateResult && remoteUpdateResult.modifiedCount ? call.remoteLegCallId : false;
+
+		const uids = await this.getUsersFromCall(call);
+		for (const uid of uids) {
+			await this.sendSignal(uid, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'escalated',
+			});
+
+			if (remoteLegCallId) {
+				await this.sendSignal(uid, {
+					callId: remoteLegCallId,
+					type: 'notification',
+					notification: 'escalated',
+				});
+			}
 		}
 	}
 }

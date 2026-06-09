@@ -120,7 +120,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		 *    Since the Call instance is only created when we receive "something" from the server, this would mean we received signals out of order, or missed one.
 		 */
 
-		return this.ignored || this.contractState === 'ignored' || !this.initialized;
+		return this.ignored || this.contractState === 'ignored' || !this._initialized;
 	}
 
 	public get muted(): boolean {
@@ -185,7 +185,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private hasRemoteData: boolean;
 
-	private initialized: boolean;
+	private _initialized: boolean;
+
+	public get initialized(): boolean {
+		return this._initialized;
+	}
 
 	private acknowledged: boolean;
 
@@ -221,6 +225,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	private receivedRemoteSdp: boolean;
 
 	private enabledFeatures: CallFeature[] | null;
+
+	private escalated: boolean;
 
 	private _flags: CallFlag[];
 
@@ -274,6 +280,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			activeTimestamp: this.activeTimestamp,
 			tempCallId: this.tempCallId,
 			hidden: this.hidden,
+			escalated: this.escalated,
 
 			localParticipant: this.localParticipant,
 			remoteParticipant: this.remoteParticipant,
@@ -296,7 +303,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.acceptedRemotely = false;
 		this.endedLocally = false;
 		this.hasRemoteData = false;
-		this.initialized = false;
+		this._initialized = false;
 		this.acknowledged = false;
 		this.contractState = 'proposed';
 		this.serviceStates = new Map();
@@ -308,6 +315,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
 		this.enabledFeatures = null;
+		this.escalated = false;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -340,7 +348,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const wasInitialized = this.initialized;
 
-		this.initialized = true;
+		this._initialized = true;
 		this.acceptedLocally = true;
 		if (this.hasRemoteData) {
 			this.changeContact(contact, { prioritizeExisting: true });
@@ -362,7 +370,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		supportedFeatures: CallFeature[],
 		contactInfo?: CallContact,
 	): Promise<void> {
-		if (this.initialized) {
+		if (this._initialized) {
 			return;
 		}
 
@@ -388,7 +396,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.remoteCallId = signal.callId;
 		const wasInitialized = this.initialized;
 
-		this.initialized = true;
+		this._initialized = true;
 		this.hasRemoteData = true;
 		this._service = signal.service;
 		this._role = signal.role;
@@ -1172,6 +1180,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			case 'hangup':
 				return this.flagAsEnded('remote');
+			case 'escalated':
+				return this.flagAsEscalated();
 		}
 	}
 
@@ -1217,6 +1227,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.changeState('hangup');
+	}
+
+	private flagAsEscalated(): void {
+		if (this.escalated) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.flagAsEscalated');
+
+		this.escalated = true;
+		this.emitter.emit('escalated');
 	}
 
 	private addStateTimeout(state: ClientState, timeout: number, callback?: () => void): void {

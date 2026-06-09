@@ -18,6 +18,7 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
+	FindOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -32,6 +33,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
 			{ key: { discussionRid: 1 }, unique: false },
+			{ key: { mediaCallIds: 1 }, unique: true, sparse: true },
 		];
 	}
 
@@ -104,8 +106,10 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		mediaCallIds,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>> &
+		Pick<IGroupVideoConference, 'mediaCallIds'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -114,6 +118,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			anonymousUsers: 0,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			...(mediaCallIds?.length && { mediaCallIds }),
 			...callDetails,
 		};
 
@@ -300,6 +305,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					discussionRid: 1,
 				},
 			},
+		);
+	}
+
+	public async findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				mediaCallIds: callId,
+			},
+			options || {},
 		);
 	}
 }
