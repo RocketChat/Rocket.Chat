@@ -15,9 +15,7 @@ describe('validateLicenseForPreview', () => {
 	it('should preview a valid license without applying it', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
-		const license = await new MockedLicenseBuilder()
-			.withGrantedModules(['livechat-enterprise', 'engagement-dashboard'])
-			.sign();
+		const license = await new MockedLicenseBuilder().withGrantedModules(['livechat-enterprise', 'engagement-dashboard']).sign();
 
 		const result = await licenseManager.validateLicenseForPreview(license);
 
@@ -50,9 +48,7 @@ describe('validateLicenseForPreview', () => {
 	it('should report an invalid license when the workspace URL does not match', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
-		const license = await new MockedLicenseBuilder()
-			.withServerUrls({ value: 'another-workspace.com', type: 'url' })
-			.sign();
+		const license = await new MockedLicenseBuilder().withServerUrls({ value: 'another-workspace.com', type: 'url' }).sign();
 
 		const result = await licenseManager.validateLicenseForPreview(license);
 

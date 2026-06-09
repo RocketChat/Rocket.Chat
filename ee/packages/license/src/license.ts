@@ -363,9 +363,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		const isValid = !isBehaviorsInResult(validationResult, ['invalidate_license', 'prevent_installation']);
 
 		const disabledModules = getModulesToDisable(validationResult);
-		const grantedModules = license.grantedModules
-			.filter(({ module }) => !disabledModules.includes(module))
-			.map(({ module }) => module);
+		const grantedModules = license.grantedModules.filter(({ module }) => !disabledModules.includes(module)).map(({ module }) => module);
 
 		return {
 			isFormatValid: true,
@@ -473,10 +471,10 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 
 		const items = await Promise.all(
 			keys.map(async (limit) => {
-				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
+				const cached = this.shouldPreventActionResults.get(limit);
 
 				if (cached !== undefined) {
-					return [limit as LicenseLimitKind, cached];
+					return [limit, cached];
 				}
 
 				const fresh = license
@@ -491,9 +489,9 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 							'prevent_action',
 						]);
 
-				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
+				this.shouldPreventActionResults.set(limit, fresh);
 
-				return [limit as LicenseLimitKind, fresh];
+				return [limit, fresh];
 			}),
 		);
 
