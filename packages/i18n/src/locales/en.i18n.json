@@ -5880,6 +5880,8 @@
   "VideoConf_Mobile_Ringing_Description": "When enabled, direct calls to mobile users will ring their device as a phone call.",
   "VideoConf_Persistent_Chat_Discussion_Name": "Persistent Chat Discussion Name",
   "VideoConf_Persistent_Chat_Discussion_Name_Description": "Use [date] tag to set where to include the date. Date will be added to the start if tag is not included.",
+  "Video_escalation_modal_description": "If you start a video call the current call will be finished, the other participants will be transferred and notified about the new call.",
+  "Video_escalation_modal_title": "Starting a video call",
   "Video_Call_unavailable_for_this_type_of_room": "Video Call is unavailable for this type of room",
   "Video_Chat_Window": "Video Chat",
   "Video_Conference": "Conference Call",
