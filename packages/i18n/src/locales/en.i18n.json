@@ -4830,6 +4830,7 @@
   "Score": "Score",
   "Screen_Lock": "Screen Lock",
   "Screen_Share": "Screen Share",
+  "Screen_sharing_stopped_video_escalation": "Screen sharing was stopped because the call was escalated to a video call",
   "Script": "Script",
   "Script_Enabled": "Script Enabled",
   "Script_Engine": "Script Sandbox",
