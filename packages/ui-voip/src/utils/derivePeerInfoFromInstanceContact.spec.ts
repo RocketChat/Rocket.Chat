@@ -10,6 +10,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				id: '+5511999999999',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: true,
 				number: '+5511999999999',
 			});
 		});
@@ -19,6 +20,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				type: 'sip',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: true,
 				number: 'unknown',
 			});
 		});
@@ -29,7 +31,21 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				id: '',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: true,
 				number: 'unknown',
+			});
+		});
+
+		it('returns external peer info with displayName when provided', () => {
+			const contact: CallContact = {
+				type: 'sip',
+				id: '+5511999999999',
+				displayName: 'Customer Support',
+			};
+			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: true,
+				number: '+5511999999999',
+				displayName: 'Customer Support',
 			});
 		});
 	});
@@ -44,6 +60,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				sipExtension: '1001',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: false,
 				displayName: 'John Doe',
 				userId: 'userId123',
 				username: 'johndoe',
@@ -56,6 +73,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				type: 'user',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: false,
 				displayName: 'unknown',
 				userId: 'unknown',
 				username: undefined,
@@ -72,6 +90,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				sipExtension: '1002',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: false,
 				displayName: 'Jane Smith',
 				userId: 'userId456',
 				username: 'janesmith',
@@ -86,6 +105,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				displayName: '',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				external: false,
 				displayName: 'unknown',
 				userId: 'unknown',
 				username: undefined,

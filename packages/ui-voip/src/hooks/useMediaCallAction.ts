@@ -22,7 +22,7 @@ export const useMediaCallAction = (
 		}
 
 		const getDisplayName = (peerInfo: { displayName?: string; number?: string }) => {
-			return 'displayName' in peerInfo ? peerInfo?.displayName : peerInfo?.number;
+			return peerInfo.displayName || peerInfo.number;
 		};
 
 		if (state === 'ongoing' && peerInfo) {

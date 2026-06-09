@@ -29,6 +29,7 @@ describe('derivePeerInfoFromInstanceState', () => {
 				state: 'ringing',
 			};
 			expect(derivePeerInfoFromInstanceState(state)).toEqual({
+				external: false,
 				displayName: 'Someone',
 				userId: 'unknown',
 				username: undefined,
@@ -68,6 +69,7 @@ describe('derivePeerInfoFromInstanceState', () => {
 				state: 'active',
 			};
 			expect(derivePeerInfoFromInstanceState(state)).toEqual({
+				external: false,
 				displayName: 'John Doe',
 				userId: 'userId123',
 				username: 'johndoe',
@@ -103,6 +105,7 @@ describe('derivePeerInfoFromInstanceState', () => {
 				state: 'active',
 			};
 			expect(derivePeerInfoFromInstanceState(state)).toEqual({
+				external: true,
 				number: '+5511999999999',
 			});
 		});
