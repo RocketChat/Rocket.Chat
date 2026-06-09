@@ -67,7 +67,6 @@ import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
 import { canEditExtension } from '../../../lib/server/functions/saveUser/validateUserEditing';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
@@ -2002,45 +2001,35 @@ API.v1
 				return API.v1.forbidden();
 			}
 
-			if (this.bodyParams.status) {
-				const validStatus = ['online', 'away', 'offline', 'busy'];
-				if (!validStatus.includes(this.bodyParams.status)) {
-					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-						method: 'users.setStatus',
-					});
-				}
+			const validStatus = ['online', 'away', 'offline', 'busy'];
+			if (this.bodyParams.status && !validStatus.includes(this.bodyParams.status)) {
+				throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					method: 'users.setStatus',
+				});
+			}
 
-				if (this.bodyParams.status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-					throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-						method: 'users.setStatus',
-					});
-				}
+			if (this.bodyParams.status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+					method: 'users.setStatus',
+				});
+			}
 
-				const { status } = this.bodyParams;
+			const { status, message, expiresAt } = this.bodyParams;
 
-				if (status === 'online' && !this.bodyParams.message) {
-					await Presence.clearActiveState(user._id);
-				} else {
-					await Presence.setActiveState(user._id, {
-						statusDefault: status,
-						statusSource: 'manual',
-						...(this.bodyParams.message != null && { statusText: this.bodyParams.message }),
-						...(this.bodyParams.expiresAt &&
-							(() => {
-								const date = new Date(this.bodyParams.expiresAt);
-								if (isNaN(date.getTime())) {
-									throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
-										method: 'users.setStatus',
-									});
-								}
-								return { statusExpiresAt: date };
-							})()),
-					});
-				}
+			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
+			if (statusExpiresAt && isNaN(statusExpiresAt.getTime())) {
+				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
+					method: 'users.setStatus',
+				});
+			}
 
+			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
+			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
+			const statusToUpdate = status || user.statusDefault || ('online' as UserStatus);
+			await Presence.setStatus(user._id, statusToUpdate, message, statusExpiresAt);
+
+			if (status) {
 				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-			} else if (this.bodyParams.message != null) {
-				await setStatusText(user, this.bodyParams.message);
 			}
 
 			return API.v1.success();

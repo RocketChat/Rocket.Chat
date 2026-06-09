@@ -280,21 +280,18 @@ export class Presence extends ServiceClass implements IPresence {
 		return result;
 	}
 
-	/**
-	 * @deprecated Use setActiveState, endActiveState, or clearActiveState instead.
-	 */
-	async setStatus(userId: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
+	async setStatus(userId: string, statusDefault: UserStatus, statusText?: string, statusExpiresAt?: Date): Promise<boolean> {
+		// Selecting 'online' without a status message clears any manual claim
+		// and reverts to connection-driven presence.
 		if (statusDefault === UserStatus.ONLINE && !statusText) {
-			return this.updatePresenceAndReschedule(userId, { type: 'clearActive' });
+			return this.clearActiveState(userId);
 		}
 
-		return this.updatePresenceAndReschedule(userId, {
-			type: 'setActive',
-			newState: {
-				statusDefault,
-				statusSource: 'manual',
-				...(statusText != null && { statusText: normalizeStatusText(statusText) }),
-			},
+		return this.setActiveState(userId, {
+			statusDefault,
+			statusSource: 'manual',
+			...(statusText != null && { statusText: normalizeStatusText(statusText) }),
+			...(statusExpiresAt && { statusExpiresAt }),
 		});
 	}
 
@@ -304,8 +301,8 @@ export class Presence extends ServiceClass implements IPresence {
 	async setActiveState(
 		userId: string,
 		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
-	): Promise<void> {
-		await this.updatePresenceAndReschedule(userId, {
+	): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, {
 			type: 'setActive',
 			newState: {
 				...newState,
@@ -318,15 +315,15 @@ export class Presence extends ServiceClass implements IPresence {
 	 * Ends the current active claim. Restores previous if valid, otherwise
 	 * falls back to system-managed.
 	 */
-	async endActiveState(userId: string): Promise<void> {
-		await this.updatePresenceAndReschedule(userId, { type: 'endActive' });
+	async endActiveState(userId: string): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, { type: 'endActive' });
 	}
 
 	/**
 	 * Removes all presence claims and resets to "Online" with no text.
 	 */
-	async clearActiveState(userId: string): Promise<void> {
-		await this.updatePresenceAndReschedule(userId, { type: 'clearActive' });
+	async clearActiveState(userId: string): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, { type: 'clearActive' });
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {

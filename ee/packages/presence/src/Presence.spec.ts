@@ -154,13 +154,12 @@ describe('Presence class', () => {
 	});
 
 	describe('setStatus', () => {
-		it('should return true when status changed', async () => {
+		it('should apply a manual claim when status changes', async () => {
 			findUserMock.mockResolvedValue(user());
 			withOnlineSession();
 
-			const result = await presence.setStatus('u1', UserStatus.BUSY, 'Working');
+			await presence.setStatus('u1', UserStatus.BUSY, 'Working');
 
-			expect(result).toBe(true);
 			expect(updatePresenceMock).toHaveBeenCalledWith(
 				'u1',
 				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusSource: 'manual' }),
@@ -235,12 +234,12 @@ describe('Presence class', () => {
 			expect(updateArg).not.toHaveProperty('statusText');
 		});
 
-		it('should return false when user is not found', async () => {
+		it('should not write when user is not found', async () => {
 			findUserMock.mockResolvedValue(null);
 
-			const result = await presence.setStatus('u1', UserStatus.BUSY);
+			await presence.setStatus('u1', UserStatus.BUSY);
 
-			expect(result).toBe(false);
+			expect(updatePresenceMock).not.toHaveBeenCalled();
 		});
 	});
 });

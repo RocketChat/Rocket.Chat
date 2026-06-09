@@ -5776,6 +5776,25 @@ describe('[Users]', () => {
 			expect(status.status).to.be.equal('online');
 			expect(status).to.not.have.property('statusExpiresAt');
 		});
+
+		it('should update only the status message when no status is provided', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					message: 'message only, no status',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const infoResponse = await request.get(api('users.info')).query({ userId: credentials['X-User-Id'] }).set(credentials).expect(200);
+			expect(infoResponse.body.user).to.have.property('statusText', 'message only, no status');
+		});
 	});
 
 	describe('[/users.removeOtherTokens]', () => {

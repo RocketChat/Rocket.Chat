@@ -14,12 +14,11 @@ slashCommands.add({
 			return;
 		}
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText' | 'language'>>(
-			userId,
-			{
-				projection: { language: 1, username: 1, name: 1, status: 1, roles: 1, statusText: 1 },
-			},
-		);
+		const user = await Users.findOneById<
+			Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusDefault' | 'roles' | 'statusText' | 'language'>
+		>(userId, {
+			projection: { language: 1, username: 1, name: 1, status: 1, statusDefault: 1, roles: 1, statusText: 1 },
+		});
 		const lng = user?.language || settings.get('Language') || 'en';
 
 		if (!user) {
