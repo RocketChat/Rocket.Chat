@@ -110,3 +110,17 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+/*
+ * Reuse the fuselage SidebarV2 item kebab wrapper (`rcx-sidebar-v2-item__menu-wrapper`)
+ * for user-room-category headers. Fuselage already styles the wrapper as hidden by
+ * default; here we only extend the reveal rule to also fire when the parent
+ * collapse-group bar is hovered or contains keyboard focus, so the kebab follows the
+ * same hover/focus visibility pattern as standard rooms.
+ */
+.rcx-sidebar-v2-collapse-group__bar:hover .rcx-sidebar-v2-item__menu-wrapper,
+.rcx-sidebar-v2-collapse-group__bar:focus-within .rcx-sidebar-v2-item__menu-wrapper {
+	width: 1.25rem;
+	margin-right: 0;
+	opacity: 1;
+}

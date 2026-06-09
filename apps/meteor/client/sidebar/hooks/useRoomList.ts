@@ -1,12 +1,14 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
+import { SIDEBAR_BUILTIN_GROUP_KEYS, SIDEBAR_BUILTIN_GROUP_ORDER } from '../../../lib/sidebarBuiltinGroups';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
+import { useUserRoomCategories } from '../../hooks/useUserRoomCategories';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 
@@ -14,25 +16,15 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-const order = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-	'Drafts',
-	'Favorites',
-	'Teams',
-	'Discussions',
-	'Channels',
-	'Direct_Messages',
-	'Conversations',
-] as const;
+const order = SIDEBAR_BUILTIN_GROUP_ORDER;
+
+/** Known sidebar section keys (i18n); any other `groupTitle` is a user-defined room category name. */
+export { SIDEBAR_BUILTIN_GROUP_KEYS };
 
 type useRoomListReturnType = {
 	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
-	groupsList: TranslationKey[];
+	groupsList: string[];
 	groupedUnreadInfo: Pick<
 		SubscriptionWithRoom,
 		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
@@ -46,6 +38,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+	const { data: userRoomCategories = [] } = useUserRoomCategories();
 
 	const options = useSortQueryOptions();
 
@@ -72,9 +65,32 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const discussion = new Set();
 			const conversation = new Set();
 			const onHold = new Set();
+			const customCategoryRooms = new Map<string, Set<SubscriptionWithRoom>>();
+			// Drop user categories whose name collides with a built-in section key, otherwise
+			// `groups.set(categoryName, ...)` below would silently overwrite (or be overwritten by)
+			// the built-in section, and rooms placed in those categories would disappear.
+			const safeUserRoomCategories = userRoomCategories.filter((category) => !SIDEBAR_BUILTIN_GROUP_KEYS.has(category.name));
+			const customCategoryOrder = safeUserRoomCategories.map((category) => category.name);
+			const roomIdToCategoryName = new Map<string, string>();
+
+			for (const category of safeUserRoomCategories) {
+				customCategoryRooms.set(category.name, new Set());
+				for (const roomId of category.roomIds ?? []) {
+					// Deterministic mapping: first category in `safeUserRoomCategories` wins.
+					if (!roomIdToCategoryName.has(roomId)) {
+						roomIdToCategoryName.set(roomId, category.name);
+					}
+				}
+			}
 
 			rooms.forEach((room) => {
 				if (room.archived) {
+					return;
+				}
+
+				const customCategoryName = roomIdToCategoryName.get(room.rid);
+				if (customCategoryName) {
+					customCategoryRooms.get(customCategoryName)?.add(room);
 					return;
 				}
 
@@ -133,6 +149,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			sidebarDrafts && drafts.size && groups.set('Drafts', drafts);
 
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+			customCategoryRooms.forEach((rooms, categoryName) => {
+				// Show empty categories as groups, so they are visible/manageable right after creation.
+				groups.set(categoryName, rooms);
+			});
 
 			sidebarGroupByType && team.size && groups.set('Teams', team);
 
@@ -144,7 +164,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
+			const fullSidebarOrder = [...sidebarOrder, ...customCategoryOrder.filter((categoryName) => !sidebarOrder.includes(categoryName))];
+			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = fullSidebarOrder.reduce(
 				(acc, key) => {
 					const value = groups.get(key);
 
@@ -152,7 +173,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return acc;
 					}
 
-					acc.groupsList.push(key as TranslationKey);
+					acc.groupsList.push(key);
 
 					const groupedUnreadInfoAcc = {
 						userMentions: 0,
@@ -212,6 +233,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			sidebarOrder,
 			collapsedGroups,
 			incomingCalls,
+			userRoomCategories,
 		]),
 		50,
 	);

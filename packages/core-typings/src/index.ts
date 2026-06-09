@@ -36,6 +36,7 @@ export * from './license';
 export type * from './IUserDataFile';
 export type * from './IUserSession';
 export type * from './IUserStatus';
+export type * from './IUserRoomCategories';
 export * from './IUser';
 export type * from './IMeApiUser';
 
