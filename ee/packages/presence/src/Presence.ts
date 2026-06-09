@@ -7,6 +7,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
+import { normalizeStatusText } from './lib/normalizeStatusText';
 import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
 
 const MAX_CONNECTIONS = 200;
@@ -292,7 +293,7 @@ export class Presence extends ServiceClass implements IPresence {
 			newState: {
 				statusDefault,
 				statusSource: 'manual',
-				...(statusText != null && { statusText }),
+				...(statusText != null && { statusText: normalizeStatusText(statusText) }),
 			},
 		});
 	}
@@ -304,7 +305,13 @@ export class Presence extends ServiceClass implements IPresence {
 		userId: string,
 		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
 	): Promise<void> {
-		await this.updatePresenceAndReschedule(userId, { type: 'setActive', newState });
+		await this.updatePresenceAndReschedule(userId, {
+			type: 'setActive',
+			newState: {
+				...newState,
+				...(newState.statusText != null && { statusText: normalizeStatusText(newState.statusText) }),
+			},
+		});
 	}
 
 	/**
