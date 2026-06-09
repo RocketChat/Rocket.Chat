@@ -273,15 +273,15 @@ const chatEndpoints = API.v1
                 return API.v1.failure('Cannot edit a deleted message.');
             }
 
-            // Sanitize invisible control characters to prevent empty message bypass
+            // Sanitize invisible control characters (excluding safe whitespace) to prevent empty message bypass
             if ('text' in bodyParams && typeof bodyParams.text === 'string') {
-                const sanitizedText = bodyParams.text.replace(/[\p{Cc}]/gu, '').trim();
+                const sanitizedText = bodyParams.text.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '').trim();
                 
                 if (sanitizedText.length === 0) {
                     return API.v1.failure('Message cannot be empty or contain only invisible control characters.');
                 }
                 
-                bodyParams.text = bodyParams.text.replace(/[\p{Cc}]/gu, '');
+                bodyParams.text = bodyParams.text.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '');
             }
 
 			if (bodyParams.roomId !== msg.rid) {
@@ -853,17 +853,17 @@ const chatEndpoints = API.v1
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
-			// Sanitize invisible control characters to prevent empty message bypass
+			// Sanitize invisible control characters (excluding safe whitespace) to prevent empty message bypass
             const msgPayload = this.bodyParams.message as { msg?: string; attachments?: any[] };
             if (msgPayload && typeof msgPayload.msg === 'string') {
-                const sanitizedMsg = msgPayload.msg.replace(/[\p{Cc}]/gu, '').trim();
+                const sanitizedMsg = msgPayload.msg.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '').trim();
                 
                 // Reject if the message is empty and has no attachments
                 if (sanitizedMsg.length === 0 && (!msgPayload.attachments || msgPayload.attachments.length === 0)) {
                     return API.v1.failure('Message cannot be empty or contain only invisible control characters.');
                 }
                 
-                msgPayload.msg = msgPayload.msg.replace(/[\p{Cc}]/gu, '');
+                msgPayload.msg = msgPayload.msg.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '');
             }
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
