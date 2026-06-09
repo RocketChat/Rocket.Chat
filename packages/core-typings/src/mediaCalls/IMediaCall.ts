@@ -68,4 +68,6 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	/** The list of features that may be used in this call. Values are final once the call is accepted. */
 	features: string[];
+
+	sipCallId?: string;
 }
