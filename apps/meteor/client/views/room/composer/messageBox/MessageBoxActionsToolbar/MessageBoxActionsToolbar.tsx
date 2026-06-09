@@ -15,6 +15,7 @@ import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
+import { useViewScheduledMessagesAction } from './hooks/useViewScheduledMessagesAction';
 import { messageBox } from '../../../../../../app/ui-utils/client';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
@@ -62,6 +63,7 @@ const MessageBoxActionsToolbar = ({
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
 	const timestampAction = useTimestampAction(chatContext.composer);
+	const viewScheduledMessagesAction = useViewScheduledMessagesAction(rid);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -74,6 +76,7 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
 		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
+		...(!isHidden(hiddenActions, viewScheduledMessagesAction) && { viewScheduledMessagesAction }),
 	};
 
 	const featured = [];
@@ -82,6 +85,10 @@ const MessageBoxActionsToolbar = ({
 	const insert = [];
 
 	createNew.push(allActions.createDiscussionAction);
+
+	if (allActions.viewScheduledMessagesAction) {
+		createNew.push(allActions.viewScheduledMessagesAction);
+	}
 
 	if (allActions.timestampAction) {
 		insert.push(allActions.timestampAction);

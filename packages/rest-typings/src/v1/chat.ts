@@ -1016,4 +1016,27 @@ export type ChatEndpoints = {
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
 	};
+	'/v1/chat.scheduleMessage': {
+		POST: (params: {
+			roomId: string;
+			message: string;
+			scheduledAt: string;
+			tmid?: string;
+		}) => {
+			message: IMessage;
+		};
+	};
+	'/v1/chat.getScheduledMessages': {
+		GET: (params: { roomId: string; count?: number; offset?: number }) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.cancelScheduledMessage': {
+		POST: (params: { messageId: string }) => {
+			success: boolean;
+		};
+	};
 };

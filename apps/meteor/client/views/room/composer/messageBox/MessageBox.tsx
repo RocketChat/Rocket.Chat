@@ -22,6 +22,7 @@ import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
 import { handleSelectionWrapping } from './wrapSelection';
+import { useScheduleMessageButton } from './hooks/useScheduleMessageButton';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -152,6 +153,11 @@ const MessageBox = ({
 	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
+
+	const { scheduleMenu } = useScheduleMessageButton(
+		room._id,
+		tmid,
+	);
 
 	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
@@ -501,6 +507,7 @@ const MessageBox = ({
 						{canSend && (
 							<>
 								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+								{!isEditing && scheduleMenu}
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
