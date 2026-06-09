@@ -4,7 +4,7 @@ import { renderHook } from '@testing-library/react';
 import { enabledDefaultFeatures } from './useFeaturePreviewList';
 import { usePreferenceFeaturePreviewList } from './usePreferenceFeaturePreviewList';
 
-it('should return the number of unseen features and Accounts_AllowFeaturePreview enabled ', () => {
+it('should return the number of unseen features and Accounts_AllowFeaturePreview enabled', () => {
 	const { result } = renderHook(() => usePreferenceFeaturePreviewList(), {
 		wrapper: mockAppRoot().withSetting('Accounts_AllowFeaturePreview', true).build(),
 	});
@@ -17,7 +17,7 @@ it('should return the number of unseen features and Accounts_AllowFeaturePreview
 	);
 });
 
-it('should return the number of unseen features and Accounts_AllowFeaturePreview disabled ', () => {
+it('should return the number of unseen features and Accounts_AllowFeaturePreview disabled', () => {
 	const { result } = renderHook(() => usePreferenceFeaturePreviewList(), {
 		wrapper: mockAppRoot().withSetting('Accounts_AllowFeaturePreview', false).build(),
 	});
