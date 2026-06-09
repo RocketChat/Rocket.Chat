@@ -18,7 +18,7 @@ export const useOpenRoomMutation = () => {
 			return { userId, roomId };
 		},
 		onMutate: async ({ roomId, userId }) => {
-			return updateSubscription(roomId, userId, { open: true });
+			updateSubscription(roomId, userId, { open: true });
 		},
 		onError: async (_, { roomId, userId }, rollbackDocument) => {
 			if (!rollbackDocument) {
@@ -26,7 +26,7 @@ export const useOpenRoomMutation = () => {
 			}
 
 			const { open } = rollbackDocument;
-			await updateSubscription(roomId, userId, { open });
+			updateSubscription(roomId, userId, { open });
 		},
 	});
 };
