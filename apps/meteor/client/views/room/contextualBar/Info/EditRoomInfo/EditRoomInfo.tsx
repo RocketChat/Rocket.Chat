@@ -154,7 +154,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleUpdateRoomData = useEffectEvent(
 		async ({
 			hideSysMes,
-			disableLinkPreviews,
 			joinCodeRequired,
 			retentionEnabled,
 			retentionOverrideGlobal,

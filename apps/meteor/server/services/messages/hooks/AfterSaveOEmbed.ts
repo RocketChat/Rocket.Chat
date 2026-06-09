@@ -336,15 +336,15 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		return message;
 	}
 
+	if (!Array.isArray(message.urls)) {
+		return message;
+	}
+
 	if (message.rid) {
 		const room = await Rooms.findOneById(message.rid, { projection: { disableLinkPreviews: 1 } });
 		if (room?.disableLinkPreviews) {
 			return message;
 		}
-	}
-
-	if (!Array.isArray(message.urls)) {
-		return message;
 	}
 
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
