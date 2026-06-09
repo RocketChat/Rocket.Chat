@@ -101,15 +101,16 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				processResult(_message);
 			})
 			.catch((error: unknown) => {
-				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown; status?: number };
+				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
 
-				// Check if this is an authentication error and clear credentials
-				// This handles the case where tokens are deleted/expired on the server
-				// but the client still has them in localStorage.
-				const isAuthError = e.status === 401 || e.status === 403;
+				// Check if it's a session expiration error and clear credentials.
+				const isExpiredSessionError =
+					(typeof e.error === 'string' && e.error === 'You must be logged in to do this.') ||
+					(typeof e.message === 'string' && e.message === 'You must be logged in to do this.') ||
+					(typeof e.reason === 'string' && e.reason === 'You must be logged in to do this.');
 
-				if (isAuthError) {
-					console.warn('[ddpOverREST] Auth error detected, clearing credentials', { method: message.method, error });
+				if (isExpiredSessionError && message.method !== 'login' && message.method !== 'logout') {
+					console.warn('[ddpOverREST] Expired session detected, clearing credentials', { method: message.method, error });
 					try {
 						localStorage.removeItem('Meteor.userId');
 						localStorage.removeItem('Meteor.loginToken');

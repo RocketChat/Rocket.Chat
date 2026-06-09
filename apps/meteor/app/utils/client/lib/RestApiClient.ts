@@ -35,7 +35,7 @@ APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
  * The original rest api code throws the Response object, which is very useful
  * for the client sometimes, if the developer wants to access more information about the error
  * unfortunately/fortunately Rocket.Chat expects an error object (from Response.json()
- * This middleware will throw the error object instead, while preserving the HTTP status code.
+ * This middleware will throw the error object instead
  * */
 
 APIClient.use(async (request, next) => {
@@ -44,9 +44,7 @@ APIClient.use(async (request, next) => {
 	} catch (error) {
 		if (error instanceof Response) {
 			const e = await error.json();
-			const errorObject = new Error(typeof e.message === 'string' ? e.message : 'API Error');
-			Object.assign(errorObject, e, { status: error.status });
-			throw errorObject;
+			throw e;
 		}
 
 		throw error;
@@ -54,19 +52,27 @@ APIClient.use(async (request, next) => {
 });
 
 /**
- * Auth error handling middleware: clears expired credentials on 401/403 errors.
+ * Auth error handling middleware: clears expired credentials on session expiration.
  * This handles direct REST API calls that bypass ddpOverREST.
+ * Only triggers on the SPECIFIC error message from expired sessions to avoid false positives.
  */
 APIClient.use(async (request, next) => {
 	try {
 		return await next(...request);
 	} catch (error) {
-		const e = error as { status?: number };
+		const e = error as { status?: number; error?: unknown; message?: unknown };
+		const [url] = request;
 
-		const isAuthError = e.status === 401 || e.status === 403;
+		// Only clear credentials on the specific expired session error message,
+		// not all 401s (which can occur during page loads, auth handshakes, etc.)
+		const isExpiredSessionError =
+			(typeof e.error === 'string' && e.error === 'You must be logged in to do this.') ||
+			(typeof e.message === 'string' && e.message === 'You must be logged in to do this.');
 
-		if (isAuthError) {
-			console.warn('[RestApiClient] Auth error detected, clearing credentials', { error });
+		const isAuthEndpoint = typeof url === 'string' && (url.includes('/login') || url.includes('/logout'));
+
+		if (isExpiredSessionError && !isAuthEndpoint) {
+			console.warn('[RestApiClient] Expired session detected, clearing credentials', { url, error });
 			try {
 				removeStoredItem(STORAGE_KEYS.USER_ID);
 				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
