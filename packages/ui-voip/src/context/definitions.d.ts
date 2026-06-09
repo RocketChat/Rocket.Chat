@@ -33,6 +33,7 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	escalated?: boolean;
 	ringing?: boolean;
 	supportedFeatures: readonly CallFeature[];
 	// True when the idle dialer ('new') is docked inside a slot (the sidebar call panel)
