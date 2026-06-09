@@ -1,11 +1,9 @@
 import { Presence } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { RateLimiter } from '../../../lib/server';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -16,7 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const setUserStatusMethod = async (
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>,
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusDefault' | 'roles' | 'statusText'>,
 	statusType: IUser['status'],
 	statusText: IUser['statusText'],
 ): Promise<void> => {
@@ -26,30 +24,15 @@ export const setUserStatusMethod = async (
 		});
 	}
 
-	if (statusType) {
-		if (statusType === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-			throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-				method: 'setUserStatus',
-			});
-		}
-
-		if (statusType === 'online' && !statusText) {
-			await Presence.clearActiveState(user._id);
-		} else {
-			await Presence.setActiveState(user._id, {
-				statusDefault: statusType,
-				statusSource: 'manual',
-				...(statusText != null && { statusText }),
-			});
-		}
-		return;
+	if (statusType === UserStatus.OFFLINE && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+		throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+			method: 'setUserStatus',
+		});
 	}
 
-	if (statusText || statusText === '') {
-		check(statusText, String);
-
-		await setStatusText(user, statusText);
-	}
+	// If only the status message changes (no statusType), use the user's statusDefault (their chosen status).
+	// This avoids overwriting transient status (auto-away, offline) with a manual claim.
+	await Presence.setStatus(user._id, statusType || user.statusDefault || UserStatus.ONLINE, statusText);
 };
 
 Meteor.methods<ServerMethods>({

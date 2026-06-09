@@ -109,10 +109,23 @@ function resolveIntent(
 		return {
 			set: {
 				statusDefault: newState.statusDefault,
-				statusText: newState.statusText,
 				statusSource: newState.statusSource,
+				...(newState.statusText != null && { statusText: newState.statusText }),
 				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
 				...(previousState && { previousState }),
+			},
+			unset: fieldsToUnset(newState),
+		};
+	}
+
+	// same priority -> overwrite and keep previous
+	if (newPriority === currentPriority) {
+		return {
+			set: {
+				statusDefault: newState.statusDefault,
+				statusSource: newState.statusSource,
+				...(newState.statusText != null && { statusText: newState.statusText }),
+				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
 			},
 			unset: fieldsToUnset(newState),
 		};
