@@ -268,6 +268,22 @@ const chatEndpoints = API.v1
 				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
 			}
 
+			// Prevent editing of soft-deleted messages (Zombie Edits fix)
+            if (msg.t === 'rm') {
+                return API.v1.failure('Cannot edit a deleted message.');
+            }
+
+			// --- Fix : Strict Input Sanitization for updates ---
+            if ('text' in bodyParams && typeof bodyParams.text === 'string') {
+                const sanitizedText = bodyParams.text.replace(/\u0000/g, '').trim();
+                
+                if (sanitizedText.length === 0) {
+                    return API.v1.failure('Message cannot be empty or contain only invisible control characters.');
+                }
+                
+                bodyParams.text = bodyParams.text.replace(/\u0000/g, '');
+            }
+
 			if (bodyParams.roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
@@ -836,6 +852,21 @@ const chatEndpoints = API.v1
 			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
+
+			// --- Fix : Strict Input Sanitization (Invisible Character Bypass) ---
+            const msgPayload = this.bodyParams.message as { msg?: string; attachments?: any[] };
+            if (msgPayload && typeof msgPayload.msg === 'string') {
+                // Strip null bytes and trim
+                const sanitizedMsg = msgPayload.msg.replace(/\u0000/g, '').trim();
+                
+                // If the message is completely empty after stripping, and has no attachments, reject it
+                if (sanitizedMsg.length === 0 && (!msgPayload.attachments || msgPayload.attachments.length === 0)) {
+                    return API.v1.failure('Message cannot be empty or contain only invisible control characters.');
+                }
+                
+                // Clean the actual payload sent to the database
+                msgPayload.msg = msgPayload.msg.replace(/\u0000/g, '');
+            }
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
 				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
