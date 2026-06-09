@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +9,7 @@ import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
+
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -31,6 +32,7 @@ export const useRoomMenuActions = ({
 }: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
+	const room = useUserRoom(rid);
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
@@ -50,7 +52,7 @@ export const useRoomMenuActions = ({
 	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
-	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
+	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen, teamId: room?.teamId, teamMain: room?.teamMain });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
