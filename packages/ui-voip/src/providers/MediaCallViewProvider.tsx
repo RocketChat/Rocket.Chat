@@ -23,6 +23,7 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
+import { useVoiceToVideoEscalation } from '../hooks/useVoiceToVideoEscalation';
 import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
 
@@ -40,6 +41,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
+
+	const { onRequestVideoCall, isRequestingVideoCall } = useVoiceToVideoEscalation(sessionState);
 
 	useDesktopNotifications(sessionState);
 
@@ -231,6 +234,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const contextValue = {
 		sessionState,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onClickDirectMessage,
 		onMute,
 		onHold,
