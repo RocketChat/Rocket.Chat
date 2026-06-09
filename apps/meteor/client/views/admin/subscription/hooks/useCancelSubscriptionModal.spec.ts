@@ -61,7 +61,7 @@ it('should call remove license endpoint when confirm is clicked', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Cancel_subscription' }));
 	expect(result.current.isLoading).toBeTruthy();
-	await act(() => resolve({ success: true }));
+	act(() => resolve({ success: true }));
 	await waitFor(() => expect(result.current.isLoading).toBeFalsy());
 
 	expect(removeLicenseEndpoint).toHaveBeenCalled();
