@@ -1,6 +1,7 @@
 import { dirname, join, resolve } from 'path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
+import webpack from 'webpack';
 
 export default {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
@@ -27,8 +28,18 @@ export default {
 			fallback: {
 				...config.resolve?.fallback,
 				buffer: require.resolve('buffer/'),
+				path: require.resolve('path-browserify'),
 			},
 		};
+
+		// Webpack 5 does not handle `node:` URI imports out of the box. Strip the
+		// prefix so the corresponding `resolve.fallback` entries (above) kick in.
+		config.plugins = [
+			...(config.plugins ?? []),
+			new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
+				resource.request = resource.request.replace(/^node:/, '');
+			}),
+		];
 
 		return config;
 	},

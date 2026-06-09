@@ -45,9 +45,11 @@
 		"eslint": "~9.39.4",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
+		"path-browserify": "^1.0.1",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.18",
-		"typescript": "~5.9.3"
+		"typescript": "~5.9.3",
+		"webpack": "~5.104.1"
 	},
 	"volta": {
 		"extends": "../../../package.json"
