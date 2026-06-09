@@ -275,13 +275,13 @@ const chatEndpoints = API.v1
 
 			// --- Fix : Strict Input Sanitization for updates ---
             if ('text' in bodyParams && typeof bodyParams.text === 'string') {
-                const sanitizedText = bodyParams.text.replace(/\u0000/g, '').trim();
+                const sanitizedText = bodyParams.text.replace(/[\p{Cc}]/gu, '').trim();
                 
                 if (sanitizedText.length === 0) {
                     return API.v1.failure('Message cannot be empty or contain only invisible control characters.');
                 }
                 
-                bodyParams.text = bodyParams.text.replace(/\u0000/g, '');
+                bodyParams.text = bodyParams.text.replace(/[\p{Cc}]/gu, '');
             }
 
 			if (bodyParams.roomId !== msg.rid) {
@@ -857,7 +857,7 @@ const chatEndpoints = API.v1
             const msgPayload = this.bodyParams.message as { msg?: string; attachments?: any[] };
             if (msgPayload && typeof msgPayload.msg === 'string') {
                 // Strip null bytes and trim
-                const sanitizedMsg = msgPayload.msg.replace(/\u0000/g, '').trim();
+                const sanitizedMsg = msgPayload.msg.replace(/[\p{Cc}]/gu, '').trim();
                 
                 // If the message is completely empty after stripping, and has no attachments, reject it
                 if (sanitizedMsg.length === 0 && (!msgPayload.attachments || msgPayload.attachments.length === 0)) {
@@ -865,7 +865,7 @@ const chatEndpoints = API.v1
                 }
                 
                 // Clean the actual payload sent to the database
-                msgPayload.msg = msgPayload.msg.replace(/\u0000/g, '');
+                msgPayload.msg = msgPayload.msg.replace(/[\p{Cc}]/gu, '');
             }
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
