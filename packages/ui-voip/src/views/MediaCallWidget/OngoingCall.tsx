@@ -16,14 +16,16 @@ import {
 	ActionButton,
 	useInfoSlots,
 	Keypad,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt } = sessionState;
+	const { sessionState, isRequestingVideoCall, onRequestVideoCall, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } =
+		useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt, escalated } = sessionState;
 
 	const [open, setOpen] = useState(false);
 	const [inputValue, setInputValue] = useState('');
@@ -36,6 +38,7 @@ const OngoingCall = () => {
 
 	const transferDisabled = !supportedFeatures.includes('transfer');
 	const holdDisabled = !supportedFeatures.includes('hold');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -53,6 +56,7 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				{videoConfAvailable && <VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>

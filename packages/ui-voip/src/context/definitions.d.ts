@@ -31,6 +31,7 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	escalated: boolean;
 	supportedFeatures: readonly CallFeature[];
 }
 

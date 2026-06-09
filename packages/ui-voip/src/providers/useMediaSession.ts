@@ -20,6 +20,7 @@ const defaultSessionInfo: SessionState = {
 	startedAt: undefined,
 	hidden: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	escalated: false,
 };
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -158,6 +159,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						callId: instanceState.tempCallId,
 						startedAt: undefined,
 						supportedFeatures: [],
+						escalated: false,
 					},
 				});
 				return;
@@ -169,6 +171,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				activeTimestamp: startedAt,
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
+				escalated,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
 			} = instanceState;
 
@@ -190,6 +193,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						callId,
 						startedAt,
 						supportedFeatures,
+						escalated,
 					},
 				});
 				return;
@@ -224,6 +228,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					callId,
 					startedAt,
 					supportedFeatures,
+					escalated,
 				},
 			});
 		};
