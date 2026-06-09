@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -14,7 +15,8 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useMemo, useState } from 'react';
+
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -29,6 +31,7 @@ import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionF
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import { getImageQualityOption, setImageQualityOption, type ImageQualityOption } from '../../../../lib/chats/flows/uploadFiles';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
@@ -152,6 +155,7 @@ const MessageBox = ({
 	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
+	const [imageQuality, setImageQuality] = useState<ImageQualityOption>(() => getImageQualityOption());
 
 	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
@@ -166,6 +170,36 @@ const MessageBox = ({
 	});
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
+	const imageQualityTitle = t('Images');
+	const imageQualityOptions = useMemo<GenericMenuItemProps[]>(
+		() => [
+			{
+				id: 'image-quality-low',
+				content: t('Low'),
+				icon: imageQuality === 'low' ? 'check' : undefined,
+				onClick: () => {
+					setImageQuality(setImageQualityOption('low'));
+				},
+			},
+			{
+				id: 'image-quality-medium',
+				content: t('Medium'),
+				icon: imageQuality === 'medium' ? 'check' : undefined,
+				onClick: () => {
+					setImageQuality(setImageQualityOption('medium'));
+				},
+			},
+			{
+				id: 'image-quality-high',
+				content: t('High'),
+				icon: imageQuality === 'high' ? 'check' : undefined,
+				onClick: () => {
+					setImageQuality(setImageQualityOption('high'));
+				},
+			},
+		],
+		[imageQuality, t],
+	);
 
 	const handleSendMessage = useEffectEvent(() => {
 		if (isUploading || isProcessingUploads) {
@@ -472,6 +506,13 @@ const MessageBox = ({
 							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
+						/>
+						<GenericMenu
+							icon='image'
+							detached
+							disabled={isRecording || !canSend}
+							title={imageQualityTitle}
+							sections={[{ title: imageQualityTitle, items: imageQualityOptions }]}
 						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
