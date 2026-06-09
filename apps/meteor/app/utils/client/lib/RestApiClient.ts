@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { RestClient } from '@rocket.chat/api-client';
-import { Meteor } from 'meteor/meteor';
 
 import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
-import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../../../client/lib/sdk/storage';
+import { STORAGE_KEYS, getStoredItem } from '../../../../client/lib/sdk/storage';
 
 class RestApiClient extends RestClient {
 	override getCredentials():
@@ -45,43 +44,6 @@ APIClient.use(async (request, next) => {
 		if (error instanceof Response) {
 			const e = await error.json();
 			throw e;
-		}
-
-		throw error;
-	}
-});
-
-/**
- * Auth error handling middleware: clears expired credentials on session expiration.
- * This handles direct REST API calls that bypass ddpOverREST.
- * Only triggers on the SPECIFIC error message from expired sessions to avoid false positives.
- */
-APIClient.use(async (request, next) => {
-	try {
-		return await next(...request);
-	} catch (error) {
-		const e = error as { status?: number; error?: unknown; message?: unknown };
-		const [url] = request;
-
-		// Only clear credentials on the specific expired session error message,
-		// not all 401s (which can occur during page loads, auth handshakes, etc.)
-		const isExpiredSessionError =
-			(typeof e.error === 'string' && e.error === 'You must be logged in to do this.') ||
-			(typeof e.message === 'string' && e.message === 'You must be logged in to do this.');
-
-		const isAuthEndpoint = typeof url === 'string' && (url.includes('/login') || url.includes('/logout'));
-
-		if (isExpiredSessionError && !isAuthEndpoint) {
-			console.warn('[RestApiClient] Expired session detected, clearing credentials', { url, error });
-			try {
-				removeStoredItem(STORAGE_KEYS.USER_ID);
-				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
-				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
-				Meteor.connection.setUserId(null);
-				console.log('[RestApiClient] Credentials cleared');
-			} catch (cleanupError) {
-				console.warn('[RestApiClient] Failed to clean up expired session', cleanupError);
-			}
 		}
 
 		throw error;
