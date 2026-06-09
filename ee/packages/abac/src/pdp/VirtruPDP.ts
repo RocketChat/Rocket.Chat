@@ -357,22 +357,21 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const abacRooms = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
+		const abacRoomCursor = Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
 			projection: { _id: 1, abacAttributes: 1 },
-		}).toArray();
+		});
 
-		const abacRoomById = Object.fromEntries(abacRooms.map((room) => [room._id, room]));
+		const abacRoomById = new Map<string, IRoom>();
+		for await (const room of abacRoomCursor) {
+			abacRoomById.set(room._id, room);
+		}
 
 		const entries = users
 			.map((user) => {
-				const rooms = (user.__rooms ?? []).map((rid) => abacRoomById[rid]).filter(Boolean);
+				const rooms = (user.__rooms ?? []).map((rid) => abacRoomById.get(rid)).filter(isTruthy);
 				return rooms.length ? { user, rooms } : null;
 			})
 			.filter(isTruthy);
-
-		if (!entries.length) {
-			return [];
-		}
 
 		return this.evaluateUserRooms(entries);
 	}
