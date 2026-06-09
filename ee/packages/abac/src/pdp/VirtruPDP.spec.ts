@@ -481,7 +481,7 @@ describe('reevaluateUsers', () => {
 	});
 
 	it('returns non-compliant {user, room} pairs for denied users', async () => {
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor([room]));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(asyncIterable([room]));
 		const apiCall = jest.fn().mockResolvedValue(denyFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
@@ -492,7 +492,7 @@ describe('reevaluateUsers', () => {
 	});
 
 	it('returns no pairs when the user is permitted', async () => {
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor([room]));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(asyncIterable([room]));
 		const apiCall = jest.fn().mockResolvedValue(permitFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
