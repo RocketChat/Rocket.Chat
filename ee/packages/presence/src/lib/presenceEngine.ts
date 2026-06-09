@@ -70,9 +70,15 @@ function resolveIntent(
 
 	if (claimUpdate.type === 'endActive') {
 		if (user.previousState && !isExpired(user.previousState.statusExpiresAt)) {
+			const prev = user.previousState;
 			return {
-				set: { ...user.previousState },
-				unset: fieldsToUnset(user.previousState, ['previousState']),
+				set: {
+					statusDefault: prev.statusDefault,
+					statusText: prev.statusText,
+					statusSource: prev.statusSource,
+					...(prev.statusExpiresAt && { statusExpiresAt: prev.statusExpiresAt }),
+				},
+				unset: fieldsToUnset(prev, ['previousState']),
 			};
 		}
 		return RESET_TO_ONLINE;
@@ -101,15 +107,13 @@ function resolveIntent(
 			: undefined;
 
 		return {
-			set: { ...newState, ...(previousState && { previousState }) },
-			unset: fieldsToUnset(newState),
-		};
-	}
-
-	// same priority -> overwrite and keep previous
-	if (newPriority === currentPriority) {
-		return {
-			set: { ...newState },
+			set: {
+				statusDefault: newState.statusDefault,
+				statusText: newState.statusText,
+				statusSource: newState.statusSource,
+				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
+				...(previousState && { previousState }),
+			},
 			unset: fieldsToUnset(newState),
 		};
 	}
