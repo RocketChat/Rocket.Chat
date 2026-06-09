@@ -3064,6 +3064,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
+		return this.updateOne({ _id }, update);
+	}
+
 	clearSettings(_id: IUser['_id']) {
 		const update = {
 			$set: {

@@ -202,6 +202,7 @@ API.v1
 				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
+				phones: this.bodyParams.data.phones,
 			};
 
 			if (userData.realname && !validateNameChars(userData.realname)) {
