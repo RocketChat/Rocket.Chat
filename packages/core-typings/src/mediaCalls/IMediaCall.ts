@@ -74,4 +74,6 @@ export interface IMediaCall extends IRocketChatRecord {
 	features: string[];
 
 	sipCallId?: string;
+	/** If this is a SIP call between two rocket.chat users, this attribute will hold the id of the other user's call */
+	remoteLegCallId?: string;
 }

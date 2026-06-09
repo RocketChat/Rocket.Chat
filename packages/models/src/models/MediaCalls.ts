@@ -54,6 +54,22 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public findOutgoingSIPCallsNotOverByCallerUId<T extends Document = IMediaCall>(
+		callerUid: string,
+		options: FindOptions<T>,
+	): FindCursor<T> {
+		return this.find<T>(
+			{
+				'caller.type': 'user',
+				'caller.id': callerUid,
+				'callee.type': 'sip',
+				'ended': false,
+				'remoteLegCallId': { $exists: false },
+			},
+			options,
+		);
+	}
+
 	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(
 		id: Required<IMediaCall>['callerRequestedId'],
 		caller: { type: MediaCallActorType; id: string },
@@ -225,5 +241,9 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{ limit: 1 },
 		);
 		return count > 0;
+	}
+
+	public async setRemoteLegCallId(callId: string, remoteLegCallId: string): Promise<UpdateResult> {
+		return this.updateOne({ _id: callId, remoteLegCallId: { $exists: false } }, { $set: { remoteLegCallId } });
 	}
 }
