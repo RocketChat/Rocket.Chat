@@ -45,6 +45,8 @@ type UserPreferences = {
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
+	sidebarGroupTeamsAndChannels: boolean;
+	sidebarGroupUnlistedInConversations: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
@@ -119,6 +121,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarViewMode: Match.Optional(String),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
+		sidebarGroupTeamsAndChannels: Match.Optional(Boolean),
+		sidebarGroupUnlistedInConversations: Match.Optional(Boolean),
 		muteFocusedConversations: Match.Optional(Boolean),
 		themeAppearence: Match.Optional(String),
 		fontSize: Match.Optional(String),
