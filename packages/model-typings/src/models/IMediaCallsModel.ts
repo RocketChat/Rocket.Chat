@@ -29,6 +29,8 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall>(options: FindOptions<T> | undefined): FindCursor<T>;
 	findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T>;
+	findOutgoingSIPCallsNotOverByCallerUId<T extends Document = IMediaCall>(callerUid: string, options: FindOptions<T>): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	setRemoteLegCallId(callId: string, remoteLegCallId: string): Promise<UpdateResult>;
 }

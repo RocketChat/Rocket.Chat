@@ -250,7 +250,40 @@ class MediaCallDirector {
 		logger.info({ msg: `New call was created`, callId: newCall._id });
 		this.scheduleExpirationCheckByCallId(newCall._id);
 
+		if (newCall.caller.type === 'sip' && newCall.caller.uid) {
+			void this.identifyRemoteLeg(newCall).catch((err) => {
+				logger.error({ msg: 'Failed to identify remote leg of SIP call', err });
+			});
+		}
+
 		return newCall;
+	}
+
+	private async identifyRemoteLeg(call: IMediaCall): Promise<void> {
+		// If it's not an incoming SIP call or not from a rocket.chat user, don't do anything
+		if (call.caller.type !== 'sip' || !call.caller.uid) {
+			return;
+		}
+
+		const callerActiveCalls = await MediaCalls.findOutgoingSIPCallsNotOverByCallerUId<Pick<IMediaCall, '_id' | 'callee'>>(call.caller.uid, {
+			projection: { callee: 1 },
+		}).toArray();
+
+		const filteredCalls =
+			callerActiveCalls.length === 1
+				? callerActiveCalls
+				: callerActiveCalls.filter((outgoingCall) => outgoingCall.callee.uid === call.callee.id);
+
+		if (filteredCalls.length !== 1) {
+			return;
+		}
+
+		return this.linkSIPLegs(call._id, callerActiveCalls[0]._id);
+	}
+
+	private async linkSIPLegs(incomingCallId: string, outgoingCallId: string) {
+		await MediaCalls.setRemoteLegCallId(incomingCallId, outgoingCallId);
+		await MediaCalls.setRemoteLegCallId(outgoingCallId, incomingCallId);
 	}
 
 	public async transferCall(
