@@ -1,5 +1,6 @@
 import { CronJobsSvc } from '@rocket.chat/core-services';
-import { ajv, ajvQuery, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
+import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -43,6 +44,47 @@ const isCronJobsHistoryParams = ajvQuery.compile<{
 	additionalProperties: false,
 });
 
+const isCronJobsListResponse = ajv.compile<{ jobs: ICronJobItem[]; count: number; offset: number; total: number; success: boolean }>({
+	type: 'object',
+	properties: {
+		jobs: { type: 'array' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['jobs', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const isCronJobsHistoryResponse = ajv.compile<{
+	history: ICronHistoryItem[];
+	count: number;
+	offset: number;
+	total: number;
+	success: boolean;
+}>({
+	type: 'object',
+	properties: {
+		history: { type: 'array' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['history', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const isCronJobsActionResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
 const cronJobsEndpoints = API.v1
 	.get(
 		'cron.jobs',
@@ -51,6 +93,7 @@ const cronJobsEndpoints = API.v1
 			permissionsRequired: ['manage-scheduled-jobs'],
 			query: isCronJobsListParams,
 			response: {
+				200: isCronJobsListResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
@@ -73,6 +116,7 @@ const cronJobsEndpoints = API.v1
 			permissionsRequired: ['manage-scheduled-jobs'],
 			query: isCronJobsListParams,
 			response: {
+				200: isCronJobsListResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
@@ -95,6 +139,7 @@ const cronJobsEndpoints = API.v1
 			permissionsRequired: ['manage-scheduled-jobs'],
 			query: isCronJobsHistoryParams,
 			response: {
+				200: isCronJobsHistoryResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
@@ -118,6 +163,8 @@ const cronJobsEndpoints = API.v1
 			permissionsRequired: ['manage-scheduled-jobs'],
 			body: isCronJobsActionParams,
 			response: {
+				200: isCronJobsActionResponse,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
@@ -138,6 +185,8 @@ const cronJobsEndpoints = API.v1
 			permissionsRequired: ['manage-scheduled-jobs'],
 			body: isCronJobsActionParams,
 			response: {
+				200: isCronJobsActionResponse,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
@@ -158,6 +207,8 @@ const cronJobsEndpoints = API.v1
 			permissionsRequired: ['manage-scheduled-jobs'],
 			body: isCronJobsActionParams,
 			response: {
+				200: isCronJobsActionResponse,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
