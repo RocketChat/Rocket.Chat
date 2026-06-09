@@ -1,16 +1,14 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import PeerCardsView from './PeerCardsView';
+import VideoEscalatedView from './VideoEscalatedView';
 import {
 	ToggleButton,
 	Timer,
 	DevicePicker,
 	ActionButton,
-	CardListContainer,
-	CardListSection,
-	PeerCard,
-	StreamCard,
 	useShouldWrapCards,
 	CARD_LIST_SECTION_MAX_HEIGHT,
 	ActionStrip,
@@ -19,7 +17,6 @@ import {
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePeekMediaSessionFeatures } from '../../context/usePeekMediaSessionFeatures';
 import useRoomView from '../../context/useRoomView';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
 type MediaCallRoomSectionProps = {
 	showChat: boolean;
@@ -48,7 +45,6 @@ const getSplitStyles = (showChat?: boolean) => {
 const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
-	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
 	const {
 		sessionState,
 		onMute,
@@ -56,28 +52,16 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
-		streams: { remoteScreen, localScreen },
+		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
-
+	const { muted, held, peerInfo, connectionState, startedAt, escalated } = sessionState;
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
-	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
-
 	useRoomView();
-
-	const onClickFocusRemoteCard = () => {
-		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));
-	};
-
-	const onClickFocusLocalCard = () => {
-		setFocusedCard((prev) => (prev === 'local' ? null : 'local'));
-	};
 
 	const features = usePeekMediaSessionFeatures();
 
@@ -87,30 +71,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	if (!peerInfo || !('userId' in peerInfo) || !peerInfo.userId) {
 		return null;
 	}
-
-	const remoteStreamCard = remoteScreen?.active ? (
-		<StreamCard onClickFocusStream={onClickFocusRemoteCard} focused={focusedCard === 'remote'}>
-			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
-
-	const localStreamCard = localScreen?.active ? (
-		<StreamCard
-			own
-			onClickFocusStream={onClickFocusLocalCard}
-			onClickStopSharing={onToggleScreenSharing}
-			focused={focusedCard === 'local'}
-			showStopSharingOnHover
-		>
-			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
-
-	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
 		<Box
@@ -122,14 +82,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			flexDirection='column'
 			{...getSplitStyles(showChat)}
 		>
-			<CardListSection>
-				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
-					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
-					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
-					{focusedCard !== 'remote' && remoteStreamCard}
-					{focusedCard !== 'local' && localStreamCard}
-				</CardListContainer>
-			</CardListSection>
+			{escalated ? <VideoEscalatedView /> : <PeerCardsView user={user} shouldWrapCards={shouldWrapCards} />}
+
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>
