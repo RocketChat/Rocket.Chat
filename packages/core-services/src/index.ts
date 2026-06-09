@@ -9,7 +9,6 @@ import type {
 	AISearchResult,
 	AISearchStatus,
 } from './types/IAISearchService';
-import type { ICronJobsService } from './types/ICronJobsService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
@@ -20,6 +19,7 @@ import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
 import type { ICallHistoryService } from './types/ICallHistoryService';
+import type { ICronJobsService } from './types/ICronJobsService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';

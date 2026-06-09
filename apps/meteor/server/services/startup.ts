@@ -4,7 +4,7 @@ import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-ser
 import { MongoInternals } from 'meteor/mongo';
 
 import { isRunningMs } from '../lib/isRunningMs';
-import { AISearchService } from './ai-search/service'
+import { AISearchService } from './ai-search/service';
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
