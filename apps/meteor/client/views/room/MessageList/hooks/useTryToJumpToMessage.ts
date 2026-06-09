@@ -3,7 +3,7 @@ import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useEffect } from 'react';
-import type { WindowVirtualizerHandle } from 'virtua';
+import type { VirtualizerHandle } from 'virtua';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
@@ -13,12 +13,19 @@ import { clearHighlightMessage, setHighlightMessage } from '../providers/message
 
 type UseTryToJumpToMessageProps = {
 	rid: string;
-	virtualizerRef: MutableRefObject<WindowVirtualizerHandle | null>;
+	virtualizerRef: MutableRefObject<VirtualizerHandle | null>;
 	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	messages: { _id: string }[];
+	messageListItemOffset?: number;
 };
 
-const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
+const useTryToJumpToMessage = ({
+	rid,
+	virtualizerRef,
+	setIsJumpingToMessage,
+	messages,
+	messageListItemOffset = 0,
+}: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
 
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
@@ -62,9 +69,8 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			return;
 		}
 
-		const messageIndex = messages.indexOf(loadedMessage);
+		const messageIndex = messages.indexOf(loadedMessage) + messageListItemOffset;
 
-		// TODO: Calculate the offset of the page, for the message to be in the center of the page
 		virtualizerRef.current?.scrollToIndex(messageIndex, {
 			align: 'center',
 		});
@@ -79,7 +85,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
 		}, 1000);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message]);
+	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, messageListItemOffset]);
 };
 
 export default useTryToJumpToMessage;
