@@ -51,6 +51,9 @@ const reducer = (
 				type: 'reset';
 		  }
 		| {
+				type: 'call_cleared';
+		  }
+		| {
 				type: 'selectPeer';
 				payload: { peerInfo?: PeerInfo };
 		  }
@@ -93,6 +96,17 @@ const reducer = (
 		return defaultSessionInfo;
 	}
 
+	// No active call on the instance. Tear down call-derived state, but preserve a user-driven
+	// idle compose widget ('new') — e.g. a dial pad pre-filled from a desktop telephony deeplink —
+	// which the instance's autoSync emit would otherwise clobber right after it initializes.
+	if (action.type === 'call_cleared') {
+		if (reducerState.state === 'new') {
+			return reducerState;
+		}
+
+		return defaultSessionInfo;
+	}
+
 	if (action.type === 'status_updated' && reducerState.peerInfo && 'userId' in reducerState.peerInfo) {
 		return { ...reducerState, peerInfo: { ...reducerState.peerInfo, status: action.payload?.status } };
 	}
@@ -120,7 +134,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		const updateSessionState = () => {
 			const instanceState = instance.getState();
 			if (!instanceState) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
@@ -131,7 +145,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 

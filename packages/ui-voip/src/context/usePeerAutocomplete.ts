@@ -39,6 +39,26 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 		initialData: [],
 	});
 
+	// Reflect an externally-selected phone number (e.g. forwarded from a `tel:`/`callto:` deeplink
+	// by the Desktop app) in the visible input. `value` is derived from `userId` only, so a peer
+	// set as `{ number }` would otherwise leave the field empty. Fires on `peerInfo` identity change
+	// only, so manual typing is preserved and re-selecting the same number is a no-op.
+	useEffect(() => {
+		if (peerInfo && 'number' in peerInfo) {
+			setFilter(peerInfo.number);
+		}
+	}, [peerInfo]);
+
+	// When the dial-pad holds a phone-number peer (e.g. pre-filled from a deeplink), keep the
+	// selected peer in sync with manual edits so the call dials the number the user actually sees,
+	// not the original one. Status-based peers (`userId`) keep their existing selection.
+	const updateNumberFilter = (next: string) => {
+		setFilter(next);
+		if (peerInfo && 'number' in peerInfo) {
+			onSelectPeer({ number: next });
+		}
+	};
+
 	const status = useUserPresence(peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined);
 
 	useEffect(() => {
@@ -58,7 +78,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 
 	return {
 		options,
-		onChangeFilter: setFilter,
+		onChangeFilter: updateNumberFilter,
 		onChangeValue: (value: string | string[]) => {
 			if (Array.isArray(value)) {
 				return;
@@ -85,6 +105,6 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 		},
 		value: peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined,
 		filter,
-		onKeypadPress: (key: string) => setFilter((filter) => filter + key),
+		onKeypadPress: (key: string) => updateNumberFilter(filter + key),
 	};
 };
