@@ -4,6 +4,7 @@ import { MediaStreamWrapper } from './MediaStreamWrapper';
 import type { IMediaSignalLogger } from '../../definition';
 import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager';
 import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification';
+import { SDP } from '../services/webrtc';
 
 export class MediaStreamManager implements IMediaStreamManager {
 	public readonly emitter: Emitter<MediaStreamManagerEvents>;
@@ -41,6 +42,24 @@ export class MediaStreamManager implements IMediaStreamManager {
 			}
 
 			localStream.addRemoteId(stream.id);
+		}
+	}
+
+	public setRemoteIdsBySDP(remoteSDP: string): void {
+		const contentMap = SDP.getStreamContentMapFromSDP(remoteSDP);
+		const streams: MediaStreamIdentification[] = Object.entries(contentMap)
+			.map(([id, content]) => {
+				const tag = this.getStreamTagByMediaContent(content);
+				if (!tag) {
+					return null;
+				}
+
+				return { id, tag };
+			})
+			.filter((stream): stream is MediaStreamIdentification => Boolean(stream));
+
+		if (streams.length) {
+			this.setRemoteIds(streams);
 		}
 	}
 
@@ -101,9 +120,9 @@ export class MediaStreamManager implements IMediaStreamManager {
 			return [this.mainRemote];
 		}
 
-		// A video track for an unidentified stream, let's ignore it
-		this.logger?.debug('unidentified stream, ignoring video track');
-		return [];
+		// A video track for an unidentified stream - since the only video we support now is screen share, assume that's what this is
+		this.logger?.debug('unidentified stream, assuming screen-share');
+		return [this.screenShareRemote];
 	}
 
 	private createStream(remote: boolean, tag: string): MediaStreamWrapper {
@@ -123,5 +142,16 @@ export class MediaStreamManager implements IMediaStreamManager {
 
 	private getRemoteStreamById(id: string): MediaStreamWrapper | null {
 		return this.getRemoteStreams().find((stream) => stream.hasRemoteId(id)) || null;
+	}
+
+	private getStreamTagByMediaContent(content: string): string | null {
+		switch (content) {
+			case 'slides':
+				return 'screen-share';
+			case 'main':
+				return 'main';
+			default:
+				return null;
+		}
 	}
 }
