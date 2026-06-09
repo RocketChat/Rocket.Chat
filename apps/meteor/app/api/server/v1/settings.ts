@@ -185,8 +185,17 @@ API.v1.get(
 					return service;
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
-					return { ...service };
+				//	CAUTION: Never hide sign-in with apple button from mobile app.
+				if (service.service && ['apple'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
+					return { ...service, hideButtonOnMobile: true };
 				}
 
 				return {
@@ -200,6 +209,7 @@ API.v1.get(
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
+					hideButtonOnMobile: true,
 				};
 			}),
 		});
