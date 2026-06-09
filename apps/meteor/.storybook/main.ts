@@ -4,7 +4,7 @@ import type { StorybookConfig } from '@storybook/react-webpack5';
 import webpack from 'webpack';
 
 export default {
-	stories: ['../client/**/*.stories.{js,tsx}', '../app/**/*.stories.{js,tsx}', '../ee/app/**/*.stories.{js,tsx}'],
+	stories: ['../client/**/*.stories.{js,tsx}'],
 
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
