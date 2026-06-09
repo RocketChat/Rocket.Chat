@@ -500,6 +500,17 @@ describe('Create attachments for message URLs', () => {
 											image_size: 68016,
 											type: 'file',
 											description: 'chained 3 - file',
+											descriptionMd: [
+												{
+													type: 'PARAGRAPH',
+													value: [
+														{
+															type: 'PLAIN_TEXT',
+															value: 'chained 3 - file',
+														},
+													],
+												},
+											],
 										},
 									],
 								},
