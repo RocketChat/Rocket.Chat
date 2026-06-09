@@ -56,7 +56,7 @@ const OngoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
-				{peerInfo.external ? <PeerInfo {...peerInfo} /> : <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
+				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 				<MediaCallDialpad />
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
@@ -81,9 +81,7 @@ const OngoingCall = () => {
 						onClick={onForward}
 					/>
 					<ActionButton
-						label={t('Voice_call__user__hangup', {
-							user: peerInfo.external ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
-						})}
+						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
 						icon='phone-off'
 						danger
 						onClick={onEndCall}

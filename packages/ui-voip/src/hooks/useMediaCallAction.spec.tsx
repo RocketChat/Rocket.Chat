@@ -125,7 +125,7 @@ describe('useMediaCallAction', () => {
 		});
 
 		it('uses number when peerInfo has no displayName (external peer)', () => {
-			usePeekMediaSessionPeerInfoMock.mockReturnValue({ external: true, number: '+5511999999999' });
+			usePeekMediaSessionPeerInfoMock.mockReturnValue({ number: '+5511999999999' });
 
 			const { result } = renderHook(() => useMediaCallAction(), {
 				wrapper: createWrapper(),
@@ -166,7 +166,7 @@ describe('useMediaCallAction', () => {
 		});
 
 		it('uses number when peerInfo has no displayName (external peer)', () => {
-			usePeekMediaSessionPeerInfoMock.mockReturnValue({ external: true, number: '+5511999999999' });
+			usePeekMediaSessionPeerInfoMock.mockReturnValue({ number: '+5511999999999' });
 
 			const { result } = renderHook(() => useMediaCallAction(), {
 				wrapper: createWrapper(),
@@ -178,7 +178,7 @@ describe('useMediaCallAction', () => {
 
 	describe('when callee is provided (available state)', () => {
 		it('returns voice call action with callee displayName in title', () => {
-			const callee: PeerInfo = { external: false, displayName: 'Dave', userId: 'dave-id' };
+			const callee: PeerInfo = { displayName: 'Dave', userId: 'dave-id' };
 
 			const { result } = renderHook(() => useMediaCallAction(callee), {
 				wrapper: createWrapper(),
@@ -192,7 +192,7 @@ describe('useMediaCallAction', () => {
 		});
 
 		it('calls toggleWidget with callee when action is invoked', () => {
-			const callee: PeerInfo = { external: false, displayName: 'Dave', userId: 'dave-id' };
+			const callee: PeerInfo = { displayName: 'Dave', userId: 'dave-id' };
 
 			const { result } = renderHook(() => useMediaCallAction(callee), {
 				wrapper: createWrapper(),
@@ -206,7 +206,7 @@ describe('useMediaCallAction', () => {
 		});
 
 		it('uses number when callee has no displayName (external peer)', () => {
-			const callee: PeerInfo = { external: true, number: '+5511888888888' };
+			const callee: PeerInfo = { number: '+5511888888888' };
 
 			const { result } = renderHook(() => useMediaCallAction(callee), {
 				wrapper: createWrapper(),
