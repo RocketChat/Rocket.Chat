@@ -1,6 +1,7 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import MediaCallDialpad from './MediaCallDialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -64,6 +65,8 @@ const OngoingCall = () => {
 			<WidgetContent>
 				<CardWidgetContainer>
 					{peerInfo.external ? <PeerInfo {...peerInfo} /> : <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
+
+					<MediaCallDialpad />
 
 					{remoteScreen?.active && (
 						<StreamCard autoHeight maxHeight={120} onClickOpenInRoom={onClickDirectMessage}>

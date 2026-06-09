@@ -13,7 +13,13 @@ type UseKeypad = {
 	};
 };
 
-export const useKeypad = (onPress: (tone: string) => void): UseKeypad => {
+type UseKeypadOptions = {
+	// When `true` the keypad is always rendered (expanded) and does not steal focus on mount.
+	// Used by the inline (sidebar rail) layout where the dialpad is permanently visible.
+	alwaysOpen?: boolean;
+};
+
+export const useKeypad = (onPress: (tone: string) => void, { alwaysOpen = false }: UseKeypadOptions = {}): UseKeypad => {
 	const [open, setOpen] = useState(false);
 	const [inputValue, setInputValue] = useState('');
 	const { t } = useTranslation();
@@ -26,6 +32,7 @@ export const useKeypad = (onPress: (tone: string) => void): UseKeypad => {
 				</FieldRow>
 			</Field>
 			<Keypad
+				autoFocus={!alwaysOpen}
 				onKeyPress={(...args) => {
 					setInputValue((inputValue) => inputValue + args[0]);
 					onPress(...args);
@@ -36,7 +43,7 @@ export const useKeypad = (onPress: (tone: string) => void): UseKeypad => {
 	);
 
 	return {
-		element: open ? element : null,
+		element: alwaysOpen || open ? element : null,
 		buttonProps: {
 			title: open ? t('Close_dialpad') : t('Open_dialpad'),
 			onClick: () => setOpen((open) => !open),

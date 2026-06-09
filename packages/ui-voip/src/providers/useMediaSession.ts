@@ -76,6 +76,12 @@ const reducer = (
 		}
 
 		if (reducerState.state === 'new') {
+			// If a peer is supplied while the dialer is already open, replace the
+			// peer instead of toggling closed — keeps "Call rodrigo" working when
+			// the dialer is already mounted (e.g. inside the sidebar rail panel).
+			if (action.payload?.peerInfo) {
+				return { ...reducerState, peerInfo: action.payload.peerInfo };
+			}
 			return { ...reducerState, state: 'closed' };
 		}
 	}

@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
@@ -8,15 +7,17 @@ import { useEffect, useRef } from 'react';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
+import SecondaryPanel from './SecondaryPanel';
+import { isSidebarRailEnabled } from './sidebarRailFlag';
 import NavBar from '../../../navbar';
-import Sidebar from '../../../sidebar';
-import NavigationRegion from '../../navigation';
-import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
+import SidebarRail from '../../../sidebar/SidebarRail';
+import SidebarRailHeader from '../../../sidebar/SidebarRail/SidebarRailHeader';
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
-	const { isEmbedded: embeddedLayout } = useLayout();
+	const { isEmbedded: embeddedLayout, isMobile } = useLayout();
+	const showSidebarRail = isSidebarRailEnabled() && !embeddedLayout && !isMobile;
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
@@ -54,25 +55,15 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 	return (
 		<>
 			<AccessibilityShortcut />
-			{!embeddedLayout && <NavBar />}
+			{!embeddedLayout && (showSidebarRail ? <SidebarRailHeader /> : <NavBar />)}
 			<Box
 				bg='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
-				{!removeSidenav && (
-					<FeaturePreview feature='secondarySidebar'>
-						<FeaturePreviewOn>
-							<RoomsNavigationProvider>
-								<NavigationRegion />
-							</RoomsNavigationProvider>
-						</FeaturePreviewOn>
-						<FeaturePreviewOff>
-							<Sidebar />
-						</FeaturePreviewOff>
-					</FeaturePreview>
-				)}
+				{showSidebarRail && <SidebarRail />}
+				{!removeSidenav && <SecondaryPanel showSidebarRail={showSidebarRail} currentRoutePath={currentRoutePath} />}
 				<MainContent>{children}</MainContent>
 			</Box>
 		</>

@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
@@ -21,6 +22,7 @@ import { useWidgetExternalControlSignalListener } from './useWidgetExternalContr
 import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
+import { useMediaCallWidgetSlot } from '../context/MediaCallWidgetSlotContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
@@ -258,11 +260,17 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		},
 	};
 
+	const { slot } = useMediaCallWidgetSlot();
+
 	return (
 		<MediaCallViewContext.Provider value={contextValue}>
-			<AnchorPortal id='rcx-media-call-widget-portal'>
-				<MediaCallWidget />
-			</AnchorPortal>
+			{slot ? (
+				createPortal(<MediaCallWidget />, slot)
+			) : (
+				<AnchorPortal id='rcx-media-call-widget-portal'>
+					<MediaCallWidget />
+				</AnchorPortal>
+			)}
 			{children}
 		</MediaCallViewContext.Provider>
 	);
