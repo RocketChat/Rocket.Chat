@@ -22,7 +22,7 @@ export const ComposerOmnichannelJoin = (): ReactElement => {
 							roomId: room._id,
 						});
 					} catch (error) {
-						dispatchToastMessage({ type: 'error', message: error });
+						dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
 					}
 				}}
 			>
