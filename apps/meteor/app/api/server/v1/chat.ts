@@ -268,12 +268,12 @@ const chatEndpoints = API.v1
 				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
 			}
 
-			// Prevent editing of soft-deleted messages (Zombie Edits fix)
+			// Reject modifications to soft-deleted messages
             if (msg.t === 'rm') {
                 return API.v1.failure('Cannot edit a deleted message.');
             }
 
-			// --- Fix : Strict Input Sanitization for updates ---
+            // Sanitize invisible control characters to prevent empty message bypass
             if ('text' in bodyParams && typeof bodyParams.text === 'string') {
                 const sanitizedText = bodyParams.text.replace(/[\p{Cc}]/gu, '').trim();
                 
@@ -853,18 +853,16 @@ const chatEndpoints = API.v1
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
-			// --- Fix : Strict Input Sanitization (Invisible Character Bypass) ---
+			// Sanitize invisible control characters to prevent empty message bypass
             const msgPayload = this.bodyParams.message as { msg?: string; attachments?: any[] };
             if (msgPayload && typeof msgPayload.msg === 'string') {
-                // Strip null bytes and trim
                 const sanitizedMsg = msgPayload.msg.replace(/[\p{Cc}]/gu, '').trim();
                 
-                // If the message is completely empty after stripping, and has no attachments, reject it
+                // Reject if the message is empty and has no attachments
                 if (sanitizedMsg.length === 0 && (!msgPayload.attachments || msgPayload.attachments.length === 0)) {
                     return API.v1.failure('Message cannot be empty or contain only invisible control characters.');
                 }
                 
-                // Clean the actual payload sent to the database
                 msgPayload.msg = msgPayload.msg.replace(/[\p{Cc}]/gu, '');
             }
 
