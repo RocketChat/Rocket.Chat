@@ -2,7 +2,6 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export type InternalPeerInfo = {
-	external: false;
 	displayName: string;
 	userId: string;
 	username?: string;
@@ -12,10 +11,7 @@ export type InternalPeerInfo = {
 };
 
 export type ExternalPeerInfo = {
-	external: true;
 	number: string;
-	displayName?: string;
-	avatarUrl?: string;
 };
 
 export type ConnectionState = 'CONNECTED' | 'CONNECTING' | 'RECONNECTING';

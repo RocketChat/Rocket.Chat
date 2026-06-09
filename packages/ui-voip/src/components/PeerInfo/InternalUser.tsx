@@ -3,7 +3,7 @@ import { Avatar, Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 
 import type { Slot } from './useInfoSlots';
 
-export type InternalUserProps = {
+type InternalUserProps = {
 	displayName: string;
 	status?: UserStatus;
 	avatarUrl?: string;

@@ -1,15 +1,14 @@
-import { ExternalUser, InternalUser } from '.';
-import type { ExternalUserProps } from './ExternalUser';
-import type { InternalUserProps } from './InternalUser';
+import type { ComponentProps } from 'react';
 
-export type PeerInfoProps = (InternalUserProps & { external?: false }) | (ExternalUserProps & { external: true });
+import { InternalUser, PhoneNumber } from '.';
+
+export type PeerInfoProps = ComponentProps<typeof InternalUser> | ComponentProps<typeof PhoneNumber>;
 
 const PeerInfo = (props: PeerInfoProps) => {
-	if (props.external) {
-		return <ExternalUser {...props} />;
+	if ('displayName' in props) {
+		return <InternalUser {...props} />;
 	}
-
-	return <InternalUser {...props} />;
+	return <PhoneNumber {...props} />;
 };
 
 export default PeerInfo;

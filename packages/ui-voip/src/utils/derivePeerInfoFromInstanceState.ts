@@ -5,7 +5,6 @@ import { derivePeerInfoFromInstanceContact } from './derivePeerInfoFromInstanceC
 export const derivePeerInfoFromInstanceState = (callState: AnyMediaCallData) => {
 	if (!callState.confirmed) {
 		return {
-			external: false as const,
 			displayName: callState.title,
 			userId: 'unknown',
 			username: undefined,
