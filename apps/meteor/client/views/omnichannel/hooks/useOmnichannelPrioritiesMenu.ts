@@ -20,7 +20,11 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 	return useMemo(() => {
 		const handlePriorityChange = (priorityId: string) => async () => {
 			try {
-				priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
+				if (priorityId) {
+					await updateRoomPriority({ priorityId });
+				} else {
+					await removeRoomPriority();
+				}
 				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 				queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) });
 			} catch (error) {
