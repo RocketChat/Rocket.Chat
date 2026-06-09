@@ -67,6 +67,7 @@ type MemoizedSettingProps = {
 	required?: boolean;
 	showUpgradeButton?: ReactNode;
 	actionText?: string;
+	error?: string;
 };
 
 const MemoizedSetting = ({
@@ -81,6 +82,7 @@ const MemoizedSetting = ({
 	showUpgradeButton,
 	className = undefined,
 	invisible = undefined,
+	error = undefined,
 	...inputProps
 }: MemoizedSettingProps): ReactElement | null => {
 	if (invisible) {
@@ -99,6 +101,7 @@ const MemoizedSetting = ({
 					onChangeValue={onChangeValue}
 					onChangeEditor={onChangeEditor}
 					disabled={disabled}
+					error={error}
 					{...inputProps}
 				/>
 				{callout && (

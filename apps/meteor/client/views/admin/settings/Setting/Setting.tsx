@@ -98,7 +98,18 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
 
-	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
+	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert, validationPattern, i18nValidation } = setting;
+
+	const validationError = useMemo(() => {
+		if (!validationPattern || typeof value !== 'string' || value === '') {
+			return undefined;
+		}
+		const regex = new RegExp(validationPattern);
+		if (!regex.test(value)) {
+			return i18nValidation && i18n.exists(i18nValidation) ? t(i18nValidation) : t('Invalid_value');
+		}
+		return undefined;
+	}, [validationPattern, i18nValidation, value, i18n, t]);
 
 	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery);
 	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
@@ -182,6 +193,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			onChangeEditor={onChangeEditor}
 			onResetButtonClick={onResetButtonClick}
 			invisible={invisible}
+			error={validationError}
 		/>
 	);
 }

@@ -115,6 +115,14 @@ Meteor.methods<ServerMethods>({
 						break;
 					default:
 						check(value, String);
+						if (setting?.validationPattern && typeof value === 'string' && value !== '') {
+							const regex = new RegExp(setting.validationPattern);
+							if (!regex.test(value)) {
+								throw new Meteor.Error('error-invalid-setting-value', `Invalid value for setting ${_id}`, {
+									method: 'saveSettings',
+								});
+							}
+						}
 						break;
 				}
 			}),
