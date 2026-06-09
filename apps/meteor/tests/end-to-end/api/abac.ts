@@ -2142,6 +2142,87 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
+	describe('Room access via projection-path endpoints (groups.messages)', () => {
+		// Unlike groups.history (which re-loads the full room), groups.messages gates access
+		// solely through the shared `roomAccessAttributes` projection. That projection must carry
+		// `abacAttributes`, otherwise canAccessRoom falls back to the subscription check and a
+		// non-compliant but still-subscribed member can read messages.
+		let projRoom: IRoom;
+		const projAttrKey = `proj_access_attr_${Date.now()}`;
+		let projUser: IUser;
+		let projUserCreds: Credentials;
+
+		before(async function () {
+			this.timeout(10000);
+
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: projAttrKey, values: ['on'] })
+				.expect(200);
+
+			projRoom = (await createRoom({ type: 'p', name: `abac-proj-room-${Date.now()}` })).body.group;
+
+			projUser = await createUser();
+			projUserCreds = await login(projUser.username, password);
+			await addAbacAttributesToUserDirectly(projUser._id, [{ key: projAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
+
+			await request
+				.post(`${v1}/abac/rooms/${projRoom._id}/attributes/${projAttrKey}`)
+				.set(credentials)
+				.send({ values: ['on'] })
+				.expect(200);
+
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: projRoom._id, usernames: [projUser.username] })
+				.expect(200);
+
+			await request
+				.post(`${v1}/chat.sendMessage`)
+				.set(credentials)
+				.send({ message: { rid: projRoom._id, msg: 'Seed message for projection access test' } })
+				.expect(200);
+
+			// Evaluate every access check against the PDP, no cached decisions
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', 0);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: projRoom._id });
+			await deleteUser(projUser);
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', 300);
+		});
+
+		it('PROJECTION: compliant member can read messages', async () => {
+			await request
+				.get(`${v1}/groups.messages`)
+				.set(projUserCreds)
+				.query({ roomId: projRoom._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').that.is.an('array');
+				});
+		});
+
+		it('PROJECTION: member that lost its attributes is denied while still subscribed', async () => {
+			await addAbacAttributesToUserDirectly(projUser._id, []);
+
+			await request
+				.get(`${v1}/groups.messages`)
+				.set(projUserCreds)
+				.query({ roomId: projRoom._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				});
+		});
+	});
+
 	describe('list abac rooms', () => {
 		const listAttrKey1 = `list_attr_1_${Date.now()}`;
 		const listAttrKey2 = `list_attr_2_${Date.now()}`;
