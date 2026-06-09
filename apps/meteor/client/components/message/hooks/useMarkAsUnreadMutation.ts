@@ -18,7 +18,7 @@ export const useMarkAsUnreadMutation = () => {
 					roomId: string;
 					subscription: ISubscription;
 			  }) => {
-			await LegacyRoomManager.close(subscription.t + subscription.name);
+			LegacyRoomManager.close(subscription.t + subscription.name);
 			if ('message' in props) {
 				const { message } = props;
 				await unreadMessages({ firstUnreadMessage: { _id: message._id } });
