@@ -6635,6 +6635,8 @@
   "manage-selected-settings_description": "Permission to change settings which are explicitly granted to be changed",
   "manage-sounds": "Manage Sounds",
   "manage-sounds_description": "Permission to manage the server sounds",
+  "manage-feature-preview": "Manage Feature Preview",
+  "manage-feature-preview_description": "Permission to manage feature preview",
   "manage-the-app": "Manage the App",
   "manage-user-status": "Manage User Status",
   "manage-user-status_description": "Permission to manage the server custom user statuses",
