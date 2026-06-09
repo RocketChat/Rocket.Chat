@@ -48,6 +48,7 @@ type RoomSettings = {
 		favorite: boolean;
 		defaultValue: boolean;
 	};
+	disableLinkPreviews: boolean;
 };
 
 type RoomSettingsValidators = {
@@ -351,6 +352,9 @@ const settingSavers: RoomSettingsSavers = {
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
 	},
+	async disableLinkPreviews({ value, rid }) {
+		await Rooms.saveDisableLinkPreviewsById(rid, value);
+	},
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -387,6 +391,7 @@ const fields: (keyof RoomSettings)[] = [
 	'retentionOverrideGlobal',
 	'encrypted',
 	'favorite',
+	'disableLinkPreviews',
 ];
 
 const validate = <TRoomSetting extends keyof RoomSettings>(

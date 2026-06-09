@@ -2524,6 +2524,7 @@
   "Hide_On_Workspace": "Hide on workspace",
   "Hide_Private_Warning": "Are you sure you want to hide the discussion with \"{{roomName}}\"?",
   "Hide_Room_Warning": "Are you sure you want to hide the channel \"{{roomName}}\"?",
+  "Disable_Link_Previews": "Disable link previews",
   "Hide_System_Messages": "Hide system messages",
   "Hide_Unread_Room_Status": "Hide Unread Room Status",
   "Hide_additional_fields": "Hide additional fields",

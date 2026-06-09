@@ -1897,6 +1897,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	saveDisableLinkPreviewsById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {};
+
+		if (value == null) {
+			update.$unset = { disableLinkPreviews: 1 };
+		} else {
+			update.$set = { disableLinkPreviews: value };
+		}
+
+		return this.updateOne(query, update);
+	}
+
 	saveRetentionEnabledById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

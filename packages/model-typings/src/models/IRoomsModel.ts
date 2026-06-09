@@ -302,6 +302,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	saveFeaturedById(rid: string, featured: boolean): Promise<UpdateResult>;
 	saveDefaultById(rid: string, defaultValue: boolean): Promise<UpdateResult>;
 	saveFavoriteById(rid: string, favorite: boolean, defaultValue: boolean): Promise<UpdateResult>;
+	saveDisableLinkPreviewsById(rid: string, disableLinkPreviews: boolean): Promise<UpdateResult>;
 	saveRetentionEnabledById(rid: string, retentionEnabled: boolean): Promise<UpdateResult>;
 	saveRetentionMaxAgeById(rid: string, retentionMaxAge: number): Promise<UpdateResult>;
 	saveRetentionExcludePinnedById(rid: string, retentionExcludePinned: boolean): Promise<UpdateResult>;
