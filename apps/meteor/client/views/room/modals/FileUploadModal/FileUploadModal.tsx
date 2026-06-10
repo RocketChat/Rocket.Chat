@@ -19,7 +19,7 @@ import {
 	FieldGroup,
 	FieldDescription,
 } from '@rocket.chat/fuselage-forms';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useCallback, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,7 @@ type FileUploadModalProps = {
 	fileDescription?: string;
 };
 
-const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubmit }: FileUploadModalProps): ReactElement => {
+const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubmit }: FileUploadModalProps) => {
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');

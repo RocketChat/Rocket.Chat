@@ -7,8 +7,8 @@ import type StepsLinkedList from './lib/StepsLinkedList';
  * Custom hook to manage the state of wizard steps.
  * It uses a linked list to store the steps and provides a way to subscribe to changes.
  *
- * @param {StepsLinkedList} list - The linked list containing the steps.
- * @returns {StepNode[]} The current state of the steps.
+ * @param list - The linked list containing the steps.
+ * @returns The current state of the steps.
  */
 export const useWizardSteps = (list: StepsLinkedList) => {
 	const stateRef = useRef<StepNode[]>([]);

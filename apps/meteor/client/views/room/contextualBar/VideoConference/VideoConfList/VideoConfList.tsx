@@ -11,7 +11,6 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -28,7 +27,7 @@ type VideoConfListProps = {
 	loadMoreItems: () => void;
 };
 
-const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps): ReactElement => {
+const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps) => {
 	const { t } = useTranslation();
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
@@ -42,7 +41,6 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				{loading && (
 					<Box pi={24} pb={12}>
@@ -79,7 +77,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								endReached={loadMoreItems}
 								overscan={25}
 								data={videoConfs}
-								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
+								itemContent={(_index, data) => <VideoConfListItem videoConfData={data} reload={reload} />}
 							/>
 						</VirtualizedScrollbars>
 					)}

@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 import GenericGroupPage from './GenericGroupPage';
 import TabbedGroupPage from './TabbedGroupPage';
@@ -7,7 +7,7 @@ import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '
 type BaseGroupPageProps = {
 	_id: string;
 	i18nLabel: string;
-	headerButtons?: ReactElement;
+	headerButtons?: ReactNode;
 	hasReset?: boolean;
 	onClickBack?: () => void;
 };

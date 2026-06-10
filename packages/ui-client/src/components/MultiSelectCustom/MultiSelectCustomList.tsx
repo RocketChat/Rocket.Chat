@@ -1,6 +1,6 @@
 import { Box, CheckBox, Icon, Option, OptionIcon, SearchInput, Tile } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,14 +25,14 @@ const MultiSelectCustomList = ({
 	searchBarText,
 }: {
 	options: OptionProp[];
-	onSelected: (item: OptionProp, e?: FormEvent<HTMLElement>) => void;
+	onSelected: (item: OptionProp, e?: ChangeEvent<HTMLElement>) => void;
 	searchBarText?: string;
 }) => {
 	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 
-	const handleChange = useCallback((event: FormEvent<HTMLInputElement>) => setText(event.currentTarget.value), []);
+	const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value), []);
 
 	const filteredOptions = useFilteredOptions(text, options);
 

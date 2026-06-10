@@ -1,5 +1,5 @@
 import { Card, CardControls, CardTitle } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
@@ -15,7 +15,7 @@ export type CardProps = {
 	upgradeButton?: ReactNode;
 };
 
-const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
+const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps) => {
 	const { title, infoText, upgradeButton } = card;
 
 	return (

@@ -1,15 +1,15 @@
 import type { OptionType } from '@rocket.chat/fuselage';
 import { IconButton, useCursor, PositionAnimated, Options } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo, useRef, useCallback, useEffect } from 'react';
 
 import ToneItem from './ToneItem';
 
 const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number) => void }) => {
 	const options = useMemo(() => {
-		const renderOption = (tone: number): ReactElement => <ToneItem tone={tone} />;
+		const renderOption = (tone: number) => <ToneItem tone={tone} />;
 
-		const statuses: Array<[value: number, label: ReactElement, selected: boolean]> = [
+		const statuses: Array<[value: number, label: ReactNode, selected: boolean]> = [
 			[0, renderOption(0), tone === 0],
 			[1, renderOption(1), tone === 1],
 			[2, renderOption(2), tone === 2],
