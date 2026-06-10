@@ -1,4 +1,5 @@
 import { useEndpoint, useRouter, useSearchParameter, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { buildDeepLinkURL } from '../../../lib/buildAuthDeeplinkURL';
@@ -10,40 +11,36 @@ export const useOAuthLogin = () => {
 	const redeemLoginCode = useEndpoint('POST', '/v1/loginCode.redeem');
 	const loginWithToken = useLoginWithToken();
 
+	const { mutate: redeemLoginCodeMutation } = useMutation({
+		mutationFn: async (loginCode: string) => {
+			const { loginToken, userId } = await redeemLoginCode({ code: loginCode });
+
+			if (!loginToken || !userId) {
+				throw new Error('Invalid response from login code redemption');
+			}
+
+			return { loginToken, userId };
+		},
+		onSuccess: async ({ loginToken, userId }) => {
+			if (loginClient === 'desktop' || loginClient === 'mobile') {
+				window.location.href = buildDeepLinkURL(loginToken, userId);
+				return;
+			}
+
+			await loginWithToken(loginToken);
+			router.navigate('/home', { replace: true });
+		},
+		onError: (error) => {
+			console.error('Failed to redeem login code for client redirect', error);
+			router.navigate('/login', { replace: true });
+		},
+	});
+
 	useEffect(() => {
 		if (!loginCode) {
 			return;
 		}
 
-		let timeout: NodeJS.Timeout;
-
-		const handleLogin = async () => {
-			try {
-				const { loginToken, userId } = await redeemLoginCode({ code: loginCode });
-
-				if (!loginToken || !userId) {
-					throw new Error('Invalid response from login code redemption');
-				}
-
-				if (loginClient === 'desktop' || loginClient === 'mobile') {
-					const loginURL = buildDeepLinkURL(loginToken, userId);
-					window.location.href = loginURL;
-					return;
-				}
-
-				await loginWithToken(loginToken);
-
-				timeout = setTimeout(() => {
-					router.navigate('/home', { replace: true });
-				}, 0);
-			} catch (error) {
-				console.error('Failed to redeem login code for client redirect', error);
-				router.navigate('/login', { replace: true });
-			}
-		};
-
-		handleLogin();
-
-		return () => clearTimeout(timeout);
-	}, [loginCode, router, redeemLoginCode, loginWithToken, loginClient]);
+		redeemLoginCodeMutation(loginCode);
+	}, [loginCode, redeemLoginCodeMutation]);
 };
