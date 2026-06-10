@@ -1,27 +1,13 @@
-import { dirname, join, resolve } from 'path';
+import { resolve } from 'node:path';
 
-import type { StorybookConfig } from '@storybook/react-webpack5';
+import baseConfig from '@rocket.chat/storybook-config/main';
 import webpack from 'webpack';
 
-export default {
-	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	addons: [getAbsolutePath('@storybook/addon-docs'), getAbsolutePath('@storybook/addon-webpack5-compiler-swc')],
-
-	framework: {
-		name: getAbsolutePath('@storybook/react-webpack5'),
-		options: {},
-	},
-
+export default baseConfig({
 	staticDirs: ['../src/public'],
 
-	typescript: {
-		reactDocgen: 'react-docgen',
-	},
-
-	docs: {},
-
 	webpackFinal: (config) => {
-		// This is only needed because of Fontello
+		// This is only needed because of Rocket.Chat's icon font.
 		config.resolve = {
 			...config.resolve,
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../../apps/meteor/public')],
@@ -43,8 +29,4 @@ export default {
 
 		return config;
 	},
-} satisfies StorybookConfig;
-
-function getAbsolutePath(value: any): string {
-	return dirname(require.resolve(join(value, 'package.json')));
-}
+});

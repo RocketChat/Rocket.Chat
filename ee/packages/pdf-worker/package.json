@@ -30,9 +30,8 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:~",
+		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@storybook/addon-docs": "^9.1.13",
-		"@storybook/addon-webpack5-compiler-swc": "^4.0.3",
 		"@storybook/react": "^9.1.13",
 		"@storybook/react-webpack5": "^9.1.13",
 		"@testing-library/dom": "~10.4.1",
