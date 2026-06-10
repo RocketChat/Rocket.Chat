@@ -67,6 +67,7 @@ describe('saveRoomName — sysMes unread alert behavior', () => {
 
 		await saveRoomName('room1', 'new-name', fakeUser);
 
+		expect(mocks.Rooms.setNameById.calledOnceWith('room1', 'new-name', 'new-name')).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndAlertByRoomId.calledOnce).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndFnameByRoomId.called).to.be.false;
 	});
@@ -76,6 +77,7 @@ describe('saveRoomName — sysMes unread alert behavior', () => {
 
 		await saveRoomName('room1', 'new-name', fakeUser);
 
+		expect(mocks.Rooms.setNameById.calledOnceWith('room1', 'new-name', 'new-name')).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndFnameByRoomId.calledOnce).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndAlertByRoomId.called).to.be.false;
 	});
@@ -85,6 +87,7 @@ describe('saveRoomName — sysMes unread alert behavior', () => {
 
 		await saveRoomName('room1', 'new-name', fakeUser);
 
+		expect(mocks.Rooms.setNameById.calledOnceWith('room1', 'new-name', 'new-name')).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndAlertByRoomId.calledOnce).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndFnameByRoomId.called).to.be.false;
 	});
@@ -94,6 +97,7 @@ describe('saveRoomName — sysMes unread alert behavior', () => {
 
 		await saveRoomName('room1', 'new-name', fakeUser);
 
+		expect(mocks.Rooms.setNameById.calledOnceWith('room1', 'new-name', 'new-name')).to.be.true;
 		// 'rp'/'ru' are not 'r', so alert should still fire
 		expect(mocks.Subscriptions.updateNameAndAlertByRoomId.calledOnce).to.be.true;
 		expect(mocks.Subscriptions.updateNameAndFnameByRoomId.called).to.be.false;
