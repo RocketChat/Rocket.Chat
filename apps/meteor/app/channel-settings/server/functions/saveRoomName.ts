@@ -21,7 +21,7 @@ const updateFName = async (rid: string, displayName: string): Promise<(UpdateRes
 	return responses;
 };
 
-const updateRoomName = async (rid: string, displayName: string, slugifiedRoomName: string) => {
+const updateRoomName = async (rid: string, displayName: string, slugifiedRoomName: string, alert = true) => {
 	// Check if the username is available
 	if (!(await checkUsernameAvailability(slugifiedRoomName))) {
 		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
@@ -32,7 +32,9 @@ const updateRoomName = async (rid: string, displayName: string, slugifiedRoomNam
 
 	const responses = await Promise.all([
 		Rooms.setNameById(rid, slugifiedRoomName, displayName),
-		Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName),
+		alert
+			? Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName)
+			: Subscriptions.updateNameAndFnameByRoomId(rid, slugifiedRoomName, displayName),
 	]);
 
 	if (responses[1]?.modifiedCount) {
@@ -84,7 +86,8 @@ export async function saveRoomName(
 	if (isDiscussion || isRoomNativeFederated(room)) {
 		update = await updateFName(rid, displayName);
 	} else {
-		update = await updateRoomName(rid, displayName, slugifiedRoomName);
+		const shouldAlert = !room.sysMes?.some((m) => m === 'r');
+		update = await updateRoomName(rid, displayName, slugifiedRoomName, shouldAlert);
 	}
 
 	if (!update) {
