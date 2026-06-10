@@ -114,6 +114,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
 
+	findByRoomIdAndNotificationAll(roomId: IRoom['_id'], excludeUserIds: IUser['_id'][]): FindCursor<ISubscription>;
+
+	incUnreadForRoomIdAndNotificationAll(roomId: IRoom['_id'], excludeUserIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
+
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;

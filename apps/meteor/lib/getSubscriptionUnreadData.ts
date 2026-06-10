@@ -46,7 +46,7 @@ export const getSubscriptionUnreadData = (
 		mentions: userMentions + (tunreadUser?.length || 0),
 		threads: tunread?.length || 0,
 		groupMentions,
-		total: unread + (tunread?.length || 0),
+		total: unread + (tunread?.length || 0) + (alert && !unread ? 1 : 0),
 	};
 
 	const unreadTitle = getUnreadTitle(unreadCount, t);

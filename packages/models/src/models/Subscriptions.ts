@@ -558,6 +558,43 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
+	findByRoomIdAndNotificationAll(roomId: IRoom['_id'], excludeUserIds: IUser['_id'][]): FindCursor<ISubscription> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$nin: excludeUserIds,
+			},
+			$or: [{ desktopNotifications: 'all' as const }, { mobilePushNotifications: 'all' as const }],
+		};
+
+		return this.find(query);
+	}
+
+	incUnreadForRoomIdAndNotificationAll(roomId: IRoom['_id'], excludeUserIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document> {
+		if (inc == null) {
+			inc = 1;
+		}
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$nin: excludeUserIds,
+			},
+			$or: [{ desktopNotifications: 'all' as const }, { mobilePushNotifications: 'all' as const }],
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: inc,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,

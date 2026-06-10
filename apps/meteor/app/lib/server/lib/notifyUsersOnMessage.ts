@@ -108,6 +108,11 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		onlyRead: !toAll && !toHere && !unreadAllMessages,
 	}).toArray();
 
+	const notifSubs =
+		!toAll && !toHere && !unreadAllMessages
+			? await Subscriptions.findByRoomIdAndNotificationAll(room._id, [message.u._id, ...userIds]).toArray()
+			: [];
+
 	// Give priority to user mentions over group mentions
 	if (userIds.length) {
 		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc);
@@ -119,6 +124,10 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
+	if (!toAll && !toHere && !unreadAllMessages) {
+		await Subscriptions.incUnreadForRoomIdAndNotificationAll(room._id, [message.u._id, ...userIds], 1);
+	}
+
 	// update subscriptions of other members of the room
 	await Promise.all([
 		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
@@ -127,7 +136,8 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	subs.forEach((sub) => {
 		const hasUserMention = userIds.includes(sub.u._id);
-		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
+		const hasAllNotifications = sub.desktopNotifications === 'all' || sub.mobilePushNotifications === 'all';
+		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages || hasAllNotifications;
 		void notifyOnSubscriptionChanged(
 			{
 				...sub,
@@ -140,6 +150,20 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 			'updated',
 		);
 	});
+
+	for (const notifSub of notifSubs) {
+		if (!subs.some((s) => s.u._id === notifSub.u._id)) {
+			void notifyOnSubscriptionChanged(
+				{
+					...notifSub,
+					alert: true,
+					open: true,
+					unread: (notifSub.unread || 0) + 1,
+				},
+				'updated',
+			);
+		}
+	}
 
 	// update subscription of the message sender
 	const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
