@@ -102,6 +102,25 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 			.catch((error: unknown) => {
 				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
 
+				// Check if it's a session expiration error and clear credentials.
+				const isExpiredSessionError =
+					(typeof e.error === 'string' && e.error === 'You must be logged in to do this.') ||
+					(typeof e.message === 'string' && e.message === 'You must be logged in to do this.') ||
+					(typeof e.reason === 'string' && e.reason === 'You must be logged in to do this.');
+
+				if (isExpiredSessionError) {
+					console.warn('[ddpOverREST] Expired session detected, clearing credentials', { method: message.method, error });
+					try {
+						localStorage.removeItem('Meteor.userId');
+						localStorage.removeItem('Meteor.loginToken');
+						localStorage.removeItem('Meteor.loginTokenExpires');
+						Meteor.connection.setUserId(null);
+						console.log('[ddpOverREST] Credentials cleared');
+					} catch (cleanupError) {
+						console.warn('[ddpOverREST] Failed to clean up expired session', cleanupError);
+					}
+				}
+
 				// method.call / method.callAnon encode the original Meteor error
 				// inside `body.message` as a DDP `result` frame (mountResult in
 				// app/api/server/v1/misc.ts). Forward it untouched so the original
