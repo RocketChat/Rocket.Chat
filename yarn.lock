@@ -11023,6 +11023,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:~"
