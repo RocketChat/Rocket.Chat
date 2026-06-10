@@ -13,7 +13,7 @@ import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../
 
 const pdpLogger = logger.section('VirtruPDP');
 
-export const collectDenied = <T>(
+export const getDeniedSubjects = <T>(
 	responses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined>,
 	subjects: T[],
 	logContext: (subject: T) => { rid: IRoom['_id']; userId: IUser['_id'] },
@@ -309,7 +309,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		nonCompliantUsers.push(...collectDenied(responses, requestUserIndex, (user) => ({ rid: room._id, userId: user._id })));
+		nonCompliantUsers.push(...getDeniedSubjects(responses, requestUserIndex, (user) => ({ rid: room._id, userId: user._id })));
 
 		return nonCompliantUsers;
 	}
@@ -361,7 +361,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(allRequests);
 
-		nonCompliant.push(...collectDenied(responses, requestIndex, ({ user, room }) => ({ rid: room._id, userId: user._id })));
+		nonCompliant.push(...getDeniedSubjects(responses, requestIndex, ({ user, room }) => ({ rid: room._id, userId: user._id })));
 
 		return nonCompliant;
 	}
