@@ -31,12 +31,6 @@ export interface IUIKitIncomingInteractionActionButtonMessageBox {
 	};
 }
 
-export const isUIKitIncomingInteractionActionButtonMessageBox = (
-	interaction: IUIKitIncomingInteractionActionButtonBase,
-): interaction is IUIKitIncomingInteractionActionButtonMessageBox => {
-	return interaction.payload.context === 'messageBoxAction';
-};
-
 interface IUIKitIncomingInteractionActionButtonMessage extends IUIKitIncomingInteractionActionButtonBase {
 	room: IRoom;
 	tmid?: string;
@@ -70,9 +64,20 @@ interface IUIKitIncomingInteractionActionButtonUserDropdown extends IUIKitIncomi
 	};
 }
 
-export type IUIKitIncomingInteractionActionButton =
-	| IUIKitIncomingInteractionActionButtonMessageBox
-	| IUIKitIncomingInteractionActionButtonMessage
-	| IUIKitIncomingInteractionActionButtonRoomSidebar
-	| IUIKitIncomingInteractionActionButtonRoom
-	| IUIKitIncomingInteractionActionButtonUserDropdown;
+export const isUIKitIncomingInteractionActionButtonMessageBox = (
+	interaction: IUIKitIncomingInteractionActionButtonBase,
+): interaction is IUIKitIncomingInteractionActionButtonMessageBox => {
+	return interaction.payload.context === 'messageBoxAction';
+};
+
+export interface IUIKitIncomingInteractionActionButtonMap {
+	messageBoxAction: IUIKitIncomingInteractionActionButtonMessageBox;
+	messageAction: IUIKitIncomingInteractionActionButtonMessage;
+	roomSideBarAction: IUIKitIncomingInteractionActionButtonRoomSidebar;
+	roomAction: IUIKitIncomingInteractionActionButtonRoom;
+	userDropdownAction: IUIKitIncomingInteractionActionButtonUserDropdown;
+}
+
+export type UIKitIncomingInteractionActionButton = {
+	[K in keyof IUIKitIncomingInteractionActionButtonMap]: IUIKitIncomingInteractionActionButtonMap[K];
+}[keyof IUIKitIncomingInteractionActionButtonMap];
