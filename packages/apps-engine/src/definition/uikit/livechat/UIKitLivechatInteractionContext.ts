@@ -13,7 +13,7 @@ export abstract class UIKitLivechatInteractionContext {
 
 		this.baseContext = { appId, actionId, room, visitor, triggerId };
 
-		this.responder = new UIKitInteractionResponderImpl(this.baseContext as any as IUIKitBaseIncomingInteraction);
+		this.responder = new UIKitInteractionResponderImpl(this.baseContext as unknown as IUIKitBaseIncomingInteraction);
 	}
 
 	public getInteractionResponder() {

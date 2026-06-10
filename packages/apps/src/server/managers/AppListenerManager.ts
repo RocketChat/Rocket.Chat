@@ -28,6 +28,7 @@ import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from
 
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
+import { isIUIKitActionButtonMediaCallWidgetIncomingInteraction } from '../experimental/MediaCallActionButtons';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
 import { UIKitIncomingInteractionType, type UIKitIncomingInteraction } from '../uikit/IUIKitIncomingInteraction';
@@ -1019,6 +1020,20 @@ export class AppListenerManager {
 							user,
 							threadId: data.tmid,
 							...('message' in data.payload && { text: data.payload.message }),
+						})
+						.catch(handleError(method));
+				}
+
+				if (isIUIKitActionButtonMediaCallWidgetIncomingInteraction(data)) {
+					return app
+						.call(method, {
+							appId,
+							actionId,
+							buttonContext: 'mediaCallWidgetAction',
+							room: data.room,
+							triggerId,
+							user,
+							callId: data.payload.callId,
 						})
 						.catch(handleError(method));
 				}
