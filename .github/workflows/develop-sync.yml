@@ -1,0 +1,43 @@
+name: Sync develop with master
+
+# Runs after a final release is published to master and opens a PR syncing
+# develop with master. Version-bump conflicts are resolved in develop's favour
+# and the PR is set to auto-merge; changelog/code conflicts open a review PR.
+on:
+  workflow_run:
+    workflows: ['Publish Final Release']
+    types: [completed]
+
+concurrency: ${{ github.workflow }}
+
+env:
+  HUSKY: 0
+
+jobs:
+  sync:
+    name: Sync develop
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build release action
+        run: yarn workspace @rocket.chat/release-action build
+
+      - name: Sync develop with master
+        uses: ./packages/release-action
+        with:
+          action: sync-develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
