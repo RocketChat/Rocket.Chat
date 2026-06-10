@@ -18,7 +18,7 @@ export const useOpenRoomMutation = () => {
 			return { userId, roomId };
 		},
 		onMutate: async ({ roomId, userId }) => {
-			updateSubscription(roomId, userId, { open: true });
+			return updateSubscription(roomId, userId, { open: true });
 		},
 		onError: async (_, { roomId, userId }, rollbackDocument) => {
 			if (!rollbackDocument) {
