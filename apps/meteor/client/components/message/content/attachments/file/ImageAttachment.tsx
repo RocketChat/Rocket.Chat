@@ -1,4 +1,5 @@
 import type { ImageAttachmentProps } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 
 import { useLoadImage } from './hooks/useLoadImage';
@@ -36,6 +37,13 @@ const ImageAttachment = ({
 					id={id}
 					alt={description}
 				/>
+
+				{/*Box for caption rendering*/}
+				{description && (
+					<Box color='hint' fontScale='p2' style={{ wordBreak: 'break-word' }}>
+						{description}
+					</Box>
+				)}
 			</MessageCollapsible>
 		</>
 	);
