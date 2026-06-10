@@ -10318,6 +10318,7 @@ __metadata:
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
   peerDependencies:
+    "@storybook/react": "*"
     "@tanstack/react-query": "*"
     react: "*"
   languageName: unknown
