@@ -7,6 +7,7 @@ import _ from 'underscore';
 import { callbacks } from '../../../server/lib/callbacks';
 import { beforeCreateUserCallback } from '../../../server/lib/callbacks/beforeCreateUserCallback';
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
 const config: Partial<OAuthConfiguration> = {
@@ -21,6 +22,8 @@ const config: Partial<OAuthConfiguration> = {
 	},
 	accessTokenParam: 'access_token',
 };
+
+const Dolphin = new CustomOAuth('dolphin', config);
 
 function DolphinOnCreateUser(options: any, user?: IUser) {
 	// TODO: callbacks Fix this
@@ -46,14 +49,27 @@ const configureDolphinOAuth = () => {
 		return;
 	}
 
-	addPassportCustomOAuth('dolphin', { ...config, serverURL, clientId, clientSecret });
+	const completeConfig = { ...config, serverURL, clientId, clientSecret };
+
+	if (settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport') {
+		addPassportCustomOAuth('dolphin', completeConfig);
+		return;
+	}
+
+	Dolphin.configure(completeConfig);
 };
 
 Meteor.startup(async () => {
-	const updateConfig = () => _.debounce(configureDolphinOAuth, 300);
+	const updateConfig = _.debounce(configureDolphinOAuth, 300);
 
 	settings.watchMultiple(
-		['Accounts_OAuth_Dolphin', 'Accounts_OAuth_Dolphin_URL', 'Accounts_OAuth_Dolphin_id', 'Accounts_OAuth_Dolphin_secret'],
+		[
+			'Accounts_OAuth_Dolphin',
+			'Accounts_OAuth_Dolphin_URL',
+			'Accounts_OAuth_Dolphin_id',
+			'Accounts_OAuth_Dolphin_secret',
+			'Accounts_OAuth_Flow_Engine',
+		],
 		updateConfig,
 	);
 

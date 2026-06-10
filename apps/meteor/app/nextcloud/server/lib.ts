@@ -2,9 +2,11 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server/cached';
 
 const NEXTCLOUD_PATHS = {
+	serverURL: '',
 	tokenPath: '/index.php/apps/oauth2/api/v1/token',
 	tokenSentVia: 'header' as OAuthConfiguration['tokenSentVia'],
 	authorizePath: '/index.php/apps/oauth2/authorize',
@@ -15,6 +17,8 @@ const NEXTCLOUD_PATHS = {
 		forOtherUsers: ['services.nextcloud.name'],
 	},
 };
+
+const Nextcloud = new CustomOAuth('nextcloud', NEXTCLOUD_PATHS);
 
 function configureNextcloudOAuth(): void {
 	const enabled = settings.get<boolean>('Accounts_OAuth_Nextcloud');
@@ -30,17 +34,26 @@ function configureNextcloudOAuth(): void {
 		return;
 	}
 
-	addPassportCustomOAuth('nextcloud', {
-		...NEXTCLOUD_PATHS,
-		serverURL,
-		clientId,
-		clientSecret,
-	});
+	const config = { ...NEXTCLOUD_PATHS, serverURL, clientId, clientSecret };
+	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
+
+	if (isPassportFlowEnabled) {
+		addPassportCustomOAuth('nextcloud', config);
+		return;
+	}
+
+	Nextcloud.configure(config);
 }
 
 Meteor.startup(() => {
 	settings.watchMultiple(
-		['Accounts_OAuth_Nextcloud', 'Accounts_OAuth_Nextcloud_URL', 'Accounts_OAuth_Nextcloud_id', 'Accounts_OAuth_Nextcloud_secret'],
+		[
+			'Accounts_OAuth_Nextcloud',
+			'Accounts_OAuth_Nextcloud_URL',
+			'Accounts_OAuth_Nextcloud_id',
+			'Accounts_OAuth_Nextcloud_secret',
+			'Accounts_OAuth_Flow_Engine',
+		],
 		configureNextcloudOAuth,
 	);
 });

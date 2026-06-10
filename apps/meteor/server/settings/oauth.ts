@@ -4,6 +4,16 @@ import { settingsRegistry } from '../../app/settings/server';
 
 export const createOauthSettings = () =>
 	settingsRegistry.addGroup('OAuth', async function () {
+		await this.add('Accounts_OAuth_Flow_Engine', 'meteor', {
+			type: 'select',
+			values: [
+				{ key: 'meteor', i18nLabel: 'Meteor' },
+				{ key: 'passport', i18nLabel: 'New flow' },
+			],
+			public: true,
+			i18nDescription: 'Accounts_OAuth_Flow_Engine_Description',
+		});
+
 		await this.section('Drupal', async function () {
 			const enableQuery = {
 				_id: 'Accounts_OAuth_Drupal',

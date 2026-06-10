@@ -18,6 +18,7 @@ const LoginServices = ({
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
+	const enableNewOAuthFlow = useSetting('Accounts_OAuth_Flow_Engine') === 'passport';
 
 	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser;
 
@@ -52,7 +53,13 @@ const LoginServices = ({
 			{servicesToShow.length > 0 && (
 				<ButtonGroup vertical stretch small>
 					{servicesToShow.map((service) => (
-						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
+						<LoginServicesButton
+							disabled={disabled}
+							key={service.service}
+							{...service}
+							setError={setError}
+							enableNewOAuthFlow={enableNewOAuthFlow}
+						/>
 					))}
 				</ButtonGroup>
 			)}

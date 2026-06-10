@@ -4,9 +4,11 @@ import passport from 'passport';
 import _ from 'underscore';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
 const config: Partial<OAuthConfiguration> = {
+	serverURL: '',
 	identityPath: '/oauth2/UserInfo',
 	authorizePath: '/oauth2/authorize',
 	tokenPath: '/oauth2/token',
@@ -20,6 +22,8 @@ const config: Partial<OAuthConfiguration> = {
 	},
 	accessTokenParam: 'access_token',
 };
+
+const Drupal = new CustomOAuth('drupal', config);
 
 const configureDrupalOAuth = () => {
 	passport.unuse('drupal');
@@ -36,14 +40,22 @@ const configureDrupalOAuth = () => {
 		return;
 	}
 
-	addPassportCustomOAuth('drupal', { ...config, serverURL, clientId, clientSecret });
+	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
+	const completeConfig = { ...config, serverURL, clientId, clientSecret };
+
+	if (isPassportFlowEnabled) {
+		addPassportCustomOAuth('drupal', completeConfig);
+		return;
+	}
+
+	Drupal.configure(completeConfig);
 };
 
 Meteor.startup(() => {
 	const updateConfig = _.debounce(configureDrupalOAuth, 300);
 
 	settings.watchMultiple(
-		['Accounts_OAuth_Drupal', 'API_Drupal_URL', 'Accounts_OAuth_Drupal_id', 'Accounts_OAuth_Drupal_secret'],
+		['Accounts_OAuth_Drupal', 'API_Drupal_URL', 'Accounts_OAuth_Drupal_id', 'Accounts_OAuth_Drupal_secret', 'Accounts_OAuth_Flow_Engine'],
 		updateConfig,
 	);
 });
