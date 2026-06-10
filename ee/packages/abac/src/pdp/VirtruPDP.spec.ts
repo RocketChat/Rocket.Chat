@@ -1,4 +1,4 @@
-import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError, PdpUnavailableError } from '../errors';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { VirtruPDP } from './VirtruPDP';
 
 const serverFetchMock = jest.fn();
@@ -498,7 +498,7 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 		expect(apiCall).toHaveBeenCalled();
 	});
 
-	it('rejects when response count mismatches request count (positional contract broken)', async () => {
+	it('maps responses positionally; a missing trailing response is inconclusive (no evict)', async () => {
 		const u = user();
 		const rooms = [
 			{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] },
@@ -508,7 +508,8 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] }],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		await expect(pdp.evaluateUserRooms([{ user: u, rooms }])).rejects.toBeInstanceOf(PdpUnavailableError);
+		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
+		expect(result).toEqual([{ user: u, room: rooms[0] }]);
 	});
 });
 
@@ -549,7 +550,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 		expect(apiCall).toHaveBeenCalled();
 	});
 
-	it('onSubjectAttributesChanged rejects when response count mismatches request count (positional contract broken)', async () => {
+	it('onSubjectAttributesChanged treats a missing trailing response as non-compliant', async () => {
 		const rooms = [
 			{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] },
 			{ _id: 'r2', abacAttributes: [{ key: 'k', values: ['v'] }] },
@@ -559,7 +560,8 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] }],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		await expect(pdp.onSubjectAttributesChanged(user({ __rooms: ['r1', 'r2'] }) as any, [])).rejects.toBeInstanceOf(PdpUnavailableError);
+		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1', 'r2'] }) as any, []);
+		expect(result).toEqual([rooms[1]]);
 	});
 });
 
