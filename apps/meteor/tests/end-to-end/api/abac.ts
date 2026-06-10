@@ -2093,9 +2093,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.get(`${v1}/groups.history`)
 				.set(cacheUserCreds)
 				.query({ roomId: cacheRoom._id })
-				.expect(403)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
 				});
 		});
 
@@ -3259,13 +3260,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.get('/api/v1/groups.history')
 				.set(userCreds)
 				.query({ roomId: room._id })
-				.expect(403)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
 				});
 		});
 
 		it('user is removed from room after access DENY', async () => {
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
 			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
@@ -3338,6 +3344,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('denied user is not a member of the room', async () => {
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
 			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
@@ -3397,9 +3407,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.get('/api/v1/groups.history')
 				.set(userCredentials)
 				.query({ roomId: room._id })
-				.expect(403)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
 				});
 		});
 
