@@ -13,6 +13,11 @@ import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../
 
 const pdpLogger = logger.section('VirtruPDP');
 
+// Removal requires an explicit DENY, mirroring canAccessObject: inconclusive decisions block
+// access in realtime but must not destroy membership
+const hasExplicitDeny = (resp?: { resourceDecisions?: IResourceDecision[] }): boolean =>
+	!!resp?.resourceDecisions?.some((rd) => rd.decision === 'DECISION_DENY');
+
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private client: VirtruClient;
 
@@ -93,7 +98,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 	private async getDecisionBulk(
 		requests: Array<IGetDecisionBulkRequest | null>,
-		{ isolateBatchFailures = false }: { isolateBatchFailures?: boolean } = {},
 	): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
 		const BATCH_SIZE = 200;
 		const limit = pLimit(4);
@@ -112,18 +116,9 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 						return batch.map(() => undefined);
 					}
 
-					let result: IGetDecisionBulkResponse;
-					try {
-						result = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-							decisionRequests: validBatch,
-						});
-					} catch (err) {
-						if (!isolateBatchFailures) {
-							throw err;
-						}
-						pdpLogger.error({ msg: 'GetDecisionBulk batch failed, skipping its decisions', batch: batchIndex + 1, err });
-						return batch.map(() => undefined);
-					}
+					const result = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+						decisionRequests: validBatch,
+					});
 
 					pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: batchIndex + 1, result });
 
@@ -131,18 +126,9 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 					// Decisions carry no entity info, so mapping back to requests is positional; a count
 					// mismatch means the whole batch is unattributable
 					if (responses.length !== validBatch.length) {
-						if (!isolateBatchFailures) {
-							throw new Error(
-								`GetDecisionBulk response count mismatch: expected ${validBatch.length}, received ${responses.length} (batch ${batchIndex + 1})`,
-							);
-						}
-						pdpLogger.error({
-							msg: 'GetDecisionBulk response count mismatch, skipping batch decisions',
-							batch: batchIndex + 1,
-							expected: validBatch.length,
-							received: responses.length,
-						});
-						return batch.map(() => undefined);
+						throw new Error(
+							`GetDecisionBulk response count mismatch: expected ${validBatch.length}, received ${responses.length} (batch ${batchIndex + 1})`,
+						);
 					}
 					let responseIdx = 0;
 					return batch.map((req) => (req ? responses[responseIdx++] : undefined));
@@ -310,12 +296,24 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
+		let inconclusive = 0;
 		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted && requestUserIndex[index]) {
+			if (!requestUserIndex[index]) {
+				return;
+			}
+			if (hasExplicitDeny(resp)) {
 				nonCompliantUsers.push(requestUserIndex[index]);
+				return;
+			}
+			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
+			if (!permitted) {
+				inconclusive++;
 			}
 		});
+
+		if (inconclusive) {
+			pdpLogger.warn({ msg: 'Inconclusive PDP decisions after room attributes change, eviction skipped', rid: room._id, inconclusive });
+		}
 
 		return nonCompliantUsers;
 	}
@@ -365,19 +363,19 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return nonCompliant;
 		}
 
-		const responses = await this.getDecisionBulk(allRequests, { isolateBatchFailures: true });
+		const responses = await this.getDecisionBulk(allRequests);
 
 		let inconclusive = 0;
 		responses.forEach((resp, index) => {
 			if (!requestIndex[index]) {
 				return;
 			}
-			const decisions = resp?.resourceDecisions;
-			if (decisions?.some((rd) => rd.decision === 'DECISION_DENY')) {
+			if (hasExplicitDeny(resp)) {
 				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
 				return;
 			}
-			if (!decisions?.length || decisions.some((rd) => rd.decision !== 'DECISION_PERMIT')) {
+			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
+			if (!permitted) {
 				inconclusive++;
 			}
 		});

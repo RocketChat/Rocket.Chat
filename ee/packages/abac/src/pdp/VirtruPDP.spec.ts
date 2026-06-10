@@ -284,13 +284,39 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 		expect(result).toEqual([u2]);
 	});
 
-	it('treats empty resourceDecisions as non-compliant', async () => {
+	it('does not evict on empty resourceDecisions (inconclusive)', async () => {
 		const u = user();
 		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [] }] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
-		expect(result).toEqual([u]);
+		expect(result).toEqual([]);
+	});
+
+	it('does not evict on DECISION_UNSPECIFIED (inconclusive)', async () => {
+		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
+		expect(result).toEqual([]);
+	});
+
+	it('still evicts entity-keyless users alongside DENY-only filtering of decided users', async () => {
+		const keyless = user({ _id: 'u0', emails: [] });
+		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com' }] });
+		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com' }] });
+		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([keyless, denied, unspecified]));
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [
+				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] },
+				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] },
+			],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
+		expect(result).toEqual([keyless, denied]);
 	});
 
 	it('returns only entity-keyless users when ALL users lack entity keys (no API call)', async () => {
@@ -344,6 +370,17 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['rP', 'rD'] }) as any, []);
 		expect(result).toEqual([rooms[1]]);
+	});
+
+	it('still treats DECISION_UNSPECIFIED as non-compliant (LDAP-driven path cannot yield inconclusive decisions)', async () => {
+		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, []);
+		expect(result).toEqual(rooms);
 	});
 
 	it('splits >200 rooms into multiple decision batches', async () => {
@@ -453,36 +490,15 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 		expect(result).toEqual([{ user: u, room: rooms[2] }]);
 	});
 
-	it('resolves without evictions when the decision call fails', async () => {
+	it('rejects when the decision call fails (no evictions, sweep retried next run)', async () => {
 		const apiCall = jest.fn().mockRejectedValue(new Error('pdp down'));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
-		const result = await pdp.evaluateUserRooms([{ user: user(), rooms }]);
-		expect(result).toEqual([]);
+		await expect(pdp.evaluateUserRooms([{ user: user(), rooms }])).rejects.toThrow('pdp down');
 		expect(apiCall).toHaveBeenCalled();
 	});
 
-	it('keeps evictions from successful batches when another batch fails', async () => {
-		const u = user();
-		const total = 201;
-		const rooms = Array.from({ length: total }, (_, i) => ({ _id: `r${i}`, abacAttributes: [{ key: 'k', values: ['v'] }] }));
-		const apiCall = jest.fn().mockImplementation(async (_endpoint, body: any) => {
-			if (body.decisionRequests.some((r: any) => r.resources[0].ephemeralId === 'r0')) {
-				throw new Error('pdp down');
-			}
-			return {
-				decisionResponses: body.decisionRequests.map((r: any) => ({
-					resourceDecisions: [{ ephemeralResourceId: r.resources[0].ephemeralId, decision: 'DECISION_DENY' }],
-				})),
-			};
-		});
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
-		expect(result).toEqual([{ user: u, room: rooms[200] }]);
-		expect(apiCall).toHaveBeenCalledTimes(2);
-	});
-
-	it('skips evictions for a batch whose response count mismatches the request count', async () => {
+	it('rejects when response count mismatches request count (positional contract broken)', async () => {
 		const u = user();
 		const rooms = [
 			{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] },
@@ -492,8 +508,7 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] }],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
-		expect(result).toEqual([]);
+		await expect(pdp.evaluateUserRooms([{ user: u, rooms }])).rejects.toThrow(/mismatch/);
 	});
 });
 
