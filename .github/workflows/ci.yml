@@ -1100,3 +1100,4 @@ jobs:
     secrets:
       CI_PAT: ${{ secrets.CI_PAT }}
       D360_TOKEN: ${{ secrets.D360_TOKEN }}
+      D360_USER_ID: ${{ secrets.D360_USER_ID }}
