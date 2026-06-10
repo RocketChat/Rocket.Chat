@@ -1,5 +1,6 @@
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { VirtruPDP } from './VirtruPDP';
+import { collectDenied, VirtruPDP } from './VirtruPDP';
+import type { Decision } from './types';
 
 const serverFetchMock = jest.fn();
 jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) => serverFetchMock(...a) }));
@@ -85,6 +86,34 @@ describe('VirtruPDP.isAvailable', () => {
 		const pdp = new VirtruPDP(mkClient({ isAvailable }));
 		expect(await pdp.isAvailable()).toBe(true);
 		expect(isAvailable).toHaveBeenCalled();
+	});
+});
+
+describe('collectDenied', () => {
+	const logContext = (subject: string) => ({ rid: 'r1', userId: subject });
+	const resp = (...decisions: Decision[]) => ({
+		resourceDecisions: decisions.map((decision) => ({ ephemeralResourceId: 'r1', decision })),
+	});
+
+	it('collects subjects with an explicit DENY decision', () => {
+		const responses = [resp('DECISION_DENY'), resp('DECISION_PERMIT'), resp('DECISION_DENY')];
+		expect(collectDenied(responses, ['a', 'b', 'c'], logContext)).toEqual(['a', 'c']);
+	});
+
+	it('skips subjects when every decision is PERMIT', () => {
+		expect(collectDenied([resp('DECISION_PERMIT')], ['a'], logContext)).toEqual([]);
+	});
+
+	it('skips inconclusive subjects (UNSPECIFIED, empty decisions, missing response)', () => {
+		expect(collectDenied([resp('DECISION_UNSPECIFIED'), resp(), undefined], ['a', 'b', 'c'], logContext)).toEqual([]);
+	});
+
+	it('treats a DENY among PERMITs in one response as denied', () => {
+		expect(collectDenied([resp('DECISION_PERMIT', 'DECISION_DENY')], ['a'], logContext)).toEqual(['a']);
+	});
+
+	it('ignores responses without a matching subject', () => {
+		expect(collectDenied([resp('DECISION_DENY'), resp('DECISION_DENY')], ['a'], logContext)).toEqual(['a']);
 	});
 });
 

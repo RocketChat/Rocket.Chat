@@ -13,8 +13,30 @@ import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../
 
 const pdpLogger = logger.section('VirtruPDP');
 
-const hasExplicitDeny = (resp?: { resourceDecisions?: IResourceDecision[] }): boolean =>
-	!!resp?.resourceDecisions?.some((rd) => rd.decision === 'DECISION_DENY');
+export const collectDenied = <T>(
+	responses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined>,
+	subjects: T[],
+	logContext: (subject: T) => { rid: IRoom['_id']; userId: IUser['_id'] },
+): T[] => {
+	const denied: T[] = [];
+
+	responses.forEach((resp, index) => {
+		const subject = subjects[index];
+		if (!subject) {
+			return;
+		}
+		if (resp?.resourceDecisions?.some((rd) => rd.decision === 'DECISION_DENY')) {
+			denied.push(subject);
+			return;
+		}
+		if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
+			return;
+		}
+		pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', ...logContext(subject) });
+	});
+
+	return denied;
+};
 
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private client: VirtruClient;
@@ -287,19 +309,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		responses.forEach((resp, index) => {
-			if (!requestUserIndex[index]) {
-				return;
-			}
-			if (hasExplicitDeny(resp)) {
-				nonCompliantUsers.push(requestUserIndex[index]);
-				return;
-			}
-			if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
-				return;
-			}
-			pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', rid: room._id, userId: requestUserIndex[index]._id });
-		});
+		nonCompliantUsers.push(...collectDenied(responses, requestUserIndex, (user) => ({ rid: room._id, userId: user._id })));
 
 		return nonCompliantUsers;
 	}
@@ -310,7 +320,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
-		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: AtLeast<IRoom, '_id' | 'abacAttributes'> }> = [];
+		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
 		const allRequests: IGetDecisionBulkRequest[] = [];
 
 		const config = this.client.getConfig();
@@ -327,7 +337,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			}
 
 			for (const room of rooms) {
-				requestIndex.push({ user, room });
+				requestIndex.push({ user, room: room as IRoom });
 				allRequests.push({
 					entityIdentifier: {
 						entityChain: {
@@ -351,23 +361,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(allRequests);
 
-		responses.forEach((resp, index) => {
-			if (!requestIndex[index]) {
-				return;
-			}
-			if (hasExplicitDeny(resp)) {
-				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
-				return;
-			}
-			if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
-				return;
-			}
-			pdpLogger.warn({
-				msg: 'Inconclusive PDP decision, eviction skipped',
-				rid: requestIndex[index].room._id,
-				userId: requestIndex[index].user._id,
-			});
-		});
+		nonCompliant.push(...collectDenied(responses, requestIndex, ({ user, room }) => ({ rid: room._id, userId: user._id })));
 
 		return nonCompliant;
 	}
