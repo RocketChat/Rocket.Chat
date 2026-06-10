@@ -87,6 +87,8 @@
 		"picomatch@npm:^4.0.3": "^4.0.4",
 		"path-to-regexp@npm:^8.1.0": "^8.4.0",
 		"serialize-javascript": "^7.0.5",
+		"launch-editor/shell-quote": "1.8.4",
+		"npm-run-all/shell-quote": "1.8.4",
 		"underscore": "1.13.8",
 		"undici@npm:^6.19.5": "^6.24.0",
 		"webpack": "~5.104.0",
