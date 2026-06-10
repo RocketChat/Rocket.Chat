@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, MediaCallContact } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
@@ -36,7 +36,7 @@ export interface IMediaCallServerSettings {
 	mobileRinging: boolean;
 
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
-	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
+	isFeatureEnabled: (feature: CallFeature) => boolean;
 }
 
 export interface IMediaCallServer {
@@ -60,5 +60,5 @@ export interface IMediaCallServer {
 	requestCall(params: InternalCallParams): Promise<void>;
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
-	isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean;
+	isFeatureAvailableForParticipants(feature: CallFeature, participants: MediaCallContact[]): boolean;
 }

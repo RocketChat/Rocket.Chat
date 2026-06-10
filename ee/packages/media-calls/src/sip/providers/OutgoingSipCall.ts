@@ -46,7 +46,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'OutgoingSipCall.createCall', sessionId: session.sessionId });
-		const { callee, ...extraParams } = params;
+		const { callee, features: requestedFeatures, ...extraParams } = params;
 
 		// pre-sign the callee to this session
 		const signedCallee: MediaCallSignedContact = {
@@ -68,12 +68,13 @@ export class OutgoingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
 
+		const features = requestedFeatures.filter((feature) => SIP_CALL_FEATURES.includes(feature));
 		const call = await mediaCallDirector.createCall({
 			...extraParams,
 			callee: signedCallee,
 			calleeAgent,
 			callerAgent,
-			features: SIP_CALL_FEATURES,
+			features,
 		});
 
 		const channel = await calleeAgent.getOrCreateChannel(call, session.sessionId);

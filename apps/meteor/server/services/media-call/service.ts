@@ -400,20 +400,19 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			},
 			mobileRinging,
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
-			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
+			isFeatureEnabled: (feature) => this.isFeatureEnabled(feature),
 		};
 	}
 
-	private userHasFeaturePermission(_uid: IUser['_id'], feature: CallFeature): boolean {
-		if (feature === 'audio') {
-			return true;
+	private isFeatureEnabled(feature: CallFeature): boolean {
+		switch (feature) {
+			case 'screen-share':
+				return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
+			case 'conference-escalation':
+				return Boolean(settings.get('VoIP_TeamCollab_Video_Escalation_Enabled') && settings.get('Pexip_Integration_Enabled'));
+			default:
+				return true;
 		}
-
-		if (feature === 'screen-share') {
-			return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
-		}
-
-		return true;
 	}
 
 	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {

@@ -21,6 +21,6 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 		mobileRinging: false,
 
 		permissionCheck: async () => false,
-		isFeatureAvailableForUser: () => false,
+		isFeatureEnabled: () => false,
 	};
 }
