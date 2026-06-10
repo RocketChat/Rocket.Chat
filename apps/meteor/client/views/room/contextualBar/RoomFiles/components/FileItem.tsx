@@ -1,29 +1,33 @@
-import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { FilePreviewIcon } from '@rocket.chat/ui-client';
 
-import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
+import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { normalizeUsername } from '../../../../../../lib/utils/normalizeUsername';
 import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
+import { isPreviewableImage } from '../../../../../lib/utils/isPreviewableImage';
 
 type FileItemProps = {
+	rid: IRoom['_id'];
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;
 };
 
-const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
+const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
-	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
+	const { _id, path, name, uploadedAt, type, typeGroup, user, description } = fileData;
 
 	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
 	const normalizedUsername = user?.username ? normalizeUsername(user.username) : undefined;
+	const shouldDisplayPreview = typeGroup === 'image' && !!type && isPreviewableImage(type);
 
 	return (
 		<>
-			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} />
+			{shouldDisplayPreview ? (
+				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
 			) : (
 				<Box
 					is='a'
@@ -34,6 +38,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					target='_blank'
 					title={name}
 					display='flex'
+					alignItems='center'
 					flexGrow={1}
 					flexShrink={1}
 					href={path}
@@ -41,7 +46,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					textDecorationLine='none'
 					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
-					<FileItemIcon type={type} />
+					<FilePreviewIcon format={getFileExtension(name)} />
 					<Box mis={8} flexShrink={1} overflow='hidden'>
 						<Box withTruncatedText color='default' fontScale='p2m'>
 							{name}
@@ -57,7 +62,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					</Box>
 				</Box>
 			)}
-			<FileItemMenu fileData={fileData} onClickDelete={onClickDelete} />
+			<FileItemMenu rid={rid} fileData={fileData} onClickDelete={onClickDelete} />
 		</>
 	);
 };

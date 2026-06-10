@@ -1,11 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 
 const CounterItem = ({
 	title = '',
 	count = '-',
 	...props
 }: {
-	title: string | JSX.Element;
+	title: ReactNode;
 	count: string | number;
 	flexShrink?: number;
 	pb?: number;

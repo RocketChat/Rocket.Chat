@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Button, Box, Card, CardTitle, CardBody, CardControls } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useId, type ReactElement } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -21,7 +21,7 @@ type SettingsGroupCardProps = {
 	description?: TranslationKey;
 };
 
-const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCardProps): ReactElement => {
+const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCardProps) => {
 	const { t, i18n } = useTranslation();
 	const router = useRouter();
 	const cardId = useId();

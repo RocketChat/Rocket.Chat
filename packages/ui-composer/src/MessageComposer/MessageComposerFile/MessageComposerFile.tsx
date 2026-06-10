@@ -1,12 +1,18 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Avatar, Box, Palette, Skeleton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { useMemo, type KeyboardEvent, type MouseEvent, type AllHTMLAttributes, type ReactElement } from 'react';
+import { FilePreviewIcon } from '@rocket.chat/ui-client';
+import type { ReactNode, KeyboardEvent, MouseEvent, AllHTMLAttributes } from 'react';
+import { useMemo } from 'react';
 
 type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
-	actionIcon: ReactElement;
+	fileFormat: string;
+	showPreview?: boolean;
+	previewUrl?: string;
+	alt?: string;
+	actionIcon: ReactNode;
 	error?: boolean;
 	disabled?: boolean;
 	onClick: () => void;
@@ -15,6 +21,10 @@ type MessageComposerFileProps = {
 const MessageComposerFile = ({
 	fileTitle,
 	fileSubtitle,
+	fileFormat,
+	showPreview,
+	previewUrl,
+	alt = '',
 	actionIcon,
 	error,
 	disabled,
@@ -22,12 +32,6 @@ const MessageComposerFile = ({
 	className,
 	...props
 }: MessageComposerFileProps) => {
-	const closeWrapperStyle = css`
-		position: absolute;
-		right: 0.5rem;
-		top: 0.5rem;
-	`;
-
 	const previewWrapperStyle = css`
 		background-color: ${Palette.surface['surface-tint']};
 		cursor: ${error || disabled ? 'not-allowed' : 'pointer'};
@@ -74,13 +78,24 @@ const MessageComposerFile = ({
 			borderColor={error ? 'error' : 'extra-light'}
 			alignItems='center'
 			position='relative'
-			height='x56'
-			width='x200'
+			height='x58'
+			width='x234'
 			mie={8}
 			onClick={handleClick}
 			{...props}
 		>
-			<Box width='x160' mis={4} display='flex' flexDirection='column'>
+			{showPreview ? (
+				<Box minWidth='x48'>
+					{previewUrl ? (
+						<Avatar objectFit='cover' url={previewUrl} size='x48' alt={alt} />
+					) : (
+						<Skeleton variant='rect' width='x48' height='x48' />
+					)}
+				</Box>
+			) : (
+				<FilePreviewIcon format={fileFormat} />
+			)}
+			<Box flexGrow={1} withTruncatedText mis={4} display='flex' flexDirection='column'>
 				<Box {...buttonProps} fontScale='p2' color={disabled ? 'disabled' : 'info'} withTruncatedText>
 					{fileTitle}
 				</Box>
@@ -88,7 +103,7 @@ const MessageComposerFile = ({
 					{fileSubtitle}
 				</Box>
 			</Box>
-			{!disabled && <Box className={closeWrapperStyle}>{actionIcon}</Box>}
+			{!disabled && <Box alignSelf='start'>{actionIcon}</Box>}
 		</Box>
 	);
 };

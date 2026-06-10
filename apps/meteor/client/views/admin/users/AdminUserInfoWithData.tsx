@@ -1,10 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarContent } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import AdminUserInfoActions from './AdminUserInfoActions';
@@ -22,7 +21,7 @@ type AdminUserInfoWithDataProps = {
 	tab: AdminUsersTab;
 };
 
-const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {
+const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps) => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
@@ -42,7 +41,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 		},
 	});
 
-	const onChange = useEffectEvent(() => {
+	const onChange = useStableCallback(() => {
 		onReload();
 		refetch();
 	});

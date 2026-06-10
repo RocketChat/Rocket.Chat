@@ -38,6 +38,7 @@ const ImageAttachment = ({
 					src={getURL(url)}
 					previewUrl={`data:image/png;base64,${imagePreview}`}
 					id={id}
+					alt={description}
 				/>
 			</MessageCollapsible>
 		</>

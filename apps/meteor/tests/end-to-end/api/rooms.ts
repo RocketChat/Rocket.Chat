@@ -22,7 +22,13 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
-import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import {
+	getSettingValueById,
+	restorePermissionToRoles,
+	updateEEPermission,
+	updatePermission,
+	updateSetting,
+} from '../../data/permissions.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -96,6 +102,162 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/rooms.saveDraft]', () => {
+		let testChannel: IRoom;
+		let userWithoutSubscription: TestUser<IUser>;
+		let userWithoutSubscriptionCredentials: Credentials;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `rooms.saveDraft.test.${Date.now()}-${Math.random()}` })).body.channel;
+			userWithoutSubscription = await createUser({ joinDefaultChannels: false });
+			userWithoutSubscriptionCredentials = await login(userWithoutSubscription.username, password);
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), deleteUser(userWithoutSubscription)]));
+
+		it('should save a draft on the user subscription', async () => {
+			const draft = `draft-${Date.now()}`;
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('draft', draft);
+				});
+		});
+
+		it('should clear the draft from the user subscription', async () => {
+			const draft = `draft-to-clear-${Date.now()}`;
+
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft }).expect(200);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('draft', draft);
+				});
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft: '' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.not.have.property('draft');
+				});
+		});
+
+		it('should fail when the user does not have a subscription for the room', async () => {
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(userWithoutSubscriptionCredentials)
+				.send({ rid: testChannel._id, draft: `draft-${Date.now()}` })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+					expect(res.body).to.have.property('error', 'Invalid subscription [error-invalid-subscription]');
+				});
+		});
+
+		describe('max allowed message size', () => {
+			const maxAllowedSize = 10;
+			let originalMaxAllowedSize: SettingValue;
+
+			before(async () => {
+				originalMaxAllowedSize = await getSettingValueById('Message_MaxAllowedSize');
+				await updateSetting('Message_MaxAllowedSize', maxAllowedSize);
+			});
+
+			after(async () => {
+				await updateSetting('Message_MaxAllowedSize', originalMaxAllowedSize);
+			});
+
+			it('should save a draft with the maximum allowed message size', async () => {
+				const draft = 'a'.repeat(maxAllowedSize);
+
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.have.property('draft', draft);
+					});
+			});
+
+			it('should fail when the draft exceeds the maximum allowed message size', async () => {
+				await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '' }).expect(200);
+
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft: 'a'.repeat(maxAllowedSize + 1) })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.not.have.property('draft');
+					});
+			});
 		});
 	});
 
@@ -1542,7 +1704,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "prid" is required.');
+					expect(res.body).to.have.property('error').that.includes("must have required property 'prid'");
 				})
 				.end(done);
 		});
@@ -1556,7 +1718,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "t_name" is required.');
+					expect(res.body).to.have.property('error').that.includes("must have required property 't_name'");
 				})
 				.end(done);
 		});
@@ -1572,7 +1734,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "users" must be an array.');
+					expect(res.body).to.have.property('error').that.includes('must be array');
 				})
 				.end(done);
 		});
@@ -1826,7 +1988,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
+					expect(res.body.error).to.include("must have required property 'selector'");
 				})
 				.end(done);
 		});
@@ -1870,7 +2032,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
+					expect(res.body.error).to.include("must have required property 'selector'");
 				})
 				.end(done);
 		});
@@ -1966,7 +2128,7 @@ describe('[Rooms]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
+						expect(res.body.error).to.include("must have required property 'selector'");
 					})
 					.end(done);
 			});
@@ -2358,30 +2520,39 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should update group name if user changes name', async () => {
-			await updateSetting('UI_Use_Real_Name', true);
-			await request
-				.post(api('users.update'))
-				.set(credentials)
-				.send({
-					userId: testUser._id,
-					data: {
-						name: `changed.name.${testUser.username}`,
-					},
-				});
+		describe('use real name', () => {
+			before(async () => {
+				await updateSetting('UI_Use_Real_Name', true);
+			});
 
-			// need to wait for the name update finish
-			await sleep(300);
+			after(async () => {
+				await updateSetting('UI_Use_Real_Name', false);
+			});
 
-			await request
-				.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({ roomId })
-				.send()
-				.expect((res) => {
-					const { subscription } = res.body;
-					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
-				});
+			it('should update group name if user changes name', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							name: `changed.name.${testUser.username}`,
+						},
+					});
+
+				// need to wait for the name update finish
+				await sleep(300);
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId })
+					.send()
+					.expect((res) => {
+						const { subscription } = res.body;
+						expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
+					});
+			});
 		});
 	});
 
@@ -3939,7 +4110,11 @@ describe('[Rooms]', () => {
 					deleteRoom({ type: 'c', roomId: publicChannelInPrivateTeam._id }),
 				]);
 
-				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
+				await Promise.all([
+					deleteTeam(credentials, publicTeam.name),
+					deleteTeam(credentials, privateTeam.name),
+					restorePermissionToRoles('view-c-room'),
+				]);
 
 				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
 			});
@@ -4382,8 +4557,49 @@ describe('[Rooms]', () => {
 		});
 
 		describe('unban via re-invite', () => {
-			it('should unban the user when re-invited', () => {
+			it('should fail to invite a banned user', () => {
 				return request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: bannableUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-user-is-banned');
+					});
+			});
+
+			it('should list the banned user in rooms.bannedUsers', async () => {
+				const res = await request
+					.get(api('rooms.bannedUsers'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				const usernames = res.body.bannedUsers.map((u: { username: string }) => u.username);
+				expect(usernames).to.include(bannableUser.username);
+			});
+
+			it('should unban the user and then re-invite successfully', async () => {
+				await request
+					.post(api('rooms.unbanUser'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						username: bannableUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				await request
 					.post(api('channels.invite'))
 					.set(credentials)
 					.send({

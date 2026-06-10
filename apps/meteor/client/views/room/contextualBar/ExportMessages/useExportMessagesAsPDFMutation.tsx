@@ -78,7 +78,6 @@ export const useExportMessagesAsPDFMutation = () => {
 				fonts: [{ src: absoluteUrl(font.fontSrc) }],
 			});
 		}
-		Font.registerHyphenationCallback((word) => [word]);
 	}, []);
 
 	return useMutation({

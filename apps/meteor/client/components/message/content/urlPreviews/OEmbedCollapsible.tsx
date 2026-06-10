@@ -1,5 +1,5 @@
 import { MessageGenericPreview } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OEmbedPreviewContent from './OEmbedPreviewContent';
@@ -8,7 +8,7 @@ import MessageCollapsible from '../../MessageCollapsible';
 
 type OEmbedCollapsibleProps = { children?: ReactNode } & OEmbedPreviewMetadata;
 
-const OEmbedCollapsible = ({ children, ...props }: OEmbedCollapsibleProps): ReactElement => {
+const OEmbedCollapsible = ({ children, ...props }: OEmbedCollapsibleProps) => {
 	const { t } = useTranslation();
 
 	return (

@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +26,7 @@ type CustomUserStatusProps = {
 };
 
 // TODO: Missing error state
-const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
+const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();

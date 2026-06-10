@@ -3,7 +3,6 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -18,7 +17,7 @@ type CustomUserStatusFormProps = {
 	status?: IUserStatus;
 };
 
-const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFormProps): ReactElement => {
+const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFormProps) => {
 	const t = useTranslation();
 	const { _id } = status || {};
 	const setModal = useSetModal();
@@ -113,7 +112,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 								name='statusType'
 								control={control}
 								rules={{ required: t('Required_field', { field: t('Presence') }) }}
-								render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
+								render={({ field }) => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
 							/>
 						</FieldRow>
 						{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}

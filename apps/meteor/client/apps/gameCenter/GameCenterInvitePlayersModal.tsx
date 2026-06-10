@@ -1,12 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { Random } from '@rocket.chat/random';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { Tracker } from 'meteor/tracker';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -19,7 +19,7 @@ interface IGameCenterInvitePlayersModalProps {
 	onClose: () => void;
 }
 
-const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayersModalProps): ReactElement => {
+const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayersModalProps) => {
 	const { t } = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 	const { name } = game;
@@ -30,23 +30,17 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 		const privateGroupName = `${name.replace(/\s/g, '-')}-${Random.id(10)}`;
 
 		try {
-			const result = await callWithErrorHandling('createPrivateGroup' as any, privateGroupName, users);
+			const { group } = await sdk.rest.post('/v1/groups.create', { name: privateGroupName, members: users });
 
-			roomCoordinator.openRouteLink(result.t, result);
+			roomCoordinator.openRouteLink(group.t, { rid: group._id, name: group.name });
 
-			Tracker.autorun((c) => {
-				if (openedRoom !== result.rid) {
-					return;
-				}
-
-				callWithErrorHandling('sendMessage', {
+			if (openedRoom === group._id) {
+				await callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
-					rid: result.rid,
+					rid: group._id,
 					msg: t('Apps_Game_Center_Play_Game_Together', { name }),
 				});
-
-				c.stop();
-			});
+			}
 			onClose();
 		} catch (err) {
 			console.warn(err);

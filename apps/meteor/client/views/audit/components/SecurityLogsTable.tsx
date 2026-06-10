@@ -14,7 +14,7 @@ import {
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useState, type ReactElement } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SecurityLogDisplayModal from './SecurityLogDisplayModal';
@@ -24,7 +24,7 @@ import GenericNoResults from '../../../components/GenericNoResults';
 import type { DateRange } from '../utils/dateRange';
 import { getTypeTranslation } from '../utils/getAppTypeTranslation';
 
-const SecurityLogsTable = (): ReactElement => {
+const SecurityLogsTable = () => {
 	const { t } = useTranslation();
 	const [setting, setSetting] = useState('');
 

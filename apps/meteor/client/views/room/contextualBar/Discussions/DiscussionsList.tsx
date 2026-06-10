@@ -1,8 +1,7 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarContent,
@@ -13,19 +12,22 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import type { ChangeEvent, MouseEvent, RefObject } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import DiscussionsListRow from './DiscussionsListRow';
+import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
+import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 type DiscussionsListProps = {
-	total: number;
+	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
-	loadMoreItems: (start: number, end: number) => void;
-	loading: boolean;
+	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
+	isPending: boolean;
+	isSuccess: boolean;
 	onClose: () => void;
 	error: unknown;
 	text: string;
@@ -33,16 +35,19 @@ type DiscussionsListProps = {
 };
 
 function DiscussionsList({
-	total = 10,
+	itemCount,
 	discussions = [],
 	loadMoreItems,
-	loading,
+	isPending,
+	isSuccess,
 	onClose,
 	error,
 	text,
 	onChangeFilter,
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
+	const discussionListId = useId();
+
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
 
@@ -51,14 +56,10 @@ function DiscussionsList({
 	const onClick = useCallback(
 		(e: MouseEvent<HTMLElement>) => {
 			const { drid } = e.currentTarget.dataset;
-			if (drid) goToRoom(drid);
+			if (drid) void goToRoom(drid);
 		},
 		[goToRoom],
 	);
-
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
-		debounceDelay: 200,
-	});
 
 	return (
 		<ContextualbarDialog>
@@ -70,44 +71,44 @@ function DiscussionsList({
 			<ContextualbarSection>
 				<TextInput
 					placeholder={t('Search_Messages')}
+					aria-label={t('Search_Messages')}
+					aria-controls={isSuccess ? discussionListId : undefined}
 					value={text}
 					onChange={onChangeFilter}
 					ref={inputRef as RefObject<HTMLInputElement>}
 					addon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
-				{loading && (
+			<ContextualbarContent paddingInline={0}>
+				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+				{isPending && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-
 				{error instanceof Error && (
 					<Callout mi={24} type='danger'>
 						{error.toString()}
 					</Callout>
 				)}
-
-				{!loading && total === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
-
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{!error && total > 0 && discussions.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
-								totalCount={total}
-								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
-								overscan={25}
-								data={discussions}
-								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
-							/>
-						</VirtualizedScrollbars>
-					)}
-				</Box>
+				{isSuccess && (
+					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
+						{discussions.length > 0 && (
+							<Box h='full' w='full' style={{ minHeight: 0 }}>
+								<PaginatedVirtualList
+									items={discussions}
+									totalCount={itemCount}
+									overscan={25}
+									onEndReached={isPending ? undefined : loadMoreItems}
+									renderItem={(discussion) => (
+										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+									)}
+								/>
+							</Box>
+						)}
+					</Box>
+				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

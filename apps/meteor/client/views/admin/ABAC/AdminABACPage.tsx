@@ -1,7 +1,7 @@
-import { Box, Button, Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
 import AttributesContextualBar from './ABACAttributesTab/AttributesContextualBar';
@@ -13,8 +13,10 @@ import RoomsContextualBarWithData from './ABACRoomsTab/RoomsContextualBarWithDat
 import RoomsPage from './ABACRoomsTab/RoomsPage';
 import SettingsPage from './ABACSettingTab/SettingsPage';
 import AdminABACTabs from './AdminABACTabs';
+import { useABACTabPermissions } from './hooks/useABACTabPermissions';
 import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useLdapSync } from '../../../hooks/useLdapSync';
 import { links } from '../../../lib/links';
 
 type AdminABACPageProps = {
@@ -29,8 +31,13 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const context = useRouteParameter('context');
 	const learnMore = useExternalLink();
 	const isABACAvailable = useIsABACAvailable();
+	const ldapEnabled = useSetting('LDAP_Enable');
+	const abacEnabled = useSetting('ABAC_Enabled');
+	const handleSyncNow = useLdapSync();
+	const isSyncDisabled = !ldapEnabled || !abacEnabled;
+	const tabPermissions = useABACTabPermissions();
 
-	const handleCloseContextualbar = useEffectEvent((): void => {
+	const handleCloseContextualbar = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}
@@ -48,9 +55,18 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('ABAC')}>
-					<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
-						{t('ABAC_Learn_More')}
-					</Button>
+					<ButtonGroup>
+						<Button
+							disabled={isSyncDisabled}
+							title={isSyncDisabled ? t('Enable_ABAC_and_LDAP_to_sync') : undefined}
+							onClick={handleSyncNow}
+						>
+							{t('LDAP_Sync_Now')}
+						</Button>
+						<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
+							{t('ABAC_Learn_More')}
+						</Button>
+					</ButtonGroup>
 				</PageHeader>
 				{shouldShowWarning && (
 					<Box mi={24} mb={16}>
@@ -70,21 +86,21 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 				)}
 				<AdminABACTabs />
 				<PageContent>
-					{tab === 'settings' && <SettingsPage />}
-					{tab === 'room-attributes' && <AttributesPage />}
-					{tab === 'rooms' && <RoomsPage />}
-					{tab === 'logs' && <LogsPage />}
+					{tab === 'settings' && tabPermissions.settings && <SettingsPage />}
+					{tab === 'room-attributes' && tabPermissions['room-attributes'] && <AttributesPage />}
+					{tab === 'rooms' && tabPermissions.rooms && <RoomsPage />}
+					{tab === 'logs' && tabPermissions.logs && <LogsPage />}
 				</PageContent>
 			</Page>
 			{isABACAvailable === true && tab !== undefined && context !== undefined && (
 				<ContextualbarDialog onClose={() => handleCloseContextualbar()}>
-					{tab === 'room-attributes' && (
+					{tab === 'room-attributes' && tabPermissions['room-attributes'] && (
 						<>
 							{context === 'new' && <AttributesContextualBar onClose={() => handleCloseContextualbar()} />}
 							{context === 'edit' && _id && <AttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />}
 						</>
 					)}
-					{tab === 'rooms' && (
+					{tab === 'rooms' && tabPermissions.rooms && (
 						<>
 							{context === 'new' && <RoomsContextualBar onClose={() => handleCloseContextualbar()} />}
 							{context === 'edit' && _id && <RoomsContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />}

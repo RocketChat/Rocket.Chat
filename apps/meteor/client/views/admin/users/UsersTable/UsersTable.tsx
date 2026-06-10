@@ -1,6 +1,6 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import {
 	GenericTable,
@@ -12,7 +12,7 @@ import {
 import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
+import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,7 @@ import { useShowVoipExtension } from '../useShowVoipExtension';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
 	total: number;
 	isLoading: boolean;
@@ -50,7 +50,7 @@ const UsersTable = ({
 	paginationData,
 	sortData,
 	isSeatsCapExceeded,
-}: UsersTableProps): ReactElement | null => {
+}: UsersTableProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const breakpoints = useBreakpoints();
@@ -65,7 +65,7 @@ const UsersTable = ({
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
 	};
 
-	const handleClickOrKeyDown = useEffectEvent((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
+	const handleClickOrKeyDown = useStableCallback((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
 		e.stopPropagation();
 
 		const keyboardSubmitKeys = ['Enter', ' '];

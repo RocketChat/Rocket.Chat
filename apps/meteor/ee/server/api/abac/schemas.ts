@@ -1,4 +1,11 @@
-import type { IAbacAttribute, IAbacAttributeDefinition, IAuditServerActor, IRoom, IServerEvents } from '@rocket.chat/core-typings';
+import type {
+	IAbacAttribute,
+	IAbacAttributeDefinition,
+	IAuditServerActor,
+	IRoom,
+	IRoomAbacRedaction,
+	IServerEvents,
+} from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -223,6 +230,7 @@ export const GETAbacAuditEventsResponseSchema = ajv.compile<{
 		| IServerEvents['abac.attribute.changed']
 		| IServerEvents['abac.object.attribute.changed']
 		| IServerEvents['abac.object.attributes.removed']
+		| IServerEvents['abac.attribute.store.switched']
 	)[];
 	count: number;
 	offset: number;
@@ -342,6 +350,31 @@ export const POSTAbacUsersSyncBodySchema = ajv.compile<{
 
 export const GenericErrorSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
 
+export const GETAbacPdpHealthResponseSchema = ajv.compile<{
+	available: boolean;
+	message: string;
+}>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		available: { type: 'boolean' },
+		message: { type: 'string' },
+	},
+	required: ['success', 'available', 'message'],
+	additionalProperties: false,
+});
+
+export const GETAbacPdpHealthErrorResponseSchema = ajv.compile<{ available: boolean; message: string }>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		available: { type: 'boolean', enum: [false] },
+		message: { type: 'string' },
+	},
+	required: ['success', 'available', 'message'],
+	additionalProperties: false,
+});
+
 const GETAbacRoomsListQuerySchema = {
 	type: 'object',
 	properties: {
@@ -383,7 +416,7 @@ export const GETAbacRoomsResponseSchema = {
 };
 
 type GETAbacRoomsResponse = PaginatedResult<{
-	rooms: IRoom[];
+	rooms: Array<IRoom & IRoomAbacRedaction>;
 }>;
 
 export const GETAbacRoomsResponseValidator = ajv.compile<GETAbacRoomsResponse>(GETAbacRoomsResponseSchema);

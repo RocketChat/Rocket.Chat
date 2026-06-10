@@ -11,7 +11,7 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 
 import ThreadListMetrics from './ThreadListMetrics';
@@ -54,7 +54,7 @@ const ThreadListMessage = ({
 	className = [],
 	emoji,
 	...props
-}: ThreadListMessageProps): ReactElement => {
+}: ThreadListMessageProps) => {
 	const formatDate = useTimeAgo();
 
 	return (

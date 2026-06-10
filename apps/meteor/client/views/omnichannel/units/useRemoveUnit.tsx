@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,7 +12,7 @@ export const useRemoveUnit = (id: string) => {
 	const queryClient = useQueryClient();
 	const removeUnit = useEndpoint('DELETE', '/v1/livechat/units/:id', { id });
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const onDeleteAgent = async () => {
 			try {
 				await removeUnit();

@@ -3,7 +3,6 @@ import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -21,7 +20,7 @@ type SettingProps = {
 	sectionChanged?: boolean;
 };
 
-function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
+function Setting({ className = undefined, settingId, sectionChanged }: SettingProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);

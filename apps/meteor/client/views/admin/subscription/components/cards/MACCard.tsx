@@ -1,5 +1,4 @@
 import { Palette } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
@@ -8,15 +7,7 @@ import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
-const MACCard = ({
-	value = 0,
-	max,
-	hideManageSubscription,
-}: {
-	value: number;
-	max: number;
-	hideManageSubscription?: boolean;
-}): ReactElement => {
+const MACCard = ({ value = 0, max, hideManageSubscription }: { value: number; max: number; hideManageSubscription?: boolean }) => {
 	const { t } = useTranslation();
 
 	const pieGraph = {

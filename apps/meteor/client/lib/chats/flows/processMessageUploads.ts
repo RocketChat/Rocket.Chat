@@ -59,6 +59,7 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
 			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
+			description: fileToUpload.description,
 		}),
 	};
 };
@@ -97,7 +98,11 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 	const filesToUpload = store.get();
 
 	const confirmFilesQueue: (IUploadToConfirm & {
-		composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> & { fileName?: string; fileContent?: IE2EEMessage['content'] };
+		composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> & {
+			fileName?: string;
+			fileContent?: IE2EEMessage['content'];
+			description?: string;
+		};
 	})[] = [];
 
 	const validFiles = filesToUpload.filter((file) => !file.error);
@@ -118,7 +123,7 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 			confirmFilesQueue.push({
 				_id: upload.id,
 				name: upload.file.name,
-				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name },
+				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.description },
 			});
 			continue;
 		}

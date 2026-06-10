@@ -75,7 +75,7 @@ export type InlineCode = {
 export type Heading = {
 	type: 'HEADING';
 	level: 1 | 2 | 3 | 4;
-	value: Plain[];
+	value: Inlines[];
 };
 
 export type Quote = {
@@ -198,6 +198,9 @@ export type Types = {
 	LIST_ITEM: ListItem;
 	IMAGE: Image;
 	LINE_BREAK: LineBreak;
+	KATEX: KaTeX;
+	INLINE_KATEX: InlineKaTeX;
+	TIMESTAMP: Timestamp;
 	SPOILER_BLOCK: SpoilerBlock;
 };
 

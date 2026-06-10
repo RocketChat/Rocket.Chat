@@ -22,7 +22,11 @@ import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoo
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChanged,
+	notifyOnSubscriptionChangedById,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
+} from '../../../app/lib/server/lib/notifyListener';
 import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
@@ -41,14 +45,21 @@ import { removeRoomOwner } from '../../methods/removeRoomOwner';
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
-	async updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean> {
+	async updateDirectMessageRoomName(
+		room: IRoom,
+		ignoreStatusFromSubs?: string[],
+		updatedNames?: AtLeast<IUser, '_id' | 'name' | 'username'>[],
+	): Promise<boolean> {
+		if (room.t !== 'd') {
+			throw new Error('Invalid room type');
+		}
 		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
 
-		const uids = subs.map((sub) => sub.u._id);
+		const uids = subs.map((sub) => sub.u._id).filter((uid) => !updatedNames?.some((user) => user._id === uid));
 
 		const roomMembers = await Users.findUsersByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
 
-		const roomNames = getNameForDMs(roomMembers);
+		const roomNames = getNameForDMs([...roomMembers, ...(updatedNames ?? [])]);
 
 		for await (const sub of subs) {
 			// don't update the name if the user is invited but hasn't accepted yet
@@ -139,6 +150,16 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
 		return performAcceptRoomInvite(room, subscription, user);
+	}
+
+	async revokeInvite(room: IRoom, user: IUser): Promise<void> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (subscription?.status !== 'INVITED') {
+			return;
+		}
+
+		await Subscriptions.removeById(subscription._id);
+		void notifyOnSubscriptionChanged(subscription, 'removed');
 	}
 
 	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {
@@ -353,5 +374,21 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			room,
 			tmid,
 		});
+	}
+
+	async unbanAndInviteUser(
+		subscription: ISubscription,
+		inviteeUser: Pick<IUser, '_id' | 'username' | 'name'>,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void> {
+		await Subscriptions.unbanToInvitedById(subscription._id, inviterUser);
+
+		void notifyOnSubscriptionChangedById(subscription._id, 'updated');
+
+		if (inviteeUser?.username) {
+			await Message.saveSystemMessage('ui', subscription.rid, inviteeUser.username, inviteeUser, {
+				u: { _id: inviterUser._id, username: inviterUser.username },
+			});
+		}
 	}
 }

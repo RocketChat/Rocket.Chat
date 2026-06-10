@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/breakpoints.json';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
 import HeaderSkeleton from '../Header/HeaderSkeleton';
@@ -34,7 +34,7 @@ const useBreakpointsElement = () => {
 	};
 };
 
-const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps): ReactElement => {
+const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) => {
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';

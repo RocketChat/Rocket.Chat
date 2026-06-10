@@ -5,16 +5,16 @@ import { usePlayMediaStream } from './usePlayMediaStream';
 
 const getAudioStream = (instance?: MediaSignalingSession) => {
 	try {
-		const mainCall = instance?.getMainCall();
-		if (!mainCall) {
+		const instanceState = instance?.getState();
+		if (!instanceState?.confirmed) {
 			return null;
 		}
 
-		if (mainCall.hidden) {
+		if (instanceState.hidden) {
 			return null;
 		}
 
-		return mainCall.getRemoteMediaStream('main')?.stream || null;
+		return instanceState.remoteParticipant.getMediaStream('main')?.stream || null;
 	} catch (error) {
 		console.error('MediaCall: useAudioStream - Error getting remote media stream (main audio)', error);
 		return null;

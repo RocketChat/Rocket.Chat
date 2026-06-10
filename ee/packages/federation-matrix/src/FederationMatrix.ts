@@ -7,7 +7,7 @@ import {
 	isUserNativeFederated,
 	UserStatus,
 } from '@rocket.chat/core-typings';
-import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
+import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated, ISubscription } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -117,6 +117,51 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+
+		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
+			if (!username || username.includes(':')) {
+				return;
+			}
+
+			const localUser = await Users.findOneByUsername(username, {
+				projection: { _id: 1, username: 1, name: 1, federated: 1, federation: 1 },
+			});
+
+			if (!localUser?.username) {
+				return;
+			}
+
+			if (isUserNativeFederated(localUser)) {
+				this.logger.warn(`Skipping avatar update for federated user ${username} (remote user)`);
+				return;
+			}
+
+			this.logger.info(`Sending avatar update for ${username} to federated rooms`);
+
+			const matrixUserId = `@${localUser.username}:${this.serverName}`;
+
+			// if no avatarETag is provided, it means the user removed his avatar, so we need to send an empty string to Matrix to remove the avatar from their side as well
+			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
+
+			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id);
+
+			// TODO add user avatar update events to a fanout queue
+			for await (const { externalRoomId } of roomsUserIsMemberOf) {
+				if (!externalRoomId) {
+					continue;
+				}
+
+				try {
+					await federationSDK.updateUserProfile(externalRoomId, matrixUserId, {
+						displayname: localUser.name || localUser.username,
+						avatar_url: avatarUrl,
+					});
+					this.logger.debug({ msg: 'Sent avatar update', username, roomId: externalRoomId });
+				} catch (error) {
+					this.logger.error({ err: error, msg: `Failed to send avatar update for ${username} to room ${externalRoomId}` });
+				}
+			}
+		});
 	}
 
 	override async started(): Promise<void> {
@@ -947,5 +992,34 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			userId: userIdSchema.parse(matrixUserId),
 			...(threadEventId && { threadId: eventIdSchema.parse(threadEventId) }),
 		});
+	}
+
+	// when a user changes their username, we need to send a new event for every room the user is a member
+	async updateUserName(user: IUser): Promise<void> {
+		const matrixUserId = userIdSchema.parse(`@${user.username}:${this.serverName}`);
+
+		const subs = await Subscriptions.findJoinedByUserId<Pick<ISubscription, 'rid'>>(user._id, { projection: { rid: 1 } }).toArray();
+
+		const rooms = await Rooms.findFederatedByIds<Pick<IRoomNativeFederated, '_id' | 'federation' | 'federated'>>(
+			subs.map(({ rid }) => rid),
+			{ projection: { _id: 1, federation: 1, federated: 1 } },
+		).toArray();
+
+		await Promise.all(
+			rooms.map(async ({ federation }) => {
+				try {
+					await federationSDK.updateRoomMembership({
+						roomId: roomIdSchema.parse(federation.mrid),
+						userId: matrixUserId,
+						membership: 'join',
+						content: {
+							displayname: user.name || user.username,
+						},
+					});
+				} catch (err) {
+					this.logger.error({ msg: 'Failed to update username in Matrix for a room', roomId: federation.mrid, err });
+				}
+			}),
+		);
 	}
 }

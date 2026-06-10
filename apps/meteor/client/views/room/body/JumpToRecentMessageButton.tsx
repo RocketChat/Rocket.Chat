@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 type JumpToRecentMessageButtonProps = {
@@ -39,7 +38,7 @@ const buttonStyle = css`
 	}
 `;
 
-const JumpToRecentMessageButton = ({ visible, onClick, text }: JumpToRecentMessageButtonProps): ReactElement => {
+const JumpToRecentMessageButton = ({ visible, onClick, text }: JumpToRecentMessageButtonProps) => {
 	const [clicked, setClicked] = useState(false);
 
 	return (
