@@ -4,7 +4,7 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useRouter, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,13 +15,7 @@ import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 import type { NavBarSearchFormValues } from './hooks/useSearchItems';
-import {
-	buildAppliedFilterChips,
-	emptySearchFilters,
-	extractCompletedSearchFilters,
-	mergeSearchFilters,
-	serializeSearchQuery,
-} from './hooks/useSearchItems';
+import { buildAppliedFilterChips, emptySearchFilters, extractCompletedSearchFilters, mergeSearchFilters } from './hooks/useSearchItems';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 import { getURL } from '../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../components/GenericUpsellModal';
@@ -32,15 +26,15 @@ const NavBarSearch = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
-	const router = useRouter();
 	const setModal = useSetModal();
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const showIntelligentSearch = useSetting('AI_Intelligent_Search_Show_In_Top_Bar', true);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
 	const { handleTalkToSales } = useUpsellActions(hasIntelligentSearchLicense);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
-	const canSearchWithAIFromTopBar = Boolean(canUseAISearch && intelligentSearchEnabled && showIntelligentSearch);
+	const canSearchWithAIFromTopBar = Boolean(canUseAISearch && intelligentSearchEnabled);
+	const [aiSearchRequested, setAISearchRequested] = useState(false);
+	const aiSearchActive = Boolean(aiSearchRequested && canSearchWithAIFromTopBar);
 
 	const searchLabel = canSearchWithAIFromTopBar ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
@@ -48,7 +42,6 @@ const NavBarSearch = () => {
 	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
 	const {
 		formState: { isDirty },
-		getValues,
 		register,
 		resetField,
 		setFocus,
@@ -57,8 +50,8 @@ const NavBarSearch = () => {
 	} = methods;
 	const { filterText, appliedFilters } = watch();
 	const appliedFilterChips = useMemo(
-		() => (canUseAISearch ? buildAppliedFilterChips(appliedFilters) : []),
-		[appliedFilters, canUseAISearch],
+		() => (aiSearchActive ? buildAppliedFilterChips(appliedFilters) : []),
+		[aiSearchActive, appliedFilters],
 	);
 	const chipContainerRef = useRef<HTMLElement>(null);
 	const [chipContainerWidth, setChipContainerWidth] = useState(0);
@@ -124,12 +117,9 @@ const NavBarSearch = () => {
 
 	const handleIntelligentSearchClick = useCallback(() => {
 		if (hasIntelligentSearchLicense) {
-			const query = serializeSearchQuery(getValues('filterText'), getValues('appliedFilters'));
-			router.navigate({
-				name: 'search',
-				search: query ? { q: query } : {},
-			});
-			state.close();
+			setAISearchRequested((current) => !current);
+			state.open();
+			setFocus('filterText');
 			return;
 		}
 
@@ -147,10 +137,18 @@ const NavBarSearch = () => {
 				imgHeight={256}
 			/>,
 		);
-	}, [getValues, handleTalkToSales, hasIntelligentSearchLicense, router, setModal, state, t]);
+	}, [handleTalkToSales, hasIntelligentSearchLicense, setFocus, setModal, state, t]);
 
 	useEffect(() => {
-		if (!canUseAISearch || !filterText) {
+		if (canSearchWithAIFromTopBar || !aiSearchRequested) {
+			return;
+		}
+
+		setAISearchRequested(false);
+	}, [aiSearchRequested, canSearchWithAIFromTopBar]);
+
+	useEffect(() => {
+		if (!aiSearchActive || !filterText) {
 			return;
 		}
 
@@ -161,7 +159,7 @@ const NavBarSearch = () => {
 
 		setValue('appliedFilters', mergeSearchFilters(appliedFilters, filters), { shouldDirty: true });
 		setValue('filterText', searchText, { shouldDirty: true });
-	}, [appliedFilters, canUseAISearch, filterText, setValue]);
+	}, [aiSearchActive, appliedFilters, filterText, setValue]);
 
 	useEffect(() => {
 		const unsubscribe = tinykeys(window, {
@@ -239,6 +237,7 @@ const NavBarSearch = () => {
 								<IconButton
 									mini
 									icon='stars'
+									pressed={aiSearchActive}
 									aria-label={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Intelligent_Search_locked')}
 									title={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Contact_sales_for_Intelligent_Search')}
 									onClick={handleIntelligentSearchClick}
@@ -247,7 +246,7 @@ const NavBarSearch = () => {
 						</Box>
 					}
 				/>
-				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}
+				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} aiSearchActive={aiSearchActive} />}
 			</Box>
 		</FormProvider>
 	);

@@ -90,7 +90,7 @@ const extractIntelligentResultIds = (result: IntelligentSearchRawResult): { rid?
 
 export const normalizeIntelligentSearchCandidates = (
 	rawSearchResults: unknown,
-	userRoomIds: string[],
+	userRoomIds: string[] = [],
 	limit: number,
 	logger?: AIServiceLogger,
 ): IntelligentSearchCandidate[] => {
@@ -118,6 +118,7 @@ export const normalizeIntelligentSearchCandidates = (
 	});
 
 	const userRoomIdSet = new Set(userRoomIds);
+	const shouldFilterByRoomIds = userRoomIdSet.size > 0;
 
 	const candidates = rawResults
 		.map((rawResult: unknown, index: number): IntelligentSearchCandidate => {
@@ -139,7 +140,7 @@ export const normalizeIntelligentSearchCandidates = (
 			if (!result.msgId && !result.rid) {
 				return false;
 			}
-			if (result.rid && !userRoomIdSet.has(result.rid)) {
+			if (shouldFilterByRoomIds && result.rid && !userRoomIdSet.has(result.rid)) {
 				logger?.debug?.({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid: result.rid });
 				return false;
 			}

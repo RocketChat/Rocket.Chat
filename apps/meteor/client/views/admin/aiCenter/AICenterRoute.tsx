@@ -21,8 +21,8 @@ type CapabilityCardProps = {
 };
 
 const CapabilityCard = ({ icon, title, description, status, actionLabel, disabled, onClick }: CapabilityCardProps): ReactElement => (
-	<Card role='region'>
-		<Box display='flex' flexDirection='column' p={16}>
+	<Card role='region' style={{ height: '100%', minHeight: 220 }}>
+		<Box display='flex' flexDirection='column' p={16} height='full'>
 			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={12}>
 				<Box bg='surface-selected' borderRadius={4} size='x40' display='flex' alignItems='center' justifyContent='center'>
 					<Icon name={icon} size='x24' color='primary' />
@@ -30,12 +30,12 @@ const CapabilityCard = ({ icon, title, description, status, actionLabel, disable
 				{status}
 			</Box>
 			<CardTitle>{title}</CardTitle>
-			<CardBody flexDirection='column'>
+			<CardBody flexDirection='column' flexGrow={1}>
 				<Box color='hint' fontScale='p2'>
 					{description}
 				</Box>
 			</CardBody>
-			<CardControls>
+			<CardControls mbs='auto'>
 				<Button small disabled={disabled} onClick={onClick}>
 					{actionLabel}
 				</Button>
@@ -77,7 +77,7 @@ const AICenterOverview = (): ReactElement => {
 							{t('Capabilities')}
 						</Box>
 					</Box>
-					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 4, lg: 4, xl: 4 }}>
+					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 6, lg: 6, xl: 6 }}>
 						<CapabilityCard
 							icon='stars'
 							title={t('Intelligent_Search')}
@@ -102,7 +102,6 @@ const AICenterOverview = (): ReactElement => {
 };
 
 const AISettingsSection = ({ section }: { section: 'Intelligent_Search' | 'AI_LLM_Provider' }): ReactElement => {
-	const { t } = useTranslation();
 	const router = useRouter();
 	const titleBySection = {
 		Intelligent_Search: 'Intelligent_Search',
@@ -112,17 +111,7 @@ const AISettingsSection = ({ section }: { section: 'Intelligent_Search' | 'AI_LL
 
 	return (
 		<EditableSettingsProvider>
-			<GenericGroupPage
-				_id='AI_Center'
-				i18nLabel={title}
-				sections={[section]}
-				onClickBack={() => router.navigate('/admin/ai-center')}
-				headerButtons={
-					<Button small onClick={() => router.navigate('/admin/ai-center')}>
-						{t('Overview')}
-					</Button>
-				}
-			/>
+			<GenericGroupPage _id='AI_Center' i18nLabel={title} sections={[section]} onClickBack={() => router.navigate('/admin/ai-center')} />
 		</EditableSettingsProvider>
 	);
 };

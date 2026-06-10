@@ -538,6 +538,10 @@ API.v1.get(
 	{
 		authRequired: true,
 		query: isUnifiedSearchProps,
+		rateLimiterOptions: {
+			numRequestsAllowed: 120,
+			intervalTimeInMS: 60000,
+		},
 		response: {
 			200: unifiedSearchResponseSchema,
 			400: validateBadRequestErrorResponse,

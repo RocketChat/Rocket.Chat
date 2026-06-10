@@ -2,6 +2,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -26,6 +27,8 @@ type IntelligentResult = {
 };
 
 const roomLookupOptions = { sort: { lm: -1, name: 1 }, limit: 20 } as const;
+const emptyRoomLookupQuery = { _id: '__ai_search_no_room_filter__' };
+const MAX_SOURCE_MESSAGE_LENGTH = 700;
 
 const formatMessageTime = (ts: Date | string | undefined): string => {
 	if (!ts) return '';
@@ -44,42 +47,72 @@ const getMessageHref = (item: IntelligentResult): string | undefined => {
 	return `${href}?msg=${encodeURIComponent(item.msgId || item._id)}`;
 };
 
-const SourceResult = ({ item, index }: { item: IntelligentResult; index: number }): ReactElement => {
+const trimSourceMessage = (text: string): string =>
+	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
+
+const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
 	const href = getMessageHref(item);
+	const username = item.u?.username || item.u?.name || t('Unknown_User');
+	const displayName = item.u?.name || username;
+	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
 
 	return (
 		<Box
 			is={href ? 'a' : 'div'}
 			href={href}
-			display='flex'
-			flexDirection='column'
-			p={16}
-			mbe={8}
+			color='default'
+			display='block'
+			mbe={12}
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
 			borderRadius={4}
 			bg='surface-light'
-			color='default'
-			style={{ textDecoration: 'none', gap: 8 }}
+			style={{ textDecoration: 'none' }}
 		>
-			<Box display='flex' alignItems='center' color='hint' fontScale='c1' style={{ gap: 8 }}>
-				<Tag>{index + 1}</Tag>
-				{roomLabel && (
-					<Box display='flex' alignItems='center' style={{ gap: 4 }}>
-						<Icon name='hash' size='x12' />
-						{roomLabel}
+			<Box role='listitem' display='flex' p={16} style={{ gap: 12 }}>
+				<Box flexShrink={0}>
+					<MessageAvatar username={username} size='x36' />
+				</Box>
+				<Box display='flex' flexDirection='column' flexGrow={1} style={{ minWidth: 0, gap: 8 }}>
+					<Box display='flex' alignItems='flex-start' justifyContent='space-between' style={{ gap: 12, minWidth: 0 }}>
+						<Box display='flex' alignItems='baseline' flexWrap='wrap' style={{ gap: 6, minWidth: 0 }}>
+							<Box is='span' fontScale='p2b' withTruncatedText>
+								{displayName}
+							</Box>
+							{item.u?.username && (
+								<Box is='span' color='hint' fontScale='p2' withTruncatedText>
+									@{item.u.username}
+								</Box>
+							)}
+							{roomLabel && (
+								<Tag>
+									<Box display='flex' alignItems='center' style={{ gap: 4 }}>
+										<Icon name='hash' size='x12' />
+										{roomLabel}
+									</Box>
+								</Tag>
+							)}
+							{item.ts && (
+								<Box is='span' color='hint' fontScale='p2' flexShrink={0}>
+									{formatMessageTime(item.ts)}
+								</Box>
+							)}
+						</Box>
+						{typeof relevanceScore === 'number' && (
+							<Tag title={`${relevanceScore}%`} style={{ flexShrink: 0 }}>
+								{relevanceScore}%
+							</Tag>
+						)}
 					</Box>
-				)}
-				{item.u?.username && <Box>@{item.u.username}</Box>}
-				{item.ts && <Box>{formatMessageTime(item.ts)}</Box>}
+					<MarkdownText
+						content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
+						parseEmoji
+						fontScale='p2'
+						style={{ lineHeight: 1.45, wordBreak: 'break-word' }}
+					/>
+				</Box>
 			</Box>
-			<MarkdownText
-				content={item.text || t('Intelligent_Search_Result')}
-				parseEmoji
-				fontScale='p2'
-				style={{ lineHeight: 1.45, wordBreak: 'break-word' }}
-			/>
 		</Box>
 	);
 };
@@ -172,9 +205,10 @@ const SearchPage = (): ReactElement => {
 	const queryParam = useSearchParameter('q') ?? '';
 	const [intelligentCount, setIntelligentCount] = useState(8);
 	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
+	const roomLookupText = parsedSearch.filters.roomNames[parsedSearch.filters.roomNames.length - 1] || '';
 	const roomLookupQuery = useMemo(
-		() => buildRoomSearchQuery(parsedSearch.filters.roomNames[parsedSearch.filters.roomNames.length - 1] || '', '#'),
-		[parsedSearch.filters.roomNames],
+		() => (roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : emptyRoomLookupQuery),
+		[roomLookupText],
 	);
 	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, roomLookupOptions);
 	const selectedRooms = useMemo(() => {
@@ -264,11 +298,11 @@ const SearchPage = (): ReactElement => {
 				messages: answerMessages,
 			}),
 	});
+	const { data: answerData, error: answerError, isPending: answerPending, mutate: mutateAnswer, reset: resetAnswer } = answerMutation;
 
 	useEffect(() => {
-		answerMutation.reset();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [answerKey]);
+		resetAnswer();
+	}, [answerKey, resetAnswer]);
 
 	const canGenerateAnswer = Boolean(result.data?.meta.answerGenerationConfigured && debouncedQuery && intelligent.length > 0);
 	const answerEmptyReason = useMemo(() => {
@@ -292,12 +326,12 @@ const SearchPage = (): ReactElement => {
 	}, [debouncedQuery, intelligent.length, result.data?.meta.answerGenerationConfigured, result.isLoading, t]);
 
 	useEffect(() => {
-		if (!canGenerateAnswer || answerMutation.isPending || answerMutation.data || answerMutation.error) {
+		if (!canGenerateAnswer || answerPending || answerData || answerError) {
 			return;
 		}
 
-		answerMutation.mutate();
-	}, [answerMutation, canGenerateAnswer]);
+		mutateAnswer();
+	}, [answerData, answerError, answerPending, canGenerateAnswer, mutateAnswer]);
 
 	return (
 		<Page background='tint'>
@@ -347,13 +381,13 @@ const SearchPage = (): ReactElement => {
 					)}
 					{debouncedQuery && (
 						<AnswerPanel
-							answer={answerMutation.data?.answer}
-							provider={answerMutation.data?.provider}
-							isLoading={answerMutation.isPending}
-							error={answerMutation.error}
+							answer={answerData?.answer}
+							provider={answerData?.provider}
+							isLoading={answerPending}
+							error={answerError}
 							disabled={!canGenerateAnswer}
 							emptyReason={answerEmptyReason}
-							onGenerate={() => answerMutation.mutate()}
+							onGenerate={() => mutateAnswer()}
 						/>
 					)}
 					<Box display='flex' alignItems='center' justifyContent='space-between' mbe={12}>
@@ -381,8 +415,8 @@ const SearchPage = (): ReactElement => {
 							{t('No_results_found')}
 						</Box>
 					)}
-					{intelligent.map((item, index) => (
-						<SourceResult key={item._id} item={item} index={index} />
+					{intelligent.map((item) => (
+						<SourceResult key={item._id} item={item} />
 					))}
 				</Box>
 			</PageScrollableContentWithShadow>

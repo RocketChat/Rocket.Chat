@@ -20,6 +20,7 @@ import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
+	aiSearchActive?: boolean;
 };
 
 const filterSuggestionGroupLabels = {
@@ -42,7 +43,7 @@ const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchF
 		.filter(([, groupSuggestions]) => groupSuggestions.length > 0);
 };
 
-const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const containerRef = useRef<HTMLElement>(null);
@@ -72,7 +73,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		},
 		isLoading,
 		isFetching,
-	} = useSearchItems(debouncedFilter, appliedFilters);
+	} = useSearchItems(debouncedFilter, appliedFilters, aiSearchActive);
 	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
 	const filterSuggestionGroups = useMemo(() => groupFilterSuggestions(items.filterSuggestions), [items.filterSuggestions]);
 

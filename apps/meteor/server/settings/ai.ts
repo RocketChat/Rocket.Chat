@@ -45,17 +45,6 @@ export const createAISettings = () =>
 				i18nDescription: 'AI_Intelligent_Search_Enabled_Description',
 			});
 
-			await this.add('AI_Intelligent_Search_Show_In_Top_Bar', true, {
-				type: 'boolean',
-				i18nLabel: 'AI_Intelligent_Search_Show_In_Top_Bar',
-				public: true,
-				enterprise: true,
-				modules: [AI_LICENSE_MODULE],
-				invalidValue: false,
-				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
-				i18nDescription: 'AI_Intelligent_Search_Show_In_Top_Bar_Description',
-			});
-
 			await this.add('AI_Intelligent_Search_Pipeline_Base_URL', '', {
 				type: 'string',
 				i18nLabel: 'AI_Intelligent_Search_Pipeline_Base_URL',
@@ -112,6 +101,16 @@ export const createAISettings = () =>
 				invalidValue: '',
 				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
 				i18nDescription: 'AI_Intelligent_Search_Query_Template_Description',
+			});
+			await this.add('AI_Intelligent_Search_Answer_Enabled', true, {
+				type: 'boolean',
+				i18nLabel: 'AI_Intelligent_Search_Answer_Enabled',
+				public: true,
+				enterprise: true,
+				modules: [AI_LICENSE_MODULE],
+				invalidValue: false,
+				enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
+				i18nDescription: 'AI_Intelligent_Search_Answer_Enabled_Description',
 			});
 			await this.add('AI_Intelligent_Search_Answer_System_Prompt', '', {
 				type: 'string',

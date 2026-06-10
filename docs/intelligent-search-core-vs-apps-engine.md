@@ -61,7 +61,7 @@ Route `/search` — a dedicated AI Search results page. Single list, no tabs.
 
 ```
 ┌──────────────────────────────────────────────────┐
-│  Page header: "Intelligent Search"               │
+│  Page header: "AI Search"                        │
 │  Results  <query>                                │
 │  ✦ Searching rooms you can access where AI      │
 │    Search is enabled                            │
@@ -77,18 +77,19 @@ Route `/search` — a dedicated AI Search results page. Single list, no tabs.
 │  └──────────────────────────────────────────┘   │
 ├──────────────────────────────────────────────────┤
 │  Sources · N Messages            [Show more]     │
-│  ┌─ SourceResult ──────────────────────────┐    │
-│  │  [1]  #room  @user  Mar 15              │    │
-│  │  Full message text preview…             │    │
+│  ┌─ Message-style source row ──────────────┐    │
+│  │  avatar  user @username #room 89%       │    │
+│  │  Trimmed Markdown message preview       │    │
 │  └─────────────────────────────────────────┘    │
 └──────────────────────────────────────────────────┘
 ```
 
-- **AnswerPanel** — auto-triggers `POST /v1/search.answer` once results arrive and LLM is
-  configured; shows Skeleton animation during generation (can take 5–20 seconds); renders
-  response as Markdown; "Regenerate" button available; shows a clear empty state when there are no
-  source results to summarize.
-- **SourceResult cards** — numbered badge, room label, `@username`, formatted date, message text.
+- **AnswerPanel** — auto-triggers `POST /v1/search.answer` once results arrive and answer
+  generation is enabled with a configured LLM; shows Skeleton animation during generation (can take
+  5–20 seconds); renders response as Markdown; "Regenerate" button available; shows a clear empty
+  state when there are no source results to summarize.
+- **Source rows** — use the standard message visual structure with avatar, display name,
+  `@username`, room label, formatted date, trimmed Markdown text, and a relevance tag.
 - **"Show more"** — appends 8 more results per click by updating the `intelligentCount` query
   param. No page reload.
 
@@ -357,7 +358,7 @@ the channel, and reads the answer in a thread rather than seeing it appear inlin
 | Filter token parsing (`in:`, `from:`, `after:`, `before:`) | ✅ Done |
 | `parseSearchFilterText` + `buildAppliedFilterChips` | ✅ Done |
 | `getActiveFilter` + live filter suggestions in dropdown | ✅ Done |
-| AI Search preview (3 results) in NavBar dropdown | ✅ Done |
+| AI Search toggle + 3-result preview in NavBar dropdown | ✅ Done |
 | Applied filter chips (removable) | ✅ Done |
 | `GET /v1/search.unified` with filter params | ✅ Done |
 | Server-side room name resolution | ✅ Done |
@@ -370,7 +371,7 @@ the channel, and reads the answer in a thread rather than seeing it appear inlin
 | `IAISearchService` core-services interface | ✅ Done |
 | `ee/apps/ai-search-service` standalone service | ✅ Done |
 | `POST /v1/search.answer` + auto-triggered LLM generation | ✅ Done |
-| `SourceResult` cards + `AnswerPanel` + Skeleton | ✅ Done |
+| Message-style source rows + `AnswerPanel` + Skeleton | ✅ Done |
 | "Show more" pagination | ✅ Done |
 | AI Center overview + settings sub-pages | ✅ Done |
 | 13 enterprise settings with `invalidValue` + module gating | ✅ Done |
