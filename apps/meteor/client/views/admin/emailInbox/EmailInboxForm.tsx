@@ -18,7 +18,7 @@ import {
 	FieldError,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import { GenericModal, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -93,7 +93,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 		mode: 'all',
 	});
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const deleteInbox = async (): Promise<void> => {
 			try {
 				await deleteInboxAction();
@@ -113,7 +113,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 		);
 	});
 
-	const handleSave = useEffectEvent(
+	const handleSave = useStableCallback(
 		async ({
 			active,
 			name,
@@ -172,7 +172,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 		},
 	);
 
-	const checkEmailExists = useEffectEvent(async (email: string) => {
+	const checkEmailExists = useStableCallback(async (email: string) => {
 		if (!email) {
 			return;
 		}

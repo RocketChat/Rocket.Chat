@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 import AttachmentDownload from './content/attachments/structure/AttachmentDownload';
 import AttachmentSize from './content/attachments/structure/AttachmentSize';
+import CollapsibleContent from './content/collapsible/CollapsibleContent';
 import { useCollapse } from './hooks/useCollapse';
 
 type MessageCollapsibleProps = {
@@ -15,7 +16,7 @@ type MessageCollapsibleProps = {
 };
 
 const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps) => {
-	const [collapsed, collapse] = useCollapse(isCollapsed);
+	const [collapsed, toggleCollapse] = useCollapse(isCollapsed);
 
 	return (
 		<>
@@ -23,7 +24,8 @@ const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollap
 				<Box withTruncatedText title={title}>
 					{title}
 				</Box>
-				{size && <AttachmentSize size={size} />} {collapse}
+				{size && <AttachmentSize size={size} />}{' '}
+				<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 				{hasDownload && link && <AttachmentDownload title={title} href={link} />}
 			</Box>
 			{!collapsed && children}

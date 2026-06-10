@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -58,7 +58,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps) => 
 		setModal(<PrioritiesResetModal onReset={onReset} onCancel={(): void => setModal(null)} />);
 	};
 
-	const onRowClick = useEffectEvent((id: string): void => {
+	const onRowClick = useStableCallback((id: string): void => {
 		prioritiesRoute.push({ context: 'edit', id });
 	});
 

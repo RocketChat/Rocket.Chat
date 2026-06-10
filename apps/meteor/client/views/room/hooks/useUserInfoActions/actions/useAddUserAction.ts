@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
 	useUser,
@@ -57,7 +57,7 @@ export const useAddUserAction = (
 
 	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room.t === 'p' ? 'p' : 'c']);
 
-	const handleAddUser = useEffectEvent(async ({ users }: { users: string[] }) => {
+	const handleAddUser = useStableCallback(async ({ users }: { users: string[] }) => {
 		const [username] = users;
 		await inviteUser({ roomId: rid, username });
 		reload?.();
@@ -65,7 +65,7 @@ export const useAddUserAction = (
 
 	const addClickHandler = useAddMatrixUsers();
 
-	const addUserOptionAction = useEffectEvent(async () => {
+	const addUserOptionAction = useStableCallback(async () => {
 		try {
 			const users = [username as string];
 			if (isRoomFederated(room)) {

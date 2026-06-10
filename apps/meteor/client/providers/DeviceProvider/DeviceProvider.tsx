@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Device, DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
@@ -40,7 +40,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps) => {
 		setSelectedAudioInputDevice(device);
 	};
 
-	const setAudioOutputDevice = useEffectEvent(
+	const setAudioOutputDevice = useStableCallback(
 		({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }): void => {
 			if (!isSetSinkIdAvailable()) {
 				throw new Error('setSinkId is not available in this browser');

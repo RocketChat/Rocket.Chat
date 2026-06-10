@@ -26,7 +26,7 @@ export const useOpenRoomMutation = () => {
 			}
 
 			const { open } = rollbackDocument;
-			await updateSubscription(roomId, userId, { open });
+			updateSubscription(roomId, userId, { open });
 		},
 	});
 };

@@ -16,6 +16,7 @@ import AttachmentThumb from './structure/AttachmentThumb';
 import AttachmentTitle from './structure/AttachmentTitle';
 import MarkdownText from '../../../MarkdownText';
 import { useCollapse } from '../../hooks/useCollapse';
+import CollapsibleContent from '../collapsible/CollapsibleContent';
 
 const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
@@ -27,7 +28,7 @@ const applyMarkdownIfRequires = (
 type DefaultAttachmentProps = MessageAttachmentDefault;
 
 const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
-	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
+	const [collapsed, toggleCollapse] = useCollapse(!!attachment.collapsed);
 
 	return (
 		<AttachmentBlock
@@ -66,7 +67,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
 						>
 							{attachment.title}
 						</AttachmentTitle>{' '}
-						{collapse}
+						<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 					</AttachmentRow>
 				)}
 				{!collapsed && (

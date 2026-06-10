@@ -16,7 +16,7 @@ import {
 	ButtonGroup,
 	AvatarStack,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -62,7 +62,7 @@ const VideoConfListItem = ({
 		}
 	`;
 
-	const handleJoinConference = useEffectEvent((): void => {
+	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
 	});

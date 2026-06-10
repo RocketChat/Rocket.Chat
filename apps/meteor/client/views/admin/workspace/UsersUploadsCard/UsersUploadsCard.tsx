@@ -1,6 +1,6 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 
 	const router = useRouter();
 
-	const handleEngagement = useEffectEvent(() => {
+	const handleEngagement = useStableCallback(() => {
 		router.navigate('/admin/engagement');
 	});
 

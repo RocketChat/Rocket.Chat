@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldR
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { SyntheticEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -117,7 +117,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 					<FieldRow>
 						<TextInput
 							value={name}
-							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
 					</FieldRow>

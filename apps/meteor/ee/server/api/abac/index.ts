@@ -1,8 +1,8 @@
 import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
-import { Abac, LDAPEnterprise } from '@rocket.chat/core-services';
+import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
-import { ServerEvents, Users } from '@rocket.chat/models';
+import { ServerEvents } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -209,7 +209,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
-			license: ['abac', 'ldap-enterprise'],
+			license: ['abac'],
 			body: POSTAbacUsersSyncBodySchema,
 			response: {
 				200: GenericSuccessSchema,
@@ -225,7 +225,7 @@ const abacEndpoints = API.v1
 
 			const { usernames, ids, emails, ldapIds } = this.bodyParams;
 
-			await LDAPEnterprise.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds }));
+			await Abac.reevaluateUsers({ usernames, ids, emails, ldapIds });
 
 			return API.v1.success();
 		},

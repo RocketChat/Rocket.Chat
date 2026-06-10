@@ -1,6 +1,6 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import {
 	GenericTable,
@@ -65,7 +65,7 @@ const UsersTable = ({
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
 	};
 
-	const handleClickOrKeyDown = useEffectEvent((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
+	const handleClickOrKeyDown = useStableCallback((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
 		e.stopPropagation();
 
 		const keyboardSubmitKeys = ['Enter', ' '];

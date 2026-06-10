@@ -1,5 +1,5 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import {
@@ -53,7 +53,7 @@ export const useVideoCallRoomAction = () => {
 	const disabled = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
 	const tooltip = disabled ? t('core.Video_Call_unavailable_for_this_type_of_room') : undefined;
 
-	const handleOpenVideoConf = useEffectEvent(async () => {
+	const handleOpenVideoConf = useStableCallback(async () => {
 		if (isCalling || isRinging) {
 			return;
 		}

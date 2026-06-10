@@ -3,7 +3,7 @@ import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rock
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -88,7 +88,7 @@ const RoomMessage = ({
 
 	useCountSelected();
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!selecting) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;

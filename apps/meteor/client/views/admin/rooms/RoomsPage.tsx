@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useRef } from 'react';
@@ -14,7 +14,7 @@ const RoomsPage = () => {
 	const context = useRouteParameter('context');
 
 	const reloadRef = useRef(() => null);
-	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/rooms'));
+	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/rooms'));
 
 	return (
 		<Page flexDirection='row'>

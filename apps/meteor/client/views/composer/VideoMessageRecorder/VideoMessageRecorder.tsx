@@ -1,7 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
 import { useRef, useEffect, useState } from 'react';
@@ -94,7 +94,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		stopVideoRecording(rid, tmid);
 	};
 
-	const handleCancel = useEffectEvent(() => {
+	const handleCancel = useStableCallback(() => {
 		VideoRecorder.stop();
 		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);

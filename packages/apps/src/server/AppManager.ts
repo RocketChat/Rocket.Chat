@@ -845,7 +845,7 @@ export class AppManager {
 	}
 
 	public getLanguageContent(): { [key: string]: object } {
-		const langs: { [key: string]: object } = {};
+		const langs: { [key: string]: object } = Object.create(null);
 
 		this.apps.forEach((rl) => {
 			const content = rl.getStorageItem().languageContent;

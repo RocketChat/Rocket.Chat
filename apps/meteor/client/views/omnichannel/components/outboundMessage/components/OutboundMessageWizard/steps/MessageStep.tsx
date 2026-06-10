@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useWizardContext, WizardActions, WizardBackButton, WizardNextButton } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 
@@ -12,7 +12,7 @@ type MessageStepProps = Omit<ComponentProps<typeof MessageForm>, 'onSubmit'> & {
 const MessageStep = ({ contact, templates, defaultValues, onSubmit }: MessageStepProps) => {
 	const { next } = useWizardContext();
 
-	const handleSubmit = useEffectEvent(async (values: MessageFormSubmitPayload) => {
+	const handleSubmit = useStableCallback(async (values: MessageFormSubmitPayload) => {
 		onSubmit(values);
 		next();
 	});

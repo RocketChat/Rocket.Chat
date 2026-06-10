@@ -1,5 +1,5 @@
 import { Field, FieldHint, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
-import type { FormEventHandler, Key } from 'react';
+import type { ChangeEventHandler, Key } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -55,7 +55,7 @@ function TimespanSettingInput({
 	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value)));
 	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value)));
 
-	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		const newValue = sanitizeInputValue(Number(event.currentTarget.value));
 
 		onChangeValue?.(timeUnitToMs(timeUnit, newValue));

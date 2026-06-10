@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useLanguage, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
@@ -31,7 +31,7 @@ const AutoTranslateWithData = () => {
 
 	const languagesDict = supportedLanguages ? Object.fromEntries(supportedLanguages.map((lang) => [lang.language, lang.name])) : {};
 
-	const handleChangeLanguage = useEffectEvent(async (value: string) => {
+	const handleChangeLanguage = useStableCallback(async (value: string) => {
 		setCurrentLanguage(value);
 
 		await saveSettings({
@@ -45,7 +45,7 @@ const AutoTranslateWithData = () => {
 		});
 	});
 
-	const handleSwitch = useEffectEvent(async (event: ChangeEvent<HTMLInputElement>) => {
+	const handleSwitch = useStableCallback(async (event: ChangeEvent<HTMLInputElement>) => {
 		await saveSettings({
 			roomId: room._id,
 			field: 'autoTranslate',

@@ -18,15 +18,15 @@ const mockVirtualizerHandle = {
 };
 
 jest.mock('virtua', () => {
-	const React = jest.requireActual<typeof import('react')>('react');
+	const { forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
 
 	return {
-		VList: React.forwardRef(
+		VList: forwardRef(
 			(
 				{ children, onScroll, shift: _shift, ...props }: { children: ReactNode; onScroll?: (offset: number) => void; shift?: boolean },
 				ref: any,
 			) => {
-				React.useImperativeHandle(ref, () => mockVirtualizerHandle);
+				useImperativeHandle(ref, () => mockVirtualizerHandle);
 				return (
 					<ul data-testid='message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
 						{children}

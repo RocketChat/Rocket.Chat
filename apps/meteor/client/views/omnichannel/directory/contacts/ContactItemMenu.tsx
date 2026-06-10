@@ -1,5 +1,5 @@
 import type { ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
@@ -22,7 +22,7 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps) => {
 	const canEditContact = usePermission('update-livechat-contact');
 	const canDeleteContact = usePermission('delete-livechat-contact');
 
-	const handleContactEdit = useEffectEvent((): void =>
+	const handleContactEdit = useStableCallback((): void =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'edit',
@@ -30,7 +30,7 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps) => {
 		}),
 	);
 
-	const handleContactRemoval = useEffectEvent(() => {
+	const handleContactRemoval = useStableCallback(() => {
 		setModal(<RemoveContactModal _id={_id} name={name} channelsCount={channels.length} onClose={() => setModal(null)} />);
 	});
 

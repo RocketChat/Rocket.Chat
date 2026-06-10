@@ -11,7 +11,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEventHandler, MouseEvent, SetStateAction } from 'react';
+import type { Dispatch, ChangeEventHandler, MouseEvent, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -27,7 +27,7 @@ type CannedResponseListProps = {
 	onClose: () => void;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLInputElement>;
+	setText: ChangeEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;

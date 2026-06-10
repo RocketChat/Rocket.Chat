@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRef, useEffect } from 'react';
 
 export const useSingleFileInput = (
@@ -63,8 +63,8 @@ export const useSingleFileInput = (
 		};
 	}, [fileField, fileType, onSetFile, maxSize, onError]);
 
-	const onClick = useEffectEvent(() => ref?.current?.click());
-	const reset = useEffectEvent(() => {
+	const onClick = useStableCallback(() => ref?.current?.click());
+	const reset = useStableCallback(() => {
 		if (ref.current) {
 			ref.current.value = '';
 		}

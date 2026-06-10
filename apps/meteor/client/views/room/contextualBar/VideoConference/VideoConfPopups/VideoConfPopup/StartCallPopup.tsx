@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useOutsideClick, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -46,7 +46,7 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
 
-	const handleStartCall = useEffectEvent(() => {
+	const handleStartCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});

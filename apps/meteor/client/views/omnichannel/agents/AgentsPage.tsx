@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ const AgentsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const router = useRouter();
-	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/agents'));
+	const handleCloseContextualbar = useStableCallback(() => router.navigate('/omnichannel/agents'));
 
 	if (!canViewAgents) {
 		return <NotAuthorizedPage />;
