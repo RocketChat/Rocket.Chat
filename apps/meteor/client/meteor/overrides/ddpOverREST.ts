@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
+import { clearStoredCredentials } from '../../lib/sdk/ddpSdk';
 import { getUserId } from '../../lib/user';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
@@ -111,11 +112,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				if (isExpiredSessionError) {
 					console.warn('[ddpOverREST] Expired session detected, clearing credentials', { method: message.method, error });
 					try {
-						localStorage.removeItem('Meteor.userId');
-						localStorage.removeItem('Meteor.loginToken');
-						localStorage.removeItem('Meteor.loginTokenExpires');
-						Meteor.connection.setUserId(null);
-						console.log('[ddpOverREST] Credentials cleared');
+						clearStoredCredentials();
 					} catch (cleanupError) {
 						console.warn('[ddpOverREST] Failed to clean up expired session', cleanupError);
 					}
