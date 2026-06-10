@@ -123,7 +123,7 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 			confirmFilesQueue.push({
 				_id: upload.id,
 				name: upload.file.name,
-				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.altText },
+				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.altText || undefined },
 			});
 			continue;
 		}

@@ -63,12 +63,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box
-					is='form'
-					id={fileUploadFormId}
-					onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim() || undefined))}
-					{...props}
-				/>
+				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))} {...props} />
 			)}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
