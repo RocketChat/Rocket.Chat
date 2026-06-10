@@ -69,12 +69,21 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 	}
 
+	const clientId = settings.get<string>('Accounts_OAuth_Wordpress_id');
+	const clientSecret = settings.get<string>('Accounts_OAuth_Wordpress_secret');
+
+	if (!clientId || !clientSecret) {
+		return;
+	}
+
+	const completeConfig = { ...config, clientId, clientSecret };
+
 	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
 
 	if (isPassportFlowEnabled) {
-		addPassportCustomOAuth(serviceKey, config);
+		addPassportCustomOAuth(serviceKey, completeConfig);
 	} else {
-		WordPress.configure(config);
+		WordPress.configure(completeConfig);
 	}
 
 	const enabled = settings.get('Accounts_OAuth_Wordpress');

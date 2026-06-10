@@ -81,7 +81,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		oAuthRouter.get(
 			`/_oauth/${config.provider}`,
 			(_req, _res, next) => {
-				console.log('In check middleware');
 				const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
 				if (isPassportFlowEnabled) {
 					next();

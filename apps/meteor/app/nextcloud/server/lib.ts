@@ -1,5 +1,6 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import passport from 'passport';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
@@ -21,6 +22,7 @@ const NEXTCLOUD_PATHS = {
 const Nextcloud = new CustomOAuth('nextcloud', NEXTCLOUD_PATHS);
 
 function configureNextcloudOAuth(): void {
+	passport.unuse('nextcloud');
 	const enabled = settings.get<boolean>('Accounts_OAuth_Nextcloud');
 	if (!enabled) {
 		return;
