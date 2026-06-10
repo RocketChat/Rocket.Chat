@@ -2,10 +2,12 @@ import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 import type { SessionState } from '../context';
+import { useOpenVideoCall } from './useOpenVideoCall';
 import { ConfirmVideoEscalationModal } from '../views';
 
 export const useVoiceToVideoEscalation = (sessionState: SessionState) => {
 	const setModal = useSetModal();
+	const openVideoCall = useOpenVideoCall();
 	const requestEscalation = useEndpoint('POST', '/v1/media-calls.escalate');
 
 	const { mutateAsync: requestVideoEscalation, isPending } = useMutation({
@@ -21,8 +23,8 @@ export const useVoiceToVideoEscalation = (sessionState: SessionState) => {
 		const { callId } = sessionState;
 
 		try {
-			const data = await requestVideoEscalation({ callId });
-			console.log('Video escalation data', data);
+			const { url, providerName } = await requestVideoEscalation({ callId });
+			openVideoCall(url, providerName);
 		} catch (error) {
 			console.error('Error requesting video escalation', error);
 		}
