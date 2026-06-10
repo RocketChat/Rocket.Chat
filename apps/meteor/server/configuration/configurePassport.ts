@@ -22,16 +22,6 @@ export const oAuthRouter = router();
 const oAuthApp = express();
 oAuthApp.set('trust proxy', true);
 
-const configureOAuth = (settings: ICachedSettings) => {
-	if (settings.get<string>('Accounts_OAuth_Flow_Engine') !== 'passport') {
-		return;
-	}
-
-	const services = getOAuthServices(settings);
-	const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
-	configureOAuthServices(oauthServiceConfigs, settings);
-};
-
 export const configurePassport = (settings: ICachedSettings) => {
 	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -94,11 +84,13 @@ export const configurePassport = (settings: ICachedSettings) => {
 	});
 
 	settings.watchByRegex(/^(Accounts_OAuth_)[a-z0-9_]+$/i, () => {
-		configureOAuth(settings);
-	});
+		if (settings.get<string>('Accounts_OAuth_Flow_Engine') !== 'passport') {
+			return;
+		}
 
-	settings.watch('Accounts_OAuth_Flow_Engine', () => {
-		configureOAuth(settings);
+		const services = getOAuthServices(settings);
+		const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
+		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
 	WebApp.rawConnectHandlers.use(oAuthApp);
