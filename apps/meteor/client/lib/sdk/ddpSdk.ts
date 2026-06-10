@@ -151,22 +151,41 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 			// latter dispatches a `logout` method which itself races against
 			// parallel re-auth flows in CI's parallel-shard environment and
 			// kicked otherwise-healthy tests out.
-			removeStoredItem(STORAGE_KEYS.USER_ID);
-			removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
-			removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
-			Meteor.connection.setUserId(null);
+			clearStoredCredentials();
 			return;
 		}
 		console.warn('[ddpSdk] loginWithToken failed', error);
 	}
 };
 
-const isAuthError = (error: unknown): boolean => {
+/**
+ * Drop the local session credentials without dispatching Meteor's `logout`
+ * method. Nulling the connection userId propagates through the
+ * Accounts.connection.userId() Tracker.autorun (see overrides/userAndUsers.ts)
+ * into the userIdStore, so `useUserId()` becomes undefined and the router falls
+ * through to LoginPage. We avoid `Meteor.logout()` on purpose: it dispatches a
+ * `logout` method that races parallel re-auth flows (fresh registration,
+ * Meteor's own resume) and has kicked otherwise-healthy sessions/tests out.
+ */
+export const clearStoredCredentials = (): void => {
+	removeStoredItem(STORAGE_KEYS.USER_ID);
+	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
+	Meteor.connection.setUserId(null);
+};
+
+export const isAuthError = (error: unknown): boolean => {
 	if (!error || typeof error !== 'object') return false;
-	const e = error as { error?: unknown; reason?: unknown };
+	const e = error as { error?: unknown; reason?: unknown; status?: unknown; statusCode?: unknown };
 	return (
 		e.error === 401 ||
 		e.error === 403 ||
+		// REST-shaped failures (e.g. sdk.rest.get('/v1/me'), userData stream
+		// `nosub`) surface the HTTP status instead of a DDP `error` code.
+		e.status === 401 ||
+		e.status === 403 ||
+		e.statusCode === 401 ||
+		e.statusCode === 403 ||
 		e.reason === 'User not found' ||
 		e.reason === 'Login token expired' ||
 		e.reason === 'You are not allowed to use this token'
