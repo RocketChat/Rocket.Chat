@@ -1,5 +1,5 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import AnnouncementBanner from './AnnouncementBanner';
 
@@ -21,7 +21,7 @@ Default.args = {
 export const WithLink = Template.bind({});
 WithLink.args = {
 	children: (
-		<a target='_blank' href='https://rocket.chat'>
+		<a target='_blank' href='https://rocket.chat' rel='noreferrer'>
 			Announcement
 		</a>
 	),

@@ -7,8 +7,7 @@ export default {
 	stories: ['../client/**/*.stories.{js,tsx}'],
 
 	addons: [
-		getAbsolutePath('@storybook/addon-essentials'),
-		getAbsolutePath('@storybook/addon-interactions'),
+		getAbsolutePath('@storybook/addon-docs'),
 		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		getAbsolutePath('@storybook/addon-styling-webpack'),
 		getAbsolutePath('@storybook/addon-a11y'),

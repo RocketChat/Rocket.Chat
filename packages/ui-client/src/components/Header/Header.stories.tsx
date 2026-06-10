@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 import type { ComponentPropsWithoutRef, ComponentType } from 'react';
+import { action } from 'storybook/actions';
 
 import {
 	Header,

@@ -1,7 +1,7 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import i18next from 'i18next';
 import type { ComponentProps } from 'preact';
+import { action } from 'storybook/actions';
 
 import { Screen, ScreenContent, ScreenFooter } from '.';
 import { screenDecorator } from '../../../.storybook/helpers';

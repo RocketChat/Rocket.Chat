@@ -1,6 +1,6 @@
 import { Avatar, Icon } from '@rocket.chat/fuselage';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import VideoConfButton from '../VideoConfButton';
 import VideoConfController from '../VideoConfController';

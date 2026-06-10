@@ -12,8 +12,8 @@ import {
 	ModalClose,
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
 import type { ReactNode } from 'react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';

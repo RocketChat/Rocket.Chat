@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentType } from 'react';
+import { action } from 'storybook/actions';
 
 import GenericModal, { GenericModalDoNotAskAgain } from './GenericModal';
 

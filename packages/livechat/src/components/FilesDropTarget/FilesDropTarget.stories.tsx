@@ -1,7 +1,7 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 import { createRef } from 'preact';
+import { action } from 'storybook/actions';
 
 import { FilesDropTarget } from '.';
 import { Button } from '../Button';

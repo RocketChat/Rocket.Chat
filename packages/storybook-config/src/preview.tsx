@@ -1,7 +1,7 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import type { Parameters, Decorator } from '@storybook/react';
-import { themes } from '@storybook/theming';
+import { themes } from 'storybook/theming';
 import { useDarkMode } from 'storybook-dark-mode';
 
 import manifest from '../package.json';

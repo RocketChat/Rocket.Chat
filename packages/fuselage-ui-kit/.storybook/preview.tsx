@@ -1,7 +1,7 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import type { Decorator, Parameters } from '@storybook/react';
-import { themes } from '@storybook/theming';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { themes } from 'storybook/theming';
 import { useDarkMode } from 'storybook-dark-mode';
 
 import manifest from '../package.json';

@@ -1,7 +1,7 @@
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { action } from 'storybook/actions';
 
 import DiscussionsList from './DiscussionsList';
 

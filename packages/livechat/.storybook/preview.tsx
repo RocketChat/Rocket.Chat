@@ -1,5 +1,5 @@
 import type { Parameters } from '@storybook/preact';
-import { themes } from '@storybook/theming';
+import { themes } from 'storybook/theming';
 
 import manifest from '../package.json';
 import logo from './logo.svg';

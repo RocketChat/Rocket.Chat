@@ -5,7 +5,7 @@ import webpack from 'webpack';
 
 export default {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	addons: [getAbsolutePath('@storybook/addon-essentials'), getAbsolutePath('@storybook/addon-webpack5-compiler-swc')],
+	addons: [getAbsolutePath('@storybook/addon-docs'), getAbsolutePath('@storybook/addon-webpack5-compiler-swc')],
 
 	framework: {
 		name: getAbsolutePath('@storybook/react-webpack5'),
