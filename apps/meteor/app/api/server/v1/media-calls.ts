@@ -126,6 +126,10 @@ const mediaCallsEscalateEndpoints = API.v1.post(
 				additionalProperties: false,
 				type: 'object',
 				properties: {
+					providerName: {
+						type: 'string',
+						description: 'The name of the conference provider.',
+					},
 					url: {
 						type: 'string',
 						description: 'The url of the conference.',
@@ -135,7 +139,7 @@ const mediaCallsEscalateEndpoints = API.v1.post(
 						description: 'Indicates if the request was successful.',
 					},
 				},
-				required: ['call', 'success'],
+				required: ['providerName', 'url', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
