@@ -13,8 +13,6 @@ import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../
 
 const pdpLogger = logger.section('VirtruPDP');
 
-// Removal requires an explicit DENY, mirroring canAccessObject: inconclusive decisions block
-// access in realtime but must not destroy membership
 const hasExplicitDeny = (resp?: { resourceDecisions?: IResourceDecision[] }): boolean =>
 	!!resp?.resourceDecisions?.some((rd) => rd.decision === 'DECISION_DENY');
 
@@ -123,8 +121,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 					pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: batchIndex + 1, result });
 
 					const responses = result.decisionResponses ?? [];
-					// Decisions carry no entity info, so mapping back to requests is positional; a count
-					// mismatch means the whole batch is unattributable
 					if (responses.length !== validBatch.length) {
 						throw new Error(
 							`GetDecisionBulk response count mismatch: expected ${validBatch.length}, received ${responses.length} (batch ${batchIndex + 1})`,
@@ -296,7 +292,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		let inconclusive = 0;
 		responses.forEach((resp, index) => {
 			if (!requestUserIndex[index]) {
 				return;
@@ -305,15 +300,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				nonCompliantUsers.push(requestUserIndex[index]);
 				return;
 			}
-			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted) {
-				inconclusive++;
+			if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
+				return;
 			}
+			pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', rid: room._id, userId: requestUserIndex[index]._id });
 		});
-
-		if (inconclusive) {
-			pdpLogger.warn({ msg: 'Inconclusive PDP decisions after room attributes change, eviction skipped', rid: room._id, inconclusive });
-		}
 
 		return nonCompliantUsers;
 	}
@@ -365,7 +356,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(allRequests);
 
-		let inconclusive = 0;
 		responses.forEach((resp, index) => {
 			if (!requestIndex[index]) {
 				return;
@@ -374,15 +364,15 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
 				return;
 			}
-			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted) {
-				inconclusive++;
+			if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
+				return;
 			}
+			pdpLogger.warn({
+				msg: 'Inconclusive PDP decision, eviction skipped',
+				rid: requestIndex[index].room._id,
+				userId: requestIndex[index].user._id,
+			});
 		});
-
-		if (inconclusive) {
-			pdpLogger.warn({ msg: 'Inconclusive PDP decisions during membership evaluation, eviction skipped for those pairs', inconclusive });
-		}
 
 		return nonCompliant;
 	}
