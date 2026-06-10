@@ -68,6 +68,38 @@ export const upsertThreadMessageInCache = (
 	});
 };
 
+export const getFirstUnreadThreadMessageId = (
+	items: ReadonlyArray<Pick<IMessage, '_id' | 'ts' | 'u'>>,
+	{
+		threadLastRead,
+		userId,
+	}: {
+		threadLastRead?: Date;
+		userId?: string | null;
+	},
+): string | undefined => {
+	if (!threadLastRead) {
+		return undefined;
+	}
+
+	for (const message of items) {
+		if (userId && message.u._id === userId) {
+			continue;
+		}
+
+		if (new Date(message.ts).getTime() > threadLastRead.getTime()) {
+			return message._id;
+		}
+	}
+
+	return undefined;
+};
+
+export const getThreadLastReadFromItems = (items: ReadonlyArray<Pick<IMessage, 'ts'>>): Date | undefined => {
+	const lastItem = items.at(-1);
+	return lastItem ? new Date(lastItem.ts) : undefined;
+};
+
 export const markThreadMessagesAsRead = (messages: IThreadMessage[], until?: Date): IThreadMessage[] => {
 	return messages.map((msg) => {
 		if (!msg.unread) {

@@ -5,12 +5,14 @@ import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
-import { Fragment, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { threadsReadStateManager } from '../../../../../lib/threadsReadStateManager';
+import { getThreadLastReadFromItems } from '../../../../../lib/utils/threadMessageUtils';
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
@@ -19,8 +21,8 @@ import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
-import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
+import { useFirstUnreadThreadMessageId } from '../hooks/useFirstUnreadThreadMessageId';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
 
@@ -65,7 +67,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 
 	const { messageListRef } = useMessageListNavigation();
@@ -74,6 +75,18 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const isAtBottom = useRef(true);
 
 	const items = loading ? [] : [mainMessage, ...messages];
+
+	const firstUnreadMessageId = useFirstUnreadThreadMessageId(mainMessage._id, items);
+
+	const updateThreadLastRead = useCallback(
+		(itemsToRead: ReadonlyArray<Pick<IMessage, 'ts'>>) => {
+			const lastRead = getThreadLastReadFromItems(itemsToRead);
+			if (lastRead) {
+				threadsReadStateManager.setLastRead(mainMessage._id, lastRead);
+			}
+		},
+		[mainMessage._id],
+	);
 
 	const threadMsgTargetIndex = useMemo(() => {
 		if (!msgJumpParam || loading) {
@@ -129,6 +142,18 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
 
 	useEffect(() => {
+		if (!loading && items.length > 0 && isAtBottom.current) {
+			updateThreadLastRead(items);
+		}
+
+		return () => {
+			if (items.length > 0 && isAtBottom.current) {
+				updateThreadLastRead(items);
+			}
+		};
+	}, [loading, items, mainMessage._id, updateThreadLastRead]);
+
+	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
 		clientCallbacks.add(
 			'afterSaveMessage',
@@ -166,7 +191,12 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						onScroll={(offset: number) => {
 							const handle = virtualizerRef.current;
 							if (!handle) return;
+							const wasAtBottom = isAtBottom.current;
 							isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
+
+							if (!wasAtBottom && isAtBottom.current) {
+								updateThreadLastRead(items);
+							}
 
 							const topMessage = items[handle.findItemIndex(handle.scrollOffset)];
 							handleDateScroll(topMessage);
