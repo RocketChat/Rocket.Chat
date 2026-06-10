@@ -227,7 +227,7 @@ they silently fall back to their invalid value when the license module is inacti
 
 | Section | Settings |
 |---|---|
-| `AI_LLM_Provider` | OpenAI-compatible base URL, API key, model (lookup type — live dropdown from `/v1/ai.llm.models`) |
+| `AI_LLM_Provider` / LLM Providers | OpenAI-compatible base URL, API key, model (lookup type — live dropdown from `/v1/ai.llm.models`) |
 | `Intelligent_Search` | Enabled (public), Show in top bar (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, Answer system prompt |
 | `AI_Thread_Summarization` | Enabled (public) |
 

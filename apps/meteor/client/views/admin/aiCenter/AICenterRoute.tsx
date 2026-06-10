@@ -88,8 +88,8 @@ const AICenterOverview = (): ReactElement => {
 						/>
 						<CapabilityCard
 							icon='smart'
-							title={t('AI_Center_LLM_Provider')}
-							description={t('AI_Center_LLM_Provider_card_description')}
+							title={t('AI_Center_LLM_Providers')}
+							description={t('AI_Center_LLM_Providers_card_description')}
 							status={<Tag>{t('Available')}</Tag>}
 							actionLabel={t('Manage')}
 							onClick={() => router.navigate('/admin/ai-center/llm-providers')}
@@ -106,7 +106,7 @@ const AISettingsSection = ({ section }: { section: 'Intelligent_Search' | 'AI_LL
 	const router = useRouter();
 	const titleBySection = {
 		Intelligent_Search: 'Intelligent_Search',
-		AI_LLM_Provider: 'AI_Center_LLM_Provider',
+		AI_LLM_Provider: 'AI_Center_LLM_Providers',
 	} as const;
 	const title = titleBySection[section];
 
