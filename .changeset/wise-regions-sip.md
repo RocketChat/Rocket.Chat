@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Fixes an issue on `canAccessRoom` were `abacAttributes` were not fetched in some endpoint calls
+Fixes an issue on `canAccessRoom` where `abacAttributes` were not fetched in some endpoint calls
