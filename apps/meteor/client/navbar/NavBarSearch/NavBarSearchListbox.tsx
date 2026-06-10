@@ -1,7 +1,7 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -30,7 +30,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 
 	const debouncedFilter = useDebouncedValue(filterText, 500);
 
-	const handleSelect = useEffectEvent(() => {
+	const handleSelect = useStableCallback(() => {
 		state.close();
 		resetField('filterText');
 	});

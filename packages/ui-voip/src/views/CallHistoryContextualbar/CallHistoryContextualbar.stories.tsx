@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import CallHistoryContextualbar from './CallHistoryContextualbar';
 import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
@@ -31,7 +30,7 @@ const meta = {
 			})
 			.withDefaultLanguage('en-US')
 			.buildStoryDecorator(),
-		(Story): ReactElement => (
+		(Story) => (
 			<MockedMediaCallProvider>
 				<Story />
 			</MockedMediaCallProvider>

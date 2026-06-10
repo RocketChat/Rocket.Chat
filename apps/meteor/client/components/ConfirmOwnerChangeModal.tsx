@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import type { ComponentPropsWithoutRef } from 'react';
 import { Trans } from 'react-i18next';
@@ -18,7 +18,7 @@ const ConfirmOwnerChangeModal = ({
 	onConfirm,
 	onCancel,
 }: ConfirmOwnerChangeModalProps) => {
-	const getChangeOwnerRooms = useEffectEvent(() => {
+	const getChangeOwnerRooms = useStableCallback(() => {
 		if (shouldChangeOwner.length === 0) {
 			return '';
 		}
@@ -50,7 +50,7 @@ const ConfirmOwnerChangeModal = ({
 		);
 	});
 
-	const getRemovedRooms = useEffectEvent(() => {
+	const getRemovedRooms = useStableCallback(() => {
 		if (shouldBeRemoved.length === 0) {
 			return '';
 		}

@@ -1,5 +1,5 @@
 import { Box, Button, Icon, Margins, Pagination, Select, TextInput } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -36,7 +36,7 @@ const RoomsPage = () => {
 	const isABACAvailable = useIsABACAvailable();
 	const isExternalStore = useIsExternalAttributeStore();
 
-	const handleNewAttribute = useEffectEvent(() => {
+	const handleNewAttribute = useStableCallback(() => {
 		router.navigate({
 			name: 'admin-ABAC',
 			params: {

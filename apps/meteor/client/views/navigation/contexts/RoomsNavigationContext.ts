@@ -1,5 +1,5 @@
 import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -230,7 +230,7 @@ export const useUnreadOnlyToggle = (): [boolean, () => void] => {
 	const { setFilter, parentRid } = useRoomsListContext();
 	const [currentTab, unread] = useSidePanelFilter();
 
-	return [unread, useEffectEvent(() => setFilter(currentTab, !unread, parentRid))];
+	return [unread, useStableCallback(() => setFilter(currentTab, !unread, parentRid))];
 };
 
 export const useSwitchSidePanelTab = () => {

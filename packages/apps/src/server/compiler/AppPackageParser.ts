@@ -93,7 +93,7 @@ export class AppPackageParser {
 	}
 
 	private getLanguageContent(zip: AdmZip): { [key: string]: object } {
-		const languageContent: { [key: string]: object } = {};
+		const languageContent: { [key: string]: object } = Object.create(null);
 
 		zip
 			.getEntries()

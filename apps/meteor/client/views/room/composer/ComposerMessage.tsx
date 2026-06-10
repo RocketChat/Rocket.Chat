@@ -1,6 +1,6 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useMemo, useSyncExternalStore } from 'react';
 
 import ComposerSkeleton from './ComposerSkeleton';
@@ -23,7 +23,7 @@ export type ComposerMessageProps = {
 	onClickSelectAll?: () => void;
 };
 
-const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();

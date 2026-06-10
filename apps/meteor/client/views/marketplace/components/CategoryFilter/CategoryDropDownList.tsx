@@ -1,10 +1,9 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
-const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps): ReactElement => {
+const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps) => {
 	return (
 		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2}>
 			{categories.map((category, index) => (

@@ -1,6 +1,6 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ type EngagementDashboardCardErrorBoundaryProps = {
 	children?: ReactNode;
 };
 
-const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardCardErrorBoundaryProps): ReactElement => {
+const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardCardErrorBoundaryProps) => {
 	const { t } = useTranslation();
 
 	const [error, setError] = useState<Error>();
@@ -22,11 +22,11 @@ const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardC
 
 	return (
 		<QueryErrorResetBoundary>
-			{({ reset }): ReactElement => (
+			{({ reset }) => (
 				<ErrorBoundary
 					onError={errorHandler}
 					onReset={reset}
-					fallbackRender={({ resetErrorBoundary }): ReactElement => (
+					fallbackRender={({ resetErrorBoundary }) => (
 						<States>
 							<StatesIcon name='circle-exclamation' />
 							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>

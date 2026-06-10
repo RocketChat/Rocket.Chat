@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 const generateQuery = (
@@ -16,7 +16,7 @@ type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>
 	readOnly?: boolean;
 };
 
-const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoCompleteProps): ReactElement => {
+const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
@@ -50,7 +50,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 			filter={filter}
 			setFilter={setFilter}
 			multiple
-			renderSelected={({ selected: { value, label }, onRemove, ...props }): ReactElement => (
+			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
 				<Chip {...props} key={value} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />
 					<Box is='span' margin='none' mis={4}>
@@ -58,7 +58,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }): ReactElement => (
+			renderItem={({ value, label, ...props }) => (
 				<Option
 					key={value}
 					{...props}

@@ -11,7 +11,7 @@ import {
 	FieldRow,
 	FieldError,
 } from '@rocket.chat/fuselage-forms';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -69,7 +69,7 @@ const CreateDiscussion = ({
 		},
 	});
 
-	const onParentRoomChange = useEffectEvent((room: IRoom | undefined) => {
+	const onParentRoomChange = useStableCallback((room: IRoom | undefined) => {
 		if (!room) {
 			return;
 		}

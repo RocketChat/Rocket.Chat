@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,7 +13,7 @@ export const useRemoveCustomField = () => {
 	const removeCustomField = useEndpoint('POST', '/v1/livechat/custom-fields.delete');
 	const queryClient = useQueryClient();
 
-	const handleDelete = useEffectEvent((id: string) => {
+	const handleDelete = useStableCallback((id: string) => {
 		const onDeleteAgent = async () => {
 			try {
 				await removeCustomField({ customFieldId: id });

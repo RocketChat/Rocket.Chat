@@ -126,3 +126,20 @@ const NotFoundErrorResponseSchema = {
 };
 
 export const validateNotFoundErrorResponse = ajv.compile<NotFoundErrorResponse>(NotFoundErrorResponseSchema);
+
+type InternalErrorResponse = {
+	success: false;
+	error: string;
+};
+
+const InternalErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		error: { type: 'string' },
+	},
+	required: ['success', 'error'],
+	additionalProperties: false,
+};
+
+export const validateInternalErrorResponse = ajv.compile<InternalErrorResponse>(InternalErrorResponseSchema);

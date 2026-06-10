@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
@@ -22,7 +21,7 @@ type BoldSpanProps = {
 	children: MessageBlock[];
 };
 
-const BoldSpan = ({ children }: BoldSpanProps): ReactElement => (
+const BoldSpan = ({ children }: BoldSpanProps) => (
 	<>
 		{children.map((block, index) => {
 			if (
@@ -39,7 +38,7 @@ const BoldSpan = ({ children }: BoldSpanProps): ReactElement => (
 	</>
 );
 
-const renderBlockComponent = (block: MessageBlock, index: number): ReactElement | null => {
+const renderBlockComponent = (block: MessageBlock, index: number) => {
 	switch (block.type) {
 		case 'EMOJI':
 			return <EmojiElement key={index} {...block} />;

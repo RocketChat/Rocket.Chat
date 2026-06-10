@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { CSSProperties, ReactElement } from 'react';
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
@@ -12,7 +12,7 @@ type CustomUserStatusRowProps = {
 	onClick: (id: string) => void;
 };
 
-const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): ReactElement => {
+const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps) => {
 	const { _id, name, statusType } = status;
 	const { t } = useTranslation();
 

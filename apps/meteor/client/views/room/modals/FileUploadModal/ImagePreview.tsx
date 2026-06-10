@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 import GenericPreview from './GenericPreview';
@@ -11,7 +10,7 @@ type ImagePreviewProps = {
 	altText?: string;
 };
 
-const ImagePreview = ({ url, file, altText = '' }: ImagePreviewProps): ReactElement => {
+const ImagePreview = ({ url, file, altText = '' }: ImagePreviewProps) => {
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(true);
 

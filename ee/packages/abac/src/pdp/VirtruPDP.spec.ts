@@ -470,6 +470,38 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 	});
 });
 
+describe('reevaluateUsers', () => {
+	const room = { _id: 'r1', abacAttributes: [{ key: 'clearance', values: ['secret'] }] };
+
+	it('returns no pairs when users have no ABAC rooms', async () => {
+		const pdp = new VirtruPDP(mkClient());
+		const result = await pdp.reevaluateUsers([user({ _id: 'u1', __rooms: [] })]);
+		expect(result).toEqual([]);
+		expect(roomsFindPrivateRoomsByIdsWithAbacAttributes).not.toHaveBeenCalled();
+	});
+
+	it('returns non-compliant {user, room} pairs for denied users', async () => {
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(asyncIterable([room]));
+		const apiCall = jest.fn().mockResolvedValue(denyFor(['r1']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const u = user({ _id: 'u1', __rooms: ['r1'] });
+		const result = await pdp.reevaluateUsers([u]);
+
+		expect(result).toEqual([{ user: u, room }]);
+	});
+
+	it('returns no pairs when the user is permitted', async () => {
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(asyncIterable([room]));
+		const apiCall = jest.fn().mockResolvedValue(permitFor(['r1']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.reevaluateUsers([user({ _id: 'u1', __rooms: ['r1'] })]);
+
+		expect(result).toEqual([]);
+	});
+});
+
 describe('VirtruPDP.getHealthStatus', () => {
 	const platformOk = () => okJson({ status: 'SERVING' });
 	const authOk = () => okJson({});

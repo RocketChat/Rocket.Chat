@@ -4,7 +4,7 @@ import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { UIEvent } from 'react';
+import type { UIEvent, ReactNode } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
 import { normalizeUsername } from '../../lib/utils/normalizeUsername';
@@ -14,7 +14,7 @@ import { useMessageListHighlights, useMessageListShowRealName } from './message/
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 type GazzodownTextProps = {
-	children: JSX.Element;
+	children: ReactNode;
 	mentions?: {
 		type?: 'user' | 'team';
 		_id: string;

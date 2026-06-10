@@ -1,10 +1,9 @@
 import { Box, MessageGenericPreviewImage } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 
-const UrlImagePreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>): ReactElement => {
+const UrlImagePreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>) => {
 	const { maxHeight: oembedMaxHeight } = useOembedLayout();
 
 	return (

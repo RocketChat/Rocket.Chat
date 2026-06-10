@@ -1,4 +1,4 @@
-import { useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef, useState } from 'react';
 
 const events = ['error', 'stalled', 'play'];
@@ -52,7 +52,7 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 	const isRecovering = useRef(false);
 	const firstRecoveryAttempted = useRef(false);
 
-	const handleMediaURLRecovery = useEffectEvent(async (event: Event) => {
+	const handleMediaURLRecovery = useStableCallback(async (event: Event) => {
 		if (isRecovering.current) {
 			console.debug(`Media URL recovery already in progress, skipping ${event.type} event`);
 			return;

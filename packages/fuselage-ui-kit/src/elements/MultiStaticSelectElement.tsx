@@ -1,7 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { MultiSelectFiltered } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
@@ -10,7 +9,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type MultiStaticSelectElementProps = BlockProps<UiKit.MultiStaticSelectElement>;
 
-const MultiStaticSelectElement = ({ block, context }: MultiStaticSelectElementProps): ReactElement => {
+const MultiStaticSelectElement = ({ block, context }: MultiStaticSelectElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 

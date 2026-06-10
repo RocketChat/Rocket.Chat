@@ -1278,7 +1278,7 @@
   "Custom_Sound_Saved_Successfully": "Dźwięk niestandardowy został zapisany",
   "Custom_Status": "Status niestandardowy",
   "Custom_Translations": "Tłumaczenia niestandardowe",
-  "Custom_Translations_Description": "Powinien to być prawidłowy JSON, w którym klucze są językami zawierającymi słownik klucza i tłumaczenia. Przykład:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
+  "Custom_Translations_Description": "Powinien to być prawidłowy JSON, w którym klucze są językami zawierającymi słownik klucza i tłumaczenia. Przykład: `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_User_Status": "Niestandardowe statusy użytkowników",
   "Custom_User_Status_Add": "Dodaj niestandardowy status użytkownika",
   "Custom_User_Status_Added_Successfully": "Niestandardowy status użytkownika został dodany",
