@@ -188,7 +188,6 @@ export const DraggableBoxWithControls: Story = {
 };
 
 const meta = {
-	title: 'hooks/useDraggable',
 	component: DraggableBox,
 	parameters: {
 		layout: 'fullscreen',

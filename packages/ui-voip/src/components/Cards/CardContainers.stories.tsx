@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import CardList from './CardList';
 import CardListSection from './CardListSection';
@@ -19,7 +19,6 @@ const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBg
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z`;
 
 export default {
-	title: 'V2/Components/CardContainers',
 	component: CardList,
 	decorators: [
 		(Story) => (
@@ -32,19 +31,19 @@ export default {
 	],
 } satisfies Meta<typeof CardList>;
 
-export const CardListStory: StoryFn<typeof CardList> = (args) => {
-	return (
+export const CardListStory: StoryObj<typeof CardList> = {
+	render: (args) => (
 		<CardList {...args}>
 			<PeerCard displayName='John Doe 0' avatarUrl={avatarUrl} muted={false} held={true} />
 			<PeerCard displayName='John Doe 1' avatarUrl={avatarUrl} muted={true} held={false} />
 			<PeerCard displayName='John Doe 2' avatarUrl={avatarUrl} muted={true} held={true} />
 			<PeerCard displayName='John Doe 3' avatarUrl={avatarUrl} muted={false} held={false} />
 		</CardList>
-	);
+	),
 };
 
-export const StreamCardListStory: StoryFn<typeof CardList> = (args) => {
-	return (
+export const StreamCardListStory: StoryObj<typeof CardList> = {
+	render: (args) => (
 		<CardList {...args}>
 			<StreamCard own focused autoHeight onClickFocusStream={() => undefined} onClickStopSharing={() => undefined}>
 				<Box width='100%' height='100%' minHeight={120}>
@@ -67,5 +66,5 @@ export const StreamCardListStory: StoryFn<typeof CardList> = (args) => {
 				</Box>
 			</StreamCard>
 		</CardList>
-	);
+	),
 };
