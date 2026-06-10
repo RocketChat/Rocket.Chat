@@ -82,4 +82,39 @@ export class UIKitInteractionResponderImpl implements UIKitInteractionResponder 
 			errors: errorInteraction.errors,
 		};
 	}
+
+	/**
+	 * =========================================
+	 * EXPERIMENTAL
+	 * =========================================
+	 */
+
+	// This method isn't part of the base public interface, an augmentation interface is used to expose it as experimental
+	public updateActionButtonResponse(update: {
+		actionId?: string;
+		labelI18n?: string;
+		variant?: 'default' | 'danger';
+		disabled?: boolean;
+	}): {
+		appId: string;
+		actionId: string;
+		triggerId: string;
+		type: 'action_button.update';
+		update: {
+			actionId?: string;
+			labelI18n?: string;
+			variant?: 'default' | 'danger';
+			disabled?: boolean;
+		};
+	} {
+		const { appId, actionId, triggerId } = this.baseContext;
+
+		return {
+			type: 'action_button.update',
+			appId,
+			actionId: actionId as string,
+			triggerId: triggerId as string,
+			update,
+		};
+	}
 }
