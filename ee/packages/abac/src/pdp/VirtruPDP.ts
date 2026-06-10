@@ -4,7 +4,7 @@ import { serverFetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
-import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError, PdpUnavailableError } from '../errors';
 import { logger } from '../logger';
 import type { IPolicyDecisionPoint, IGetDecisionBulkRequest, IGetDecisionBulkResponse, IResourceDecision, ReevaluationUser } from './types';
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
@@ -122,9 +122,13 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 					const responses = result.decisionResponses ?? [];
 					if (responses.length !== validBatch.length) {
-						throw new Error(
-							`GetDecisionBulk response count mismatch: expected ${validBatch.length}, received ${responses.length} (batch ${batchIndex + 1})`,
-						);
+						pdpLogger.error({
+							msg: 'GetDecisionBulk response count mismatch',
+							batch: batchIndex + 1,
+							expected: validBatch.length,
+							received: responses.length,
+						});
+						throw new PdpUnavailableError();
 					}
 					let responseIdx = 0;
 					return batch.map((req) => (req ? responses[responseIdx++] : undefined));

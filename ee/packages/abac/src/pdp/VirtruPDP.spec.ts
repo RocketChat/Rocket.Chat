@@ -1,4 +1,4 @@
-import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError, PdpUnavailableError } from '../errors';
 import { VirtruPDP } from './VirtruPDP';
 
 const serverFetchMock = jest.fn();
@@ -508,7 +508,7 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] }],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		await expect(pdp.evaluateUserRooms([{ user: u, rooms }])).rejects.toThrow(/mismatch/);
+		await expect(pdp.evaluateUserRooms([{ user: u, rooms }])).rejects.toBeInstanceOf(PdpUnavailableError);
 	});
 });
 
@@ -559,7 +559,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] }],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		await expect(pdp.onSubjectAttributesChanged(user({ __rooms: ['r1', 'r2'] }) as any, [])).rejects.toThrow(/mismatch/);
+		await expect(pdp.onSubjectAttributesChanged(user({ __rooms: ['r1', 'r2'] }) as any, [])).rejects.toBeInstanceOf(PdpUnavailableError);
 	});
 });
 
