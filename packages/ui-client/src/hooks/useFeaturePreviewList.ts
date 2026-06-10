@@ -17,6 +17,8 @@ export type FeaturePreviewProps = {
 	};
 };
 
+export type FeaturePreviewSetting = Pick<FeaturePreviewProps, 'name' | 'value'>;
+
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
@@ -42,30 +44,25 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
 // TODO: Remove this logic after we have a way to store object settings.
-export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
+export const parseSetting = (setting?: FeaturePreviewSetting[] | string) => {
 	if (typeof setting === 'string') {
 		try {
-			return JSON.parse(setting) as FeaturePreviewProps[];
+			const parsed = JSON.parse(setting);
+			return Array.isArray(parsed) ? (parsed as FeaturePreviewSetting[]) : undefined;
 		} catch (_) {
 			return;
 		}
 	}
-	return setting;
+	return Array.isArray(setting) ? setting : undefined;
 };
 
-export const useFeaturePreviewList = (featuresList: FeaturePreviewProps[]) => {
+export const useFeaturePreviewList = (featuresList: FeaturePreviewSetting[]) => {
 	const unseenFeatures = enabledDefaultFeatures.filter(
 		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
 
 	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
 		const feature = featuresList?.find((feature) => feature.name === defaultFeature.name);
-		// overwrite enableQuery and disabled with default value to avoid a migration to remove this from the DB
-		// payload on save now only have `name` and `value`
-		if (feature) {
-			feature.enableQuery = defaultFeature.enableQuery;
-			feature.disabled = defaultFeature.disabled;
-		}
 		return { ...defaultFeature, ...feature };
 	});
 
