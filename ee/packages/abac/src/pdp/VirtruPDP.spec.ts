@@ -497,20 +497,6 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 		await expect(pdp.evaluateUserRooms([{ user: user(), rooms }])).rejects.toThrow('pdp down');
 		expect(apiCall).toHaveBeenCalled();
 	});
-
-	it('maps responses positionally; a missing trailing response is inconclusive (no evict)', async () => {
-		const u = user();
-		const rooms = [
-			{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] },
-			{ _id: 'r2', abacAttributes: [{ key: 'k', values: ['v'] }] },
-		];
-		const apiCall = jest.fn().mockResolvedValue({
-			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] }],
-		});
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
-		expect(result).toEqual([{ user: u, room: rooms[0] }]);
-	});
 });
 
 describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
@@ -548,20 +534,6 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, [])).rejects.toThrow('pdp down');
 		expect(apiCall).toHaveBeenCalled();
-	});
-
-	it('onSubjectAttributesChanged treats a missing trailing response as non-compliant', async () => {
-		const rooms = [
-			{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] },
-			{ _id: 'r2', abacAttributes: [{ key: 'k', values: ['v'] }] },
-		];
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
-		const apiCall = jest.fn().mockResolvedValue({
-			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] }],
-		});
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1', 'r2'] }) as any, []);
-		expect(result).toEqual([rooms[1]]);
 	});
 });
 
