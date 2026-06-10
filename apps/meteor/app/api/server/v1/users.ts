@@ -899,8 +899,8 @@ API.v1.post(
 		if (this.bodyParams.customFields) {
 			try {
 				validateCustomFields(this.bodyParams.customFields);
-			} catch (e) {
-				return API.v1.failure(e);
+			} catch (e: any) {
+				return API.v1.failure(e.message, e.error);
 			}
 		}
 
