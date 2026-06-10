@@ -7,8 +7,8 @@ export const createOauthSettings = () =>
 		await this.add('Accounts_OAuth_Flow_Engine', 'meteor', {
 			type: 'select',
 			values: [
-				{ key: 'meteor', i18nLabel: 'Meteor' },
-				{ key: 'passport', i18nLabel: 'New flow' },
+				{ key: 'meteor', i18nLabel: 'Legacy_Meteor_OAuth' },
+				{ key: 'passport', i18nLabel: 'Modern_OAuth_System_Browser_and_Deep_Links_Recommended' },
 			],
 			public: true,
 			i18nDescription: 'Accounts_OAuth_Flow_Engine_Description',
