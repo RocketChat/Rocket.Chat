@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 
 import type { ILoginCode } from '@rocket.chat/core-typings';
 import type { ILoginCodesModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, IndexDescription } from 'mongodb';
+import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -34,9 +34,5 @@ export class LoginCodesRaw extends BaseRaw<ILoginCode> implements ILoginCodesMod
 			_id: code,
 			expireAt: { $gt: new Date() },
 		});
-	}
-
-	removeByCode(code: string): Promise<DeleteResult> {
-		return this.deleteOne({ _id: code });
 	}
 }
