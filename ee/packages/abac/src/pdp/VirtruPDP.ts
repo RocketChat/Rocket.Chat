@@ -93,6 +93,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 	private async getDecisionBulk(
 		requests: Array<IGetDecisionBulkRequest | null>,
+		{ isolateBatchFailures = false }: { isolateBatchFailures?: boolean } = {},
 	): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
 		const BATCH_SIZE = 200;
 		const limit = pLimit(4);
@@ -111,13 +112,38 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 						return batch.map(() => undefined);
 					}
 
-					const result = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-						decisionRequests: validBatch,
-					});
+					let result: IGetDecisionBulkResponse;
+					try {
+						result = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+							decisionRequests: validBatch,
+						});
+					} catch (err) {
+						if (!isolateBatchFailures) {
+							throw err;
+						}
+						pdpLogger.error({ msg: 'GetDecisionBulk batch failed, skipping its decisions', batch: batchIndex + 1, err });
+						return batch.map(() => undefined);
+					}
 
 					pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: batchIndex + 1, result });
 
 					const responses = result.decisionResponses ?? [];
+					// Decisions carry no entity info, so mapping back to requests is positional; a count
+					// mismatch means the whole batch is unattributable
+					if (responses.length !== validBatch.length) {
+						if (!isolateBatchFailures) {
+							throw new Error(
+								`GetDecisionBulk response count mismatch: expected ${validBatch.length}, received ${responses.length} (batch ${batchIndex + 1})`,
+							);
+						}
+						pdpLogger.error({
+							msg: 'GetDecisionBulk response count mismatch, skipping batch decisions',
+							batch: batchIndex + 1,
+							expected: validBatch.length,
+							received: responses.length,
+						});
+						return batch.map(() => undefined);
+					}
 					let responseIdx = 0;
 					return batch.map((req) => (req ? responses[responseIdx++] : undefined));
 				}),
@@ -339,14 +365,26 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return nonCompliant;
 		}
 
-		const responses = await this.getDecisionBulk(allRequests);
+		const responses = await this.getDecisionBulk(allRequests, { isolateBatchFailures: true });
 
+		let inconclusive = 0;
 		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted && requestIndex[index]) {
+			if (!requestIndex[index]) {
+				return;
+			}
+			const decisions = resp?.resourceDecisions;
+			if (decisions?.some((rd) => rd.decision === 'DECISION_DENY')) {
 				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
+				return;
+			}
+			if (!decisions?.length || decisions.some((rd) => rd.decision !== 'DECISION_PERMIT')) {
+				inconclusive++;
 			}
 		});
+
+		if (inconclusive) {
+			pdpLogger.warn({ msg: 'Inconclusive PDP decisions during membership evaluation, eviction skipped for those pairs', inconclusive });
+		}
 
 		return nonCompliant;
 	}
