@@ -31,6 +31,7 @@ import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { isEventResult, makeHostEventResult } from '../eventResult';
+import { isIUIKitActionButtonMediaCallWidgetIncomingInteraction } from '../experimental/MediaCallActionButtons';
 import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
 import { getMediaCallCreatePatch } from '../mediaCalls';
 import { Utilities } from '../misc/Utilities';
@@ -1032,6 +1033,20 @@ export class AppListenerManager {
 							user,
 							threadId: data.tmid,
 							...('message' in data.payload && { text: data.payload.message }),
+						})
+						.catch(handleError(method));
+				}
+
+				if (isIUIKitActionButtonMediaCallWidgetIncomingInteraction(data)) {
+					return app
+						.call(method, {
+							appId,
+							actionId,
+							buttonContext: 'mediaCallWidgetAction',
+							room: data.room,
+							triggerId,
+							user,
+							callId: data.payload.callId,
 						})
 						.catch(handleError(method));
 				}
