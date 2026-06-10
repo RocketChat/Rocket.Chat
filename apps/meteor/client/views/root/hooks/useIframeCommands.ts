@@ -77,7 +77,6 @@ export const useIframeCommands = () => {
 
 			'login-with-token'(data: { token: string }) {
 				if (typeof data.token === 'string') {
-					console.log('Iframe command [login-with-token]: executing login with token', data.token);
 					void loginWithToken(data.token, () => {
 						console.log('Iframe command [login-with-token]: result', data);
 					});
@@ -95,7 +94,6 @@ export const useIframeCommands = () => {
 		} & Parameters<(typeof commands)[TCommandName]>[0];
 
 		const messageListener = (event: MessageEvent<CommandMessage>) => {
-			console.log('Received message', event);
 			if (typeof event.data !== 'object' || typeof event.data.externalCommand !== 'string') {
 				return;
 			}
