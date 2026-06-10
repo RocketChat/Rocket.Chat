@@ -4,12 +4,29 @@ import { SystemLogger } from '../lib/logger/system';
 
 const { USE_ROOM_SEARCH_INDEX = 'false' } = process.env;
 
+const ATTACHMENT_TEXT_FIELDS = [
+	'attachments.text',
+	'attachments.title',
+	'attachments.description',
+	'attachments.pretext',
+	'attachments.author_name',
+] as const;
+
+const TEXT_INDEX_FIELDS = { msg: 'text' as const, ...Object.fromEntries(ATTACHMENT_TEXT_FIELDS.map((f) => [f, 'text' as const])) };
+
 // MongoDB stores a text index's key with `_fts: 'text'` / `_ftsx: 1` placeholders
 // and tracks the original text fields in `weights`. Classify by looking at the
 // non-placeholder prefix fields plus weights.
 const classifyTextIndex = (idx: { key: Record<string, unknown>; weights?: Record<string, number> }) => {
 	const { weights, key } = idx;
-	if (weights?.msg !== 1 || Object.keys(weights).length !== 1) {
+
+	const expectedWeightKeys = Object.keys(TEXT_INDEX_FIELDS);
+	const actualWeightKeys = Object.keys(weights ?? {});
+
+	if (
+		actualWeightKeys.length !== expectedWeightKeys.length ||
+		!expectedWeightKeys.every((k) => weights?.[k] === 1)
+	) {
 		return 'other';
 	}
 
@@ -79,7 +96,7 @@ export const ensureMessagesTextIndex = async (): Promise<void> => {
 		shape: desiredShape,
 	});
 	try {
-		const name = await Messages.col.createIndex(desiredShape === 'room-scoped' ? { rid: 1, msg: 'text' } : { msg: 'text' });
+		const name = await Messages.col.createIndex(desiredShape === 'room-scoped' ? { rid: 1, ...TEXT_INDEX_FIELDS } : TEXT_INDEX_FIELDS);
 		SystemLogger.startup({ msg: 'created messages text index', name, shape: desiredShape });
 	} catch (err) {
 		SystemLogger.error({ msg: 'failed to create messages text index', shape: desiredShape, err });
