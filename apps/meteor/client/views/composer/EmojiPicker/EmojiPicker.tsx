@@ -39,7 +39,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const emojiContainerRef = useRef<HTMLDivElement>(null);
 
 	const [isVisibleRef, isInputVisible] = useIsVisible();
-	const textInputRef = useRef<HTMLInputElement>();
+	const textInputRef = useRef<HTMLInputElement>(undefined);
 
 	const mergedTextInputRef = useMergedRefs(isVisibleRef, textInputRef);
 
@@ -186,7 +186,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	return (
-		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement>} ref={emojiContainerRef}>
+		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement | null>} ref={emojiContainerRef}>
 			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
 				<EmojiPickerHeader>
 					<TextInput

@@ -9,7 +9,6 @@ import {
 	PageContent,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useRef, useEffect } from 'react';
 
 import CustomUserActiveConnections from './CustomUserActiveConnections';
@@ -19,7 +18,7 @@ import CustomUserStatusTable from './CustomUserStatusTable';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const CustomUserStatusRoute = (): ReactElement => {
+const CustomUserStatusRoute = () => {
 	const t = useTranslation();
 	const route = useRoute('user-status');
 	const context = useRouteParameter('context');

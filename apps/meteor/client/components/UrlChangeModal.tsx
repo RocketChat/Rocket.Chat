@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type UrlChangeModalProps = {
@@ -11,7 +10,7 @@ type UrlChangeModalProps = {
 	onClose: () => void;
 };
 
-const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeModalProps): ReactElement => {
+const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeModalProps) => {
 	const { t } = useTranslation();
 	return (
 		<GenericModal variant='warning' title={t('Warning')} onConfirm={onConfirm} onClose={onClose} onCancel={onClose} confirmText={t('Yes')}>

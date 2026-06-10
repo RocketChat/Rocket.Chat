@@ -1,6 +1,6 @@
 import { useEndpoint, useMethod, useRouter, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 
 import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
@@ -10,7 +10,7 @@ import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromAp
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
-const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement => {
+const EmbeddedPreload = ({ children }: { children: ReactNode }) => {
 	const ready = useMainReady();
 	const router = useRouter();
 	const uid = useUserId();

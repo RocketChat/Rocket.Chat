@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +17,7 @@ type TwoFactorTotpFormData = {
 	code: string;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss }: TwoFactorTotpModalProps): ReactElement => {
+const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss }: TwoFactorTotpModalProps) => {
 	const { t } = useTranslation();
 
 	const {

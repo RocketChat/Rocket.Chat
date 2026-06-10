@@ -3,7 +3,9 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 
 import { useLoadImage } from './hooks/useLoadImage';
+import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
+import MessageContentBody from '../../../MessageContentBody';
 import AttachmentImage from '../structure/AttachmentImage';
 
 const ImageAttachment = ({
@@ -17,6 +19,7 @@ const ImageAttachment = ({
 		height: 368,
 	},
 	description,
+	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
@@ -26,6 +29,7 @@ const ImageAttachment = ({
 
 	return (
 		<>
+			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage
 					{...imageDimensions}

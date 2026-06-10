@@ -1,9 +1,7 @@
-import type { ReactElement } from 'react';
-
 type PreviewCodeElementProps = {
 	code: string;
 };
 
-const PreviewCodeElement = ({ code }: PreviewCodeElementProps): ReactElement => <>{code}</>;
+const PreviewCodeElement = ({ code }: PreviewCodeElementProps) => <>{code}</>;
 
 export default PreviewCodeElement;

@@ -13,7 +13,6 @@ import {
 	useVideoConfCapabilities,
 	useVideoConfPreferences,
 } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
@@ -25,7 +24,7 @@ type OutgoingPopupProps = {
 	onClose: (id: string) => void;
 };
 
-const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps): ReactElement => {
+const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps) => {
 	const { t } = useTranslation();
 	const videoConfPreferences = useVideoConfPreferences();
 	const { controllersConfig } = useVideoConfControllers(videoConfPreferences);

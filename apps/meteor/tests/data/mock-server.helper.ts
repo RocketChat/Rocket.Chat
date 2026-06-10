@@ -71,6 +71,16 @@ export const seedGetDecisionBulk = async (
 	await mockServerSet('POST', '/authorization.v2.AuthorizationService/GetDecisionBulk', { decisionResponses: responses }, 200, times);
 };
 
+export const seedGetEntitlements = async (fqnMap: Record<string, unknown>, times = 0) => {
+	await mockServerSet(
+		'POST',
+		'/authorization.v2.AuthorizationService/GetEntitlements',
+		{ entitlements: [{ actionsPerAttributeValueFqn: fqnMap }] },
+		200,
+		times,
+	);
+};
+
 export const seedBulkDecisionByEntity = async (permitValues: string[], defaultDecision: Decision = 'DECISION_DENY') => {
 	const res = await fetch(`${MOCK_SERVER_URL}/__mock/set-bulk-decision`, {
 		method: 'POST',

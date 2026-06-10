@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -21,7 +21,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
 	const contextValue = useModalContextValue({ view, errors, values, updateValues });
 
-	const handleSubmit = useEffectEvent((e: FormEvent) => {
+	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
@@ -35,7 +35,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 		});
 	});
 
-	const handleCancel = useEffectEvent((e: FormEvent) => {
+	const handleCancel = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
@@ -50,7 +50,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 		});
 	});
 
-	const handleClose = useEffectEvent(() => {
+	const handleClose = useStableCallback(() => {
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {

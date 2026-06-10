@@ -1,6 +1,5 @@
 import { Box, Flex, Grid, GridItem } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
 import Fields from './SectionBlock.Fields';
@@ -8,7 +7,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type SectionBlockProps = BlockProps<UiKit.SectionBlock>;
 
-const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps): ReactElement => {
+const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) => {
 	const { text, fields } = block;
 
 	const accessoryElement = useMemo(

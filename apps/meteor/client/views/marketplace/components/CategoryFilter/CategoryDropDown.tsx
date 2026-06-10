@@ -1,14 +1,14 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useRef, useCallback } from 'react';
 
+import CategoryDropDownAnchor from './CategoryDropDownAnchor';
+import CategoryDropDownList from './CategoryDropDownList';
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
 import DropDownListWrapper from '../DropDownListWrapper';
-import CategoryDropDownAnchor from './CategoryDropDownAnchor';
-import CategoryDropDownList from './CategoryDropDownList';
 
 type CategoryDropDownProps = {
 	categories: CategoryDropDownListProps['categories'];
@@ -16,7 +16,7 @@ type CategoryDropDownProps = {
 	selectedCategories: (CategoryDropdownItem & { checked: true })[];
 } & ComponentProps<typeof Button>;
 
-const CategoryDropDown = ({ categories, onSelected, selectedCategories, ...props }: CategoryDropDownProps): ReactElement => {
+const CategoryDropDown = ({ categories, onSelected, selectedCategories, ...props }: CategoryDropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
