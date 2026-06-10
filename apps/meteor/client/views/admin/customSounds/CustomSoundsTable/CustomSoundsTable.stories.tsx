@@ -22,7 +22,10 @@ const Template: StoryFn<typeof CustomSoundsTable> = (args) => {
 	return <CustomSoundsTable {...args} reload={reloadRef} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-	onClick: () => action('clicked'),
+export const Default = {
+	render: Template,
+
+	args: {
+		onClick: () => action('clicked'),
+	},
 };

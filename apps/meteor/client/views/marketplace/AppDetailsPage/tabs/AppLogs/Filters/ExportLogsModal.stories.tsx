@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 import type { ComponentProps } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { action } from 'storybook/actions';
@@ -36,4 +36,4 @@ export default {
 	},
 } satisfies Meta<typeof ExportLogsModal>;
 
-export const Default: StoryFn<ComponentProps<typeof ExportLogsModal>> = (args) => <ExportLogsModal {...args} />;
+export const Default: StoryObj<ComponentProps<typeof ExportLogsModal>> = {};

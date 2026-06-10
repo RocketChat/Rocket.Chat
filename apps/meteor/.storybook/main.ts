@@ -1,21 +1,10 @@
 import { dirname, join, resolve } from 'path';
 
-import type { StorybookConfig } from '@storybook/react-webpack5';
+import baseConfig from '@rocket.chat/storybook-config/main';
 import webpack from 'webpack';
 
-export default {
+export default baseConfig({
 	stories: ['../client/**/*.stories.{js,tsx}'],
-
-	addons: [
-		getAbsolutePath('@storybook/addon-docs'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
-		getAbsolutePath('@storybook/addon-styling-webpack'),
-		getAbsolutePath('@storybook/addon-a11y'),
-	],
-
-	typescript: {
-		reactDocgen: 'react-docgen',
-	},
 
 	webpackFinal: async (config) => {
 		// Those aliases are needed because dependencies in the monorepo use another
@@ -62,15 +51,4 @@ export default {
 
 		return config;
 	},
-
-	framework: {
-		name: getAbsolutePath('@storybook/react-webpack5'),
-		options: {},
-	},
-
-	docs: {},
-} satisfies StorybookConfig;
-
-function getAbsolutePath(value: any): string {
-	return dirname(require.resolve(join(value, 'package.json')));
-}
+});
