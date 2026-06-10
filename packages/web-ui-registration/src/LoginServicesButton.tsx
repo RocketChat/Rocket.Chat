@@ -20,17 +20,25 @@ const LoginServicesButton = <T extends LoginService>({
 	setError,
 	buttonColor,
 	buttonLabelColor,
+	loginStyle,
 	...props
 }: T & {
 	className?: string;
 	disabled?: boolean;
+	loginStyle?: 'popup' | 'redirect' | '';
 	setError?: Dispatch<SetStateAction<LoginErrorState>>;
 }): ReactElement => {
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
+	console.log({ [service]: props });
 
 	const handleOnClick = useCallback(() => {
 		if (!servicesSupportedByMeteor.includes(service)) {
+			if (loginStyle === 'popup') {
+				window.open(`/oauth/${service}`, 'oauth', 'popup=yes,width=500,height=700,left=100,top=100');
+				return;
+			}
+
 			const url = new URL(window.location.href);
 			const queryParams = url.searchParams;
 			const loginClient = queryParams.get('loginClient');

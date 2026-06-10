@@ -47,7 +47,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
-		passport.authenticate(serviceName, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
-		passportOAuthCallback(siteUrl),
+		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
+		passportOAuthCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
 	);
 };
