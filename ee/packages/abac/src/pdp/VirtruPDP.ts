@@ -6,7 +6,14 @@ import pLimit from 'p-limit';
 
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { logger } from '../logger';
-import type { IPolicyDecisionPoint, IGetDecisionBulkRequest, IGetDecisionBulkResponse, IResourceDecision, ReevaluationUser } from './types';
+import type {
+	IPolicyDecisionPoint,
+	IGetDecisionBulkRequest,
+	IGetDecisionBulkResponse,
+	IResourceDecision,
+	NonCompliantPair,
+	ReevaluationUser,
+} from './types';
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
@@ -319,25 +326,25 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			user: Pick<IUser, '_id' | 'emails' | 'username'>;
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
-	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
-		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
+	): Promise<NonCompliantPair[]> {
+		const requestIndex: NonCompliantPair[] = [];
 		const allRequests: IGetDecisionBulkRequest[] = [];
 
 		const config = this.client.getConfig();
-		const nonCompliant: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
+		const nonCompliant: NonCompliantPair[] = [];
 
 		for (const { user, rooms } of entries) {
 			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
 			if (!entityKey) {
 				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
 				for (const room of rooms) {
-					nonCompliant.push({ user, room: room as IRoom });
+					nonCompliant.push({ user, room });
 				}
 				continue;
 			}
 
 			for (const room of rooms) {
-				requestIndex.push({ user, room: room as IRoom });
+				requestIndex.push({ user, room });
 				allRequests.push({
 					entityIdentifier: {
 						entityChain: {
@@ -366,7 +373,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return nonCompliant;
 	}
 
-	async reevaluateUsers(users: ReevaluationUser[]): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
+	async reevaluateUsers(users: ReevaluationUser[]): Promise<NonCompliantPair[]> {
 		const roomIds = [...new Set(users.flatMap((u) => u.__rooms ?? []))];
 		if (!roomIds.length) {
 			return [];
