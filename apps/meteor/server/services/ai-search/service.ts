@@ -299,7 +299,10 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		const systemPrompt =
 			asString(systemPromptSetting) ||
-			'You are an assistant that summarizes Rocket.Chat search results into a concise answer with relevant caveats.';
+			`
+			Given below user's query and the search results, provide a concise and accurate answer to the query based on the search results. Make sure to include relevant caveats and context. Add references to the search results in the format [N] after the relevant information. If you are unsure about the answer, say that you are not sure instead of making something up.
+			For formatting the answer, use markdown. For code snippets, use markdown code blocks with the appropriate language specified. Keep the answers as concise as possible, while still providing a complete answer to the user's question, and everything in a single column, without using tables or other formatting that may be hard to read in the Rocket.Chat client.
+			`;
 
 		const sanitizedMessages: SearchAnswerMessage[] = messages.map(({ text, username, roomName, ts, score }) => ({
 			text,
