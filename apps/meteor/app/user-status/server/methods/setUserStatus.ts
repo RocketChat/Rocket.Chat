@@ -24,15 +24,15 @@ export const setUserStatusMethod = async (
 		});
 	}
 
-	if (statusType === UserStatus.OFFLINE && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+	const effectiveStatus = statusType || user.statusDefault || UserStatus.ONLINE;
+
+	if (effectiveStatus === UserStatus.OFFLINE && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 		throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 			method: 'setUserStatus',
 		});
 	}
 
-	// If only the status message changes (no statusType), use the user's statusDefault (their chosen status).
-	// This avoids overwriting transient status (auto-away, offline) with a manual claim.
-	await Presence.setStatus(user._id, statusType || user.statusDefault || UserStatus.ONLINE, statusText);
+	await Presence.setStatus(user._id, effectiveStatus, statusText);
 };
 
 Meteor.methods<ServerMethods>({

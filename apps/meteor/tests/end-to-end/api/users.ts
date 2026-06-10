@@ -5713,6 +5713,23 @@ describe('[Users]', () => {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
+		it('should reject a message-only update when status resolves to offline via statusDefault and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+			await request.post(api('users.setStatus')).set(credentials).send({ status: 'offline' }).expect(200);
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({ message: 'still trying to stay invisible' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
 		it('should return an error when the payload is missing all supported fields', (done) => {
 			void request
 				.post(api('users.setStatus'))

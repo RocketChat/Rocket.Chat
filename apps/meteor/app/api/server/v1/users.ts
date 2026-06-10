@@ -2008,12 +2008,6 @@ API.v1
 				});
 			}
 
-			if (this.bodyParams.status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-					method: 'users.setStatus',
-				});
-			}
-
 			const { status, message, expiresAt } = this.bodyParams;
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
@@ -2025,8 +2019,15 @@ API.v1
 
 			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
 			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
-			const statusToUpdate = status || user.statusDefault || ('online' as UserStatus);
-			await Presence.setStatus(user._id, statusToUpdate, message, statusExpiresAt);
+			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
+
+			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+					method: 'users.setStatus',
+				});
+			}
+
+			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
 
 			if (status) {
 				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
