@@ -254,7 +254,7 @@ export type EventSignatures = {
 			  }
 			| {
 					clientAction: 'updated';
-					diff: Record<string, number>;
+					diff: Record<string, any>;
 					unset: Record<string, number>;
 			  }
 		),
