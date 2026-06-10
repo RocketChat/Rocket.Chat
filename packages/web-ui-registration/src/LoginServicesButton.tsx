@@ -30,7 +30,6 @@ const LoginServicesButton = <T extends LoginService>({
 }): ReactElement => {
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
-	console.log({ [service]: props });
 
 	const handleOnClick = useCallback(() => {
 		if (!servicesSupportedByMeteor.includes(service)) {
