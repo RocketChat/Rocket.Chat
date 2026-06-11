@@ -69,6 +69,16 @@ export const AutoTranslate = {
 					}
 				}
 
+				if (attachment.description && attachment.translations && attachment.translations[language]) {
+					attachment.translations.original = attachment.description;
+
+					if (autoTranslateShowInverse) {
+						attachment.description = attachment.translations.original;
+					} else {
+						attachment.description = attachment.translations[language];
+					}
+				}
+
 				if (attachment.attachments && attachment.attachments.length > 0) {
 					// @ts-expect-error - not sure what to do with this
 					attachment.attachments = this.translateAttachments(attachment.attachments, language);
@@ -85,10 +95,12 @@ export const AutoTranslate = {
 
 		const loadProviders = async () => {
 			try {
-				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
+				const [providersMetadata, supportedLanguagesResponse] = await Promise.all([
 					sdk.call('autoTranslate.getProviderUiMetadata'),
-					sdk.call('autoTranslate.getSupportedLanguages', 'en'),
+					sdk.rest.get('/v1/autotranslate.getSupportedLanguages', { targetLanguage: 'en' }),
 				]);
+				this.providersMetadata = providersMetadata;
+				this.supportedLanguages = supportedLanguagesResponse.languages;
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
 				console.error((e as Error).message);

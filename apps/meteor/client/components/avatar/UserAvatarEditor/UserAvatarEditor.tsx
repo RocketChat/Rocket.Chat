@@ -3,7 +3,7 @@ import { Box, Button, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,7 @@ type UserAvatarEditorProps = {
 	name: IUser['name'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps) {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
@@ -50,7 +50,13 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
+	const canAddUrl = !disabled && Boolean(avatarFromUrl) && !avatarUrlError;
+
 	const handleAddUrl = async (): Promise<void> => {
+		if (!canAddUrl) {
+			return;
+		}
+
 		if (!isSafeAvatarUrl(avatarFromUrl)) {
 			setAvatarUrlError(t('error-invalid-image-url'));
 			return;
@@ -125,13 +131,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 										icon='permalink'
 										secondary
 										small
-										disabled={disabled || !avatarFromUrl || !!avatarUrlError}
+										disabled={!canAddUrl}
 										title={t('Add_URL')}
 										onClick={handleAddUrl}
 										mb={-4}
 										mie={-4}
 									/>
 								}
+								disabled={disabled}
 								value={avatarFromUrl}
 								onChange={handleAvatarFromUrlChange}
 								error={avatarUrlError}

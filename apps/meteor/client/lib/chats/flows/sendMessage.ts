@@ -8,6 +8,7 @@ import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
+import { afterSendMessageCallback } from './afterSendMessageCallback';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
@@ -108,6 +109,7 @@ export const sendMessage = async (
 		try {
 			await process(chat, message, previewUrls, isSlashCommandAllowed);
 			chat.composer?.dismissAllQuotedMessages();
+			await afterSendMessageCallback(message, message.rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

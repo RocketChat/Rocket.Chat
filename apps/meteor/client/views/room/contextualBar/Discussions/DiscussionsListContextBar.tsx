@@ -44,7 +44,7 @@ const DiscussionListContextBar = () => {
 			itemCount={itemCount}
 			isPending={isPending}
 			isSuccess={isSuccess}
-			loadMoreItems={() => fetchNextPage()}
+			loadMoreItems={fetchNextPage}
 			text={text}
 			onChangeFilter={handleTextChange}
 		/>

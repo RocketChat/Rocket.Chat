@@ -1,9 +1,8 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -68,7 +67,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
-	const handleOpenUserInfo = useEffectEvent(() => {
+	const handleOpenUserInfo = useStableCallback(() => {
 		onOpenUserInfo();
 		onClose();
 	});
@@ -90,7 +89,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]): ReactElement => (
+		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
 			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
 		);
 

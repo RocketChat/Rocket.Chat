@@ -1,10 +1,9 @@
 import { Box, Card, CardBody, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
 
-const PlanCardCommunity = (): ReactElement => {
+const PlanCardCommunity = () => {
 	const { t } = useTranslation();
 
 	return (

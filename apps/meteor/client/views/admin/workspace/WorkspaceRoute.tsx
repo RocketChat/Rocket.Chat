@@ -1,7 +1,6 @@
 import { Callout, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,7 @@ import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const WorkspaceRoute = (): ReactElement => {
+const WorkspaceRoute = () => {
 	const { t } = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 

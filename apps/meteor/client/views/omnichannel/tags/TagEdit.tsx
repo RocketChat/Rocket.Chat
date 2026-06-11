@@ -24,7 +24,7 @@ type TagEditPayload = {
 };
 
 type TagEditProps = {
-	tagData?: ILivechatTag;
+	tagData?: Serialized<ILivechatTag>;
 	currentDepartments?: Serialized<ILivechatDepartment>[];
 	onClose: () => void;
 };

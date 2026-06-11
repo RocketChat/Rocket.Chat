@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -56,8 +56,8 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		reload.current = refetch;
 	}, [reload, refetch]);
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/sla-policies/new'));
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
+	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
 	const headers = (
 		<>

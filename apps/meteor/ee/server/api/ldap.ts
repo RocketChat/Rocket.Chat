@@ -1,7 +1,8 @@
+import { LDAPEnterprise } from '@rocket.chat/core-services';
+
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
-import { LDAPEE } from '../sdk';
 
 API.v1.addRoute(
 	'ldap.syncNow',
@@ -25,8 +26,8 @@ API.v1.addRoute(
 				throw new Error('LDAP_disabled');
 			}
 
-			await LDAPEE.sync();
-			await LDAPEE.syncAvatarAndAbacAttributes();
+			await LDAPEnterprise.sync();
+			await LDAPEnterprise.syncAvatarAndAbacAttributes();
 
 			return API.v1.success({
 				message: 'Sync_in_progress' as const,

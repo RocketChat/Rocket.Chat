@@ -393,6 +393,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, active?: boolean): Promise<UpdateResult | Document>;
+	findActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,

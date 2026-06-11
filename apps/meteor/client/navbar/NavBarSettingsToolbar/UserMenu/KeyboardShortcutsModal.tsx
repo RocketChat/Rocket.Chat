@@ -1,6 +1,5 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -87,7 +86,7 @@ type KeyboardShortcutsModalProps = {
 	onClose: () => void;
 };
 
-const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps): ReactElement => {
+const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 	const { t } = useTranslation();
 	const isMac = isMacPlatform();
 

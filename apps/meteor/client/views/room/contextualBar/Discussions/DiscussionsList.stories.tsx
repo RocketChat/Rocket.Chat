@@ -1,8 +1,15 @@
 import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 
 import DiscussionsList from './DiscussionsList';
+
+const loadMoreItemsAction = action('loadMoreItems');
+const loadMoreItems = (async (options) => {
+	loadMoreItemsAction(options);
+	return {} as Awaited<ReturnType<UseInfiniteQueryResult['fetchNextPage']>>;
+}) satisfies UseInfiniteQueryResult['fetchNextPage'];
 
 export default {
 	component: DiscussionsList,
@@ -13,7 +20,7 @@ export default {
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 	args: {
 		text: '',
-		loadMoreItems: action('loadMoreItems'),
+		loadMoreItems,
 	},
 } satisfies Meta<typeof DiscussionsList>;
 

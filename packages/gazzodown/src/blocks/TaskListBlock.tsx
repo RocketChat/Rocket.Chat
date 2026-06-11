@@ -1,6 +1,5 @@
 import { CheckBox } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { useContext } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -10,7 +9,7 @@ type TaskListBlockProps = {
 	tasks: MessageParser.Task[];
 };
 
-const TaksListBlock = ({ tasks }: TaskListBlockProps): ReactElement => {
+const TaskListBlock = ({ tasks }: TaskListBlockProps) => {
 	const { onTaskChecked } = useContext(MarkupInteractionContext);
 
 	return (
@@ -24,4 +23,4 @@ const TaksListBlock = ({ tasks }: TaskListBlockProps): ReactElement => {
 	);
 };
 
-export default TaksListBlock;
+export default TaskListBlock;

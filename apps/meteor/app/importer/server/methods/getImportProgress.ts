@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 	const operation = await Imports.findLastImport();
@@ -32,6 +33,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getImportProgress() {
+		methodDeprecationLogger.method('getImportProgress', '9.0.0', '/v1/getImportProgress');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getImportProgress');

@@ -1,3 +1,5 @@
+import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
+
 export enum AbacErrorCode {
 	InvalidAttributeValues = 'error-invalid-attribute-values',
 	InvalidAttributeKey = 'error-invalid-attribute-key',
@@ -11,6 +13,9 @@ export enum AbacErrorCode {
 	AbacUnsupportedOperation = 'error-abac-unsupported-operation',
 	OnlyCompliantCanBeAddedToRoom = 'error-only-compliant-users-can-be-added-to-abac-rooms',
 	PdpUnavailable = 'error-pdp-unavailable',
+	AttributeStoreExternal = 'error-abac-attribute-store-external',
+	EntityResolutionFailed = 'error-virtru-entity-resolution-failed',
+	NotAuthorizedToModifyRoom = 'error-abac-not-authorized-to-modify-room',
 }
 
 export class AbacError extends Error {
@@ -99,13 +104,36 @@ export class PdpUnavailableError extends AbacError {
 	}
 }
 
-export class PdpHealthCheckError extends Error {
-	public readonly errorCode: string;
+export class AbacAttributeStoreExternalError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.AttributeStoreExternal, details);
+	}
+}
 
+export class AbacEntityResolutionFailedError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.EntityResolutionFailed, details);
+	}
+}
+
+export class AbacNotAuthorizedToModifyRoomError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.NotAuthorizedToModifyRoom, details);
+	}
+}
+
+export class PdpHealthCheckError extends MeteorError {
 	constructor(errorCode: string) {
-		super(errorCode);
-		this.errorCode = errorCode;
+		super(errorCode, errorCode);
+		this.message = errorCode;
 
 		Object.setPrototypeOf(this, new.target.prototype);
 	}
 }
+
+export const getPdpHealthErrorCode = (err: unknown): string => {
+	if (isMeteorError(err) && err.reason?.startsWith('ABAC_PDP_Health_')) {
+		return err.reason;
+	}
+	return 'ABAC_PDP_Health_Not_OK';
+};

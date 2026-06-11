@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
-	"version": "0.3.55",
+	"version": "0.3.57",
 	"private": true,
 	"description": "Rocket.Chat DDP-Streamer service",
 	"keywords": [
@@ -45,7 +45,7 @@
 		"prometheus-gc-stats": "^1.1.0",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.8",
-		"uuid": "^11.0.5",
+		"uuid": "^11.1.1",
 		"ws": "~8.19.0"
 	},
 	"devDependencies": {
@@ -54,7 +54,7 @@
 		"@rocket.chat/jest-presets": "workspace:*",
 		"@types/ejson": "^2.2.2",
 		"@types/jest": "~30.0.0",
-		"@types/node": "~22.16.5",
+		"@types/node": "~22.19.17",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/underscore": "^1.13.0",

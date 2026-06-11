@@ -4,11 +4,11 @@ import type { ReactElement } from 'react';
 
 type ItemProps = {
 	block: UiKit.ContextBlock['elements'][number];
-	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement>;
+	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 	index: number;
 };
 
-const Item = ({ block: element, surfaceRenderer: parser, index }: ItemProps): ReactElement | null => {
+const Item = ({ block: element, surfaceRenderer: parser, index }: ItemProps) => {
 	const renderedElement = parser.renderContextBlockElement(element, index);
 
 	if (!renderedElement) {

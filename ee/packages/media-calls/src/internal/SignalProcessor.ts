@@ -144,7 +144,7 @@ export class GlobalSignalProcessor {
 			return;
 		}
 
-		await Promise.all(calls.map((call) => this.reactToUnknownCall(uid, call, signal).catch(() => null)));
+		await Promise.allSettled(calls.map((call) => this.reactToUnknownCall(uid, call, signal)));
 	}
 
 	private async reactToUnknownCall(uid: IUser['_id'], call: IMediaCall, signal: ClientMediaSignalRegister): Promise<void> {

@@ -2,7 +2,6 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ const sortMapping = {
 	loginAt: 'loginAt',
 };
 
-const DeviceManagementAccountTable = (): ReactElement => {
+const DeviceManagementAccountTable = () => {
 	const { t } = useTranslation();
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'loginAt'>('loginAt');
@@ -59,7 +58,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 		<DeviceManagementTable
 			{...queryResult}
 			headers={headers}
-			renderRow={(session): ReactElement => (
+			renderRow={(session) => (
 				<DeviceManagementAccountRow
 					key={session._id}
 					_id={session._id}

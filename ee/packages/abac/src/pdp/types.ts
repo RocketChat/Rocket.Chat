@@ -2,18 +2,6 @@ import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.ch
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
-export interface IGetDecisionRequest {
-	actions: Array<{ standard: number }>;
-	resourceAttributes: Array<{
-		resourceAttributesId: string;
-		attributeValueFqns: string[];
-	}>;
-	entityChains: Array<{
-		id: string;
-		entities: IEntityIdentifier[];
-	}>;
-}
-
 export interface IGetDecisionBulkRequest {
 	entityIdentifier: {
 		entityChain: {
@@ -34,17 +22,13 @@ export interface IResourceDecision {
 	ephemeralResourceId?: string;
 }
 
-export interface IGetDecisionsResponse {
-	decisionResponses?: Array<{
-		decision?: Decision;
-	}>;
-}
-
 export interface IGetDecisionBulkResponse {
 	decisionResponses?: Array<{
 		resourceDecisions?: IResourceDecision[];
 	}>;
 }
+
+export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
 
 export interface IPolicyDecisionPoint {
 	isAvailable(): Promise<boolean>;
@@ -71,6 +55,8 @@ export interface IPolicyDecisionPoint {
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+
+	reevaluateUsers(users: ReevaluationUser[]): Promise<void | Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
 }
 
 export interface IVirtruPDPConfig {
@@ -85,4 +71,22 @@ export interface IVirtruPDPConfig {
 export interface ITokenCache {
 	accessToken: string;
 	expiresAt: number;
+}
+
+export interface IGetEntitlementsRequest {
+	entityIdentifier: {
+		entityChain: {
+			entities: IEntityIdentifier[];
+		};
+	};
+	withComprehensiveHierarchy: boolean;
+}
+
+export interface IEntityEntitlements {
+	ephemeralId?: string;
+	actionsPerAttributeValueFqn: Record<string, unknown>;
+}
+
+export interface IGetEntitlementsResponse {
+	entitlements?: IEntityEntitlements[];
 }

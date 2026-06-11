@@ -1,5 +1,87 @@
 # @rocket.chat/ui-voip
 
+## 21.0.0
+
+### Minor Changes
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+### Patch Changes
+
+- ([#40330](https://github.com/RocketChat/Rocket.Chat/pull/40330)) Fixes an issue where intentionally cancelling a screen share request would show an error toast by identifying error types and counting consecutive failures.
+
+- <details><summary>Updated dependencies [fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
+
+  - @rocket.chat/ui-client@31.0.0
+  - @rocket.chat/desktop-api@1.2.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0
+  - @rocket.chat/ui-avatar@27.0.0
+  - @rocket.chat/ui-contexts@31.0.0
+  </details>
+
+## 21.0.0-rc.0
+
+### Minor Changes
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+### Patch Changes
+
+- ([#40330](https://github.com/RocketChat/Rocket.Chat/pull/40330)) Fixes an issue where intentionally cancelling a screen share request would show an error toast by identifying error types and counting consecutive failures.
+
+- <details><summary>Updated dependencies [ae9f740d6af20557eac61b4af902c868b4132b49, fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
+
+  - @rocket.chat/desktop-api@1.2.0-rc.0
+  - @rocket.chat/ui-client@31.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  - @rocket.chat/ui-avatar@27.0.0-rc.0
+  </details>
+
+## 20.0.0
+
+### Minor Changes
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#39741](https://github.com/RocketChat/Rocket.Chat/pull/39741)) Fixes empty notifications sent when a voice call ends
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a, 2632182e429d337325fe3b1e28ea52ab12d99591, 21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0
+  - @rocket.chat/media-signaling@1.0.0
+  - @rocket.chat/fuselage-ui-kit@30.0.0
+  - @rocket.chat/ui-avatar@26.0.0
+  - @rocket.chat/ui-contexts@30.0.0
+  </details>
+
+## 20.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.2
+  - @rocket.chat/ui-avatar@26.0.0-rc.2
+  - @rocket.chat/ui-client@30.0.0-rc.2
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  </details>
+
+## 20.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2632182e429d337325fe3b1e28ea52ab12d99591]:</summary>
+
+  - @rocket.chat/media-signaling@1.0.0-rc.1
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.1
+  - @rocket.chat/ui-avatar@26.0.0-rc.1
+  - @rocket.chat/ui-client@30.0.0-rc.1
+  </details>
+
 ## 19.0.2
 
 ### Patch Changes
@@ -22,6 +104,25 @@
   - @rocket.chat/ui-avatar@25.0.1
   - @rocket.chat/ui-client@29.0.1
   - @rocket.chat/ui-contexts@29.0.1
+  </details>
+
+## 20.0.0-rc.0
+
+### Minor Changes
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#39741](https://github.com/RocketChat/Rocket.Chat/pull/39741)) Fixes empty notifications sent when a voice call ends
+
+- <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a, 21cd54f87de5837fe6c999a44bd15be34b9fe905, c544b805d1c03f8eae9d061cd48838206207a7c9]:</summary>
+
+  - @rocket.chat/ui-client@30.0.0-rc.0
+  - @rocket.chat/media-signaling@0.3.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@30.0.0-rc.0
+  - @rocket.chat/ui-avatar@26.0.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
   </details>
 
 ## 19.0.0

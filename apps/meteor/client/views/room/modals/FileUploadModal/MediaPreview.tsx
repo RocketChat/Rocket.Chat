@@ -1,5 +1,4 @@
 import { AudioPlayer, Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,10 +11,10 @@ import { useFileAsDataURL } from '../../hooks/useFileAsDataURL';
 type MediaPreviewProps = {
 	file: File;
 	fileType: FilePreviewType;
-	description?: string;
+	altText?: string;
 };
 
-const MediaPreview = ({ file, fileType, description }: MediaPreviewProps): ReactElement => {
+const MediaPreview = ({ file, fileType, altText }: MediaPreviewProps) => {
 	const [loaded, url] = useFileAsDataURL(file);
 	const { t } = useTranslation();
 
@@ -33,7 +32,7 @@ const MediaPreview = ({ file, fileType, description }: MediaPreviewProps): React
 	}
 
 	if (fileType === FilePreviewType.IMAGE) {
-		return <ImagePreview url={url} file={file} alt={description} />;
+		return <ImagePreview url={url} file={file} altText={altText} />;
 	}
 
 	if (fileType === FilePreviewType.VIDEO) {

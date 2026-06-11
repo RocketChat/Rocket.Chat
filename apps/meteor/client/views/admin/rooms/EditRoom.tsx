@@ -13,7 +13,7 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -97,7 +97,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
+	const handleUpdateRoomData = useStableCallback(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 
@@ -117,7 +117,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		}
 	});
 
-	const handleSave = useEffectEvent((data: EditRoomFormData) =>
+	const handleSave = useStableCallback((data: EditRoomFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
