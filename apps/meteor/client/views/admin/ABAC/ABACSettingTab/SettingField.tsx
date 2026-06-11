@@ -16,10 +16,9 @@ type SettingFieldProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;
-	renderConfirmModal?: (props: { onConfirm: () => void; onCancel: () => void }) => React.ReactNode;
 };
 
-function SettingField({ className = undefined, settingId, sectionChanged, renderConfirmModal }: SettingFieldProps) {
+function SettingField({ className = undefined, settingId, sectionChanged }: SettingFieldProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -95,11 +94,11 @@ function SettingField({ className = undefined, settingId, sectionChanged, render
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
-		(newValue: SettingValue) => {
-			setValue(newValue);
-			update({ value: newValue });
+		(value: SettingValue) => {
+			setValue(value);
+			update({ value });
 		},
-		[renderConfirmModal, value, update, setModal],
+		[update],
 	);
 
 	const onChangeEditor = useCallback(
