@@ -68,7 +68,7 @@
 		"@storybook/preact-webpack5": "9.0.0-alpha.11",
 		"@types/crypto-js": "~4.2.2",
 		"@types/mini-css-extract-plugin": "~2.5.1",
-		"@types/react": "~18.3.28",
+		"@types/react": "~19.2.17",
 		"@types/webpack-env": "~1.18.8",
 		"@types/whatwg-fetch": "~0.0.33",
 		"autoprefixer": "^9.8.8",

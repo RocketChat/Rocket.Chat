@@ -9423,8 +9423,8 @@ __metadata:
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@testing-library/user-event": "npm:~14.6.1"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     cross-env: "npm:^7.0.3"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
@@ -9505,8 +9505,8 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@types/jest": "npm:~30.0.0"
     "@types/katex": "npm:~0.16.8"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     date-fns: "npm:~4.1.0"
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
@@ -9697,7 +9697,7 @@ __metadata:
     "@storybook/preact-webpack5": "npm:9.0.0-alpha.11"
     "@types/crypto-js": "npm:~4.2.2"
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
-    "@types/react": "npm:~18.3.28"
+    "@types/react": "npm:~19.2.17"
     "@types/webpack-env": "npm:~1.18.8"
     "@types/whatwg-fetch": "npm:~0.0.33"
     ajv: "npm:^8.20.0"
@@ -10054,8 +10054,8 @@ __metadata:
     "@types/proxyquire": "npm:^1.3.31"
     "@types/psl": "npm:^1.1.3"
     "@types/qs": "npm:^6.14.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     "@types/sanitize-html": "npm:~2.16.1"
     "@types/semver": "npm:^7.5.8"
     "@types/sharp": "npm:^0.32.0"
@@ -10289,8 +10289,8 @@ __metadata:
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/jest-dom": "npm:~6.8.0"
     "@testing-library/react": "npm:~16.3.2"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
@@ -10477,7 +10477,7 @@ __metadata:
     "@types/node": "npm:~22.19.17"
     "@types/polka": "npm:^0.5.8"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
-    "@types/react": "npm:~18.3.28"
+    "@types/react": "npm:~19.2.17"
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.4"
@@ -10563,8 +10563,8 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@types/emojione": "npm:^2.2.9"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     buffer: "npm:~6.0.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.4"
@@ -10915,8 +10915,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
@@ -10956,8 +10956,8 @@ __metadata:
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
@@ -11007,8 +11007,8 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@testing-library/user-event": "npm:~14.6.1"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
     react: "npm:~18.3.1"
@@ -11044,8 +11044,8 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/tools": "workspace:~"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
@@ -11106,8 +11106,8 @@ __metadata:
     "@storybook/react": "npm:^9.1.13"
     "@types/jest": "npm:~30.0.0"
     "@types/jest-axe": "npm:~3.5.9"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
     jest-axe: "npm:~10.0.0"
@@ -11164,8 +11164,8 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/node": "npm:~22.19.17"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     date-fns: "npm:~4.1.0"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
@@ -11218,8 +11218,8 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@types/lodash": "npm:~4.17.24"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     "@vitejs/plugin-react": "npm:~6.0.1"
     codemirror: "npm:^6.0.2"
     eslint: "npm:~9.39.4"
@@ -11260,8 +11260,8 @@ __metadata:
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
@@ -14725,12 +14725,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:~18.3.7":
-  version: 18.3.7
-  resolution: "@types/react-dom@npm:18.3.7"
+"@types/react-dom@npm:~19.2.3":
+  version: 19.2.3
+  resolution: "@types/react-dom@npm:19.2.3"
   peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: 10/317569219366d487a3103ba1e5e47154e95a002915fdcf73a44162c48fe49c3a57fcf7f57fc6979e70d447112681e6b13c6c3c1df289db8b544df4aab2d318f3
+    "@types/react": ^19.2.0
+  checksum: 10/616c4a8aee250ea05fb1e7b98e7e00475dd3a6c1c30d7be18b4b93caba832f4203106b3a496a6b147e5acc2da14575eca47bce234c633bca1f8430ef8ffb234a
   languageName: node
   linkType: hard
 
@@ -14744,13 +14744,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:~18.3.28":
-  version: 18.3.28
-  resolution: "@types/react@npm:18.3.28"
+"@types/react@npm:~19.2.17":
+  version: 19.2.17
+  resolution: "@types/react@npm:19.2.17"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.2.2"
-  checksum: 10/6db7bb7f19957ee9f530baa7d143527f8befedad1585b064eb80777be0d84621157de75aba4f499ff429b10c5ef0c7d13e89be6bca3296ef71c80472894ff0eb
+  checksum: 10/8debb092bd0bb9c99176a31824c7587c27c775a6526b60060e7b9e8dc2af53aee2ffadc7a1e3845953792437db5699d34a9054e198c9d4e54a74728ff47c6725
   languageName: node
   linkType: hard
 
