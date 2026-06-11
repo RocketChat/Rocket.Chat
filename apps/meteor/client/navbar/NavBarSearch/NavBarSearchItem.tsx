@@ -3,7 +3,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 
 type NavBarSearchItemProps = {
 	title: string;
-	avatar?: ReactNode;
+	avatar: ReactNode;
 	icon: ReactNode;
 	actions?: ReactNode;
 	href?: string;

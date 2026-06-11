@@ -64,6 +64,7 @@ const NavBarSearchMessageRow = ({ item, onClick, type }: NavBarSearchMessageRowP
 			href={href}
 			onClick={onClick}
 			title={title}
+			avatar={null}
 			icon={<SidebarV2ItemIcon icon={<Icon name={type === 'intelligent' ? 'stars' : 'post'} size='x16' />} />}
 			actions={
 				roomLabel ? (

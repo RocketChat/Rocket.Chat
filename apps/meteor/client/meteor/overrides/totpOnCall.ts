@@ -8,7 +8,7 @@ import { isTotpInvalidError } from '../../lib/2fa/utils';
 const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	const callWithTotp =
 		(methodName: string, args: unknown[], callback: LoginCallback) =>
-		(twoFactorCode: string, twoFactorMethod: string): void => {
+		(twoFactorCode: string, twoFactorMethod: string): void =>
 			call(
 				methodName,
 				...args,
@@ -22,7 +22,6 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 					callback(error, result);
 				},
 			);
-		};
 
 	const callWithoutTotp = (methodName: string, args: unknown[], callback: LoginCallback) => (): unknown =>
 		call(
@@ -46,20 +45,18 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	};
 };
 
-const withAsyncTOTP = (callAsync: (name: string, ...args: unknown[]) => Promise<unknown>): typeof Meteor.callAsync => {
-	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<unknown> {
+const withAsyncTOTP = <T extends (name: string, ...args: any[]) => Promise<any>>(callAsync: T): T => {
+	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<ReturnType<T>> {
 		try {
 			return await callAsync(methodName, ...args);
 		} catch (error: unknown) {
-			// Use the original (unwrapped) callAsync here to prevent recursive 2FA modal opening
-			// when the server returns totp-invalid (e.g. wrong code entered).
 			return process2faAsyncReturn({
 				error,
 				onCode: (twoFactorCode, twoFactorMethod) => callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
 				emailOrUsername: undefined,
 			});
 		}
-	} as typeof Meteor.callAsync;
+	} as T;
 };
 
 Meteor.call = withSyncTOTP(Meteor.call);

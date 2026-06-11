@@ -77,7 +77,7 @@ export async function process2faReturn({
 	};
 
 	const validateCode = async (code: string, method: string): Promise<void> => {
-		await onCode(method === 'password' ? SHA256(code) : code, method);
+		await onCode(code, method);
 	};
 
 	await invokeTwoFactorModal(props, validateCode);
@@ -108,7 +108,7 @@ export async function process2faAsyncReturn<TResult>({
 	let result: TResult | undefined;
 
 	const validateCode = async (code: string, method: string): Promise<void> => {
-		result = await onCode(method === 'password' ? SHA256(code) : code, method);
+		result = await onCode(code, method);
 	};
 
 	await invokeTwoFactorModal(props, validateCode);
