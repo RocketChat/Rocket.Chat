@@ -1,6 +1,10 @@
+import './absoluteUrl';
 import './ddpOverREST';
+import './ddpSdkCollectionBridge';
+import './subscribeViaSDK';
+import './stubMeteorStream';
+import './killMeteorStream';
 import './desktopInjection';
 import './settings';
 import './totpOnCall';
-import './unstoreLoginToken';
 import './userAndUsers';

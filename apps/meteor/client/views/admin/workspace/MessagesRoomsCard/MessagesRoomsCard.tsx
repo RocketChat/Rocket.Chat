@@ -1,6 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Card } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +11,7 @@ type MessagesRoomsCardProps = {
 	statistics: IStats;
 };
 
-const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement => {
+const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps) => {
 	const { t } = useTranslation();
 
 	return (

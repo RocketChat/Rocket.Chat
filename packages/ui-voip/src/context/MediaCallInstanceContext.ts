@@ -13,7 +13,7 @@ export type Signals = {
 type MediaCallInstanceContextValue = {
 	instance: MediaSignalingSession | undefined;
 	signalEmitter: Emitter<Signals>;
-	audioElement: RefObject<HTMLAudioElement> | undefined;
+	audioElement: RefObject<HTMLAudioElement | null> | undefined;
 	openRoomId: string | undefined;
 	inRoomView: boolean;
 	setOpenRoomId: (openRoomId: string | undefined) => void;

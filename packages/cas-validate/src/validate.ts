@@ -1,7 +1,7 @@
-import type { IncomingMessage } from 'http';
-import https from 'https';
-import type { ParsedUrlQueryInput } from 'querystring';
-import url from 'url';
+import type { IncomingMessage } from 'node:http';
+import https from 'node:https';
+import type { ParsedUrlQueryInput } from 'node:querystring';
+import url from 'node:url';
 
 import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';

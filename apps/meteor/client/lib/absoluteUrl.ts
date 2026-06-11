@@ -1,6 +1,7 @@
 // There is a good chance this module may be promoted to root lib/ in the future
 
 import { baseURI } from './baseURI';
+import { getRootUrlPathPrefix } from './meteorRuntimeConfig';
 
 type AbsoluteUrlOptions = {
 	rootUrl?: string;
@@ -50,8 +51,8 @@ absoluteUrl.defaultOptions = {
 } as AbsoluteUrlOptions;
 
 export function _relativeToSiteRootUrl(link: string): string {
-	if (typeof __meteor_runtime_config__ === 'object' && link.slice(0, 1) === '/') {
-		link = (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '') + link;
+	if (link.startsWith('/')) {
+		link = getRootUrlPathPrefix() + link;
 	}
 
 	return link;

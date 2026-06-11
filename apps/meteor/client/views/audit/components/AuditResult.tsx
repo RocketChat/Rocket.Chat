@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import AuditMessageList from './AuditMessageList';
@@ -10,7 +9,7 @@ type AuditResultProps = {
 	messages: IMessage[];
 };
 
-const AuditResult = ({ className, messages }: AuditResultProps): ReactElement => {
+const AuditResult = ({ className, messages }: AuditResultProps) => {
 	if (messages.length === 0) {
 		return <GenericNoResults />;
 	}

@@ -110,6 +110,7 @@ exports[`renders Default without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -262,6 +263,7 @@ exports[`renders Default without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -822,6 +824,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -986,6 +989,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"

@@ -1,5 +1,25 @@
 # Change Log
 
+## 1.1.0
+
+### Minor Changes
+
+- ([#39858](https://github.com/RocketChat/Rocket.Chat/pull/39858)) Adds support to room information on ViewSubmit and ViewClose events for ContextualBar surface
+
+### Patch Changes
+
+- ([#39858](https://github.com/RocketChat/Rocket.Chat/pull/39858)) Fixes an issue that prevented BlockAction interactions from having room information when triggered in a ContextualBar surface
+
+## 1.1.0-rc.0
+
+### Minor Changes
+
+- ([#39858](https://github.com/RocketChat/Rocket.Chat/pull/39858)) Adds support to room information on ViewSubmit and ViewClose events for ContextualBar surface
+
+### Patch Changes
+
+- ([#39858](https://github.com/RocketChat/Rocket.Chat/pull/39858)) Fixes an issue that prevented BlockAction interactions from having room information when triggered in a ContextualBar surface
+
 ## 1.0.0
 
 ### Major Changes

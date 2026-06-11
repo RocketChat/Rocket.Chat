@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useStableCallback, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -106,7 +106,7 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
-}: MessageBoxProps): ReactElement => {
+}: MessageBoxProps) => {
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
@@ -125,7 +125,7 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const textareaRef = useRef(null);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
@@ -153,7 +153,7 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
+	const handleOpenEmojiPicker = useStableCallback((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -167,7 +167,7 @@ const MessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useEffectEvent(() => {
+	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
@@ -203,7 +203,7 @@ const MessageBox = ({
 		}
 	};
 
-	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
+	const keyboardEventHandler = useStableCallback((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -329,7 +329,7 @@ const MessageBox = ({
 		mutationFn: async () => onJoin?.(),
 	});
 
-	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLTextAreaElement>) => {
+	const handlePaste = useStableCallback((event: ClipboardEvent<HTMLTextAreaElement>) => {
 		const { clipboardData } = event;
 
 		if (!clipboardData) {
@@ -484,7 +484,6 @@ const MessageBox = ({
 						)}
 						<MessageBoxActionsToolbar
 							canSend={canSend}
-							typing={typing}
 							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
 							tmid={tmid}

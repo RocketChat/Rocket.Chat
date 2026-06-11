@@ -1,5 +1,5 @@
 import { useAtLeastOnePermission, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import MarketPlaceSidebar from './MarketplaceSidebar';
@@ -7,7 +7,7 @@ import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 import NotFoundPage from '../notFound/NotFoundPage';
 
-const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {
+const MarketplaceRouter = ({ children }: { children?: ReactNode }) => {
 	const currentContext = useRouteParameter('context') || 'all';
 	const marketplaceRoute = useRoute('marketplace');
 	const canAccessMarketplace = useAtLeastOnePermission(['access-marketplace', 'manage-apps']);

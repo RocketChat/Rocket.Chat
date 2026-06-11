@@ -6,7 +6,7 @@ import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 export const useReloadAfterLogin = (user: IUser | null) => {
-	const usernameRef = useRef<string>();
+	const usernameRef = useRef<string>(undefined);
 	const router = useRouter();
 
 	useEffect(() => {

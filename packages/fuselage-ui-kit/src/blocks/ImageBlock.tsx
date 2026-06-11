@@ -1,6 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useEffect, useState } from 'react';
 
 import { Image } from './ImageBlock.styles';
@@ -32,7 +31,7 @@ const fetchImageState = (img: HTMLImageElement) => {
 
 type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
 
-const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps): ReactElement => {
+const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 	const surface = useSurfaceType();
 
 	const alignment = surface === 'banner' || surface === 'message' ? 'flex-start' : 'center';

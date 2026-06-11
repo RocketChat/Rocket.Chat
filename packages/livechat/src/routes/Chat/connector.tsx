@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next';
-import type { FunctionalComponent } from 'preact';
+import type { Ref } from 'preact';
 import { useContext } from 'preact/hooks';
 import { withTranslation } from 'react-i18next';
 
@@ -9,7 +9,14 @@ import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
 import { StoreContext } from '../../store';
 
-export const ChatConnector: FunctionalComponent<{ path: string; default: boolean; t: TFunction }> = ({ ref, t }) => {
+type ChatConnectorProps = {
+	path: string;
+	default: boolean;
+	t: TFunction;
+	ref?: Ref<any>;
+};
+
+export const ChatConnector = ({ ref, t }: ChatConnectorProps) => {
 	const { theme } = useContext(ScreenContext);
 	const {
 		config: {

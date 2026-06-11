@@ -53,7 +53,7 @@ test.describe('E2EE PDF Export', () => {
 
 		await encryptedRoomPage.showExportMessagesTab();
 		await expect(exportMessagesTab.method).toContainClass('disabled'); // FIXME: looks like the component have an a11y issue
-		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file Method');
 	});
 
 	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
@@ -69,7 +69,7 @@ test.describe('E2EE PDF Export', () => {
 
 		await encryptedRoomPage.sendMessage('This is a message to export as PDF.');
 		await encryptedRoomPage.showExportMessagesTab();
-		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file Method');
 
 		// Select Output format as PDF
 		await exportMessagesTab.setOutputFormat('PDF');

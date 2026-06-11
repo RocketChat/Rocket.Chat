@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -35,7 +35,7 @@
 		"mongodb": "6.16.0",
 		"pino": "10.3.1",
 		"reflect-metadata": "^0.2.2",
-		"sanitize-html": "~2.17.3",
+		"sanitize-html": "~2.17.4",
 		"tsyringe": "^4.10.0",
 		"tweetnacl": "^1.0.3"
 	},
@@ -43,11 +43,11 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@types/emojione": "^2.2.9",
 		"@types/lodash.debounce": "^4.0.9",
-		"@types/node": "~22.16.5",
+		"@types/node": "~22.19.17",
 		"@types/sanitize-html": "~2.16.1",
 		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
-		"jest-qase-reporter": "^2.1.4",
+		"jest-qase-reporter": "^2.4.0",
 		"matrix-js-sdk": "^38.4.0",
 		"pino-pretty": "13.1.3",
 		"typescript": "~5.9.3"

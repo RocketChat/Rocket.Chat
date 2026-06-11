@@ -1,8 +1,8 @@
-import fs from 'fs';
-import { IncomingMessage } from 'http';
-import type { Stream, Transform } from 'stream';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
+import fs from 'node:fs';
+import { IncomingMessage } from 'node:http';
+import type { Stream, Transform } from 'node:stream';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';

@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { clientCallbacks } from '@rocket.chat/ui-client';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { settings } from '../../../../client/lib/settings';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { getUser, getUserId } from '../../../../client/lib/user';
+import { upsertThreadMessageInCache } from '../../../../client/lib/utils/threadMessageUtils';
 import { Messages, Rooms } from '../../../../client/stores';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { t } from '../../../utils/lib/i18n';
@@ -45,5 +45,8 @@ export const runOptimisticSendMessage = async (
 
 	const processed = await onClientMessageReceived(optimistic);
 	Messages.state.store(processed);
-	await clientCallbacks.run('afterSaveMessage', processed, { room, user });
+
+	if (processed.tmid) {
+		upsertThreadMessageInCache(processed, processed.rid, processed.tmid);
+	}
 };

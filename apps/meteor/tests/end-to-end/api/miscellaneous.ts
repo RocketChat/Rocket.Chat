@@ -686,4 +686,51 @@ describe('miscellaneous', () => {
 				.end(done);
 		});
 	});
+
+	describe('/fingerprint', () => {
+		let unauthorizedUser: TestUser<IUser>;
+		let unauthorizedUserCredentials: Credentials;
+
+		before(async () => {
+			unauthorizedUser = await createUser();
+			unauthorizedUserCredentials = await doLogin(unauthorizedUser.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(unauthorizedUser);
+		});
+
+		it('should return 401 when called without authentication', async () => {
+			const res = await request.post(api('fingerprint')).send({ setDeploymentAs: 'updated-configuration' });
+
+			expect(res.status).to.equal(401);
+			expect(res.body).to.have.property('status', 'error');
+		});
+
+		it('should return 403 when a user without the manage-cloud permission tries to acknowledge a deployment configuration change', async () => {
+			const res = await request
+				.post(api('fingerprint'))
+				.set(unauthorizedUserCredentials)
+				.send({ setDeploymentAs: 'updated-configuration' });
+
+			expect(res.status).to.equal(403);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+		});
+
+		it('should return 403 when a user without the manage-cloud permission tries to deregister the workspace as a new workspace', async () => {
+			const res = await request.post(api('fingerprint')).set(unauthorizedUserCredentials).send({ setDeploymentAs: 'new-workspace' });
+
+			expect(res.status).to.equal(403);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+		});
+
+		it('should return 200 when a user with the manage-cloud permission acknowledges a deployment configuration change', async () => {
+			const res = await request.post(api('fingerprint')).set(credentials).send({ setDeploymentAs: 'updated-configuration' });
+
+			expect(res.status).to.equal(200);
+			expect(res.body).to.have.property('success', true);
+		});
+	});
 });

@@ -1,6 +1,6 @@
 import type { IOutboundProviderMetadata, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -111,12 +111,12 @@ const RecipientForm = (props: RecipientFormProps) => {
 	const isContactNotFound = isSuccessContact && !contact;
 	const isProviderNotFound = isSuccessProvider && !provider;
 
-	const validateContactField = useEffectEvent((shouldValidate = false) => {
+	const validateContactField = useStableCallback((shouldValidate = false) => {
 		trigger('contactId');
 		setValue('recipient', '', { shouldValidate });
 	});
 
-	const validateProviderField = useEffectEvent((shouldValidate = false) => {
+	const validateProviderField = useStableCallback((shouldValidate = false) => {
 		trigger('providerId');
 		setValue('sender', '', { shouldValidate });
 	});
@@ -151,7 +151,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 		isDirty && onDirty && onDirty();
 	}, [isDirty, onDirty]);
 
-	const submit = useEffectEvent(async (values: RecipientFormData) => {
+	const submit = useStableCallback(async (values: RecipientFormData) => {
 		try {
 			// Wait if contact or provider is still being fetched in background
 			const [updatedContact, updatedProvider] = await Promise.all([
