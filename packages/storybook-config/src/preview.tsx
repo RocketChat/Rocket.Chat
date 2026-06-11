@@ -48,11 +48,16 @@ export const parameters: Parameters = {
 };
 
 export const decorators: Decorator[] = [
-	(Story) => {
+	function DarkModeDecorator(Story) {
 		const dark = useDarkMode();
 
 		return (
 			<>
+				<style>{`
+					body {
+						background-color: var(--rcx-color-surface-light);
+					}
+				`}</style>
 				<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
 				<Story />
 			</>

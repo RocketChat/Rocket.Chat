@@ -8,7 +8,7 @@ import TranslationContextMock from '../client/stories/contexts/TranslationContex
 
 const MockedAppRoot = mockAppRoot().build();
 
-export const rocketChatDecorator: Decorator = (Story, { parameters }) => (
+export const RocketChatDecorator: Decorator = (Story, { parameters }) => (
 	<MockedAppRoot>
 		<ServerContextMock {...parameters.serverContext}>
 			<TranslationContextMock {...parameters.translationContext}>
