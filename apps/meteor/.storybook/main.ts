@@ -27,7 +27,7 @@ export default baseConfig({
 				'swiper/swiper.css$': join(swiperRoot, 'swiper.css'),
 				'swiper/modules/zoom.css$': join(swiperRoot, 'modules/zoom.css'),
 			},
-			// This is only needed because of Fontello
+			// This is only needed because of Rocket.Chat's icon font.
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
 		};
 

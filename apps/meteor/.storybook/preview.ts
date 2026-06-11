@@ -3,6 +3,9 @@ import type { Preview } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
 
+import '../app/theme/client/main.css';
+import 'highlight.js/styles/github.css';
+
 const preview: Preview = {
 	parameters: {
 		...parameters,
