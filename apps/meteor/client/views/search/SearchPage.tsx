@@ -63,55 +63,58 @@ const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 			is={href ? 'a' : 'div'}
 			href={href}
 			color='default'
-			display='block'
-			mbe={12}
+			display='flex'
+			alignItems='flex-start'
+			role='listitem'
+			pi={12}
+			pb={10}
+			pt={10}
+			mbe={8}
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
 			borderRadius={4}
 			bg='surface-light'
-			style={{ textDecoration: 'none' }}
+			style={{ gap: 10, textDecoration: 'none' }}
 		>
-			<Box role='listitem' display='flex' p={16} style={{ gap: 12 }}>
-				<Box flexShrink={0}>
-					<MessageAvatar username={username} size='x36' />
-				</Box>
-				<Box display='flex' flexDirection='column' flexGrow={1} style={{ minWidth: 0, gap: 8 }}>
-					<Box display='flex' alignItems='flex-start' justifyContent='space-between' style={{ gap: 12, minWidth: 0 }}>
-						<Box display='flex' alignItems='baseline' flexWrap='wrap' style={{ gap: 6, minWidth: 0 }}>
-							<Box is='span' fontScale='p2b' withTruncatedText>
-								{displayName}
-							</Box>
-							{item.u?.username && (
-								<Box is='span' color='hint' fontScale='p2' withTruncatedText>
-									@{item.u.username}
-								</Box>
-							)}
-							{roomLabel && (
-								<Tag>
-									<Box display='flex' alignItems='center' style={{ gap: 4 }}>
-										<Icon name='hash' size='x12' />
-										{roomLabel}
-									</Box>
-								</Tag>
-							)}
-							{item.ts && (
-								<Box is='span' color='hint' fontScale='p2' flexShrink={0}>
-									{formatMessageTime(item.ts)}
-								</Box>
-							)}
+			<Box flexShrink={0} mbs={2}>
+				<MessageAvatar username={username} size='x28' />
+			</Box>
+			<Box display='flex' flexDirection='column' flexGrow={1} style={{ minWidth: 0, gap: 4 }}>
+				<Box display='flex' alignItems='center' style={{ gap: 8, minWidth: 0 }}>
+					<Box display='flex' alignItems='baseline' flexWrap='wrap' flexGrow={1} style={{ gap: 6, minWidth: 0 }}>
+						<Box is='span' fontScale='p2b' withTruncatedText>
+							{displayName}
 						</Box>
-						{typeof relevanceScore === 'number' && (
-							<Tag title={`${relevanceScore}%`} style={{ flexShrink: 0 }}>
-								{relevanceScore}%
+						{item.u?.username && (
+							<Box is='span' color='hint' fontScale='p2' withTruncatedText>
+								@{item.u.username}
+							</Box>
+						)}
+						{roomLabel && (
+							<Tag>
+								<Box display='flex' alignItems='center' style={{ gap: 4 }}>
+									<Icon name='hash' size='x12' />
+									{roomLabel}
+								</Box>
 							</Tag>
 						)}
+						{item.ts && (
+							<Box is='span' color='hint' fontScale='p2' flexShrink={0}>
+								{formatMessageTime(item.ts)}
+							</Box>
+						)}
 					</Box>
-					<MarkdownText
-						content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
-						parseEmoji
-						fontScale='p2'
-						style={{ lineHeight: 1.45, wordBreak: 'break-word' }}
-					/>
+					{typeof relevanceScore === 'number' && (
+						<Tag title={`${relevanceScore}%`} style={{ flexShrink: 0 }}>
+							{relevanceScore}%
+						</Tag>
+					)}
 				</Box>
+				<MarkdownText
+					content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
+					parseEmoji
+					fontScale='p2'
+					style={{ lineHeight: 1.35, wordBreak: 'break-word' }}
+				/>
 			</Box>
 		</Box>
 	);
