@@ -27,6 +27,11 @@ export interface IRoom {
 	parentRoom?: IRoom;
 	livechatData?: { [key: string]: any };
 	isFederated?: boolean;
+	federation?: {
+		version: number;
+		mrid: string;
+		origin: string;
+	};
 
 	abacAttributes?: IAbacAttributeDefinition[];
 }

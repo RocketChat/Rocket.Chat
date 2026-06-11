@@ -41,4 +41,9 @@ export interface IRoomRaw {
 	departmentId?: string;
 	contactId?: string;
 	isFederated?: boolean;
+	federation?: {
+		version: number;
+		mrid: string;
+		origin: string;
+	};
 }

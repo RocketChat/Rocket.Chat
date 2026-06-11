@@ -60,6 +60,7 @@ export class AppRoomsConverter {
 			departmentId: 'departmentId',
 			parentRoomId: 'prid',
 			isFederated: 'federated',
+			federation: 'federation',
 			visitor: (data) => {
 				const { v } = data;
 				if (!v) {
@@ -263,6 +264,7 @@ export class AppRoomsConverter {
 			...(room.customFields && { customFields: room.customFields }),
 			...(room.livechatData && { livechatData: room.livechatData }),
 			...(typeof room.isFederated !== 'undefined' && { federated: room.isFederated }),
+			...(typeof room.federation !== 'undefined' && { federation: room.federation }),
 			...(typeof room.parentRoom !== 'undefined' && { prid: room.parentRoom.id }),
 			...(contactId && { contactId }),
 			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
@@ -307,6 +309,7 @@ export class AppRoomsConverter {
 			teamId: 'teamId',
 			isTeamMain: 'teamMain',
 			isFederated: 'federated',
+			federation: 'federation',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
