@@ -26,10 +26,29 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 			roomId: rid,
 			lastUpdate: lastMessage.ts.toISOString(),
 		});
+
 		if (result?.updated?.length) {
 			const subscription = Subscriptions.state.find((record) => record.rid === rid);
-			await Promise.all(result.updated.map((msg) => upsertMessage({ msg: mapMessageFromApi(msg), subscription })));
+			// `/v1/chat.syncMessages` returns everything changed since `lastUpdate` by
+			// `_updatedAt`, which includes edits to older messages. We only want to
+			// upsert messages that are genuinely new (created after our newest loaded
+			// message) or that are already loaded (so edits stay in sync), otherwise we
+			// would inject stale messages into the room history.
+			await Promise.all(
+				result.updated
+					.map(mapMessageFromApi)
+					.filter((msg) => msg.ts.getTime() > lastMessage.ts.getTime() || Messages.state.has(msg._id))
+					.map((msg) => upsertMessage({ msg, subscription })),
+			);
 		}
+
+		// Drop messages that were deleted while the connection was down, but only if
+		// they are currently loaded.
+		result?.deleted?.forEach(({ _id }) => {
+			if (Messages.state.has(_id)) {
+				Messages.state.delete(_id);
+			}
+		});
 	} catch (error) {
 		console.error('Error loading missed messages:', error);
 	}

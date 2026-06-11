@@ -930,9 +930,9 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.delete': {
 		POST: (params: ChatDelete) => {
-			_id: string;
-			ts: string;
-			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
+			_id?: string;
+			ts?: string;
+			message?: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
 	};
 	'/v1/chat.react': {

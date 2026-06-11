@@ -549,6 +549,55 @@ describe('miscellaneous', () => {
 				})
 				.end(done);
 		});
+		it('should not return users when the type param disables user search', (done) => {
+			void request
+				.get(api('spotlight'))
+				.query({
+					query: `${adminUsername}`,
+					type: JSON.stringify({ users: false, rooms: true }),
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should exclude usernames passed in the usernames param from the results', (done) => {
+			void request
+				.get(api('spotlight'))
+				.query({
+					query: `@${adminUsername}`,
+					usernames: adminUsername,
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body.users.map((u: { username: string }) => u.username)).to.not.include(adminUsername);
+				})
+				.end(done);
+		});
+		it('should allow anonymous (unauthenticated) requests', (done) => {
+			void request
+				.get(api('spotlight'))
+				.query({
+					query: `#${testChannel.name}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/instances.get]', () => {

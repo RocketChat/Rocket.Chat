@@ -24,7 +24,20 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const { data: list } = useQuery({
 		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
-			const { sounds } = await getCustomSounds({});
+			// `/v1/custom-sounds.list` is paginated, so we page through all results to
+			// load every custom sound into the provider (the legacy `listCustomSounds`
+			// method returned them all at once).
+			const sounds: Awaited<ReturnType<typeof getCustomSounds>>['sounds'] = [];
+			let total = Infinity;
+			while (sounds.length < total) {
+				const page = await getCustomSounds({ count: 100, offset: sounds.length });
+				total = page.total;
+				sounds.push(...page.sounds);
+				if (!page.sounds.length) {
+					break;
+				}
+			}
+
 			if (!sounds.length) {
 				return defaultSounds;
 			}

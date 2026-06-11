@@ -3906,6 +3906,40 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it('should persist the utcOffset preference on the user document', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { utcOffset: 5 } })
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('me'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('utcOffset', 5);
+				});
+		});
+
+		it('should fail when utcOffset is not a number', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { utcOffset: 'not-a-number' } })
+				.expect(400)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
 		it('should return 401 when not authenticated', async () => {
 			await request
 				.post(api('users.setPreferences'))

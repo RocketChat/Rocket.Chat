@@ -14,7 +14,7 @@ import { Meteor } from 'meteor/meteor';
 import { readMessages } from '../../../../server/lib/readMessages';
 import { getSubscriptions } from '../../../../server/publications/subscription';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
-import { readThread } from '../../../threads/server/functions';
+import { readThreadMethod } from '../../../threads/server/functions';
 import { API } from '../api';
 
 const subscriptionsGetResponseSchema = ajv.compile<{
@@ -153,7 +153,7 @@ API.v1.post(
 			if (thread?.rid !== room._id) {
 				throw new Error('error-invalid-thread');
 			}
-			await readThread({ user: this.user, room, tmid });
+			await readThreadMethod({ user: this.user, tmid });
 			return API.v1.success();
 		}
 

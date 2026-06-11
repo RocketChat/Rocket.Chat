@@ -1,7 +1,7 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Upload } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Users, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
 import {
 	ajv,
 	isChatReportMessageProps,
@@ -37,6 +37,7 @@ import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../file-upload/server';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { getSingleMessage } from '../../../lib/server/methods/getSingleMessage';
@@ -521,7 +522,7 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			body: isChatDeleteProps,
 			response: {
-				200: ajv.compile<{ _id: string; ts: string; message: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
+				200: ajv.compile<{ _id?: string; ts?: string; message?: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
 					type: 'object',
 					properties: {
 						_id: { type: 'string' },
@@ -538,7 +539,7 @@ const chatEndpoints = API.v1
 						},
 						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['_id', 'ts', 'message', 'success'],
+					required: ['success'],
 					additionalProperties: false,
 				}),
 				400: validateBadRequestErrorResponse,
@@ -552,8 +553,31 @@ const chatEndpoints = API.v1
 					: await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
-				const ref = 'fileId' in this.bodyParams ? `the file id of "${this.bodyParams.fileId}"` : `the id of "${this.bodyParams.msgId}"`;
-				return API.v1.failure(`No message found with ${ref}.`);
+				// The legacy `deleteFileMessage` method allowed removing an uploaded file
+				// that had no associated message by deleting it straight from the store,
+				// validating the upload-delete permission first.
+				if ('fileId' in this.bodyParams) {
+					const user = await Users.findOneById(this.userId, { projection: { username: 1 } });
+					if (!user) {
+						return API.v1.failure('User not found');
+					}
+
+					const file = await Uploads.findOneById(this.bodyParams.fileId, {
+						projection: { userId: 1, rid: 1, expiresAt: 1, uploadedAt: 1 },
+					});
+					if (!file) {
+						return API.v1.failure(`No file found with the file id of "${this.bodyParams.fileId}".`);
+					}
+
+					if (!(await Upload.canDeleteFile(user, file, null))) {
+						return API.v1.failure('Unauthorized. You are not allowed to delete this file.');
+					}
+
+					await FileUpload.getStore('Uploads').deleteById(this.bodyParams.fileId);
+					return API.v1.success();
+				}
+
+				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
 			}
 
 			if ('roomId' in this.bodyParams && this.bodyParams.roomId !== msg.rid) {
@@ -580,7 +604,7 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				_id: msg._id,
 				ts: Date.now().toString(),
-				message: msg,
+				message: { _id: msg._id, rid: msg.rid, u: msg.u },
 			});
 		},
 	)
