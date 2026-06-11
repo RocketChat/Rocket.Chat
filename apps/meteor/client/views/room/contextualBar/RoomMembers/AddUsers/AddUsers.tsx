@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -11,9 +11,8 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +29,7 @@ type AddUsersProps = {
 	reload: () => void;
 };
 
-const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => {
+const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();
@@ -42,7 +41,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 
 	const setModal = useSetModal();
 	const { closeTab } = useRoomToolbox();
-	const saveAction = useMethod('addUsersToRoom');
+	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
+	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
 	const getBannedUsers = useEndpoint('GET', '/v1/rooms.bannedUsers');
 	const unbanUser = useEndpoint('POST', '/v1/rooms.unbanUser');
 
@@ -53,7 +53,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting, errors },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useEffectEvent(async ({ users, unbanConfirmed }: { users: string[]; unbanConfirmed?: boolean }) => {
+	const handleSave = useStableCallback(async ({ users, unbanConfirmed }: { users: string[]; unbanConfirmed?: boolean }) => {
 		if (unbanConfirmed) {
 			const { bannedUsers } = await getBannedUsers({ roomId: rid });
 			const bannedSet = new Set(bannedUsers.map((u) => u.username));
@@ -63,13 +63,15 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 				await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
 			}
 		}
-		await saveAction({ rid, users });
+		await Promise.all(
+			users.map((username) => (room.t === 'c' ? inviteToChannel({ roomId: rid, username }) : inviteToGroup({ roomId: rid, username }))),
+		);
 		dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
 		onClickBack();
 		reload();
 	});
 
-	const handleSaveWithBannedCheck = useEffectEvent(async ({ users }: { users: string[] }) => {
+	const handleSaveWithBannedCheck = useStableCallback(async ({ users }: { users: string[] }) => {
 		try {
 			await handleSave({ users });
 		} catch (error: any) {
@@ -84,7 +86,11 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							onClose={() => setModal(null)}
 							onConfirm={async () => {
 								await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
-								await saveAction({ rid, users });
+								await Promise.all(
+									users.map((username) =>
+										room.t === 'c' ? inviteToChannel({ roomId: rid, username }) : inviteToGroup({ roomId: rid, username }),
+									),
+								);
 								setModal(null);
 								dispatchToastMessage({
 									type: 'success',

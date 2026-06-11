@@ -16,12 +16,11 @@ import {
 	ButtonGroup,
 	AvatarStack,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
@@ -36,7 +35,7 @@ const VideoConfListItem = ({
 	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
-}): ReactElement => {
+}) => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
@@ -63,7 +62,7 @@ const VideoConfListItem = ({
 		}
 	`;
 
-	const handleJoinConference = useEffectEvent((): void => {
+	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
 	});

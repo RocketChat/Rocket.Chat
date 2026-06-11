@@ -14,6 +14,7 @@ import {
 	isMeteorCall,
 	meSuccessResponseSchema,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { MeApiSuccessResponse, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
@@ -1165,10 +1166,12 @@ API.v1.post(
 	'fingerprint',
 	{
 		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
 		body: isFingerprintProps,
 		response: {
 			200: fingerprintResponseSchema,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			400: validateBadRequestErrorResponse,
 		},
 	},

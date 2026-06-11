@@ -10,6 +10,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { getConfig } from '../../../lib/utils/getConfig';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
+const MAX_ROOM_SEARCH_PATTERN_LENGTH = 64;
 
 const options = {
 	sort: {
@@ -342,7 +343,7 @@ const mergeFilterSuggestions = (primary: SearchFilterSuggestion[], fallback: Sea
 };
 
 export const buildRoomSearchQuery = (value: string, mention?: string) => {
-	const filterRegex = new RegExp(escapeRegExp(value), 'i');
+	const filterRegex = new RegExp(escapeRegExp(value.slice(0, MAX_ROOM_SEARCH_PATTERN_LENGTH)), 'i');
 
 	return {
 		$or: [{ name: filterRegex }, { fname: filterRegex }],

@@ -15,7 +15,7 @@ export const createComposerAPI = (
 	persistDraft: (value: string) => void,
 	initialDraft: string,
 	quoteChainLimit: number,
-	composerRef: RefObject<HTMLElement>,
+	composerRef: RefObject<HTMLElement | null>,
 	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {

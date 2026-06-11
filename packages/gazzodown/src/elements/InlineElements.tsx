@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { lazy } from 'react';
 
 import BoldSpan from './BoldSpan';
@@ -23,7 +22,7 @@ type InlineElementsProps = {
 	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];
 };
 
-const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
+const InlineElements = ({ children }: InlineElementsProps) => (
 	<>
 		{children.map((child, index) => {
 			switch (child.type) {

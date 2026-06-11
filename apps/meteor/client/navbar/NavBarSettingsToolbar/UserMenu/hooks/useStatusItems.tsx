@@ -1,9 +1,10 @@
+import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import { useEndpoint, useMethod, useSetting, useStream } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
@@ -12,6 +13,7 @@ import { UserStatus } from '../../../../components/UserStatus';
 import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
+import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (): GenericMenuItemProps[] => {
@@ -21,7 +23,20 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 
 	const queryClient = useQueryClient();
 	const stream = useStream('notify-logged');
-	const listCustomUserStatus = useMethod('listCustomUserStatus');
+	const listCustomUserStatusEndpoint = useEndpoint('GET', '/v1/custom-user-status.list');
+	const listCustomUserStatus = useCallback(async (): Promise<ICustomUserStatus[]> => {
+		const all: ICustomUserStatus[] = [];
+		const count = 100;
+		let offset = 0;
+		// REST endpoint is paginated; loop until total reached.
+		while (true) {
+			const { statuses, total } = await listCustomUserStatusEndpoint({ count, offset });
+			all.push(...statuses.map(mapCustomUserStatusFromApi));
+			if (all.length >= total || statuses.length === 0) break;
+			offset += statuses.length;
+		}
+		return all;
+	}, [listCustomUserStatusEndpoint]);
 
 	useEffect(
 		() =>

@@ -31,6 +31,7 @@ const fakeItems = Array.from({ length: 10 }, (_, i) => ({
 		_id: 'rocket.cat',
 		username: 'rocket.cat',
 	},
+	_updatedAt: new Date(),
 }));
 
 export const Default = Template.bind({});

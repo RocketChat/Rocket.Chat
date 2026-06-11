@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ export const useToggleNotificationAction = ({ rid, isNotificationEnabled, roomNa
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const handleToggleNotification = useEffectEvent(async () => {
+	const handleToggleNotification = useStableCallback(async () => {
 		try {
 			await toggleNotification({ roomId: rid, notifications: { disableNotifications: isNotificationEnabled ? '1' : '0' } });
 			dispatchToastMessage({

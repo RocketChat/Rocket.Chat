@@ -3,14 +3,10 @@ import { GenericMenu, useSort } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import type {
-	CallHistoryTableExternalContact,
-	CallHistoryTableInternalContact,
-	CallHistoryTableRowProps,
-	CallHistoryUnknownContact,
-} from './CallHistoryTableRow';
+import type { CallHistoryTableRowProps } from './CallHistoryTableRow';
 import CallHistoryTableRow from './CallHistoryTableRow';
 import MediaCallHistoryTable from './MediaCallHistoryTable';
+import type { CallHistoryContact, CallHistoryInternalContact } from '../../definitions';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -65,7 +61,7 @@ const getDate = (index: number) => {
 	return new Date(date.setMonth(date.getMonth() - 2));
 };
 
-const getContact = (index: number): CallHistoryTableInternalContact | CallHistoryTableExternalContact | CallHistoryUnknownContact => {
+const getContact = (index: number): CallHistoryContact => {
 	if (index % 3 === 0) {
 		return {
 			_id: `user_${index}`,
@@ -84,9 +80,9 @@ const getContact = (index: number): CallHistoryTableInternalContact | CallHistor
 };
 
 const results = Array.from({ length: 100 }).map(
-	(_, index): CallHistoryTableRowProps<CallHistoryTableInternalContact> => ({
+	(_, index): CallHistoryTableRowProps<CallHistoryInternalContact> => ({
 		_id: `call_${index}`,
-		contact: getContact(index) as CallHistoryTableInternalContact,
+		contact: getContact(index) as CallHistoryInternalContact,
 		type: index % 2 ? 'outbound' : 'inbound',
 		status: getStatus(index),
 		duration: index % 2 ? 120 : 0,

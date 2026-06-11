@@ -4,6 +4,7 @@ import { CustomUserStatus } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -30,6 +31,7 @@ export const deleteCustomUserStatus = async (userId: string, userStatusID: strin
 
 Meteor.methods<ServerMethods>({
 	async deleteCustomUserStatus(userStatusID) {
+		methodDeprecationLogger.method('deleteCustomUserStatus', '9.0.0', '/v1/custom-user-status.delete');
 		if (!this.userId) {
 			throw new Meteor.Error('not_authorized');
 		}

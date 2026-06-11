@@ -26,7 +26,7 @@ import { createRoom } from '../../../server/lib/rooms';
 
 const logger = new Logger('SMS');
 
-const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
+const getUploadFile = async (details: Omit<IUpload, '_id' | '_updatedAt'>, fileUrl: string) => {
 	const response = await fetch(fileUrl, {
 		ignoreSsrfValidation: false,
 		allowList: settings.get<string>('SSRF_Allowlist'),

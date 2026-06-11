@@ -123,5 +123,11 @@ describe('NavBarSearch AI filter helpers', () => {
 				t: { $ne: 'd' },
 			});
 		});
+
+		it('bounds the escaped regex pattern used for room lookup', () => {
+			const query = buildRoomSearchQuery('/'.repeat(128));
+
+			expect(query.$or[0].name.source).toBe('\\/'.repeat(64));
+		});
 	});
 });

@@ -1,5 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { settings } from '../../../settings/server';
 
 type LockResult = {
@@ -9,10 +10,10 @@ type LockResult = {
 };
 
 export async function conditionalLockAgent(agentId: string): Promise<LockResult> {
-	// Lock and chats limits enforcement are only required when waiting_queue is enabled
+	// Lock and chats limits enforcement are only required when waiting_queue is enabled and the agent is not a bot
 	const shouldLock = settings.get<boolean>('Livechat_waiting_queue');
 
-	if (!shouldLock) {
+	if (!shouldLock || (await hasRoleAsync(agentId, 'bot'))) {
 		return {
 			acquired: false,
 			required: false,

@@ -191,8 +191,16 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async start(): Promise<void> {
-		await this.broker.start();
+		try {
+			// We have to set this before calling `.start` as some services might call another service (settings, likely) as part of
+			// their `started` lifecycle method. `.call` bails out early (and silently) if `started` is false, returning undefined
+			// which can affect the service startup.
+			this.started = Promise.resolve(true);
 
-		this.started = Promise.resolve(true);
+			await this.broker.start();
+		} catch (e) {
+			this.started = Promise.resolve(false);
+			throw e;
+		}
 	}
 }

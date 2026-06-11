@@ -1,8 +1,7 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
+const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }) => {
 	const { t } = useTranslation();
 
 	return (

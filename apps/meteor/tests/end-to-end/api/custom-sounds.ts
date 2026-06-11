@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import fs from 'fs';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
@@ -30,18 +31,7 @@ async function createCustomSound(fileName: string, filePath: string): Promise<st
 }
 
 async function deleteCustomSound(_id: string) {
-	await request
-		.post(api('method.call/deleteCustomSound'))
-		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				msg: 'method',
-				id: '1',
-				method: 'deleteCustomSound',
-				params: [_id],
-			}),
-		})
-		.expect(200);
+	await request.post(api('custom-sounds.delete')).set(credentials).send({ _id }).expect(200);
 }
 
 describe('[CustomSounds]', () => {
@@ -361,6 +351,61 @@ describe('[CustomSounds]', () => {
 					.expect(403);
 			});
 		});
+
+		describe('mutating file on failed validation', () => {
+			let soundAId: string;
+			let soundBId: string;
+			const soundAName = `sound-a-${randomUUID()}`;
+			const soundBName = `sound-b-${randomUUID()}`;
+
+			before(async () => {
+				soundAId = await createCustomSound(soundAName, mockWavAudioPath);
+				soundBId = await createCustomSound(soundBName, mockMp3AudioPath);
+			});
+
+			after(async () => {
+				await deleteCustomSound(soundAId);
+				await deleteCustomSound(soundBId);
+			});
+
+			it('should not mutate the underlying file or metadata if the update fails validation (e.g., name collision)', async () => {
+				await request
+					.post(api('custom-sounds.update'))
+					.set(credentials)
+					.attach('sound', mockMp3AudioPath)
+					.field('_id', soundAId)
+					.field('name', soundBName)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
+					});
+
+				await request
+					.get(api('custom-sounds.getOne'))
+					.set(credentials)
+					.query({ _id: soundAId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.sound).to.have.property('name', soundAName);
+						expect(res.body.sound).to.have.property('extension', 'wav');
+					});
+
+				const originalWavBuffer = fs.readFileSync(mockWavAudioPath);
+
+				await request
+					.get(`/custom-sounds/${soundAId}.wav`)
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.headers).to.have.property('content-type', 'audio/wav');
+						expect(Buffer.isBuffer(res.body)).to.be.true;
+						expect(originalWavBuffer.equals(res.body)).to.be.true;
+					});
+
+				await request.get(`/custom-sounds/${soundAId}.mp3`).set(credentials).expect(404);
+			});
+		});
 	});
 
 	describe('[/custom-sounds.list]', () => {
@@ -412,6 +457,78 @@ describe('[CustomSounds]', () => {
 					expect(res.body.sounds[0]._id).to.be.equal(fileId2);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/custom-sounds.delete]', () => {
+		let soundToDeleteId: string;
+		let soundDeleted: boolean = false;
+
+		before(async () => {
+			soundToDeleteId = await createCustomSound(`sound-to-delete-${randomUUID()}`, mockWavAudioPath);
+		});
+
+		after(async () => {
+			if (soundToDeleteId && !soundDeleted) {
+				await deleteCustomSound(soundToDeleteId);
+			}
+		});
+
+		it('should return unauthorized if the user is not authenticated', async () => {
+			await request.post(api('custom-sounds.delete')).send({ _id: soundToDeleteId }).expect(401);
+		});
+
+		it('should return a 400 if attempting to delete a sound that does not exist', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: 'invalid-non-existent-id' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.equal('Custom_Sound_Error_Invalid_Sound');
+				});
+		});
+
+		it('should reject requests with invalid parameter types', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: { $ne: null } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		describe('without manage-sounds permission', async () => {
+			let unauthorizedUser: IUser;
+			let unauthorizedUserCredentials: Credentials;
+
+			before(async () => {
+				unauthorizedUser = await createUser();
+				unauthorizedUserCredentials = await login(unauthorizedUser.username, password);
+			});
+
+			after(async () => {
+				await deleteUser(unauthorizedUser);
+			});
+
+			it('should return forbidden if user does not have the manage-sounds permission', async () => {
+				await request.post(api('custom-sounds.delete')).set(unauthorizedUserCredentials).send({ _id: soundToDeleteId }).expect(403);
+			});
+		});
+
+		it('should successfully delete a custom sound when providing a valid _id', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: soundToDeleteId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+			soundDeleted = true;
 		});
 	});
 

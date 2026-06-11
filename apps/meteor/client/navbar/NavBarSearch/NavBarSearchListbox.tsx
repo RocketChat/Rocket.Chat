@@ -1,7 +1,7 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
@@ -56,11 +56,11 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 
 	const debouncedFilter = useDebouncedValue(filterText, 500);
 
-	const handleSelect = useCallback(() => {
+	const handleSelect = useStableCallback(() => {
 		state.close();
 		resetField('filterText');
 		setValue('appliedFilters', { roomNames: [], rids: [], fromUsernames: [] });
-	}, [resetField, setValue, state]);
+	});
 
 	const {
 		data: items = {

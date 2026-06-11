@@ -2,7 +2,7 @@ import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
 import NavBarSearchListBox from './NavBarSearchListbox';
+import { getAISearchButtonTooltip } from './getAISearchButtonTooltip';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
@@ -18,26 +19,6 @@ import type { NavBarSearchFormValues } from './hooks/useSearchItems';
 import { buildAppliedFilterChips, emptySearchFilters, extractCompletedSearchFilters, mergeSearchFilters } from './hooks/useSearchItems';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-
-export const getAISearchButtonTooltip = ({
-	hasIntelligentSearchLicense,
-	intelligentSearchEnabled,
-	t,
-}: {
-	hasIntelligentSearchLicense: boolean;
-	intelligentSearchEnabled: unknown;
-	t: ReturnType<typeof useTranslation>['t'];
-}): string => {
-	if (!hasIntelligentSearchLicense) {
-		return t('AI_Search_license_required_tooltip');
-	}
-
-	if (!intelligentSearchEnabled) {
-		return t('AI_Search_disabled_tooltip');
-	}
-
-	return t('Search_with_AI');
-};
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
@@ -107,11 +88,11 @@ const NavBarSearch = () => {
 		state.close();
 	}, [resetField, setValue, state]);
 
-	const handleClearText = useCallback(() => {
+	const handleClearText = useStableCallback(() => {
 		resetField('filterText');
 		setValue('appliedFilters', emptySearchFilters());
 		setFocus('filterText');
-	}, [resetField, setFocus, setValue]);
+	});
 
 	const handleRemoveFilter = useCallback(
 		(filterKey: string) => {

@@ -10,6 +10,7 @@ import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
+import { CallHistoryService } from './call-history/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
@@ -60,6 +61,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new OmnichannelAnalyticsService());
 	api.registerService(new UserService());
 	api.registerService(new MediaCallService());
+	api.registerService(new CallHistoryService());
 
 	if (!process.env.USE_EXTERNAL_AI_SEARCH_SERVICE) {
 		api.registerService(new AISearchService());

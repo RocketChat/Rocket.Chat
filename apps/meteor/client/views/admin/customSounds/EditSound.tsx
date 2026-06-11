@@ -1,8 +1,8 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,7 @@ type EditSoundProps = {
 	};
 };
 
-function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
+function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -36,7 +36,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		setFile(undefined);
 	}, [_id, previousName]);
 
-	const deleteCustomSound = useMethod('deleteCustomSound');
+	const deleteCustomSoundEndpoint = useEndpoint('POST', '/v1/custom-sounds.delete');
 
 	const { mutate: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.update', {
 		onSuccess: () => {
@@ -76,7 +76,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
 			try {
-				await deleteCustomSound(_id);
+				await deleteCustomSoundEndpoint({ _id });
 				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Has_Been_Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -94,7 +94,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				{t('Custom_Sound_Delete_Warning')}
 			</GenericModal>,
 		);
-	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
+	}, [_id, close, deleteCustomSoundEndpoint, dispatchToastMessage, onChange, setModal, t]);
 
 	const [clickUpload] = useSingleFileInput(
 		handleChangeFile,
@@ -117,7 +117,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					<FieldRow>
 						<TextInput
 							value={name}
-							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
 					</FieldRow>

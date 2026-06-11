@@ -1,5 +1,5 @@
 import type { CallHistoryItem, IInternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
-import { CallHistoryContextualBar } from '@rocket.chat/ui-voip';
+import { CallHistoryContextualBar, type CallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
 import { useMediaCallInternalHistoryActions } from './useMediaCallInternalHistoryActions';
@@ -18,13 +18,13 @@ type MediaCallHistoryInternalProps = {
 };
 
 export const isInternalCallHistoryItem = (data: { item: Serialized<CallHistoryItem> }): data is InternalCallEndpointData => {
-	return 'external' in data.item && !data.item.external;
+	return data.item.type === 'media-call' && !data.item.external;
 };
 
-const getContact = (item: InternalCallEndpointData['item'], call: InternalCallEndpointData['call']) => {
+const getContact = (item: InternalCallEndpointData['item'], call: InternalCallEndpointData['call']): CallHistoryInternalContact => {
 	const { caller, callee } = call ?? {};
 	const contact = caller?.id === item.contactId ? caller : callee;
-	const { id, sipExtension, username, displayName, ...rest } = contact;
+	const { id, sipExtension, username, displayName, ...rest } = contact ?? {};
 	return {
 		...rest,
 		_id: id,

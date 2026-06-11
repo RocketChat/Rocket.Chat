@@ -10,7 +10,7 @@ import {
 	IconButton,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useId, useMemo, Fragment, useState } from 'react';
@@ -74,7 +74,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const [showDisclaimer, setShowDisclaimer] = useState<number[]>([]);
 	const viewRoomsAction = useViewRoomsAction();
 
-	const removeLockedAttribute = useEffectEvent(async (index: number) => {
+	const removeLockedAttribute = useStableCallback(async (index: number) => {
 		const isInUse = await isAttributeUsed();
 		if (showDisclaimer.includes(index)) {
 			return;

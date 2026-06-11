@@ -1,14 +1,18 @@
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
+
+const logger = new Logger('MessageSearch');
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -51,12 +55,24 @@ export const messageSearch = async function (
 
 	const user = (await Users.findOneById(userId)) || undefined;
 
-	const { query, options } = parseMessageSearchQuery(text, {
-		user,
-		offset,
-		limit,
-		forceRegex: settings.get('Message_AlwaysSearchRegExp'),
-	});
+	let parsedQuery: ReturnType<typeof parseMessageSearchQuery>;
+
+	try {
+		parsedQuery = parseMessageSearchQuery(text, {
+			user,
+			offset,
+			limit,
+			forceRegex: settings.get('Message_AlwaysSearchRegExp'),
+		});
+	} catch (error: unknown) {
+		logger.error({ msg: 'Error while parsing message search query', error });
+		if (error instanceof SyntaxError) {
+			return { message: { docs: [] } };
+		}
+		throw error;
+	}
+
+	const { query, options } = parsedQuery;
 
 	if (Object.keys(query).length === 0) {
 		return {
@@ -101,19 +117,25 @@ export const messageSearch = async function (
 		};
 	}
 
-	return {
-		message: {
-			docs: await Messages.find(query, {
-				// @ts-expect-error col.s.db is not typed
-				readPreference: readSecondaryPreferred(Messages.col.s.db),
-				...options,
-			}).toArray(),
-		},
-	};
+	try {
+		return {
+			message: {
+				docs: await Messages.find(query, {
+					// @ts-expect-error col.s.db is not typed
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			},
+		};
+	} catch (error) {
+		logger.error({ msg: 'Error while finding messages', error });
+		throw new Error('error-while-finding-messages', { cause: error });
+	}
 };
 
 Meteor.methods<ServerMethods>({
 	async messageSearch(text, rid, limit, offset) {
+		methodDeprecationLogger.method('messageSearch', '9.0.0', '/v1/chat.search');
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

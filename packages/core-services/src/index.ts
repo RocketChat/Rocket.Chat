@@ -16,11 +16,13 @@ import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
+import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
+import type { ILDAPEEService } from './types/ILDAPEEService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
 import type { IMediaCallService } from './types/IMediaCallService';
@@ -110,6 +112,7 @@ export type {
 	ICreateRoomParams,
 	IDeviceManagementService,
 	IEnterpriseSettings,
+	ILDAPEEService,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -157,6 +160,7 @@ export type {
 	AISearchFilters,
 	AISearchModelOption,
 	AISearchStatus,
+	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
@@ -187,11 +191,13 @@ export const Media = proxify<IMediaService>('media');
 export const MediaCall = proxify<IMediaCallService>('media-call');
 export const Analytics = proxify<IAnalyticsService>('analytics');
 export const LDAP = proxify<ILDAPService>('ldap');
+export const LDAPEnterprise = proxify<ILDAPEEService>('ldap-enterprise');
 export const SAUMonitor = proxify<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxify<IDeviceManagementService>('device-management');
 export const VideoConf = proxify<IVideoConfService>('video-conference');
 export const Upload = proxify<IUploadService>('upload');
 export const Calendar = proxify<ICalendarService>('calendar');
+export const CallHistory = proxify<ICallHistoryService>('call-history');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');

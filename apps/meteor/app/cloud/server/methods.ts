@@ -12,6 +12,7 @@ import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { userLogout } from './functions/userLogout';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,6 +41,7 @@ Meteor.methods<ServerMethods>({
 	 * Prefer using cloud.registrationStatus rest api.
 	 */
 	async 'cloud:checkRegisterStatus'() {
+		methodDeprecationLogger.method('cloud:checkRegisterStatus', '9.0.0', '/v1/cloud.registrationStatus');
 		const uid = Meteor.userId();
 
 		if (!uid) {

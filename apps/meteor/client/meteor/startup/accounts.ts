@@ -2,6 +2,8 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
+import { settings } from '../../lib/settings';
 import { dispatchToastMessage } from '../../lib/toast';
 import { userIdStore } from '../../lib/user';
 import { useUserDataSyncReady } from '../../lib/userData';
@@ -45,6 +47,31 @@ const whenMainReady = (): Promise<void> => {
 		const unsubscribeUserData = useUserDataSyncReady.subscribe(checkAndResolve);
 	});
 };
+
+let configuredStorageBackend: 'local' | 'session' = 'local';
+
+const applyForgetSessionOnWindowClose = (): void => {
+	const forgetSession = Boolean(settings.peek<boolean>(FORGET_SESSION_SETTING_ID) ?? window[FORGET_SESSION_SETTING_ID]);
+
+	const storageBackend = forgetSession ? 'session' : 'local';
+
+	if (configuredStorageBackend === storageBackend) {
+		return;
+	}
+
+	window[FORGET_SESSION_SETTING_ID] = forgetSession;
+	try {
+		getDdpSdk().storage?.changeStorageBackend();
+	} catch (error) {
+		console.warn('[accounts] changeStorageBackend failed', error);
+		return;
+	}
+
+	configuredStorageBackend = storageBackend;
+};
+
+applyForgetSessionOnWindowClose();
+settings.observe(FORGET_SESSION_SETTING_ID, applyForgetSessionOnWindowClose);
 
 getDdpSdk().account.onEmailVerificationLink(async (token: string) => {
 	try {

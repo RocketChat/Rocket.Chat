@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
@@ -40,7 +39,7 @@ const AppsFilters = ({
 	statusFilterStructure,
 	statusFilterOnSelected,
 	context,
-}: AppsFiltersProps): ReactElement => {
+}: AppsFiltersProps) => {
 	const { t } = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
