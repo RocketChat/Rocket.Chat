@@ -1,6 +1,7 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useSettingsDispatch, useSettingStructure } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useEffect, useMemo, useState, useCallback } from 'react';
@@ -41,6 +42,32 @@ function SettingField({ className = undefined, settingId, sectionChanged, render
 				return;
 			}
 
+			if (persistedSetting.alert) {
+				setModal(
+					<GenericModal
+						variant='danger'
+						title={t('Confirm_setting_change')}
+						confirmText={t('Continue')}
+						cancelText={t('Cancel')}
+						onConfirm={() => {
+							dispatch([
+								{
+									_id: persistedSetting._id,
+									...(value !== undefined && { value }),
+									...(editor !== undefined && { editor }),
+								},
+							]);
+							setModal(null);
+						}}
+						onCancel={() => setModal(null)}
+						onClose={() => setModal(null)}
+					>
+						{t(persistedSetting.alert)}
+					</GenericModal>,
+				);
+				return;
+			}
+
 			dispatch([
 				{
 					_id: persistedSetting._id,
@@ -69,19 +96,6 @@ function SettingField({ className = undefined, settingId, sectionChanged, render
 
 	const onChangeValue = useCallback(
 		(newValue: SettingValue) => {
-			if (renderConfirmModal && JSON.stringify(newValue) !== JSON.stringify(value)) {
-				setModal(
-					renderConfirmModal({
-						onConfirm: () => {
-							setValue(newValue);
-							update({ value: newValue });
-							setModal();
-						},
-						onCancel: () => setModal(),
-					}),
-				);
-				return;
-			}
 			setValue(newValue);
 			update({ value: newValue });
 		},
