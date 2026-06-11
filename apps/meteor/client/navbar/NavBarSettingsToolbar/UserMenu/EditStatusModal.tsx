@@ -76,6 +76,8 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 	const duration = useWatch({ control, name: 'duration' });
 	const statusType = useWatch({ control, name: 'statusType' });
 
+	const isStatusFromCall = user?.statusSource === 'internal' || user?.statusSource === 'external';
+
 	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
 	const defaultStatusLabel = `${t(statusType)} (${t('Default')})`;
@@ -228,7 +230,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 							</Box>
 						)}
 						{errors.duration && <FieldError>{errors.duration.message}</FieldError>}
-						<FieldHint>{t('Status_new_status_warning')}</FieldHint>
+						<FieldHint>{t(isStatusFromCall ? 'Status_new_status_warning_after_call' : 'Status_new_status_warning')}</FieldHint>
 					</Field>
 				</Box>
 			</ModalContent>
