@@ -1,7 +1,6 @@
 import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 
 const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
