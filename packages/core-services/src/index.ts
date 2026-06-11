@@ -218,7 +218,7 @@ export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
-export const CronJobsSvc = proxify<ICronJobsService>('cron-jobs');
+export const CronJobs = proxify<ICronJobsService>('cron-jobs');
 export const User = proxify<IUserService>('user');
 export const Push = proxify<IPushService>('push');
 
