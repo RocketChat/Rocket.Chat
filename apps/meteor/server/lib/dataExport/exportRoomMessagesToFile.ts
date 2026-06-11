@@ -231,8 +231,7 @@ export const exportRoomMessages = async (
 		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
 		// handle both new format (msg.files array) and old format (msg.file) for backward compatibility
-		// and filter out thumbnails (typeGroup === 'thumb') to only include actual files
-		const files = (msg.files || (msg.file ? [msg.file] : [])).filter((file) => file && file.typeGroup !== 'thumb');
+		const files = (msg.files || (msg.file ? [msg.file] : [])).filter(Boolean) as FileProp[];
 
 		result.uploads.push(...files);
 		result.messages.push(exportMessageObject(exportType, messageObject, files));
