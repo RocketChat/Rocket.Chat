@@ -38,8 +38,6 @@ async function getApplePublicKeys(forceRefresh = false): Promise<AppleJWK[]> {
 	try {
 		const response = await fetch('https://appleid.apple.com/auth/keys', {
 			method: 'GET',
-			// SECURITY: Hardcoded URL, no SSRF protection needed
-			ignoreSsrfValidation: true,
 		});
 
 		if (!response.ok) {
