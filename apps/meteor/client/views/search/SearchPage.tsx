@@ -111,6 +111,7 @@ const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 				</Box>
 				<MarkdownText
 					content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
+					variant='inline'
 					parseEmoji
 					fontScale='p2'
 					style={{ lineHeight: 1.35, wordBreak: 'break-word' }}
