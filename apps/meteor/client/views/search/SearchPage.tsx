@@ -50,7 +50,7 @@ const getMessageHref = (item: IntelligentResult): string | undefined => {
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
-const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
+export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
 	const href = getMessageHref(item);

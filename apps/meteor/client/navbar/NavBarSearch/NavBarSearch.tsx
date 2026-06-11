@@ -19,7 +19,7 @@ import { buildAppliedFilterChips, emptySearchFilters, extractCompletedSearchFilt
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-const getAISearchButtonTooltip = ({
+export const getAISearchButtonTooltip = ({
 	hasIntelligentSearchLicense,
 	intelligentSearchEnabled,
 	t,

@@ -686,4 +686,71 @@ describe('miscellaneous', () => {
 				.end(done);
 		});
 	});
+
+	describe('[/search.unified]', () => {
+		it('should fail when query param is missing', (done) => {
+			void request
+				.get(api('search.unified'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should return the unified search response shape for authenticated users', (done) => {
+			void request
+				.get(api('search.unified'))
+				.query({
+					query: adminUsername,
+					includeMessages: false,
+					includeIntelligent: true,
+					intelligentCount: 8,
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body).to.have.property('messages').and.to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('intelligent').and.to.be.an('array');
+					expect(res.body).to.have.nested.property('meta.aiSearch');
+					expect(res.body.meta.aiSearch).to.include.keys([
+						'hasIntelligentSearchLicense',
+						'intelligentSearchEnabled',
+						'intelligentSearchConfigured',
+						'answerGenerationConfigured',
+					]);
+				})
+				.end(done);
+		});
+
+		it('should allow suppressing spotlight results while keeping AI Search metadata', (done) => {
+			void request
+				.get(api('search.unified'))
+				.query({
+					query: adminUsername,
+					includeSpotlight: false,
+					includeMessages: false,
+					includeIntelligent: true,
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('messages').and.to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('intelligent').and.to.be.an('array');
+					expect(res.body).to.have.nested.property('meta.aiSearch');
+				})
+				.end(done);
+		});
+	});
 });
