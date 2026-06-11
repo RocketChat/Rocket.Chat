@@ -3,6 +3,7 @@ import { Box, Card, CardBody, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { ExternalLink, useLicenseName } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
+import PlanCardControls from './PlanCardControls';
 import PlanCardHeader from './PlanCardHeader';
 import { useFormatDate } from '../../../../../../hooks/useFormatDate';
 import { useIsSelfHosted } from '../../../../../../hooks/useIsSelfHosted';
@@ -58,6 +59,7 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) =
 				) : (
 					<Skeleton />
 				)}
+				<PlanCardControls />
 			</CardBody>
 		</Card>
 	);

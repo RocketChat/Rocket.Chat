@@ -63,7 +63,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 	const isSmall = useMediaQuery('(min-width: 1180px)');
 
 	return (
-		<Card>
+		<Card height='full'>
 			<CardTitle>{!isEnterprise ? t('Unlock_premium_capabilities') : t('Includes')}</CardTitle>
 			<CardBody>
 				<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>
