@@ -60,60 +60,56 @@ describe('SettingField', () => {
 		});
 	});
 
-	it('should open the confirmation modal instead of dispatching when renderConfirmModal is provided and the value changes', async () => {
+	it('should open the confirmation modal instead of dispatching when the setting has an alert', async () => {
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-		let confirmProps: { onConfirm: () => void; onCancel: () => void } | undefined;
-		const renderConfirmModal = (props: { onConfirm: () => void; onCancel: () => void }) => {
-			confirmProps = props;
-			return <div>confirm modal</div>;
-		};
-
-		render(<SettingField settingId='Test_Setting' renderConfirmModal={renderConfirmModal} />, {
+		render(<SettingField settingId='Test_Setting' />, {
 			wrapper: mockAppRoot()
 				.wrap((children) => <EditableSettingsProvider>{children}</EditableSettingsProvider>)
-				.withSetting('Test_Setting', false, settingStructure)
+				.withSetting('Test_Setting', false, { ...settingStructure, alert: 'Test_Setting_Alert' })
 				.build(),
 		});
 
 		await user.click(screen.getByRole('checkbox'));
 
-		expect(setModalMock).toHaveBeenCalled();
-		expect(dispatchMock).not.toHaveBeenCalled();
-
 		await act(async () => {
-			confirmProps?.onConfirm();
 			jest.runOnlyPendingTimers();
 		});
 
-		await waitFor(() => {
-			expect(dispatchMock).toHaveBeenCalled();
+		expect(setModalMock).toHaveBeenCalled();
+		expect(dispatchMock).not.toHaveBeenCalled();
+
+		const modal = setModalMock.mock.calls[0][0];
+		await act(async () => {
+			modal.props.onConfirm();
 		});
+
+		expect(dispatchMock).toHaveBeenCalledWith([{ _id: 'Test_Setting', value: true }]);
+		expect(setModalMock).toHaveBeenLastCalledWith(null);
 	});
 
 	it('should not dispatch when the confirmation modal is cancelled', async () => {
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-		let confirmProps: { onConfirm: () => void; onCancel: () => void } | undefined;
-		const renderConfirmModal = (props: { onConfirm: () => void; onCancel: () => void }) => {
-			confirmProps = props;
-			return <div>confirm modal</div>;
-		};
-
-		render(<SettingField settingId='Test_Setting' renderConfirmModal={renderConfirmModal} />, {
+		render(<SettingField settingId='Test_Setting' />, {
 			wrapper: mockAppRoot()
 				.wrap((children) => <EditableSettingsProvider>{children}</EditableSettingsProvider>)
-				.withSetting('Test_Setting', false, settingStructure)
+				.withSetting('Test_Setting', false, { ...settingStructure, alert: 'Test_Setting_Alert' })
 				.build(),
 		});
 
 		await user.click(screen.getByRole('checkbox'));
 
 		await act(async () => {
-			confirmProps?.onCancel();
 			jest.runOnlyPendingTimers();
 		});
 
+		const modal = setModalMock.mock.calls[0][0];
+		await act(async () => {
+			modal.props.onCancel();
+		});
+
 		expect(dispatchMock).not.toHaveBeenCalled();
+		expect(setModalMock).toHaveBeenLastCalledWith(null);
 	});
 });
