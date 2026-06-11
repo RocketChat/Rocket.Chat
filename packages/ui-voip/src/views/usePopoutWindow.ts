@@ -39,10 +39,12 @@ const changeTheme = (ownerDocument: Document, theme?: string) => {
 
 const openExternalWindow = async (title: string, theme: string) => {
 	try {
-		const externalWindow = window.open(`/voice-call-popup.html${theme ? `?theme=${theme}` : ''}`, title, 'width=800,height=500,popup');
+		const externalWindow = window.open(`/voice-call-popup.html`, title, 'width=800,height=500,popup');
 		if (!externalWindow) {
 			throw new Error('No window was opened');
 		}
+
+		changeTheme(externalWindow.document, theme);
 
 		const root = await createRootElement(externalWindow);
 		return { root, externalWindow };
