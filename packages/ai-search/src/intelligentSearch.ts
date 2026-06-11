@@ -6,6 +6,7 @@ import type {
 	IntelligentSearchPipelineFilters,
 	IntelligentSearchPipelineRequest,
 } from './types';
+import { trimTrailingSlashes } from './url';
 
 type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
 
@@ -203,7 +204,7 @@ export const searchIntelligentPipeline = async ({
 }: IntelligentSearchPipelineRequest): Promise<unknown> => {
 	const minimumSimilarity = normalizeSimilarityPercent(config.minimumSimilarityPercent);
 	const formattedQuery = config.queryTemplate ? config.queryTemplate.replace('{query}', query) : query;
-	const url = `${config.baseUrl.replace(/\/+$/, '')}/pipelines/${encodeURIComponent(config.pipelineId)}/search`;
+	const url = `${trimTrailingSlashes(config.baseUrl)}/pipelines/${encodeURIComponent(config.pipelineId)}/search`;
 
 	logger?.debug?.({
 		msg: 'Intelligent search request',

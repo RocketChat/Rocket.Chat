@@ -1,4 +1,5 @@
 import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, SearchAnswerMessage, SearchAnswerResult } from './types';
+import { trimTrailingSlashes } from './url';
 
 export const buildSearchAnswerPrompt = (
 	query: string,
@@ -44,7 +45,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 	maxMessages: number;
 	maxTextLength: number;
 }): Promise<SearchAnswerResult> => {
-	const response = await fetch(`${provider.baseUrl.replace(/\/+$/, '')}/chat/completions`, {
+	const response = await fetch(`${trimTrailingSlashes(provider.baseUrl)}/chat/completions`, {
 		method: 'POST',
 		timeout: 20000,
 		ignoreSsrfValidation: true,
@@ -95,7 +96,7 @@ export const listOpenAICompatibleModels = async ({
 	}
 
 	try {
-		const response = await fetch(`${provider.baseUrl.replace(/\/+$/, '')}/models`, {
+		const response = await fetch(`${trimTrailingSlashes(provider.baseUrl)}/models`, {
 			method: 'GET',
 			timeout: 10000,
 			ignoreSsrfValidation: true,
