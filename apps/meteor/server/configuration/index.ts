@@ -12,6 +12,7 @@ import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import './videoConference';
 
 export async function configureServer(settings: ICachedSettings) {
 	await Promise.all([

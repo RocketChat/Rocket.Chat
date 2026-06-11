@@ -18,6 +18,7 @@ const ACCEPT_TIMEOUT = 5000;
 type IncomingDirectCall = DirectCallParams & {
 	timeout: ReturnType<typeof setTimeout> | undefined;
 	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
+	isGroupCall?: boolean;
 };
 
 type CurrentCallParams = {
@@ -181,6 +182,16 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 		if (callData.acceptTimeout) {
 			this.debugLog(`[VideoConf] We're already trying to accept call ${callId}.`);
+			return;
+		}
+
+		// Group calls (ring action): skip the accepted→confirmed handshake and join directly.
+		// The creator does not participate in the accept/confirm protocol for group rings.
+		if (callData.isGroupCall) {
+			this.debugLog(`[VideoConf] Accepting group call ${callId}, joining directly.`);
+			this.dismissIncomingCall(callId);
+			this.removeIncomingCall(callId);
+			void this.joinCall(callId);
 			return;
 		}
 
@@ -501,6 +512,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		switch (action) {
 			case 'call':
 				return this.onDirectCall(params);
+			case 'ring':
+				return this.onGroupCallRing(params);
 			case 'canceled':
 				return this.onDirectCallCanceled(params);
 			case 'accepted':
@@ -579,7 +592,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT);
 	}
 
-	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams): void {
+	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams, isGroupCall = false): void {
 		if (this.isCallDismissed(callId)) {
 			this.debugLog(`[VideoConf] Ignoring dismissed call.`);
 			return;
@@ -593,6 +606,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			callId,
 			uid,
 			rid,
+			isGroupCall,
 			timeout: this.createAbortTimeout(callId),
 		});
 
@@ -615,6 +629,19 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		if (!this.isCallDismissed(callId)) {
 			this.emit('direct/ringing', { callId, uid, rid });
+		}
+	}
+
+	private onGroupCallRing({ callId, uid, rid }: DirectCallParams): void {
+		if (this.incomingDirectCalls.get(callId)?.acceptTimeout) {
+			return;
+		}
+
+		this.infoLog(`[VideoConf] Group call ${callId} is ringing.`);
+		if (this.incomingDirectCalls.has(callId)) {
+			this.refreshExistingIncomingCall({ callId, uid, rid });
+		} else {
+			this.startNewIncomingCall({ callId, uid, rid }, true);
 		}
 	}
 
