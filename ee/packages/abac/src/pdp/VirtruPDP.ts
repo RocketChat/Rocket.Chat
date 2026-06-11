@@ -75,7 +75,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				timeout: HEALTH_CHECK_TIMEOUT,
 				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
 				body: JSON.stringify({
-					entityIdentifier: { entityChain: { entities: [{ id: config.clientId }] } },
+					entityIdentifier: { entityChain: { entities: [{ id: 'health-check', clientId: config.clientId }] } },
 				}),
 				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
