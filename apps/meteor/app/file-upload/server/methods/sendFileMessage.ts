@@ -73,7 +73,7 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
-			description: file?.description,
+			image_alt: file?.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,
