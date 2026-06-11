@@ -287,5 +287,185 @@ describe('FileUpload', () => {
 			expect(result).to.be.true;
 			expect(validateAndDecodeJWTStub.calledOnceWith('valid-token', 'test-secret')).to.be.true;
 		});
+
+		describe('livechat room-based authorization (rc_room_type=l)', () => {
+			it('should allow access when livechat credentials are valid and file belongs to the same room', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(true);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/test-file-id/test-file.png?rc_room_type=l&rc_rid=room-1&rc_token=visitor-token',
+				} as any;
+
+				const file = { _id: 'test-file-id', rid: 'room-1' } as any;
+
+				const result = await FileUpload.requestCanAccessFiles(request, file);
+				expect(result).to.be.true;
+				expect(canAccessUploadedFileStub.calledOnce).to.be.true;
+			});
+
+			it('should deny access when livechat credentials are valid but file belongs to a different room', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(false);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/victim-file-id/secret.txt?rc_room_type=l&rc_rid=room-attacker&rc_token=attacker-token',
+				} as any;
+
+				// File belongs to victim's room, not the attacker's room
+				const file = { _id: 'victim-file-id', rid: 'room-victim' } as any;
+
+				const result = await FileUpload.requestCanAccessFiles(request, file);
+				expect(result).to.be.false;
+			});
+
+			it('should pass the file object to canAccessUploadedFile', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(true);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/test-file-id/test-file.png?rc_room_type=l&rc_rid=room-1&rc_token=visitor-token',
+				} as any;
+
+				const file = { _id: 'test-file-id', rid: 'room-1' } as any;
+
+				await FileUpload.requestCanAccessFiles(request, file);
+
+				const callArgs = canAccessUploadedFileStub.firstCall.args;
+				expect(callArgs[1]).to.deep.equal(file);
+			});
+
+			it('should deny access when rc_room_type is provided but canAccessUploadedFile returns false', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(false);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/test-file-id/test-file.png?rc_room_type=l&rc_rid=room-1&rc_token=invalid-token',
+				} as any;
+
+				const file = { _id: 'test-file-id', rid: 'room-1' } as any;
+
+				const result = await FileUpload.requestCanAccessFiles(request, file);
+				expect(result).to.be.false;
+			});
+		});
+	});
+
+	describe('getRequestUserId', () => {
+		it('should return undefined when no url is provided', async () => {
+			const request = { headers: {}, url: undefined } as any;
+
+			const result = await FileUpload.getRequestUserId(request);
+			expect(result).to.be.undefined;
+			expect(usersModelStub.findOneByIdAndLoginToken.called).to.be.false;
+		});
+
+		it('should return undefined when no credentials are provided', async () => {
+			const request = { headers: {}, url: '/ufs/UserDataFiles/file-id' } as any;
+
+			const result = await FileUpload.getRequestUserId(request);
+			expect(result).to.be.undefined;
+			expect(usersModelStub.findOneByIdAndLoginToken.called).to.be.false;
+		});
+
+		it('should return undefined when a uid is provided without a token', async () => {
+			const request = { headers: { 'x-user-id': 'user-1' }, url: '/ufs/UserDataFiles/file-id' } as any;
+
+			const result = await FileUpload.getRequestUserId(request);
+			expect(result).to.be.undefined;
+			expect(usersModelStub.findOneByIdAndLoginToken.called).to.be.false;
+		});
+
+		it('should return undefined when the login token is invalid', async () => {
+			usersModelStub.findOneByIdAndLoginToken.resolves(null);
+
+			const request = { headers: { 'x-user-id': 'user-1', 'x-auth-token': 'bad-token' }, url: '/ufs/UserDataFiles/file-id' } as any;
+
+			const result = await FileUpload.getRequestUserId(request);
+			expect(result).to.be.undefined;
+			expect(usersModelStub.findOneByIdAndLoginToken.calledOnceWith('user-1', 'hashed_bad-token')).to.be.true;
+		});
+
+		it('should return the user id when credentials are valid via headers', async () => {
+			usersModelStub.findOneByIdAndLoginToken.resolves({ _id: 'user-1' });
+
+			const request = { headers: { 'x-user-id': 'user-1', 'x-auth-token': 'good-token' }, url: '/ufs/UserDataFiles/file-id' } as any;
+
+			const result = await FileUpload.getRequestUserId(request);
+			expect(result).to.equal('user-1');
+			expect(usersModelStub.findOneByIdAndLoginToken.calledOnceWith('user-1', 'hashed_good-token')).to.be.true;
+		});
+
+		it('should return the user id when credentials are valid via query string', async () => {
+			usersModelStub.findOneByIdAndLoginToken.resolves({ _id: 'user-1' });
+
+			const request = { headers: {}, url: '/ufs/UserDataFiles/file-id?rc_uid=user-1&rc_token=good-token' } as any;
+
+			const result = await FileUpload.getRequestUserId(request);
+			expect(result).to.equal('user-1');
+			expect(usersModelStub.findOneByIdAndLoginToken.calledOnceWith('user-1', 'hashed_good-token')).to.be.true;
+		});
+	});
+
+	describe('UserDataFiles.onRead', () => {
+		// eslint-disable-next-line new-cap
+		const getOnRead = () => FileUpload.defaults.UserDataFiles().onRead;
+
+		const createResponse = () => {
+			const res = { writeHead: sinon.stub(), setHeader: sinon.stub() };
+			res.writeHead.returns(res);
+			return res as any;
+		};
+
+		it('should deny access to an unauthenticated request', async () => {
+			const res = createResponse();
+			const file = { _id: 'file-id', userId: 'owner-1', name: 'export.zip' } as any;
+			const request = { headers: {}, url: '/ufs/UserDataFiles/file-id' } as any;
+
+			const result = await getOnRead()('file-id', file, request, res);
+			expect(result).to.be.false;
+			expect(res.writeHead.calledOnceWith(403)).to.be.true;
+			expect(res.setHeader.called).to.be.false;
+		});
+
+		it('should deny access to an authenticated user who is not the owner', async () => {
+			usersModelStub.findOneByIdAndLoginToken.resolves({ _id: 'attacker-1' });
+
+			const res = createResponse();
+			const file = { _id: 'file-id', userId: 'owner-1', name: 'export.zip' } as any;
+			const request = {
+				headers: { 'x-user-id': 'attacker-1', 'x-auth-token': 'attacker-token' },
+				url: '/ufs/UserDataFiles/file-id',
+			} as any;
+
+			const result = await getOnRead()('file-id', file, request, res);
+			expect(result).to.be.false;
+			expect(res.writeHead.calledOnceWith(403)).to.be.true;
+			expect(res.setHeader.called).to.be.false;
+		});
+
+		it('should allow access to the owner of the export', async () => {
+			usersModelStub.findOneByIdAndLoginToken.resolves({ _id: 'owner-1' });
+
+			const res = createResponse();
+			const file = { _id: 'file-id', userId: 'owner-1', name: 'export.zip' } as any;
+			const request = {
+				headers: { 'x-user-id': 'owner-1', 'x-auth-token': 'owner-token' },
+				url: '/ufs/UserDataFiles/file-id',
+			} as any;
+
+			const result = await getOnRead()('file-id', file, request, res);
+			expect(result).to.be.true;
+			expect(res.writeHead.called).to.be.false;
+			expect(res.setHeader.calledOnceWith('content-disposition', 'attachment; filename="export.zip"')).to.be.true;
+		});
 	});
 });
