@@ -111,7 +111,12 @@ describe('Presence class', () => {
 				statusExpiresAt: expiresAt,
 			});
 
-			expect(updatePresenceMock).toHaveBeenCalledWith('u1', expect.objectContaining({ statusExpiresAt: expiresAt }), undefined, undefined);
+			expect(updatePresenceMock).toHaveBeenCalledWith(
+				'u1',
+				expect.objectContaining({ statusExpiresAt: expiresAt }),
+				expect.arrayContaining(['previousState']),
+				undefined,
+			);
 		});
 	});
 

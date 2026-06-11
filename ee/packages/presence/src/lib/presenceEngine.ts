@@ -95,16 +95,21 @@ function resolveIntent(
 	const currentPriority = user.statusSource ? PRIORITY[user.statusSource] : NO_PRIORITY;
 	const newPriority = newState.statusSource ? PRIORITY[newState.statusSource] : NO_PRIORITY;
 
-	// higher priority -> save current as previous and apply new
+	// a manual claim is the user's explicit intent: when it wins it doesn't stash the
+	// displaced claim and clears any queued one, so it never gets auto-reverted.
+	const isManual = newState.statusSource === 'manual';
+
+	// higher priority -> apply new; stash displaced claim unless the new claim is manual
 	if (newPriority < currentPriority) {
-		const previousState = user.statusSource
-			? {
-					statusDefault: currentStatusDefault,
-					statusText: user.statusText ?? '',
-					statusSource: user.statusSource,
-					statusExpiresAt: user.statusExpiresAt,
-				}
-			: undefined;
+		const previousState =
+			!isManual && user.statusSource
+				? {
+						statusDefault: currentStatusDefault,
+						statusText: user.statusText ?? '',
+						statusSource: user.statusSource,
+						statusExpiresAt: user.statusExpiresAt,
+					}
+				: undefined;
 
 		return {
 			set: {
@@ -114,11 +119,11 @@ function resolveIntent(
 				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
 				...(previousState && { previousState }),
 			},
-			unset: fieldsToUnset(newState),
+			unset: fieldsToUnset(newState, isManual ? ['previousState'] : []),
 		};
 	}
 
-	// same priority -> overwrite and keep previous
+	// same priority -> overwrite; manual also drops any queued previous
 	if (newPriority === currentPriority) {
 		return {
 			set: {
@@ -127,7 +132,7 @@ function resolveIntent(
 				...(newState.statusText != null && { statusText: newState.statusText }),
 				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
 			},
-			unset: fieldsToUnset(newState),
+			unset: fieldsToUnset(newState, isManual ? ['previousState'] : []),
 		};
 	}
 

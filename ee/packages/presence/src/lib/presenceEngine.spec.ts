@@ -163,7 +163,7 @@ describe('processPresence', () => {
 			expect(result.values).toStrictEqual({});
 		});
 
-		test('should apply higher priority over external and save external as previousState', () => {
+		test('should apply manual over external without stashing the displaced claim', () => {
 			const result = processPresence(
 				user({ statusSource: 'external', statusDefault: UserStatus.BUSY, statusText: 'In a meeting' }),
 				[session()],
@@ -171,7 +171,39 @@ describe('processPresence', () => {
 			);
 			expect(result.values.statusSource).toBe('manual');
 			expect(result.values.statusText).toBe('Focusing');
-			expect(result.values.previousState).toMatchObject({ statusSource: 'external', statusText: 'In a meeting' });
+			expect(result.values.previousState).toBeUndefined();
+			expect(result.clear).toContain('previousState');
+		});
+
+		test('should drop a queued previousState when a manual claim wins', () => {
+			const result = processPresence(
+				user({
+					statusSource: 'external',
+					statusDefault: UserStatus.BUSY,
+					statusText: 'In a meeting',
+					previousState: { statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'manual' },
+				}),
+				[session()],
+				{ type: 'setActive', newState: { statusDefault: UserStatus.BUSY, statusText: 'Focusing', statusSource: 'manual' } },
+			);
+			expect(result.values.statusSource).toBe('manual');
+			expect(result.values.previousState).toBeUndefined();
+			expect(result.clear).toContain('previousState');
+		});
+
+		test('should clear a queued previousState when overwriting a same-source manual claim', () => {
+			const result = processPresence(
+				user({
+					statusSource: 'manual',
+					statusDefault: UserStatus.BUSY,
+					statusText: 'Focusing',
+					previousState: { statusDefault: UserStatus.AWAY, statusText: 'Lunch', statusSource: 'external' },
+				}),
+				[session()],
+				{ type: 'setActive', newState: { statusDefault: UserStatus.AWAY, statusText: 'Heads down', statusSource: 'manual' } },
+			);
+			expect(result.values.statusText).toBe('Heads down');
+			expect(result.clear).toContain('previousState');
 		});
 	});
 
