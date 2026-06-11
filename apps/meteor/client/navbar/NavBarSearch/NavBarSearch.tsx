@@ -4,7 +4,7 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -17,24 +17,40 @@ import { useSearchFocus } from './hooks/useSearchFocus';
 import type { NavBarSearchFormValues } from './hooks/useSearchItems';
 import { buildAppliedFilterChips, emptySearchFilters, extractCompletedSearchFilters, mergeSearchFilters } from './hooks/useSearchItems';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
-import { getURL } from '../../../app/utils/client/getURL';
-import GenericUpsellModal from '../../components/GenericUpsellModal';
-import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+
+const getAISearchButtonTooltip = ({
+	hasIntelligentSearchLicense,
+	intelligentSearchEnabled,
+	t,
+}: {
+	hasIntelligentSearchLicense: boolean;
+	intelligentSearchEnabled: unknown;
+	t: ReturnType<typeof useTranslation>['t'];
+}): string => {
+	if (!hasIntelligentSearchLicense) {
+		return t('AI_Search_license_required_tooltip');
+	}
+
+	if (!intelligentSearchEnabled) {
+		return t('AI_Search_disabled_tooltip');
+	}
+
+	return t('Search_with_AI');
+};
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
-	const setModal = useSetModal();
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
-	const { handleTalkToSales } = useUpsellActions(hasIntelligentSearchLicense);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const canSearchWithAIFromTopBar = Boolean(canUseAISearch && intelligentSearchEnabled);
 	const [aiSearchRequested, setAISearchRequested] = useState(false);
 	const aiSearchActive = Boolean(aiSearchRequested && canSearchWithAIFromTopBar);
+	const aiSearchButtonTooltip = getAISearchButtonTooltip({ hasIntelligentSearchLicense, intelligentSearchEnabled, t });
 
 	const searchLabel = canSearchWithAIFromTopBar ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
@@ -116,28 +132,14 @@ const NavBarSearch = () => {
 	);
 
 	const handleIntelligentSearchClick = useCallback(() => {
-		if (hasIntelligentSearchLicense) {
-			setAISearchRequested((current) => !current);
-			state.open();
-			setFocus('filterText');
+		if (!canSearchWithAIFromTopBar) {
 			return;
 		}
 
-		setModal(
-			<GenericUpsellModal
-				aria-label={t('Intelligent_Search')}
-				title={t('Intelligent_Search')}
-				img={getURL('images/abac-upsell-modal.svg')}
-				subtitle={t('Intelligent_Search_upsell_modal_subtitle')}
-				description={t('Intelligent_Search_upsell_modal_description')}
-				confirmText={t('Contact_sales')}
-				onClose={() => setModal(null)}
-				onConfirm={handleTalkToSales}
-				onCancel={() => setModal(null)}
-				imgHeight={256}
-			/>,
-		);
-	}, [handleTalkToSales, hasIntelligentSearchLicense, setFocus, setModal, state, t]);
+		setAISearchRequested((current) => !current);
+		state.open();
+		setFocus('filterText');
+	}, [canSearchWithAIFromTopBar, setFocus, state]);
 
 	useEffect(() => {
 		if (canSearchWithAIFromTopBar || !aiSearchRequested) {
@@ -238,8 +240,8 @@ const NavBarSearch = () => {
 									mini
 									icon='stars'
 									pressed={aiSearchActive}
-									aria-label={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Intelligent_Search_locked')}
-									title={hasIntelligentSearchLicense ? t('Search_with_AI') : t('Contact_sales_for_Intelligent_Search')}
+									aria-label={aiSearchButtonTooltip}
+									title={aiSearchButtonTooltip}
 									onClick={handleIntelligentSearchClick}
 								/>
 							)}
