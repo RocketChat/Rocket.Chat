@@ -2897,7 +2897,7 @@
   "LDAP_Sync_Now_Description": "将立即执行 **后台同步**，而不是等待 **同步间隔**，即使 **后台同步** 为 False。  \n 此操作是异步的，请参阅日志以获取有关处理",
   "LDAP_Sync_User_Active_State": "同步用户激活状态",
   "LDAP_Sync_User_Active_State_Both": "启用和禁用用户",
-  "LDAP_Sync_User_Active_State_Description": "根据 LDAP 状态确定用户在 Rocket.Chat 应该启用还是禁用。其中`pwdAccountLockedTime`属性将会被用于确认用户是否被禁用。",
+  "LDAP_Sync_User_Active_State_Description": "根据 LDAP 状态确定用户在 Rocket.Chat 应该启用还是禁用。",
   "LDAP_Sync_User_Active_State_Disable": "禁用用户",
   "LDAP_Sync_User_Active_State_Enable": "启用用户",
   "LDAP_Sync_User_Active_State_Nothing": "什么也不做",

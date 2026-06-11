@@ -2069,7 +2069,7 @@
   "LDAP_Sync_Now_Description": "Hierdoor wordt nu een **Achtergrondsynchronisatie**-operatie gestart, zonder op de volgende geplande synchronisatie te wachten.  \nDeze actie is asynchroon, zie de logs voor meer informatie.",
   "LDAP_Sync_User_Active_State": "Synchroniseer de actieve status van de gebruiker",
   "LDAP_Sync_User_Active_State_Both": "Schakel gebruikers in en uit",
-  "LDAP_Sync_User_Active_State_Description": "Bepaal of gebruikers moeten worden in- of uitgeschakeld op Rocket.Chat op basis van de LDAP-status. Het kenmerk 'pwdAccountLockedTime' wordt gebruikt om te bepalen of de gebruiker is uitgeschakeld.",
+  "LDAP_Sync_User_Active_State_Description": "Bepaal of gebruikers moeten worden in- of uitgeschakeld op Rocket.Chat op basis van de LDAP-status.",
   "LDAP_Sync_User_Active_State_Disable": "Schakel gebruikers uit",
   "LDAP_Sync_User_Active_State_Nothing": "Niets doen",
   "LDAP_Sync_User_Avatar": "Synchroniseer gebruikersavatar",

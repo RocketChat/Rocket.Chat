@@ -2992,7 +2992,7 @@
   "LDAP_Sync_Now_Description": "This will start a **Background Sync** operation now, without waiting for the next scheduled Sync.  \nThis action is asynchronous, please see the logs for more information.",
   "LDAP_Sync_User_Active_State": "Sync User Active State",
   "LDAP_Sync_User_Active_State_Both": "Enable and Disable Users",
-  "LDAP_Sync_User_Active_State_Description": "Determine if users should be enabled or disabled on Rocket.Chat based on the LDAP status. The 'pwdAccountLockedTime' attribute will be used to determine if the user is disabled.",
+  "LDAP_Sync_User_Active_State_Description": "Determine if users should be enabled or disabled on Rocket.Chat based on the LDAP status.",
   "LDAP_Sync_User_Active_State_Disable": "Disable Users",
   "LDAP_Sync_User_Active_State_Enable": "Enable Users",
   "LDAP_Sync_User_Active_State_Nothing": "Do Nothing",
