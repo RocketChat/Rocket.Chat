@@ -1,21 +1,31 @@
 import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
-import { useMethod, useStream } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEndpoint, useMethod, useStream } from '@rocket.chat/ui-contexts';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { getConfig } from '../../../../../lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import {
 	createDeleteCriteria,
 	markThreadMessagesAsRead,
 	mergeThreadMessages,
+	mutateThreadMessagesInfiniteData,
+	type ThreadMessagesInfiniteData,
 	upsertThreadMessageInCache,
 } from '../../../../../lib/utils/threadMessageUtils';
 import { useRoom } from '../../../contexts/RoomContext';
 
 const processMessages = async (messages: IMessage[]): Promise<IMessage[]> => {
 	return Promise.all(messages.map((msg) => onClientMessageReceived(msg)));
+};
+
+const filterThreadMessages = (messages: IMessage[], tmid: IThreadMainMessage['_id']): IThreadMessage[] => {
+	return messages
+		.map((m) => mapMessageFromApi(m))
+		.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);
 };
 
 export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IRoom['_id']) => {
@@ -31,6 +41,8 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 
 	const unprocessedReadMessagesEvent = useRef<{ tmid: string; until: Date } | null>(null);
 
+	const count = parseInt(`${getConfig('threadMessagesSize', 50)}`, 10);
+
 	useEffect(() => {
 		const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 
@@ -44,32 +56,30 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${roomId}/deleteMessage`, (event) => {
-			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
-				if (!old) {
-					return old;
+			mutateThreadMessagesInfiniteData(queryClient, currentQueryKey, (messages) => {
+				const index = messages.findIndex((m) => m._id === event._id);
+				if (index !== -1) {
+					messages.splice(index, 1);
 				}
-				return old.filter((m) => m._id !== event._id);
 			});
 		});
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${roomId}/deleteMessageBulk`, (bulkParams) => {
 			const matchDeleteCriteria = createDeleteCriteria(bulkParams);
 
-			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
-				if (!old) {
-					return old;
-				}
-
+			mutateThreadMessagesInfiniteData(queryClient, currentQueryKey, (messages) => {
 				if (bulkParams.filesOnly) {
-					return old.map((msg) => {
+					for (let index = 0; index < messages.length; index++) {
+						const msg = messages[index];
 						if (matchDeleteCriteria(msg)) {
-							return modifyMessageOnFilesDelete(msg, bulkParams.replaceFileAttachmentsWith);
+							messages[index] = modifyMessageOnFilesDelete(msg, bulkParams.replaceFileAttachmentsWith);
 						}
-						return msg;
-					});
+					}
+					return;
 				}
 
-				return old.filter((msg) => !matchDeleteCriteria(msg));
+				const filtered = messages.filter((msg) => !matchDeleteCriteria(msg));
+				messages.splice(0, messages.length, ...filtered);
 			});
 		});
 
@@ -84,11 +94,9 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 				return;
 			}
 
-			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
-				if (!old) {
-					return old;
-				}
-				return markThreadMessagesAsRead(old, until);
+			mutateThreadMessagesInfiniteData(queryClient, currentQueryKey, (messages) => {
+				const updated = markThreadMessagesAsRead(messages, until);
+				messages.splice(0, messages.length, ...updated);
 			});
 		});
 
@@ -100,23 +108,49 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		};
 	}, [tmid, roomId, queryClient, subscribeToRoomMessages, subscribeToNotifyRoom]);
 
-	return useQuery({
+	return useInfiniteQuery({
 		queryKey,
-		queryFn: async () => {
-			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
+		queryFn: async ({ pageParam: offset }) => {
+			if (offset === 0) {
+				void Promise.resolve(readThreads(tmid)).catch(() => undefined);
+			}
 
-			const messages = await getThreadMessages({ tmid });
-			const filtered = messages.filter(
-				(msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true,
-			);
+			const cachedData = offset === 0 ? queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey) : undefined;
+			const cachedMessages = cachedData?.pages[0]?.items ?? [];
 
-			const sorted = mergeThreadMessages(cachedMessages, filtered);
-			if (unprocessedReadMessagesEvent.current) {
+			const { messages, total } = await getThreadMessages({
+				tmid,
+				offset,
+				count,
+				sort: JSON.stringify({ ts: 1 }),
+			});
+
+			let filtered = filterThreadMessages(messages, tmid);
+			if (offset === 0) {
+				filtered = mergeThreadMessages(cachedMessages, filtered);
+			}
+
+			if (offset === 0 && unprocessedReadMessagesEvent.current) {
 				const { until } = unprocessedReadMessagesEvent.current;
 				unprocessedReadMessagesEvent.current = null;
-				return processMessages(markThreadMessagesAsRead(sorted, until)) as Promise<Array<IThreadMessage>>;
+				filtered = markThreadMessagesAsRead(filtered, until);
 			}
-			return processMessages(sorted) as Promise<Array<IThreadMessage>>;
+
+			const processed = (await processMessages(filtered)) as IThreadMessage[];
+
+			return {
+				items: processed,
+				itemCount: total,
+			};
 		},
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
+			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
+		},
+		select: ({ pages }) => ({
+			messages: pages.flatMap((page) => page.items),
+			itemCount: pages.at(-1)?.itemCount ?? 0,
+		}),
 	});
 };

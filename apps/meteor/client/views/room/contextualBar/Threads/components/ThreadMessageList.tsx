@@ -1,5 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
@@ -11,6 +12,7 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
 import { useMergedRefsV2 } from '../../../../../hooks/useMergedRefsV2';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
@@ -61,7 +63,18 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
 
-	const { data: messages = [], isLoading: loading } = useThreadMessagesQuery(mainMessage._id);
+	const { data, isLoading: loading, fetchNextPage, hasNextPage, isFetchingNextPage } = useThreadMessagesQuery(mainMessage._id);
+	const messages = data?.messages ?? [];
+
+	const loadMoreMessages = useDebouncedCallback(
+		() => {
+			if (hasNextPage && !isFetchingNextPage) {
+				void fetchNextPage();
+			}
+		},
+		100,
+		[hasNextPage, isFetchingNextPage, fetchNextPage],
+	);
 
 	const room = useRoom();
 	const uid = useUserId();
@@ -88,6 +101,19 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			}
 		});
 	}, [messagesLength, setKeepAtBottom, msgJumpParam]);
+
+	useEffect(() => {
+		if (loading || isFetchingNextPage || !hasNextPage || !msgJumpParam) {
+			return;
+		}
+		if (msgJumpParam === mainMessage._id) {
+			return;
+		}
+		if (messages.some((message) => message._id === msgJumpParam)) {
+			return;
+		}
+		void fetchNextPage();
+	}, [loading, isFetchingNextPage, hasNextPage, msgJumpParam, messages, mainMessage._id, fetchNextPage]);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef);
 
@@ -215,7 +241,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						ref={virtualizerRef}
 						style={{ height: '100%' }}
 						aria-label={t('Thread_message_list')}
-						aria-busy={loading}
+						aria-busy={loading || isFetchingNextPage}
 						role='list'
 						keepMounted={keepMountedMessages}
 						onScroll={(offset) => {
@@ -259,6 +285,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								);
 							})
 						)}
+						{!loading && hasNextPage ? (
+							<li className='load-more'>
+								{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
+							</li>
+						) : null}
 					</VList>
 				</MessageListProvider>
 			</CustomVirtuaScrollbars>

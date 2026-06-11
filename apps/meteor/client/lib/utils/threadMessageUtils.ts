@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import type { QueryClient } from '@tanstack/react-query';
+import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import type { Condition, Filter } from 'mongodb';
 
 import { queryClient as defaultQueryClient } from '../queryClient';
@@ -47,6 +47,48 @@ export const createDeleteCriteria = (params: NotifyRoomRidDeleteBulkEvent): ((me
 	return createPredicateFromFilter(query);
 };
 
+export type ThreadMessagesPage = {
+	items: IThreadMessage[];
+	itemCount: number;
+};
+
+export type ThreadMessagesInfiniteData = InfiniteData<ThreadMessagesPage, number>;
+
+export const mutateThreadMessagesInfiniteData = (
+	client: QueryClient,
+	queryKey: readonly unknown[],
+	mutation: (messages: IThreadMessage[]) => void,
+): void => {
+	client.setQueryData<ThreadMessagesInfiniteData>(queryKey, (old) => {
+		if (!old?.pages.length) {
+			return old;
+		}
+
+		const items = old.pages.flatMap((page) => page.items);
+		const lastPage = old.pages.at(-1) ?? { items: [], itemCount: 0 };
+
+		const beforeMutationItemsLength = items.length;
+		mutation(items);
+		const afterMutationItemsLength = items.length;
+
+		const pageSize = lastPage.items.length || items.length;
+		if (pageSize === 0) {
+			return old;
+		}
+
+		const newPageCount = Math.ceil(items.length / pageSize);
+		const itemCountDelta = beforeMutationItemsLength - afterMutationItemsLength;
+
+		return {
+			pages: Array.from({ length: newPageCount }, (_, pageIndex) => ({
+				items: items.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+				itemCount: lastPage.itemCount - itemCountDelta,
+			})),
+			pageParams: Array.from({ length: newPageCount }, (_, pageIndex) => pageIndex * pageSize),
+		};
+	});
+};
+
 export const upsertThreadMessageInCache = (
 	message: IMessage,
 	rid: IMessage['rid'],
@@ -54,17 +96,24 @@ export const upsertThreadMessageInCache = (
 	client: QueryClient = defaultQueryClient,
 ): void => {
 	const queryKey = roomsQueryKeys.threadMessages(rid, tmid);
-	client.setQueryData<IMessage[]>(queryKey, (old) => {
-		if (!old) {
-			return [message];
-		}
-		const idx = old.findIndex((m) => m._id === message._id);
+
+	if (!client.getQueryData<ThreadMessagesInfiniteData>(queryKey)) {
+		client.setQueryData<ThreadMessagesInfiniteData>(queryKey, {
+			pages: [{ items: [message as IThreadMessage], itemCount: 1 }],
+			pageParams: [0],
+		});
+		return;
+	}
+
+	mutateThreadMessagesInfiniteData(client, queryKey, (messages) => {
+		const idx = messages.findIndex((m) => m._id === message._id);
 		if (idx >= 0) {
-			const updated = [...old];
-			updated[idx] = message;
-			return updated;
+			messages[idx] = message as IThreadMessage;
+			return;
 		}
-		return [...old, message].sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
+
+		messages.push(message as IThreadMessage);
+		messages.sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 	});
 };
 
