@@ -11,7 +11,10 @@ import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { useMergedRefsV2 } from '../../../../../hooks/useMergedRefsV2';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
+import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
@@ -71,7 +74,23 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const { messageListRef } = useMessageListNavigation();
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
-	const isAtBottom = useRef(true);
+	const isAtBottom = useRef<boolean | null>(null);
+
+	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
+	const messagesLength = messages.length;
+	useEffect(() => {
+		setKeepAtBottom(() => {
+			if (virtualizerRef.current) {
+				virtualizerRef.current.scrollToIndex(messagesLength + 1, {
+					align: 'end',
+				});
+			}
+		});
+	}, [messagesLength, setKeepAtBottom]);
+
+	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef);
+
+	const lastScrollSizeRef = useRef(0);
 
 	const items = loading ? [] : [mainMessage, ...messages];
 
@@ -101,6 +120,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			setShouldJumpToBottom(false);
 			return;
 		}
+		if (isAtBottom.current === true && lastScrollSizeRef.current !== handle?.scrollSize) {
+			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
+			setShouldJumpToBottom(true);
+		}
 		if (shouldJumpToBottom) {
 			handle.scrollToIndex(items.length, { align: 'end' });
 			setShouldJumpToBottom(false);
@@ -129,9 +152,27 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
 
 	useEffect(() => {
+		if (!msgJumpParam) {
+			return;
+		}
+		const clearMsgJumpParam = () => {
+			if (messages.find((m) => m._id === msgJumpParam) && mainMessage._id !== msgJumpParam) {
+				setMessageJumpQueryStringParameter(null);
+			}
+		};
+		const timeoutId = setTimeout(() => {
+			clearMsgJumpParam();
+		}, 500);
+		return () => {
+			clearMsgJumpParam();
+			clearTimeout(timeoutId);
+		};
+	}, [msgJumpParam, messages, mainMessage._id]);
+
+	useEffect(() => {
 		const handlerId = `thread-scroll-${mainMessage._id}`;
 		clientCallbacks.add(
-			'afterSaveMessage',
+			'streamNewMessage',
 			(msg: IMessage) => {
 				if (msg.rid !== room._id || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
@@ -145,7 +186,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		);
 
 		return () => {
-			clientCallbacks.remove('afterSaveMessage', handlerId);
+			clientCallbacks.remove('streamNewMessage', handlerId);
 		};
 	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom]);
 
@@ -154,7 +195,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomVirtuaScrollbars ref={messageListRef}>
+			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
 					<VList
 						ref={virtualizerRef}
@@ -163,13 +204,18 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						aria-busy={loading}
 						role='list'
 						keepMounted={keepMountedMessages}
-						onScroll={(offset: number) => {
+						onScroll={(offset) => {
 							const handle = virtualizerRef.current;
 							if (!handle) return;
+
+							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
+							if (handle.scrollSize >= handle.viewportSize) {
+								isAtBottom.current = true;
+							}
 							isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
 
 							const topMessage = items[handle.findItemIndex(handle.scrollOffset)];
-							handleDateScroll(topMessage);
+							handleDateScroll(topMessage, offset);
 						}}
 					>
 						{loading ? (

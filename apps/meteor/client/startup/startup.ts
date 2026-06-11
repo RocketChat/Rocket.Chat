@@ -3,8 +3,9 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
-import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
+import { clearStoredCredentials, ensureConnectedAndAuthenticated, getDdpSdk, isAuthError } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
+import { STORAGE_KEYS, getStoredItem } from '../lib/sdk/storage';
 import { userIdStore } from '../lib/user';
 import { removeLocalUserData, synchronizeUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
@@ -47,12 +48,33 @@ if (!sdkTransportEnabled) {
 		// of userIdStore, so without sequencing the sub races the auth and
 		// hits the rejection on every re-login. Await the SDK auth here so
 		// the sub fires authenticated.
+		const tokenBeforeSync = getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 		try {
 			await ensureConnectedAndAuthenticated();
 		} catch {
 			// non-fatal: sdk.stream queues until DDPSDK eventually auths
 		}
-		const user = await synchronizeUserData(uid);
+
+		let user: Awaited<ReturnType<typeof synchronizeUserData>>;
+		try {
+			user = await synchronizeUserData(uid);
+		} catch (error) {
+			// When the stored token is expired/revoked server-side, the userData
+			// stream sub + /v1/me come back 401/403, so synchronizeUserData throws
+			// and useUserDataSyncReady never flips true. useMainReady then stays
+			// false forever (uid is still truthy from the stale credentials), so
+			// Preload sits on PageLoading — and because Preload WRAPS
+			// AuthenticationCheck, the user never reaches LoginPage and the
+			// workspace looks stuck "loading"/grayed-out. Escalate the dead-session
+			// signal to a credential wipe so userId drops to null and the router
+			// falls through to the login screen. Token-stable guard: only clear
+			// when localStorage still holds the token we synced with, so a parallel
+			// re-auth that already rotated the token isn't kicked out.
+			if (isAuthError(error) && getStoredItem(STORAGE_KEYS.LOGIN_TOKEN) === tokenBeforeSync) {
+				clearStoredCredentials();
+			}
+			throw error;
+		}
 		if (!user) return;
 
 		const utcOffset = -new Date().getTimezoneOffset() / 60;
