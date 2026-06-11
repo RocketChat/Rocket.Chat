@@ -10,6 +10,7 @@ import {
 	isFingerprintProps,
 	isMeteorCall,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -788,10 +789,12 @@ API.v1.post(
 	'fingerprint',
 	{
 		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
 		body: isFingerprintProps,
 		response: {
 			200: fingerprintResponseSchema,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			400: validateBadRequestErrorResponse,
 		},
 	},
