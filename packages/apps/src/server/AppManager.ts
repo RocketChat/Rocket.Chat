@@ -731,7 +731,7 @@ export class AppManager {
 		}
 
 		// If there is any error during disabling, it doesn't really matter
-		await this.disable(old.id).catch(() => {});
+		await this.disable(old.id, AppStatus.DISABLED, true).catch(() => {});
 
 		const descriptor: IAppStorageItem = {
 			...old,
