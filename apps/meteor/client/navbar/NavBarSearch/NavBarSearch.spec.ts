@@ -1,4 +1,4 @@
-import { getAISearchButtonTooltip } from './NavBarSearch';
+import { getAISearchButtonTooltip } from './getAISearchButtonTooltip';
 
 describe('getAISearchButtonTooltip', () => {
 	const t = (key: string): string => key;
