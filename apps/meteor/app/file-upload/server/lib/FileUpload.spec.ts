@@ -287,5 +287,75 @@ describe('FileUpload', () => {
 			expect(result).to.be.true;
 			expect(validateAndDecodeJWTStub.calledOnceWith('valid-token', 'test-secret')).to.be.true;
 		});
+
+		describe('livechat room-based authorization (rc_room_type=l)', () => {
+			it('should allow access when livechat credentials are valid and file belongs to the same room', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(true);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/test-file-id/test-file.png?rc_room_type=l&rc_rid=room-1&rc_token=visitor-token',
+				} as any;
+
+				const file = { _id: 'test-file-id', rid: 'room-1' } as any;
+
+				const result = await FileUpload.requestCanAccessFiles(request, file);
+				expect(result).to.be.true;
+				expect(canAccessUploadedFileStub.calledOnce).to.be.true;
+			});
+
+			it('should deny access when livechat credentials are valid but file belongs to a different room', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(false);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/victim-file-id/secret.txt?rc_room_type=l&rc_rid=room-attacker&rc_token=attacker-token',
+				} as any;
+
+				// File belongs to victim's room, not the attacker's room
+				const file = { _id: 'victim-file-id', rid: 'room-victim' } as any;
+
+				const result = await FileUpload.requestCanAccessFiles(request, file);
+				expect(result).to.be.false;
+			});
+
+			it('should pass the file object to canAccessUploadedFile', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(true);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/test-file-id/test-file.png?rc_room_type=l&rc_rid=room-1&rc_token=visitor-token',
+				} as any;
+
+				const file = { _id: 'test-file-id', rid: 'room-1' } as any;
+
+				await FileUpload.requestCanAccessFiles(request, file);
+
+				const callArgs = canAccessUploadedFileStub.firstCall.args;
+				expect(callArgs[1]).to.deep.equal(file);
+			});
+
+			it('should deny access when rc_room_type is provided but canAccessUploadedFile returns false', async () => {
+				settingsGetMap.set('FileUpload_ProtectFiles', true);
+				const canAccessUploadedFileStub = sinon.stub().resolves(false);
+				roomCoordinatorStub.getRoomDirectives.returns({ canAccessUploadedFile: canAccessUploadedFileStub });
+
+				const request = {
+					headers: {},
+					url: '/file-upload/test-file-id/test-file.png?rc_room_type=l&rc_rid=room-1&rc_token=invalid-token',
+				} as any;
+
+				const file = { _id: 'test-file-id', rid: 'room-1' } as any;
+
+				const result = await FileUpload.requestCanAccessFiles(request, file);
+				expect(result).to.be.false;
+			});
+		});
 	});
 });
