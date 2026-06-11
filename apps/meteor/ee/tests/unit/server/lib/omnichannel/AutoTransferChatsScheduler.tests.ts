@@ -23,6 +23,10 @@ const mockLivechatRooms = {
 const mockUsers = {
 	findOneById: sinon.stub(),
 };
+const mockCronHistory = {
+	insertOne: sinon.stub().resolves({ insertedId: 'mockId' }),
+	updateOne: sinon.stub().resolves(),
+};
 
 class MockAgendaClass {
 	constructor(opts: Record<string, any>) {
@@ -78,7 +82,9 @@ const mocks = {
 	'@rocket.chat/models': {
 		LivechatRooms: mockLivechatRooms,
 		Users: mockUsers,
+		CronHistory: mockCronHistory,
 	},
+	'@rocket.chat/random': { Random: { id: sinon.stub().returns('mock-random-id') } },
 };
 
 const { AutoTransferChatSchedulerClass } = proxyquire

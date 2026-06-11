@@ -1,4 +1,4 @@
-import { CronJobsSvc } from '@rocket.chat/core-services';
+import { CronJobs } from '@rocket.chat/core-services';
 import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
 import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 
@@ -94,12 +94,13 @@ const cronJobsEndpoints = API.v1
 			query: isCronJobsListParams,
 			response: {
 				200: isCronJobsListResponse,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { jobs, total } = await CronJobsSvc.getCoreJobs({ offset, count });
+			const { jobs, total } = await CronJobs.getCoreJobs({ offset, count });
 
 			return API.v1.success({
 				jobs,
@@ -117,12 +118,13 @@ const cronJobsEndpoints = API.v1
 			query: isCronJobsListParams,
 			response: {
 				200: isCronJobsListResponse,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { jobs, total } = await CronJobsSvc.getAppJobs({ offset, count });
+			const { jobs, total } = await CronJobs.getAppJobs({ offset, count });
 
 			return API.v1.success({
 				jobs,
@@ -140,13 +142,14 @@ const cronJobsEndpoints = API.v1
 			query: isCronJobsHistoryParams,
 			response: {
 				200: isCronJobsHistoryResponse,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { jobName } = this.queryParams;
-			const { history, total } = await CronJobsSvc.getHistory(jobName, { offset, count });
+			const { history, total } = await CronJobs.getHistory(jobName, { offset, count });
 
 			return API.v1.success({
 				history,
@@ -170,7 +173,7 @@ const cronJobsEndpoints = API.v1
 		},
 		async function action() {
 			const { jobName } = this.bodyParams;
-			const success = await CronJobsSvc.enable(jobName);
+			const success = await CronJobs.enable(jobName);
 
 			if (!success) {
 				return API.v1.failure('error-job-not-found');
@@ -192,7 +195,7 @@ const cronJobsEndpoints = API.v1
 		},
 		async function action() {
 			const { jobName } = this.bodyParams;
-			const success = await CronJobsSvc.disable(jobName);
+			const success = await CronJobs.disable(jobName);
 
 			if (!success) {
 				return API.v1.failure('error-job-not-found');
@@ -214,7 +217,7 @@ const cronJobsEndpoints = API.v1
 		},
 		async function action() {
 			const { jobName } = this.bodyParams;
-			const success = await CronJobsSvc.trigger(jobName);
+			const success = await CronJobs.trigger(jobName);
 
 			if (!success) {
 				return API.v1.failure('error-job-not-found');

@@ -19,6 +19,7 @@ const modelsMock = {
 	LivechatRooms: { findOneById: sinon.stub() },
 	LivechatInquiry: { findOneById: sinon.stub() },
 	Users: { findOneById: sinon.stub() },
+	CronHistory: { insertOne: sinon.stub().resolves({ insertedId: 'mockId' }), updateOne: sinon.stub().resolves() },
 };
 const meteorMock = { Meteor: { startup: sinon.stub() } };
 const createIndexStub = sinon.stub();
