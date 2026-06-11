@@ -1,7 +1,8 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
-import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
 
+import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
@@ -37,5 +38,19 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	async parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments> {
 		return parseFileIntoMessageAttachments(file, roomId, user);
+	}
+
+	async canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean> {
+		if (msg) {
+			return canDeleteMessageAsync(user._id, msg);
+		}
+
+		if (!file.userId || !file.rid) {
+			return false;
+		}
+
+		// Use data from the file to run message delete permission checks
+		const msgForValidation = { u: { _id: file.userId }, ts: file.uploadedAt, rid: file.rid };
+		return canDeleteMessageAsync(user._id, msgForValidation);
 	}
 }
