@@ -42,9 +42,10 @@ type MessageListProps = {
 	setUnreadCount: Dispatch<SetStateAction<number>>;
 	setLastMessageDate: Dispatch<SetStateAction<Date | undefined>>;
 	debouncedClearNewMessagesOnScroll: () => void;
-	handleDateScroll: (topMessage: IMessage | undefined) => void;
+	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	setShouldJumpToBottom: Dispatch<SetStateAction<boolean>>;
 	debouncedMessageRead: () => void;
+	setKeepAtBottom: (keepAtBottom: () => void) => void;
 };
 
 export const MessageList = function MessageList({
@@ -66,12 +67,17 @@ export const MessageList = function MessageList({
 	debouncedClearNewMessagesOnScroll,
 	handleDateScroll,
 	debouncedMessageRead,
+	setKeepAtBottom,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
 	const isPrepend = useRef<boolean>(false);
 	useLayoutEffect(() => {
 		isPrepend.current = false;
+		// FIXME: isAtBottom should be better calculated, as it does no alwas represent the correct value
+		if (hasMoreNextMessages) {
+			isAtBottom.current = false;
+		}
 	});
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
@@ -79,12 +85,27 @@ export const MessageList = function MessageList({
 
 	const messages = useMessages({ rid });
 
+	const messagesLength = canPreview ? messages.length + 1 : messages.length;
+
+	useEffect(() => {
+		setKeepAtBottom(() => {
+			if (virtualizerRef.current) {
+				virtualizerRef.current.scrollToIndex(messagesLength, {
+					align: 'end',
+				});
+			}
+		});
+	}, [messagesLength, setKeepAtBottom]);
+
 	const keepMountedMessages = useKeepMountedMessages(messages, canPreview);
 
 	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages });
 
 	const handlePrepend = useCallback(
 		(offset: number) => {
+			if (!isRoomInitialized.current) {
+				return;
+			}
 			// If the offset is less than 200, it means the user is reaching the top of the list,
 			// so the prepend need to be enabled for smooth scrolling,
 			// if the prepend is enabled when a new message is added, the list will misalign.
@@ -95,6 +116,11 @@ export const MessageList = function MessageList({
 			const scrollSize = virtualizerRef.current?.scrollSize ?? 0;
 			const viewportSize = virtualizerRef.current?.viewportSize ?? 0;
 
+			if (hasMoreNextMessages) {
+				isAtBottom.current = false;
+				return;
+			}
+
 			if (scrollSize >= viewportSize) {
 				isAtBottom.current = true;
 			}
@@ -104,7 +130,7 @@ export const MessageList = function MessageList({
 				setShouldJumpToBottom(false);
 			}
 		},
-		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom],
+		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
 	);
 
 	const isRoomInitialized = useRef<boolean>(false);
@@ -141,14 +167,7 @@ export const MessageList = function MessageList({
 
 				setShouldJumpToBottom(false);
 
-				const index = virtualizerRef.current?.findItemIndex(store?.scroll);
-				if (index !== undefined) {
-					virtualizerRef.current?.scrollToIndex(index, {
-						align: 'start',
-					});
-				} else {
-					virtualizerRef.current?.scrollTo(store?.scroll);
-				}
+				virtualizerRef.current?.scrollTo(store?.scroll);
 				isAtBottom.current = false;
 				isRoomInitialized.current = true;
 				return;
@@ -251,9 +270,12 @@ export const MessageList = function MessageList({
 						debouncedClearNewMessagesOnScroll();
 
 						const handle = virtualizerRef.current;
-						const topMessage = handle ? messages[handle.findItemIndex(handle.scrollOffset) - (canPreview ? 1 : 0)] : undefined;
+						const viewportTopPadding = 21; // TODO: we should derive this value from somewhere else.
+						const topMessage = handle
+							? messages[handle.findItemIndex(handle.scrollOffset - viewportTopPadding) - (canPreview ? 1 : 0)]
+							: undefined;
 						handleTopVisibleMessage(topMessage);
-						handleDateScroll(topMessage);
+						handleDateScroll(topMessage, offset);
 						debouncedMessageRead();
 					}}
 				>
