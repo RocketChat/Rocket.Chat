@@ -48,7 +48,7 @@ const MessageSearchTab = () => {
 					<>
 						{searchText && isPending && <Throbber />}
 						{isSuccess && (
-							<Box id={searchListId} display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
+							<Box id={searchListId} w='full' h='full' overflow='hidden' flexShrink={1}>
 								<MessageSearch searchText={searchText} globalSearch={globalSearch} />
 							</Box>
 						)}

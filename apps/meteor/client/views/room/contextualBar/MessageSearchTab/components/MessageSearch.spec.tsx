@@ -86,6 +86,19 @@ describe('MessageSearch', () => {
 		expect(screen.getByText('No_results_found')).toBeInTheDocument();
 	});
 
+	it('renders nothing until the search query succeeds', () => {
+		useMessageSearchQueryMock.mockReturnValue({
+			isPending: true,
+			isSuccess: false,
+			data: undefined,
+			fetchNextPage: jest.fn(),
+		});
+
+		const { container } = render(<MessageSearch searchText='hello' globalSearch={false} />);
+
+		expect(container).toBeEmptyDOMElement();
+	});
+
 	it('renders room and system messages with date dividers', () => {
 		const roomMessage = createMessage('message-1');
 		const systemMessage = createMessage('message-2', {

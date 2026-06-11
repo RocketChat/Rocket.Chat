@@ -41,7 +41,17 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 			{items.length > 0 && (
 				<MessageListErrorBoundary>
 					<MessageListProvider>
-						<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+						<Box
+							is='section'
+							display='flex'
+							flexDirection='column'
+							flexGrow={1}
+							flexShrink={1}
+							flexBasis={0}
+							height='full'
+							overflow='hidden'
+							style={{ minHeight: 0 }}
+						>
 							<Box h='full' w='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
 									items={items}
