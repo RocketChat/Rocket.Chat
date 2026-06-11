@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { afterSaveMessageAsync } from '../../hooks/messages/afterSaveMessage';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { attachMessage } from '../../lib/messages/attachMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
