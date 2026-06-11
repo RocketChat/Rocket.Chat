@@ -3,7 +3,6 @@ import { CustomUserStatus } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 export const deleteCustomUserStatus = async (userId: string, userStatusID: string): Promise<boolean> => {
 	if (!(await hasPermissionAsync(userId, 'manage-user-status'))) {

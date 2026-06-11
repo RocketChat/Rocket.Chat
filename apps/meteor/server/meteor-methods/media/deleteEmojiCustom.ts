@@ -4,7 +4,6 @@ import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { RocketChatFileEmojiCustomInstance } from '../../lib/media/emoji-custom/startup/emoji-custom';
 
 export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDescriptor['_id']): Promise<boolean> => {
