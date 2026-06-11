@@ -13,26 +13,23 @@ Accounts.registerLoginHandler('apple', async (loginRequest) => {
 		return;
 	}
 
-	const { identityToken, fullName, email } = loginRequest;
+	const { identityToken, fullName } = loginRequest;
 
 	try {
-		const serviceData = await handleIdentityToken(identityToken);
+		const clientId = settings.get<string>('Accounts_OAuth_Apple_id') || '';
 
-		if (!serviceData.email && email) {
-			serviceData.email = email;
-		}
+		const serviceData = await handleIdentityToken(identityToken, clientId);
 
 		const profile: { name?: string } = {};
 
-		const { givenName, familyName } = fullName;
+		const { givenName, familyName } = fullName || {};
 		if (givenName && familyName) {
 			profile.name = `${givenName} ${familyName}`;
 		}
 
-		const result = Accounts.updateOrCreateUserFromExternalService('apple', serviceData, { profile });
+		const result = await Accounts.updateOrCreateUserFromExternalService('apple', serviceData, { profile });
 
-		// Ensure processing succeeded
-		if (result === undefined || result.userId === undefined) {
+		if (result?.userId === undefined) {
 			return {
 				type: 'apple',
 				error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Apple response token'),
