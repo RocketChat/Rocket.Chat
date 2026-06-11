@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType, IExportOperation } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../app/settings/server';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -175,9 +176,10 @@ export const exportMessageObject = (type: 'json' | 'html', messageObject: Messag
 
 	const italicTypes: IMessage['t'][] = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
 
-	const message = italicTypes.includes(messageType) ? `<i>${messageObject.msg}</i>` : messageObject.msg;
+	const safeMsg = escapeHTML(messageObject.msg ?? '');
+	const message = italicTypes.includes(messageType) ? `<i>${safeMsg}</i>` : safeMsg;
 
-	file.push(`<p><strong>${messageObject.username}</strong> (${timestamp}):<br/>`);
+	file.push(`<p><strong>${escapeHTML(messageObject.username ?? '')}</strong> (${timestamp}):<br/>`);
 	file.push(message);
 
 	for (const messageFile of messageFiles) {
@@ -187,7 +189,7 @@ export const exportMessageObject = (type: 'json' | 'html', messageObject: Messag
 			const description = attachment?.title || i18n.t('Message_Attachments');
 
 			const assetUrl = `./assets/${messageFile._id}-${messageFile.name}`;
-			const link = `<br/><a href="${assetUrl}">${description}</a>`;
+			const link = `<br/><a href="${escapeHTML(assetUrl)}">${escapeHTML(description)}</a>`;
 			file.push(link);
 		}
 	}
@@ -281,7 +283,14 @@ export const exportRoomMessagesToFile = async function (
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
 			if (exportType === 'html') {
-				await writeFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">', { encoding: 'utf8' });
+				await writeFile(
+					filePath,
+					[
+						'<meta http-equiv="content-type" content="text/html; charset=utf-8">',
+						`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:;">`,
+					].join('\n'),
+					{ encoding: 'utf8' },
+				);
 			}
 		}
 

@@ -114,6 +114,75 @@ describe('Export - exportMessageObject', () => {
 	});
 });
 
+describe('Export - exportMessageObject HTML escaping (XSS prevention)', () => {
+	const ts = new Date('2020-01-01T00:00:00.000Z');
+
+	it('should escape HTML in the message body when exporting as html', async () => {
+		const result = await exportMessageObject('html', {
+			msg: '<img src=x onerror="alert(1)">',
+			username: 'attacker',
+			ts,
+		});
+
+		expect(result).to.contain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+		expect(result).to.not.contain('<img src=x');
+	});
+
+	it('should escape HTML in the username when exporting as html', async () => {
+		const result = await exportMessageObject('html', {
+			msg: 'hello',
+			username: '<script>alert(1)</script>',
+			ts,
+		});
+
+		expect(result).to.contain('&lt;script&gt;alert(1)&lt;/script&gt;');
+		expect(result).to.not.contain('<script>');
+	});
+
+	it('should escape HTML inside italicized (system) messages when exporting as html', async () => {
+		const result = await exportMessageObject('html', {
+			msg: '<img src=x onerror=alert(1)>',
+			username: 'attacker',
+			ts,
+			type: 'wm',
+		});
+
+		expect(result).to.contain('<i>&lt;img src=x onerror=alert(1)&gt;</i>');
+		expect(result).to.not.contain('<img src=x');
+	});
+
+	it('should escape HTML in the attachment description and prevent href attribute breakout', async () => {
+		const result = await exportMessageObject(
+			'html',
+			{
+				msg: 'file',
+				username: 'attacker',
+				ts,
+				attachments: [
+					{
+						type: 'file',
+						title: '<img src=x onerror=alert(1)>',
+						title_link: '/file-upload/evil-id/x',
+					},
+				] as any,
+			},
+			[{ _id: 'evil-id', name: '"><img src=x onerror=alert(1)>.png' } as any],
+		);
+
+		expect(result).to.contain('&lt;img src=x');
+		expect(result).to.not.contain('<img src=x');
+		// the crafted filename must not break out of the href="" attribute
+		expect(result).to.not.contain('"><img');
+	});
+
+	it('should not escape plain JSON exports (escaping is html-only)', async () => {
+		const messageObject = { msg: '<b>x</b>', username: 'attacker', ts };
+		const result = await exportMessageObject('json', messageObject);
+
+		expect(result).to.equal(JSON.stringify(messageObject));
+	});
+});
+
 describe('Export - exportRoomMessages', () => {
 	const totalMessages = 10;
 	const userData = {
