@@ -62,6 +62,7 @@ export interface IRocketChatDesktop {
 	clearOutlookCredentials: () => void;
 	setUserToken: (token: string, userId: string) => void;
 	openDocumentViewer: (url: string, format: string, options: any) => void;
+	supportedDocumentViewerFormats?: () => string[];
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;

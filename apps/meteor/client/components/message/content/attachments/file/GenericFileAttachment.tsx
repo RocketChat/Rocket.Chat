@@ -20,6 +20,7 @@ import AttachmentSize from '../structure/AttachmentSize';
 import { useOpenEncryptedPdf } from './hooks/useOpenEncryptedPdf';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
+const supportedDocumentViewerFormats = window.RocketChatDesktop?.supportedDocumentViewerFormats;
 
 type GenericFileAttachmentProps = MessageAttachmentBase;
 
@@ -58,6 +59,15 @@ const GenericFileAttachment = ({
 				const url = new URL(getURL(link), window.location.origin);
 				url.searchParams.set('contentDisposition', 'inline');
 				openDocumentViewer(url.toString(), format, '');
+				return;
+			}
+
+			if (format === 'MD' && !isEncrypted && openDocumentViewer && supportedDocumentViewerFormats?.().includes('markdown')) {
+				event.preventDefault();
+
+				const url = new URL(getURL(link), window.location.origin);
+				url.searchParams.set('contentDisposition', 'inline');
+				openDocumentViewer(url.toString(), 'markdown', '');
 				return;
 			}
 
