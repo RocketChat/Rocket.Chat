@@ -687,7 +687,6 @@ describe('miscellaneous', () => {
 		});
 	});
 
-<<<<<<< HEAD
 	describe('[/stdout.queue]', () => {
 		let testUser: TestUser<IUser>;
 		let testUsername: string;
@@ -860,7 +859,9 @@ describe('miscellaneous', () => {
 						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					});
 			});
-=======
+		});
+	});
+
 	describe('/fingerprint', () => {
 		let unauthorizedUser: TestUser<IUser>;
 		let unauthorizedUserCredentials: Credentials;
@@ -905,7 +906,6 @@ describe('miscellaneous', () => {
 
 			expect(res.status).to.equal(200);
 			expect(res.body).to.have.property('success', true);
->>>>>>> 9dcadc1073 (fix: add missing authorization check to fingerprint endpoint (#40706))
 		});
 	});
 });
