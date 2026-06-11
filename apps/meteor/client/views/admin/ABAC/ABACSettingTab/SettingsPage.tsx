@@ -1,5 +1,5 @@
 import { Accordion, AccordionItem, Box, Callout, FieldGroup } from '@rocket.chat/fuselage';
-import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -18,24 +18,7 @@ const SettingsPage = () => {
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
 				<SettingField settingId='ABAC_PDP_Type' />
-				{pdpType !== 'local' && (
-					<SettingField
-						settingId='ABAC_Attribute_Store'
-						renderConfirmModal={({ onConfirm, onCancel }) => (
-							<GenericModal
-								variant='danger'
-								title={t('ABAC_Attribute_Store_Switch_Title')}
-								confirmText={t('ABAC_Attribute_Store_Switch_Confirm')}
-								cancelText={t('Cancel')}
-								onConfirm={onConfirm}
-								onCancel={onCancel}
-								onClose={onCancel}
-							>
-								{t('ABAC_Attribute_Store_Switch_Alert')}
-							</GenericModal>
-						)}
-					/>
-				)}
+				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 
