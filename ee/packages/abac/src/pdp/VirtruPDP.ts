@@ -20,10 +20,9 @@ import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../
 
 const pdpLogger = logger.section('VirtruPDP');
 
-export const getDeniedSubjects = <T>(
+export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pick<IRoom, '_id'> }>(
 	responses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined>,
 	subjects: T[],
-	logContext: (subject: T) => { rid: IRoom['_id']; userId: IUser['_id'] },
 ): T[] => {
 	const denied: T[] = [];
 
@@ -39,7 +38,7 @@ export const getDeniedSubjects = <T>(
 		if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
 			return;
 		}
-		pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', ...logContext(subject) });
+		pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', rid: subject.room._id, userId: subject.user._id });
 	});
 
 	return denied;
@@ -282,7 +281,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		const config = this.client.getConfig();
 		const nonCompliantUsers: IUser[] = [];
 		const decisionRequests: IGetDecisionBulkRequest[] = [];
-		const requestUserIndex: IUser[] = [];
+		const requestIndex: Array<{ user: IUser; room: typeof room }> = [];
 		const fqns = buildAttributeFqns(config.attributeNamespace, newAttributes);
 
 		for await (const user of users) {
@@ -293,7 +292,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				continue;
 			}
 
-			requestUserIndex.push(user);
+			requestIndex.push({ user, room });
 			decisionRequests.push({
 				entityIdentifier: {
 					entityChain: {
@@ -316,7 +315,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		nonCompliantUsers.push(...getDeniedSubjects(responses, requestUserIndex, (user) => ({ rid: room._id, userId: user._id })));
+		nonCompliantUsers.push(...getDeniedSubjects(responses, requestIndex).map(({ user }) => user));
 
 		return nonCompliantUsers;
 	}
@@ -368,7 +367,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(allRequests);
 
-		nonCompliant.push(...getDeniedSubjects(responses, requestIndex, ({ user, room }) => ({ rid: room._id, userId: user._id })));
+		nonCompliant.push(...getDeniedSubjects(responses, requestIndex));
 
 		return nonCompliant;
 	}

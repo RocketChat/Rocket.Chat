@@ -90,30 +90,31 @@ describe('VirtruPDP.isAvailable', () => {
 });
 
 describe('getDeniedSubjects', () => {
-	const logContext = (subject: string) => ({ rid: 'r1', userId: subject });
+	const pair = (userId: string) => ({ user: { _id: userId }, room: { _id: 'r1' } });
+	const [a, b, c] = [pair('a'), pair('b'), pair('c')];
 	const resp = (...decisions: Decision[]) => ({
 		resourceDecisions: decisions.map((decision) => ({ ephemeralResourceId: 'r1', decision })),
 	});
 
 	it('collects subjects with an explicit DENY decision', () => {
 		const responses = [resp('DECISION_DENY'), resp('DECISION_PERMIT'), resp('DECISION_DENY')];
-		expect(getDeniedSubjects(responses, ['a', 'b', 'c'], logContext)).toEqual(['a', 'c']);
+		expect(getDeniedSubjects(responses, [a, b, c])).toEqual([a, c]);
 	});
 
 	it('skips subjects when every decision is PERMIT', () => {
-		expect(getDeniedSubjects([resp('DECISION_PERMIT')], ['a'], logContext)).toEqual([]);
+		expect(getDeniedSubjects([resp('DECISION_PERMIT')], [a])).toEqual([]);
 	});
 
 	it('skips inconclusive subjects (UNSPECIFIED, empty decisions, missing response)', () => {
-		expect(getDeniedSubjects([resp('DECISION_UNSPECIFIED'), resp(), undefined], ['a', 'b', 'c'], logContext)).toEqual([]);
+		expect(getDeniedSubjects([resp('DECISION_UNSPECIFIED'), resp(), undefined], [a, b, c])).toEqual([]);
 	});
 
 	it('treats a DENY among PERMITs in one response as denied', () => {
-		expect(getDeniedSubjects([resp('DECISION_PERMIT', 'DECISION_DENY')], ['a'], logContext)).toEqual(['a']);
+		expect(getDeniedSubjects([resp('DECISION_PERMIT', 'DECISION_DENY')], [a])).toEqual([a]);
 	});
 
 	it('ignores responses without a matching subject', () => {
-		expect(getDeniedSubjects([resp('DECISION_DENY'), resp('DECISION_DENY')], ['a'], logContext)).toEqual(['a']);
+		expect(getDeniedSubjects([resp('DECISION_DENY'), resp('DECISION_DENY')], [a])).toEqual([a]);
 	});
 });
 
