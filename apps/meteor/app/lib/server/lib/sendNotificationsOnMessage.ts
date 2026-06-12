@@ -195,6 +195,8 @@ export const sendNotification = async ({
 		const firstAttachment = message.attachments?.length && message.attachments.shift();
 
 		if (firstAttachment) {
+			firstAttachment.description =
+				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
 			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 

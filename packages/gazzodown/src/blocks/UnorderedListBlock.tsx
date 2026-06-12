@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import InlineElements from '../elements/InlineElements';
 
@@ -7,7 +6,7 @@ type UnorderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 
-const UnorderedListBlock = ({ items }: UnorderedListBlockProps): ReactElement => (
+const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (
 	<ul>
 		{items.map((item, index) => (
 			<li key={index}>

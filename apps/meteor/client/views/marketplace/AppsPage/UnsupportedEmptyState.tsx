@@ -1,12 +1,11 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, Button } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { links } from '../../../lib/links';
 import UpdateRocketChatButton from '../components/UpdateRocketChatButton';
 
-const UnsupportedEmptyState = (): ReactElement => {
+const UnsupportedEmptyState = () => {
 	const isAdmin = usePermission('manage-apps');
 	const { t } = useTranslation();
 

@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer';
+export type FeaturesAvailable = 'secondarySidebar' | 'sidebarDrafts';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -25,6 +25,15 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Filters_and_secondary_sidebar_description',
 		group: 'Navigation',
 		imageUrl: 'images/featurePreview/secondary-sidebar.png',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'sidebarDrafts',
+		i18n: 'Drafts_in_sidebar',
+		description: 'Drafts_in_sidebar_description',
+		group: 'Navigation',
+		imageUrl: 'images/featurePreview/sidebar-drafts.png',
 		value: false,
 		enabled: true,
 	},

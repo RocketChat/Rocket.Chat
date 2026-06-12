@@ -1,5 +1,5 @@
-import { Readable } from 'stream';
-import { ReadableStream } from 'stream/web';
+import { Readable } from 'node:stream';
+import { ReadableStream } from 'node:stream/web';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
@@ -102,7 +102,9 @@ export async function getUploadFormData<
 			return reject(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
-			return reject(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
+			return reject(
+				new MeteorError(`Invalid fields ${(options.validate.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join(', ')}`),
+			);
 		}
 		return resolve(uploadedFile);
 	}

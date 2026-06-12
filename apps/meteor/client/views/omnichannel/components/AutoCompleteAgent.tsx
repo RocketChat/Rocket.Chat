@@ -1,6 +1,6 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 
 import { useAgentsList } from '../hooks/useAgentsList';
@@ -27,7 +27,7 @@ const AutoCompleteAgent = ({
 	onlyAvailable = false,
 	onChange,
 	...props
-}: AutoCompleteAgentProps): ReactElement => {
+}: AutoCompleteAgentProps) => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 

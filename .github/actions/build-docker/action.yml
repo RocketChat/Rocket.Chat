@@ -99,7 +99,7 @@ runs:
 
           find /tmp/build/bundle/programs/server/npm/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
 
-          find /tmp/build/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
+          find /tmp/build/bundle/programs/server/npm/node_modules/@rocket.chat/apps/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
         fi
 
         if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then

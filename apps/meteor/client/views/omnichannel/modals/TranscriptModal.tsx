@@ -1,14 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
-	Field,
 	Button,
-	TextInput,
 	Modal,
 	Box,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	FieldError,
 	ModalHeader,
 	ModalIcon,
 	ModalTitle,
@@ -17,8 +11,9 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 type TranscriptModalProps = {
@@ -34,7 +29,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 	const { t } = useTranslation();
 
 	const {
-		register,
+		control,
 		handleSubmit,
 		setValue,
 		setFocus,
@@ -72,8 +67,6 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 		}
 	}, [setValue, transcriptRequest]);
 
-	// const canSubmit = isValid && Boolean(watch('subject'));
-
 	return (
 		<Modal open wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
 			<ModalHeader>
@@ -85,28 +78,38 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<FieldGroup>
 					<Field>
-						<FieldLabel>{t('Email')}*</FieldLabel>
+						<FieldLabel required>{t('Email')}</FieldLabel>
 						<FieldRow>
-							<TextInput
-								disabled={!!emailDefault || !!transcriptRequest}
-								error={errors.email?.message}
-								flexGrow={1}
-								{...register('email', { required: t('Required_field', { field: t('Email') }) })}
+							<Controller
+								name='email'
+								control={control}
+								rules={{ required: t('Required_field', { field: t('Email') }) }}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										disabled={!!emailDefault || !!transcriptRequest}
+										error={errors.email?.message}
+										flexGrow={1}
+										aria-required='true'
+									/>
+								)}
 							/>
 						</FieldRow>
-						<FieldError>{errors.email?.message}</FieldError>
+						{errors.email && <FieldError>{errors.email?.message}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel>{t('Subject')}*</FieldLabel>
+						<FieldLabel required>{t('Subject')}</FieldLabel>
 						<FieldRow>
-							<TextInput
-								disabled={!!transcriptRequest}
-								error={errors.subject?.message}
-								flexGrow={1}
-								{...register('subject', { required: t('Required_field', { field: t('Subject') }) })}
+							<Controller
+								name='subject'
+								control={control}
+								rules={{ required: t('Required_field', { field: t('Subject') }) }}
+								render={({ field }) => (
+									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} flexGrow={1} aria-required='true' />
+								)}
 							/>
 						</FieldRow>
-						<FieldError>{errors.subject?.message}</FieldError>
+						{errors.subject && <FieldError>{errors.subject?.message}</FieldError>}
 					</Field>
 				</FieldGroup>
 			</ModalContent>
@@ -119,12 +122,12 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button aria-label='request-button' disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
+						<Button disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button aria-label='send-button' disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
+						<Button disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}

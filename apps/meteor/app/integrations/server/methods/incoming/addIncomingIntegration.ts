@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
@@ -175,6 +176,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 Meteor.methods<ServerMethods>({
 	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
+		methodDeprecationLogger.method('addIncomingIntegration', '9.0.0', '/v1/integrations.create');
 		const { userId } = this;
 
 		if (!userId) {

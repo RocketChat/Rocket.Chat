@@ -1,5 +1,82 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.57
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, 4c3984593017d59edd631bf8ae4f35f9d3c3db36, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76, b1c2668b74bfb49ebaefe2f581b2f8be5d4d1dd6]:</summary>
+
+  - @rocket.chat/model-typings@2.3.0
+  - @rocket.chat/models@2.3.0
+  - @rocket.chat/rest-typings@8.5.0
+  - @rocket.chat/core-typings@8.5.0
+  - @rocket.chat/network-broker@0.2.36
+  - @rocket.chat/core-services@0.14.1
+  - @rocket.chat/instance-status@0.1.57
+  </details>
+
+## 0.3.57-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, 4c3984593017d59edd631bf8ae4f35f9d3c3db36, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76, b1c2668b74bfb49ebaefe2f581b2f8be5d4d1dd6]:</summary>
+
+  - @rocket.chat/model-typings@2.3.0-rc.0
+  - @rocket.chat/models@2.3.0-rc.0
+  - @rocket.chat/rest-typings@8.5.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  - @rocket.chat/core-services@0.14.1-rc.0
+  - @rocket.chat/instance-status@0.1.57-rc.0
+  - @rocket.chat/network-broker@0.2.36-rc.0
+  </details>
+
+## 0.3.56
+
+### Patch Changes
+
+- ([#40057](https://github.com/RocketChat/Rocket.Chat/pull/40057)) Fixes an issue where some DDP method calls could incorrectly return a 404 error.
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, c544b805d1c03f8eae9d061cd48838206207a7c9, 4e99ff6c1a99ac569cf444f9de9b5fe5ac3262b2, 8c0e16ca29b393cfa50b425520db48ba5a74f678, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/core-services@0.14.0
+  - @rocket.chat/model-typings@2.2.0
+  - @rocket.chat/models@2.2.0
+  - @rocket.chat/core-typings@8.4.0
+  - @rocket.chat/rest-typings@8.4.0
+  - @rocket.chat/network-broker@0.2.35
+  - @rocket.chat/instance-status@0.1.56
+  </details>
+
+## 0.3.56-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  - @rocket.chat/rest-typings@8.4.0-rc.2
+  - @rocket.chat/core-services@0.14.0-rc.2
+  - @rocket.chat/model-typings@2.2.0-rc.2
+  - @rocket.chat/models@2.2.0-rc.2
+  - @rocket.chat/network-broker@0.2.35-rc.2
+  - @rocket.chat/instance-status@0.1.56-rc.2
+  </details>
+
+## 0.3.56-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.1
+  - @rocket.chat/network-broker@0.2.35-rc.1
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  - @rocket.chat/rest-typings@8.4.0-rc.1
+  - @rocket.chat/model-typings@2.2.0-rc.1
+  - @rocket.chat/models@2.2.0-rc.1
+  - @rocket.chat/instance-status@0.1.56-rc.1
+  </details>
+
 ## 0.3.55
 
 ### Patch Changes
@@ -28,6 +105,23 @@
   - @rocket.chat/models@2.1.3
   - @rocket.chat/network-broker@0.2.33
   - @rocket.chat/instance-status@0.1.54
+  </details>
+
+## 0.3.56-rc.0
+
+### Patch Changes
+
+- ([#40057](https://github.com/RocketChat/Rocket.Chat/pull/40057)) Fixes an issue where some DDP method calls could incorrectly return a 404 error.
+
+- <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, c544b805d1c03f8eae9d061cd48838206207a7c9, 4e99ff6c1a99ac569cf444f9de9b5fe5ac3262b2, 8c0e16ca29b393cfa50b425520db48ba5a74f678, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
+
+  - @rocket.chat/core-services@0.14.0-rc.0
+  - @rocket.chat/model-typings@2.2.0-rc.0
+  - @rocket.chat/models@2.2.0-rc.0
+  - @rocket.chat/core-typings@8.4.0-rc.0
+  - @rocket.chat/rest-typings@8.4.0-rc.0
+  - @rocket.chat/network-broker@0.2.33-rc.0
+  - @rocket.chat/instance-status@0.1.54-rc.0
   </details>
 
 ## 0.3.53

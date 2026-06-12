@@ -1,6 +1,6 @@
 import { Field, FieldHint, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -20,10 +20,10 @@ function RelativeUrlSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: RelativeUrlSettingInputProps): ReactElement {
+}: RelativeUrlSettingInputProps) {
 	const getAbsoluteUrl = useAbsoluteUrl();
 
-	const handleChange: EventHandler<SyntheticEvent<HTMLInputElement>> = (event) => {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 

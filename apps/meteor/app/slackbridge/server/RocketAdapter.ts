@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-import util from 'util';
+import util from 'node:util';
 
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -203,11 +203,14 @@ export default class RocketAdapter {
 
 		if (rocketMessage.file.name) {
 			let fileName = rocketMessage.file.name;
-			const text = rocketMessage.msg;
+			let text = rocketMessage.msg;
 
 			const attachment = this.getMessageAttachment(rocketMessage);
 			if (attachment) {
 				fileName = Meteor.absoluteUrl(attachment.title_link);
+				if (!text) {
+					text = attachment.description;
+				}
 			}
 
 			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), { ...rocketMessage, msg: `${text} ${fileName}` });

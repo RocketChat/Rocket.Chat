@@ -1,83 +1,74 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
+import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { logger } from '../logger';
 import type {
-	Decision,
-	IEntityIdentifier,
 	IPolicyDecisionPoint,
-	IGetDecisionRequest,
 	IGetDecisionBulkRequest,
-	IGetDecisionsResponse,
 	IGetDecisionBulkResponse,
 	IResourceDecision,
-	ITokenCache,
-	IVirtruPDPConfig,
+	NonCompliantPair,
+	ReevaluationUser,
 } from './types';
+import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
+import type { VirtruClient } from '../clients/virtru/VirtruClient';
+import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
 
 const pdpLogger = logger.section('VirtruPDP');
 
-const HEALTH_CHECK_TIMEOUT = 5000;
-const REQUEST_TIMEOUT = 10000;
+export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pick<IRoom, '_id'> }>(
+	responses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined>,
+	subjects: T[],
+): T[] => {
+	return subjects.filter((subject, index) => {
+		const decisions = responses[index]?.resourceDecisions ?? [];
+		if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
+			return true;
+		}
+		if (!decisions.length || decisions.some((rd) => rd.decision !== 'DECISION_PERMIT')) {
+			pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', rid: subject.room._id, userId: subject.user._id });
+		}
+		return false;
+	});
+};
 
 export class VirtruPDP implements IPolicyDecisionPoint {
-	private tokenCache: ITokenCache | null = null;
+	private client: VirtruClient;
 
-	private config: IVirtruPDPConfig;
-
-	constructor(config: IVirtruPDPConfig) {
-		this.config = config;
-	}
-
-	updateConfig(config: IVirtruPDPConfig): void {
-		this.config = config;
-		this.tokenCache = null;
+	constructor(client: VirtruClient) {
+		this.client = client;
 	}
 
 	async isAvailable(): Promise<boolean> {
-		try {
-			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
-				method: 'GET',
-				timeout: HEALTH_CHECK_TIMEOUT,
-				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
-				ignoreSsrfValidation: true,
-			});
-
-			if (!response.ok) {
-				throw new Error('PDP Health check failed');
-			}
-
-			const data = (await response.json()) as { status?: string };
-
-			pdpLogger.info({ msg: 'Virtru PDP health check response', data });
-			return data.status === 'SERVING';
-		} catch (err) {
-			pdpLogger.warn({ msg: 'Virtru PDP is not reachable', err });
-			return false;
-		}
+		return this.client.isAvailable();
 	}
 
 	async getHealthStatus(): Promise<void> {
 		await this.checkPlatformHealth();
 		const token = await this.checkIdpConnectivity();
 		await this.checkAuthorizedAccess(token);
+		pdpLogger.info({ msg: 'Virtru PDP health check passed' });
 	}
 
 	private async checkIdpConnectivity(): Promise<string> {
 		try {
-			this.tokenCache = null;
-			return await this.getClientToken();
-		} catch {
+			const token = await this.client.getClientTokenForHealthCheck();
+			pdpLogger.info({ msg: 'Virtru PDP health check: IdP connectivity OK' });
+			return token;
+		} catch (err) {
+			pdpLogger.warn({ msg: 'Virtru PDP health check: IdP connectivity failed', err });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_IdP_Failed');
 		}
 	}
 
 	private async checkPlatformHealth(): Promise<void> {
+		const config = this.client.getConfig();
 		try {
-			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
+			const response = await serverFetch(`${config.baseUrl}/healthz`, {
 				method: 'GET',
 				timeout: HEALTH_CHECK_TIMEOUT,
 				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
@@ -85,102 +76,42 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			});
 
 			if (!response.ok) {
-				throw new Error();
+				throw new Error(`Platform healthz returned HTTP ${response.status}`);
 			}
 
 			const data = (await response.json()) as { status?: string };
 			if (data.status !== 'SERVING') {
-				throw new Error();
+				throw new Error(`Platform healthz status is '${data.status ?? 'unknown'}'`);
 			}
-		} catch {
+			pdpLogger.info({ msg: 'Virtru PDP health check: platform OK', status: data.status });
+		} catch (err) {
+			pdpLogger.warn({ msg: 'Virtru PDP health check: platform failed', err });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_Platform_Failed');
 		}
 	}
 
 	private async checkAuthorizedAccess(token: string): Promise<void> {
+		const config = this.client.getConfig();
 		try {
-			const response = await serverFetch(`${this.config.baseUrl}/authorization.AuthorizationService/GetDecisions`, {
+			const response = await serverFetch(`${config.baseUrl}/authorization.v2.AuthorizationService/GetEntitlements`, {
 				method: 'POST',
 				timeout: HEALTH_CHECK_TIMEOUT,
 				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-				body: JSON.stringify({ decisionRequests: [] }),
+				body: JSON.stringify({
+					entityIdentifier: { entityChain: { entities: [{ id: 'health-check', clientId: config.clientId }] } },
+				}),
 				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
 			});
 
 			if (!response.ok) {
-				throw new Error();
+				throw new Error(`Authorization endpoint returned HTTP ${response.status}`);
 			}
-		} catch {
+			pdpLogger.info({ msg: 'Virtru PDP health check: authorization OK' });
+		} catch (err) {
+			pdpLogger.warn({ msg: 'Virtru PDP health check: authorization failed', err });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_Authorization_Failed');
 		}
-	}
-
-	private async getClientToken(): Promise<string> {
-		if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
-			return this.tokenCache.accessToken;
-		}
-		const response = await serverFetch(`${this.config.oidcEndpoint}/protocol/openid-connect/token`, {
-			method: 'POST',
-			timeout: REQUEST_TIMEOUT,
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: new URLSearchParams({
-				grant_type: 'client_credentials',
-				client_id: this.config.clientId,
-				client_secret: this.config.clientSecret,
-			}),
-			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
-			ignoreSsrfValidation: true,
-		});
-
-		if (!response.ok) {
-			throw new Error(`Failed to obtain client token: ${response.status} ${response.statusText}`);
-		}
-
-		const data = (await response.json()) as { access_token: string; expires_in?: number };
-
-		const expiresIn = data.expires_in ?? 300;
-		this.tokenCache = {
-			accessToken: data.access_token,
-			// We check for expiry 30 seconds before the actual expiry time for safety.
-			expiresAt: Date.now() + (expiresIn - 30) * 1000,
-		};
-
-		return data.access_token;
-	}
-
-	private async apiCall<T>(endpoint: string, body: unknown): Promise<T> {
-		const token = await this.getClientToken();
-
-		const response = await serverFetch(`${this.config.baseUrl}${endpoint}`, {
-			method: 'POST',
-			timeout: REQUEST_TIMEOUT,
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
-			body: JSON.stringify(body),
-			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
-			ignoreSsrfValidation: true,
-		});
-
-		if (!response.ok) {
-			const text = await response.text().catch(() => '');
-			pdpLogger.error({ msg: 'Virtru PDP API call failed', endpoint, status: response.status, response: text });
-			throw new Error('Virtru PDP call failed');
-		}
-
-		return response.json() as Promise<T>;
-	}
-
-	private async getDecision(request: IGetDecisionRequest): Promise<Decision | undefined> {
-		const result = await this.apiCall<IGetDecisionsResponse>('/authorization.AuthorizationService/GetDecisions', {
-			decisionRequests: [request],
-		});
-
-		pdpLogger.debug({ msg: 'GetDecision response', result: result.decisionResponses });
-
-		return result.decisionResponses?.[0]?.decision;
 	}
 
 	private async getDecisionBulk(
@@ -203,7 +134,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 						return batch.map(() => undefined);
 					}
 
-					const result = await this.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+					const result = await this.client.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
 						decisionRequests: validBatch,
 					});
 
@@ -219,33 +150,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return batchResults.flat();
 	}
 
-	private buildAttributeFqns(attributes: IAbacAttributeDefinition[]): string[] {
-		if (!this.config.attributeNamespace) {
-			throw new Error('Attribute namespace is not configured for VirtruPDP');
-		}
-
-		return attributes.flatMap((attr) =>
-			attr.values.map((value) => `https://${this.config.attributeNamespace}/attr/${attr.key}/value/${value}`),
-		);
-	}
-
-	private buildEntityIdentifier(entityKey: string): IEntityIdentifier {
-		if (this.config.defaultEntityKey === 'emailAddress') {
-			return { emailAddress: entityKey };
-		}
-
-		return { id: entityKey };
-	}
-
-	private getUserEntityKey(user: Pick<IUser, '_id' | 'emails' | 'username'>): string | undefined {
-		switch (this.config.defaultEntityKey) {
-			case 'emailAddress':
-				return user.emails?.[0]?.address;
-			case 'oidcIdentifier':
-				return user.username; // For now, username, we're gonna change this to find the right oidc identifier for the user
-		}
-	}
-
 	async canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
 		user: AtLeast<IUser, '_id'>,
@@ -256,42 +160,53 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return { granted: true };
 		}
 
+		const config = this.client.getConfig();
 		const fullUser = await Users.findOneById(user._id);
 		if (!fullUser) {
 			return { granted: false };
 		}
 
-		const entityKey = this.getUserEntityKey(fullUser);
+		const entityKey = getUserEntityKey(config.defaultEntityKey, fullUser);
 		if (!entityKey) {
 			pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation', userId: user._id });
 			return { granted: false };
 		}
 
-		const decision = await this.getDecision({
-			actions: [{ standard: 1 }],
-			resourceAttributes: [
-				{
-					resourceAttributesId: room._id,
-					attributeValueFqns: this.buildAttributeFqns(attributes),
+		const responses = await this.getDecisionBulk([
+			{
+				entityIdentifier: {
+					entityChain: {
+						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
+					},
 				},
-			],
-			entityChains: [
-				{
-					id: 'rc-access-check',
-					entities: [this.buildEntityIdentifier(entityKey)],
-				},
-			],
-		});
+				action: { name: 'read' },
+				resources: [
+					{
+						ephemeralId: room._id,
+						attributeValues: { fqns: buildAttributeFqns(config.attributeNamespace, attributes) },
+					},
+				],
+			},
+		]);
+
+		const decision = responses[0]?.resourceDecisions?.[0]?.decision;
 
 		if (decision === 'DECISION_PERMIT') {
+			pdpLogger.debug({ msg: 'Virtru PDP canAccessObject: permitted', roomId: room._id, userId: user._id });
 			return { granted: true };
 		}
 
 		if (decision === 'DECISION_DENY') {
+			pdpLogger.debug({ msg: 'Virtru PDP canAccessObject: denied', roomId: room._id, userId: user._id });
 			return { granted: false, userToRemove: fullUser };
 		}
 
-		// If we get an inconclusive or error decision, we err on the side of caution and deny access, but do not remove the user since we can't be sure
+		pdpLogger.debug({
+			msg: 'Virtru PDP canAccessObject: inconclusive decision, denying without removal',
+			roomId: room._id,
+			userId: user._id,
+			decision,
+		});
 		return { granted: false };
 	}
 
@@ -300,13 +215,14 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return;
 		}
 
+		const config = this.client.getConfig();
 		const users = await Users.findByUsernames(usernames, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
 
-		const fqns = this.buildAttributeFqns(attributes);
+		const fqns = buildAttributeFqns(config.attributeNamespace, attributes);
 		const decisionRequests: IGetDecisionBulkRequest[] = [];
 
 		for (const user of users) {
-			const entityKey = this.getUserEntityKey(user);
+			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
 			if (!entityKey) {
 				throw new OnlyCompliantCanBeAddedToRoomError();
 			}
@@ -314,7 +230,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			decisionRequests.push({
 				entityIdentifier: {
 					entityChain: {
-						entities: [this.buildEntityIdentifier(entityKey)],
+						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
 					},
 				},
 				action: { name: 'read' },
@@ -354,24 +270,25 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			projection: { _id: 1, emails: 1, username: 1 },
 		});
 
+		const config = this.client.getConfig();
 		const nonCompliantUsers: IUser[] = [];
 		const decisionRequests: IGetDecisionBulkRequest[] = [];
-		const requestUserIndex: IUser[] = [];
-		const fqns = this.buildAttributeFqns(newAttributes);
+		const requestIndex: Array<{ user: IUser; room: typeof room }> = [];
+		const fqns = buildAttributeFqns(config.attributeNamespace, newAttributes);
 
 		for await (const user of users) {
-			const entityKey = this.getUserEntityKey(user);
+			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
 			if (!entityKey) {
 				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
 				nonCompliantUsers.push(user);
 				continue;
 			}
 
-			requestUserIndex.push(user);
+			requestIndex.push({ user, room });
 			decisionRequests.push({
 				entityIdentifier: {
 					entityChain: {
-						entities: [this.buildEntityIdentifier(entityKey)],
+						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
 					},
 				},
 				action: { name: 'read' },
@@ -390,12 +307,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted && requestUserIndex[index]) {
-				nonCompliantUsers.push(requestUserIndex[index]);
-			}
-		});
+		nonCompliantUsers.push(...getDeniedSubjects(responses, requestIndex).map(({ user }) => user));
 
 		return nonCompliantUsers;
 	}
@@ -405,18 +317,19 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			user: Pick<IUser, '_id' | 'emails' | 'username'>;
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
-	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
-		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: AtLeast<IRoom, '_id' | 'abacAttributes'> }> = [];
+	): Promise<NonCompliantPair[]> {
+		const requestIndex: NonCompliantPair[] = [];
 		const allRequests: IGetDecisionBulkRequest[] = [];
 
-		const nonCompliant: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
+		const config = this.client.getConfig();
+		const nonCompliant: NonCompliantPair[] = [];
 
 		for (const { user, rooms } of entries) {
-			const entityKey = this.getUserEntityKey(user);
+			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
 			if (!entityKey) {
 				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
 				for (const room of rooms) {
-					nonCompliant.push({ user, room: room as IRoom });
+					nonCompliant.push({ user, room });
 				}
 				continue;
 			}
@@ -426,14 +339,14 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				allRequests.push({
 					entityIdentifier: {
 						entityChain: {
-							entities: [this.buildEntityIdentifier(entityKey)],
+							entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
 						},
 					},
 					action: { name: 'read' },
 					resources: [
 						{
 							ephemeralId: room._id,
-							attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? []) },
+							attributeValues: { fqns: buildAttributeFqns(config.attributeNamespace, room.abacAttributes ?? []) },
 						},
 					],
 				});
@@ -446,14 +359,34 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(allRequests);
 
-		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted && requestIndex[index]) {
-				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
-			}
-		});
+		nonCompliant.push(...getDeniedSubjects(responses, requestIndex));
 
 		return nonCompliant;
+	}
+
+	async reevaluateUsers(users: ReevaluationUser[]): Promise<NonCompliantPair[]> {
+		const roomIds = [...new Set(users.flatMap((u) => u.__rooms ?? []))];
+		if (!roomIds.length) {
+			return [];
+		}
+
+		const abacRoomCursor = Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
+			projection: { _id: 1, abacAttributes: 1 },
+		});
+
+		const abacRoomById = new Map<string, IRoom>();
+		for await (const room of abacRoomCursor) {
+			abacRoomById.set(room._id, room);
+		}
+
+		const entries = users
+			.map((user) => {
+				const rooms = (user.__rooms ?? []).map((rid) => abacRoomById.get(rid)).filter(isTruthy);
+				return rooms.length ? { user, rooms } : null;
+			})
+			.filter(isTruthy);
+
+		return this.evaluateUserRooms(entries);
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {
@@ -470,26 +403,27 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const entityKey = this.getUserEntityKey(user);
+		const config = this.client.getConfig();
+		const entityKey = getUserEntityKey(config.defaultEntityKey, user);
 		if (!entityKey) {
 			pdpLogger.warn({
 				msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant for all ABAC rooms',
 				userId: user._id,
 			});
-			return abacRooms as IRoom[];
+			return abacRooms;
 		}
 
 		const decisionRequests = abacRooms.map((room) => ({
 			entityIdentifier: {
 				entityChain: {
-					entities: [this.buildEntityIdentifier(entityKey)],
+					entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
 				},
 			},
 			action: { name: 'read' },
 			resources: [
 				{
 					ephemeralId: room._id,
-					attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? []) },
+					attributeValues: { fqns: buildAttributeFqns(config.attributeNamespace, room.abacAttributes ?? []) },
 				},
 			],
 		}));

@@ -6,7 +6,7 @@ import styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import MarkdownBlock from '../../components/MarkdownBlock';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 
 type GDPRProps = {
@@ -25,7 +25,7 @@ class GDPR extends Component<GDPRProps> {
 
 	render = ({ title, consentText, instructions, t }: GDPRProps) => (
 		<Screen title={title} className={createClassName(styles, 'gdpr')}>
-			<Screen.Content>
+			<ScreenContent>
 				{consentText ? (
 					<p className={createClassName(styles, 'gdpr__consent-text')}>
 						<MarkdownBlock text={consentText} />
@@ -51,8 +51,8 @@ class GDPR extends Component<GDPRProps> {
 						{t('i_agree')}
 					</Button>
 				</ButtonGroup>
-			</Screen.Content>
-			<Screen.Footer />
+			</ScreenContent>
+			<ScreenFooter />
 		</Screen>
 	);
 }

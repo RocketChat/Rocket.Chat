@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, TextInput, Button, Margins, Select, FieldError, FieldGroup, Field, FieldRow } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ const AddToken = ({ reload }: AddTokenProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const setModal = useSetModal();
-	const createTokenFn = useMethod('personalAccessTokens:generateToken');
+	const createTokenFn = useEndpoint('POST', '/v1/users.generatePersonalAccessToken');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const initialValues = useMemo(() => ({ name: '', bypassTwoFactor: 'require' }), []);
@@ -42,7 +42,7 @@ const AddToken = ({ reload }: AddTokenProps) => {
 	const handleAddToken = useCallback(
 		async ({ name: tokenName, bypassTwoFactor }: AddTokenFormData) => {
 			try {
-				const token = await createTokenFn({ tokenName, bypassTwoFactor: bypassTwoFactor === 'bypass' });
+				const { token } = await createTokenFn({ tokenName, bypassTwoFactor: bypassTwoFactor === 'bypass' });
 
 				const handleDismissModal = () => {
 					setModal(null);

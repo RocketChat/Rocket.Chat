@@ -1,7 +1,6 @@
 import { Badge, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
@@ -13,7 +12,7 @@ type AppRequestItemProps = {
 	username: string;
 };
 
-const AppRequestItem = ({ seen, name, createdDate, message, username }: AppRequestItemProps): ReactElement => {
+const AppRequestItem = ({ seen, name, createdDate, message, username }: AppRequestItemProps) => {
 	const formatDateAndTime = useFormatDateAndTime();
 	const isAdminUser = usePermission('manage-apps');
 

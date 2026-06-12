@@ -4,6 +4,7 @@ import { Imports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 export const executeGetLatestImportOperations = async () => {
 	const data = Imports.find(
@@ -26,6 +27,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getLatestImportOperations() {
+		methodDeprecationLogger.method('getLatestImportOperations', '9.0.0', '/v1/getLatestImportOperations');
 		const userId = Meteor.userId();
 
 		if (!userId) {

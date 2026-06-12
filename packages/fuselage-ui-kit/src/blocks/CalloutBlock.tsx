@@ -1,12 +1,11 @@
 import { Callout } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 
 type CalloutBlockProps = BlockProps<UiKit.CalloutBlock>;
 
-const CalloutBlock = ({ block, surfaceRenderer }: CalloutBlockProps): ReactElement => (
+const CalloutBlock = ({ block, surfaceRenderer }: CalloutBlockProps) => (
 	<Callout
 		type={block.variant}
 		title={block.title?.text}

@@ -1,8 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
-export const RegisterTitle = (): ReactElement | null => {
+export const RegisterTitle = () => {
 	const siteName = useSetting('Site_Name', 'Rocket.Chat');
 	const hideTitle = useSetting('Layout_Login_Hide_Title', false);
 

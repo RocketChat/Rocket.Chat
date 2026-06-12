@@ -8,7 +8,10 @@ import { RoutingManager } from '../../lib/RoutingManager';
 import { online } from '../../lib/service-status';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from '../lib/livechat';
 
-const cachedSettings = mem(settings, { maxAge: process.env.TEST_MODE === 'true' ? 1 : 1000, cacheKey: JSON.stringify });
+const cachedSettings = mem(settings, {
+	maxAge: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? 1 : 1000,
+	cacheKey: JSON.stringify,
+});
 
 API.v1.addRoute(
 	'livechat/config',

@@ -1,5 +1,69 @@
 # @rocket.chat/gazzodown
 
+## 31.0.0
+
+### Patch Changes
+
+- ([#40420](https://github.com/RocketChat/Rocket.Chat/pull/40420)) Fixes Insert Timestamp relative time preview not updating on input changes and losing the user's locale after the first refresh tick.
+
+- ([#40613](https://github.com/RocketChat/Rocket.Chat/pull/40613)) Sanitizes image URLs in rendered messages to block `javascript:`, `data:`, and `vbscript:` schemes — matching the protection already applied to markdown links. Defense-in-depth against XSS via crafted markdown like `![label](javascript:...)`.
+
+- <details><summary>Updated dependencies [fac64728505b312d5da786e92d3134450ce4a7c1, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/ui-client@31.0.0
+  - @rocket.chat/core-typings@8.5.0
+  - @rocket.chat/ui-contexts@31.0.0
+  </details>
+
+## 31.0.0-rc.0
+
+### Patch Changes
+
+- ([#40420](https://github.com/RocketChat/Rocket.Chat/pull/40420)) Fixes Insert Timestamp relative time preview not updating on input changes and losing the user's locale after the first refresh tick.
+
+- ([#40613](https://github.com/RocketChat/Rocket.Chat/pull/40613)) Sanitizes image URLs in rendered messages to block `javascript:`, `data:`, and `vbscript:` schemes — matching the protection already applied to markdown links. Defense-in-depth against XSS via crafted markdown like `![label](javascript:...)`.
+
+- <details><summary>Updated dependencies [ae9f740d6af20557eac61b4af902c868b4132b49, fac64728505b312d5da786e92d3134450ce4a7c1, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  - @rocket.chat/ui-client@31.0.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  </details>
+
+## 30.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 543b6c8cbde0d084a3a923acf4845b68db80206a, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36
+  - @rocket.chat/ui-client@30.0.0
+  - @rocket.chat/core-typings@8.4.0
+  - @rocket.chat/ui-contexts@30.0.0
+  </details>
+
+## 30.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  - @rocket.chat/ui-client@30.0.0-rc.2
+  - @rocket.chat/ui-contexts@30.0.0-rc.2
+  </details>
+
+## 30.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@30.0.0-rc.1
+  - @rocket.chat/ui-client@30.0.0-rc.1
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  </details>
+
 ## 29.0.2
 
 ### Patch Changes
@@ -20,6 +84,18 @@
   - @rocket.chat/core-typings@8.3.1
   - @rocket.chat/ui-client@29.0.1
   - @rocket.chat/ui-contexts@29.0.1
+  </details>
+
+## 30.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 543b6c8cbde0d084a3a923acf4845b68db80206a, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36-rc.0
+  - @rocket.chat/ui-client@30.0.0-rc.0
+  - @rocket.chat/core-typings@8.4.0-rc.0
+  - @rocket.chat/ui-contexts@30.0.0-rc.0
   </details>
 
 ## 29.0.0

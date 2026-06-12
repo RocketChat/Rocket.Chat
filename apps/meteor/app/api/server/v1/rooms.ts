@@ -1,6 +1,7 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import {
 	type IRoom,
+	type IRoomAbacRedaction,
 	type IUpload,
 	type RequiredField,
 	type RoomAdminFieldsType,
@@ -59,11 +60,13 @@ import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
+import { notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
 import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
@@ -87,6 +90,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
+import { scopeAdminRoomsForAbac } from '../lib/scopeAdminRoomsForAbac';
 
 export async function findRoomByIdOrName({
 	params,
@@ -414,6 +418,54 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 	},
 );
 
+const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string }>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string', minLength: 1 },
+		draft: { type: 'string' },
+	},
+	required: ['rid', 'draft'],
+	additionalProperties: false,
+});
+
+const saveDraftResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const roomsSaveDraftEndpoint = API.v1.post(
+	'rooms.saveDraft',
+	{
+		authRequired: true,
+		body: saveDraftBodySchema,
+		response: {
+			200: saveDraftResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { rid, draft } = this.bodyParams;
+
+		if (draft.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
+			return API.v1.failure('error-message-size-exceeded');
+		}
+
+		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined);
+		if (!subscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
+		}
+
+		void notifyOnSubscriptionChanged(subscription);
+
+		return API.v1.success();
+	},
+);
+
 API.v1.post(
 	'rooms.cleanHistory',
 	{
@@ -662,10 +714,15 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAdminRoomsProps,
 		response: {
-			200: ajv.compile<{ rooms: IRoom[]; count: number; offset: number; total: number }>({
+			200: ajv.compile<{
+				rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
+				count: number;
+				offset: number;
+				total: number;
+			}>({
 				type: 'object',
 				properties: {
-					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields
+					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields + optional ABAC redaction
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -735,10 +792,17 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAdminRoomsGetRoomProps,
 		response: {
-			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType>>({
+			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>({
 				allOf: [
 					{ $ref: '#/components/schemas/IRoomAdmin' },
-					{ type: 'object', properties: { success: { type: 'boolean', enum: [true] } }, required: ['success'] },
+					{
+						type: 'object',
+						properties: {
+							success: { type: 'boolean', enum: [true] },
+							abacAttributesRedacted: { type: 'boolean' },
+						},
+						required: ['success'],
+					},
 				],
 			}),
 			400: validateBadRequestErrorResponse,
@@ -1397,7 +1461,7 @@ export const roomEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				403: validateUnauthorizedErrorResponse,
 				200: ajv.compile<{
-					rooms: IRoom[];
+					rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
 					count: number;
 					offset: number;
 					total: number;
@@ -1432,10 +1496,10 @@ export const roomEndpoints = API.v1
 				projection: adminFields,
 			});
 
-			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [rooms, total] = await Promise.all([cursor.map(stripABACManagedFieldsForAdmin).toArray(), totalCount]);
 
 			return API.v1.success({
-				rooms,
+				rooms: await scopeAdminRoomsForAbac(rooms, this.userId),
 				count: rooms.length,
 				offset,
 				total,
@@ -1630,7 +1694,8 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

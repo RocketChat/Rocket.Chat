@@ -1,5 +1,5 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -21,7 +21,7 @@ export const useToggleReadAction = ({ rid, isUnread, subscription }: ToggleReadA
 
 	const unreadMessages = useMarkAsUnreadMutation();
 
-	const handleToggleRead = useEffectEvent(async () => {
+	const handleToggleRead = useStableCallback(async () => {
 		try {
 			queryClient.invalidateQueries({
 				queryKey: ['sidebar/search/spotlight'],

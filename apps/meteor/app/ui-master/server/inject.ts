@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import type { NextHandleFunction } from 'connect';
 import { Inject } from 'meteor/meteorhacks:inject-initial';

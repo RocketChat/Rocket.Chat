@@ -107,7 +107,7 @@ export type MediaSessionStateWithWidgetControls = {
 };
 
 export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionStateWithWidgetControls => {
-	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
+	const [mediaSession, dispatch] = useReducer(reducer, defaultSessionInfo);
 
 	const getAvatarUrl = useUserAvatarPath();
 

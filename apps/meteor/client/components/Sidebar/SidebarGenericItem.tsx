@@ -1,5 +1,5 @@
 import { Box, SidebarItem } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 type SidebarGenericItemProps = {
@@ -10,7 +10,7 @@ type SidebarGenericItemProps = {
 	externalUrl?: boolean;
 };
 
-const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps): ReactElement => (
+const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps) => (
 	<SidebarItem
 		selected={active}
 		clickable

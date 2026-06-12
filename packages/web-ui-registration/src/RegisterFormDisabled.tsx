@@ -1,12 +1,11 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
-export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const linkReplacementText = useSetting('Accounts_RegistrationForm_LinkReplacementText', '');
 
 	const { t } = useTranslation();

@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
 import Item from './ContextBlock.Item';
@@ -8,7 +7,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type ContextBlockProps = BlockProps<UiKit.ContextBlock>;
 
-const ContextBlock = ({ className, block, surfaceRenderer }: ContextBlockProps): ReactElement => {
+const ContextBlock = ({ className, block, surfaceRenderer }: ContextBlockProps) => {
 	const itemElements = useMemo(
 		() =>
 			block.elements.map((element) => ({

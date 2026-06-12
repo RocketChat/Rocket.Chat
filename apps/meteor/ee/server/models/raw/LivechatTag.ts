@@ -29,7 +29,7 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 		_id: string | undefined,
 		{ name, description }: { name: string; description?: string },
 		departments: string[] = [],
-	): Promise<ILivechatTag> {
+	): Promise<Omit<ILivechatTag, '_updatedAt'>> {
 		const record = {
 			name,
 			description,

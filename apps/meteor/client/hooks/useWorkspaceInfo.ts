@@ -53,15 +53,15 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 				queryFn: () => getStatistics({ refresh: refreshStatistics ? 'true' : 'false' }),
 				staleTime: Infinity,
 				placeholderData: keepPreviousData,
-				select: (data: unknown) => {
-					const statsData = data as Serialized<IStats>;
+				select: (data: Serialized<IStats>): IStats => {
 					return {
-						...statsData,
-						lastMessageSentAt: statsData.lastMessageSentAt ? new Date(statsData.lastMessageSentAt) : undefined,
+						...data,
+						lastMessageSentAt: data.lastMessageSentAt ? new Date(data.lastMessageSentAt) : undefined,
+						_updatedAt: new Date(data._updatedAt),
 					};
 				},
 			},
-		],
+		] as const,
 	});
 };
 

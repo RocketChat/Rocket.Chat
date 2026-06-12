@@ -2,6 +2,8 @@ import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
+import { getMessageMaxParseLength } from '../../../../lib/getMessageMaxParseLength';
+
 type ParserConfig = {
 	colors?: boolean;
 	emoticons?: boolean;
@@ -26,9 +28,19 @@ export class BeforeSaveMarkdownParser {
 			return message;
 		}
 
+		const messageMaxParseLength = getMessageMaxParseLength();
+		if (messageMaxParseLength > 0 && message.msg && message.msg.length > messageMaxParseLength) {
+			delete message.md;
+			return message;
+		}
+
 		try {
 			if (message.msg) {
 				message.md = parse(message.msg, config);
+			}
+
+			if (message.attachments?.[0]?.description) {
+				message.attachments[0].descriptionMd = parse(message.attachments[0].description, config);
 			}
 		} catch (e) {
 			console.error(e); // errors logged while the parser is at experimental stage

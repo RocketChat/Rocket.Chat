@@ -1,7 +1,6 @@
 import { Field, FieldLabel, FieldRow, Flex, InputBoxSkeleton, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-const SettingSkeleton = (): ReactElement => (
+const SettingSkeleton = () => (
 	<Field>
 		<Flex.Item align='stretch'>
 			<FieldLabel>
