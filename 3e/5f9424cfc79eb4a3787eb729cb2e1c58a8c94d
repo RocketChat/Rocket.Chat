@@ -1,0 +1,25 @@
+apps/meteor/scripts/migration/move-batch.mjs
+  s_ade77be329b87d::t_287496512730e7 13
+  s_ade77be329b87d::t_e92f5118a0cd45 67-71,73-74,76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3e5f9424cfc79eb4a3787eb729cb2e1c58a8c94d",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_ade77be329b87d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2bd641de-748c-415d-b88d-94d8454dc13d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
