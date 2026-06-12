@@ -16,6 +16,7 @@ export const useShowSettingAlerts = () => {
 					<GenericModal
 						variant='danger'
 						icon={null}
+						maxHeight='x600'
 						title={t('Confirm_settings_change')}
 						confirmText={t('Save_changes')}
 						cancelText={t('Cancel')}
