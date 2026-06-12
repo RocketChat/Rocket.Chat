@@ -22,15 +22,15 @@ describe('AI Search SourceResult', () => {
 					text: '**Oranges** are green',
 					score: 0.61,
 					ts: '2026-01-05T12:00:00.000Z',
-					u: { name: 'Devanshu', username: 'dnouv' },
+					u: { name: 'Search User', username: 'search.user' },
 					room: { _id: 'r1', t: 'c', name: 'general', fname: 'General' },
 				}}
 			/>,
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		expect(screen.getByText('Devanshu')).toBeInTheDocument();
-		expect(screen.getByText('@dnouv')).toBeInTheDocument();
+		expect(screen.getByText('Search User')).toBeInTheDocument();
+		expect(screen.getByText('@search.user')).toBeInTheDocument();
 		expect(screen.getByText('General')).toBeInTheDocument();
 		expect(screen.getByText('61%')).toBeInTheDocument();
 		expect(screen.getByText('Oranges').tagName).toBe('STRONG');

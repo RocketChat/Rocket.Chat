@@ -1,4 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSettings } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -16,12 +17,8 @@ export const useSettingsGroups = (filter: string): ISetting[] => {
 		const getMatchableStrings = (setting: ISetting): string[] =>
 			[setting.i18nLabel && t(setting.i18nLabel as TranslationKey), t(setting._id as TranslationKey), setting._id].filter(Boolean);
 
-		try {
-			const filterRegex = new RegExp(filter, 'i');
-			return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => filterRegex.test(text));
-		} catch (e) {
-			return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
-		}
+		const filterRegex = new RegExp(escapeRegExp(filter), 'i');
+		return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => filterRegex.test(text));
 	}, [filter, t]);
 
 	return useMemo(() => {
