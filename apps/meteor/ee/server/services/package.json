@@ -44,7 +44,7 @@
 		"pino": "10.3.1",
 		"sodium-native": "^4.3.3",
 		"sodium-plus": "^0.9.0",
-		"ws": "~8.19.0"
+		"ws": "~8.21.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/icons": "~0.47.0",
