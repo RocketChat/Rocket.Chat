@@ -8,6 +8,12 @@ inputs:
   CR_PAT:
     required: true
     description: 'GitHub Container Registry Personal Access Token'
+  DOCKER_USER:
+    required: false
+    description: 'DockerHub username (required for FIPS builds to pull private base image)'
+  DOCKER_PASS:
+    required: false
+    description: 'DockerHub password (required for FIPS builds to pull private base image)'
   deno-version:
     required: true
     description: 'Deno version'
@@ -28,7 +34,7 @@ inputs:
     default: 'true'
   type:
     required: false
-    description: 'production or coverage'
+    description: 'production, coverage, or fips'
     default: 'coverage'
 
 runs:
@@ -43,11 +49,21 @@ runs:
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
 
+    - name: Login to DockerHub
+      # FIPS base image (rocketchat/dhi-node) lives in a private DockerHub repo and requires auth to pull.
+      if: inputs.type == 'fips' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+      with:
+        username: ${{ inputs.DOCKER_USER }}
+        password: ${{ inputs.DOCKER_PASS }}
+
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
-        name: build-${{ inputs.type }}
+        # Temporary: rocketchat fips reuses existing Meteor artifacts until build-fips exists.
+        # PR/merge queue runs only produce build-coverage, while release/develop produce build-production.
+        name: build-${{ inputs.type == 'fips' && ((github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production') || inputs.type }}
         path: /tmp/build
 
     - name: Unpack meteor build
@@ -85,6 +101,10 @@ runs:
         GITHUB_REF: ${{ github.ref }}
       run: |
         set -o xtrace
+        compose_fips_override=''
+        if [[ "$INPUT_TYPE" == 'fips' ]]; then
+          compose_fips_override='-f docker-compose-ci.fips.yml'
+        fi
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
@@ -109,10 +129,10 @@ runs:
         fi
 
         # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
 
         docker buildx bake \
-          -f docker-compose-ci.yml \
+          -f docker-compose-ci.yml $compose_fips_override \
           ${LOAD_OR_PUSH} \
           --allow=fs.read=/tmp/build \
           --set "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}" \
@@ -133,6 +153,8 @@ runs:
           SERVICE_SUFFIX=''
           if [[ "$INPUT_SERVICE" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
             SERVICE_SUFFIX='-cov'
+          elif [[ "$INPUT_TYPE" == 'fips' ]]; then
+            SERVICE_SUFFIX='-fips'
           fi
 
           mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
@@ -160,9 +182,13 @@ runs:
         TYPE: ${{ inputs.type }}
       run: |
         set -o xtrace
+        compose_fips_override=''
+        if [[ "$TYPE" == 'fips' ]]; then
+          compose_fips_override='-f docker-compose-ci.fips.yml'
+        fi
 
         # Get image name from docker-compose-ci.yml
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
+        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images

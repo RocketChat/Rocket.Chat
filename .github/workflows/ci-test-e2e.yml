@@ -134,7 +134,7 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
+          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-fips' || 'docker-image-*-amd64-coverage') }}
           path: /tmp/docker-images
           merge-multiple: true
 
@@ -187,20 +187,22 @@ jobs:
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
 
       - name: Start containers for EE
-        if: inputs.release == 'ee'
+        if: inputs.release == 'ee' || inputs.release == 'fips'
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
           TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
+          FIPS_OVERRIDE: ${{ inputs.release == 'fips' && '-f docker-compose-ci.fips.yml' || '' }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
+          read -r -a fips_override <<< "$FIPS_OVERRIDE"
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml "${fips_override[@]}" up -d --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
 
       - name: Wait services to start up
-        if: inputs.release == 'ee'
+        if: inputs.release == 'ee' || inputs.release == 'fips'
         run: |
           docker ps
 
@@ -218,7 +220,7 @@ jobs:
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
         run: |
           set -o xtrace
 
@@ -234,7 +236,7 @@ jobs:
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
         run: |
           set -o xtrace
 
@@ -249,7 +251,7 @@ jobs:
         if: inputs.type == 'ui'
         env:
           E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
           REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
