@@ -238,7 +238,7 @@ describe('AISearchService', () => {
 		it('rejects answer generation when AI Search or answer generation is unavailable', async () => {
 			mockSettingsGet.mockImplementation(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
 
-			await expect(createService().answer({ query: 'fruit', messages: [{ _id: 'm1', text: 'oranges are green' }] })).rejects.toThrow(
+			await expect(createService().answer({ query: 'fruit', messages: [{ text: 'oranges are green' }] })).rejects.toThrow(
 				'error-ai-not-enabled',
 			);
 			expect(mockFetch).not.toHaveBeenCalled();
@@ -255,7 +255,7 @@ describe('AISearchService', () => {
 			await expect(
 				createService().answer({
 					query: 'fruit colors',
-					messages: [{ _id: 'm1', text: 'oranges are green', username: 'alice', roomName: 'general', score: 0.61 }],
+					messages: [{ text: 'oranges are green', username: 'alice', roomName: 'general', score: 0.61 }],
 				}),
 			).resolves.toEqual({
 				answer: 'Oranges are green.',

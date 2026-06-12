@@ -126,8 +126,18 @@ describe('NavBarSearch AI filter helpers', () => {
 
 		it('bounds the escaped regex pattern used for room lookup', () => {
 			const query = buildRoomSearchQuery('/'.repeat(128));
+			const firstPredicate = query.$or[0];
 
-			expect(query.$or[0].name.source).toBe('\\/'.repeat(64));
+			if (!firstPredicate || !('name' in firstPredicate)) {
+				throw new Error('Expected the first room lookup predicate to match room names');
+			}
+
+			const nameRegex = firstPredicate.name;
+			if (!(nameRegex instanceof RegExp)) {
+				throw new Error('Expected the room name lookup predicate to use a regex');
+			}
+
+			expect(nameRegex.source).toBe('\\/'.repeat(64));
 		});
 	});
 });

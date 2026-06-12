@@ -30,16 +30,20 @@ const CapabilityCard = ({ icon, title, description, status, actionLabel, disable
 				{status}
 			</Box>
 			<CardTitle>{title}</CardTitle>
-			<CardBody flexDirection='column' flexGrow={1}>
-				<Box color='hint' fontScale='p2'>
-					{description}
-				</Box>
-			</CardBody>
-			<CardControls mbs='auto'>
-				<Button small disabled={disabled} onClick={onClick}>
-					{actionLabel}
-				</Button>
-			</CardControls>
+			<Box flexGrow={1}>
+				<CardBody flexDirection='column'>
+					<Box color='hint' fontScale='p2'>
+						{description}
+					</Box>
+				</CardBody>
+			</Box>
+			<Box mbs='auto'>
+				<CardControls>
+					<Button small disabled={disabled} onClick={onClick}>
+						{actionLabel}
+					</Button>
+				</CardControls>
+			</Box>
 		</Box>
 	</Card>
 );
