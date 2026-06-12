@@ -35,6 +35,7 @@
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
+		"external-editor/tmp": "0.2.6",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
 		"adm-zip": "0.5.9",
 		"axios@npm:^1.6.1": "1.16.0",
@@ -86,7 +87,14 @@
 		"picomatch@npm:^4.0.3": "^4.0.4",
 		"path-to-regexp@npm:^8.1.0": "^8.4.0",
 		"serialize-javascript": "^7.0.5",
+		"launch-editor/shell-quote": "1.8.4",
+		"npm-run-all/shell-quote": "1.8.4",
+		"socks-proxy-agent/socks": "^2.8.9",
+		"mongodb/socks": "^2.8.9",
 		"underscore": "1.13.8",
+		"ws@npm:^8": "^8.20.1",
+		"ws@npm:^8.2.3": "^8.20.1",
+		"ws@npm:^8.18.0": "^8.20.1",
 		"undici@npm:^6.19.5": "^6.24.0",
 		"webpack": "~5.104.0",
 		"yaml@npm:^1.10.0": "^1.10.3",
@@ -152,7 +160,11 @@
 		"@peggyjs/from-mem/semver": "7.7.4",
 		"node-gyp/tar": "7.5.13",
 		"cacache/tar": "7.5.13",
-		"@mapbox/node-pre-gyp/tar": "7.5.13"
+		"@mapbox/node-pre-gyp/tar": "7.5.13",
+		"@opentelemetry/exporter-logs-otlp-grpc/@grpc/grpc-js": "^1.14.4",
+		"@opentelemetry/exporter-metrics-otlp-grpc/@grpc/grpc-js": "^1.14.4",
+		"@opentelemetry/exporter-trace-otlp-grpc/@grpc/grpc-js": "^1.14.4",
+		"@opentelemetry/otlp-grpc-exporter-base/@grpc/grpc-js": "^1.14.4"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
