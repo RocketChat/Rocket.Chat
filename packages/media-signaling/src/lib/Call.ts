@@ -185,7 +185,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private hasRemoteData: boolean;
 
-	private initialized: boolean;
+	private _initialized: boolean;
+
+	public get initialized(): boolean {
+		return this._initialized;
+	}
 
 	private acknowledged: boolean;
 
@@ -296,7 +300,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.acceptedRemotely = false;
 		this.endedLocally = false;
 		this.hasRemoteData = false;
-		this.initialized = false;
+		this._initialized = false;
 		this.acknowledged = false;
 		this.contractState = 'proposed';
 		this.serviceStates = new Map();
@@ -340,7 +344,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const wasInitialized = this.initialized;
 
-		this.initialized = true;
+		this._initialized = true;
 		this.acceptedLocally = true;
 		if (this.hasRemoteData) {
 			this.changeContact(contact, { prioritizeExisting: true });
@@ -388,7 +392,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.remoteCallId = signal.callId;
 		const wasInitialized = this.initialized;
 
-		this.initialized = true;
+		this._initialized = true;
 		this.hasRemoteData = true;
 		this._service = signal.service;
 		this._role = signal.role;
