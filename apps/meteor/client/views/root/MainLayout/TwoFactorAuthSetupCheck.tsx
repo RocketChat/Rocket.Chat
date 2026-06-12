@@ -3,13 +3,12 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
-import LayoutWithSidebar from './LayoutWithSidebar';
 import MainContent from './MainContent';
 import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
 
-const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }) => {
+const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactNode => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 	const require2faSetup = useRequire2faSetup();
 
@@ -23,7 +22,7 @@ const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }) => {
 		);
 	}
 
-	return <LayoutWithSidebar>{children}</LayoutWithSidebar>;
+	return children;
 };
 
 export default TwoFactorAuthSetupCheck;
