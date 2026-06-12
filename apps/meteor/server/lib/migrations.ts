@@ -18,8 +18,8 @@ const log = new Logger('Migrations');
 const migrations = new Set<IMigration>();
 
 // sets the control record
-function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IControl, 'version' | 'locked'> {
-	void Migrations.updateMany(
+async function setControl(control: Pick<IControl, 'version' | 'locked'>): Promise<Pick<IControl, 'version' | 'locked'>> {
+	await Migrations.updateOne(
 		{
 			_id: 'control',
 		},
@@ -107,8 +107,8 @@ export function addMigration(migration: IMigration): void {
 }
 
 // Side effect: saves version.
-function unlock(version: number): void {
-	setControl({
+async function unlock(version: number): Promise<void> {
+	await setControl({
 		locked: false,
 		version,
 	});
@@ -173,7 +173,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 
 	// version 0 means it is a fresh database, just set the control to latest known version and skip
 	if (currentVersion === 0) {
-		setControl({
+		await setControl({
 			locked: false,
 			version: orderedMigrations[orderedMigrations.length - 1].version,
 		});
@@ -239,7 +239,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			process.exit(1);
 		}
 		log.startup('Finished migrating.');
-		unlock(currentVersion);
+		await unlock(currentVersion);
 		return true;
 	}
 
@@ -248,7 +248,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			msg: 'Already at target migration version',
 			version,
 		});
-		unlock(currentVersion);
+		await unlock(currentVersion);
 		return true;
 	}
 
@@ -274,7 +274,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			for (let i = startIdx; i < endIdx; i++) {
 				migrations.push(async () => {
 					await migrate('up', orderedMigrations[i + 1]);
-					setControl({
+					await setControl({
 						locked: true,
 						version: orderedMigrations[i + 1].version,
 					});
@@ -284,7 +284,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			for (let i = startIdx; i > endIdx; i--) {
 				migrations.push(async () => {
 					await migrate('down', orderedMigrations[i]);
-					setControl({
+					await setControl({
 						locked: true,
 						version: orderedMigrations[i - 1].version,
 					});
@@ -300,7 +300,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		process.exit(1);
 	}
 
-	unlock(orderedMigrations[endIdx].version);
+	await unlock(orderedMigrations[endIdx].version);
 	log.startup('Finished migrating.');
 
 	// remember to run meteor with --once otherwise it will restart

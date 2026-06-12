@@ -1,7 +1,7 @@
 import { RouterContext } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
 import type { ContextType, ReactNode } from 'react';
 import { useContext, useMemo } from 'react';
+import { action } from 'storybook/actions';
 
 const logAction = action('RouterContext');
 
