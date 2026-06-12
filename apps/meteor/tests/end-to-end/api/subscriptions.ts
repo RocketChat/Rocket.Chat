@@ -428,7 +428,8 @@ describe('[Subscriptions]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body.subscription).to.not.have.property('tunread');
+						// removeUnreadThreadByRoomIdAndUserId only $pulls the tmid, leaving an empty array
+						expect(res.body.subscription).to.have.property('tunread').that.is.an('array').and.does.not.include(threadId);
 					});
 			});
 

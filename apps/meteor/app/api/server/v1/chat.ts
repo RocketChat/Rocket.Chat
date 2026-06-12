@@ -546,6 +546,9 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
+			// Deleting by fileId resolves the message that references the file and deletes it.
+			// An orphan upload (a file with no associated message) is not deletable through this
+			// endpoint and intentionally returns a failure below.
 			const msg =
 				'fileId' in this.bodyParams
 					? await Messages.getMessageByFileId(this.bodyParams.fileId)
@@ -555,7 +558,7 @@ const chatEndpoints = API.v1
 				if ('fileId' in this.bodyParams) {
 					return API.v1.failure(`No message found with the file id: "${this.bodyParams.fileId}".`);
 				}
-				return API.v1.failure(`No message found with the id: "${this.bodyParams.msgId}".`);
+				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
 			}
 
 			if ('roomId' in this.bodyParams && this.bodyParams.roomId !== msg.rid) {

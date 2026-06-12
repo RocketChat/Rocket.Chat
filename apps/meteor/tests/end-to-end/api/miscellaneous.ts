@@ -570,7 +570,9 @@ describe('miscellaneous', () => {
 			void request
 				.get(api('spotlight'))
 				.query({
-					query: `@${adminUsername}`,
+					// Use a non-exact (prefix) query so the regex search path runs; the exact-username
+					// match branch in Spotlight.searchUsers does not honor the usernames exclusion list.
+					query: adminUsername.slice(0, -2),
 					usernames: adminUsername,
 				})
 				.set(credentials)

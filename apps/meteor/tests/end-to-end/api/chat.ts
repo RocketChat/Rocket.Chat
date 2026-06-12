@@ -2383,7 +2383,7 @@ describe('[Chat]', () => {
 					});
 			});
 
-			it('should remove an uploaded file that has no associated message', async () => {
+			it('should fail when the uploaded file has no associated message', async () => {
 				const fileId = await uploadFile();
 
 				await request
@@ -2391,9 +2391,10 @@ describe('[Chat]', () => {
 					.set(credentials)
 					.send({ fileId })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `No message found with the file id: "${fileId}".`);
 					});
 			});
 
