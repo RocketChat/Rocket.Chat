@@ -83,6 +83,34 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
 	});
 
+	it('should respect explicit group visibility options', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('hidden_group', { hidden: true }, async function () {
+			await this.section('section', async function () {
+				await this.add('hidden_group_setting', true, {
+					type: 'boolean',
+				});
+			});
+		});
+
+		expect(Settings.findOne({ _id: 'hidden_group' })).to.include({
+			type: 'group',
+			hidden: true,
+			blocked: false,
+		});
+		expect(Settings.findOne({ _id: 'hidden_group_setting' })).to.include({
+			group: 'hidden_group',
+			section: 'section',
+			hidden: false,
+			blocked: false,
+			packageValue: true,
+		});
+	});
+
 	it('should respect override via environment as int', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;

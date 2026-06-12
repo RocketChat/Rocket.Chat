@@ -35,6 +35,12 @@ class MessageSearchQueryParser {
 		this.forceRegex = forceRegex;
 	}
 
+	private getDateFromFilter(year: string, month: string, day: string): Date {
+		const utcOffsetInHours = this.user?.utcOffset ?? 0;
+		const timestamp = Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+		return new Date(timestamp - utcOffsetInHours * 60 * 60 * 1000);
+	}
+
 	private consumeFrom(text: string) {
 		const from: string[] = [];
 
@@ -170,8 +176,7 @@ class MessageSearchQueryParser {
 	 */
 	private consumeBefore(text: string) {
 		return text.replace(/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
-			const beforeDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
-			beforeDate.setUTCHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
+			const beforeDate = this.getDateFromFilter(year, month, day);
 
 			this.query.ts = {
 				...this.query.ts,
@@ -187,8 +192,7 @@ class MessageSearchQueryParser {
 	 */
 	private consumeAfter(text: string) {
 		return text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
-			const afterDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + 1);
-			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
+			const afterDate = this.getDateFromFilter(year, month, (parseInt(day, 10) + 1).toString());
 
 			this.query.ts = {
 				...this.query.ts,
@@ -204,10 +208,8 @@ class MessageSearchQueryParser {
 	 */
 	private consumeOn(text: string) {
 		return text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
-			const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
-			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
-			const dayAfter = new Date(date);
-			dayAfter.setDate(dayAfter.getDate() + 1);
+			const date = this.getDateFromFilter(year, month, day);
+			const dayAfter = new Date(date.getTime() + 24 * 60 * 60 * 1000);
 
 			this.query.ts = {
 				$gte: date,

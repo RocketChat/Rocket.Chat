@@ -8,8 +8,6 @@ describe('parseMessageSearchQuery', () => {
 		user: createFakeUser(),
 	};
 
-	const utcOffset = new Date().getTimezoneOffset() / 60;
-
 	[
 		{
 			text: 'from:rodrigo mention:gabriel chat',
@@ -175,17 +173,17 @@ describe('parseMessageSearchQuery', () => {
 		},
 		{
 			text: 'before:01-01-2023',
-			query: { ts: { $lte: new Date(2023, 0, 1, utcOffset) } },
+			query: { ts: { $lte: new Date(Date.UTC(2023, 0, 1)) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'after:01-01-2023',
-			query: { ts: { $gte: new Date(2023, 0, 2, utcOffset) } },
+			query: { ts: { $gte: new Date(Date.UTC(2023, 0, 2)) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'on:01-01-2023',
-			query: { ts: { $gte: new Date(2023, 0, 1, utcOffset), $lt: new Date(2023, 0, 2, utcOffset) } },
+			query: { ts: { $gte: new Date(Date.UTC(2023, 0, 1)), $lt: new Date(Date.UTC(2023, 0, 2)) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
@@ -203,6 +201,22 @@ describe('parseMessageSearchQuery', () => {
 			const { query, options } = parseMessageSearchQuery(text, params);
 			expect(query).to.deep.equal(expectedQuery);
 			expect(options).to.deep.equal(expectedOptions);
+		});
+	});
+
+	it('should apply fractional user timezone offsets to date filters', () => {
+		const { query } = parseMessageSearchQuery('on:01-01-2023', {
+			user: {
+				...params.user,
+				utcOffset: 5.5,
+			},
+		});
+
+		expect(query).to.deep.equal({
+			ts: {
+				$gte: new Date('2022-12-31T18:30:00.000Z'),
+				$lt: new Date('2023-01-01T18:30:00.000Z'),
+			},
 		});
 	});
 });

@@ -3,7 +3,7 @@ import { settingsRegistry } from '../../app/settings/server';
 const AI_LICENSE_MODULE = 'chat.rocket.rc-ai' as const;
 
 export const createAISettings = () =>
-	settingsRegistry.addGroup('AI_Center', async function () {
+	settingsRegistry.addGroup('AI_Center', { hidden: true }, async function () {
 		await this.section('AI_LLM_Provider', async function () {
 			await this.add('AI_LLM_OpenAI_Base_URL', 'https://api.openai.com/v1', {
 				type: 'string',
