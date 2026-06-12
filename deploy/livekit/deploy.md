@@ -1,14 +1,25 @@
-# Deploying LiveKit + Egress to AWS
+# Deploying LiveKit + on-demand Egress to AWS
 
-Single-instance self-hosted LiveKit stack (server + egress + redis + Caddy) on
-one EC2, provisioned by `cloudformation.yaml`. Intended for testing — single
-AZ, single instance, no HA.
+Two CloudFormation stacks:
+
+- **`core.yaml`** — LiveKit server + Redis + Caddy (auto-TLS) on a small EC2.
+  Always on. Cheap (~$15/mo for `t4g.small`). Also runs a tiny scaler
+  script that polls LK every 5s and drives the egress ASG.
+- **`egress.yaml`** — Auto Scaling Group (min=0, max=1) of egress workers.
+  Scaling is driven by the scaler running on the core box, not by webhooks
+  or Lambda — so deploy is a single shot per stack, no chicken-and-egg.
+
+Cross-stack wiring is via `Fn::ImportValue` (VPC, subnet, private IP of the
+core box for Redis, public domain for the egress worker's `ws_url`). The
+ASG name is by convention: `${CoreStackName}-egress-asg`. core.yaml's IAM
+role grants `SetDesiredCapacity` on exactly that name.
 
 ## Prerequisites
 
-- **AWS CLI** configured (`aws sts get-caller-identity` must work)
-- **Permissions** in the target account: `cloudformation:*`, `ec2:*`, `iam:CreateRole / AttachRolePolicy / PassRole / CreateInstanceProfile`
-- **A domain you control** — Caddy provisions Let's Encrypt certs, which requires a publicly resolvable A record
+- **AWS CLI** configured (`aws sts get-caller-identity` must work).
+- **Permissions**: `cloudformation:*`, `ec2:*`, `iam:*`, `autoscaling:*`.
+- **A domain you control** — Caddy provisions Let's Encrypt certs, which
+  requires a publicly resolvable A record.
 
 ## 1. Generate LiveKit credentials
 
@@ -19,12 +30,12 @@ echo "LIVEKIT_API_KEY=$LK_KEY"
 echo "LIVEKIT_API_SECRET=$LK_SECRET"
 ```
 
-Record these — you'll also paste them into Rocket.Chat's video-conf settings.
+Same values get passed to both stacks AND into Rocket.Chat workspace settings.
 
 ## 2. EC2 key pair
 
 ```sh
-REGION=us-east-1                # match your AWS default
+REGION=us-east-1
 KEYNAME=livekit-test
 
 aws ec2 create-key-pair \
@@ -36,16 +47,11 @@ aws ec2 create-key-pair \
 chmod 600 ~/.ssh/$KEYNAME.pem
 ```
 
-The `chmod 600` is required; SSH refuses keys that are world-readable.
-
 ## 3. Choose a VPC
 
-The template creates a new VPC by default, but most corporate AWS accounts
-sit at or near the per-region VPC quota (default 5). If the deploy fails with
-`The maximum number of VPCs has been reached`, reuse an existing public VPC
-instead.
-
-List candidates:
+The template can create a new VPC, but most corporate AWS accounts sit near
+the per-region VPC quota (default 5). If deploy fails with
+`The maximum number of VPCs has been reached`, reuse an existing public VPC.
 
 ```sh
 # VPCs
@@ -57,11 +63,8 @@ aws ec2 describe-vpcs --region "$REGION" \
 aws ec2 describe-subnets --region "$REGION" \
   --query 'Subnets[].[VpcId,SubnetId,AvailabilityZone,CidrBlock,MapPublicIpOnLaunch,Tags[?Key==`Name`].Value|[0]]' \
   --output table
-```
 
-Confirm the subnet routes `0.0.0.0/0` to an Internet Gateway (not a NAT):
-
-```sh
+# Confirm subnet routes 0.0.0.0/0 to an IGW (not a NAT)
 aws ec2 describe-route-tables --region "$REGION" \
   --filters "Name=association.subnet-id,Values=<subnet-id>" \
   --query 'RouteTables[].Routes[?DestinationCidrBlock==`0.0.0.0/0`].[GatewayId,NatGatewayId]' \
@@ -69,15 +72,15 @@ aws ec2 describe-route-tables --region "$REGION" \
 # Expected: igw-... in column 1, empty column 2.
 ```
 
-Note the VPC + subnet IDs.
+**Both stacks must use the same VPC + subnet.** Note the IDs now.
 
-## 4. Deploy
+## 4. Deploy `core.yaml`
 
 ```sh
 aws cloudformation deploy \
   --region "$REGION" \
-  --stack-name livekit-dev-test \
-  --template-file deploy/livekit/cloudformation.yaml \
+  --stack-name livekit-core \
+  --template-file deploy/livekit/core.yaml \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides \
     Domain=livekit.dev.example.com \
@@ -89,102 +92,186 @@ aws cloudformation deploy \
     ExistingPublicSubnetId=subnet-xxxxxxxxxxxx
 ```
 
-Drop `ExistingVpcId` / `ExistingPublicSubnetId` if you want the template to
-create its own VPC.
+Drop `ExistingVpcId` / `ExistingPublicSubnetId` to provision a fresh VPC.
 
 Takes ~3-5 min. CloudFormation waits for `cfn-signal` from the in-instance
-bootstrap, so `CREATE_COMPLETE` means Docker images are pulled and containers
-are running.
-
-## 5. DNS
+bootstrap, so `CREATE_COMPLETE` means LK + Redis + Caddy + the scaler are
+all running. The scaler is already polling LK; until egress.yaml is up, its
+`SetDesiredCapacity` calls will fail (ASG doesn't exist yet) — that's fine.
 
 Get the EIP:
 
 ```sh
-aws cloudformation describe-stacks \
-  --region "$REGION" \
-  --stack-name livekit-dev-test \
+aws cloudformation describe-stacks --region "$REGION" \
+  --stack-name livekit-core \
   --query 'Stacks[0].Outputs' --output table
 ```
 
-Create an A record:
-- `livekit.dev.example.com` → `<PublicIP>`
-- TTL 60 while iterating
+## 5. DNS
 
-Wait for propagation:
+Create an A record `livekit.dev.example.com → <PublicIP>` (TTL 60 while
+iterating). Wait until it resolves:
 
 ```sh
 dig +short livekit.dev.example.com
-# Should return the EIP
 ```
 
-## 6. Wait for the cert
+If the Caddy cert isn't valid within ~60s of DNS propagating, restart Caddy
+(it backed off after the initial NXDOMAIN — see Troubleshooting).
 
-Caddy attempts cert issuance on startup. **If your DNS A record wasn't in
-place at boot, the first attempts will fail** and Caddy enters exponential
-backoff (can be minutes-to-hours).
-
-Once DNS resolves, force an immediate retry:
+## 6. Deploy `egress.yaml`
 
 ```sh
-ssh -i ~/.ssh/$KEYNAME.pem ec2-user@<PublicIP>
-sudo docker compose -f /opt/livekit/docker-compose.yml restart caddy
-sudo docker compose -f /opt/livekit/docker-compose.yml logs -f caddy
-# Watch for: "certificate obtained successfully"
+aws cloudformation deploy \
+  --region "$REGION" \
+  --stack-name livekit-egress \
+  --template-file deploy/livekit/egress.yaml \
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides \
+    CoreStackName=livekit-core \
+    LiveKitApiKey=$LK_KEY \
+    LiveKitApiSecret=$LK_SECRET \
+    KeyPairName=$KEYNAME
 ```
 
-Then:
-
-```sh
-curl -fsSI https://livekit.dev.example.com/
-# 200 OK via Caddy = LK server reachable through TLS
-```
+That's it — no follow-up redeploy needed. Within ~5s of `CREATE_COMPLETE`,
+core's scaler picks up the ASG and starts driving it.
 
 ## 7. Point Rocket.Chat at it
 
-Workspace settings (Admin → Video Conference → LiveKit, or via REST):
+Workspace settings (Admin → Video Conference → LiveKit):
 
 - `VideoConf_LiveKit_URL`: `wss://livekit.dev.example.com`
-- `VideoConf_LiveKit_APIKey`: the `$LK_KEY` from step 1
-- `VideoConf_LiveKit_APISecret`: the `$LK_SECRET` from step 1
+- `VideoConf_LiveKit_APIKey`: `$LK_KEY`
+- `VideoConf_LiveKit_APISecret`: `$LK_SECRET`
 
-Start a call and check:
-- Joining the room (signaling works → port 443 / wss path good)
-- Audio + video flowing (media works → UDP 50000-60000 not blocked)
-- Captions appearing (worker connected + Gemini path good)
-- Recording (Egress reachable; payload must include the S3 destination
-  since the template doesn't bake one in)
+## 8. Verify end-to-end
+
+Start a call in Rocket.Chat. Within ~2-3 minutes:
+
+```sh
+ASG=$(aws cloudformation describe-stacks --region "$REGION" \
+  --stack-name livekit-egress \
+  --query 'Stacks[0].Outputs[?OutputKey==`AsgName`].OutputValue' --output text)
+
+# Watch ASG capacity flip 0 -> 1
+aws autoscaling describe-auto-scaling-groups --region "$REGION" \
+  --auto-scaling-group-names "$ASG" \
+  --query 'AutoScalingGroups[0].[DesiredCapacity,length(Instances)]' --output text
+```
+
+End the call. Within ~5-10s (one scaler poll + the `SetDesiredCapacity`
+call) the instance is marked for termination.
+
+## Architecture
+
+```
+                 Rocket.Chat client
+                        │ wss
+                        ▼
+    ┌───────────────────────────────────────────────────┐
+    │ core.yaml (always on, ~$15/mo)                    │
+    │                                                   │
+    │   livekit-server  +  redis  +  caddy              │
+    │   t4g.small (2 vCPU / 2 GB RAM)                   │
+    │                                                   │
+    │   scale-egress.py (systemd) ──┐                   │
+    │     poll LK every 5s          │                   │
+    │     on count change:          │                   │
+    │       aws autoscaling         │                   │
+    │       set-desired-capacity ───┼──────┐            │
+    └───────────────────────────────│──────│────────────┘
+              ▲ Twirp + Redis       │      │
+              │ (over VPC)          │      │
+              │                     ▼      ▼
+    ┌─────────│────────────────────────────────────────┐
+    │ egress.yaml (on demand)                          │
+    │                                                  │
+    │   ASG min=0/max=1                                │
+    │   t4g.xlarge (4 vCPU / 16 GB RAM)                │
+    │   Boots when scaler sets desired=1               │
+    │                                                  │
+    │   livekit/egress container                       │
+    └──────────────────────────────────────────────────┘
+```
+
+No Lambda, no API Gateway, no webhook. The whole loop is local on core +
+one AWS call per state transition.
+
+## Cost picture
+
+| Component | $/mo (idle) | $/hr (active) |
+|---|---|---|
+| Core EC2 (`t4g.small`, on 24/7) | ~$12 | — |
+| Core EBS (20 GB gp3) | ~$1.60 | — |
+| Caddy / cert / DNS | $0 | $0 |
+| Egress EC2 (`t4g.xlarge`) | $0 | ~$0.134 |
+| Egress EBS (30 GB gp3, attached only while up) | $0 | ~$0.003 |
+| AWS API calls (SetDesiredCapacity only) | $0 | $0 |
+| **Total** | **~$14/mo** | **+~$0.14/hr per recording-active call** |
+
+For sporadic test calls, monthly bill is dominated by the always-on core
+stack (~$14/mo).
+
+## Cold start
+
+When the first room starts in an empty cluster:
+
+```
+Local LK poll (5s avg)  ──>  scaler sees count = 1  ──>  SetDesiredCapacity(1)
+                                                                │
+                                                                ▼
+              EC2 launch + cloud-init + Docker pull (~60-90s)
+                                                                │
+                                                                ▼
+                              egress container + register with LK (~30s)
+                                                                │
+                                                                ▼
+                                        ready for StartEgress (~2 min total)
+```
+
+If a user clicks Record within the first ~2 min of a call, `StartEgress`
+will return `503 unavailable`. Two options to handle:
+
+- **Wait it out** — Rocket.Chat's recording UI retries on failure.
+- **Pre-bake an AMI** with Docker + the egress image already pulled. Cuts
+  ~60s off the cold start. Out of scope here.
 
 ## Troubleshooting
 
 ### Stack stuck in `ROLLBACK_COMPLETE`
 That state can't be updated. Delete first, then redeploy:
 ```sh
-aws cloudformation delete-stack --stack-name livekit-dev-test
-aws cloudformation wait stack-delete-complete --stack-name livekit-dev-test
+aws cloudformation delete-stack --stack-name <stack>
+aws cloudformation wait stack-delete-complete --stack-name <stack>
 ```
 
-### "Maximum number of VPCs / IGWs has been reached"
-You're at the per-region quota. Either reuse an existing VPC (step 3) or
-request a quota increase:
+### "Maximum number of VPCs has been reached"
+Reuse an existing VPC (step 3) or request a quota increase:
 ```sh
 aws service-quotas request-service-quota-increase \
   --service-code vpc --quota-code L-F678F1CE --desired-value 10
-# Takes ~24h. Quota code L-F678F1CE is VPCs/region.
+# ~24h to take effect
 ```
 
 ### `cloudformation..amazonaws.com` (double dot)
 `$REGION` is unset. `export REGION=us-east-1` or pass `--region` literally.
 
-### `tlsv1 alert internal error` from curl
+### `tlsv1 alert internal error` from curl to the core domain
 Caddy doesn't have a valid cert yet. Either:
 - DNS still propagating — wait a few minutes
-- LE failed earlier (NXDOMAIN at the time) and Caddy is in backoff — restart
-  Caddy to retry (`docker compose restart caddy`)
+- LE failed earlier (NXDOMAIN at the time) — Caddy is in backoff; restart
+  Caddy to retry:
+  ```sh
+  ssh -i ~/.ssh/$KEYNAME.pem ec2-user@<core-ip>
+  sudo docker compose -f /opt/livekit/docker-compose.yml restart caddy
+  sudo docker compose -f /opt/livekit/docker-compose.yml logs -f caddy
+  # Watch for: "certificate obtained successfully"
+  ```
 
 ### LE rate limit hit (5 failures/hostname/hour)
-Switch to LE *staging* (untrusted but unlimited) while debugging. SSH in and
-edit `/opt/livekit/Caddyfile` global block:
+Switch to LE *staging* (untrusted but unlimited) while debugging. SSH in
+and edit `/opt/livekit/Caddyfile` global block:
 ```
 {
   email you@example.com
@@ -193,35 +280,48 @@ edit `/opt/livekit/Caddyfile` global block:
 ```
 Then `docker compose restart caddy`. Browsers warn; `curl -k` works.
 
-### SSH key "bad permissions"
-`chmod 600 ~/.ssh/$KEYNAME.pem` — required.
-
-### SSM `start-session` blocked by KMS
-Some corporate accounts enforce KMS-encrypted SSM sessions and your role
-can't access the key. Use `aws ssm send-command` instead:
+### ASG stays at 0 forever after starting a call
+Tail the scaler log on core:
 ```sh
-CMD_ID=$(aws ssm send-command --instance-ids $INSTANCE \
-  --document-name AWS-RunShellScript \
-  --parameters 'commands=["sudo docker ps"]' \
-  --query 'Command.CommandId' --output text)
-sleep 3
-aws ssm get-command-invocation --command-id $CMD_ID \
-  --instance-id $INSTANCE --query 'StandardOutputContent' --output text
+ssh -i ~/.ssh/$KEYNAME.pem ec2-user@<core-ip>
+sudo journalctl -u lk-scaler -f
 ```
-Or just SSH (step 6).
+- No output at all → service didn't start. Check `systemctl status lk-scaler`.
+- `lk_post ... failed` → LK server is unreachable on localhost:7880. Check
+  `docker ps` for livekit-server.
+- `active=0 desired=0` even though a call is up → LK doesn't see the room.
+  Check the LK client is actually connected.
+- `SetDesiredCapacity` errors in the log → IAM grant mismatch. The role's
+  inline policy targets `${StackName}-egress-asg` — confirm egress.yaml
+  used the same `CoreStackName` value.
+
+### Egress instance boots but doesn't register with LK
+SSH into the egress instance and check it can reach Redis on the core box:
+```sh
+aws ec2 describe-instances --region $REGION \
+  --filters "Name=tag:Name,Values=livekit-core-egress" \
+            "Name=instance-state-name,Values=running" \
+  --query 'Reservations[0].Instances[0].PublicIpAddress' --output text
+
+ssh -i ~/.ssh/$KEYNAME.pem ec2-user@<egress-ip>
+nc -zv <core-private-ip> 6379
+# Connection to <ip> 6379 port [tcp/redis] succeeded!
+```
+If timeout, the cross-SG ingress rule is broken — check the egress
+instance is a member of `EgressClientsSG`.
 
 ### Recording fails with `twirp error unknown: no response from servers`
-Egress registered as a worker but won't accept room-composite jobs because
-of insufficient CPU (egress requires ≥4 vCPU for room-composite by default).
-Check `docker compose logs egress` for `not enough cpu for some egress
-types`. Fix: redeploy with `InstanceType=t4g.xlarge` (or any 4+ vCPU type),
-or lower `cpu_cost.room_composite_cpu_cost` in `/opt/livekit/egress.yaml`
-(quality risk on busy rooms).
+Egress isn't online yet. Either it hasn't finished booting (give it 2-3
+min after call start) or it crashed:
+```sh
+sudo docker compose -f /opt/egress/docker-compose.yml logs --tail=100 egress
+```
+The `not enough cpu` error means InstanceType is too small — bump to
+`t4g.2xlarge` or `c7g.xlarge` (and redeploy egress.yaml).
 
 ### Call joins but no media
-UDP 50000-60000 inbound is needed for WebRTC media. If you used an existing
-VPC, a NACL there may be denying that range. The template's security group
-already allows it; NACLs are the next layer up and stay with the VPC. Check:
+UDP 50000-60000 inbound is needed for WebRTC media on the core box. If you
+used an existing VPC, a NACL there may be denying that range. Check:
 ```sh
 aws ec2 describe-network-acls --region "$REGION" \
   --filters "Name=association.subnet-id,Values=<subnet-id>" \
@@ -229,39 +329,29 @@ aws ec2 describe-network-acls --region "$REGION" \
   --output table
 ```
 
-## Iterating
-
-For changes to the template (e.g. open a new port), redeploy:
-```sh
-aws cloudformation deploy ...   # same command; CFN diffs
-```
-
-For changes inside the instance only (swap container versions, edit configs),
-SSH in:
-```sh
-sudo vim /opt/livekit/docker-compose.yml         # or livekit.yaml / Caddyfile
-sudo docker compose -f /opt/livekit/docker-compose.yml pull
-sudo docker compose -f /opt/livekit/docker-compose.yml up -d
-```
-
 ## Tear down
 
 ```sh
-aws cloudformation delete-stack --region "$REGION" --stack-name livekit-dev-test
-aws cloudformation wait stack-delete-complete --region "$REGION" --stack-name livekit-dev-test
-
-# Optional: remove the key pair
-aws ec2 delete-key-pair --region "$REGION" --key-name $KEYNAME
-rm ~/.ssh/$KEYNAME.pem
+aws cloudformation delete-stack --region "$REGION" --stack-name livekit-egress
+aws cloudformation wait stack-delete-complete --region "$REGION" --stack-name livekit-egress
+aws cloudformation delete-stack --region "$REGION" --stack-name livekit-core
+aws cloudformation wait stack-delete-complete --region "$REGION" --stack-name livekit-core
 ```
 
-## Cost
+Egress must come down first (it imports values from core). If you try the
+other order CFN refuses with "Export ... is in use".
 
-At rest in `us-east-1` (rough):
-- `t4g.large` on-demand: ~$0.067/hr (~$48/mo if 24/7)
-- EBS gp3 30 GB: ~$2.40/mo
-- EIP attached: free; detached: $0.005/hr
-- Data egress: first 100 GB/mo free across all AWS services
+## Security notes
 
-If you stop the instance between tests (`aws ec2 stop-instances --instance-ids $INSTANCE`),
-hourly compute charge pauses; volume + (detached) EIP charges continue.
+- LK API key/secret are passed as `NoEcho: true` parameters but end up in
+  the EC2 launch template's user-data + the core scaler's systemd unit
+  (visible to anyone with `ec2:DescribeLaunchTemplateVersions` or root on
+  the instance). Fine for dev/test; for production move them to SSM
+  Parameter Store or Secrets Manager and fetch at boot.
+- The egress ASG's instances accept SSH from 0.0.0.0/0 by default. Narrow
+  `EgressSG`'s ingress for anything resembling production.
+- core's IAM role is scoped to `SetDesiredCapacity` on a single ARN (the
+  egress ASG with the conventional name). No other AWS API access.
+- S3 credentials for recording output are passed per-`StartEgress` request
+  by Rocket.Chat, not baked into the instance — see the project's
+  application code for that wiring.
