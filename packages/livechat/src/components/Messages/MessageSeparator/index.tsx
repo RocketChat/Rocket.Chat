@@ -1,3 +1,4 @@
+import { isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
@@ -13,6 +14,16 @@ type MessageSeparatorProps = {
 	style?: CSSProperties;
 	t: TFunction;
 	use?: any;
+};
+
+const formatDateLabel = (date: string, t: TFunction): string => {
+	const d = new Date(date);
+	if (isToday(d)) return t('today').toUpperCase();
+	if (isYesterday(d)) return t('yesterday').toUpperCase();
+	return t('message_separator_date', {
+		val: d,
+		formatParams: { val: { month: 'short', day: '2-digit', year: 'numeric' } },
+	}).toUpperCase();
 };
 
 // TODO: find a better way to pass `use` and do not default to a string
@@ -33,14 +44,7 @@ const MessageSeparator = ({ date, unread, use: Element = 'div', className, style
 		<hr className={createClassName(styles, 'separator__line')} />
 		{(date || unread) && (
 			<span className={createClassName(styles, 'separator__text')}>
-				{(!!date &&
-					t('message_separator_date', {
-						val: new Date(date),
-						formatParams: {
-							val: { month: 'short', day: '2-digit', year: 'numeric' },
-						},
-					}).toUpperCase()) ||
-					(unread && t('unread_messages'))}
+				{(!!date && formatDateLabel(date, t)) || (unread && t('unread_messages'))}
 			</span>
 		)}
 		<hr className={createClassName(styles, 'separator__line')} />
