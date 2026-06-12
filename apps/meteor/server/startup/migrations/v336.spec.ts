@@ -1,3 +1,5 @@
+import { up } from './v336';
+
 const mockFindOne = jest.fn();
 const mockDeleteMany = jest.fn();
 
@@ -11,8 +13,6 @@ jest.mock('@rocket.chat/models', () => ({
 jest.mock('../../lib/migrations', () => ({
 	addMigration: jest.fn(),
 }));
-
-import { up } from './v336';
 
 const WEBDAV_SETTING_IDS = [
 	'Webdav Integration',
