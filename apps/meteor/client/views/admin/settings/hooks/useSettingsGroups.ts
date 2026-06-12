@@ -22,10 +22,9 @@ export const useSettingsGroups = (filter: string): ISetting[] => {
 	}, [filter, t]);
 
 	return useMemo(() => {
-		const visibleSettings = settings.filter(({ group, _id }) => _id !== 'AI_Center' && group !== 'AI_Center');
 		const groupIds = Array.from(
 			new Set(
-				visibleSettings.filter(filterPredicate).map((setting) => {
+				settings.filter(filterPredicate).map((setting) => {
 					if (setting.type === 'group') {
 						return setting._id;
 					}
@@ -35,7 +34,7 @@ export const useSettingsGroups = (filter: string): ISetting[] => {
 			),
 		);
 
-		return visibleSettings
+		return settings
 			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
 			.sort((a, b) => t((a.i18nLabel || a._id) as TranslationKey).localeCompare(t((b.i18nLabel || b._id) as TranslationKey)));
 	}, [settings, filterPredicate, t]);

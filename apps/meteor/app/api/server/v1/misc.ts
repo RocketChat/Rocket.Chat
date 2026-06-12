@@ -1,23 +1,19 @@
 import crypto from 'node:crypto';
 
-import { AISearch } from '@rocket.chat/core-services';
-import type { IDirectoryChannelResult, IDirectoryUserResult, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Rooms, Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
+import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
 	isShieldSvgProps,
 	isSpotlightProps,
-	isUnifiedSearchProps,
-	isSearchAnswerProps,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
 	meSuccessResponseSchema,
 	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
-import type { MeApiSuccessResponse, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
+import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
@@ -27,7 +23,6 @@ import { Meteor } from 'meteor/meteor';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
-import { messageSearch } from '../../../../server/methods/messageSearch';
 import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { passwordPolicy } from '../../../lib/server';
@@ -36,7 +31,6 @@ import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
-import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -221,8 +215,7 @@ API.v1.get(
 	},
 	async function action() {
 		const { type, icon } = this.queryParams;
-		const { channel } = this.queryParams;
-		let { name } = this.queryParams;
+		let { channel, name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
@@ -265,7 +258,7 @@ API.v1.get(
 
 				text = `#${channel}`;
 				break;
-			case 'user': {
+			case 'user':
 				if (settings.get('API_Shield_user_require_auth') && !this.user) {
 					return API.v1.failure('You must be logged in to do this.');
 				}
@@ -278,17 +271,20 @@ API.v1.get(
 					text = `@${user.username}`;
 				}
 
-				const statusColors: Record<string, string> = {
-					online: '#1fb31f',
-					away: '#dc9b01',
-					busy: '#bc2031',
-					offline: '#a5a1a1',
-				};
-				if (user.status && statusColors[user.status]) {
-					backgroundColor = statusColors[user.status];
+				switch (user.status) {
+					case 'online':
+						backgroundColor = '#1fb31f';
+						break;
+					case 'away':
+						backgroundColor = '#dc9b01';
+						break;
+					case 'busy':
+						backgroundColor = '#bc2031';
+						break;
+					case 'offline':
+						backgroundColor = '#a5a1a1';
 				}
 				break;
-			}
 			default:
 				text = i18n.t('Join_Chat').toUpperCase();
 		}
@@ -299,6 +295,7 @@ API.v1.get(
 		const width = leftSize + rightSize;
 		const height = 20;
 
+		channel = escapeHTML(channel);
 		text = escapeHTML(text);
 		name = escapeHTML(name);
 
@@ -328,9 +325,9 @@ API.v1.get(
 						<text x="${leftSize + 7}" y="14">${text}</text>
 					</g>
 				</svg>
-				`
+			`
 			.trim()
-			.replace(/>[\s]+</gm, '><');
+			.replace(/\>[\s]+\</gm, '><');
 
 		return {
 			statusCode: 200 as const,
@@ -340,47 +337,42 @@ API.v1.get(
 	},
 );
 
-const spotlightUsersSchema = {
-	type: 'array',
-	items: {
-		type: 'object',
-		properties: {
-			_id: { type: 'string' },
-			name: { type: 'string' },
-			username: { type: 'string' },
-			status: { type: 'string' },
-			statusText: { type: 'string' },
-			avatarETag: { type: 'string' },
-		},
-		required: ['_id', 'name', 'username', 'status'],
-		additionalProperties: true,
-	},
-} as const;
-
-const spotlightRoomsSchema = {
-	type: 'array',
-	items: {
-		type: 'object',
-		properties: {
-			_id: { type: 'string' },
-			t: { type: 'string' },
-			name: { type: 'string' },
-			fname: { type: 'string' },
-			lastMessage: { $ref: '#/components/schemas/IMessage' },
-		},
-		required: ['_id', 't'],
-		additionalProperties: true,
-	},
-} as const;
-
 const spotlightResponseSchema = ajv.compile<{
 	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
-	rooms: Pick<IRoom, 't' | 'name' | 'fname' | 'lastMessage' | '_id'>[];
+	rooms: Pick<IRoom, 't' | 'name' | 'lastMessage' | '_id'>[];
 }>({
 	type: 'object',
 	properties: {
-		users: spotlightUsersSchema,
-		rooms: spotlightRoomsSchema,
+		users: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					name: { type: 'string' },
+					username: { type: 'string' },
+					status: { type: 'string' },
+					statusText: { type: 'string' },
+					avatarETag: { type: 'string' },
+				},
+				required: ['_id', 'name', 'username', 'status'],
+				additionalProperties: true,
+			},
+		},
+		rooms: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					t: { type: 'string' },
+					name: { type: 'string' },
+					lastMessage: { $ref: '#/components/schemas/IMessage' },
+				},
+				required: ['_id', 't', 'name'],
+				additionalProperties: true,
+			},
+		},
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['users', 'rooms', 'success'],
@@ -404,369 +396,6 @@ API.v1.get(
 		const result = await spotlightMethod({ text: query, userId: this.userId });
 
 		return API.v1.success(result);
-	},
-);
-
-const MAX_UNIFIED_SEARCH_RESULTS = 10;
-const AI_SEARCH_PAGE_SIZE = 5;
-const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
-const MAX_UNIFIED_SEARCH_FILTER_VALUES = 25;
-
-const unifiedSearchResponseSchema = ajv.compile<{
-	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
-	rooms: Pick<IRoom, 't' | 'name' | 'fname' | '_id'>[];
-	messages: UnifiedSearchMessageResult[];
-	intelligent: UnifiedSearchIntelligentResult[];
-	meta: {
-		globalMessagesEnabled: boolean;
-		intelligentSearchEnabled: boolean;
-		intelligentSearchConfigured: boolean;
-		answerGenerationConfigured: boolean;
-	};
-}>({
-	type: 'object',
-	properties: {
-		users: spotlightUsersSchema,
-		rooms: spotlightRoomsSchema,
-		messages: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					_id: { type: 'string' },
-					rid: { type: 'string' },
-					msg: { type: 'string', nullable: true },
-					u: { type: 'object', nullable: true },
-					room: {
-						type: 'object',
-						nullable: true,
-						properties: {
-							_id: { type: 'string' },
-							t: { type: 'string' },
-							name: { type: 'string', nullable: true },
-							fname: { type: 'string', nullable: true },
-						},
-						required: ['_id', 't'],
-						additionalProperties: true,
-					},
-				},
-				required: ['_id', 'rid'],
-				additionalProperties: true,
-			},
-		},
-		intelligent: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					_id: { type: 'string' },
-					rid: { type: 'string', nullable: true },
-					msgId: { type: 'string', nullable: true },
-					text: { type: 'string' },
-					score: { type: 'number', nullable: true },
-					room: {
-						type: 'object',
-						nullable: true,
-						properties: {
-							_id: { type: 'string' },
-							t: { type: 'string' },
-							name: { type: 'string', nullable: true },
-							fname: { type: 'string', nullable: true },
-						},
-						required: ['_id', 't'],
-						additionalProperties: true,
-					},
-				},
-				required: ['_id', 'text'],
-				additionalProperties: true,
-			},
-		},
-		meta: {
-			type: 'object',
-			properties: {
-				globalMessagesEnabled: { type: 'boolean' },
-				intelligentSearchEnabled: { type: 'boolean' },
-				intelligentSearchConfigured: { type: 'boolean' },
-				answerGenerationConfigured: { type: 'boolean' },
-			},
-			required: ['globalMessagesEnabled', 'intelligentSearchEnabled', 'intelligentSearchConfigured', 'answerGenerationConfigured'],
-			additionalProperties: false,
-		},
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['users', 'rooms', 'messages', 'intelligent', 'meta', 'success'],
-	additionalProperties: false,
-});
-
-const parseCommaList = (value: string | undefined): string[] =>
-	String(value ?? '')
-		.split(',')
-		.map((item) => item.trim())
-		.filter(Boolean)
-		.slice(0, MAX_UNIFIED_SEARCH_FILTER_VALUES);
-
-const parseQueryBoolean = (value: unknown, defaultValue = false): boolean => {
-	if (value === undefined || value === null) {
-		return defaultValue;
-	}
-
-	return value === true || value === 'true';
-};
-
-const parseQueryDate = (value: string | undefined): Date | undefined => {
-	if (!value) {
-		return undefined;
-	}
-
-	const date = new Date(value);
-	return Number.isNaN(date.getTime()) ? undefined : date;
-};
-
-const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
-	if (!roomIds.length) {
-		return new Map();
-	}
-
-	const rooms = await Rooms.findByIds([...new Set(roomIds)], {
-		projection: { _id: 1, t: 1, name: 1, fname: 1 },
-	}).toArray();
-
-	return new Map(rooms.map((room) => [room._id, room]));
-};
-
-API.v1.get(
-	'search.unified',
-	{
-		authRequired: true,
-		query: isUnifiedSearchProps,
-		rateLimiterOptions: {
-			numRequestsAllowed: 120,
-			intervalTimeInMS: 60000,
-		},
-		response: {
-			200: unifiedSearchResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		const query = this.queryParams.query.trim();
-		const { count } = await getPaginationItems(this.queryParams);
-		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
-		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
-		const intelligentLimit = Math.min(
-			Math.max(Number.isFinite(requestedIntelligentCount) ? requestedIntelligentCount : AI_SEARCH_PAGE_SIZE, AI_SEARCH_PAGE_SIZE),
-			MAX_INTELLIGENT_SEARCH_RESULTS,
-		);
-		const rid = this.queryParams.rid || undefined;
-		const rids = parseCommaList(this.queryParams.rids);
-		const roomNames = parseCommaList(this.queryParams.roomNames);
-		const fromUsername = this.queryParams.fromUsername || undefined;
-		const fromUsernames = parseCommaList(this.queryParams.fromUsernames);
-		const startDate = parseQueryDate(this.queryParams.startDate);
-		const endDate = parseQueryDate(this.queryParams.endDate);
-		const includeSpotlight = parseQueryBoolean(this.queryParams.includeSpotlight, true);
-		const includeMessages = parseQueryBoolean(this.queryParams.includeMessages);
-		const includeIntelligent = parseQueryBoolean(this.queryParams.includeIntelligent);
-
-		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
-		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
-
-		const [spotlight, aiSearchStatus] = await Promise.all([
-			// Don't run spotlight when filtering to a specific room (not useful)
-			rid || !includeSpotlight
-				? Promise.resolve({ users: [], rooms: [] })
-				: spotlightMethod({
-						text: query,
-						userId: this.userId,
-						type: { users: true, rooms: true, includeFederatedRooms: true },
-					}),
-			AISearch.status().catch((error) => {
-				SystemLogger.warn({ msg: 'AI search status unavailable', err: error });
-				return {
-					hasIntelligentSearchLicense: false,
-					intelligentSearchEnabled: false,
-					intelligentSearchConfigured: false,
-					answerGenerationConfigured: false,
-				};
-			}),
-		]);
-
-		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
-
-		let messages: UnifiedSearchMessageResult[] = [];
-		// Room-specific search is always allowed; global search requires the setting
-		if (includeMessages && (rid || globalMessagesEnabled)) {
-			const searchResult = await messageSearch(this.userId, query, rid, limit, 0, filters);
-			const docs = searchResult && searchResult.message ? await normalizeMessagesForUser(searchResult.message.docs, this.userId) : [];
-			const rooms = await getRoomMap(docs.map((message: IMessage) => message.rid));
-			messages = docs.map((message: IMessage) => ({
-				_id: message._id,
-				rid: message.rid,
-				msg: message.msg,
-				ts: message.ts,
-				u: message.u,
-				...(rooms.has(message.rid) && { room: rooms.get(message.rid) }),
-			}));
-		}
-
-		let intelligent: UnifiedSearchIntelligentResult[] = [];
-		if (
-			includeIntelligent &&
-			aiSearchStatus.hasIntelligentSearchLicense &&
-			aiSearchStatus.intelligentSearchEnabled &&
-			aiSearchStatus.intelligentSearchConfigured
-		) {
-			try {
-				intelligent = await AISearch.search({
-					query,
-					userId: this.userId,
-					filters: {
-						rid,
-						rids,
-						roomNames,
-						fromUsername,
-						fromUsernames,
-						startDate: startDate?.toISOString(),
-						endDate: endDate?.toISOString(),
-					},
-					limit: intelligentLimit,
-				});
-			} catch (error) {
-				SystemLogger.warn({
-					msg: 'AI search request failed',
-					err: error,
-				});
-			}
-		} else {
-			SystemLogger.debug({
-				msg: 'AI search skipped at endpoint',
-				includeIntelligent,
-				hasIntelligentSearchLicense: aiSearchStatus.hasIntelligentSearchLicense,
-				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
-				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
-			});
-		}
-
-		return API.v1.success({
-			users: spotlight.users,
-			rooms: spotlight.rooms,
-			messages,
-			intelligent,
-			meta: {
-				globalMessagesEnabled,
-				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
-				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
-				answerGenerationConfigured: aiSearchStatus.answerGenerationConfigured,
-			},
-		});
-	},
-);
-
-API.v1.get(
-	'ai.llm.models',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-privileged-setting'],
-		rateLimiterOptions: {
-			numRequestsAllowed: 5,
-			intervalTimeInMS: 60000,
-		},
-		response: {
-			200: ajv.compile<{ data: { key: string; label: string }[] }>({
-				type: 'object',
-				properties: {
-					data: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								key: { type: 'string' },
-								label: { type: 'string' },
-							},
-							required: ['key', 'label'],
-							additionalProperties: false,
-						},
-					},
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['data', 'success'],
-				additionalProperties: false,
-			}),
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		return API.v1.success({
-			data: await AISearch.models(),
-		});
-	},
-);
-
-API.v1.post(
-	'search.answer',
-	{
-		authRequired: true,
-		body: isSearchAnswerProps,
-		rateLimiterOptions: {
-			numRequestsAllowed: 10,
-			intervalTimeInMS: 60000,
-		},
-		response: {
-			200: ajv.compile<{
-				answer: string;
-				provider: { name: string; model: string };
-			}>({
-				type: 'object',
-				properties: {
-					answer: { type: 'string' },
-					provider: {
-						type: 'object',
-						properties: {
-							name: { type: 'string' },
-							model: { type: 'string' },
-						},
-						required: ['name', 'model'],
-						additionalProperties: false,
-					},
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['answer', 'provider', 'success'],
-				additionalProperties: false,
-			}),
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		const { query, messages } = this.bodyParams;
-		let answer;
-		try {
-			answer = await AISearch.answer({
-				query,
-				messages: messages.map(({ text, username, roomName, ts, score }) => ({
-					text,
-					username,
-					roomName,
-					ts,
-					score,
-				})),
-			});
-		} catch (error) {
-			const message = error instanceof Error ? error.message : '';
-			if (message.includes('error-ai-not-enabled')) {
-				throw new Meteor.Error('error-ai-not-enabled', 'AI Search is not enabled');
-			}
-			if (message.includes('error-ai-provider-not-configured')) {
-				throw new Meteor.Error('error-ai-provider-not-configured', 'AI answer provider is not configured');
-			}
-			if (message.includes('error-ai-provider-empty-response')) {
-				throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
-			}
-			throw new Meteor.Error('error-ai-provider-request-failed', 'AI answer provider request failed');
-		}
-
-		return API.v1.success(answer);
 	},
 );
 
@@ -1166,12 +795,10 @@ API.v1.post(
 	'fingerprint',
 	{
 		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
 		body: isFingerprintProps,
 		response: {
 			200: fingerprintResponseSchema,
 			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
 			400: validateBadRequestErrorResponse,
 		},
 	},

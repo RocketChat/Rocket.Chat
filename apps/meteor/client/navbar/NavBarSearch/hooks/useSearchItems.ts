@@ -1,5 +1,18 @@
+import {
+	AI_LICENSE_MODULE,
+	applySearchFilterToken,
+	buildAppliedFilterChips,
+	buildRoomSearchQuery,
+	emptySearchFilters,
+	getActiveSearchFilter,
+	mergeSearchFilters,
+	parseSearchFilterText,
+	type ActiveSearchFilter,
+	type SearchFilterChip,
+	type SearchFilters,
+	type SearchFilterSuggestion,
+} from '@rocket.chat/ai-search';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useMethod, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
@@ -10,7 +23,6 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { getConfig } from '../../../lib/utils/getConfig';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
-const MAX_ROOM_SEARCH_PATTERN_LENGTH = 64;
 
 const options = {
 	sort: {
@@ -31,227 +43,13 @@ export type NavBarSearchItems = {
 	filters: SearchFilters;
 };
 
-export type SearchFilters = {
-	roomNames: string[];
-	rids: string[];
-	fromUsernames: string[];
-	startDate?: string;
-	endDate?: string;
-	// Kept for API callers that still expect a single resolved room.
-	rid?: string;
-	fromUsername?: string;
-};
-
-export type NavBarSearchFormValues = {
-	filterText: string;
-	appliedFilters: SearchFilters;
-};
-
-export type SearchFilterSuggestion = {
-	key: string;
-	group: 'rooms' | 'users' | 'dates';
-	title: string;
-	description: string;
-	value: string;
-	icon: 'hash' | 'user' | 'calendar';
-};
-
-export type SearchFilterChip = {
-	key: string;
-	label: string;
-	values: string[];
-};
-
-export const emptySearchFilters = (): SearchFilters => ({ roomNames: [], rids: [], fromUsernames: [] });
-
-type ActiveFilter = {
-	key: 'in' | 'from' | 'after' | 'before';
-	value: string;
-	start: number;
-	end: number;
-};
-
-const FILTER_PATTERN = /(?:^|\s)(in|from|after|before):(?:"([^"]*)"|(\S+))/gi;
-
-const normalizeFilterText = (value: string): string => value.replace(/\s+/g, ' ').trimStart();
-
-const splitFilterValues = (value: string): string[] =>
-	value
-		.split(',')
-		.map((item) => item.replace(/^[@#]/, '').trim())
-		.filter(Boolean);
-
-const unique = (items: string[]): string[] => Array.from(new Set(items));
-
-export const mergeSearchFilters = (...filtersList: SearchFilters[]): SearchFilters =>
-	filtersList.reduce<SearchFilters>(
-		(result, filters) => ({
-			roomNames: unique([...result.roomNames, ...filters.roomNames]),
-			rids: unique([...result.rids, ...filters.rids]),
-			fromUsernames: unique([...result.fromUsernames, ...filters.fromUsernames]),
-			startDate: filters.startDate || result.startDate,
-			endDate: filters.endDate || result.endDate,
-			rid: filters.rid || result.rid,
-			fromUsername: filters.fromUsername || result.fromUsername,
-		}),
-		emptySearchFilters(),
-	);
-
-export const parseSearchFilterText = (filterText: string): { searchText: string; filters: SearchFilters } => {
-	const filters: SearchFilters = emptySearchFilters();
-	const searchText = filterText
-		.replace(FILTER_PATTERN, (_match, key: string, quotedValue?: string, bareValue?: string) => {
-			const value = String(quotedValue || bareValue || '').trim();
-			const values = splitFilterValues(value);
-			if (!values.length) {
-				return ' ';
-			}
-
-			switch (key.toLowerCase()) {
-				case 'in':
-					filters.roomNames.push(...values);
-					break;
-				case 'from':
-					filters.fromUsernames.push(...values);
-					break;
-				case 'after':
-					filters.startDate = values[0];
-					break;
-				case 'before':
-					filters.endDate = values[0];
-					break;
-			}
-
-			return ' ';
-		})
-		.replace(/\s+/g, ' ')
-		.trim();
-
-	return { searchText, filters };
-};
-
-export const extractCompletedSearchFilters = (
-	filterText: string,
-): { searchText: string; filters: SearchFilters; hasCompletedFilters: boolean } => {
-	const filters: SearchFilters = emptySearchFilters();
-	let hasCompletedFilters = false;
-	const trimmedLength = filterText.trimEnd().length;
-	const shouldKeepTrailingTokenEditable = Array.from(filterText.matchAll(FILTER_PATTERN)).length <= 1;
-	const searchText = filterText
-		.replace(FILTER_PATTERN, (match, key: string, quotedValue?: string, bareValue?: string, offset?: number) => {
-			const start = typeof offset === 'number' ? offset : 0;
-			const end = start + match.length;
-			const isActiveToken = shouldKeepTrailingTokenEditable && end >= trimmedLength && !/\s$/.test(filterText);
-			if (isActiveToken) {
-				return match;
-			}
-
-			const values = splitFilterValues(String(quotedValue || bareValue || ''));
-			if (!values.length) {
-				return ' ';
-			}
-
-			hasCompletedFilters = true;
-			switch (key.toLowerCase()) {
-				case 'in':
-					filters.roomNames.push(...values);
-					break;
-				case 'from':
-					filters.fromUsernames.push(...values);
-					break;
-				case 'after':
-					filters.startDate = values[0];
-					break;
-				case 'before':
-					filters.endDate = values[0];
-					break;
-			}
-
-			return ' ';
-		})
-		.replace(/\s+/g, ' ')
-		.trimStart();
-
-	return { searchText, filters, hasCompletedFilters };
-};
-
-const getActiveFilter = (filterText: string): ActiveFilter | undefined => {
-	const match = /(?:^|\s)(in|from|after|before):([^\s]*)$/i.exec(filterText);
-	if (!match) {
-		return undefined;
-	}
-
-	const tokenStart = filterText.lastIndexOf(match[1], filterText.length - match[2].length - 1);
-	return {
-		key: match[1].toLowerCase() as ActiveFilter['key'],
-		value: match[2],
-		start: tokenStart,
-		end: filterText.length,
-	};
-};
-
-const formatFilterValue = (key: ActiveFilter['key'], value: string): string => `${key}:${/\s/.test(value) ? `"${value}"` : value}`;
-
-const applyFilterToken = (filterText: string, activeFilter: ActiveFilter | undefined, key: ActiveFilter['key'], value: string): string => {
-	const token = formatFilterValue(key, value);
-	if (activeFilter) {
-		return normalizeFilterText(`${filterText.slice(0, activeFilter.start)}${token} `);
-	}
-
-	return normalizeFilterText(`${filterText.trim()} ${token} `);
-};
-
-const getFilterChipLabel = (key: ActiveFilter['key'], value: string): string => {
-	switch (key) {
-		case 'in':
-			return `#${value}`;
-		case 'from':
-			return `@${value}`;
-		default:
-			return `${key}:${value}`;
-	}
-};
-
-export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChip[] =>
-	[
-		filters.roomNames.length && {
-			key: 'in',
-			values: filters.roomNames,
-			label: `in: ${filters.roomNames.map((roomName) => `#${roomName}`).join(', ')}`,
-		},
-		filters.fromUsernames.length && {
-			key: 'from',
-			values: filters.fromUsernames,
-			label: `from: ${filters.fromUsernames.map((username) => `@${username}`).join(', ')}`,
-		},
-		filters.startDate && {
-			key: 'after',
-			values: [filters.startDate],
-			label: getFilterChipLabel('after', filters.startDate),
-		},
-		filters.endDate && {
-			key: 'before',
-			values: [filters.endDate],
-			label: getFilterChipLabel('before', filters.endDate),
-		},
-	].filter(Boolean) as SearchFilterChip[];
-
-export const serializeSearchQuery = (searchText: string, filters: SearchFilters): string =>
-	normalizeFilterText(
-		[
-			...filters.roomNames.map((roomName) => formatFilterValue('in', roomName)),
-			...filters.fromUsernames.map((username) => formatFilterValue('from', username)),
-			filters.startDate && formatFilterValue('after', filters.startDate),
-			filters.endDate && formatFilterValue('before', filters.endDate),
-			searchText,
-		]
-			.filter(Boolean)
-			.join(' '),
-	);
-
 const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
 
-const getDateFilterSuggestions = (filterText: string, activeFilter: ActiveFilter, key: 'after' | 'before'): SearchFilterSuggestion[] => {
+const getDateFilterSuggestions = (
+	filterText: string,
+	activeFilter: ActiveSearchFilter,
+	key: 'after' | 'before',
+): SearchFilterSuggestion[] => {
 	const today = new Date();
 	const yesterday = new Date(today);
 	yesterday.setDate(today.getDate() - 1);
@@ -267,14 +65,14 @@ const getDateFilterSuggestions = (filterText: string, activeFilter: ActiveFilter
 		group: 'dates',
 		title: `${key}:${value}`,
 		description: label,
-		value: applyFilterToken(filterText, activeFilter, key, value),
+		value: applySearchFilterToken(filterText, activeFilter, key, value),
 		icon: 'calendar',
 	}));
 };
 
 const buildFilterSuggestions = (
 	filterText: string,
-	activeFilter: ActiveFilter | undefined,
+	activeFilter: ActiveSearchFilter | undefined,
 	rooms: SubscriptionWithRoom[],
 ): SearchFilterSuggestion[] => {
 	if (!activeFilter) {
@@ -287,7 +85,7 @@ const buildFilterSuggestions = (
 			group: 'rooms',
 			title: `#${room.fname || room.name}`,
 			description: 'Search in this room',
-			value: applyFilterToken(filterText, activeFilter, 'in', room.name || room.fname || ''),
+			value: applySearchFilterToken(filterText, activeFilter, 'in', room.name || room.fname || ''),
 			icon: 'hash',
 		}));
 	}
@@ -299,7 +97,7 @@ const buildFilterSuggestions = (
 				group: 'users',
 				title: activeFilter.value ? `from:${activeFilter.value.replace(/^@/, '')}` : 'from:username',
 				description: 'Search messages from this username',
-				value: applyFilterToken(filterText, activeFilter, 'from', activeFilter.value.replace(/^@/, '')),
+				value: applySearchFilterToken(filterText, activeFilter, 'from', activeFilter.value.replace(/^@/, '')),
 				icon: 'user',
 			},
 		];
@@ -310,7 +108,7 @@ const buildFilterSuggestions = (
 
 const buildUserFilterSuggestions = (
 	filterText: string,
-	activeFilter: ActiveFilter | undefined,
+	activeFilter: ActiveSearchFilter | undefined,
 	users: {
 		_id: string;
 		name?: string;
@@ -326,7 +124,7 @@ const buildUserFilterSuggestions = (
 		group: 'users',
 		title: `@${user.username}`,
 		description: user.name || 'Search messages from this user',
-		value: applyFilterToken(filterText, activeFilter, 'from', user.username),
+		value: applySearchFilterToken(filterText, activeFilter, 'from', user.username),
 		icon: 'user',
 	}));
 };
@@ -342,17 +140,6 @@ const mergeFilterSuggestions = (primary: SearchFilterSuggestion[], fallback: Sea
 	return [...primary, ...fallback.filter(({ value }) => !existingValues.has(value))];
 };
 
-export const buildRoomSearchQuery = (value: string, mention?: string) => {
-	const filterRegex = new RegExp(escapeRegExp(value.slice(0, MAX_ROOM_SEARCH_PATTERN_LENGTH)), 'i');
-
-	return {
-		$or: [{ name: filterRegex }, { fname: filterRegex }],
-		...(mention && {
-			t: mention === '@' ? 'd' : { $ne: 'd' },
-		}),
-	};
-};
-
 export const useSearchItems = (
 	filterText: string,
 	appliedSearchFilters: SearchFilters = emptySearchFilters(),
@@ -363,7 +150,7 @@ export const useSearchItems = (
 	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const canUseInlineFilters = Boolean(canUseAISearch && aiSearchActive);
 	const { searchText, filters } = useMemo(() => {
@@ -376,7 +163,10 @@ export const useSearchItems = (
 	}, [appliedSearchFilters, canUseInlineFilters, filterText]);
 	const appliedFilters = useMemo(() => (canUseInlineFilters ? buildAppliedFilterChips(filters) : []), [canUseInlineFilters, filters]);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
-	const activeFilter = useMemo(() => (canUseInlineFilters ? getActiveFilter(filterText) : undefined), [canUseInlineFilters, filterText]);
+	const activeFilter = useMemo(
+		() => (canUseInlineFilters ? getActiveSearchFilter(filterText) : undefined),
+		[canUseInlineFilters, filterText],
+	);
 	const roomLookupText = useMemo(() => {
 		if (!canUseInlineFilters) {
 			return '';

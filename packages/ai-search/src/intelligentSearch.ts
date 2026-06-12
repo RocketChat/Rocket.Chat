@@ -1,3 +1,4 @@
+import { MAX_PIPELINE_ROOM_FILTER_VALUES } from './constants';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -9,10 +10,6 @@ import type {
 import { trimTrailingSlashes } from './url';
 
 type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
-
-// Keep explicit room filters exact, but avoid sending unbounded room-id lists for broad searches.
-// The caller must still post-filter normalized results by the user's accessible room IDs.
-const MAX_PIPELINE_ROOM_FILTER_VALUES = 1000;
 
 const asRecord = (value: unknown): Record<string, unknown> =>
 	value && typeof value === 'object' ? (value as Record<string, unknown>) : {};

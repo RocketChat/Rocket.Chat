@@ -3,12 +3,13 @@ import {
 	buildRoomSearchQuery,
 	emptySearchFilters,
 	extractCompletedSearchFilters,
+	getAISearchButtonTooltip,
 	mergeSearchFilters,
 	parseSearchFilterText,
 	serializeSearchQuery,
-} from './useSearchItems';
+} from './clientSearch';
 
-describe('NavBarSearch AI filter helpers', () => {
+describe('AI Search client helpers', () => {
 	describe('parseSearchFilterText', () => {
 		it('extracts room, user, and date filters while preserving the free-text query', () => {
 			expect(parseSearchFilterText('in:general,dev from:@alice after:2026-01-01 before:2026-01-31 fruit colors')).toEqual({
@@ -138,6 +139,26 @@ describe('NavBarSearch AI filter helpers', () => {
 			}
 
 			expect(nameRegex.source).toBe('\\/'.repeat(64));
+		});
+	});
+
+	describe('getAISearchButtonTooltip', () => {
+		const t = (key: string): string => key;
+
+		it('explains unavailable AI Search when the add-on is missing', () => {
+			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: false, intelligentSearchEnabled: true, t })).toBe(
+				'AI_Search_license_required_tooltip',
+			);
+		});
+
+		it('explains disabled AI Search when the add-on is available', () => {
+			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: false, t })).toBe(
+				'AI_Search_disabled_tooltip',
+			);
+		});
+
+		it('uses the normal action label when AI Search can be toggled', () => {
+			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: true, t })).toBe('Search_with_AI');
 		});
 	});
 });

@@ -1,4 +1,5 @@
 /* eslint-disable react/no-multi-comp */
+import { AI_LICENSE_MODULE, buildRoomSearchQuery, MAX_SOURCE_MESSAGE_LENGTH, parseSearchFilterText } from '@rocket.chat/ai-search';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
@@ -13,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import MarkdownText from '../../components/MarkdownText';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { buildRoomSearchQuery, parseSearchFilterText } from '../../navbar/NavBarSearch/hooks/useSearchItems';
 
 type IntelligentResult = {
 	_id: string;
@@ -28,7 +28,6 @@ type IntelligentResult = {
 
 const roomLookupOptions = { sort: { lm: -1, name: 1 }, limit: 20 } as const;
 const emptyRoomLookupQuery = { _id: '__ai_search_no_room_filter__' };
-const MAX_SOURCE_MESSAGE_LENGTH = 700;
 
 const formatMessageTime = (ts: Date | string | undefined): string => {
 	if (!ts) return '';
@@ -236,7 +235,7 @@ const SearchPage = (): ReactElement => {
 	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const generateAnswer = useEndpoint('POST', '/v1/search.answer');

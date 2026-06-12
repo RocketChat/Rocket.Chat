@@ -1,7 +1,14 @@
 import {
+	AI_LICENSE_MODULE,
+	AI_SEARCH_PAGE_SIZE,
 	buildIntelligentSearchPipelineFilters,
 	generateOpenAICompatibleSearchAnswer,
 	listOpenAICompatibleModels,
+	MAX_PIPELINE_ROOM_FILTER_VALUES,
+	MAX_SEARCH_ANSWER_MESSAGES,
+	MAX_SEARCH_ANSWER_TEXT_LENGTH,
+	MAX_SEARCH_FILTER_VALUES,
+	MAX_UNSCOPED_PIPELINE_RESULTS,
 	normalizeIntelligentSearchCandidates,
 	searchIntelligentPipeline,
 	type AIServiceFetch,
@@ -26,13 +33,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../lib/logger/system';
 
-const AI_SEARCH_PAGE_SIZE = 5;
-const MAX_SEARCH_ANSWER_MESSAGES = 12;
-const MAX_SEARCH_ANSWER_TEXT_LENGTH = 1600;
-const MAX_SEARCH_FILTER_VALUES = 25;
-const MAX_PIPELINE_ROOM_FILTER_VALUES = 1000;
 const PIPELINE_ROOM_PREFETCH_LIMIT = MAX_PIPELINE_ROOM_FILTER_VALUES + 1;
-const MAX_UNSCOPED_PIPELINE_RESULTS = 100;
 
 const aiServiceFetch: AIServiceFetch = (url, options) => fetch(url, options as Parameters<typeof fetch>[1]);
 
@@ -126,7 +127,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	async status(): Promise<AISearchStatus> {
 		const [hasIntelligentSearchLicense, intelligentSearchEnabled, answerGenerationEnabled, pipelineConfig, answerProviderConfig] =
 			await Promise.all([
-				License.hasModule('chat.rocket.rc-ai'),
+				License.hasModule(AI_LICENSE_MODULE),
 				Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
 				Settings.get<boolean>('AI_Intelligent_Search_Answer_Enabled'),
 				this.getPipelineConfig(),
@@ -268,7 +269,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		limit?: number;
 	}): Promise<UnifiedSearchIntelligentResult[]> {
 		const [hasIntelligentSearchLicense, intelligentSearchEnabled, config] = await Promise.all([
-			License.hasModule('chat.rocket.rc-ai'),
+			License.hasModule(AI_LICENSE_MODULE),
 			Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
 			this.getPipelineConfig(),
 		]);
@@ -331,7 +332,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {
 		const [hasIntelligentSearchLicense, intelligentSearchEnabled, answerGenerationEnabled, pipelineConfig, provider, systemPromptSetting] =
 			await Promise.all([
-				License.hasModule('chat.rocket.rc-ai'),
+				License.hasModule(AI_LICENSE_MODULE),
 				Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
 				Settings.get<boolean>('AI_Intelligent_Search_Answer_Enabled'),
 				this.getPipelineConfig(),

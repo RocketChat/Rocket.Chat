@@ -1,11 +1,5 @@
-import { expect } from 'chai';
-
-import {
-	buildSearchAnswerPrompt,
-	generateOpenAICompatibleSearchAnswer,
-	listOpenAICompatibleModels,
-} from '../../../../../../packages/ai-search/src';
-import type { AIServiceFetch } from '../../../../../../packages/ai-search/src';
+import { buildSearchAnswerPrompt, generateOpenAICompatibleSearchAnswer, listOpenAICompatibleModels } from './llm';
+import type { AIServiceFetch } from './types';
 
 describe('AI Search LLM helpers', () => {
 	describe('buildSearchAnswerPrompt', () => {
@@ -26,7 +20,7 @@ describe('AI Search LLM helpers', () => {
 				{ maxMessages: 2, maxTextLength: 5 },
 			);
 
-			expect(prompt).to.equal(
+			expect(prompt).toBe(
 				[
 					'User search query: What did we decide?',
 					'Search results:',
@@ -68,13 +62,13 @@ describe('AI Search LLM helpers', () => {
 				maxTextLength: 200,
 			});
 
-			expect(result).to.deep.equal({ answer: 'Answer from sources.', provider: { name: 'OpenAI compatible', model: 'gpt-test' } });
-			expect(requestUrl).to.equal('https://llm.example.com/chat/completions');
-			expect(JSON.parse(requestBody)).to.include({
+			expect(result).toEqual({ answer: 'Answer from sources.', provider: { name: 'OpenAI compatible', model: 'gpt-test' } });
+			expect(requestUrl).toBe('https://llm.example.com/chat/completions');
+			expect(JSON.parse(requestBody)).toMatchObject({
 				model: 'gpt-test',
 				temperature: 0.2,
 			});
-			expect(JSON.parse(requestBody).messages[0]).to.deep.equal({ role: 'system', content: 'Use sources only.' });
+			expect(JSON.parse(requestBody).messages[0]).toEqual({ role: 'system', content: 'Use sources only.' });
 		});
 
 		it('throws on provider failures and empty responses', async () => {
@@ -95,7 +89,7 @@ describe('AI Search LLM helpers', () => {
 					maxMessages: 4,
 					maxTextLength: 200,
 				}),
-			).to.be.rejectedWith('error-ai-provider-request-failed');
+			).rejects.toThrow('error-ai-provider-request-failed');
 
 			const emptyFetch: AIServiceFetch = async () => ({
 				ok: true,
@@ -114,7 +108,7 @@ describe('AI Search LLM helpers', () => {
 					maxMessages: 4,
 					maxTextLength: 200,
 				}),
-			).to.be.rejectedWith('error-ai-provider-empty-response');
+			).rejects.toThrow('error-ai-provider-empty-response');
 		});
 	});
 
@@ -124,7 +118,7 @@ describe('AI Search LLM helpers', () => {
 				throw new Error('must not fetch');
 			};
 
-			expect(await listOpenAICompatibleModels({ selectedModel: 'existing-model', fetch })).to.deep.equal([
+			expect(await listOpenAICompatibleModels({ selectedModel: 'existing-model', fetch })).toEqual([
 				{ key: 'existing-model', label: 'existing-model' },
 			]);
 		});
@@ -143,7 +137,7 @@ describe('AI Search LLM helpers', () => {
 					selectedModel: 'custom-model',
 					fetch,
 				}),
-			).to.deep.equal([
+			).toEqual([
 				{ key: 'custom-model', label: 'custom-model' },
 				{ key: 'a-model', label: 'a-model' },
 				{ key: 'z-model', label: 'z-model' },
@@ -164,7 +158,7 @@ describe('AI Search LLM helpers', () => {
 					selectedModel: 'configured-model',
 					fetch,
 				}),
-			).to.deep.equal([{ key: 'configured-model', label: 'configured-model' }]);
+			).toEqual([{ key: 'configured-model', label: 'configured-model' }]);
 		});
 	});
 });

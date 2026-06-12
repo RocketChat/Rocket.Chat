@@ -1,6 +1,15 @@
 import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
+import {
+	AI_LICENSE_MODULE,
+	buildAppliedFilterChips,
+	emptySearchFilters,
+	extractCompletedSearchFilters,
+	getAISearchButtonTooltip,
+	mergeSearchFilters,
+	type NavBarSearchFormValues,
+} from '@rocket.chat/ai-search';
 import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
@@ -11,12 +20,9 @@ import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
 import NavBarSearchListBox from './NavBarSearchListbox';
-import { getAISearchButtonTooltip } from './getAISearchButtonTooltip';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
-import type { NavBarSearchFormValues } from './hooks/useSearchItems';
-import { buildAppliedFilterChips, emptySearchFilters, extractCompletedSearchFilters, mergeSearchFilters } from './hooks/useSearchItems';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
@@ -26,7 +32,7 @@ const NavBarSearch = () => {
 	const shortcut = getShortcutLabel();
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const canSearchWithAIFromTopBar = Boolean(canUseAISearch && intelligentSearchEnabled);
 	const [aiSearchRequested, setAISearchRequested] = useState(false);

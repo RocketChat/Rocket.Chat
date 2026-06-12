@@ -1,4 +1,5 @@
 /* eslint-disable react/no-multi-comp */
+import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { Box, Button, Callout, Card, CardBody, CardControls, CardGrid, CardTitle, Icon, Tag } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useIsPrivilegedSettingsContext, useRouteParameter, useRouter, useSetting } from '@rocket.chat/ui-contexts';
@@ -51,7 +52,7 @@ const CapabilityCard = ({ icon, title, description, status, actionLabel, disable
 const AICenterOverview = (): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { data: hasAILicense = false } = useHasLicenseModule('chat.rocket.rc-ai');
+	const { data: hasAILicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 
 	let premiumStatus = <Tag>{t('Disabled')}</Tag>;

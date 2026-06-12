@@ -1,55 +1,60 @@
-const mockLicenseHasModule = jest.fn();
-const mockSettingsGet = jest.fn();
-const mockMessagesFindVisibleByIds = jest.fn();
-const mockRoomsFindByIds = jest.fn();
-const mockRoomsFindOneByNameOrFname = jest.fn();
-const mockSubscriptionsFindByUserId = jest.fn();
-const mockSubscriptionsFindByUserIdAndRoomIds = jest.fn();
-const mockUsersFindOneById = jest.fn();
-const mockFetch = jest.fn();
+import { expect } from 'chai';
+import { beforeEach, describe, it } from 'mocha';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
-jest.mock('@rocket.chat/core-services', () => ({
-	License: {
-		hasModule: (...args: unknown[]) => mockLicenseHasModule(...args),
-	},
-	ServiceClass: class {
-		protected name = '';
-	},
-	Settings: {
-		get: (...args: unknown[]) => mockSettingsGet(...args),
-	},
-}));
+const License = {
+	hasModule: sinon.stub(),
+};
 
-jest.mock('@rocket.chat/models', () => ({
-	Messages: {
-		findVisibleByIds: (...args: unknown[]) => mockMessagesFindVisibleByIds(...args),
-	},
-	Rooms: {
-		findByIds: (...args: unknown[]) => mockRoomsFindByIds(...args),
-		findOneByNameOrFname: (...args: unknown[]) => mockRoomsFindOneByNameOrFname(...args),
-	},
-	Subscriptions: {
-		findByUserId: (...args: unknown[]) => mockSubscriptionsFindByUserId(...args),
-		findByUserIdAndRoomIds: (...args: unknown[]) => mockSubscriptionsFindByUserIdAndRoomIds(...args),
-	},
-	Users: {
-		findOneById: (...args: unknown[]) => mockUsersFindOneById(...args),
-	},
-}));
+const Settings = {
+	get: sinon.stub(),
+};
 
-jest.mock('@rocket.chat/server-fetch', () => ({
-	serverFetch: (...args: unknown[]) => mockFetch(...args),
-}));
+const Messages = {
+	findVisibleByIds: sinon.stub(),
+};
 
-jest.mock('../../lib/logger/system', () => ({
-	SystemLogger: {
-		debug: jest.fn(),
-		warn: jest.fn(),
+const Rooms = {
+	findByIds: sinon.stub(),
+	findOneByNameOrFname: sinon.stub(),
+};
+
+const Subscriptions = {
+	findByUserId: sinon.stub(),
+	findByUserIdAndRoomIds: sinon.stub(),
+};
+
+const Users = {
+	findOneById: sinon.stub(),
+};
+
+const serverFetch = sinon.stub();
+
+const { AISearchService } = proxyquire.noCallThru().load('../../../../../server/services/ai-search/service', {
+	'@rocket.chat/core-services': {
+		License,
+		ServiceClass: class {
+			protected name = '';
+		},
+		Settings,
 	},
-}));
-
-// eslint-disable-next-line import/first
-import { AISearchService } from './service';
+	'@rocket.chat/models': {
+		Messages,
+		Rooms,
+		Subscriptions,
+		Users,
+	},
+	'@rocket.chat/server-fetch': {
+		serverFetch,
+	},
+	'../../lib/logger/system': {
+		SystemLogger: {
+			debug: sinon.stub(),
+			warn: sinon.stub(),
+		},
+	},
+});
 
 type CursorResult<T> = {
 	toArray(): Promise<T[]>;
@@ -74,15 +79,24 @@ const settings: Record<string, unknown> = {
 	AI_Intelligent_Search_Answer_System_Prompt: 'Use sources only.',
 };
 
-const createService = (): AISearchService => new AISearchService();
+const createService = (): InstanceType<typeof AISearchService> => new AISearchService();
 
 describe('AISearchService', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
-		mockLicenseHasModule.mockResolvedValue(true);
-		mockSettingsGet.mockImplementation(async (key: string) => settings[key]);
-		mockUsersFindOneById.mockResolvedValue({ roles: ['admin'] });
-		mockRoomsFindByIds.mockImplementation((roomIds: string[]) =>
+		License.hasModule.reset();
+		Settings.get.reset();
+		Messages.findVisibleByIds.reset();
+		Rooms.findByIds.reset();
+		Rooms.findOneByNameOrFname.reset();
+		Subscriptions.findByUserId.reset();
+		Subscriptions.findByUserIdAndRoomIds.reset();
+		Users.findOneById.reset();
+		serverFetch.reset();
+
+		License.hasModule.resolves(true);
+		Settings.get.callsFake(async (key: string) => settings[key]);
+		Users.findOneById.resolves({ roles: ['admin'] });
+		Rooms.findByIds.callsFake((roomIds: string[]) =>
 			cursor(
 				roomIds.map((roomId) => ({
 					_id: roomId,
@@ -92,10 +106,10 @@ describe('AISearchService', () => {
 				})),
 			),
 		);
-		mockSubscriptionsFindByUserIdAndRoomIds.mockImplementation((_userId: string, roomIds: string[]) =>
+		Subscriptions.findByUserIdAndRoomIds.callsFake((_userId: string, roomIds: string[]) =>
 			cursor(roomIds.filter((roomId) => roomId === 'allowed' || roomId === 'room-general').map((rid) => ({ rid }))),
 		);
-		mockMessagesFindVisibleByIds.mockImplementation((msgIds: string[]) =>
+		Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
 			cursor(
 				msgIds.map((msgId) => ({
 					_id: msgId,
@@ -110,7 +124,7 @@ describe('AISearchService', () => {
 
 	describe('status', () => {
 		it('reports availability from license, settings, pipeline, and LLM configuration', async () => {
-			await expect(createService().status()).resolves.toEqual({
+			expect(await createService().status()).to.deep.equal({
 				hasIntelligentSearchLicense: true,
 				intelligentSearchEnabled: true,
 				intelligentSearchConfigured: true,
@@ -119,9 +133,9 @@ describe('AISearchService', () => {
 		});
 
 		it('marks answer generation unavailable when the answer setting is off', async () => {
-			mockSettingsGet.mockImplementation(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
+			Settings.get.callsFake(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
 
-			await expect(createService().status()).resolves.toMatchObject({
+			expect(await createService().status()).to.include({
 				answerGenerationConfigured: false,
 			});
 		});
@@ -129,15 +143,15 @@ describe('AISearchService', () => {
 
 	describe('search', () => {
 		it('does not call the pipeline when license, setting, or configuration is unavailable', async () => {
-			mockLicenseHasModule.mockResolvedValue(false);
+			License.hasModule.resolves(false);
 
-			await expect(createService().search({ query: 'fruit', userId: 'user-id' })).resolves.toEqual([]);
-			expect(mockFetch).not.toHaveBeenCalled();
+			expect(await createService().search({ query: 'fruit', userId: 'user-id' })).to.deep.equal([]);
+			expect(serverFetch.called).to.be.false;
 		});
 
 		it('uses bounded overfetch and post-filters accessible rooms for broad searches', async () => {
-			mockSubscriptionsFindByUserId.mockReturnValue(cursor(Array.from({ length: 1001 }, (_, index) => ({ rid: `room-${index}` }))));
-			mockFetch.mockResolvedValue({
+			Subscriptions.findByUserId.returns(cursor(Array.from({ length: 1001 }, (_, index) => ({ rid: `room-${index}` }))));
+			serverFetch.resolves({
 				ok: true,
 				status: 200,
 				json: async () => ({
@@ -151,7 +165,7 @@ describe('AISearchService', () => {
 
 			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
 
-			expect(results).toEqual([
+			expect(results).to.deep.equal([
 				{
 					_id: 'allowed-msg',
 					rid: 'allowed',
@@ -164,23 +178,29 @@ describe('AISearchService', () => {
 				},
 			]);
 
-			const [, options] = mockFetch.mock.calls[0];
+			const [, options] = serverFetch.firstCall.args;
 			const body = JSON.parse(options.body);
-			expect(body.params.k).toBe(50);
-			expect(body.filters).toEqual({});
-			expect(mockSubscriptionsFindByUserId).toHaveBeenCalledWith('user-id', {
-				projection: { rid: 1 },
-				limit: 1001,
-			});
-			expect(mockSubscriptionsFindByUserIdAndRoomIds).toHaveBeenCalledWith('user-id', expect.arrayContaining(['blocked', 'allowed']), {
-				projection: { rid: 1 },
-			});
+			expect(body.params.k).to.equal(50);
+			expect(body.filters).to.deep.equal({});
+			expect(
+				Subscriptions.findByUserId.calledWith('user-id', {
+					projection: { rid: 1 },
+					limit: 1001,
+				}),
+			).to.be.true;
+			expect(
+				Subscriptions.findByUserIdAndRoomIds.calledWith(
+					'user-id',
+					sinon.match((roomIds: string[]) => roomIds.includes('blocked') && roomIds.includes('allowed')),
+					{ projection: { rid: 1 } },
+				),
+			).to.be.true;
 		});
 
 		it('resolves room-name filters before querying the pipeline', async () => {
-			mockRoomsFindOneByNameOrFname.mockResolvedValue({ _id: 'room-general' });
-			mockSubscriptionsFindByUserId.mockReturnValue(cursor([{ rid: 'room-general' }]));
-			mockFetch.mockResolvedValue({
+			Rooms.findOneByNameOrFname.resolves({ _id: 'room-general' });
+			Subscriptions.findByUserId.returns(cursor([{ rid: 'room-general' }]));
+			serverFetch.resolves({
 				ok: true,
 				status: 200,
 				json: async () => ({
@@ -191,7 +211,7 @@ describe('AISearchService', () => {
 				}),
 				text: async () => '',
 			});
-			mockMessagesFindVisibleByIds.mockReturnValue(
+			Messages.findVisibleByIds.returns(
 				cursor([
 					{
 						_id: 'general-msg',
@@ -202,7 +222,7 @@ describe('AISearchService', () => {
 					},
 				]),
 			);
-			mockRoomsFindByIds.mockReturnValue(cursor([{ _id: 'room-general', t: 'c', name: 'general', fname: 'General' }]));
+			Rooms.findByIds.returns(cursor([{ _id: 'room-general', t: 'c', name: 'general', fname: 'General' }]));
 
 			const results = await createService().search({
 				query: 'fruit',
@@ -216,14 +236,16 @@ describe('AISearchService', () => {
 				limit: 5,
 			});
 
-			expect(results).toHaveLength(1);
-			expect(results[0]).toMatchObject({ _id: 'general-msg', rid: 'room-general', score: 0.8 });
-			expect(mockMessagesFindVisibleByIds).toHaveBeenCalledWith(['general-msg'], {
-				projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
-			});
+			expect(results).to.have.lengthOf(1);
+			expect(results[0]).to.include({ _id: 'general-msg', rid: 'room-general', score: 0.8 });
+			expect(
+				Messages.findVisibleByIds.calledWith(['general-msg'], {
+					projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
+				}),
+			).to.be.true;
 
-			const [, options] = mockFetch.mock.calls[0];
-			expect(JSON.parse(options.body).filters).toEqual({
+			const [, options] = serverFetch.firstCall.args;
+			expect(JSON.parse(options.body).filters).to.deep.equal({
 				room_id: { $eq: 'room-general' },
 				username: { $eq: 'alice' },
 				timestamp: {
@@ -236,36 +258,39 @@ describe('AISearchService', () => {
 
 	describe('answer', () => {
 		it('rejects answer generation when AI Search or answer generation is unavailable', async () => {
-			mockSettingsGet.mockImplementation(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
+			Settings.get.callsFake(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
 
-			await expect(createService().answer({ query: 'fruit', messages: [{ text: 'oranges are green' }] })).rejects.toThrow(
-				'error-ai-not-enabled',
-			);
-			expect(mockFetch).not.toHaveBeenCalled();
+			try {
+				await createService().answer({ query: 'fruit', messages: [{ text: 'oranges are green' }] });
+				throw new Error('Expected answer generation to fail');
+			} catch (error) {
+				expect((error as Error).message).to.equal('error-ai-not-enabled');
+			}
+			expect(serverFetch.called).to.be.false;
 		});
 
 		it('generates an answer from source messages with the configured LLM provider', async () => {
-			mockFetch.mockResolvedValue({
+			serverFetch.resolves({
 				ok: true,
 				status: 200,
 				json: async () => ({ choices: [{ message: { content: 'Oranges are green.' } }] }),
 				text: async () => '',
 			});
 
-			await expect(
-				createService().answer({
+			expect(
+				await createService().answer({
 					query: 'fruit colors',
 					messages: [{ text: 'oranges are green', username: 'alice', roomName: 'general', score: 0.61 }],
 				}),
-			).resolves.toEqual({
+			).to.deep.equal({
 				answer: 'Oranges are green.',
 				provider: { name: 'OpenAI compatible', model: 'gpt-test' },
 			});
 
-			const [url, options] = mockFetch.mock.calls[0];
-			expect(url).toBe('https://llm.example.com/chat/completions');
-			expect(options.headers.Authorization).toBe('Bearer llm-key');
-			expect(JSON.parse(options.body).messages[0]).toEqual({ role: 'system', content: 'Use sources only.' });
+			const [url, options] = serverFetch.firstCall.args;
+			expect(url).to.equal('https://llm.example.com/chat/completions');
+			expect(options.headers.Authorization).to.equal('Bearer llm-key');
+			expect(JSON.parse(options.body).messages[0]).to.deep.equal({ role: 'system', content: 'Use sources only.' });
 		});
 	});
 });

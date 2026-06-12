@@ -1,5 +1,12 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
+import {
+	mergeSearchFilters,
+	parseSearchFilterText,
+	serializeSearchQuery,
+	type NavBarSearchFormValues,
+	type SearchFilterSuggestion,
+} from '@rocket.chat/ai-search';
 import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
@@ -12,8 +19,7 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
-import type { NavBarSearchFormValues, SearchFilterSuggestion } from './hooks/useSearchItems';
-import { mergeSearchFilters, parseSearchFilterText, serializeSearchQuery, useSearchItems } from './hooks/useSearchItems';
+import { useSearchItems } from './hooks/useSearchItems';
 import { useListboxNavigation } from './hooks/useSearchNavigation';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
@@ -30,17 +36,19 @@ const filterSuggestionGroupLabels = {
 } as const;
 
 const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchFilterSuggestion['group'], SearchFilterSuggestion[]][] => {
-	const grouped = suggestions.reduce<Record<SearchFilterSuggestion['group'], SearchFilterSuggestion[]>>(
-		(result, suggestion) => {
-			result[suggestion.group].push(suggestion);
-			return result;
-		},
-		{ rooms: [], users: [], dates: [] },
-	);
+	const grouped: Record<SearchFilterSuggestion['group'], SearchFilterSuggestion[]> = { rooms: [], users: [], dates: [] };
+	for (const suggestion of suggestions) {
+		grouped[suggestion.group].push(suggestion);
+	}
 
-	return (Object.keys(grouped) as SearchFilterSuggestion['group'][])
-		.map((group) => [group, grouped[group]] as [SearchFilterSuggestion['group'], SearchFilterSuggestion[]])
-		.filter(([, groupSuggestions]) => groupSuggestions.length > 0);
+	const groups: [SearchFilterSuggestion['group'], SearchFilterSuggestion[]][] = [];
+	for (const group of ['rooms', 'users', 'dates'] as const) {
+		if (grouped[group].length > 0) {
+			groups.push([group, grouped[group]]);
+		}
+	}
+
+	return groups;
 };
 
 const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: NavBarSearchListBoxProps) => {

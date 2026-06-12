@@ -1,30 +1,28 @@
-import { expect } from 'chai';
-
 import {
 	buildIntelligentSearchPipelineFilters,
 	getSemanticDistanceThreshold,
 	normalizeIntelligentSearchCandidates,
 	normalizeSimilarityPercent,
 	searchIntelligentPipeline,
-} from '../../../../../../packages/ai-search/src';
-import type { AIServiceFetch } from '../../../../../../packages/ai-search/src';
+} from './intelligentSearch';
+import type { AIServiceFetch } from './types';
 
 describe('AI Search intelligent search helpers', () => {
 	describe('normalizeSimilarityPercent', () => {
 		it('normalizes invalid and out-of-range values', () => {
-			expect(normalizeSimilarityPercent(undefined)).to.equal(0);
-			expect(normalizeSimilarityPercent('abc')).to.equal(0);
-			expect(normalizeSimilarityPercent(-10)).to.equal(0);
-			expect(normalizeSimilarityPercent(101)).to.equal(100);
-			expect(normalizeSimilarityPercent(72.9)).to.equal(72);
+			expect(normalizeSimilarityPercent(undefined)).toBe(0);
+			expect(normalizeSimilarityPercent('abc')).toBe(0);
+			expect(normalizeSimilarityPercent(-10)).toBe(0);
+			expect(normalizeSimilarityPercent(101)).toBe(100);
+			expect(normalizeSimilarityPercent(72.9)).toBe(72);
 		});
 	});
 
 	describe('getSemanticDistanceThreshold', () => {
 		it('converts minimum similarity to pipeline distance threshold', () => {
-			expect(getSemanticDistanceThreshold(89)).to.equal(0.11);
-			expect(getSemanticDistanceThreshold(0)).to.equal(1);
-			expect(getSemanticDistanceThreshold(100)).to.equal(0);
+			expect(getSemanticDistanceThreshold(89)).toBe(0.11);
+			expect(getSemanticDistanceThreshold(0)).toBe(1);
+			expect(getSemanticDistanceThreshold(100)).toBe(0);
 		});
 	});
 
@@ -43,7 +41,7 @@ describe('AI Search intelligent search helpers', () => {
 				10,
 			);
 
-			expect(results).to.deep.equal([
+			expect(results).toEqual([
 				{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: 'metadata text', score: 0.89 },
 				{ _id: 'm2', rid: 'r2', msgId: 'm2', pipelineText: 'content text', score: 0.49 },
 				{ _id: 'm3', rid: 'r3', msgId: 'm3', pipelineText: 'document text', score: 0.88 },
@@ -56,8 +54,8 @@ describe('AI Search intelligent search helpers', () => {
 				{ metadata: { room_id: 'blocked', msg_id: 'm2' }, text: 'blocked' },
 			];
 
-			expect(normalizeIntelligentSearchCandidates(rawResults, [], 10)).to.have.length(2);
-			expect(normalizeIntelligentSearchCandidates(rawResults, ['allowed'], 10)).to.deep.equal([
+			expect(normalizeIntelligentSearchCandidates(rawResults, [], 10)).toHaveLength(2);
+			expect(normalizeIntelligentSearchCandidates(rawResults, ['allowed'], 10)).toEqual([
 				{ _id: 'm1', rid: 'allowed', msgId: 'm1', pipelineText: 'allowed' },
 			]);
 		});
@@ -69,13 +67,13 @@ describe('AI Search intelligent search helpers', () => {
 				1,
 			);
 
-			expect(results).to.deep.equal([{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: '' }]);
+			expect(results).toEqual([{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: '' }]);
 		});
 	});
 
 	describe('buildIntelligentSearchPipelineFilters', () => {
 		it('returns undefined when no accessible room ids are available', () => {
-			expect(buildIntelligentSearchPipelineFilters([], {})).to.equal(undefined);
+			expect(buildIntelligentSearchPipelineFilters([], {})).toBe(undefined);
 		});
 
 		it('serializes room, user, and date filters for the pipeline', () => {
@@ -90,7 +88,7 @@ describe('AI Search intelligent search helpers', () => {
 					startDate,
 					endDate,
 				}),
-			).to.deep.equal({
+			).toEqual({
 				room_id: { $in: ['r1', 'r2'] },
 				username: { $in: ['bob', 'alice'] },
 				timestamp: { $ge: startDate.toISOString(), $le: endDate.toISOString() },
@@ -98,13 +96,13 @@ describe('AI Search intelligent search helpers', () => {
 		});
 
 		it('rejects explicit room filters that are not accessible', () => {
-			expect(buildIntelligentSearchPipelineFilters(['r1'], { rid: 'r2' })).to.equal(undefined);
+			expect(buildIntelligentSearchPipelineFilters(['r1'], { rid: 'r2' })).toBe(undefined);
 		});
 
 		it('omits broad room filters when the accessible room list is too large', () => {
 			const roomIds = Array.from({ length: 1001 }, (_, index) => `r${index}`);
 
-			expect(buildIntelligentSearchPipelineFilters(roomIds, { fromUsername: 'alice' })).to.deep.equal({
+			expect(buildIntelligentSearchPipelineFilters(roomIds, { fromUsername: 'alice' })).toEqual({
 				username: { $eq: 'alice' },
 			});
 		});
@@ -141,9 +139,9 @@ describe('AI Search intelligent search helpers', () => {
 				fetch,
 			});
 
-			expect(result).to.deep.equal({ results: [] });
-			expect(requestUrl).to.equal('https://pipeline.example.com/pipelines/workspace%20pipeline/search');
-			expect(JSON.parse(requestBody)).to.deep.equal({
+			expect(result).toEqual({ results: [] });
+			expect(requestUrl).toBe('https://pipeline.example.com/pipelines/workspace%20pipeline/search');
+			expect(JSON.parse(requestBody)).toEqual({
 				query: 'semantic: fruit colors',
 				type: 'similarity',
 				classification: {
@@ -180,7 +178,7 @@ describe('AI Search intelligent search helpers', () => {
 				fetch,
 			});
 
-			expect(result).to.deep.equal([]);
+			expect(result).toEqual([]);
 		});
 	});
 });

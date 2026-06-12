@@ -2,8 +2,9 @@
 	"name": "@rocket.chat/ai-search",
 	"version": "0.1.0",
 	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"typings": "./src/index.ts",
 	"files": [
 		"/dist"
 	],
@@ -12,11 +13,16 @@
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
 		"eslint": "~9.39.4",
+		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

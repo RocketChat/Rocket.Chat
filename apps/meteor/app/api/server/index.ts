@@ -7,6 +7,7 @@ import './helpers/isUserFromParams';
 import './helpers/parseJsonQuery';
 import './default/info';
 import './v1/assets';
+import './v1/ai-search';
 import './v1/calendar';
 import './v1/call-history';
 import './v1/channels';

@@ -1,6 +1,6 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 
-const AI_LICENSE_MODULE = 'chat.rocket.rc-ai' as const;
+import { settingsRegistry } from '../../app/settings/server';
 
 export const createAISettings = () =>
 	settingsRegistry.addGroup('AI_Center', { hidden: true }, async function () {
