@@ -14,7 +14,7 @@
  *   3. Update relative imports in OTHER files that referenced the moved module
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -103,8 +103,10 @@ function computeRelativeSpecifier(fromFile, targetAbs) {
 	return rel;
 }
 
-// Regex to match import specifiers (both `import x from 'y'` and `import 'y'`)
-const IMPORT_RE = /(?:from\s+|import\s+)(['"])([^'"]+)\1/g;
+// Regex to match import specifiers. Covers static `import x from 'y'`,
+// re-exports `export { x } from 'y'`, bare `import 'y'`, dynamic `import('y')`,
+// and CommonJS `require('y')`.
+const IMPORT_RE = /(?:from\s+|import\s+|(?:import|require)\s*\(\s*)(['"])([^'"]+)\1/g;
 
 /**
  * Update all relative imports in a file based on its old and new positions.
@@ -258,7 +260,7 @@ if (!dryRun) {
 	}
 
 	for (const [oldFile, newFile] of pathMap) {
-		execSync(`git mv "${oldFile}" "${newFile}"`, { cwd: ROOT, stdio: 'pipe' });
+		execFileSync('git', ['mv', oldFile, newFile], { cwd: ROOT, stdio: 'pipe' });
 	}
 	console.log(`  Moved ${pathMap.size} files`);
 } else {
