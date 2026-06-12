@@ -1,5 +1,6 @@
 import type { IVisitor } from '../livechat';
 import type { RoomType } from './RoomType';
+import type { FederationLookup } from '../federation';
 import type { IOmnichannelSource, IVisitorChannelInfo } from '../livechat/ILivechatRoom';
 import type { IUserLookup } from '../users';
 
@@ -41,9 +42,5 @@ export interface IRoomRaw {
 	departmentId?: string;
 	contactId?: string;
 	isFederated?: boolean;
-	federation?: {
-		version: number;
-		mrid: string;
-		origin: string;
-	};
+	federation?: FederationLookup;
 }
