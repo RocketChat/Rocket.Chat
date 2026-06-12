@@ -18,12 +18,10 @@ const settingStructure = {
 } as Partial<ISetting>;
 
 const dispatchMock = jest.fn();
-const setModalMock = jest.fn();
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
 	useSettingsDispatch: () => dispatchMock,
-	useSetModal: () => setModalMock,
 }));
 jest.mock('@rocket.chat/core-typings', () => ({
 	...jest.requireActual('@rocket.chat/core-typings'),
@@ -34,7 +32,6 @@ describe('SettingField', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();
 		dispatchMock.mockClear();
-		setModalMock.mockClear();
 	});
 
 	afterEach(() => {
@@ -60,7 +57,7 @@ describe('SettingField', () => {
 		});
 	});
 
-	it('should open the confirmation modal instead of dispatching when the setting has an alert', async () => {
+	it('should dispatch when the setting has an alert (confirmation is handled by the settings dispatch)', async () => {
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
 		render(<SettingField settingId='Test_Setting' />, {
@@ -74,42 +71,8 @@ describe('SettingField', () => {
 
 		await act(async () => {
 			jest.runOnlyPendingTimers();
-		});
-
-		expect(setModalMock).toHaveBeenCalled();
-		expect(dispatchMock).not.toHaveBeenCalled();
-
-		const modal = setModalMock.mock.calls[0][0];
-		await act(async () => {
-			modal.props.onConfirm();
 		});
 
 		expect(dispatchMock).toHaveBeenCalledWith([{ _id: 'Test_Setting', value: true }]);
-		expect(setModalMock).toHaveBeenLastCalledWith(null);
-	});
-
-	it('should not dispatch when the confirmation modal is cancelled', async () => {
-		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-
-		render(<SettingField settingId='Test_Setting' />, {
-			wrapper: mockAppRoot()
-				.wrap((children) => <EditableSettingsProvider>{children}</EditableSettingsProvider>)
-				.withSetting('Test_Setting', false, { ...settingStructure, alert: 'Test_Setting_Alert' })
-				.build(),
-		});
-
-		await user.click(screen.getByRole('checkbox'));
-
-		await act(async () => {
-			jest.runOnlyPendingTimers();
-		});
-
-		const modal = setModalMock.mock.calls[0][0];
-		await act(async () => {
-			modal.props.onCancel();
-		});
-
-		expect(dispatchMock).not.toHaveBeenCalled();
-		expect(setModalMock).toHaveBeenLastCalledWith(null);
 	});
 });

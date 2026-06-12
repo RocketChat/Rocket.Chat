@@ -102,7 +102,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
-		async (changes: Partial<ISetting>[]) => {
+		async (changes: Partial<ISetting>[], onSaved?: () => void) => {
 			const changedSettingIds = changes.map((s) => s._id).filter(isTruthy);
 			const alerts = cachedCollection.store
 				.getState()
@@ -114,13 +114,17 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 				}
 			});
 
-			const accepted = await showAlerts(alerts, changes as Pick<ISetting, '_id' | 'value'>[]);
+			if (alerts.length) {
+				const accepted = await showAlerts(alerts);
 
-			if (!accepted) {
-				return;
+				if (!accepted) {
+					return;
+				}
 			}
 
 			await saveSettings(changes as Pick<ISetting, '_id' | 'value'>[]);
+
+			onSaved?.();
 		},
 		[queryClient, saveSettings, showAlerts, cachedCollection.store],
 	);
