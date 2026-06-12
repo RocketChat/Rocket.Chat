@@ -2011,7 +2011,7 @@ API.v1
 			const { status, message, expiresAt } = this.bodyParams;
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
-			if (statusExpiresAt && isNaN(statusExpiresAt.getTime())) {
+			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
 				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
 					method: 'users.setStatus',
 				});
