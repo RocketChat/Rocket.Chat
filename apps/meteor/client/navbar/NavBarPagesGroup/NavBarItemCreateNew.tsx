@@ -12,6 +12,10 @@ const NavBarItemCreateNew = (props: CreateRoomProps) => {
 
 	const sections = useCreateNewMenu();
 
+	if (!sections.length) {
+		return null;
+	}
+
 	return <GenericMenu icon='plus' sections={sections} title={t('Create_new')} is={SidebarV2Action} {...props} />;
 };
 

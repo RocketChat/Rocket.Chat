@@ -11,7 +11,7 @@ export const useCreateNewMenu = () => {
 
 	const createRoomItems = useCreateNewItems();
 
-	const sections = [{ title: t('Create_new'), items: createRoomItems, permission: showCreate }];
+	const sections = [{ title: t('Create_new'), items: createRoomItems, permission: showCreate && createRoomItems.length > 0 }];
 
 	return sections.filter((section) => section.permission);
 };
