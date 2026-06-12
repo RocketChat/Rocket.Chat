@@ -10,7 +10,6 @@ export type AIServiceFetch = (
 	options: {
 		method: string;
 		timeout?: number;
-		ignoreSsrfValidation?: boolean;
 		headers?: Record<string, string>;
 		body?: string;
 	},

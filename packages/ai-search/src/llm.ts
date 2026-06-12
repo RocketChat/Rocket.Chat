@@ -48,7 +48,6 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 	const response = await fetch(`${trimTrailingSlashes(provider.baseUrl)}/chat/completions`, {
 		method: 'POST',
 		timeout: 20000,
-		ignoreSsrfValidation: true,
 		headers: {
 			'Content-Type': 'application/json',
 			'Accept': 'application/json',
@@ -99,7 +98,6 @@ export const listOpenAICompatibleModels = async ({
 		const response = await fetch(`${trimTrailingSlashes(provider.baseUrl)}/models`, {
 			method: 'GET',
 			timeout: 10000,
-			ignoreSsrfValidation: true,
 			headers: {
 				Accept: 'application/json',
 				Authorization: `Bearer ${provider.apiKey}`,

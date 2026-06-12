@@ -218,7 +218,6 @@ export const searchIntelligentPipeline = async ({
 		response = await fetch(url, {
 			method: 'POST',
 			timeout: 10000,
-			ignoreSsrfValidation: true,
 			headers: {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',
