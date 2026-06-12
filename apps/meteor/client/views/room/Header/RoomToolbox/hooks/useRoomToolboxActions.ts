@@ -113,6 +113,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 
 			return { featuredActions, visibleActions: engineVisible, hiddenActions };
 		} catch {
+			// intentional: silent fallback
 		}
 	}
 

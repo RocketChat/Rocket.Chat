@@ -71,54 +71,17 @@ describe('useRoomToolboxActions', () => {
 			expect(hiddenIds).toContain('rocket-search');
 		});
 
-		it('should fall back to legacy behavior if config is invalid JSON', () => {
+		it.each([
+			['invalid JSON', '{ invalid json }'],
+			['a JSON array', '[]'],
+			['non-array items', JSON.stringify({ items: {} })],
+			['items with invalid item types', JSON.stringify({ items: [null] })],
+		])('should fall back to legacy behavior if config is %s', (_, layoutConfigValue) => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout', '{ invalid json }')
-					.build(),
-			});
-
-			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
-		});
-
-		it('should fall back to legacy behavior if config is a JSON array', () => {
-			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: mockAppRoot()
-					.withSetting('Accounts_AllowFeaturePreview', true)
-					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout', '[]')
-					.build(),
-			});
-
-			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
-		});
-
-		it('should fall back to legacy behavior if config has non-array items', () => {
-			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: mockAppRoot()
-					.withSetting('Accounts_AllowFeaturePreview', true)
-					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout', JSON.stringify({ items: {} }))
-					.build(),
-			});
-
-			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
-			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
-		});
-
-		it('should fall back to legacy behavior if config has items with invalid item types', () => {
-			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: mockAppRoot()
-					.withSetting('Accounts_AllowFeaturePreview', true)
-					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout', JSON.stringify({ items: [null] }))
+					.withSetting('Room_Toolbox_Layout', layoutConfigValue)
 					.build(),
 			});
 

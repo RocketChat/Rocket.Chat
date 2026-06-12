@@ -20,17 +20,17 @@ export type RoomToolboxHiddenSection = {
 	items: RoomToolboxBaseAction[];
 };
 
-export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
+export const processRoomActions = <T extends RoomToolboxBaseAction>(actionsBase: T[], config: RoomToolboxLayoutConfig | null) => {
 	const appActions = actionsBase.filter((a) => a.type === 'apps');
 	const nonAppActions = actionsBase.filter((a) => a.type !== 'apps');
 
-	if (!config || !config.items || config.items.length === 0) {
-		const hiddenActions: RoomToolboxHiddenSection[] = [];
+	if (!config?.items || config.items.length === 0) {
+		const hiddenActions: { id: string; items: T[] }[] = [];
 		if (appActions.length > 0) {
 			hiddenActions.push({ id: 'apps', items: appActions });
 		}
 		return {
-			featuredActions: [],
+			featuredActions: [] as T[],
 			visibleActions: nonAppActions,
 			hiddenActions,
 		};
@@ -38,9 +38,7 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 
 	const itemMap = new Map(config.items.map((item) => [item.id, item]));
 
-	const [featuredWithOrder, normalWithOrder] = nonAppActions.reduce<
-		[{ action: RoomToolboxBaseAction; order: number }[], { action: RoomToolboxBaseAction; order: number }[]]
-	>(
+	const [featuredWithOrder, normalWithOrder] = nonAppActions.reduce<[{ action: T; order: number }[], { action: T; order: number }[]]>(
 		(acc, action) => {
 			const configItem = itemMap.get(action.id);
 			if (configItem?.featured) {
@@ -60,7 +58,7 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 	const visibleActions = normalWithOrder.slice(0, maxVisible).map((n) => n.action);
 	const overflowNormalActions = normalWithOrder.slice(maxVisible).map((n) => n.action);
 
-	const hiddenActions: RoomToolboxHiddenSection[] = [];
+	const hiddenActions: { id: string; items: T[] }[] = [];
 
 	if (appActions.length > 0) {
 		hiddenActions.push({ id: 'apps', items: appActions });
