@@ -24,24 +24,16 @@ export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pi
 	responses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined>,
 	subjects: T[],
 ): T[] => {
-	const denied: T[] = [];
-
-	responses.forEach((resp, index) => {
-		const subject = subjects[index];
-		if (!subject) {
-			return;
+	return subjects.filter((subject, index) => {
+		const decisions = responses[index]?.resourceDecisions ?? [];
+		if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
+			return true;
 		}
-		if (resp?.resourceDecisions?.some((rd) => rd.decision === 'DECISION_DENY')) {
-			denied.push(subject);
-			return;
+		if (!decisions.length || decisions.some((rd) => rd.decision !== 'DECISION_PERMIT')) {
+			pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', rid: subject.room._id, userId: subject.user._id });
 		}
-		if (resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
-			return;
-		}
-		pdpLogger.warn({ msg: 'Inconclusive PDP decision, eviction skipped', rid: subject.room._id, userId: subject.user._id });
+		return false;
 	});
-
-	return denied;
 };
 
 export class VirtruPDP implements IPolicyDecisionPoint {
