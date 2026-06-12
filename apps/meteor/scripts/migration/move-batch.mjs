@@ -10,7 +10,7 @@
  *   app/slashcommands-ban/server	server/slashcommands/ban
  *   app/slashcommands-kick/server	server/slashcommands/kick
  *
- * After all moves, runs `tsc --noEmit` to verify.
+ * After all moves, runs `yarn lint --quiet` to verify no imports broke.
  */
 
 import { execFileSync, execSync } from 'node:child_process';
@@ -64,12 +64,15 @@ if (failed > 0) {
 	process.exit(1);
 }
 
-// Run TypeScript check
-console.log('\nRunning tsc --noEmit to verify...');
+// Verify no imports broke. `yarn lint --quiet` is the authoritative check for
+// unresolved imports (see MIGRATION_PLAN.md); `--quiet` hides warnings so
+// import errors stand out. tsc is avoided here because it also surfaces
+// pre-existing, unrelated type errors.
+console.log('\nRunning yarn lint --quiet to verify...');
 try {
-	execSync('npx tsc --noEmit', { cwd: ROOT, stdio: 'inherit', timeout: 300_000 });
-	console.log('TypeScript check passed.');
+	execSync('yarn lint --quiet', { cwd: ROOT, stdio: 'inherit', timeout: 300_000 });
+	console.log('Lint check passed.');
 } catch {
-	console.error('TypeScript check FAILED. Fix the errors above before committing.');
+	console.error('Lint check FAILED. Fix the errors above before committing.');
 	process.exit(1);
 }
