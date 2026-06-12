@@ -9432,8 +9432,8 @@ __metadata:
     normalize.css: "npm:^8.0.1"
     npm-run-all: "npm:^4.1.5"
     prettier: "npm:~3.3.3"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:~4.12.8"
     rimraf: "npm:^6.0.1"
@@ -9516,9 +9516,9 @@ __metadata:
     jest: "npm:~30.2.0"
     katex: "npm:~0.16.45"
     outdent: "npm:^0.8.0"
-    react: "npm:~18.3.1"
+    react: "npm:~19.2.7"
     react-aria: "npm:~3.37.0"
-    react-dom: "npm:~18.3.1"
+    react-dom: "npm:~19.2.7"
     react-error-boundary: "npm:^3.1.4"
     react-i18next: "npm:~13.2.2"
     react-stately: "npm:~3.17.0"
@@ -9734,8 +9734,8 @@ __metadata:
     preact: "npm:~10.25.4"
     preact-router: "npm:^4.1.2"
     query-string: "npm:^7.1.3"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
     resolve-url-loader: "npm:~5.0.0"
@@ -10056,6 +10056,7 @@ __metadata:
     "@types/qs": "npm:^6.14.0"
     "@types/react": "npm:~19.2.17"
     "@types/react-dom": "npm:~19.2.3"
+    "@types/react-is": "npm:^19"
     "@types/sanitize-html": "npm:~2.16.1"
     "@types/semver": "npm:^7.5.8"
     "@types/sharp": "npm:^0.32.0"
@@ -10213,14 +10214,15 @@ __metadata:
     queue-fifo: "npm:^0.2.6"
     raw-loader: "npm:~4.0.2"
     re-resizable: "npm:^6.10.4"
-    react: "npm:~18.3.1"
+    react: "npm:~19.2.7"
     react-aria: "npm:~3.37.0"
     react-docgen-typescript-plugin: "npm:^1.0.8"
-    react-dom: "npm:~18.3.1"
+    react-dom: "npm:~19.2.7"
     react-error-boundary: "npm:^3.1.4"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
-    react-keyed-flatten-children: "npm:^3.0.2"
+    react-is: "npm:~19.2.7"
+    react-keyed-flatten-children: "npm:~5.1.2"
     react-stately: "npm:~3.17.0"
     react-virtuoso: "npm:~4.12.8"
     reflect-metadata: "npm:^0.2.2"
@@ -10294,8 +10296,8 @@ __metadata:
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -10494,7 +10496,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
-    react: "npm:~18.3.1"
+    react: "npm:~19.2.7"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -10573,8 +10575,8 @@ __metadata:
     moment: "npm:^2.30.1"
     moment-timezone: "npm:^0.5.48"
     path-browserify: "npm:^1.0.1"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -10827,8 +10829,8 @@ __metadata:
     "@storybook/react": "npm:^9.1.13"
     "@storybook/react-webpack5": "npm:^9.1.13"
     eslint: "npm:~9.39.4"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-virtuoso: "npm:~4.12.8"
     storybook: "npm:^9.1.13"
     storybook-dark-mode: "npm:^5.0.0"
@@ -10918,8 +10920,8 @@ __metadata:
     "@types/react": "npm:~19.2.17"
     "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-virtuoso: "npm:~4.12.8"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -10965,8 +10967,8 @@ __metadata:
     overlayscrollbars: "npm:~2.11.5"
     overlayscrollbars-react: "npm:^0.5.6"
     re-resizable: "npm:^6.10.4"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:~4.12.8"
@@ -11011,8 +11013,8 @@ __metadata:
     "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-virtuoso: "npm:~4.12.8"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -11050,8 +11052,8 @@ __metadata:
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-virtuoso: "npm:~4.12.8"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11111,8 +11113,8 @@ __metadata:
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
     jest-axe: "npm:~10.0.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-virtuoso: "npm:~4.12.8"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -11172,8 +11174,8 @@ __metadata:
     jest: "npm:~30.2.0"
     jest-axe: "npm:~10.0.0"
     jsdom: "npm:^26.1.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:~4.12.8"
     storybook: "npm:^9.1.13"
@@ -11226,8 +11228,8 @@ __metadata:
     eslint4b-prebuilt: "npm:^6.7.2"
     prettier: "npm:~3.3.3"
     rc-scrollbars: "npm:^1.1.6"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-router-dom: "npm:^6.30.4"
     react-split-pane: "npm:^0.1.92"
     react-virtuoso: "npm:~4.12.8"
@@ -11265,8 +11267,8 @@ __metadata:
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:~4.12.8"
@@ -14731,6 +14733,15 @@ __metadata:
   peerDependencies:
     "@types/react": ^19.2.0
   checksum: 10/616c4a8aee250ea05fb1e7b98e7e00475dd3a6c1c30d7be18b4b93caba832f4203106b3a496a6b147e5acc2da14575eca47bce234c633bca1f8430ef8ffb234a
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^19":
+  version: 19.2.0
+  resolution: "@types/react-is@npm:19.2.0"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/cf684b259dd0c60bb07df38e1b51a57728101b8cdde9d06209388e9a22daa64a6e36a8c7945f8d029a588c4a0d6540857ccbf52b7ec98ef083b4cee6ca4a3ee4
   languageName: node
   linkType: hard
 
@@ -31899,15 +31910,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:~18.3.1":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:~19.2.7":
+  version: 19.2.7
+  resolution: "react-dom@npm:19.2.7"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.27.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
+    react: ^19.2.7
+  checksum: 10/9564f4b83843ca5518ed5f807c93cb1663706559cde52f3ef814b41e60b63b16e684d849926458f0ba436745d7eabf822cba1c528be370e7b2f35a4c91e35941
   languageName: node
   linkType: hard
 
@@ -31972,10 +31982,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^18.0.0, react-is@npm:^18.2.0, react-is@npm:^18.3.1":
+"react-is@npm:^18.0.0, react-is@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-is@npm:18.3.1"
   checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
+  languageName: node
+  linkType: hard
+
+"react-is@npm:~19.2.7":
+  version: 19.2.7
+  resolution: "react-is@npm:19.2.7"
+  checksum: 10/ae0d3ae7638aa2fa2a82a78a817daf2806e57fa0aef357d07e1e8d1e9a301902e5967168e9334b5816db0df8fa980a725cd57569ba5a9e6e76a71e117b18be04
   languageName: node
   linkType: hard
 
@@ -31990,14 +32007,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-keyed-flatten-children@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "react-keyed-flatten-children@npm:3.0.2"
-  dependencies:
-    react-is: "npm:^18.2.0"
+"react-keyed-flatten-children@npm:~5.1.2":
+  version: 5.1.2
+  resolution: "react-keyed-flatten-children@npm:5.1.2"
   peerDependencies:
-    react: ">=15.0.0"
-  checksum: 10/58b53ccc707543b3b2f3615a6efe890b1302bf38d68df9239cb4d1ca4e8d8d9c05d670039c08e77befd27b1210c61290d6308a2f8439363e6699fecb94b69ebd
+    react: ">=18.0.0"
+    react-is: ">=18.0.0"
+  checksum: 10/b8aa894d87d129fc2cfec5fec490d1f21b8c7800149b7e91c004df7b31ce9e2c24370acc42f970a24a251e892fecbf231ec9da8fd1a5c2b54b27326d9fa5f9c4
   languageName: node
   linkType: hard
 
@@ -32178,12 +32194,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:~18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
+"react@npm:~19.2.7":
+  version: 19.2.7
+  resolution: "react@npm:19.2.7"
+  checksum: 10/2939997e87d7f0ee0d9d2bb556866b616b999dfb7916283647034eda867a045a39c4f7a736c8ea6beffffcd78397fc30f63a7a3aaf8425b683c3060670859560
   languageName: node
   linkType: hard
 
@@ -33315,19 +33329,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.2":
-  version: 0.23.2
-  resolution: "scheduler@npm:0.23.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
-  languageName: node
-  linkType: hard
-
 "scheduler@npm:^0.25.0":
   version: 0.25.0
   resolution: "scheduler@npm:0.25.0"
   checksum: 10/e661e38503ab29a153429a99203fefa764f28b35c079719eb5efdd2c1c1086522f6653d8ffce388209682c23891a6d1d32fa6badf53c35fb5b9cd0c55ace42de
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "scheduler@npm:0.27.0"
+  checksum: 10/eab3c3a8373195173e59c147224fc30dabe6dd453f248f5e610e8458512a5a2ee3a06465dc400ebfe6d35c9f5b7f3bb6b2e41c88c86fd177c25a73e7286a1e06
   languageName: node
   linkType: hard
 
