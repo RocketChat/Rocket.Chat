@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { ActionStrip, CardListContainer, CardListSection, PeerCard, StreamCard } from '../../components';
-import VideoConferenceButton from '../../components/VideoCallButton';
+import { CardListContainer, CardListSection, PeerCard, StreamCard } from '../../components';
 import { useMediaCallView } from '../../context';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
@@ -18,7 +17,6 @@ const PeerCardsView = ({ user, shouldWrapCards }: PeerCardsViewProps) => {
 	const {
 		sessionState,
 		onToggleScreenSharing,
-		onRequestVideoCall,
 		streams: { remoteScreen, localScreen },
 	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo } = sessionState;
@@ -63,17 +61,14 @@ const PeerCardsView = ({ user, shouldWrapCards }: PeerCardsViewProps) => {
 	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
-		<>
-			<ActionStrip rightSlot={<VideoConferenceButton onClick={onRequestVideoCall} />} />
-			<CardListSection>
-				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
-					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
-					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
-					{focusedCard !== 'remote' && remoteStreamCard}
-					{focusedCard !== 'local' && localStreamCard}
-				</CardListContainer>
-			</CardListSection>
-		</>
+		<CardListSection>
+			<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
+				<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
+				<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
+				{focusedCard !== 'remote' && remoteStreamCard}
+				{focusedCard !== 'local' && localStreamCard}
+			</CardListContainer>
+		</CardListSection>
 	);
 };
 

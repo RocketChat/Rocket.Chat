@@ -13,6 +13,7 @@ import {
 	CARD_LIST_SECTION_MAX_HEIGHT,
 	ActionStrip,
 	ActionToggleChat,
+	VideoCallButton,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePeekMediaSessionFeatures } from '../../context/usePeekMediaSessionFeatures';
@@ -52,6 +53,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
+		onRequestVideoCall,
 		streams: { localScreen },
 	} = useMediaCallView();
 
@@ -82,6 +84,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			flexDirection='column'
 			{...getSplitStyles(showChat)}
 		>
+			{escalated ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+
 			{escalated ? <VideoEscalatedView /> : <PeerCardsView user={user} shouldWrapCards={shouldWrapCards} />}
 
 			<ActionStrip

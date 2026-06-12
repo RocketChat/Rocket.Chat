@@ -14,3 +14,4 @@ export { default as DevicePicker } from './DevicePicker';
 export { default as CallHistoryInternalUser } from './CallHistoryInternalUser';
 export { default as CallHistoryExternalUser } from './CallHistoryExternalUser';
 export { default as VideoCallWidgetAction } from './VideoCallWidgetAction';
+export { default as VideoCallButton } from './VideoCallButton';
