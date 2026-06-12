@@ -1,3 +1,4 @@
+import type { RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
 import { useEndpoint, useMethod, useRouter, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -13,14 +14,18 @@ import { Rooms } from '../../../stores';
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
-export type EmbeddedPreloadProps = { children: ReactNode };
+export type EmbeddedPreloadProps = { children: ReactNode; reference?: string; type?: RoomType };
 
-const EmbeddedPreload = ({ children }: EmbeddedPreloadProps) => {
+const EmbeddedPreload = ({ children, reference, type }: EmbeddedPreloadProps) => {
 	const ready = useMainReady();
 	const router = useRouter();
 	const uid = useUserId();
 
 	const roomParams = useMemo(() => {
+		if (reference && type) {
+			return { reference, type };
+		}
+
 		const routeName = router.getRouteName();
 		if (!routeName) {
 			return null;
@@ -37,14 +42,18 @@ const EmbeddedPreload = ({ children }: EmbeddedPreloadProps) => {
 		}
 
 		return directives.extractOpenRoomParams(router.getRouteParameters());
-	}, [router]);
+	}, [reference, router, type]);
 
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 
 	const shouldFetch = !!roomParams && !!uid;
 
-	const { isLoading, isSuccess, isError } = useQuery({
+	const {
+		isPending: isLoading,
+		isSuccess,
+		isError,
+	} = useQuery({
 		queryKey: roomParams ? roomsQueryKeys.roomReference(roomParams.reference, roomParams.type, uid ?? undefined) : [],
 		queryFn: async () => {
 			if (!roomParams) {
@@ -52,7 +61,9 @@ const EmbeddedPreload = ({ children }: EmbeddedPreloadProps) => {
 			}
 
 			const roomData = await getRoomByTypeAndName(roomParams.type, roomParams.reference);
-			if (!roomData?._id) {
+			if (roomData?._id) {
+				Rooms.state.store(roomData);
+			} else {
 				return null;
 			}
 
