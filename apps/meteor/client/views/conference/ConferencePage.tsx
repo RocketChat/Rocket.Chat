@@ -1,10 +1,8 @@
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useRoute, useSetModal, useUser } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 
+import ConferenceInlinePage from './ConferenceInlinePage';
 import ConferencePageError from './ConferencePageError';
-import { useVideoConfOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
-import PageLoading from '../root/PageLoading';
+import ConferenceRedirectPage from './ConferenceRedirectPage';
 
 const getQueryParams = () => {
 	const queryString = window.location.search;
@@ -15,30 +13,18 @@ const getQueryParams = () => {
 };
 
 const ConferencePage = () => {
-	const user = useUser();
-	const defaultRoute = useRoute('home');
-	const setModal = useSetModal();
-	const handleOpenCall = useVideoConfOpenCall();
-	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
-
+	const id = useRouteParameter('id');
 	const { callUrlParam } = getQueryParams();
-	const callUrl = callUrlParam && userDisplayName ? `${callUrlParam}&name=${userDisplayName}` : callUrlParam;
 
-	useEffect(() => {
-		if (!callUrl) {
-			return;
-		}
-
-		handleOpenCall(callUrl);
-
-		defaultRoute.push();
-	}, [setModal, defaultRoute, callUrl, handleOpenCall, userDisplayName]);
-
-	if (!callUrl) {
-		return <ConferencePageError />;
+	if (callUrlParam) {
+		return <ConferenceRedirectPage callUrl={callUrlParam} />;
 	}
 
-	return <PageLoading />;
+	if (id) {
+		return <ConferenceInlinePage callId={id} />;
+	}
+
+	return <ConferencePageError />;
 };
 
 export default ConferencePage;
