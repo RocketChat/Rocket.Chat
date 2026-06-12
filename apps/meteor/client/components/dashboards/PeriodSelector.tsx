@@ -1,5 +1,4 @@
 import { Select } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +12,7 @@ type PeriodSelectorProps<TPeriod extends Period['key']> = {
 	onChange: (value: TPeriod) => void;
 };
 
-const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, name, onChange }: PeriodSelectorProps<TPeriod>): ReactElement => {
+const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, name, onChange }: PeriodSelectorProps<TPeriod>) => {
 	const { t } = useTranslation();
 
 	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(...getPeriod(period).label)]), [periods, t]);

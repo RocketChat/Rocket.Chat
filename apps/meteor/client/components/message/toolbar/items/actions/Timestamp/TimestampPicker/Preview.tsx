@@ -1,7 +1,6 @@
 import { Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
@@ -14,7 +13,7 @@ type PreviewProps = {
 	timezone: TimezoneKey;
 };
 
-const Preview = ({ date, format, timezone }: PreviewProps): ReactElement => {
+const Preview = ({ date, format, timezone }: PreviewProps) => {
 	const { t } = useTranslation();
 	const timestamp = dateToISOString(date, timezone);
 	const markup = generateTimestampMarkup(timestamp, format);

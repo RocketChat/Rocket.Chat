@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Reactions from './Reactions';
@@ -10,7 +9,7 @@ type ReactionListModalProps = {
 	onClose: () => void;
 };
 
-const ReactionListModal = ({ reactions, onClose }: ReactionListModalProps): ReactElement => {
+const ReactionListModal = ({ reactions, onClose }: ReactionListModalProps) => {
 	const { t } = useTranslation();
 
 	return (

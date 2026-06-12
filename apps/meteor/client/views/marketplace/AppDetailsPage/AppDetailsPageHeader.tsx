@@ -2,7 +2,6 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { formatDistanceToNow } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppMenu from '../AppMenu';
@@ -16,7 +15,7 @@ const versioni18nKey = (app: App): string => {
 	return installed ? version : marketplaceVersion;
 };
 
-const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
+const AppDetailsPageHeader = ({ app }: { app: App }) => {
 	const { t } = useTranslation();
 	const {
 		iconFileData,

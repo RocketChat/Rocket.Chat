@@ -1,13 +1,12 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
 type RadioButtonElementProps = BlockProps<UiKit.RadioButtonElement>;
 
-const RadioButtonElement = ({ block, context, surfaceRenderer }: RadioButtonElementProps): ReactElement => {
+const RadioButtonElement = ({ block, context, surfaceRenderer }: RadioButtonElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);
 	const { options } = block;
 

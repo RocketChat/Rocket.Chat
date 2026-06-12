@@ -11,7 +11,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +32,7 @@ type UserInfoWithDataProps = {
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 

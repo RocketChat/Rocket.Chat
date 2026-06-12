@@ -1,12 +1,11 @@
 import { PasswordInput } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useRoom } from '../contexts/RoomContext';
 
-const ComposerJoinWithPassword = (): ReactElement => {
+const ComposerJoinWithPassword = () => {
 	const t = useTranslation();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();

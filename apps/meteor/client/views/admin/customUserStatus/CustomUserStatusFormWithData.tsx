@@ -2,7 +2,6 @@ import type { IUserStatus } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +14,7 @@ type CustomUserStatusFormWithDataProps = {
 	onReload: () => void;
 };
 
-const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStatusFormWithDataProps): ReactElement => {
+const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStatusFormWithDataProps) => {
 	const { t } = useTranslation();
 	const query = useMemo(() => ({ _id }), [_id]);
 

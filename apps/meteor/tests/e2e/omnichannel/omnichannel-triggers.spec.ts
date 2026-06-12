@@ -132,6 +132,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 
 		await test.step('expect to register visitor', async () => {
+			await expect(poLiveChat.inputName).toBeVisible();
 			await poLiveChat.sendMessage(newVisitor, false);
 		});
 

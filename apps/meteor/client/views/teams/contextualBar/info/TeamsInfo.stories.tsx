@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
 import TeamsInfo from './TeamsInfo';
 
@@ -27,16 +27,16 @@ export default {
 	},
 } satisfies Meta<typeof TeamsInfo>;
 
-const Template: StoryFn<typeof TeamsInfo> = (args) => <TeamsInfo {...args} />;
+export const Default = {};
 
-export const Default = Template.bind({});
-
-export const Archived = Template.bind({});
-Archived.args = {
-	room: { ...room, archived: true },
+export const Archived = {
+	args: {
+		room: { ...room, archived: true },
+	},
 };
 
-export const Broadcast = Template.bind({});
-Broadcast.args = {
-	room: { ...room, broadcast: true },
+export const Broadcast = {
+	args: {
+		room: { ...room, broadcast: true },
+	},
 };

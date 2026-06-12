@@ -24,6 +24,7 @@ Meteor.methods<ServerMethods>({
 		return License.hasModule(feature as LicenseModule);
 	},
 	'license:getModules'() {
+		methodDeprecationLogger.method('license:getModules', '9.0.0', '/v1/licenses.info');
 		return License.getModules();
 	},
 	'license:getTags'() {
@@ -31,6 +32,7 @@ Meteor.methods<ServerMethods>({
 		return License.getTags();
 	},
 	'license:isEnterprise'() {
+		methodDeprecationLogger.method('license:isEnterprise', '9.0.0', '/v1/licenses.info');
 		return License.hasValidLicense();
 	},
 });

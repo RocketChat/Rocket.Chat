@@ -1,6 +1,6 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
@@ -31,7 +31,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 		setFocus('searchText');
 	}, [setFocus]);
 
-	const debouncedOnSearch = useDebouncedCallback(useEffectEvent(onSearch), 300);
+	const debouncedOnSearch = useDebouncedCallback(useStableCallback(onSearch), 300);
 
 	const submitHandler = handleSubmit(({ searchText, globalSearch }) => {
 		debouncedOnSearch.cancel();

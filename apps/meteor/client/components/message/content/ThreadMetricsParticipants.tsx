@@ -7,13 +7,12 @@ import {
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 type ThreadMetricsParticipantsProps = {
 	participants: Array<string>;
 };
 
-const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsProps): ReactElement => {
+const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsProps) => {
 	const t = useTranslation();
 
 	const hideAvatar = !useUserPreference('displayAvatars');

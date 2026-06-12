@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import ReportReason from './helpers/ReportReason';
 
-const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
+const MessageReportInfo = ({ msgId }: { msgId: string }) => {
 	const { t } = useTranslation();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reports`);
 

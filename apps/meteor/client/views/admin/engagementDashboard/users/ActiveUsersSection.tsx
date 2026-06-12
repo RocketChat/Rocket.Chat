@@ -2,7 +2,6 @@ import { ResponsiveLine } from '@nivo/line';
 import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +16,7 @@ type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement => {
+const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useActiveUsers({ utc });
 
@@ -249,7 +248,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											},
 										}}
 										enableSlices='x'
-										sliceTooltip={({ slice: { points } }): ReactElement => (
+										sliceTooltip={({ slice: { points } }) => (
 											<Tile elevation='2'>
 												<Box>
 													<Box>{formatDate(points[0].data.x)}</Box>

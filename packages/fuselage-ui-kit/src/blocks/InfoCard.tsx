@@ -1,13 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 
 import IconElement from '../elements/IconElement';
 import type { BlockProps } from '../utils/BlockProps';
 
 type InfoCardProps = BlockProps<UiKit.InfoCardBlock>;
 
-const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElement => {
+const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 	const { rows, blockId } = block;
 	return (
 		<Box

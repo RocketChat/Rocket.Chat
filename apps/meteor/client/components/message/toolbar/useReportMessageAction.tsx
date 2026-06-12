@@ -7,8 +7,8 @@ import ReportMessageModal from '../../../views/room/modals/ReportMessageModal';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
-	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.title || '';
-	newMessage.md = newMessage.md || undefined;
+	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
+	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
 	return { ...newMessage };
 };
 

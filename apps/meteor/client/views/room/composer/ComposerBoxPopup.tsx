@@ -2,7 +2,7 @@ import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
 import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +17,7 @@ export type ComposerBoxPopupProps<
 	focused?: T;
 	items: UseQueryResult<T[]>[];
 	select: (item: T) => void;
-	renderItem?: ({ item }: { item: T }) => ReactElement;
+	renderItem?: ({ item }: { item: T }) => ReactNode;
 };
 
 function ComposerBoxPopup<
@@ -26,13 +26,7 @@ function ComposerBoxPopup<
 		sort?: number;
 		disabled?: boolean;
 	},
->({
-	title,
-	items,
-	focused,
-	select,
-	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
-}: ComposerBoxPopupProps<T>): ReactElement | null {
+>({ title, items, focused, select, renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</> }: ComposerBoxPopupProps<T>) {
 	const { t } = useTranslation();
 	const id = useId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);

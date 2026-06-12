@@ -312,7 +312,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 			}
 
-			const msg = message.msg || '';
+			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
+			// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
+			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
 			// Remove nulls from final array
 			messagesData.push({
 				msg,

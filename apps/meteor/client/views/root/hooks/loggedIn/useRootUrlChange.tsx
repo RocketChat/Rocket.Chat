@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRole, useSetModal, useSetting, useSettingSetValue, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -12,7 +12,7 @@ export const useRootUrlChange = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal(null));
+	const closeModal = useStableCallback(() => setModal(null));
 
 	const currentUrl = location.origin + getRootUrlPathPrefix();
 	const siteUrl = useSetting('Site_Url', '');

@@ -11,6 +11,7 @@ import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 const useTryToJumpToThreadMessage = (): void => {
 	const messageJumpParam = useSearchParameter('msg');
+	const messageJumpContext = useSearchParameter('jumpContext');
 	const goToRoom = useGoToRoom();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
@@ -28,7 +29,7 @@ const useTryToJumpToThreadMessage = (): void => {
 	});
 
 	useEffect(() => {
-		if (!messageJumpParam) {
+		if (!messageJumpParam || messageJumpContext === 'jumpToUnread') {
 			return;
 		}
 
@@ -56,7 +57,7 @@ const useTryToJumpToThreadMessage = (): void => {
 				await RoomHistoryManager.getMore(message.rid);
 			}
 		})();
-	}, [messageJumpParam, message, goToRoom, tab, context]);
+	}, [messageJumpParam, message, goToRoom, tab, context, messageJumpContext]);
 };
 
 export default useTryToJumpToThreadMessage;
