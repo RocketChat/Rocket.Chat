@@ -2,7 +2,6 @@ import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import moment from 'moment';
 
 import {
 	notifyOnSubscriptionChanged,
@@ -165,7 +164,7 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomUpdater: Updater<IRoom>): Promise<IMessage> {
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (isEditedMessage(message)) {
-		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
+		if (Math.abs(new Date(message.editedAt).getTime() - Date.now()) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 			Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
 			return message;
@@ -183,7 +182,7 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 		return message;
 	}
 
-	if (message.ts && Math.abs(moment(message.ts).diff(Date.now())) > 60000) {
+	if (message.ts && Math.abs(new Date(message.ts).getTime() - Date.now()) > 60000) {
 		Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
 		return message;
 	}

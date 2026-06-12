@@ -1,6 +1,6 @@
 import type { IDirectMessageRoom, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { Messages, Analytics } from '@rocket.chat/models';
-import moment from 'moment';
+import { subDays } from 'date-fns';
 
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -39,7 +39,7 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date: Date): Promise<void>
 		date: convertDateToInt(date),
 	}).toArray();
 	if (!messagesFromAnalytics.length) {
-		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
+		const startOfPeriod = subDays(date, 90);
 		const messages = await Messages.getTotalOfMessagesSentByDate({
 			start: startOfPeriod,
 			end: date,
@@ -73,10 +73,10 @@ export const findWeeklyMessagesSentData = async ({
 	};
 }> => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
-	const endOfLastWeek = moment(start).clone().subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
+	const endOfLastWeek = subDays(start, 1);
+	const startOfLastWeek = subDays(endOfLastWeek, daysBetweenDates);
 	const today = convertDateToInt(end);
-	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
+	const yesterday = convertDateToInt(subDays(end, 1));
 	const currentPeriodMessages = await Analytics.getMessagesSentTotalByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),

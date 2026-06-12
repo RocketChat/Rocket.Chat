@@ -40,7 +40,6 @@
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
-		"moment-timezone": "^0.5.48",
 		"mongo-message-queue": "^1.1.0",
 		"mongodb": "6.16.0",
 		"nats": "^2.28.2",
