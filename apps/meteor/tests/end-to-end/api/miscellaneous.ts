@@ -719,13 +719,14 @@ describe('miscellaneous', () => {
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body).to.have.property('messages').and.to.be.an('array').that.is.empty;
 					expect(res.body).to.have.property('intelligent').and.to.be.an('array');
-					expect(res.body).to.have.nested.property('meta.aiSearch');
-					expect(res.body.meta.aiSearch).to.include.keys([
-						'hasIntelligentSearchLicense',
-						'intelligentSearchEnabled',
-						'intelligentSearchConfigured',
-						'answerGenerationConfigured',
-					]);
+					expect(res.body)
+						.to.have.property('meta')
+						.and.to.include.keys([
+							'globalMessagesEnabled',
+							'intelligentSearchEnabled',
+							'intelligentSearchConfigured',
+							'answerGenerationConfigured',
+						]);
 				})
 				.end(done);
 		});
@@ -748,7 +749,14 @@ describe('miscellaneous', () => {
 					expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
 					expect(res.body).to.have.property('messages').and.to.be.an('array').that.is.empty;
 					expect(res.body).to.have.property('intelligent').and.to.be.an('array');
-					expect(res.body).to.have.nested.property('meta.aiSearch');
+					expect(res.body)
+						.to.have.property('meta')
+						.and.to.include.keys([
+							'globalMessagesEnabled',
+							'intelligentSearchEnabled',
+							'intelligentSearchConfigured',
+							'answerGenerationConfigured',
+						]);
 				})
 				.end(done);
 		});
