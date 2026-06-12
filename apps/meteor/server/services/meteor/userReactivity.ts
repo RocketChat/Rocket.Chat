@@ -39,6 +39,7 @@ Accounts._expireTokens = async () => {
 			diff: {
 				'services.resume.loginTokens': validTokens,
 			},
+			unset: {},
 		});
 	});
 };
