@@ -24,6 +24,8 @@ import {
 	katex,
 	inlineKatex,
 	autoLink,
+	bigEmoji,
+	emoji,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
@@ -31,6 +33,10 @@ import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from '.
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ESCAPABLE = new Set(['*', '_', '~', '`', '#', '.']);
+
+function isShortCodeChar(ch: string): boolean {
+	return isAlphaNum(ch) || ch === '-' || ch === '_' || ch === '+' || ch === '.';
+}
 
 // ─── Re-entrancy guards ───────────────────────────────────────────────────────
 
@@ -41,6 +47,11 @@ let skipStrike = false;
 // ─── Main entry point ─────────────────────────────────────────────────────────
 
 export function parse(input: string, options: Options = {}): Root {
+	const bigEmojiRoot = tryBigEmoji(input);
+	if (bigEmojiRoot !== null) {
+		return bigEmojiRoot;
+	}
+
 	const root: Root = [];
 	const scanner = new Scanner(input);
 
@@ -236,6 +247,18 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		const ch = scanner.char();
 
+		// Whitespace run — kept as its own node so emoji boundary detection works
+		if (isSpace(ch)) {
+			const start = scanner.save();
+			while (!scanner.isEnd() && isSpace(scanner.char())) {
+				scanner.advance();
+			}
+			const text = scanner.sliceFrom(start);
+			nodes.push(plain(text));
+			prevChar = text[text.length - 1] ?? '';
+			continue;
+		}
+
 		// KaTeX inline — $ or \(
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
 			const result = tryKatexInline(scanner, options);
@@ -299,6 +322,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			if (result !== null) {
 				nodes.push(result);
 				prevChar = '~';
+				continue;
+			}
+		}
+
+		// Emoji shortcode
+		if (ch === ':') {
+			const result = tryEmojiShortCode(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ':';
 				continue;
 			}
 		}
@@ -378,7 +411,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 		// Plain run
 		if (isPlainChar(ch)) {
 			const start = scanner.save();
-			while (!scanner.isEnd() && isPlainChar(scanner.char())) {
+			while (!scanner.isEnd() && isPlainChar(scanner.char()) && !isSpace(scanner.char())) {
 				scanner.advance();
 			}
 			const text = scanner.sliceFrom(start);
@@ -406,6 +439,18 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 		if (stopChar && scanner.matches(stopChar)) break;
 
 		const ch = scanner.char();
+
+		// Whitespace run — kept as its own node so emoji boundary detection works
+		if (isSpace(ch)) {
+			const start = scanner.save();
+			while (!scanner.isEnd() && isSpace(scanner.char()) && !scanner.matches(stopChar)) {
+				scanner.advance();
+			}
+			const text = scanner.sliceFrom(start);
+			nodes.push(plain(text));
+			prevChar = text[text.length - 1] ?? '';
+			continue;
+		}
 
 		// KaTeX inline — $ or \(
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
@@ -470,6 +515,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			if (result !== null) {
 				nodes.push(result);
 				prevChar = '~';
+				continue;
+			}
+		}
+
+		// Emoji shortcode
+		if (ch === ':') {
+			const result = tryEmojiShortCode(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ':';
 				continue;
 			}
 		}
@@ -549,7 +604,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 		// Plain run
 		if (isPlainChar(ch)) {
 			const start = scanner.save();
-			while (!scanner.isEnd() && isPlainChar(scanner.char()) && !scanner.matches(stopChar)) {
+			while (!scanner.isEnd() && isPlainChar(scanner.char()) && !isSpace(scanner.char()) && !scanner.matches(stopChar)) {
 				scanner.advance();
 			}
 			const text = scanner.sliceFrom(start);
@@ -1370,4 +1425,58 @@ function tryAutoLinkUrl(scanner: Scanner, options: Options): Inlines | null {
 	}
 
 	return result;
+}
+
+// ─── Emoji ────────────────────────────────────────────────────────────────────
+
+function tryEmojiShortCode(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	scanner.advance(); // consume opening ':'
+
+	const nameStart = scanner.save();
+	while (!scanner.isEnd() && isShortCodeChar(scanner.char())) {
+		scanner.advance();
+	}
+	const name = scanner.sliceFrom(nameStart);
+
+	if (name.length === 0 || scanner.char() !== ':') {
+		scanner.restore(start);
+		return null;
+	}
+
+	scanner.advance(); // consume closing ':'
+	return emoji(name);
+}
+
+// Whole-input rule: optional whitespace, then 1-3 shortcode emojis separated
+// by whitespace, then end of input (mirrors `Start = @BigEmoji !.`)
+function tryBigEmoji(input: string): Root | null {
+	const scanner = new Scanner(input);
+
+	const skipWhitespace = (): void => {
+		while (!scanner.isEnd() && (isSpace(scanner.char()) || isNewline(scanner.char()))) {
+			scanner.advance();
+		}
+	};
+
+	skipWhitespace();
+
+	const emojis: Inlines[] = [];
+	while (emojis.length < 3 && !scanner.isEnd()) {
+		if (scanner.char() !== ':') {
+			return null;
+		}
+		const node = tryEmojiShortCode(scanner);
+		if (node === null) {
+			return null;
+		}
+		emojis.push(node);
+		skipWhitespace();
+	}
+
+	if (emojis.length === 0 || !scanner.isEnd()) {
+		return null;
+	}
+
+	return [bigEmoji(emojis as any)];
 }
