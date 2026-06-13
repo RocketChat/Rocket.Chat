@@ -18,6 +18,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 				name: { $not: /^Apps-/ },
 			},
 			{
+				sort: { name: 1 },
 				skip: pagination?.offset,
 				limit: pagination?.count,
 			},
@@ -47,6 +48,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 				name: /^Apps-/,
 			},
 			{
+				sort: { name: 1 },
 				skip: pagination?.offset,
 				limit: pagination?.count,
 			},
