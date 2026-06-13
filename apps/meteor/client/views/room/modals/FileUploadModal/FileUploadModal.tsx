@@ -30,13 +30,13 @@ import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes'
 
 type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, altText?: string) => void;
 	file: File;
 	fileName: string;
-	fileDescription?: string;
+	fileAltText?: string;
 };
 
-const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubmit }: FileUploadModalProps) => {
+const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');
@@ -45,7 +45,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 		control,
 		handleSubmit,
 		formState: { errors, isDirty, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
+	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
 
 	const validateFileName = useCallback(
 		(fieldValue: string) => {
@@ -63,12 +63,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box
-					is='form'
-					id={fileUploadFormId}
-					onSubmit={handleSubmit(({ name, description }) => onSubmit(name, description?.trim() || undefined))}
-					{...props}
-				/>
+				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))} {...props} />
 			)}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
@@ -78,7 +73,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} description={fileDescription} />
+						<FilePreview file={file} altText={fileAltText} />
 					</Box>
 					<FieldGroup>
 						<Field>
@@ -101,7 +96,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 								<FieldLabel>{t('Alternative_text')}</FieldLabel>
 								<FieldDescription>{t('Alt_text_description')}</FieldDescription>
 								<FieldRow>
-									<Controller name='description' control={control} render={({ field }) => <TextAreaInput {...field} />} />
+									<Controller name='altText' control={control} render={({ field }) => <TextAreaInput {...field} />} />
 								</FieldRow>
 							</Field>
 						)}

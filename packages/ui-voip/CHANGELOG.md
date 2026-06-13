@@ -1,5 +1,43 @@
 # @rocket.chat/ui-voip
 
+## 21.0.0
+
+### Minor Changes
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+### Patch Changes
+
+- ([#40330](https://github.com/RocketChat/Rocket.Chat/pull/40330)) Fixes an issue where intentionally cancelling a screen share request would show an error toast by identifying error types and counting consecutive failures.
+
+- <details><summary>Updated dependencies [fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
+
+  - @rocket.chat/ui-client@31.0.0
+  - @rocket.chat/desktop-api@1.2.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0
+  - @rocket.chat/ui-avatar@27.0.0
+  - @rocket.chat/ui-contexts@31.0.0
+  </details>
+
+## 21.0.0-rc.0
+
+### Minor Changes
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+### Patch Changes
+
+- ([#40330](https://github.com/RocketChat/Rocket.Chat/pull/40330)) Fixes an issue where intentionally cancelling a screen share request would show an error toast by identifying error types and counting consecutive failures.
+
+- <details><summary>Updated dependencies [ae9f740d6af20557eac61b4af902c868b4132b49, fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
+
+  - @rocket.chat/desktop-api@1.2.0-rc.0
+  - @rocket.chat/ui-client@31.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  - @rocket.chat/ui-avatar@27.0.0-rc.0
+  </details>
+
 ## 20.0.0
 
 ### Minor Changes

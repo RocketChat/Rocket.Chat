@@ -1,5 +1,25 @@
 # @rocket.chat/apps-engine
 
+## 1.63.0
+
+### Minor Changes
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Remove files that weren't accessible to apps at development time
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40604](https://github.com/RocketChat/Rocket.Chat/pull/40604)) Adds the capability for fetching a user by their sip extension to the apps
+
+## 1.63.0-rc.0
+
+### Minor Changes
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Remove files that weren't accessible to apps at development time
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40604](https://github.com/RocketChat/Rocket.Chat/pull/40604)) Adds the capability for fetching a user by their sip extension to the apps
+
 ## 1.62.0
 
 ### Minor Changes

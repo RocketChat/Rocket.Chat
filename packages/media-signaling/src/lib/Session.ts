@@ -173,7 +173,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		let pendingCall: ClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
-			if (call.state === 'hangup' || call.ignored) {
+			if (call.state === 'hangup' || call.ignored || !call.initialized) {
 				continue;
 			}
 			if (skipLocal && !call.confirmed) {

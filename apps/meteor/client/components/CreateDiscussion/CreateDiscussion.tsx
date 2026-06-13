@@ -124,7 +124,7 @@ const CreateDiscussion = ({
 							<Controller
 								control={control}
 								name='parentRoom'
-								render={({ field }) => <DefaultParentRoomField {...field} defaultParentRoom={defaultParentRoom} required={true} />}
+								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
 							/>
 						)}
 						{!defaultParentRoom && (

@@ -72,7 +72,8 @@ export class ReadStateManager extends Emitter {
 			(record) =>
 				record.rid === this.subscription?.rid &&
 				record.ts.getTime() > (this.subscription.ls?.getTime() ?? 0) &&
-				record.u._id !== getUserId(),
+				record.u._id !== getUserId() &&
+				(!record.tmid || record.tshow === true),
 			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 
