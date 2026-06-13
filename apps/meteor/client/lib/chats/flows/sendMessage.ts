@@ -9,30 +9,35 @@ import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import { afterSendMessageCallback } from './afterSendMessageCallback';
+import { processGroupMentionConfirmation } from './processGroupMentionConfirmation';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
-const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
+const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<boolean> => {
 	const mid = chat.currentEditingMessage.getMID();
 
 	if (await processSetReaction(chat, message)) {
-		return;
+		return true;
 	}
 
 	if (await processTooLongMessage(chat, message)) {
-		return;
+		return true;
+	}
+
+	if (!(await processGroupMentionConfirmation(message))) {
+		return false;
 	}
 
 	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
-		return;
+		return true;
 	}
 
 	if (await processMessageUploads(chat, message)) {
 		chat.composer?.clear();
-		return;
+		return true;
 	}
 
 	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!mid })) as IMessage & { isEditing?: boolean };
@@ -42,7 +47,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	delete (message as IMessage & { isEditing?: boolean }).isEditing;
 
 	if (await processMessageEditing(chat, message, previewUrls)) {
-		return;
+		return true;
 	}
 
 	chat.composer?.clear();
@@ -54,6 +59,8 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		(record) => record._id === message._id && record.temp === true,
 		({ temp: _, ...record }) => record,
 	);
+
+	return true;
 };
 
 export const sendMessage = async (
@@ -107,7 +114,10 @@ export const sendMessage = async (
 		}
 
 		try {
-			await process(chat, message, previewUrls, isSlashCommandAllowed);
+			if (!(await process(chat, message, previewUrls, isSlashCommandAllowed))) {
+				return false;
+			}
+
 			chat.composer?.dismissAllQuotedMessages();
 			await afterSendMessageCallback(message, message.rid);
 		} catch (error) {
