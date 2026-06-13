@@ -1,5 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
+export type CronJobStatus = 'running' | 'scheduled' | 'failed' | 'disabled' | 'completed';
+
 export interface ICronJobItem extends IRocketChatRecord {
 	name: string;
 	type?: 'once' | 'single' | 'normal';
@@ -15,5 +17,5 @@ export interface ICronJobItem extends IRocketChatRecord {
 	failCount?: number;
 	lastModifiedBy?: string;
 	data?: Record<string, any>;
-	status?: string;
+	status?: CronJobStatus;
 }
