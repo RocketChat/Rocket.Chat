@@ -165,7 +165,8 @@
 		"@opentelemetry/exporter-metrics-otlp-grpc/@grpc/grpc-js": "^1.14.4",
 		"@opentelemetry/exporter-trace-otlp-grpc/@grpc/grpc-js": "^1.14.4",
 		"@opentelemetry/otlp-grpc-exporter-base/@grpc/grpc-js": "^1.14.4",
-		"qs": "6.15.2"
+		"qs": "6.15.2",
+		"uuid@npm:13": "13.0.1"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
