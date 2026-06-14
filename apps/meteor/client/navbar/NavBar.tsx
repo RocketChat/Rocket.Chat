@@ -9,7 +9,7 @@ const NavBar = () => {
 	const { navbar } = useLayout();
 
 	return (
-		<NavBarComponent aria-label='header'>
+		<NavBarComponent aria-label='header' style={{ position: 'relative', zIndex: 9999999 }}>
 			{!navbar.searchExpanded && <NavBarPagesSection />}
 			<NavBarNavigation />
 			{!navbar.searchExpanded && <NavBarControlsSection />}
