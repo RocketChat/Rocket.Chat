@@ -266,6 +266,8 @@ export const createAccountSettings = () =>
 		});
 		await this.add('Accounts_SearchFields', 'username, name, bio, nickname', {
 			type: 'string',
+			i18nLabel: 'Accounts_SearchFields',
+			i18nDescription: 'Accounts_SearchFields_Description',
 		});
 		await this.add('Accounts_Directory_DefaultView', 'channels', {
 			type: 'select',

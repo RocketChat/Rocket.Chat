@@ -414,6 +414,7 @@
   "Accounts_RoomAvatarExternalProviderUrl": "Room Avatar External Provider URL",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Example: `https://acme.com/api/v1/{roomId}`",
   "Accounts_SearchFields": "Fields to Consider in Search",
+  "Accounts_SearchFields_Description": "Comma-separated list of user fields to search. Examples: `username`, `name`, `bio`, `nickname`, `emails.address`, `status`, `statusText`, `language`, `customFields.fieldName`",
   "Accounts_Send_Email_When_Activating": "Send email to user when user is activated",
   "Accounts_Send_Email_When_Deactivating": "Send email to user when user is deactivated",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
