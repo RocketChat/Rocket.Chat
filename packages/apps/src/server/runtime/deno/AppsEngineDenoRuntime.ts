@@ -186,11 +186,37 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
+		const targetPath = path.dirname(this.denoConfigPath);
+		const symlinkPath = path.dirname(this.denoRuntimePath);
+
+		let shouldRecreate = false;
 		try {
-			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
-		} catch (reason: unknown) {
-			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
-				throw reason;
+			const stat = fs.lstatSync(symlinkPath);
+			if (stat.isSymbolicLink()) {
+				const currentTarget = fs.readlinkSync(symlinkPath);
+				const isBroken = !fs.existsSync(symlinkPath);
+				if (currentTarget !== targetPath || isBroken) {
+					shouldRecreate = true;
+				}
+			} else {
+				shouldRecreate = true;
+			}
+		} catch (err) {
+			if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+				shouldRecreate = true;
+			} else {
+				throw err;
+			}
+		}
+
+		if (shouldRecreate) {
+			try {
+				fs.rmSync(symlinkPath, { recursive: true, force: true });
+				fs.symlinkSync(targetPath, symlinkPath, 'dir');
+			} catch (symlinkError: unknown) {
+				if ((symlinkError as NodeJS.ErrnoException).code !== 'EEXIST') {
+					throw symlinkError;
+				}
 			}
 		}
 
