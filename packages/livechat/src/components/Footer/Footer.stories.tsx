@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
+import { action } from 'storybook/actions';
 
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
@@ -15,7 +15,6 @@ import PoweredBy from './PoweredBy';
 import '../../i18next';
 
 export default {
-	title: 'Components/Footer',
 	component: Footer,
 	decorators: [
 		(storyFn) => (
@@ -32,36 +31,42 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Footer>>;
 
-export const Simple: StoryFn<ComponentProps<typeof Footer>> = (args) => (
-	<Footer {...args}>
-		<FooterContent>
-			<PoweredBy />
-		</FooterContent>
-	</Footer>
-);
-Simple.storyName = 'simple';
+type Story = StoryObj<ComponentProps<typeof Footer>>;
 
-export const WithComposerAndOptions: StoryFn<ComponentProps<typeof Footer>> = (args) => (
-	<Footer {...args}>
-		<FooterContent>
-			<Composer placeholder='Insert your text here' />
-		</FooterContent>
-		<FooterContent>
-			<FooterOptions>
-				<MenuGroup>
-					<MenuItem onClick={action('change-department')} icon={ChangeIcon}>
-						Change department
-					</MenuItem>
-					<MenuItem onClick={action('remove-user-data')} icon={RemoveIcon}>
-						Forget/Remove my personal data
-					</MenuItem>
-					<MenuItem danger onClick={action('finish-chat')} icon={FinishIcon}>
-						Finish this chat
-					</MenuItem>
-				</MenuGroup>
-			</FooterOptions>
-			<PoweredBy />
-		</FooterContent>
-	</Footer>
-);
-WithComposerAndOptions.storyName = 'with Composer and options';
+export const Simple: Story = {
+	name: 'simple',
+	render: (args) => (
+		<Footer {...args}>
+			<FooterContent>
+				<PoweredBy />
+			</FooterContent>
+		</Footer>
+	),
+};
+
+export const WithComposerAndOptions: Story = {
+	name: 'with Composer and options',
+	render: (args) => (
+		<Footer {...args}>
+			<FooterContent>
+				<Composer placeholder='Insert your text here' />
+			</FooterContent>
+			<FooterContent>
+				<FooterOptions>
+					<MenuGroup>
+						<MenuItem onClick={action('change-department')} icon={ChangeIcon}>
+							Change department
+						</MenuItem>
+						<MenuItem onClick={action('remove-user-data')} icon={RemoveIcon}>
+							Forget/Remove my personal data
+						</MenuItem>
+						<MenuItem danger onClick={action('finish-chat')} icon={FinishIcon}>
+							Finish this chat
+						</MenuItem>
+					</MenuGroup>
+				</FooterOptions>
+				<PoweredBy />
+			</FooterContent>
+		</Footer>
+	),
+};
