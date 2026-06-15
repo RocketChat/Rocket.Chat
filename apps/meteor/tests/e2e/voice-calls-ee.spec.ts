@@ -28,6 +28,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', true);
+		await Promise.all([...sessions.map(({ page }) => page.close())]);
 	});
 
 	test('should initiate voice call from direct message', async () => {
@@ -151,6 +152,169 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		await test.step('Verify call widget disappears', async () => {
 			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+		});
+	});
+});
+
+test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => {
+	test.skip(IS_EE, 'Enterprise Edition Only');
+	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
+
+	test.beforeAll(async ({ api }) => {
+		await Promise.all([
+			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
+			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
+		]);
+	});
+
+	test.beforeAll(async ({ browser }) => {
+		sessions = await Promise.all([
+			createAuxContext(browser, Users.user1).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) })),
+			createAuxContext(browser, Users.user2).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) })),
+		]);
+	});
+
+	test.afterAll(async () => {
+		await Promise.all([...sessions.map(({ page }) => page.close())]);
+	});
+
+	test('should show in-room view when navigating to peer DM during call', async () => {
+		const [user1, user2] = sessions;
+
+		await test.step('establish call from user1 DM with user2', async () => {
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+			await user1.poHomeChannel.content.btnVoiceCall.click();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
+		});
+
+		await test.step('widget should be hidden and room view should be visible', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).toBeVisible();
+		});
+
+		await test.step('user cards should have correct names', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.peerCard('user1')).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.peerCard('user2')).toBeVisible();
+		});
+
+		await test.step('mute/unmute and hold/resume', async () => {
+			await user1.poHomeChannel.voiceCalls.roomSection.muteSelf();
+			await user1.poHomeChannel.voiceCalls.roomSection.unmuteSelf();
+
+			await user1.poHomeChannel.voiceCalls.roomSection.holdSelf();
+			await user1.poHomeChannel.voiceCalls.roomSection.resumeSelf();
+		});
+
+		await test.step('should change chat visibility', async () => {
+			// Visible by default
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).toBeVisible();
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.otherControls.toggleChat).toHaveAccessibleName(/Hide chat/i);
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+
+			// Hide
+			await user1.poHomeChannel.voiceCalls.roomSection.hideChat();
+			await expect(user1.poHomeChannel.composer.inputMessage).not.toBeVisible();
+
+			// Show
+			await user1.poHomeChannel.voiceCalls.roomSection.showChat();
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+		});
+
+		await test.step('end call to clean up', async () => {
+			await user1.poHomeChannel.voiceCalls.roomSection.endCall();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
+		});
+	});
+
+	test('should switch views when navigating into and away from peer DM', async () => {
+		const [user1, user2] = sessions;
+
+		await test.step('establish call and navigate to peer DM', async () => {
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+			await user1.poHomeChannel.content.btnVoiceCall.click();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
+		});
+
+		await test.step('navigate user1 away from peer DM', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).toBeVisible();
+			const initialRoomViewTimer = await user1.poHomeChannel.voiceCalls.roomSection.getTimerContentInSeconds();
+
+			await user1.poHomeChannel.navbar.openChat('general');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
+
+			const widgetTimer = await user1.poHomeChannel.voiceCalls.widget.getTimerContentInSeconds();
+			expect(widgetTimer).toBeGreaterThanOrEqual(initialRoomViewTimer);
+		});
+
+		await test.step('return to peer DM (go to dm button)', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).toBeVisible();
+			const initialWidgetTimer = await user1.poHomeChannel.voiceCalls.widget.getTimerContentInSeconds();
+
+			await user1.poHomeChannel.voiceCalls.widget.goToDm();
+
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+
+			const roomTimer = await user1.poHomeChannel.voiceCalls.roomSection.getTimerContentInSeconds();
+			expect(roomTimer).toBeGreaterThanOrEqual(initialWidgetTimer);
+		});
+
+		await test.step('end call to clean up', async () => {
+			await user1.poHomeChannel.voiceCalls.roomSection.endCall();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+		});
+	});
+
+	// Maybe flaky
+	test('Screen sharing', async () => {
+		const [user1, user2] = sessions;
+
+		await test.step('establish call and navigate to peer DM', async () => {
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
+			await user1.poHomeChannel.content.btnVoiceCall.click();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).toBeVisible();
+		});
+
+		await test.step('start screen sharing with both users', async () => {
+			await user1.poHomeChannel.voiceCalls.roomSection.shareScreen();
+
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.allScreenShareVideos).toHaveCount(1);
+			await expect(user2.poHomeChannel.voiceCalls.widget.allScreenShareVideos).toHaveCount(1);
+
+			await user2.poHomeChannel.voiceCalls.widget.shareScreen();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.allScreenShareVideos).toHaveCount(2);
+			await expect(user2.poHomeChannel.voiceCalls.widget.allScreenShareVideos).toHaveCount(2);
+		});
+
+		await test.step('stop sharing with user1 through room view', async () => {
+			await user1.poHomeChannel.voiceCalls.roomSection.stopSharing();
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.allScreenShareVideos).toHaveCount(1);
+			await expect(user2.poHomeChannel.voiceCalls.widget.allScreenShareVideos).toHaveCount(1);
+		});
+
+		await test.step('stop sharing with user2 through widget', async () => {
+			await user2.poHomeChannel.voiceCalls.widget.stopSharing();
+
+			await expect(user1.poHomeChannel.voiceCalls.roomSection.allScreenShareVideos).toHaveCount(0);
+			await expect(user2.poHomeChannel.voiceCalls.widget.allScreenShareVideos).toHaveCount(0);
+		});
+
+		await test.step('end call to clean up', async () => {
+			await user1.poHomeChannel.voiceCalls.roomSection.endCall();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
 		});
 	});
 });
