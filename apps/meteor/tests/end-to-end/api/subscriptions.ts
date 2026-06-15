@@ -394,60 +394,6 @@ describe('[Subscriptions]', () => {
 						expect(res.body.subscription.tunread).to.deep.equal([threadId]);
 					});
 			});
-
-			it('should mark a single thread as read when a tmid is provided', async () => {
-				await request
-					.post(api('chat.sendMessage'))
-					.set(threadUserCredentials)
-					.send({
-						message: {
-							rid: testChannel._id,
-							msg: `@${adminUsername} making admin follow this thread`,
-							tmid: threadId,
-						},
-					});
-
-				await request
-					.post(api('subscriptions.read'))
-					.set(credentials)
-					.send({
-						rid: testChannel._id,
-						tmid: threadId,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
-
-				await request
-					.get(api('subscriptions.getOne'))
-					.set(credentials)
-					.query({
-						roomId: testChannel._id,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						// removeUnreadThreadByRoomIdAndUserId only $pulls the tmid, leaving an empty array
-						expect(res.body.subscription).to.have.property('tunread').that.is.an('array').and.does.not.include(threadId);
-					});
-			});
-
-			it('should fail when the tmid does not belong to the provided room', (done) => {
-				void request
-					.post(api('subscriptions.read'))
-					.set(credentials)
-					.send({
-						rid: testGroup._id,
-						tmid: threadId,
-					})
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
 		});
 	});
 
