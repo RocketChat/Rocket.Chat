@@ -1,3 +1,5 @@
+import { createHash } from 'crypto';
+
 import type {
 	IMessage,
 	IRoom,
@@ -17,6 +19,7 @@ import { callbacks } from '../../../server/lib/callbacks';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';
+import { TranslationMemoryCache } from './TranslationCache';
 
 const translationLogger = new Logger('AutoTranslate');
 
@@ -136,6 +139,10 @@ export abstract class AutoTranslate {
 	supportedLanguages: {
 		[language: string]: ISupportedLanguage[];
 	};
+
+	protected pendingTranslations = new Map<string, Promise<ITranslationResult>>();
+
+	protected pendingAttachments = new Map<string, Promise<ITranslationResult>>();
 
 	/**
 	 * Encapsulate the api key and provider settings.
@@ -309,7 +316,36 @@ export abstract class AutoTranslate {
 				targetMessage.html = escapeHTML(String(targetMessage.msg));
 				targetMessage = this.tokenize(targetMessage);
 
-				const translations = await this._translateMessage(targetMessage, targetLanguages);
+				const translations: { [k: string]: string } = {};
+				const uncachedLanguages: string[] = [];
+
+				for (const lang of targetLanguages) {
+					const cached = TranslationMemoryCache.get(this.name, message, lang);
+					if (cached) {
+						translations[lang] = cached;
+					} else {
+						uncachedLanguages.push(lang);
+					}
+				}
+
+				if (uncachedLanguages.length > 0) {
+					const msgHash = createHash('sha256').update(message.msg || '').digest('hex').slice(0, 16);
+					const cacheKey = `${message._id}:${msgHash}:${uncachedLanguages.sort().join(',')}`;
+					let promise = this.pendingTranslations.get(cacheKey);
+
+					if (!promise) {
+						promise = this._translateMessage(targetMessage, uncachedLanguages);
+						this.pendingTranslations.set(cacheKey, promise);
+						promise.finally(() => this.pendingTranslations.delete(cacheKey));
+					}
+
+					const fetchedTranslations = await promise;
+					for (const [lang, translation] of Object.entries(fetchedTranslations)) {
+						translations[lang] = translation;
+						TranslationMemoryCache.set(this.name, message, lang, translation);
+					}
+				}
+
 				if (!_.isEmpty(translations)) {
 					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
 					this.notifyTranslatedMessage(message._id);
@@ -323,8 +359,37 @@ export abstract class AutoTranslate {
 					if (attachment.description || attachment.text) {
 						// Removes the initial link `[ ](quoterl)` from quote message before translation
 						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;
-						const attachmentMessage = { ...attachment, text: translatedText };
-						const translations = await this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
+						
+						const translations: { [k: string]: string } = {};
+						const uncachedLanguages: string[] = [];
+
+						for (const lang of targetLanguages) {
+							const cached = TranslationMemoryCache.get(this.name, translatedText, lang);
+							if (cached) {
+								translations[lang] = cached;
+							} else {
+								uncachedLanguages.push(lang);
+							}
+						}
+
+						if (uncachedLanguages.length > 0) {
+							const attachmentMessage = { ...attachment, text: translatedText };
+							const msgHash = createHash('sha256').update(translatedText || '').digest('hex').slice(0, 16);
+							const cacheKey = `${message._id}:${index}:${msgHash}:${uncachedLanguages.sort().join(',')}`;
+							let promise = this.pendingAttachments.get(cacheKey);
+
+							if (!promise) {
+								promise = this._translateAttachmentDescriptions(attachmentMessage, uncachedLanguages);
+								this.pendingAttachments.set(cacheKey, promise);
+								promise.finally(() => this.pendingAttachments.delete(cacheKey));
+							}
+
+							const fetchedTranslations = await promise;
+							for (const [lang, translation] of Object.entries(fetchedTranslations)) {
+								translations[lang] = translation;
+								TranslationMemoryCache.set(this.name, translatedText, lang, translation);
+							}
+						}
 
 						if (!_.isEmpty(translations)) {
 							await Messages.addAttachmentTranslations(message._id, String(index), translations);

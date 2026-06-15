@@ -241,6 +241,7 @@
 		"lodash.debounce": "^4.0.8",
 		"lodash.escape": "^4.0.1",
 		"lodash.get": "^4.4.2",
+		"lru-cache": "^10.2.2",
 		"mailparser": "~3.7.5",
 		"marked": "^4.3.0",
 		"mem": "^8.1.1",
