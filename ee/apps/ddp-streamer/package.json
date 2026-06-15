@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
-	"version": "0.3.54",
+	"version": "0.3.55",
 	"private": true,
 	"description": "Rocket.Chat DDP-Streamer service",
 	"keywords": [

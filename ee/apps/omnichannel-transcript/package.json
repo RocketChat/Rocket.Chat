@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
-	"version": "0.4.54",
+	"version": "0.4.55",
 	"private": true,
 	"description": "Rocket.Chat service",
 	"keywords": [
