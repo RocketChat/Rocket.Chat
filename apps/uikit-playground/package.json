@@ -48,7 +48,7 @@
 		"@vitejs/plugin-react": "~6.0.1",
 		"eslint": "~9.39.4",
 		"typescript": "~5.9.3",
-		"vite": "^8.0.9"
+		"vite": "^8.0.16"
 	},
 	"volta": {
 		"extends": "../../package.json"
