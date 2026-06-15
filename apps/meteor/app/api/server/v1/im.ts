@@ -9,6 +9,7 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
+	isDmBlockUserProps,
 	isDmFileProps,
 	isDmMemberProps,
 	isDmMessagesProps,
@@ -26,7 +27,9 @@ import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { blockUserMethod } from '../../../lib/server/functions/blockUser';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
+import { unblockUserMethod } from '../../../lib/server/functions/unblockUser';
 import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -924,6 +927,42 @@ const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		});
 	};
 
+const dmBlockUserEndpointsProps = {
+	authRequired: true,
+	body: isDmBlockUserProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
+	},
+} as const;
+
+const dmBlockUserAction = <Path extends string>(_path: Path): TypedAction<typeof dmBlockUserEndpointsProps, Path> =>
+	async function action() {
+		const { roomId, block } = this.bodyParams;
+		const { room } = await findDirectMessageRoom({ roomId }, this.userId);
+
+		const blocked = room.uids?.find((uid) => uid !== this.userId);
+		if (!blocked) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'im.blockUser' });
+		}
+
+		if (block) {
+			await blockUserMethod(this.userId, { rid: room._id, blocked });
+		} else {
+			await unblockUserMethod(this.userId, { rid: room._id, blocked });
+		}
+
+		return API.v1.success();
+	};
+
 const dmEndpoints = API.v1
 	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
 	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'))
@@ -950,7 +989,8 @@ const dmEndpoints = API.v1
 	.get('dm.list', dmListEndpointsProps, dmListAction('dm.list'))
 	.get('im.list', dmListEndpointsProps, dmListAction('im.list'))
 	.get('dm.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('dm.list.everyone'))
-	.get('im.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('im.list.everyone'));
+	.get('im.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('im.list.everyone'))
+	.post('im.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('im.blockUser'));
 
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 

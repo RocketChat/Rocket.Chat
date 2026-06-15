@@ -34,7 +34,7 @@ if (!sdkTransportEnabled) {
 
 		const utcOffset = -new Date().getTimezoneOffset() / 60;
 		if (user.utcOffset !== utcOffset) {
-			sdk.call('userSetUtcOffset', utcOffset);
+			void sdk.rest.post('/v1/users.setPreferences', { data: { utcOffset } });
 		}
 
 		emitStatusChange(user.status);
@@ -79,7 +79,7 @@ if (!sdkTransportEnabled) {
 
 		const utcOffset = -new Date().getTimezoneOffset() / 60;
 		if (user.utcOffset !== utcOffset) {
-			sdk.call('userSetUtcOffset', utcOffset);
+			void sdk.rest.post('/v1/users.setPreferences', { data: { utcOffset } });
 		}
 
 		emitStatusChange(user.status);

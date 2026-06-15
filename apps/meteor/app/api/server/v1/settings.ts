@@ -15,8 +15,10 @@ import {
 	isSettingsUpdatePropsColor,
 	isSettingsPublicWithPaginationProps,
 	isSettingsGetParams,
+	isSettingsBulkProps,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -25,6 +27,7 @@ import _ from 'underscore';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
+import { saveSettingsBulk } from '../../../lib/server/functions/saveSettingsBulk';
 import { checkSettingValueBounds } from '../../../lib/server/lib/checkSettingValueBonds';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { addOAuthServiceMethod } from '../../../lib/server/methods/addOAuthService';
@@ -401,6 +404,31 @@ API.v1.post(
 		}
 
 		return API.v1.failure();
+	},
+);
+
+API.v1.post(
+	'settings',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		twoFactorOptions: { disableRememberMe: true },
+		body: isSettingsBulkProps,
+		response: {
+			200: settingByIdPostResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await saveSettingsBulk(this.userId, this.bodyParams.settings, {
+			username: this.user.username ?? '',
+			ip: this.requestIp ?? '',
+			useragent: this.request.headers.get('user-agent') ?? '',
+		});
+
+		return API.v1.success();
 	},
 );
 

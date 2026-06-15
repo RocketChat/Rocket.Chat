@@ -115,6 +115,84 @@ describe('[Settings]', () => {
 					expect(res.body.settings[0]).to.have.property('packageValue');
 				});
 		});
+
+		describe('POST (bulk)', () => {
+			before(async () => {
+				await updatePermission('edit-privileged-setting', ['admin']);
+			});
+
+			after(async () => {
+				await updatePermission('edit-privileged-setting', ['admin']);
+			});
+
+			it('should return unauthorized when not authenticated', async () => {
+				await request
+					.post(api('settings'))
+					.send({ settings: [{ _id: 'LDAP_Enable', value: false }] })
+					.expect(401);
+			});
+
+			it('should return bad request when settings is missing', async () => {
+				await request.post(api('settings')).set(credentials).send({}).expect(400);
+			});
+
+			it('should return bad request when settings is empty', async () => {
+				await request.post(api('settings')).set(credentials).send({ settings: [] }).expect(400);
+			});
+
+			it('should return bad request when an item is missing value', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'LDAP_Enable' }] })
+					.expect(400);
+			});
+
+			it('should successfully update multiple settings in a single request', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({
+						settings: [
+							{ _id: 'LDAP_Enable', value: false },
+							{ _id: 'Accounts_Default_User_Preferences_masterVolume', value: 50 },
+						],
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('settings/LDAP_Enable'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', false);
+					});
+
+				await request
+					.get(api('settings/Accounts_Default_User_Preferences_masterVolume'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', 50);
+					});
+			});
+
+			it('should fail when the user does not have edit-privileged-setting permission', async () => {
+				await updatePermission('edit-privileged-setting', []);
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'LDAP_Enable', value: false }] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.match(/error-action-not-allowed/);
+					});
+			});
+		});
 	});
 
 	describe('[/settings/:_id]', () => {
