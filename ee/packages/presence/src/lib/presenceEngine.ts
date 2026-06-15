@@ -74,8 +74,8 @@ function resolveIntent(
 			return {
 				set: {
 					statusDefault: prev.statusDefault,
-					statusText: prev.statusText,
 					statusSource: prev.statusSource,
+					...(prev.statusText != null && { statusText: prev.statusText }),
 					...(prev.statusExpiresAt && { statusExpiresAt: prev.statusExpiresAt }),
 				},
 				unset: fieldsToUnset(prev, ['previousState']),
@@ -136,10 +136,17 @@ function resolveIntent(
 		};
 	}
 
+	const previousState = {
+		statusDefault: newState.statusDefault,
+		statusSource: newState.statusSource,
+		...(newState.statusText != null && { statusText: newState.statusText }),
+		...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
+	};
+
 	// lower priority -> save as previous if slot available
 	if (!user.previousState || isExpired(user.previousState.statusExpiresAt)) {
 		return {
-			set: { previousState: newState },
+			set: { previousState },
 			unset: [],
 		};
 	}
@@ -150,7 +157,7 @@ function resolveIntent(
 		PRIORITY[newState.statusSource] <= PRIORITY[user.previousState.statusSource]
 	) {
 		return {
-			set: { previousState: newState },
+			set: { previousState },
 			unset: [],
 		};
 	}
