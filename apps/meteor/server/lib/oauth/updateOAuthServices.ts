@@ -20,6 +20,10 @@ export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
 	for await (const [key, value] of filteredServices) {
+		if (key === 'Accounts_OAuth_Use_Modern_Flow') {
+			continue;
+		}
+
 		logger.debug({ oauth_updated: key });
 		let serviceName = key.replace('Accounts_OAuth_', '');
 		if (serviceName === 'Meteor') {
