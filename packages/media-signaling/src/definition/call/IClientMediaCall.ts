@@ -8,7 +8,7 @@ import type {
 } from './IClientMediaCallParticipant';
 import type { CallActorType } from './common';
 
-export type CallService = 'webrtc';
+export type CallService = 'webrtc' | 'pexip';
 
 export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
 

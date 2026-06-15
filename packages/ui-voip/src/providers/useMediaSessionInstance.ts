@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
+import { MediaSignalingSession, MediaCallWebRTCProcessor, MediaCallPexipProcessor } from '@rocket.chat/media-signaling';
 import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useStream, useToastMessageDispatch, useWriteStream } from '@rocket.chat/ui-contexts';
@@ -145,6 +145,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			},
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
+				pexip: (config) => MediaCallPexipProcessor.wrapPexRTC(config),
 			},
 			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),

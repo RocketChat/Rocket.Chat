@@ -116,7 +116,7 @@ export class MediaCallServer implements IMediaCallServer {
 	public async createCall(params: InternalCallParams): Promise<void> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
-		if (params.callee.type === 'sip') {
+		if (params.callee.type === 'sip' && params.requestedService !== 'pexip') {
 			await this.session.createOutgoingCall(params);
 			return;
 		}

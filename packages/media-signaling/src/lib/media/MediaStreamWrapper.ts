@@ -15,7 +15,13 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		return !this.remote;
 	}
 
-	public readonly stream: MediaStream;
+	private _stream: MediaStream | null;
+
+	private readonly _fallbackStream: MediaStream;
+
+	public get stream(): MediaStream {
+		return this._stream || this._fallbackStream;
+	}
 
 	public get localId(): string {
 		return this.stream.id;
@@ -45,6 +51,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private _audioLevel: number;
 
+	public get isDynamicStream(): boolean {
+		return !this.peer;
+	}
+
 	public get audioLevel(): number {
 		return this._audioLevel;
 	}
@@ -52,11 +62,17 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	constructor(
 		remote: boolean,
 		public readonly tag: string,
-		private readonly peer: RTCPeerConnection,
+		private readonly peer: RTCPeerConnection | null,
 		private readonly logger?: IMediaSignalLogger,
 	) {
 		this.remote = remote;
-		this.stream = new MediaStream();
+		this._fallbackStream = new MediaStream();
+
+		if (peer) {
+			this._stream = this._fallbackStream;
+		} else {
+			this._stream = null;
+		}
 		this.emitter = new Emitter();
 		this.remoteIds = [];
 		this._audioLevel = 0;
@@ -67,8 +83,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	public hasAudio(): boolean {
-		if (!this.audioTrack || this.audioTrack.ended) {
-			return false;
+		if (!this.isDynamicStream) {
+			if (!this.audioTrack || this.audioTrack.ended) {
+				return false;
+			}
 		}
 
 		const tracks = this.stream.getAudioTracks() || [];
@@ -80,8 +98,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	public hasVideo(): boolean {
-		if (!this.videoTrack || this.videoTrack.ended) {
-			return false;
+		if (!this.isDynamicStream) {
+			if (!this.videoTrack || this.videoTrack.ended) {
+				return false;
+			}
 		}
 
 		const tracks = this.stream.getVideoTracks() || [];
@@ -93,6 +113,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	public isAudioMutedBySystem(): boolean {
+		if (this.isDynamicStream) {
+			return !this.audioEnabled;
+		}
+
 		if (!this.audioTrack) {
 			return false;
 		}
@@ -185,6 +209,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private async replaceTrack(kind: MediaStreamTrack['kind'], newTrack: MediaStreamTrack | null): Promise<void> {
+		if (this.isDynamicStream) {
+			return;
+		}
+
 		this.removeTracks(kind);
 
 		if (newTrack) {
@@ -198,7 +226,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private async syncTrackChange(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null): Promise<void> {
-		if (this.remote) {
+		if (this.remote || this.isDynamicStream) {
 			return;
 		}
 		const sender = kind === 'audio' ? this.audioSender : this.videoSender;
@@ -216,9 +244,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 		this.logger?.debug('MediaStreamWrapper.setPeerTrack.addTrack', kind);
 		// This will require a re-negotiation
-		this.peer.addTrack(track, this.stream);
+		this.peer?.addTrack(track, this.stream);
 
-		const transceiver = this.peer.getTransceivers().find((t) => t.sender.track === track);
+		const transceiver = this.peer?.getTransceivers().find((t) => t.sender.track === track);
 		if (transceiver) {
 			if (kind === 'audio') {
 				this.audioSender = transceiver.sender;
@@ -229,6 +257,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private wrapTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null) {
+		if (this.isDynamicStream) {
+			return;
+		}
+
 		const wrapper = track ? new MediaStreamTrackWrapper(track) : null;
 
 		const oldWrapper = this.getWrappedTrack(kind);
@@ -272,6 +304,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private getWrappedTrack(kind: MediaStreamTrack['kind']): MediaStreamTrackWrapper | null {
+		if (this.isDynamicStream) {
+			return null;
+		}
+
 		if (kind !== 'audio') {
 			return this.videoTrack;
 		}
@@ -280,7 +316,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private registerAudioLevelTracker() {
-		if (this.stopped) {
+		if (this.stopped || !this.peer) {
 			return;
 		}
 
@@ -289,7 +325,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private async collectAudioStats() {
-		if (this.stopped || !this.audioTrack) {
+		if (this.stopped || !this.audioTrack || !this.peer) {
 			this._audioLevel = 0;
 			this._trackingAudioStats = false;
 			return;
@@ -322,5 +358,13 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 			// Ensure that the countdown for the next iteration only starts after fully processing the current one
 			this.registerAudioLevelTracker();
 		}
+	}
+
+	public replaceDynamicStream(newStream: MediaStream | null) {
+		if (!this.isDynamicStream) {
+			return;
+		}
+		this._stream = newStream;
+		this.emitter.emit('stateChanged');
 	}
 }

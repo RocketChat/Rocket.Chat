@@ -8,7 +8,7 @@ import type {
 	ServerActor,
 	MediaCallNegotiationStream,
 } from '@rocket.chat/core-typings';
-import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
+import type { CallFeature, CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -104,6 +104,10 @@ class MediaCallDirector {
 		call: MediaCallHeader,
 		offer?: RTCSessionDescriptionInit,
 	): Promise<IMediaCallNegotiation['_id'] | null> {
+		if (call.service !== 'webrtc') {
+			return null;
+		}
+
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
 		// If the call already has a negotiation, do nothing
 		if (negotiation) {
@@ -192,7 +196,7 @@ class MediaCallDirector {
 		const service = requestedService || 'webrtc';
 
 		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
-		if (service !== 'webrtc') {
+		if (service !== 'webrtc' && service !== 'pexip') {
 			throw new Error('invalid-call-service');
 		}
 
@@ -207,7 +211,9 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const allowedFeatures = features.filter(
+			(feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature) && this.isFeatureSupportedByService(feature, service),
+		);
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
 			_id: randomUUID(),
@@ -251,6 +257,16 @@ class MediaCallDirector {
 		this.scheduleExpirationCheckByCallId(newCall._id);
 
 		return newCall;
+	}
+
+	private isFeatureSupportedByService(feature: CallFeature, service: CallService): boolean {
+		if (service === 'pexip') {
+			if (['hold', 'transfer'].includes(feature)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public async transferCall(

@@ -33,7 +33,7 @@ export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActor
 type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 export interface IMediaCall extends IRocketChatRecord {
-	service: 'webrtc';
+	service: 'webrtc' | 'pexip';
 	kind: 'direct';
 
 	state: MediaCallState;
