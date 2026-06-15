@@ -6,6 +6,15 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../settings/server';
 
+const DEFAULT_AVATAR_DOWNLOAD_TIMEOUT_MS = 20_000;
+const DEFAULT_MAX_FILE_SIZE = 104_857_600;
+
+const getMaxFileSize = (): number => {
+	const maxFileSizeSetting = Number(settings.get('FileUpload_MaxFileSize'));
+
+	return Number.isFinite(maxFileSizeSetting) && maxFileSizeSetting > 0 ? maxFileSizeSetting : DEFAULT_MAX_FILE_SIZE;
+};
+
 const avatarProviders = {
 	facebook(user: IUser) {
 		if (user.services?.facebook?.id && settings.get('Accounts_OAuth_Facebook')) {
@@ -153,11 +162,14 @@ export async function getAvatarSuggestionForUser(
 	}
 
 	const validAvatars: Record<string, { blob: string; contentType: string; service: string; url: string }> = {};
+	const maxFileSize = getMaxFileSize();
 	for (const avatar of avatars) {
 		try {
 			const response = await fetch(avatar.url, {
 				ignoreSsrfValidation: false,
 				allowList: settings.get<string>('SSRF_Allowlist'),
+				size: maxFileSize,
+				timeout: DEFAULT_AVATAR_DOWNLOAD_TIMEOUT_MS,
 			});
 			const newAvatar: { service: string; url: string; blob: string; contentType: string } = {
 				service: avatar.service,
