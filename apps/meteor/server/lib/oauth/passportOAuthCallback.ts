@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import { LoginCodes } from '@rocket.chat/models';
 import type { Request, Response } from 'express';
-import { Accounts } from 'meteor/accounts-base';
 
 import { doesUserRequire2FA } from './twoFactorAuth';
 
@@ -29,13 +29,11 @@ export const passportOAuthCallback = (siteUrl: string) => async (req: Request, r
 		return res.redirect(twoFARedirectUrl.toString());
 	}
 
-	const stampedToken = Accounts._generateStampedLoginToken();
-	await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
+	const loginCode = await LoginCodes.createCode(oAuthUser._id);
 
 	const redirectUrl = new URL(`/home`, siteUrl);
 
-	redirectUrl.searchParams.set('resumeToken', stampedToken.token);
-	redirectUrl.searchParams.set('userId', oAuthUser._id);
+	redirectUrl.searchParams.set('loginCode', loginCode);
 
 	if (loginClient) {
 		redirectUrl.searchParams.set('loginClient', loginClient);

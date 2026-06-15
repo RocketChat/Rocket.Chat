@@ -40,6 +40,7 @@ import type {
 	IOAuthAppsModel,
 	IOAuthAuthCodesModel,
 	IOAuthAccessTokensModel,
+	ILoginCodesModel,
 	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
 	IPushTokenModel,
@@ -174,6 +175,7 @@ export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
 export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
 export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesModel');
 export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
+export const LoginCodes = proxify<ILoginCodesModel>('ILoginCodesModel');
 export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
