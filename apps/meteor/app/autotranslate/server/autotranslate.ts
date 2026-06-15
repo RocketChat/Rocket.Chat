@@ -138,6 +138,10 @@ export abstract class AutoTranslate {
 		[language: string]: ISupportedLanguage[];
 	};
 
+	protected pendingTranslations = new Map<string, Promise<ITranslationResult>>();
+
+	protected pendingAttachments = new Map<string, Promise<ITranslationResult>>();
+
 	/**
 	 * Encapsulate the api key and provider settings.
 	 * @constructor
@@ -323,7 +327,16 @@ export abstract class AutoTranslate {
 				}
 
 				if (uncachedLanguages.length > 0) {
-					const fetchedTranslations = await this._translateMessage(targetMessage, uncachedLanguages);
+					const cacheKey = `${message._id}:${uncachedLanguages.sort().join(',')}`;
+					let promise = this.pendingTranslations.get(cacheKey);
+
+					if (!promise) {
+						promise = this._translateMessage(targetMessage, uncachedLanguages);
+						this.pendingTranslations.set(cacheKey, promise);
+						promise.finally(() => this.pendingTranslations.delete(cacheKey));
+					}
+
+					const fetchedTranslations = await promise;
 					for (const [lang, translation] of Object.entries(fetchedTranslations)) {
 						translations[lang] = translation;
 						TranslationMemoryCache.set(this.name, message, lang, translation);
@@ -358,7 +371,16 @@ export abstract class AutoTranslate {
 
 						if (uncachedLanguages.length > 0) {
 							const attachmentMessage = { ...attachment, text: translatedText };
-							const fetchedTranslations = await this._translateAttachmentDescriptions(attachmentMessage, uncachedLanguages);
+							const cacheKey = `${message._id}:${index}:${uncachedLanguages.sort().join(',')}`;
+							let promise = this.pendingAttachments.get(cacheKey);
+
+							if (!promise) {
+								promise = this._translateAttachmentDescriptions(attachmentMessage, uncachedLanguages);
+								this.pendingAttachments.set(cacheKey, promise);
+								promise.finally(() => this.pendingAttachments.delete(cacheKey));
+							}
+
+							const fetchedTranslations = await promise;
 							for (const [lang, translation] of Object.entries(fetchedTranslations)) {
 								translations[lang] = translation;
 								TranslationMemoryCache.set(this.name, translatedText, lang, translation);
