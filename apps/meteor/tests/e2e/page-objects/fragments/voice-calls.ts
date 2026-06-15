@@ -60,6 +60,10 @@ export class VoiceCallControls {
 	get directMessage(): Locator {
 		return this._controls.getByRole('button', { name: /Direct message/i });
 	}
+
+	get popout(): Locator {
+		return this._controls.getByRole('button', { name: /Open in new window|Return to main window/i });
+	}
 }
 
 export class TransferModal {
@@ -120,6 +124,15 @@ export class Widget {
 
 	get timer(): Locator {
 		return this.root.getByRole('time');
+	}
+
+	get btnShowCallHere(): Locator {
+		return this.root.getByRole('button', { name: 'Show call here' });
+	}
+
+	async showCallHere(): Promise<void> {
+		await this.btnShowCallHere.click();
+		await expect(this.btnShowCallHere).not.toBeVisible();
 	}
 
 	async getTimerContentInSeconds() {
@@ -198,6 +211,14 @@ export class Widget {
 		await this.callControls.shareScreen.click();
 		await expect(this.callControls.shareScreen).toHaveAttribute('title', 'Share screen');
 	}
+
+	async openPopout(): Promise<void> {
+		await this.headerControls.popout.click();
+	}
+
+	peerCard(username: string): Locator {
+		return this.root.getByText(username);
+	}
 }
 
 export class RoomSection {
@@ -207,8 +228,8 @@ export class RoomSection {
 
 	public readonly otherControls: VoiceCallControls;
 
-	constructor(page: Page) {
-		this.root = page.getByRole('region', { name: 'Voice call' });
+	constructor(root: Locator) {
+		this.root = root;
 		// Right now there are 2 control groups in the room view, with no discrimination between them
 		this.callControls = new VoiceCallControls(this.root.getByRole('group').first());
 		this.otherControls = new VoiceCallControls(this.root.getByRole('group').last());
@@ -228,6 +249,15 @@ export class RoomSection {
 
 	get allScreenShareVideos(): Locator {
 		return this.root.locator('video');
+	}
+
+	get btnShowCallHere(): Locator {
+		return this.root.getByRole('button', { name: 'Show call here' });
+	}
+
+	async showCallHere(): Promise<void> {
+		await this.btnShowCallHere.click();
+		await expect(this.btnShowCallHere).not.toBeVisible();
 	}
 
 	async getTimerContentInSeconds() {
@@ -285,6 +315,25 @@ export class RoomSection {
 	peerCard(username: string): Locator {
 		return this.root.getByText(username);
 	}
+
+	async openPopout(): Promise<void> {
+		await this.otherControls.popout.click();
+	}
+}
+
+export class PopoutPage extends RoomSection {
+	private readonly page: Page;
+
+	constructor(page: Page) {
+		super(page.getByRole('main', { name: 'Voice call' }));
+		this.page = page;
+	}
+
+	override async endCall(): Promise<void> {
+		const pageClosed = new Promise((resolve) => this.page.on('close', () => resolve(true)));
+		await this.callControls.hangup.click();
+		await expect(pageClosed).resolves.toBe(true);
+	}
 }
 
 export class VoiceCalls {
@@ -292,8 +341,46 @@ export class VoiceCalls {
 
 	public readonly roomSection: RoomSection;
 
+	public popoutPage: PopoutPage | undefined;
+
+	private readonly page: Page;
+
 	constructor(page: Page) {
+		this.page = page;
 		this.widget = new Widget(page);
-		this.roomSection = new RoomSection(page);
+		this.roomSection = new RoomSection(page.getByRole('region', { name: 'Voice call' }));
+	}
+
+	get popout(): PopoutPage {
+		if (!this.popoutPage) {
+			throw new Error('Voice call - Popout is not open (call openPopout(Room|Widget) first)');
+		}
+		return this.popoutPage;
+	}
+
+	// Open the popout from the room section
+	async openPopoutRoom(): Promise<void> {
+		const [popout] = await Promise.all([this.page.waitForEvent('popup'), this.roomSection.openPopout()]);
+		if (!popout) {
+			throw new Error('Voice call - Failed to open popout');
+		}
+		await popout.waitForLoadState();
+		popout.on('close', () => {
+			this.popoutPage = undefined;
+		});
+		this.popoutPage = new PopoutPage(popout);
+	}
+
+	// Open the popout from the widget
+	async openPopoutWidget(): Promise<void> {
+		const [popout] = await Promise.all([this.page.waitForEvent('popup'), this.widget.openPopout()]);
+		if (!popout) {
+			throw new Error('Voice call - Failed to open popout');
+		}
+		await popout.waitForLoadState();
+		popout.on('close', () => {
+			this.popoutPage = undefined;
+		});
+		this.popoutPage = new PopoutPage(popout);
 	}
 }
