@@ -17,6 +17,7 @@ export const useIframeCommands = () => {
 	const loginWithToken = useLoginWithToken();
 	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
+	const enableNewOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
 		if (!iframeReceiveEnabled) {
@@ -50,6 +51,21 @@ export const useIframeCommands = () => {
 			},
 
 			'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
+				if (enableNewOAuthFlow) {
+					const url = new URL(window.location.href);
+					const queryParams = url.searchParams;
+					const loginClient = queryParams.get('loginClient');
+
+					const redirectUrl = new URL(`/oauth/${data.service}`, window.location.origin);
+
+					if (loginClient) {
+						redirectUrl.searchParams.set('loginClient', loginClient);
+					}
+
+					window.location.href = redirectUrl.toString();
+					return;
+				}
+
 				const customOAuthCallback = (response: unknown) => {
 					event.source?.postMessage(
 						{
