@@ -225,4 +225,22 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 		return count > 0;
 	}
+
+	public async updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult> {
+		const { caller, callee } = participants;
+
+		if (!caller && !callee) {
+			throw new Error('participant-not-specified');
+		}
+
+		return this.updateOneById(callId, {
+			$set: {
+				...(caller && { caller }),
+				...(callee && { callee }),
+			},
+		});
+	}
 }
