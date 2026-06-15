@@ -133,5 +133,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, enableNewOAuthFlow]);
 };
