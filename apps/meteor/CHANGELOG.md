@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 8.0.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40922](https://github.com/RocketChat/Rocket.Chat/pull/40922) by [@dionisio-bot](https://github.com/dionisio-bot)) Escapes HTML tags in exported data
+
+- ([#40897](https://github.com/RocketChat/Rocket.Chat/pull/40897) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#40910](https://github.com/RocketChat/Rocket.Chat/pull/40910) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes missing permission check on the `POST /api/v1/fingerprint` endpoint
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.7
+  - @rocket.chat/rest-typings@8.0.7
+  - @rocket.chat/abac@0.1.7
+  - @rocket.chat/federation-matrix@0.0.16
+  - @rocket.chat/license@1.1.14
+  - @rocket.chat/media-calls@0.2.7
+  - @rocket.chat/omnichannel-services@0.3.51
+  - @rocket.chat/pdf-worker@0.3.33
+  - @rocket.chat/presence@0.2.54
+  - @rocket.chat/api-client@0.2.54
+  - @rocket.chat/apps@0.6.7
+  - @rocket.chat/core-services@0.12.7
+  - @rocket.chat/cron@0.1.54
+  - @rocket.chat/fuselage-ui-kit@26.0.7
+  - @rocket.chat/gazzodown@26.0.7
+  - @rocket.chat/http-router@7.9.21
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.7
+  - @rocket.chat/ui-avatar@22.0.7
+  - @rocket.chat/ui-client@26.0.7
+  - @rocket.chat/ui-contexts@26.0.7
+  - @rocket.chat/ui-voip@16.0.7
+  - @rocket.chat/web-ui-registration@26.0.7
+  - @rocket.chat/models@2.0.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.33
+  - @rocket.chat/omni-core-ee@0.0.19
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.7
+  - @rocket.chat/instance-status@0.1.54
+  - @rocket.chat/omni-core@0.0.19
+  </details>
+
 ## 8.0.6
 
 ### Patch Changes
