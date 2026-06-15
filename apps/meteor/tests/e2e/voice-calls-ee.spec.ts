@@ -8,7 +8,7 @@ import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('Internal Voice Calls - Enterprise Edition', () => {
-	test.skip(IS_EE, 'Enterprise Edition Only');
+	test.skip(!IS_EE, 'Enterprise Edition Only');
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
@@ -157,7 +157,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 });
 
 test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => {
-	test.skip(IS_EE, 'Enterprise Edition Only');
+	test.skip(!IS_EE, 'Enterprise Edition Only');
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
@@ -319,8 +319,8 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 	});
 });
 
-test.describe.only('Internal Voice Calls - Popout view - Enterprise Edition', () => {
-	test.skip(IS_EE, 'Enterprise Edition Only');
+test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
+	test.skip(!IS_EE, 'Enterprise Edition Only');
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
