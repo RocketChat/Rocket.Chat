@@ -1,10 +1,11 @@
 import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
-import { useMethod, useStream } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import {
 	createDeleteCriteria,
@@ -24,7 +25,8 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 
 	const queryClient = useQueryClient();
 	const queryKey = roomsQueryKeys.threadMessages(roomId, tmid);
-	const getThreadMessages = useMethod('getThreadMessages');
+	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
+	const markThreadRead = useEndpoint('POST', '/v1/subscriptions.read');
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
@@ -105,10 +107,11 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		queryFn: async () => {
 			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
 
-			const messages = await getThreadMessages({ tmid });
-			const filtered = messages.filter(
-				(msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true,
-			);
+			const { messages } = await getThreadMessages({ tmid });
+			void markThreadRead({ rid: roomId, tmid }).catch(() => undefined);
+			const filtered = messages
+				.map((m) => mapMessageFromApi(m))
+				.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);
 
 			const sorted = mergeThreadMessages(cachedMessages, filtered);
 			if (unprocessedReadMessagesEvent.current) {

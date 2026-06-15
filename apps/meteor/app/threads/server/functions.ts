@@ -1,13 +1,16 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions, NotificationQueue } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, NotificationQueue } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
+import { canAccessRoomAsync } from '../../authorization/server';
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../lib/server/lib/notifyListener';
 import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
+import { settings } from '../../settings/server';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
 	if (!tmid || isEditedMessage(message)) {
@@ -97,4 +100,33 @@ export const readThread = async ({ user, room, tmid }: { user: IUser; room: IRoo
 	await NotificationQueue.clearQueueByUserId(user._id);
 
 	callbacks.runAsync('afterReadMessages', room, { uid: user._id, tmid });
+};
+
+/**
+ * Marks a thread as read for a user, replicating the full behavior of the
+ * legacy `readThreads` DDP method: it validates that threads are enabled, that
+ * the thread and its room exist, that the user can access the room, and runs
+ * the `beforeReadMessages` callback before clearing the thread unread state.
+ */
+export const readThreadMethod = async ({ user, tmid }: { user: IUser; tmid: IMessage['_id'] }) => {
+	if (!settings.get('Threads_enabled')) {
+		throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'readThreads' });
+	}
+
+	const thread = await Messages.findOneById(tmid);
+	if (!thread) {
+		return;
+	}
+
+	const room = await Rooms.findOneById(thread.rid);
+	if (!room) {
+		throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'readThreads' });
+	}
+
+	if (!(await canAccessRoomAsync(room, user))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readThreads' });
+	}
+
+	await callbacks.run('beforeReadMessages', thread.rid, user._id);
+	await readThread({ user, room, tmid });
 };

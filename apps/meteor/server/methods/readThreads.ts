@@ -1,13 +1,10 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../app/authorization/server';
-import { settings } from '../../app/settings/server';
-import { readThread } from '../../app/threads/server/functions';
-import { callbacks } from '../lib/callbacks';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { readThreadMethod } from '../../app/threads/server/functions';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,33 +15,14 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async readThreads(tmid) {
+		methodDeprecationLogger.method('readThreads', '9.0.0', '/v1/subscriptions.read');
 		check(tmid, String);
 
-		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', {
-				method: 'getThreadMessages',
-			});
+		const user = (await Meteor.userAsync()) as IUser | null;
+		if (!user) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readThreads' });
 		}
 
-		const thread = await Messages.findOneById(tmid);
-		if (!thread) {
-			return;
-		}
-
-		const user = (await Meteor.userAsync()) ?? undefined;
-
-		const room = await Rooms.findOneById(thread.rid);
-		if (!room) {
-			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'getThreadMessages' });
-		}
-
-		if (!(await canAccessRoomAsync(room, user))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
-		}
-
-		await callbacks.run('beforeReadMessages', thread.rid, user?._id);
-		if (user?._id) {
-			await readThread({ user: user as IUser, room, tmid });
-		}
+		await readThreadMethod({ user, tmid });
 	},
 });
