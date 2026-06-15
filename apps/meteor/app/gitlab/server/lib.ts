@@ -4,6 +4,7 @@ import passport from 'passport';
 import _ from 'underscore';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
 const config: Partial<OAuthConfiguration> = {
@@ -17,6 +18,8 @@ const config: Partial<OAuthConfiguration> = {
 	},
 	accessTokenParam: 'access_token',
 };
+
+const Gitlab = new CustomOAuth('gitlab', config);
 
 const configureGitlabOAuth = () => {
 	passport.unuse('gitlab');
@@ -36,7 +39,14 @@ const configureGitlabOAuth = () => {
 		return;
 	}
 
-	addPassportCustomOAuth('gitlab', { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers });
+	const completeConfig = { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers };
+
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
+		addPassportCustomOAuth('gitlab', completeConfig);
+		return;
+	}
+
+	Gitlab.configure(completeConfig);
 };
 
 Meteor.startup(() => {
@@ -50,6 +60,7 @@ Meteor.startup(() => {
 			'Accounts_OAuth_Gitlab_secret',
 			'Accounts_OAuth_Gitlab_identity_path',
 			'Accounts_OAuth_Gitlab_merge_users',
+			'Accounts_OAuth_Use_Modern_Flow',
 		],
 		updateConfig,
 	);

@@ -20,17 +20,19 @@ const LoginServicesButton = <T extends LoginService>({
 	setError,
 	buttonColor,
 	buttonLabelColor,
+	enableModernOAuthFlow,
 	...props
 }: T & {
 	className?: string;
 	disabled?: boolean;
 	setError?: Dispatch<SetStateAction<LoginErrorState>>;
+	enableModernOAuthFlow?: boolean;
 }): ReactElement => {
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
 	const handleOnClick = useCallback(() => {
-		if (!servicesSupportedByMeteor.includes(service)) {
+		if (!servicesSupportedByMeteor.includes(service) && enableModernOAuthFlow) {
 			const url = new URL(window.location.href);
 			const queryParams = url.searchParams;
 			const loginClient = queryParams.get('loginClient');
@@ -51,7 +53,7 @@ const LoginServicesButton = <T extends LoginService>({
 			}
 			setError?.([e.error, e.reason]);
 		});
-	}, [handler, setError, service]);
+	}, [handler, setError, service, enableModernOAuthFlow]);
 
 	return (
 		<Button

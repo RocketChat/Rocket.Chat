@@ -178,6 +178,7 @@ API.v1.get(
 	},
 	async function action() {
 		const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
+		const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 
 		return API.v1.success({
 			services: oAuthServicesEnabled.map((service) => {
@@ -195,7 +196,7 @@ API.v1.get(
 				}
 
 				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
-					return { ...service, hideButtonOnMobile: true };
+					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 
 				return {
@@ -209,7 +210,7 @@ API.v1.get(
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
-					hideButtonOnMobile: true,
+					hideButtonOnMobile: isPassportFlowEnabled,
 				};
 			}),
 		});

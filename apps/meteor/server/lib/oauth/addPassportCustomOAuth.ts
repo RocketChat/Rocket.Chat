@@ -47,7 +47,15 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
-		passport.authenticate(serviceName, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
+		(_req, _res, next) => {
+			const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
+			if (isPassportFlowEnabled) {
+				next();
+			} else {
+				next('router');
+			}
+		},
+		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
 		passportOAuthCallback(siteUrl),
 	);
 };
