@@ -1,5 +1,23 @@
 # @rocket.chat/meteor
 
+## 8.2.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40920](https://github.com/RocketChat/Rocket.Chat/pull/40920) by [@dionisio-bot](https://github.com/dionisio-bot)) Escapes HTML tags in exported data
+
+- ([#40895](https://github.com/RocketChat/Rocket.Chat/pull/40895) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#40907](https://github.com/RocketChat/Rocket.Chat/pull/40907) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes missing permission check on the `POST /api/v1/fingerprint` endpoint
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.6
+  - @rocket.chat/rest-typings@8.2.6
+  </details>
+
 ## 8.2.5
 
 ### Patch Changes
