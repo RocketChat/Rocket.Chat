@@ -7,7 +7,6 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
@@ -175,12 +174,17 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
-			const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-			room.scroll = {
-				scrollHeight: wrapper.scrollHeight,
-				scrollTop: wrapper.scrollTop,
-			};
+			// Snapshot scroll position to keep the viewport anchored when older messages are prepended.
+			// Only relevant once the message list is rendered (pagination); on initial room open the
+			// wrapper doesn't exist yet and there's nothing to anchor, so we must NOT block the upsert
+			// waiting for it — that delayed rendering of the prefetched first batch.
+			const wrapper = document.querySelector<HTMLElement>('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+			if (wrapper) {
+				room.scroll = {
+					scrollHeight: wrapper.scrollHeight,
+					scrollTop: wrapper.scrollTop,
+				};
+			}
 
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
@@ -201,7 +205,12 @@ class RoomHistoryManagerClass extends Emitter {
 				this.updateRoom(rid, { hasMore: false });
 			}
 
-			if (room.hasMore && (visibleMessages.length === 0 || room.loaded < limit)) {
+			// Only keep paging when this batch added NO visible rows (e.g. 50 thread replies) — otherwise
+			// the screen would be blank. Previously we also paged whenever `room.loaded < limit`, which
+			// forced a second ~400ms loadHistory round trip on almost every room open (any thread reply
+			// in the last 50 messages dropped the visible count below the limit). The viewport is filled
+			// by far fewer than `limit` messages, and scroll-driven getMore fetches more on demand.
+			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
 
