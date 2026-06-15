@@ -28,7 +28,7 @@
 		"@rocket.chat/model-typings": "workspace:^",
 		"adm-zip": "^0.5.16",
 		"debug": "^4.3.7",
-		"esbuild": "~0.27.3",
+		"esbuild": "~0.28.1",
 		"jose": "^4.15.9",
 		"jsonrpc-lite": "^2.2.0",
 		"lodash.clonedeep": "^4.5.0",
