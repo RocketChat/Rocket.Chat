@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Exposes the `isFederated` and `federation` fields for room objects in apps
+Exposes the `isFederated` and `federation` fields for room and user objects in apps
