@@ -18,7 +18,7 @@ beforeEach(() => {
 					_id: 2,
 					username: 'jon',
 				},
-			].filter((user) => usernames.includes(user.username)), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
+			].filter((user) => usernames.some((username) => username.toLowerCase() === user.username.toLowerCase())), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 		getChannels(channels) {
 			return [
 				{
@@ -93,6 +93,19 @@ describe('Mention Server', () => {
 			it('should return "rocket.cat"', async () => {
 				const message = {
 					msg: '@rocket.cat',
+				};
+				const expected = [
+					{
+						_id: 1,
+						username: 'rocket.cat',
+					},
+				];
+				const result = await mention.getUsersByMentions(message);
+				expect(expected).to.be.deep.equal(result);
+			});
+			it('should return "rocket.cat" for a differently cased mention', async () => {
+				const message = {
+					msg: '@Rocket.Cat',
 				};
 				const expected = [
 					{

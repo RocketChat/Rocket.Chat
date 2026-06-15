@@ -12,10 +12,9 @@ class MentionQueries {
 
 		const teams = await Team.listByNames(uniqueUsernames, { projection: { name: 1 } });
 
-		const users = await Users.find<Pick<IUser, '_id' | 'username' | 'name'>>(
-			{ username: { $in: uniqueUsernames } },
-			{ projection: { _id: 1, username: 1, name: 1 } },
-		).toArray();
+		const users = await Users.findByUsernamesIgnoringCase(uniqueUsernames, {
+			projection: { _id: 1, username: 1, name: 1 },
+		}).toArray();
 
 		const taggedUsers = users.map((user) => ({
 			...user,

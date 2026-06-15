@@ -78,7 +78,8 @@ export class MentionsParser {
 				return this.userTemplate({ prefix, className, mention, label: mention, type: 'group' });
 			}
 
-			const filterUser = ({ username, type }: { username?: string; type?: string }) => (!type || type === 'user') && username === mention;
+			const filterUser = ({ username, type }: { username?: string; type?: string }) =>
+				(!type || type === 'user') && username?.toLowerCase() === mention.toLowerCase();
 			const filterTeam = ({ name, type }: { name?: string; type?: string }) => type === 'team' && name === mention;
 
 			const [mentionObj] = (mentions || []).filter((m) => m && (filterUser(m) || filterTeam(m)));
@@ -94,10 +95,10 @@ export class MentionsParser {
 			return this.userTemplate({
 				prefix,
 				className,
-				mention,
+				mention: mentionObj?.username || mention,
 				label,
 				type: mentionObj?.type === 'team' ? 'team' : 'username',
-				title: this.useRealName() ? mention : label,
+				title: this.useRealName() ? mentionObj?.username || mention : label,
 			});
 		});
 

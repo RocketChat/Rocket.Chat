@@ -164,6 +164,13 @@ describe('replace methods', () => {
 			expect(result).to.be.equal(`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
 		});
 
+		it('should render user mentions case-insensitively', () => {
+			const result = mentionsParser.replaceUsers('hello @Rocket.Cat', message, 'me');
+			expect(result).to.be.equal(
+				'hello <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">rocket.cat</a>',
+			);
+		});
+
 		it('should render for unknow/private user "hello @unknow"', () => {
 			const result = mentionsParser.replaceUsers('hello @unknow', message, 'me');
 			expect(result).to.be.equal('hello @unknow');
@@ -195,6 +202,13 @@ describe('replace methods', () => {
 
 		it(`should render for "hello @${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`hello @${str2}`, message, 'me');
+			expect(result).to.be.equal(
+				`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`,
+			);
+		});
+
+		it('should render user mentions case-insensitively', () => {
+			const result = mentionsParser.replaceUsers('hello @Rocket.Cat', message, 'me');
 			expect(result).to.be.equal(
 				`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`,
 			);
