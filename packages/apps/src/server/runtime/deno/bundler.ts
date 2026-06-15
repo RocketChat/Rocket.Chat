@@ -15,7 +15,7 @@ export async function bundleLegacyApp(appPackage: IParseAppPackageResult) {
 		bundle: true,
 		minify: true,
 		platform: 'node',
-		target: ['node10'],
+		target: ['node18'],
 		define: {
 			'global.Promise': 'Promise',
 		},
