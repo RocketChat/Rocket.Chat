@@ -24,8 +24,6 @@ export async function loadMessageHistory({
 	ls?: string | Date;
 	showThreadMessages?: boolean;
 	offset?: number;
-	// Pass a pre-fetched room (must include `sysMes`) to skip the duplicate Rooms.findOneById that
-	// the caller already performed (e.g. the loadHistory method fetches the room for access checks).
 	room?: IRoom;
 }) {
 	const room = providedRoom ?? (await Rooms.findOneById(rid, { projection: { sysMes: 1 } }));
@@ -56,13 +54,12 @@ export async function loadMessageHistory({
 			).toArray()
 		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
 
-	// `records` is sorted ts desc, so the oldest message in the batch is the last element. Unread
-	// math only needs its timestamp, so it can run off `records` independently of normalization.
 	const firstMessage = records[records.length - 1];
 	const lastSeen = ls ? new Date(ls) : undefined;
+	const hasValidLastSeen = lastSeen !== undefined && !Number.isNaN(lastSeen.getTime());
 
 	const computeUnread = async (): Promise<{ firstUnread: IMessage | undefined; unreadNotLoaded: number }> => {
-		if (!lastSeen || !firstMessage || new Date(firstMessage.ts) <= lastSeen) {
+		if (!hasValidLastSeen || !lastSeen || !firstMessage || !(new Date(firstMessage.ts) > lastSeen)) {
 			return { firstUnread: undefined, unreadNotLoaded: 0 };
 		}
 
@@ -87,8 +84,6 @@ export async function loadMessageHistory({
 		return { firstUnread: firstUnreadRecords[0], unreadNotLoaded };
 	};
 
-	// Normalization (a Users lookup) and the unread queries are independent — run them concurrently
-	// instead of waiting for normalization before issuing the unread find + count.
 	const [messages, unread] = await Promise.all([normalizeMessagesForUser(records, userId), computeUnread()]);
 
 	return {

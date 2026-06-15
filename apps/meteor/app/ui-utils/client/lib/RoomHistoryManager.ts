@@ -174,10 +174,6 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
-			// Snapshot scroll position to keep the viewport anchored when older messages are prepended.
-			// Only relevant once the message list is rendered (pagination); on initial room open the
-			// wrapper doesn't exist yet and there's nothing to anchor, so we must NOT block the upsert
-			// waiting for it — that delayed rendering of the prefetched first batch.
 			const wrapper = document.querySelector<HTMLElement>('.messages-box .wrapper [data-overlayscrollbars-viewport]');
 			if (wrapper) {
 				room.scroll = {
@@ -197,7 +193,7 @@ class RoomHistoryManagerClass extends Emitter {
 				room.loaded = 0;
 			}
 
-			const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
+			const visibleMessages = messages.filter((msg) => msg.t !== 'command' && (!msg.tmid || showThreadsInMainChannel || msg.tshow));
 
 			room.loaded += visibleMessages.length;
 
@@ -205,11 +201,6 @@ class RoomHistoryManagerClass extends Emitter {
 				this.updateRoom(rid, { hasMore: false });
 			}
 
-			// Only keep paging when this batch added NO visible rows (e.g. 50 thread replies) — otherwise
-			// the screen would be blank. Previously we also paged whenever `room.loaded < limit`, which
-			// forced a second ~400ms loadHistory round trip on almost every room open (any thread reply
-			// in the last 50 messages dropped the visible count below the limit). The viewport is filled
-			// by far fewer than `limit` messages, and scroll-driven getMore fetches more on demand.
 			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
