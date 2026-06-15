@@ -13,6 +13,20 @@ import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
 const MAX_CONNECTIONS = 200;
 const MAX_TIMEOUT_DELAY_MS = 2 ** 31 - 1;
 
+type PresenceUser = Pick<
+	IUser,
+	| '_id'
+	| 'username'
+	| 'roles'
+	| 'status'
+	| 'statusDefault'
+	| 'statusSource'
+	| 'statusText'
+	| 'statusExpiresAt'
+	| 'statusConnection'
+	| 'previousState'
+>;
+
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
@@ -111,8 +125,8 @@ export class Presence extends ServiceClass implements IPresence {
 		// TODO: in MS mode every instance runs this independently.
 		// Add a job-level lock to avoid redundant cross-instance reads.
 		const expiredCursor = Users.findExpiredStatuses();
-		for await (const { _id } of expiredCursor) {
-			await this.updateUserPresence(_id, { type: 'endActive' });
+		for await (const user of expiredCursor) {
+			await this.updateUserPresence(user, { type: 'endActive' });
 		}
 	}
 
@@ -338,39 +352,28 @@ export class Presence extends ServiceClass implements IPresence {
 	 * Low-level presence update. Does not reschedule the expiration job.
 	 * Prefer {@link updatePresenceAndReschedule} for public-facing methods.
 	 */
-	private async updateUserPresence(uid: string, claimUpdate?: ClaimUpdate): Promise<boolean> {
-		const user = await Users.findOneById<
-			Pick<
-				IUser,
-				| '_id'
-				| 'username'
-				| 'roles'
-				| 'status'
-				| 'statusDefault'
-				| 'statusSource'
-				| 'statusText'
-				| 'statusExpiresAt'
-				| 'statusConnection'
-				| 'previousState'
-			>
-		>(uid, {
-			projection: {
-				username: 1,
-				roles: 1,
-				status: 1,
-				statusDefault: 1,
-				statusSource: 1,
-				statusText: 1,
-				statusExpiresAt: 1,
-				statusConnection: 1,
-				previousState: 1,
-			},
-		});
+	private async updateUserPresence(uidOrUser: string | PresenceUser, claimUpdate?: ClaimUpdate): Promise<boolean> {
+		const user =
+			typeof uidOrUser === 'string'
+				? await Users.findOneById<PresenceUser>(uidOrUser, {
+						projection: {
+							username: 1,
+							roles: 1,
+							status: 1,
+							statusDefault: 1,
+							statusSource: 1,
+							statusText: 1,
+							statusExpiresAt: 1,
+							statusConnection: 1,
+							previousState: 1,
+						},
+					})
+				: uidOrUser;
 		if (!user) {
 			return false;
 		}
 
-		const userSessions = await UsersSessions.findOneById(uid);
+		const userSessions = await UsersSessions.findOneById(user._id);
 		const sessions = userSessions?.connections ?? [];
 
 		const result = processPresence(user, sessions, claimUpdate);
@@ -388,7 +391,7 @@ export class Presence extends ServiceClass implements IPresence {
 					}
 				: undefined;
 
-		const updatedUser = await Users.updatePresenceAndStatus(uid, result.values, result.clear, guard);
+		const updatedUser = await Users.updatePresenceAndStatus(user._id, result.values, result.clear, guard);
 		if (updatedUser) {
 			this.broadcast(updatedUser, user.status);
 		}

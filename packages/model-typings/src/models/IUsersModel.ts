@@ -172,7 +172,21 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findExpiredStatuses(): FindCursor<Pick<IUser, '_id'>>;
+	findExpiredStatuses(): FindCursor<
+		Pick<
+			IUser,
+			| '_id'
+			| 'username'
+			| 'roles'
+			| 'status'
+			| 'statusDefault'
+			| 'statusSource'
+			| 'statusText'
+			| 'statusExpiresAt'
+			| 'statusConnection'
+			| 'previousState'
+		>
+	>;
 
 	findNextStatusExpiration(): Promise<Pick<IUser, '_id' | 'statusExpiresAt'> | null>;
 
