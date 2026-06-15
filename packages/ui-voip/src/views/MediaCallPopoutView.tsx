@@ -108,7 +108,18 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
-		<Box id='outer-element' w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' ref={ref}>
+		<Box
+			is='main'
+			aria-label={t('Voice_call')}
+			id='outer-element'
+			w='full'
+			h='full'
+			bg='surface-tint'
+			overflow='hidden'
+			display='flex'
+			flexDirection='column'
+			ref={ref}
+		>
 			<CardListSection>
 				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
 					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
