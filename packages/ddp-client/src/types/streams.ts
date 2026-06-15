@@ -458,6 +458,9 @@ export interface StreamerEvents {
 		{ key: 'command/removed'; args: [string] },
 		{ key: 'actions/changed'; args: [] },
 	];
+
+	'video-conference': [{ key: `${string}/discussionUpdated`; args: [{ discussionRid: IRoom['_id'] | undefined }] }];
+
 	'local': [
 		{
 			key: 'broadcast';

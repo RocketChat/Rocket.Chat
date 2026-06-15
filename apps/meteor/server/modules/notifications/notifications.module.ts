@@ -1,7 +1,7 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
@@ -47,6 +47,8 @@ export class NotificationsModule {
 
 	public readonly streamPresence: IStreamer<'user-presence'>;
 
+	public readonly streamVideoConference: IStreamer<'video-conference'>;
+
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
 		this.streamLogged = new this.Streamer('notify-logged');
@@ -91,6 +93,7 @@ export class NotificationsModule {
 
 		this.streamUser = new this.Streamer('notify-user');
 		this.streamLocal = new this.Streamer('local');
+		this.streamVideoConference = new this.Streamer('video-conference');
 	}
 
 	configure(): void {
@@ -455,6 +458,22 @@ export class NotificationsModule {
 			}
 		});
 
+		this.streamVideoConference.allowWrite('none');
+		this.streamVideoConference.allowRead(async function (eventName) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
+				return false;
+			}
+
+			const [callId] = eventName.split('/');
+			const call = await VideoConference.findOneById(callId, { projection: { users: 1 } });
+			if (!call) {
+				return false;
+			}
+
+			return call.users.some(({ _id }) => _id === user._id);
+		});
+
 		this.streamLocal.serverOnly = true;
 		this.streamLocal.allowRead('none');
 		this.streamLocal.allowEmit('all');
@@ -519,6 +538,15 @@ export class NotificationsModule {
 
 	progressUpdated(progress: { rate: number } | ImporterProgress): void {
 		this.streamImporters.emit('progress', progress);
+	}
+
+	notifyVideoConference<P extends string, E extends string>(
+		callId: P,
+		event: E extends ExtractNotifyUserEventName<'video-conference', P> ? E : never,
+		...args: `${P}/${E}` extends StreamKeys<'video-conference'> ? StreamerCallbackArgs<'video-conference', `${P}/${E}`> : never
+	): void {
+		// @ts-expect-error - as we currently only have one event for the 'video-conference' stream, typescript doesn't like the destructuring
+		return this.streamVideoConference.emit(`${callId}/${event}`, ...args);
 	}
 }
 

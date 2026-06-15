@@ -156,6 +156,10 @@ export class ListenersModule {
 			notifications.notifyRoom(rid, 'videoconf', callId);
 		});
 
+		service.onEvent('video-conference.discussionUpdated', ({ callId, discussionRid }) => {
+			notifications.notifyVideoConference(callId, 'discussionUpdated', { discussionRid });
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
 			if (!status || !username) {

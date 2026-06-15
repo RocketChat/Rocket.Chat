@@ -161,6 +161,7 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	'video-conference.discussionUpdated'(data: { callId: VideoConference['_id']; discussionRid: IRoom['_id'] | undefined }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:
