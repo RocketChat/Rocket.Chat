@@ -75,7 +75,13 @@ export async function loadMessageHistory({
 				{ limit: 1, sort: { ts: 1 } },
 				showThreadMessages,
 			).toArray(),
-			Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, lastSeen, firstMessage.ts, hiddenMessageTypes, showThreadMessages),
+			Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				lastSeen,
+				firstMessage.ts,
+				hiddenMessageTypes,
+				showThreadMessages,
+			),
 		]);
 
 		return { firstUnread: firstUnreadRecords[0], unreadNotLoaded };
