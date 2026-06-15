@@ -2,11 +2,11 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 
 import MessageSearch from './MessageSearch';
+import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 import { createFakeMessageWithMd, createFakeRoom, createFakeSubscription } from '../../../../../../tests/mocks/data';
 import type { MessageSearchItem } from '../hooks/useMessageSearchQuery';
 
@@ -18,13 +18,11 @@ const subscription = createFakeSubscription({
 	tunreadGroup: [],
 });
 
-const fetchNextPageAction = action('fetchNextPage');
-const fetchNextPage = (async (options) => {
-	fetchNextPageAction(options);
-	return {} as Awaited<ReturnType<UseInfiniteQueryResult['fetchNextPage']>>;
-}) satisfies UseInfiniteQueryResult['fetchNextPage'];
+const fetchNextPage = (async () =>
+	({}) as Awaited<ReturnType<UseInfiniteQueryResult['fetchNextPage']>>) satisfies UseInfiniteQueryResult['fetchNextPage'];
 
-const formatDate = (date: Date | string | number): string => new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(date));
+const formatDate = (date: Date | string | number): string =>
+	new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(date));
 
 const createMessage = (overrides: Partial<IMessage>): MessageSearchItem =>
 	createFakeMessageWithMd({
@@ -102,11 +100,13 @@ const meta = {
 	decorators: [
 		mockAppRoot().withJohnDoe().withRoom(room).withSubscription(subscription).buildStoryDecorator(),
 		(fn) => (
-			<Contextualbar height='100vh'>
-				<Box w='full' h='full' overflow='hidden'>
-					{fn()}
-				</Box>
-			</Contextualbar>
+			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
+				<Contextualbar height='100vh'>
+					<Box w='full' h='full' overflow='hidden'>
+						{fn()}
+					</Box>
+				</Contextualbar>
+			</FakeRoomProvider>
 		),
 	],
 	args: {
