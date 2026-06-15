@@ -18,9 +18,9 @@ const LoginServices = ({
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
-	const enableNewOAuthFlow = useSetting('Accounts_OAuth_Flow_Engine') === 'passport';
+	const enableNewOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
-	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser;
+	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser && enableNewOAuthFlow;
 
 	const servicesToShow = useMemo(
 		() => (isDesktopApp ? services.filter(({ service }) => servicesToBeShownOnDesktop.includes(service)) : services),

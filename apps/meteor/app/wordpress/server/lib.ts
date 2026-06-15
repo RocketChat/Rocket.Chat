@@ -78,9 +78,7 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 
 	const completeConfig = { ...config, clientId, clientSecret };
 
-	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
-
-	if (isPassportFlowEnabled) {
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
 		addPassportCustomOAuth(serviceKey, completeConfig);
 	} else {
 		WordPress.configure(completeConfig);
@@ -105,5 +103,5 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 
 Meteor.startup(() => {
 	settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
-	settings.watch('Accounts_OAuth_Flow_Engine', () => fillSettings());
+	settings.watch('Accounts_OAuth_Use_Modern_Flow', () => fillSettings());
 });

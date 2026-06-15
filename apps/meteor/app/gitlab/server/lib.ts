@@ -39,10 +39,9 @@ const configureGitlabOAuth = () => {
 		return;
 	}
 
-	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
 	const completeConfig = { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers };
 
-	if (isPassportFlowEnabled) {
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
 		addPassportCustomOAuth('gitlab', completeConfig);
 		return;
 	}
@@ -61,7 +60,7 @@ Meteor.startup(() => {
 			'Accounts_OAuth_Gitlab_secret',
 			'Accounts_OAuth_Gitlab_identity_path',
 			'Accounts_OAuth_Gitlab_merge_users',
-			'Accounts_OAuth_Flow_Engine',
+			'Accounts_OAuth_Use_Modern_Flow',
 		],
 		updateConfig,
 	);

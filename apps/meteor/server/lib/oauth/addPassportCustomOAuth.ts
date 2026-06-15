@@ -48,7 +48,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
 		(_req, _res, next) => {
-			const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
+			const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 			if (isPassportFlowEnabled) {
 				next();
 			} else {

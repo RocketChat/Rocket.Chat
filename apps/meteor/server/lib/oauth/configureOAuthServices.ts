@@ -81,7 +81,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		oAuthRouter.get(
 			`/_oauth/${config.provider}`,
 			(_req, _res, next) => {
-				const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
+				const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 				if (isPassportFlowEnabled) {
 					next();
 				} else {

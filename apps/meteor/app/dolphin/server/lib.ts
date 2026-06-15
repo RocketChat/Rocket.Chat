@@ -51,7 +51,7 @@ const configureDolphinOAuth = () => {
 
 	const completeConfig = { ...config, serverURL, clientId, clientSecret };
 
-	if (settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport') {
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow') === true) {
 		addPassportCustomOAuth('dolphin', completeConfig);
 		return;
 	}
@@ -68,7 +68,7 @@ Meteor.startup(async () => {
 			'Accounts_OAuth_Dolphin_URL',
 			'Accounts_OAuth_Dolphin_id',
 			'Accounts_OAuth_Dolphin_secret',
-			'Accounts_OAuth_Flow_Engine',
+			'Accounts_OAuth_Use_Modern_Flow',
 		],
 		updateConfig,
 	);

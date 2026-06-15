@@ -4,14 +4,11 @@ import { settingsRegistry } from '../../app/settings/server';
 
 export const createOauthSettings = () =>
 	settingsRegistry.addGroup('OAuth', async function () {
-		await this.add('Accounts_OAuth_Flow_Engine', 'meteor', {
-			type: 'select',
-			values: [
-				{ key: 'meteor', i18nLabel: 'Legacy_Meteor_OAuth' },
-				{ key: 'passport', i18nLabel: 'Modern_OAuth_System_Browser_and_Deep_Links_Recommended' },
-			],
+		await this.add('Accounts_OAuth_Use_Modern_Flow', true, {
+			type: 'boolean',
 			public: true,
-			i18nDescription: 'Accounts_OAuth_Flow_Engine_Description',
+			i18nLabel: 'Accounts_OAuth_Use_Modern_Flow_Label',
+			i18nDescription: 'Accounts_OAuth_Use_Modern_Flow_Description',
 		});
 
 		await this.section('Drupal', async function () {

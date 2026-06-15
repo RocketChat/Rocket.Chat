@@ -40,10 +40,9 @@ const configureDrupalOAuth = () => {
 		return;
 	}
 
-	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
 	const completeConfig = { ...config, serverURL, clientId, clientSecret };
 
-	if (isPassportFlowEnabled) {
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
 		addPassportCustomOAuth('drupal', completeConfig);
 		return;
 	}
@@ -55,7 +54,13 @@ Meteor.startup(() => {
 	const updateConfig = _.debounce(configureDrupalOAuth, 300);
 
 	settings.watchMultiple(
-		['Accounts_OAuth_Drupal', 'API_Drupal_URL', 'Accounts_OAuth_Drupal_id', 'Accounts_OAuth_Drupal_secret', 'Accounts_OAuth_Flow_Engine'],
+		[
+			'Accounts_OAuth_Drupal',
+			'API_Drupal_URL',
+			'Accounts_OAuth_Drupal_id',
+			'Accounts_OAuth_Drupal_secret',
+			'Accounts_OAuth_Use_Modern_Flow',
+		],
 		updateConfig,
 	);
 });

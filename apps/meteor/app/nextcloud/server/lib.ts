@@ -37,9 +37,8 @@ function configureNextcloudOAuth(): void {
 	}
 
 	const config = { ...NEXTCLOUD_PATHS, serverURL, clientId, clientSecret };
-	const isPassportFlowEnabled = settings.get<string>('Accounts_OAuth_Flow_Engine') === 'passport';
 
-	if (isPassportFlowEnabled) {
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
 		addPassportCustomOAuth('nextcloud', config);
 		return;
 	}
@@ -54,7 +53,7 @@ Meteor.startup(() => {
 			'Accounts_OAuth_Nextcloud_URL',
 			'Accounts_OAuth_Nextcloud_id',
 			'Accounts_OAuth_Nextcloud_secret',
-			'Accounts_OAuth_Flow_Engine',
+			'Accounts_OAuth_Use_Modern_Flow',
 		],
 		configureNextcloudOAuth,
 	);
