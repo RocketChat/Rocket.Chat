@@ -26,6 +26,7 @@ import {
 	autoLink,
 	bigEmoji,
 	emoji,
+	autoEmail,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
@@ -138,11 +139,12 @@ export function parse(input: string, options: Options = {}): Root {
 
 function tryCodeFence(scanner: Scanner): Root[number] | null {
 	const start = scanner.save();
+	const fence = '```';
 
-	if (!scanner.matches('```')) {
+	if (!scanner.matches(fence)) {
 		return null;
 	}
-	scanner.advance(3);
+	scanner.advance(fence.length);
 
 	// Optional language tag
 	const langStart = scanner.save();
@@ -168,8 +170,8 @@ function tryCodeFence(scanner: Scanner): Root[number] | null {
 
 	while (!scanner.isEnd()) {
 		// Check for closing ```
-		if (scanner.matches('```')) {
-			scanner.advance(3);
+		if (scanner.matches(fence)) {
+			scanner.advance(fence.length);
 			// Consume any trailing content after closing ```
 			while (!scanner.isEnd() && !isNewline(scanner.char())) {
 				scanner.advance();
@@ -388,6 +390,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Email (local@domain) — before bare URL / autolink so it claims the @-region
+		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
+			const result = tryEmail(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
+				continue;
+			}
+		}
+
 		// Bare URL (word.word style)
 		if (isAlpha(ch)) {
 			const result = tryBareUrl(scanner);
@@ -408,10 +420,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Plain run
-		if (isPlainChar(ch)) {
+		// Plain run — stop at '(' and ')' so dispatch can re-attempt email/URL after them
+		if (isPlainChar(ch) && ch !== '(' && ch !== ')') {
 			const start = scanner.save();
-			while (!scanner.isEnd() && isPlainChar(scanner.char()) && !isSpace(scanner.char())) {
+			while (
+				!scanner.isEnd() &&
+				isPlainChar(scanner.char()) &&
+				!isSpace(scanner.char()) &&
+				scanner.char() !== '(' &&
+				scanner.char() !== ')'
+			) {
 				scanner.advance();
 			}
 			const text = scanner.sliceFrom(start);
@@ -581,6 +599,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// Email (local@domain) — before bare URL / autolink so it claims the @-region
+		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
+			const result = tryEmail(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
+				continue;
+			}
+		}
+
 		// Bare URL
 		if (isAlpha(ch)) {
 			const result = tryBareUrl(scanner);
@@ -602,9 +630,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 		}
 
 		// Plain run
-		if (isPlainChar(ch)) {
+		if (isPlainChar(ch) && ch !== '(' && ch !== ')') {
 			const start = scanner.save();
-			while (!scanner.isEnd() && isPlainChar(scanner.char()) && !isSpace(scanner.char()) && !scanner.matches(stopChar)) {
+			while (
+				!scanner.isEnd() &&
+				isPlainChar(scanner.char()) &&
+				!isSpace(scanner.char()) &&
+				!scanner.matches(stopChar) &&
+				scanner.char() !== '(' &&
+				scanner.char() !== ')'
+			) {
 				scanner.advance();
 			}
 			const text = scanner.sliceFrom(start);
@@ -945,7 +980,6 @@ function tryBlockSpoiler(scanner: Scanner, options: Options): Root[number] | nul
 	}
 
 	// Check that "||" is alone on this line
-	const peekPos = scanner.save();
 	scanner.advance(2);
 	if (!scanner.isEnd() && !isNewline(scanner.char())) {
 		scanner.restore(start);
@@ -1479,4 +1513,63 @@ function tryBigEmoji(input: string): Root | null {
 	}
 
 	return [bigEmoji(emojis as any)];
+}
+
+// ─── Email ─────────────────────────────────────────────────────────────────
+
+function tryEmail(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	const delimiter = 'mailto:';
+
+	// Optional "mailto:" prefix — consumed, but NOT part of the captured address
+	if (scanner.matches(delimiter)) {
+		scanner.advance(delimiter.length);
+	}
+
+	// Local part: alphanumeric / unicode, plus  . _ + - '
+	const localStart = scanner.save();
+	while (!scanner.isEnd()) {
+		const ch = scanner.char();
+		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '_' || ch === '+' || ch === '-' || ch === "'") {
+			scanner.advance();
+		} else {
+			break;
+		}
+	}
+	const local = scanner.sliceFrom(localStart);
+
+	// Must have a non-empty local part immediately followed by '@'
+	if (local.length === 0 || scanner.char() !== '@') {
+		scanner.restore(start);
+		return null;
+	}
+	scanner.advance(); // consume '@'
+
+	// Domain: alphanumeric / unicode, plus  . -
+	const domainStart = scanner.save();
+	while (!scanner.isEnd()) {
+		const ch = scanner.char();
+		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '-') {
+			scanner.advance();
+		} else {
+			break;
+		}
+	}
+
+	// Trim trailing '.' / '-' back out of the domain ("joe.com." → "joe.com")
+	while (scanner.pos > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
+		scanner.advance(-1);
+	}
+
+	const domain = scanner.sliceFrom(domainStart);
+
+	// Domain must contain a dot that is not at the very start or end
+	const dotIdx = domain.indexOf('.');
+	if (dotIdx <= 0 || dotIdx === domain.length - 1) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// autoEmail validates the TLD via tldts (same logic the grammar uses):
+	return autoEmail(local + '@' + domain);
 }
