@@ -134,6 +134,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			overflow='hidden'
 			display='flex'
 			flexDirection='column'
+			is='section'
+			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
 			<CardListSection>
