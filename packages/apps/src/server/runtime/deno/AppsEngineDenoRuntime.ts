@@ -199,6 +199,9 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const err = reason as NodeJS.ErrnoException;
 			if (err.code === 'ENOENT') {
 				fs.symlinkSync(symlinkTarget, symlinkSource, 'dir');
+			} else if (err.code === 'EINVAL' || err.code === 'EISDIR' || err.code === 'UNKNOWN') {
+				fs.rmSync(symlinkSource, { recursive: true, force: true });
+				fs.symlinkSync(symlinkTarget, symlinkSource, 'dir');
 			} else if (err.code !== 'EEXIST') {
 				throw reason;
 			}
