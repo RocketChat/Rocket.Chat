@@ -34,7 +34,7 @@ exports[`renders Empty without crashing 1`] = `
 </body>
 `;
 
-exports[`renders Messages without crashing 1`] = `
+exports[`renders WithResults without crashing 1`] = `
 <body>
   <div>
     <div
@@ -53,8 +53,109 @@ exports[`renders Messages without crashing 1`] = `
           >
             <div
               data-testid="message-search-list"
-              data-total-count="3"
+              data-total-count="8"
             >
+              <div>
+                <div
+                  class="rcx-message-divider"
+                  role="separator"
+                >
+                  <div
+                    class="rcx-message-divider__bar"
+                  />
+                  <div
+                    class="rcx-message-divider__wrapper"
+                  >
+                    Jun 8, 2026
+                  </div>
+                   
+                  <div
+                    class="rcx-message-divider__bar"
+                  />
+                </div>
+                <div
+                  aria-labelledby="date-message-1-displayName date-message-1-time date-message-1-content"
+                  aria-roledescription="message"
+                  class="rcx-message"
+                  data-id="date-message-1"
+                  data-mid="date-message-1"
+                  data-own="false"
+                  data-sequential="false"
+                  data-unread="false"
+                  id="date-message-1"
+                  role="listitem"
+                  tabindex="0"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                    >
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x36"
+                        data-username="ana.silva"
+                        role="button"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        style="cursor: pointer;"
+                        title="ana.silva"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-container"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-message-header"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                      >
+                        <span
+                          aria-label="ana.silva"
+                          class="rcx-box rcx-box--full rcx-message-header__name-container"
+                          id="date-message-1-displayName"
+                          role="button"
+                          style="cursor: pointer;"
+                          tabindex="0"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-message-header__name"
+                            data-username="ana.silva"
+                            title="@ana.silva"
+                          >
+                            ana.silva
+                          </span>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-message-header__time"
+                          id="date-message-1-time"
+                          title=""
+                        />
+                        <div
+                          class="rcx-message-status-indicator"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      aria-roledescription="message_body"
+                      class="rcx-message-body"
+                      dir="auto"
+                      id="date-message-1-content"
+                      role="document"
+                    >
+                      <div>
+                        Initial search result from Monday.
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
+                  />
+                </div>
+              </div>
               <div>
                 <div
                   class="rcx-message-divider"
@@ -73,6 +174,204 @@ exports[`renders Messages without crashing 1`] = `
                     class="rcx-message-divider__bar"
                   />
                 </div>
+                <div
+                  aria-roledescription="system_message"
+                  class="rcx-box rcx-box--full rcx-message-system"
+                  data-system-message-type="uj"
+                  role="listitem"
+                  tabindex="0"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+                    >
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x18"
+                        data-username="ana.silva"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="ana.silva"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-system__container"
+                  >
+                    <div
+                      class="rcx-message-system__block"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-message-header__name-container"
+                        role="button"
+                        style="cursor: pointer;"
+                        tabindex="0"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-message-system__name"
+                        >
+                          ana.silva
+                        </span>
+                      </span>
+                      <div
+                        aria-roledescription="system_message_body"
+                        class="rcx-message-system__body"
+                        role="document"
+                      >
+                        User_joined_the_channel
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-message-system__time"
+                        title=""
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  aria-roledescription="system_message"
+                  class="rcx-box rcx-box--full rcx-message-system"
+                  data-system-message-type="room_changed_topic"
+                  role="listitem"
+                  tabindex="0"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+                    >
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x18"
+                        data-username="ana.silva"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="ana.silva"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-system__container"
+                  >
+                    <div
+                      class="rcx-message-system__block"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-message-header__name-container"
+                        role="button"
+                        style="cursor: pointer;"
+                        tabindex="0"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-message-system__name"
+                        >
+                          ana.silva
+                        </span>
+                      </span>
+                      <div
+                        aria-roledescription="system_message_body"
+                        class="rcx-message-system__body"
+                        role="document"
+                      >
+                        room_changed_topic_to
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-message-system__time"
+                        title=""
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  aria-labelledby="date-message-2-displayName date-message-2-time date-message-2-content"
+                  aria-roledescription="message"
+                  class="rcx-message"
+                  data-id="date-message-2"
+                  data-mid="date-message-2"
+                  data-own="false"
+                  data-sequential="false"
+                  data-unread="false"
+                  id="date-message-2"
+                  role="listitem"
+                  tabindex="0"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                    >
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x36"
+                        data-username="ana.silva"
+                        role="button"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        style="cursor: pointer;"
+                        title="ana.silva"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-container"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-message-header"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                      >
+                        <span
+                          aria-label="ana.silva"
+                          class="rcx-box rcx-box--full rcx-message-header__name-container"
+                          id="date-message-2-displayName"
+                          role="button"
+                          style="cursor: pointer;"
+                          tabindex="0"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-message-header__name"
+                            data-username="ana.silva"
+                            title="@ana.silva"
+                          >
+                            ana.silva
+                          </span>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-message-header__time"
+                          id="date-message-2-time"
+                          title=""
+                        />
+                        <div
+                          class="rcx-message-status-indicator"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      aria-roledescription="message_body"
+                      class="rcx-message-body"
+                      dir="auto"
+                      id="date-message-2-content"
+                      role="document"
+                    >
+                      <div>
+                        Follow-up result from Tuesday.
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
+                  />
+                </div>
+              </div>
+              <div>
                 <div
                   aria-labelledby="message-1-displayName message-1-time message-1-content"
                   aria-roledescription="message"
@@ -328,238 +627,6 @@ exports[`renders Messages without crashing 1`] = `
                   />
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-</body>
-`;
-
-exports[`renders MultipleDateGroups without crashing 1`] = `
-<body>
-  <div>
-    <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
-    >
-      <div
-        class="rcx-box rcx-box--full rcx-css-1uh9jm2"
-      >
-        <section
-          class="rcx-box rcx-box--full rcx-css-fd66uj"
-          style="min-height: 0;"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-1cb6i7s"
-            style="min-height: 0;"
-          >
-            <div
-              data-testid="message-search-list"
-              data-total-count="3"
-            >
-              <div>
-                <div
-                  class="rcx-message-divider"
-                  role="separator"
-                >
-                  <div
-                    class="rcx-message-divider__bar"
-                  />
-                  <div
-                    class="rcx-message-divider__wrapper"
-                  >
-                    Jun 8, 2026
-                  </div>
-                   
-                  <div
-                    class="rcx-message-divider__bar"
-                  />
-                </div>
-                <div
-                  aria-labelledby="date-message-1-displayName date-message-1-time date-message-1-content"
-                  aria-roledescription="message"
-                  class="rcx-message"
-                  data-id="date-message-1"
-                  data-mid="date-message-1"
-                  data-own="false"
-                  data-sequential="false"
-                  data-unread="false"
-                  id="date-message-1"
-                  role="listitem"
-                  tabindex="0"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
-                  >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
-                    >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x36"
-                        data-username="ana.silva"
-                        role="button"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        style="cursor: pointer;"
-                        title="ana.silva"
-                      />
-                    </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-container"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-message-header"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-message-header__wrapper"
-                      >
-                        <span
-                          aria-label="ana.silva"
-                          class="rcx-box rcx-box--full rcx-message-header__name-container"
-                          id="date-message-1-displayName"
-                          role="button"
-                          style="cursor: pointer;"
-                          tabindex="0"
-                        >
-                          <span
-                            class="rcx-box rcx-box--full rcx-message-header__name"
-                            data-username="ana.silva"
-                            title="@ana.silva"
-                          >
-                            ana.silva
-                          </span>
-                        </span>
-                        <span
-                          class="rcx-box rcx-box--full rcx-message-header__time"
-                          id="date-message-1-time"
-                          title=""
-                        />
-                        <div
-                          class="rcx-message-status-indicator"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      aria-roledescription="message_body"
-                      class="rcx-message-body"
-                      dir="auto"
-                      id="date-message-1-content"
-                      role="document"
-                    >
-                      <div>
-                        Initial search result from Monday.
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
-                  />
-                </div>
-              </div>
-              <div>
-                <div
-                  class="rcx-message-divider"
-                  role="separator"
-                >
-                  <div
-                    class="rcx-message-divider__bar"
-                  />
-                  <div
-                    class="rcx-message-divider__wrapper"
-                  >
-                    Jun 9, 2026
-                  </div>
-                   
-                  <div
-                    class="rcx-message-divider__bar"
-                  />
-                </div>
-                <div
-                  aria-labelledby="date-message-2-displayName date-message-2-time date-message-2-content"
-                  aria-roledescription="message"
-                  class="rcx-message"
-                  data-id="date-message-2"
-                  data-mid="date-message-2"
-                  data-own="false"
-                  data-sequential="false"
-                  data-unread="false"
-                  id="date-message-2"
-                  role="listitem"
-                  tabindex="0"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
-                  >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
-                    >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x36"
-                        data-username="ana.silva"
-                        role="button"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        style="cursor: pointer;"
-                        title="ana.silva"
-                      />
-                    </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-container"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-message-header"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-message-header__wrapper"
-                      >
-                        <span
-                          aria-label="ana.silva"
-                          class="rcx-box rcx-box--full rcx-message-header__name-container"
-                          id="date-message-2-displayName"
-                          role="button"
-                          style="cursor: pointer;"
-                          tabindex="0"
-                        >
-                          <span
-                            class="rcx-box rcx-box--full rcx-message-header__name"
-                            data-username="ana.silva"
-                            title="@ana.silva"
-                          >
-                            ana.silva
-                          </span>
-                        </span>
-                        <span
-                          class="rcx-box rcx-box--full rcx-message-header__time"
-                          id="date-message-2-time"
-                          title=""
-                        />
-                        <div
-                          class="rcx-message-status-indicator"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      aria-roledescription="message_body"
-                      class="rcx-message-body"
-                      dir="auto"
-                      id="date-message-2-content"
-                      role="document"
-                    >
-                      <div>
-                        Follow-up result from Tuesday.
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
-                  />
-                </div>
-              </div>
               <div>
                 <div
                   class="rcx-message-divider"
@@ -659,167 +726,6 @@ exports[`renders MultipleDateGroups without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-</body>
-`;
-
-exports[`renders SystemMessages without crashing 1`] = `
-<body>
-  <div>
-    <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
-    >
-      <div
-        class="rcx-box rcx-box--full rcx-css-1uh9jm2"
-      >
-        <section
-          class="rcx-box rcx-box--full rcx-css-fd66uj"
-          style="min-height: 0;"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-1cb6i7s"
-            style="min-height: 0;"
-          >
-            <div
-              data-testid="message-search-list"
-              data-total-count="2"
-            >
-              <div>
-                <div
-                  class="rcx-message-divider"
-                  role="separator"
-                >
-                  <div
-                    class="rcx-message-divider__bar"
-                  />
-                  <div
-                    class="rcx-message-divider__wrapper"
-                  >
-                    Jun 9, 2026
-                  </div>
-                   
-                  <div
-                    class="rcx-message-divider__bar"
-                  />
-                </div>
-                <div
-                  aria-roledescription="system_message"
-                  class="rcx-box rcx-box--full rcx-message-system"
-                  data-system-message-type="uj"
-                  role="listitem"
-                  tabindex="0"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
-                  >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
-                    >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x18"
-                        data-username="ana.silva"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        title="ana.silva"
-                      />
-                    </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-system__container"
-                  >
-                    <div
-                      class="rcx-message-system__block"
-                    >
-                      <span
-                        class="rcx-box rcx-box--full rcx-message-header__name-container"
-                        role="button"
-                        style="cursor: pointer;"
-                        tabindex="0"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-message-system__name"
-                        >
-                          ana.silva
-                        </span>
-                      </span>
-                      <div
-                        aria-roledescription="system_message_body"
-                        class="rcx-message-system__body"
-                        role="document"
-                      >
-                        User_joined_the_channel
-                      </div>
-                      <span
-                        class="rcx-box rcx-box--full rcx-message-system__time"
-                        title=""
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div
-                  aria-roledescription="system_message"
-                  class="rcx-box rcx-box--full rcx-message-system"
-                  data-system-message-type="room_changed_topic"
-                  role="listitem"
-                  tabindex="0"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
-                  >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
-                    >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x18"
-                        data-username="ana.silva"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        title="ana.silva"
-                      />
-                    </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-message-system__container"
-                  >
-                    <div
-                      class="rcx-message-system__block"
-                    >
-                      <span
-                        class="rcx-box rcx-box--full rcx-message-header__name-container"
-                        role="button"
-                        style="cursor: pointer;"
-                        tabindex="0"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-message-system__name"
-                        >
-                          ana.silva
-                        </span>
-                      </span>
-                      <div
-                        aria-roledescription="system_message_body"
-                        class="rcx-message-system__body"
-                        role="document"
-                      >
-                        room_changed_topic_to
-                      </div>
-                      <span
-                        class="rcx-box rcx-box--full rcx-message-system__time"
-                        title=""
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

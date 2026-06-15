@@ -35,7 +35,29 @@ const createMessage = (overrides: Partial<IMessage>): MessageSearchItem =>
 		...overrides,
 	}) as MessageSearchItem;
 
-const messages = [
+const searchResults = [
+	createMessage({
+		_id: 'date-message-1',
+		msg: 'Initial search result from Monday.',
+		ts: new Date('2026-06-08T10:00:00.000Z'),
+	}),
+	createMessage({
+		_id: 'system-message-1',
+		msg: 'Sam Chen joined the room',
+		t: 'uj',
+		ts: new Date('2026-06-09T09:00:00.000Z'),
+	}),
+	createMessage({
+		_id: 'system-message-2',
+		msg: 'Room topic changed to Release coordination',
+		t: 'room_changed_topic',
+		ts: new Date('2026-06-09T09:05:00.000Z'),
+	}),
+	createMessage({
+		_id: 'date-message-2',
+		msg: 'Follow-up result from Tuesday.',
+		ts: new Date('2026-06-09T10:00:00.000Z'),
+	}),
 	createMessage({
 		_id: 'message-1',
 		msg: 'Can you share the deployment checklist?',
@@ -55,34 +77,6 @@ const messages = [
 		_id: 'message-3',
 		msg: 'I found the rollback notes as well.',
 		ts: new Date('2026-06-09T14:22:00.000Z'),
-	}),
-];
-
-const systemMessages = [
-	createMessage({
-		_id: 'system-message-1',
-		msg: 'Sam Chen joined the room',
-		t: 'uj',
-		ts: new Date('2026-06-09T09:00:00.000Z'),
-	}),
-	createMessage({
-		_id: 'system-message-2',
-		msg: 'Room topic changed to Release coordination',
-		t: 'room_changed_topic',
-		ts: new Date('2026-06-09T09:05:00.000Z'),
-	}),
-];
-
-const multipleDateMessages = [
-	createMessage({
-		_id: 'date-message-1',
-		msg: 'Initial search result from Monday.',
-		ts: new Date('2026-06-08T10:00:00.000Z'),
-	}),
-	createMessage({
-		_id: 'date-message-2',
-		msg: 'Follow-up result from Tuesday.',
-		ts: new Date('2026-06-09T10:00:00.000Z'),
 	}),
 	createMessage({
 		_id: 'date-message-3',
@@ -133,23 +127,9 @@ export const Empty: Story = {
 	},
 };
 
-export const Messages: Story = {
+export const WithResults: Story = {
 	args: {
-		items: messages,
-		itemCount: messages.length,
-	},
-};
-
-export const SystemMessages: Story = {
-	args: {
-		items: systemMessages,
-		itemCount: systemMessages.length,
-	},
-};
-
-export const MultipleDateGroups: Story = {
-	args: {
-		items: multipleDateMessages,
-		itemCount: multipleDateMessages.length,
+		items: searchResults,
+		itemCount: searchResults.length,
 	},
 };
