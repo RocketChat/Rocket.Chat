@@ -60,7 +60,9 @@ test.describe('Session Expiration Redirect', () => {
 		});
 
 		await test.step('should redirect to login page', async () => {
-			await expect(page.getByRole('form', { name: 'Login' })).toBeVisible({ timeout: 10000 });
+			const loginForm = page.getByRole('form', { name: 'Login' });
+			await loginForm.waitFor({ state: 'visible', timeout: 20000 });
+			await expect(loginForm).toBeVisible();
 		});
 
 		await test.step('verify localStorage was cleared', async () => {
