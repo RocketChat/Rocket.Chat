@@ -37,4 +37,8 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	): FindCursor<DocumentWithProjection<T, O>>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult>;
 }
