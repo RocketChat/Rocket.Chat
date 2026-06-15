@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import { LoginCodes } from '@rocket.chat/models';
 import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 
@@ -87,12 +88,11 @@ export const passportOAuthCallback =
 			return res.redirect(twoFARedirectUrl.toString());
 		}
 
-		const token = await createLoginToken(oAuthUser._id);
+		const loginCode = await LoginCodes.createCode(oAuthUser._id);
 
 		const redirectUrl = new URL(`/home`, siteUrl);
 
-		redirectUrl.searchParams.set('resumeToken', token);
-		redirectUrl.searchParams.set('userId', oAuthUser._id);
+		redirectUrl.searchParams.set('loginCode', loginCode);
 
 		if (loginClient) {
 			redirectUrl.searchParams.set('loginClient', loginClient);

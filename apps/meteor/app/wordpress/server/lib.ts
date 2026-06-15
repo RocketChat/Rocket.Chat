@@ -5,6 +5,7 @@ import passport from 'passport';
 import _ from 'underscore';
 
 import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
 const config: Partial<OAuthConfiguration> = {
@@ -19,6 +20,8 @@ const config: Partial<OAuthConfiguration> = {
 };
 
 const serviceKey = 'wordpress';
+
+const WordPress = new CustomOAuth(serviceKey, config);
 
 const fillSettings = _.debounce(async (): Promise<void> => {
 	config.serverURL = settings.get('API_Wordpress_URL');
@@ -66,7 +69,20 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 	}
 
-	addPassportCustomOAuth(serviceKey, config);
+	const clientId = settings.get<string>('Accounts_OAuth_Wordpress_id');
+	const clientSecret = settings.get<string>('Accounts_OAuth_Wordpress_secret');
+
+	if (!clientId || !clientSecret) {
+		return;
+	}
+
+	const completeConfig = { ...config, clientId, clientSecret };
+
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
+		addPassportCustomOAuth(serviceKey, completeConfig);
+	} else {
+		WordPress.configure(completeConfig);
+	}
 
 	const enabled = settings.get('Accounts_OAuth_Wordpress');
 	if (enabled) {
@@ -86,5 +102,6 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 }, 1000);
 
 Meteor.startup(() => {
-	return settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+	settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+	settings.watch('Accounts_OAuth_Use_Modern_Flow', () => fillSettings());
 });

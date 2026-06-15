@@ -18,8 +18,9 @@ const LoginServices = ({
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
-	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser;
+	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser && enableModernOAuthFlow;
 
 	const servicesToShow = useMemo(
 		() => (isDesktopApp ? services.filter(({ service }) => servicesToBeShownOnDesktop.includes(service)) : services),
@@ -52,7 +53,13 @@ const LoginServices = ({
 			{servicesToShow.length > 0 && (
 				<ButtonGroup vertical stretch small>
 					{servicesToShow.map((service) => (
-						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
+						<LoginServicesButton
+							disabled={disabled}
+							key={service.service}
+							{...service}
+							setError={setError}
+							enableModernOAuthFlow={enableModernOAuthFlow}
+						/>
 					))}
 				</ButtonGroup>
 			)}

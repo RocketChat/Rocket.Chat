@@ -80,7 +80,15 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		);
 		oAuthRouter.get(
 			`/_oauth/${config.provider}`,
-			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
+			(_req, _res, next) => {
+				const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
+				if (isPassportFlowEnabled) {
+					next();
+				} else {
+					next('router');
+				}
+			},
+			passport.authenticate(config.provider, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
 			passportOAuthCallback(siteUrl),
 		);
 	});

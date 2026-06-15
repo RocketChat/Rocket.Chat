@@ -31,6 +31,7 @@ import { useLoginOtherClients } from './hooks/useLoginOtherClients';
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
+import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
@@ -73,6 +74,7 @@ const AppLayout = () => {
 	useCodeHighlight();
 	useLoginViaQuery();
 	useLoginOtherClients();
+	useOAuthLogin();
 	useShareSessionWithOtherClients();
 	useLoadMissedMessages();
 	useDesktopFavicon();
