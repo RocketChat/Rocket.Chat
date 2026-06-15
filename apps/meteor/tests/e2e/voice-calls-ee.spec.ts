@@ -8,7 +8,7 @@ import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('Internal Voice Calls - Enterprise Edition', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
+	test.skip(IS_EE, 'Enterprise Edition Only');
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
@@ -40,18 +40,18 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 
 		await test.step('initiate a voice call from room toolbar', async () => {
 			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await expect(user1.poHomeChannel.voiceCalls.callWidget).toBeVisible();
-			await user1.poHomeChannel.voiceCalls.initiateCall();
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).toBeVisible();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
 		});
 
 		await test.step('user2 accepts the call', async () => {
-			await user2.poHomeChannel.voiceCalls.acceptCall();
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
 
 		await test.step('user2 ends the call', async () => {
-			await user2.poHomeChannel.voiceCalls.btnEndCall('user1').click();
-			await expect(user2.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
-			await expect(user1.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
+			await user2.poHomeChannel.voiceCalls.widget.endCall();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 	});
 
@@ -61,44 +61,37 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await user1.poHomeChannel.voiceCalls.initiateCall();
-			await user2.poHomeChannel.voiceCalls.acceptCall();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
 
 		await test.step('should mute/unmute microphone from user1', async () => {
 			// User1 mutes microphone
-			await user1.poHomeChannel.voiceCalls.btnMute.click();
-			await expect(user1.poHomeChannel.voiceCalls.btnMute).toHaveAttribute('title', 'Unmute');
+			await user1.poHomeChannel.voiceCalls.widget.muteSelf();
 
 			// User1 unmutes microphone
-			await user1.poHomeChannel.voiceCalls.btnMute.click();
-			await expect(user1.poHomeChannel.voiceCalls.btnMute).toHaveAttribute('title', 'Mute');
+			await user1.poHomeChannel.voiceCalls.widget.unmuteSelf();
 		});
 
 		await test.step('should put call on hold from user1', async () => {
 			// User1 puts call on hold
-			await user1.poHomeChannel.voiceCalls.btnHold.click();
-			await expect(user1.poHomeChannel.voiceCalls.btnHold).toHaveAttribute('title', 'Resume');
+			await user1.poHomeChannel.voiceCalls.widget.holdSelf();
 
 			// User1 resumes call
-			await user1.poHomeChannel.voiceCalls.btnHold.click();
-			await expect(user1.poHomeChannel.voiceCalls.btnHold).toHaveAttribute('title', 'Hold');
+			await user1.poHomeChannel.voiceCalls.widget.resumeSelf();
 		});
 
 		await test.step('should access dialpad during call', async () => {
 			// User1 opens dial pad
-			await user1.poHomeChannel.voiceCalls.btnOpenDialpad.click();
-			await expect(user1.poHomeChannel.voiceCalls.btnOpenDialpad).toHaveAttribute('title', 'Close dialpad');
+			await user1.poHomeChannel.voiceCalls.widget.openDialpad();
 
 			// User1 closes dial pad
-			await user1.poHomeChannel.voiceCalls.btnOpenDialpad.click();
-			await expect(user1.poHomeChannel.voiceCalls.btnOpenDialpad).toHaveAttribute('title', 'Open dialpad');
+			await user1.poHomeChannel.voiceCalls.widget.closeDialpad();
 		});
 
 		await test.step('should end the call from user1', async () => {
-			await user1.poHomeChannel.voiceCalls.btnEndCall('user2').click();
-			await expect(user1.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
-			await expect(user2.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
+			await user1.poHomeChannel.voiceCalls.widget.endCall();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 	});
 
@@ -115,27 +108,29 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await user1.poHomeChannel.voiceCalls.initiateCall();
-			await user2.poHomeChannel.voiceCalls.acceptCall();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
 
 		await test.step('user1 transfers call to user3', async () => {
-			await user1.poHomeChannel.voiceCalls.transferCall('user3');
+			await user1.poHomeChannel.voiceCalls.widget.transferCall('user3');
 			await user1.poHomeChannel.toastMessage.waitForDisplay({ type: 'success' });
-			await expect(user1.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
-			await expect(user2.poHomeChannel.voiceCalls.callTransferWidget).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).toHaveAccessibleName(/Transferring call.../gi);
 		});
 
 		await test.step('user3 receives transferred call', async () => {
-			await expect(user3.poHomeChannel.voiceCalls.incommingCallTransferWidget).toBeVisible();
-			await user3.poHomeChannel.voiceCalls.acceptCall();
+			await expect(user3.poHomeChannel.voiceCalls.widget.content).toBeVisible();
+			await expect(user3.poHomeChannel.voiceCalls.widget.content).toHaveAccessibleName(/Incoming call transfer.../gi);
+			await user3.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
 
 		await test.step('user3 ends the call', async () => {
-			await user3.poHomeChannel.voiceCalls.btnEndCall('user2').click();
-			await expect(user3.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
-			await expect(user2.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
+			await user3.poHomeChannel.voiceCalls.widget.endCall();
+			await expect(user3.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
+
 		await user3.page.close();
 	});
 
@@ -146,16 +141,16 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await user1.poHomeChannel.voiceCalls.initiateCall();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
 		});
 
 		await test.step('user2 declines the call', async () => {
-			await user2.poHomeChannel.voiceCalls.btnRejectCall.click();
+			await user2.poHomeChannel.voiceCalls.widget.endCall();
 		});
 
 		await test.step('Verify call widget disappears', async () => {
-			await expect(user1.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
-			await expect(user2.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 	});
 });
