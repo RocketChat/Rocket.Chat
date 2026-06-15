@@ -1,5 +1,6 @@
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { VirtruPDP } from './VirtruPDP';
+import { getDeniedSubjects, VirtruPDP } from './VirtruPDP';
+import type { Decision } from './types';
 
 const serverFetchMock = jest.fn();
 jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) => serverFetchMock(...a) }));
@@ -85,6 +86,35 @@ describe('VirtruPDP.isAvailable', () => {
 		const pdp = new VirtruPDP(mkClient({ isAvailable }));
 		expect(await pdp.isAvailable()).toBe(true);
 		expect(isAvailable).toHaveBeenCalled();
+	});
+});
+
+describe('getDeniedSubjects', () => {
+	const pair = (userId: string) => ({ user: { _id: userId }, room: { _id: 'r1' } });
+	const [a, b, c] = [pair('a'), pair('b'), pair('c')];
+	const resp = (...decisions: Decision[]) => ({
+		resourceDecisions: decisions.map((decision) => ({ ephemeralResourceId: 'r1', decision })),
+	});
+
+	it('collects subjects with an explicit DENY decision', () => {
+		const responses = [resp('DECISION_DENY'), resp('DECISION_PERMIT'), resp('DECISION_DENY')];
+		expect(getDeniedSubjects(responses, [a, b, c])).toEqual([a, c]);
+	});
+
+	it('skips subjects when every decision is PERMIT', () => {
+		expect(getDeniedSubjects([resp('DECISION_PERMIT')], [a])).toEqual([]);
+	});
+
+	it('skips inconclusive subjects (UNSPECIFIED, empty decisions, missing response)', () => {
+		expect(getDeniedSubjects([resp('DECISION_UNSPECIFIED'), resp(), undefined], [a, b, c])).toEqual([]);
+	});
+
+	it('treats a DENY among PERMITs in one response as denied', () => {
+		expect(getDeniedSubjects([resp('DECISION_PERMIT', 'DECISION_DENY')], [a])).toEqual([a]);
+	});
+
+	it('ignores responses without a matching subject', () => {
+		expect(getDeniedSubjects([resp('DECISION_DENY'), resp('DECISION_DENY')], [a])).toEqual([a]);
 	});
 });
 
@@ -284,13 +314,39 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 		expect(result).toEqual([u2]);
 	});
 
-	it('treats empty resourceDecisions as non-compliant', async () => {
+	it('does not evict on empty resourceDecisions (inconclusive)', async () => {
 		const u = user();
 		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [] }] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
-		expect(result).toEqual([u]);
+		expect(result).toEqual([]);
+	});
+
+	it('does not evict on DECISION_UNSPECIFIED (inconclusive)', async () => {
+		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
+		expect(result).toEqual([]);
+	});
+
+	it('still evicts entity-keyless users alongside DENY-only filtering of decided users', async () => {
+		const keyless = user({ _id: 'u0', emails: [] });
+		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com' }] });
+		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com' }] });
+		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([keyless, denied, unspecified]));
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [
+				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] },
+				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] },
+			],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
+		expect(result).toEqual([keyless, denied]);
 	});
 
 	it('returns only entity-keyless users when ALL users lack entity keys (no API call)', async () => {
@@ -344,6 +400,17 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['rP', 'rD'] }) as any, []);
 		expect(result).toEqual([rooms[1]]);
+	});
+
+	it('still treats DECISION_UNSPECIFIED as non-compliant (LDAP-driven path cannot yield inconclusive decisions)', async () => {
+		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, []);
+		expect(result).toEqual(rooms);
 	});
 
 	it('splits >200 rooms into multiple decision batches', async () => {
@@ -414,13 +481,51 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 		expect(result).toEqual([{ user: u, room: rooms[1] }]);
 	});
 
-	it('treats empty resourceDecisions as non-compliant', async () => {
+	it('does not evict on empty resourceDecisions (inconclusive)', async () => {
 		const u = user();
 		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [] }] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
-		expect(result).toEqual([{ user: u, room: rooms[0] }]);
+		expect(result).toEqual([]);
+	});
+
+	it('does not evict on DECISION_UNSPECIFIED (inconclusive)', async () => {
+		const u = user();
+		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
+		expect(result).toEqual([]);
+	});
+
+	it('evicts only explicit DENY among mixed PERMIT/UNSPECIFIED/DENY decisions', async () => {
+		const u = user();
+		const rooms = [
+			{ _id: 'rP', abacAttributes: [{ key: 'k', values: ['v'] }] },
+			{ _id: 'rU', abacAttributes: [{ key: 'k', values: ['v'] }] },
+			{ _id: 'rD', abacAttributes: [{ key: 'k', values: ['v'] }] },
+		];
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [
+				{ resourceDecisions: [{ ephemeralResourceId: 'rP', decision: 'DECISION_PERMIT' }] },
+				{ resourceDecisions: [{ ephemeralResourceId: 'rU', decision: 'DECISION_UNSPECIFIED' }] },
+				{ resourceDecisions: [{ ephemeralResourceId: 'rD', decision: 'DECISION_DENY' }] },
+			],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const result = await pdp.evaluateUserRooms([{ user: u, rooms }]);
+		expect(result).toEqual([{ user: u, room: rooms[2] }]);
+	});
+
+	it('rejects when the decision call fails (no evictions, sweep retried next run)', async () => {
+		const apiCall = jest.fn().mockRejectedValue(new Error('pdp down'));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
+		await expect(pdp.evaluateUserRooms([{ user: user(), rooms }])).rejects.toThrow('pdp down');
+		expect(apiCall).toHaveBeenCalled();
 	});
 });
 
@@ -458,14 +563,6 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 		const apiCall = pdpDown();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, [])).rejects.toThrow('pdp down');
-		expect(apiCall).toHaveBeenCalled();
-	});
-
-	it('evaluateUserRooms rejects when the decision call fails', async () => {
-		const apiCall = pdpDown();
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
-		await expect(pdp.evaluateUserRooms([{ user: user(), rooms } as any])).rejects.toThrow('pdp down');
 		expect(apiCall).toHaveBeenCalled();
 	});
 });

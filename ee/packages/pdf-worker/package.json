@@ -30,11 +30,10 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:~",
+		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@storybook/addon-essentials": "^8.6.18",
-		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
-		"@storybook/react": "^8.6.18",
-		"@storybook/react-webpack5": "^8.6.18",
+		"@storybook/react": "^9.1.13",
+		"@storybook/react-webpack5": "^9.1.13",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
 		"@types/emojione": "^2.2.9",
@@ -45,8 +44,9 @@
 		"eslint": "~9.39.4",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
+		"path-browserify": "^1.0.1",
 		"react-dom": "~18.3.1",
-		"storybook": "^8.6.18",
+		"storybook": "^9.1.13",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

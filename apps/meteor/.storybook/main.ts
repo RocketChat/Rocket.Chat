@@ -1,26 +1,15 @@
 import { dirname, join, resolve } from 'path';
 
-import type { StorybookConfig } from '@storybook/react-webpack5';
+import baseConfig from '@rocket.chat/storybook-config/main';
 import webpack from 'webpack';
 
-export default {
-	stories: ['../client/**/*.stories.{js,tsx}', '../app/**/*.stories.{js,tsx}', '../ee/app/**/*.stories.{js,tsx}'],
-
-	addons: [
-		getAbsolutePath('@storybook/addon-essentials'),
-		getAbsolutePath('@storybook/addon-interactions'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
-		getAbsolutePath('@storybook/addon-styling-webpack'),
-		getAbsolutePath('@storybook/addon-a11y'),
-	],
-
-	typescript: {
-		reactDocgen: 'react-docgen',
-	},
+export default baseConfig({
+	stories: ['../client/**/*.stories.{js,tsx}'],
 
 	webpackFinal: async (config) => {
 		// Those aliases are needed because dependencies in the monorepo use another
 		// dependencies that are not hoisted on this workspace
+		const swiperRoot = dirname(require.resolve('swiper/package.json'));
 		config.resolve = {
 			...config.resolve,
 			alias: {
@@ -29,8 +18,16 @@ export default {
 				// 'react/jsx-runtime': require.resolve('../../../node_modules/react/jsx-runtime'),
 				'@tanstack/react-query': require.resolve('../../../node_modules/@tanstack/react-query'),
 				'@rocket.chat/fuselage$': require.resolve('../../../node_modules/@rocket.chat/fuselage'),
+				// Meteor's bundler ignores the `exports` field, so source code reaches
+				// into swiper's internals via deep file paths. Webpack honors `exports`
+				// and rejects them, so map each subpath to the actual file.
+				'swiper/swiper-react.mjs$': join(swiperRoot, 'swiper-react.mjs'),
+				'swiper/swiper-react$': join(swiperRoot, 'swiper-react.d.ts'),
+				'swiper/modules/index.mjs$': join(swiperRoot, 'modules/index.mjs'),
+				'swiper/swiper.css$': join(swiperRoot, 'swiper.css'),
+				'swiper/modules/zoom.css$': join(swiperRoot, 'modules/zoom.css'),
 			},
-			// This is only needed because of Fontello
+			// This is only needed because of Rocket.Chat's icon font.
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
 		};
 
@@ -54,15 +51,4 @@ export default {
 
 		return config;
 	},
-
-	framework: {
-		name: getAbsolutePath('@storybook/react-webpack5'),
-		options: {},
-	},
-
-	docs: {},
-} satisfies StorybookConfig;
-
-function getAbsolutePath(value: any): string {
-	return dirname(require.resolve(join(value, 'package.json')));
-}
+});
