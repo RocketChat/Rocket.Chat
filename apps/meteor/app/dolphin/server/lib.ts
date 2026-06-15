@@ -51,7 +51,7 @@ const configureDolphinOAuth = () => {
 
 	const completeConfig = { ...config, serverURL, clientId, clientSecret };
 
-	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow') === true) {
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
 		addPassportCustomOAuth('dolphin', completeConfig);
 		return;
 	}
