@@ -1,7 +1,8 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { Box, Throbber, Tile } from '@rocket.chat/fuselage';
+import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -28,14 +29,12 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { resetField, watch } = useFormContext();
 	const { filterText } = watch();
 
-	const debouncedFilter = useDebouncedValue(filterText, 500);
-
 	const handleSelect = useStableCallback(() => {
 		state.close();
 		resetField('filterText');
 	});
 
-	const { data: items = [], isLoading } = useSearchItems(debouncedFilter);
+	const { items, isLoading } = useSearchItems(filterText);
 
 	return (
 		<Tile
@@ -52,6 +51,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			flexDirection='column'
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} />
+			<VisuallyHidden role='status'>{isLoading ? t('Loading') : ''}</VisuallyHidden>
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
@@ -63,6 +63,11 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 					{items.map((item) => (
 						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
 					))}
+					{isLoading && (
+						<Box pi={12} pbs={8} display='flex' justifyContent='center' role='presentation' aria-hidden>
+							<Throbber />
+						</Box>
+					)}
 				</div>
 			</CustomScrollbars>
 		</Tile>
