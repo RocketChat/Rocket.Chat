@@ -3,39 +3,13 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
+import { mockVirtualizerHandle } from '../../../../tests/mocks/client/virtua';
 import { MessageList } from './MessageList';
 import { useMessages } from './hooks/useMessages';
 import { RoomManager } from '../../../lib/RoomManager';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 
-const mockVirtualizerHandle = {
-	scrollToIndex: jest.fn(),
-	scrollTo: jest.fn(),
-	findItemIndex: jest.fn((offset: number) => offset),
-	scrollOffset: 0,
-	scrollSize: 1000,
-	viewportSize: 300,
-};
-
-jest.mock('virtua', () => {
-	const { forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
-
-	return {
-		VList: forwardRef(
-			(
-				{ children, onScroll, shift: _shift, ...props }: { children: ReactNode; onScroll?: (offset: number) => void; shift?: boolean },
-				ref: any,
-			) => {
-				useImperativeHandle(ref, () => mockVirtualizerHandle);
-				return (
-					<ul data-testid='message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
-						{children}
-					</ul>
-				);
-			},
-		),
-	};
-});
+jest.mock('virtua', () => require('../../../../tests/mocks/client/virtua'));
 
 jest.mock('@rocket.chat/fuselage-hooks', () => ({
 	useDebouncedCallback: (callback: (...args: any[]) => void) => callback,
@@ -146,7 +120,7 @@ describe('MessageList scroll position', () => {
 
 		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
-		expect(screen.getByTestId('message-list')).toBeInTheDocument();
+		expect(screen.getByRole('list')).toBeInTheDocument();
 		expect(mockVirtualizerHandle.scrollTo).toHaveBeenCalledWith(123);
 		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
 	});
@@ -188,7 +162,7 @@ describe('MessageList scroll position', () => {
 
 		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
-		expect(screen.getByTestId('message-list')).toBeInTheDocument();
+		expect(screen.getByRole('list')).toBeInTheDocument();
 		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
 		expect(mockVirtualizerHandle.scrollTo).not.toHaveBeenCalled();
 	});
@@ -204,7 +178,7 @@ describe('MessageList scroll position', () => {
 
 		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
-		fireEvent.scroll(screen.getByTestId('message-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 
 		await waitFor(() => {
 			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false });

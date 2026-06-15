@@ -1,77 +1,16 @@
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import * as React from 'react';
-import { Children, forwardRef, isValidElement } from 'react';
+import type { ReactNode } from 'react';
 
+import { mockVirtualizerHandle } from '../../../tests/mocks/client/virtua';
 import PaginatedVirtualList from './PaginatedVirtualList';
 
-const mockVirtualizerHandle = {
-	scrollToIndex: jest.fn(),
-	scrollTo: jest.fn(),
-	findItemIndex: jest.fn((offset: number) => offset),
-	scrollOffset: 0,
-	scrollSize: 1000,
-	viewportSize: 300,
-};
-
-type MockVListProps = {
-	children: ReactNode;
-	bufferSize?: number;
-	onScroll?: (offset: number) => void;
-	as?: React.ElementType;
-	item?: React.ElementType;
-	style?: CSSProperties;
-	className?: string;
-};
-
-jest.mock('virtua', () => {
-	return {
-		Virtualizer: React.forwardRef(
-			(
-				{ children, bufferSize, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVListProps,
-				ref: React.Ref<unknown>,
-			) => {
-				React.useImperativeHandle(ref, () => mockVirtualizerHandle);
-				const Root = asRoot;
-				const Item = asItem;
-				const wrapped = Children.map(children, (child, index) => {
-					const key = isValidElement(child) && child.key != null ? String(child.key) : `row-${index}`;
-					return <Item key={key}>{child}</Item>;
-				});
-
-				return (
-					<Root
-						className={className}
-						data-buffer-size={bufferSize}
-						data-testid='virtual-list'
-						style={style ?? { height: '100%' }}
-						onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)}
-					>
-						{wrapped}
-					</Root>
-				);
-			},
-		),
-	};
-});
+jest.mock('virtua', () => require('../../../tests/mocks/client/virtua'));
 
 jest.mock('@rocket.chat/ui-client', () => ({
 	...jest.requireActual('@rocket.chat/ui-client'),
-	CustomVirtuaScrollbars: forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CustomVirtuaScrollbars(
-		{ children, ...props },
-		ref,
-	) {
-		// eslint-disable-next-line testing-library/no-node-access
-		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
-
-		return (
-			<div ref={ref} {...props}>
-				{content}
-			</div>
-		);
-	}),
+	CustomVirtuaScrollbars: require('../../../tests/mocks/client/CustomVirtuaScrollbars').MockCustomVirtuaScrollbars,
 }));
 
 const items = Array.from({ length: 10 }, (_, index) => ({ _id: `${index}` }));
@@ -118,7 +57,7 @@ describe('PaginatedVirtualList', () => {
 		expect(onEndReached).not.toHaveBeenCalled();
 
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(1);
@@ -129,7 +68,7 @@ describe('PaginatedVirtualList', () => {
 
 		renderVirtualList({ onEndReached, totalCount: items.length });
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 
 		expect(onEndReached).not.toHaveBeenCalled();
 	});
@@ -140,8 +79,8 @@ describe('PaginatedVirtualList', () => {
 
 		renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(1);
@@ -152,14 +91,14 @@ describe('PaginatedVirtualList', () => {
 		const onEndReached = jest.fn().mockResolvedValue(undefined);
 		const { rerender } = renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
 		const resetItems = Array.from({ length: 10 }, (_, index) => ({ _id: `reset-${index}` }));
 		rerender(
 			<PaginatedVirtualList items={resetItems} totalCount={20} renderItem={(item) => <div>{item._id}</div>} onEndReached={onEndReached} />,
 		);
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
@@ -168,7 +107,7 @@ describe('PaginatedVirtualList', () => {
 	it('passes overscan through to virtua buffer size', () => {
 		renderVirtualList({ overscan: 25 });
 
-		expect(screen.getByTestId('virtual-list')).toHaveAttribute('data-buffer-size', '25');
+		expect(screen.getByRole('list')).toHaveAttribute('data-buffer-size', '25');
 	});
 
 	it('allows onEndReached to retry after a failed load', async () => {
@@ -177,10 +116,10 @@ describe('PaginatedVirtualList', () => {
 
 		renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
@@ -197,9 +136,9 @@ describe('PaginatedVirtualList', () => {
 
 		renderVirtualList({ onEndReached });
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		fireEvent.scroll(screen.getByRole('list'));
 		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
