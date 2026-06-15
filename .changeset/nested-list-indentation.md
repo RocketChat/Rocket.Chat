@@ -3,4 +3,4 @@
 '@rocket.chat/gazzodown': patch
 ---
 
-fix: support nested markdown list indentation by parsing indentLevel
+fix: support nested Markdown list indentation by parsing indentLevel
