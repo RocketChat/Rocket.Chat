@@ -1396,6 +1396,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await VideoConferenceModel.setDiscussionRidById(callId, rid);
 		}
 
+		void api.broadcast('video-conference.discussionUpdated', { callId, discussionRid: rid });
+
 		if (room) {
 			await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(room._id, _id)));
 		}
