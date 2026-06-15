@@ -1,3 +1,5 @@
+import { createHash } from 'crypto';
+
 import type {
 	IMessage,
 	IRoom,
@@ -327,7 +329,8 @@ export abstract class AutoTranslate {
 				}
 
 				if (uncachedLanguages.length > 0) {
-					const cacheKey = `${message._id}:${uncachedLanguages.sort().join(',')}`;
+					const msgHash = createHash('sha256').update(message.msg || '').digest('hex').slice(0, 16);
+					const cacheKey = `${message._id}:${msgHash}:${uncachedLanguages.sort().join(',')}`;
 					let promise = this.pendingTranslations.get(cacheKey);
 
 					if (!promise) {
@@ -371,7 +374,8 @@ export abstract class AutoTranslate {
 
 						if (uncachedLanguages.length > 0) {
 							const attachmentMessage = { ...attachment, text: translatedText };
-							const cacheKey = `${message._id}:${index}:${uncachedLanguages.sort().join(',')}`;
+							const msgHash = createHash('sha256').update(translatedText || '').digest('hex').slice(0, 16);
+							const cacheKey = `${message._id}:${index}:${msgHash}:${uncachedLanguages.sort().join(',')}`;
 							let promise = this.pendingAttachments.get(cacheKey);
 
 							if (!promise) {
