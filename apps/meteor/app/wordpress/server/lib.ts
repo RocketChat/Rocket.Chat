@@ -72,6 +72,8 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 		default:
 			config.identityPath = '/oauth/me';
+			config.authorizePath = '/oauth/authorize';
+			config.tokenPath = '/oauth/token';
 			break;
 	}
 
