@@ -129,14 +129,4 @@ export const createAISettings = async () => {
 		enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
 		i18nDescription: 'AI_Intelligent_Search_Answer_System_Prompt_Description',
 	});
-
-	await addAISetting('AI_Thread_Summarization', 'AI_Thread_Summarization_Enabled', false, {
-		type: 'boolean',
-		i18nLabel: 'AI_Thread_Summarization_Enabled',
-		public: true,
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: false,
-		i18nDescription: 'AI_Thread_Summarization_Enabled_Description',
-	});
 };

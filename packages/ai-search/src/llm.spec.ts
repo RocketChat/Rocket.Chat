@@ -110,6 +110,29 @@ describe('AI Search LLM helpers', () => {
 				}),
 			).rejects.toThrow('error-ai-provider-empty-response');
 		});
+
+		it('normalizes malformed provider JSON responses as request failures', async () => {
+			const malformedFetch: AIServiceFetch = async () => ({
+				ok: true,
+				status: 200,
+				json: async () => {
+					throw new SyntaxError('Unexpected token');
+				},
+				text: async () => '',
+			});
+
+			await expect(
+				generateOpenAICompatibleSearchAnswer({
+					query: 'fruit colors',
+					messages: [{ text: 'oranges are green' }],
+					provider: { name: 'OpenAI compatible', baseUrl: 'https://llm.example.com', apiKey: 'secret', model: 'gpt-test' },
+					systemPrompt: 'Use sources only.',
+					fetch: malformedFetch,
+					maxMessages: 4,
+					maxTextLength: 200,
+				}),
+			).rejects.toThrow('error-ai-provider-request-failed');
+		});
 	});
 
 	describe('listOpenAICompatibleModels', () => {

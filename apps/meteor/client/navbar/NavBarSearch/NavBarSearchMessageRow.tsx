@@ -34,13 +34,13 @@ const getHref = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResu
 	const rid = 'rid' in item ? item.rid : undefined;
 	const msgId = getMessageId(item);
 
-	if (!room && !rid) {
+	if (!room) {
 		return undefined;
 	}
 
-	const href = roomCoordinator.getRouteLink(room?.t || 'c', {
-		rid: room?._id || rid,
-		name: room?.name,
+	const href = roomCoordinator.getRouteLink(room.t, {
+		rid: room._id || rid,
+		name: room.name,
 	});
 
 	if (!href) {

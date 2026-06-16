@@ -140,6 +140,19 @@ const mergeFilterSuggestions = (primary: SearchFilterSuggestion[], fallback: Sea
 	return [...primary, ...fallback.filter(({ value }) => !existingValues.has(value))];
 };
 
+const dedupeRooms = <T extends { _id: string; rid?: string }>(rooms: T[]): T[] => {
+	const seen = new Set<string>();
+
+	return rooms.filter((room) => {
+		const key = room.rid || room._id;
+		if (seen.has(key)) {
+			return false;
+		}
+		seen.add(key);
+		return true;
+	});
+};
+
 export const useSearchItems = (
 	filterText: string,
 	appliedSearchFilters: SearchFilters = emptySearchFilters(),
@@ -340,7 +353,7 @@ export const useSearchItems = (
 
 			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 			return {
-				rooms: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])),
+				rooms: dedupeRooms([...exact, ...localRooms, ...resultsFromServer]),
 				intelligent,
 				filterSuggestions: nextFilterSuggestions,
 				appliedFilters,

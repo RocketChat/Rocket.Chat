@@ -171,7 +171,7 @@ describe('AISearchService', () => {
 					rid: 'allowed',
 					msgId: 'allowed-msg',
 					text: 'allowed-msg from db',
-					ts: new Date('2026-01-05T12:00:00.000Z'),
+					ts: '2026-01-05T12:00:00.000Z',
 					u: { username: 'alice', name: 'Alice' },
 					score: 0.61,
 					room: { _id: 'allowed', t: 'c', name: 'general', fname: 'General' },
@@ -253,6 +253,23 @@ describe('AISearchService', () => {
 					$le: '2026-01-31T00:00:00.000Z',
 				},
 			});
+		});
+
+		it('drops pipeline hits when the referenced message is not visible', async () => {
+			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [
+						{ metadata: { room_id: 'allowed', msg_id: 'hidden-msg' }, text: 'pipeline text should not leak', score: 0.1 },
+					],
+				}),
+				text: async () => '',
+			});
+			Messages.findVisibleByIds.returns(cursor([]));
+
+			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
 		});
 	});
 

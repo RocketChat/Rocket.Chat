@@ -190,7 +190,7 @@ export const isUnifiedSearchProps = ajvQuery.compile<UnifiedSearch>(UnifiedSearc
 export type SearchAnswer = {
 	query: string;
 	messages: {
-		_id: string;
+		_id?: string;
 		text: string;
 		username?: string;
 		roomName?: string;
@@ -221,7 +221,7 @@ const SearchAnswerSchema = {
 					ts: { type: 'string', nullable: true },
 					score: { type: 'number', nullable: true },
 				},
-				required: ['_id', 'text'],
+				required: ['text'],
 				additionalProperties: false,
 			},
 		},
@@ -242,7 +242,7 @@ export type UnifiedSearchIntelligentResult = {
 	msgId?: string;
 	text: string;
 	score?: number;
-	ts?: Date | string;
+	ts?: string;
 	u?: { username: string; name?: string };
 	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
 };
@@ -388,7 +388,7 @@ export type MiscEndpoints = {
 	'/v1/search.unified': {
 		GET: (params: UnifiedSearch) => {
 			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>)[];
-			rooms: Pick<Required<IRoom>, 't' | 'name' | '_id'>[];
+			rooms: Pick<IRoom, 't' | 'name' | 'fname' | '_id'>[];
 			messages: UnifiedSearchMessageResult[];
 			intelligent: UnifiedSearchIntelligentResult[];
 			meta: {

@@ -25,6 +25,13 @@ const firstString = (...values: unknown[]): string | undefined => {
 
 const firstNumber = (...values: unknown[]): number | undefined => {
 	for (const value of values) {
+		if (typeof value !== 'number' && typeof value !== 'string') {
+			continue;
+		}
+		if (typeof value === 'string' && !value.trim()) {
+			continue;
+		}
+
 		const numberValue = Number(value);
 		if (Number.isFinite(numberValue)) {
 			return numberValue;
@@ -245,7 +252,7 @@ export const searchIntelligentPipeline = async ({
 
 	if (!response.ok) {
 		const body = await response.text().catch(() => '');
-		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, body: body.slice(0, 500) });
+		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, bodyLength: body.length });
 		return [];
 	}
 

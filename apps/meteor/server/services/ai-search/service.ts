@@ -212,6 +212,11 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		return candidates
 			.flatMap((result) => {
 				const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
+				if (result.msgId && !dbMessage) {
+					SystemLogger.debug({ msg: 'AI search result filtered: message not visible', msgId: result.msgId });
+					return [];
+				}
+
 				const rid = dbMessage?.rid || result.rid;
 				if (!rid || !accessibleRoomIds.has(rid)) {
 					return [];
@@ -223,7 +228,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 						rid,
 						msgId: result.msgId,
 						text: dbMessage?.msg || result.pipelineText || '',
-						ts: dbMessage?.ts,
+						ts: dbMessage?.ts?.toISOString(),
 						u: dbMessage?.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
 						...(Number.isFinite(result.score) && { score: result.score }),
 						...(rid && rooms.has(rid) && { room: rooms.get(rid) }),

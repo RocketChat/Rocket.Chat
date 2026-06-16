@@ -45,37 +45,49 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 	maxMessages: number;
 	maxTextLength: number;
 }): Promise<SearchAnswerResult> => {
-	const response = await fetch(`${trimTrailingSlashes(provider.baseUrl)}/chat/completions`, {
-		method: 'POST',
-		timeout: 20000,
-		headers: {
-			'Content-Type': 'application/json',
-			'Accept': 'application/json',
-			'Authorization': `Bearer ${provider.apiKey}`,
-		},
-		body: JSON.stringify({
-			model: provider.model,
-			temperature: 0.2,
-			messages: [
-				{ role: 'system', content: systemPrompt },
-				{ role: 'user', content: buildSearchAnswerPrompt(query, messages, { maxMessages, maxTextLength }) },
-			],
-		}),
-	});
+	try {
+		const response = await fetch(`${trimTrailingSlashes(provider.baseUrl)}/chat/completions`, {
+			method: 'POST',
+			timeout: 20000,
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${provider.apiKey}`,
+			},
+			body: JSON.stringify({
+				model: provider.model,
+				temperature: 0.2,
+				messages: [
+					{ role: 'system', content: systemPrompt },
+					{ role: 'user', content: buildSearchAnswerPrompt(query, messages, { maxMessages, maxTextLength }) },
+				],
+			}),
+		});
 
-	if (!response.ok) {
-		const body = await response.text().catch(() => '');
-		logger?.warn?.({ msg: 'Search answer LLM provider returned error', status: response.status, body: body.slice(0, 500) });
-		throw new Error('error-ai-provider-request-failed');
+		if (!response.ok) {
+			const body = await response.text().catch(() => '');
+			logger?.warn?.({ msg: 'Search answer LLM provider returned error', status: response.status, bodyLength: body.length });
+			throw new Error('error-ai-provider-request-failed');
+		}
+
+		const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+		const answer = json.choices?.[0]?.message?.content?.trim();
+		if (!answer) {
+			throw new Error('error-ai-provider-empty-response');
+		}
+
+		return { answer, provider: { name: provider.name, model: provider.model } };
+	} catch (error) {
+		if (
+			error instanceof Error &&
+			(error.message === 'error-ai-provider-empty-response' || error.message === 'error-ai-provider-request-failed')
+		) {
+			throw error;
+		}
+
+		logger?.warn?.({ msg: 'Search answer LLM provider request failed', err: error });
+		throw new Error('error-ai-provider-request-failed', { cause: error });
 	}
-
-	const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
-	const answer = json.choices?.[0]?.message?.content?.trim();
-	if (!answer) {
-		throw new Error('error-ai-provider-empty-response');
-	}
-
-	return { answer, provider: { name: provider.name, model: provider.model } };
 };
 
 export const listOpenAICompatibleModels = async ({

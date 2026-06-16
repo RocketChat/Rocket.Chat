@@ -211,6 +211,15 @@ const parseQueryDate = (value: string | undefined): Date | undefined => {
 	return Number.isNaN(date.getTime()) ? undefined : date;
 };
 
+const requireNonEmptyQuery = (value: string): string => {
+	const query = value.trim();
+	if (!query) {
+		throw new Meteor.Error('error-invalid-query', 'Query cannot be empty');
+	}
+
+	return query;
+};
+
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
 		return new Map();
@@ -239,7 +248,7 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const query = this.queryParams.query.trim();
+		const query = requireNonEmptyQuery(this.queryParams.query);
 		const { count } = await getPaginationItems(this.queryParams);
 		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
 		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
@@ -259,7 +268,16 @@ API.v1.get(
 		const includeIntelligent = parseQueryBoolean(this.queryParams.includeIntelligent);
 
 		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
-		const filters = hasFilters ? { fromUsername, startDate, endDate } : undefined;
+		const filters = hasFilters
+			? {
+					rids,
+					roomNames,
+					fromUsername,
+					fromUsernames,
+					startDate,
+					endDate,
+				}
+			: undefined;
 
 		const [spotlight, aiSearchStatus] = await Promise.all([
 			rid || !includeSpotlight

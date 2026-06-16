@@ -21,7 +21,7 @@ type IntelligentResult = {
 	msgId?: string;
 	text: string;
 	score?: number;
-	ts?: Date | string;
+	ts?: string;
 	u?: Pick<IUser, 'username' | 'name'>;
 	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
 };
@@ -38,9 +38,13 @@ const formatMessageTime = (ts: Date | string | undefined): string => {
 
 const getMessageHref = (item: IntelligentResult): string | undefined => {
 	const { room } = item;
-	const href = roomCoordinator.getRouteLink(room?.t || 'c', {
-		rid: room?._id || item.rid,
-		name: room?.name,
+	if (!room) {
+		return undefined;
+	}
+
+	const href = roomCoordinator.getRouteLink(room.t, {
+		rid: room._id || item.rid,
+		name: room.name,
 	});
 	if (!href) return undefined;
 	return `${href}?msg=${encodeURIComponent(item.msgId || item._id)}`;

@@ -34,6 +34,7 @@ describe('AI Search intelligent search helpers', () => {
 						{ metadata: { room_id: 'r1', msg_id: 'm1', text: 'metadata text', score: 0.11 } },
 						{ external_identifier: 'r2:m2', content: 'content text', similarity: 0.49 },
 						{ id: 'm3', rid: 'r3', document: 'document text', distance: 12 },
+						{ metadata: { room_id: 'r4', msg_id: 'm4', score: null, similarity: '' }, text: 'no numeric score' },
 						{ text: 'missing ids' },
 					],
 				},
@@ -45,6 +46,7 @@ describe('AI Search intelligent search helpers', () => {
 				{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: 'metadata text', score: 0.89 },
 				{ _id: 'm2', rid: 'r2', msgId: 'm2', pipelineText: 'content text', score: 0.49 },
 				{ _id: 'm3', rid: 'r3', msgId: 'm3', pipelineText: 'document text', score: 0.88 },
+				{ _id: 'm4', rid: 'r4', msgId: 'm4', pipelineText: 'no numeric score' },
 			]);
 		});
 

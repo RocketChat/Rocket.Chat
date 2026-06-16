@@ -34,7 +34,7 @@ platform upsell modal instead of navigating away. As the user types, the dropdow
 
 Filter tokens are parsed directly from the text input using a deterministic regex:
 
-```
+```text
 FILTER_PATTERN = /(?:^|\s)(in|from|after|before):(?:"([^"]*)"|(\S+))/gi
 ```
 
@@ -52,14 +52,14 @@ the standard room search box.
 
 `parseSearchFilterText` strips tokens and produces `{ searchText, filters }`. Completed tokens are
 moved into grouped chips through `extractCompletedSearchFilters` and `buildAppliedFilterChips`.
-When `getActiveFilter` detects an in-progress token (e.g. `in:dev`), the dropdown shows live
+When `getActiveSearchFilter` detects an in-progress token (e.g. `in:dev`), the dropdown shows live
 autocomplete for that token.
 
 **Search page (`SearchPage.tsx`)**
 
 Route `/search` — a dedicated AI Search results page. Single list, no tabs.
 
-```
+```text
 ┌──────────────────────────────────────────────────┐
 │  Page header: "AI Search"                        │
 │  Results  <query>                                │
@@ -202,7 +202,7 @@ sequenceDiagram
 
 The same `AISearchService` code runs in two modes controlled by a single environment variable:
 
-```
+```text
 ┌─ Monolith (default) ──────────────────────────────────────┐
 │  Meteor process                                            │
 │    REST handlers → proxify → LocalBroker → AISearchService │
@@ -221,7 +221,7 @@ The same `AISearchService` code runs in two modes controlled by a single environ
 └────────────────────────────────────────────────────────────┘
 ```
 
-**Settings (`ai.ts`) — 13 enterprise settings**
+**Settings (`ai.ts`) — 12 enterprise settings**
 
 All settings use `enterprise: true`, `modules: ['chat.rocket.rc-ai']`, and `invalidValue`, meaning
 they silently fall back to their invalid value when the license module is inactive.
@@ -229,8 +229,7 @@ they silently fall back to their invalid value when the license module is inacti
 | Section | Settings |
 |---|---|
 | `AI_LLM_Provider` / LLM Providers | OpenAI-compatible base URL, API key, model (lookup type — live dropdown from `/v1/ai.llm.models`) |
-| `Intelligent_Search` | Enabled (public), Show in top bar (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, Answer system prompt |
-| `AI_Thread_Summarization` | Enabled (public) |
+| `Intelligent_Search` | Enabled (public), Pipeline URL, Pipeline ID, API key, API key secret, Min similarity %, Query template, answer generation enabled (public), answer system prompt |
 
 **AI Center admin page (`AICenterRoute.tsx`)**
 
@@ -285,7 +284,7 @@ no `modules` gating.
 
 ## 2. Capability Comparison
 
-```
+```text
 ✅ Equivalent   ⚠️ Partial / workaround   ❌ Not achievable without platform changes
 ```
 
@@ -322,7 +321,7 @@ This is the most concrete functional gap when running inside Apps Engine.
 
 **Core (current behaviour)**
 
-```
+```text
 User arrives on /search → results load
     → useEffect: canGenerateAnswer = true
     → POST /v1/search.answer (no user interaction needed)
@@ -334,7 +333,7 @@ Total wait: 5–20s, visible loading state, inline failure / empty states
 
 **Apps Engine contextual bar**
 
-```
+```text
 User opens contextual bar → clicks "Generate Answer"
     → UIKit block action fires
     → App handler starts IHttp.post() → LLM (5–20s)
@@ -357,7 +356,7 @@ the channel, and reads the answer in a thread rather than seeing it appear inlin
 |---|---|
 | Filter token parsing (`in:`, `from:`, `after:`, `before:`) | ✅ Done |
 | `parseSearchFilterText` + `buildAppliedFilterChips` | ✅ Done |
-| `getActiveFilter` + live filter suggestions in dropdown | ✅ Done |
+| `getActiveSearchFilter` + live filter suggestions in dropdown | ✅ Done |
 | AI Search toggle + 3-result preview in NavBar dropdown | ✅ Done |
 | Applied filter chips (removable) | ✅ Done |
 | `GET /v1/search.unified` with filter params | ✅ Done |
@@ -374,7 +373,7 @@ the channel, and reads the answer in a thread rather than seeing it appear inlin
 | Message-style source rows + `AnswerPanel` + Skeleton | ✅ Done |
 | "Show more" pagination | ✅ Done |
 | AI Center overview + settings sub-pages | ✅ Done |
-| 13 enterprise settings with `invalidValue` + module gating | ✅ Done |
+| 12 enterprise settings with `invalidValue` + module gating | ✅ Done |
 | `AI_LLM_OpenAI_Model` lookup setting (live model dropdown) | ✅ Done |
 | License-gated upsell modal | ✅ Done |
 | Workspace / index management UI | ❌ Not yet implemented |
@@ -516,7 +515,7 @@ The IS feature ships with two deployment modes (see the sequence diagram in Sect
   `ee/apps/ai-search-service` as a separate Node process. It connects to the same Moleculer broker
   over NATS or TCP and exposes a `/health` endpoint on port 3038.
 
-```
+```text
 Client → GET /v1/search.unified → proxify('ai-search') → AISearchService
                                                             ├── MongoDB
                                                             └── HTTP → Vector pipeline (~10 s)

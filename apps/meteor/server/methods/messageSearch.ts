@@ -1,7 +1,7 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
-import { Messages, Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -23,8 +23,64 @@ declare module '@rocket.chat/ddp-client' {
 
 export type MessageSearchFilters = {
 	fromUsername?: string;
+	fromUsernames?: string[];
+	rids?: string[];
+	roomNames?: string[];
 	startDate?: Date;
 	endDate?: Date;
+};
+
+const getUsernameLookupValues = (username: string): string[] => {
+	const trimmed = username.trim();
+	if (!trimmed) {
+		return [];
+	}
+
+	const withoutMentionPrefix = trimmed.replace(/^@(?=[^@])/, '');
+	return [...new Set([trimmed, withoutMentionPrefix])];
+};
+
+const getUserIdsByUsernames = async (usernames: string[]): Promise<string[] | undefined> => {
+	const requestedUsernames = usernames.map((username) => getUsernameLookupValues(username)).filter((values) => values.length);
+	if (!requestedUsernames.length) {
+		return undefined;
+	}
+
+	const usernameLookupValues = [...new Set(requestedUsernames.flat())];
+	const users = await Users.find(
+		{ username: { $in: usernameLookupValues } },
+		{
+			projection: { _id: 1, username: 1 },
+		},
+	).toArray();
+
+	const foundUsernames = new Set(users.map(({ username }) => username));
+	if (requestedUsernames.some((values) => !values.some((username) => foundUsernames.has(username)))) {
+		return [];
+	}
+
+	return users.map(({ _id }) => _id);
+};
+
+const getRoomIdsByNames = async (roomNames: string[]): Promise<string[] | undefined> => {
+	const normalizedRoomNames = [...new Set(roomNames.filter(Boolean))];
+	if (!normalizedRoomNames.length) {
+		return undefined;
+	}
+
+	const rooms = await Promise.all(normalizedRoomNames.map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })));
+
+	return rooms.some((room) => !room) ? [] : rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId));
+};
+
+const mergeDateFilter = (current: unknown, startDate?: Date, endDate?: Date): Record<string, Date> => {
+	const previous = current && typeof current === 'object' && !Array.isArray(current) ? (current as Record<string, Date>) : {};
+
+	return {
+		...previous,
+		...(startDate && { $gte: startDate }),
+		...(endDate && { $lte: endDate }),
+	};
 };
 
 export const messageSearch = async function (
@@ -89,32 +145,36 @@ export const messageSearch = async function (
 		$ne: true, // don't return _hidden messages
 	};
 
+	const filterRoomIds = [...(filters?.rids || []), ...((await getRoomIdsByNames(filters?.roomNames || [])) || [])].filter(Boolean);
+
 	if (rid) {
 		query.rid = rid;
 	} else {
+		const subscribedRoomIds = user?._id
+			? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid)
+			: [];
 		query.rid = {
-			$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
+			$in: filterRoomIds.length ? subscribedRoomIds.filter((roomId) => filterRoomIds.includes(roomId)) : subscribedRoomIds,
 		};
 	}
 
-	if (filters?.fromUsername) {
-		const username = filters.fromUsername.replace(/^@/, '');
-		const fromUser = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
-		if (!fromUser) {
+	const filterUserIds = await getUserIdsByUsernames([
+		...(filters?.fromUsernames || []),
+		...(filters?.fromUsername ? [filters.fromUsername] : []),
+	]);
+	if (filterUserIds) {
+		if (!filterUserIds.length) {
 			return {
 				message: {
 					docs: [],
 				},
 			};
 		}
-		query['u._id'] = fromUser._id;
+		query['u._id'] = filterUserIds.length === 1 ? filterUserIds[0] : { $in: filterUserIds };
 	}
 
 	if (filters?.startDate || filters?.endDate) {
-		query.ts = {
-			...(filters.startDate && { $gte: filters.startDate }),
-			...(filters.endDate && { $lte: filters.endDate }),
-		};
+		query.ts = mergeDateFilter(query.ts, filters.startDate, filters.endDate);
 	}
 
 	try {
