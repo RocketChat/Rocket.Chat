@@ -17,7 +17,7 @@ export const useIframeCommands = () => {
 	const loginWithToken = useLoginWithToken();
 	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
-	const enableNewOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
 		if (!iframeReceiveEnabled) {
@@ -51,7 +51,7 @@ export const useIframeCommands = () => {
 			},
 
 			'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
-				if (enableNewOAuthFlow) {
+				if (enableModernOAuthFlow) {
 					const url = new URL(window.location.href);
 					const queryParams = url.searchParams;
 					const loginClient = queryParams.get('loginClient');
@@ -133,5 +133,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, enableNewOAuthFlow]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, enableModernOAuthFlow]);
 };
