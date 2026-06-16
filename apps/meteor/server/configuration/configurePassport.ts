@@ -20,7 +20,7 @@ const { Router: router } = express;
 export const oAuthRouter = router();
 
 const oAuthApp = express();
-oAuthApp.set('trust proxy', true);
+oAuthApp.set('trust proxy', 1);
 
 export const configurePassport = (settings: ICachedSettings) => {
 	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
