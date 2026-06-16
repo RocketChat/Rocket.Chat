@@ -1,5 +1,5 @@
 diff --git a/lib/index.js b/lib/index.js
-index c64bdf2d5f7e704a65be4e9a7116c5ee6a582701..ce6641d0b63daf7c5d3f8a1de773f290c0e9d51c 100644
+index b7ea5e30fddb9bdef0034c00f28bbd4f0dee584a..47f7717632bd55d3c42ebb39f1ef5a23c14cfa3a 100644
 --- a/lib/index.js
 +++ b/lib/index.js
 @@ -2,8 +2,8 @@ import { upperFirst, capitalize, parseFloat as parseFloat$1, without, pick, comp
@@ -13,3 +13,12 @@ index c64bdf2d5f7e704a65be4e9a7116c5ee6a582701..ce6641d0b63daf7c5d3f8a1de773f290
  import emojiRegex from 'emoji-regex-xs';
  import resolveImage from '@react-pdf/image';
  
+@@ -2998,7 +2998,7 @@ const splitPage = (page, pageNumber, fontStore, yoga) => {
+     const dynamicPage = resolveDynamicPage({ pageNumber }, page, fontStore, yoga);
+     const height = page.style.height;
+     const [currentChilds, nextChilds] = splitNodes(wrapArea, contentArea, dynamicPage.children);
+-    const relayout = (node) => 
++    const relayout = (node) =>
+     // @ts-expect-error rework pagination
+     relayoutPage(node, fontStore, yoga);
+     const currentBox = { ...page.box, height };
