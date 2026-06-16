@@ -521,7 +521,7 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			body: isChatDeleteProps,
 			response: {
-				200: ajv.compile<{ _id: string; ts: string; message: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
+				200: ajv.compile<{ _id?: string; ts?: string; message?: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
 					type: 'object',
 					properties: {
 						_id: { type: 'string' },
@@ -538,7 +538,7 @@ const chatEndpoints = API.v1
 						},
 						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['_id', 'ts', 'message', 'success'],
+					required: ['success'],
 					additionalProperties: false,
 				}),
 				400: validateBadRequestErrorResponse,
@@ -546,13 +546,22 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
+			// Deleting by fileId resolves the message that references the file and deletes it.
+			// An orphan upload (a file with no associated message) is not deletable through this
+			// endpoint and intentionally returns a failure below.
+			const msg =
+				'fileId' in this.bodyParams
+					? await Messages.getMessageByFileId(this.bodyParams.fileId)
+					: await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
+				if ('fileId' in this.bodyParams) {
+					return API.v1.failure(`No message found with the file id: "${this.bodyParams.fileId}".`);
+				}
 				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
 			}
 
-			if (this.bodyParams.roomId !== msg.rid) {
+			if ('roomId' in this.bodyParams && this.bodyParams.roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
@@ -576,7 +585,7 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				_id: msg._id,
 				ts: Date.now().toString(),
-				message: msg,
+				message: { _id: msg._id, rid: msg.rid, u: msg.u },
 			});
 		},
 	)

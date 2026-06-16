@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -36,7 +36,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/departments/new'));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/departments/new'));
 
 	const query = useDebouncedValue(
 		useMemo(

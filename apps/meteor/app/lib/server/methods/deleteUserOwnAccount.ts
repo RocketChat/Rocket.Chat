@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
 import { deleteUser } from '../functions/deleteUser';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -63,6 +64,7 @@ export const deleteUserOwnAccount = async (fromUserId: string, password: string,
 
 Meteor.methods<ServerMethods>({
 	async deleteUserOwnAccount(password, confirmRelinquish) {
+		methodDeprecationLogger.method('deleteUserOwnAccount', '9.0.0', '/v1/users.deleteOwnAccount');
 		check(password, String);
 
 		const uid = Meteor.userId();

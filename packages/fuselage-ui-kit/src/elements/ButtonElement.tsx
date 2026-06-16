@@ -1,13 +1,13 @@
 import { Button, Throbber } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
 type ButtonElementProps = BlockProps<UiKit.ButtonElement>;
 
-const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps): ReactElement => {
+const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 	const { style, url, text, value, secondary } = block;
 

@@ -2,7 +2,7 @@ import type { Serialized } from '@rocket.chat/core-typings';
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import type { ComponentProps, ReactElement, SyntheticEvent } from 'react';
+import type { ComponentProps, ReactNode, SyntheticEvent } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,10 +25,10 @@ type AutoCompleteContactProps = Omit<
 > & {
 	value: string;
 	onChange: (value: string) => void;
-	renderItem?: (props: OptionProps, contact: Serialized<ILivechatContactWithManagerData>) => ReactElement;
+	renderItem?: (props: OptionProps, contact: Serialized<ILivechatContactWithManagerData>) => ReactNode;
 };
 
-const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChange, ...props }: AutoCompleteContactProps): ReactElement => {
+const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChange, ...props }: AutoCompleteContactProps) => {
 	const { t } = useTranslation();
 	const [contactsFilter, setContactFilter] = useState<string>('');
 	const debouncedContactFilter = useDebouncedValue(contactsFilter, 500);

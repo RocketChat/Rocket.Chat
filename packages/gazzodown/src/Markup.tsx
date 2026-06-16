@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { lazy, memo } from 'react';
 
 import HeadingBlock from './blocks/HeadingBlock';
@@ -19,7 +18,7 @@ type MarkupProps = {
 	tokens: MessageParser.Root;
 };
 
-const Markup = ({ tokens }: MarkupProps): ReactElement => (
+const Markup = ({ tokens }: MarkupProps) => (
 	<>
 		{tokens.map((block, index) => {
 			switch (block.type) {

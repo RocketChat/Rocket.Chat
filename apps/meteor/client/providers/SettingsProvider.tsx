@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui-contexts';
-import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
@@ -96,7 +96,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const saveSettings = useMethod('saveSettings');
+	const saveSettings = useEndpoint('POST', '/v1/settings');
 	const dispatch = useCallback(
 		async (changes: Partial<ISetting>[]) => {
 			// FIXME: This is a temporary solution to invalidate queries when settings change
@@ -106,7 +106,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 				}
 			});
 
-			await saveSettings(changes as Pick<ISetting, '_id' | 'value'>[]);
+			await saveSettings({ settings: changes as Pick<ISetting, '_id' | 'value'>[] });
 		},
 		[queryClient, saveSettings],
 	);

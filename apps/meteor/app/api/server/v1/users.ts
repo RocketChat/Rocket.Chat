@@ -1,6 +1,6 @@
-import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
+import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -40,6 +40,7 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
@@ -66,7 +67,6 @@ import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
 import { canEditExtension } from '../../../lib/server/functions/saveUser/validateUserEditing';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
@@ -554,6 +554,12 @@ API.v1.post(
 
 		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
 
+		await Promise.all([
+			OAuthAccessTokens.deleteByUserIds(ids),
+			OAuthRefreshTokens.deleteByUserIds(ids),
+			OAuthAuthCodes.deleteByUserIds(ids),
+		]);
+
 		ids.forEach((_id) => {
 			void notifyOnUserChange({
 				clientAction: 'updated',
@@ -664,7 +670,7 @@ API.v1.addRoute(
 				if (!canViewFullOtherUserInfo) {
 					return API.v1.forbidden();
 				}
-				const escapedEmail = escapeRegExp(this.queryParams.email as string);
+				const escapedEmail = escapeRegExp(this.queryParams.email);
 				nonEmptyQuery['emails.address'] = {
 					$regex: `^${escapedEmail}$`,
 					$options: 'i',
@@ -1477,7 +1483,7 @@ API.v1
 API.v1.post(
 	'users.sendConfirmationEmail',
 	{
-		authRequired: true,
+		authRequired: false,
 		body: isUsersSendConfirmationEmailParamsPOST,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,
@@ -1486,16 +1492,11 @@ API.v1.post(
 		response: {
 			200: voidSuccessResponse,
 			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
 		},
 	},
 	async function action() {
-		const { email } = this.bodyParams;
-
-		if (await sendConfirmationEmail(email)) {
-			return API.v1.success();
-		}
-		return API.v1.failure();
+		void sendConfirmationEmail(this.bodyParams.email).catch((err) => SystemLogger.error({ msg: 'sendConfirmationEmail failed', err }));
+		return API.v1.success();
 	},
 );
 
@@ -1537,6 +1538,8 @@ API.v1.get(
 				status: 1,
 				utcOffset: 1,
 				statusText: 1,
+				statusSource: 1,
+				statusExpiresAt: 1,
 				avatarETag: 1,
 			},
 		};
@@ -1574,15 +1577,22 @@ API.v1
 			authRequired: true,
 			query: isUsersRequestDataDownloadParamsGET,
 			response: {
-				200: ajv.compile<{ requested: boolean; exportOperation: IExportOperation }>({
+				200: ajv.compile<{
+					requested: boolean;
+					exportOperation: IExportOperation;
+					url: string | null;
+					pendingOperationsBeforeMyRequest: number;
+				}>({
 					type: 'object',
 					properties: {
 						requested: { type: 'boolean' },
 						// IExportOperation has complex/dynamic shape not yet in typia
 						exportOperation: { type: 'object' },
+						url: { type: 'string', nullable: true },
+						pendingOperationsBeforeMyRequest: { type: 'number' },
 						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['requested', 'exportOperation', 'success'],
+					required: ['requested', 'exportOperation', 'pendingOperationsBeforeMyRequest', 'success'],
 					additionalProperties: false,
 				}),
 				401: validateUnauthorizedErrorResponse,
@@ -1590,14 +1600,13 @@ API.v1
 		},
 		async function action() {
 			const { fullExport = false } = this.queryParams;
-			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
-				requested: boolean;
-				exportOperation: IExportOperation;
-			};
+			const result = await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' });
 
 			return API.v1.success({
 				requested: Boolean(result.requested),
 				exportOperation: result.exportOperation,
+				url: result.url,
+				pendingOperationsBeforeMyRequest: result.pendingOperationsBeforeMyRequest,
 			});
 		},
 	)
@@ -1935,6 +1944,7 @@ API.v1
 			body: ajv.compile<{
 				status?: UserStatus;
 				message?: string;
+				expiresAt?: string;
 				userId?: string;
 				username?: string;
 				user?: string;
@@ -1943,6 +1953,7 @@ API.v1
 				properties: {
 					status: { type: 'string', enum: ['online', 'away', 'offline', 'busy'] },
 					message: { type: 'string', nullable: true },
+					expiresAt: { type: 'string', nullable: true },
 					userId: { type: 'string' },
 					username: { type: 'string' },
 					user: { type: 'string' },
@@ -1990,47 +2001,37 @@ API.v1
 				return API.v1.forbidden();
 			}
 
-			const { _id, username, roles, name } = user;
-			let { statusText, status } = user;
-
-			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user, this.bodyParams.message, { emit: false });
-				statusText = this.bodyParams.message;
+			const validStatus = ['online', 'away', 'offline', 'busy'];
+			if (this.bodyParams.status && !validStatus.includes(this.bodyParams.status)) {
+				throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					method: 'users.setStatus',
+				});
 			}
 
-			if (this.bodyParams.status) {
-				const validStatus = ['online', 'away', 'offline', 'busy'];
-				if (validStatus.includes(this.bodyParams.status)) {
-					status = this.bodyParams.status;
+			const { status, message, expiresAt } = this.bodyParams;
 
-					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-							method: 'users.setStatus',
-						});
-					}
-
-					await Users.updateOne(
-						{ _id: user._id },
-						{
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						},
-					);
-
-					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-				} else {
-					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-						method: 'users.setStatus',
-					});
-				}
+			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
+			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
+				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
+					method: 'users.setStatus',
+				});
 			}
 
-			void api.broadcast('presence.status', {
-				user: { status, _id, username, statusText, roles, name },
-				previousStatus: user.status,
-			});
+			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
+			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
+			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
+
+			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+					method: 'users.setStatus',
+				});
+			}
+
+			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
+
+			if (status) {
+				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
+			}
 
 			return API.v1.success();
 		},
@@ -2041,12 +2042,14 @@ API.v1
 			authRequired: true,
 			query: isUsersGetStatusParamsGET,
 			response: {
-				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string }>({
+				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string; statusSource?: string; statusExpiresAt?: string }>({
 					type: 'object',
 					properties: {
 						_id: { type: 'string' },
 						status: statusType,
 						connectionStatus: { type: 'string', nullable: true },
+						statusSource: { type: 'string', nullable: true },
+						statusExpiresAt: { type: 'string', nullable: true },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['_id', 'status', 'success'],
@@ -2060,9 +2063,10 @@ API.v1
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				return API.v1.success({
 					_id: this.userId,
-					// message: user.statusText,
 					connectionStatus: (this.user.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 					status: (this.user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					...(this.user.statusSource && { statusSource: this.user.statusSource }),
+					...(this.user.statusExpiresAt && { statusExpiresAt: this.user.statusExpiresAt.toISOString() }),
 				});
 			}
 
@@ -2070,8 +2074,9 @@ API.v1
 
 			return API.v1.success({
 				_id: user._id,
-				// message: user.statusText,
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				...(user.statusSource && { statusSource: user.statusSource }),
+				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
 			});
 		},
 	);

@@ -1,7 +1,6 @@
 import { Box, Icon, Option, OptionAvatar, OptionColumn, OptionContent, OptionDescription, OptionMenu } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ type BannedUsersItemProps = {
 	onClickUnban: (username: string) => void;
 };
 
-const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemProps): ReactElement => {
+const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemProps) => {
 	const { t } = useTranslation();
 
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(user.name, user.username, useRealName);

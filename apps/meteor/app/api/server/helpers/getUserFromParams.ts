@@ -10,10 +10,16 @@ export async function getUserFromParams<T extends boolean = false>(
 		user?: string;
 	},
 	full?: T,
-): Promise<T extends true ? IUser : Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'>> {
+): Promise<
+	T extends true
+		? IUser
+		: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusDefault' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles'>
+> {
 	let user;
 
-	const projection = full ? {} : { username: 1, name: 1, status: 1, statusText: 1, roles: 1 };
+	const projection = full
+		? {}
+		: { username: 1, name: 1, status: 1, statusDefault: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1, roles: 1 };
 	if (params.userId?.trim()) {
 		user = await Users.findOneById(params.userId, { projection });
 	} else if (params.username?.trim()) {

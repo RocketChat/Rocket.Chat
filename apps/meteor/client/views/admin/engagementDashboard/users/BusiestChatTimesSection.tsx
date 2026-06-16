@@ -1,5 +1,4 @@
 import { Select } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +12,7 @@ type BusiestChatTimesSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps): ReactElement => {
+const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps) => {
 	const { t } = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TimeUnit>('hours');

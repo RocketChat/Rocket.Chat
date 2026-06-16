@@ -1,11 +1,11 @@
-import { api } from '@rocket.chat/core-services';
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { CustomSounds } from '@rocket.chat/models';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { deleteCustomSound } from '../lib/deleteCustomSound';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,24 +16,12 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async deleteCustomSound(_id) {
-		let sound = null;
-
-		if (this.userId && (await hasPermissionAsync(this.userId, 'manage-sounds'))) {
-			sound = await CustomSounds.findOneById(_id);
-		} else {
+		methodDeprecationLogger.method('deleteCustomSound', '9.0.0', '/v1/custom-sounds.delete');
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			throw new Meteor.Error('not_authorized');
 		}
-
-		if (sound == null) {
-			throw new Meteor.Error('Custom_Sound_Error_Invalid_Sound', 'Invalid sound', {
-				method: 'deleteCustomSound',
-			});
-		}
-
-		await RocketChatFileCustomSoundsInstance.deleteFile(`${sound._id}.${sound.extension}`);
-		await CustomSounds.removeById(_id);
-		void api.broadcast('notify.deleteCustomSound', { soundData: sound });
-
+		check(_id, String);
+		await deleteCustomSound(_id);
 		return true;
 	},
 });

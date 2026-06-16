@@ -1,10 +1,9 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import AccountTokensPage from './AccountTokensPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const AccountTokensRoute = (): ReactElement => {
+const AccountTokensRoute = () => {
 	const canCreateTokens = usePermission('create-personal-access-tokens');
 
 	if (!canCreateTokens) {

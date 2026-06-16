@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +53,7 @@ const MatrixFederationSearchModalContent = ({ defaultSelectedServer, servers }: 
 					flexGrow={4}
 					flexShrink={0}
 					value={roomName}
-					onChange={(e: FormEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
 				/>
 			</Box>
 			<Box is='a' display='flex' flexDirection='row' mbe={16} onClick={manageServers}>

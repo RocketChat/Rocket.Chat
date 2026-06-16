@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -66,7 +66,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useEffectEvent(() => !loading && loadMoreItems());
+	const lm = useStableCallback(() => !loading && loadMoreItems());
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {

@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
 
 import MapView from './location/MapView';
 
@@ -7,7 +6,7 @@ type LocationProps = {
 	location?: IMessage['location'];
 };
 
-const Location = ({ location }: LocationProps): ReactElement | null => {
+const Location = ({ location }: LocationProps) => {
 	const [longitude, latitude] = location?.coordinates ?? [];
 
 	if (!latitude || !longitude) {

@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +7,7 @@ type LocalTimeProps = {
 	utcOffset: number;
 };
 
-const LocalTime = ({ utcOffset }: LocalTimeProps): ReactElement => {
+const LocalTime = ({ utcOffset }: LocalTimeProps) => {
 	const time = useUTCClock(utcOffset);
 	const { t } = useTranslation();
 

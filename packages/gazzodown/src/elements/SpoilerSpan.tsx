@@ -1,5 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { KeyboardEvent, ReactElement } from 'react';
+import type { KeyboardEvent } from 'react';
 import { lazy, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,7 +49,7 @@ const srOnlyStyle = {
 	width: 1,
 } as const;
 
-const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
+const SpoilerSpan = ({ children }: SpoilerSpanProps) => {
 	const { t } = useTranslation();
 	const [revealed, setRevealed] = useState(false);
 
@@ -81,7 +81,7 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 	);
 };
 
-const renderBlockComponent = (block: MessageParser.Inlines, index: number): ReactElement | null => {
+const renderBlockComponent = (block: MessageParser.Inlines, index: number) => {
 	switch (block.type) {
 		case 'EMOJI':
 			return <EmojiElement key={index} {...block} />;

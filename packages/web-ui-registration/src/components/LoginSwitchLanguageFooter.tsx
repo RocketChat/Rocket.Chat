@@ -4,7 +4,7 @@ import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { normalizeLanguage } from '@rocket.chat/tools';
 import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
 import { useMemo, useEffect } from 'react';
-import type { ReactElement, UIEvent } from 'react';
+import type { UIEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 const useSuggestedLanguages = ({
@@ -41,7 +41,7 @@ type LoginSwitchLanguageFooterProps = {
 
 const LoginSwitchLanguageFooter = ({
 	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
-}: LoginSwitchLanguageFooterProps): ReactElement | null => {
+}: LoginSwitchLanguageFooterProps) => {
 	const loadLanguage = useLoadLanguage();
 	const { suggestions } = useSuggestedLanguages({ browserLanguage });
 

@@ -2,7 +2,6 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
@@ -22,7 +21,7 @@ const tryParseWithLimit = (text: string): Root | undefined => {
 	}
 };
 
-export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>): ReactElement | null {
+export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>) {
 	if (message.msg) {
 		delete message.mentions;
 
@@ -40,7 +39,11 @@ export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, '
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title);
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment?.description) {
+			return <>{attachment.description}</>;
+		}
 
 		if (attachment?.title) {
 			return <>{attachment.title}</>;

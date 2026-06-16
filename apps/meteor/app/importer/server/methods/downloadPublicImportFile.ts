@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { RocketChatImportFileInstance } from '../startup/store';
 
@@ -84,6 +85,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async downloadPublicImportFile(fileUrl: string, importerKey: string) {
+		methodDeprecationLogger.method('downloadPublicImportFile', '9.0.0', '/v1/downloadPublicImportFile');
 		const userId = Meteor.userId();
 
 		if (!userId) {

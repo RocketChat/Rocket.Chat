@@ -98,7 +98,9 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				if (!(await FileUpload.requestCanAccessFiles(req))) {
+				// UserDataFiles are GDPR data exports — only the owner of the export may download it.
+				const uid = await FileUpload.getRequestUserId(req);
+				if (!uid || uid !== file.userId) {
 					res.writeHead(403);
 					return false;
 				}
@@ -284,7 +286,7 @@ export const FileUpload = {
 		);
 	},
 
-	async resizeImagePreview(fileParam: IUpload) {
+	async resizeImagePreview(fileParam: Pick<IUpload, '_id'>) {
 		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
@@ -302,7 +304,7 @@ export const FileUpload = {
 		return sharp(await FileUpload.getBuffer(file)).metadata();
 	},
 
-	async createImageThumbnail(fileParam: IUpload) {
+	async createImageThumbnail(fileParam: Pick<IUpload, '_id' | 'identify'>) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
@@ -448,6 +450,31 @@ export const FileUpload = {
 		await Avatars.updateFileNameById(file._id, user.username);
 	},
 
+	async getRequestUserId({ headers = {}, url }: http.IncomingMessage): Promise<string | undefined> {
+		if (!url) {
+			return undefined;
+		}
+
+		const { query } = URL.parse(url, true);
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie);
+			rc_token = cookie.get('rc_token', headers.cookie);
+		}
+
+		const uid = rc_uid || (headers['x-user-id'] as string);
+		const authToken = rc_token || (headers['x-auth-token'] as string);
+
+		if (!uid || !authToken) {
+			return undefined;
+		}
+
+		const user = await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } });
+		return user?._id;
+	},
+
 	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
 		if (!url || !settings.get('FileUpload_ProtectFiles')) {
 			return true;
@@ -469,7 +496,7 @@ export const FileUpload = {
 			rc_room_type &&
 			roomCoordinator
 				.getRoomDirectives(rc_room_type)
-				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' });
+				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' }, file);
 
 		const isAuthorizedByJWT: () => boolean = () => {
 			if (!token || typeof token !== 'string' || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
@@ -836,7 +863,7 @@ export class FileUploadClass {
 	}
 
 	private async _validateFile(
-		fileData: OptionalId<IUpload>,
+		fileData: Omit<OptionalId<IUpload>, '_updatedAt'>,
 		content: stream.Readable | Buffer | string,
 	): Promise<stream.Readable | Buffer | string> {
 		const filter = this.store.getFilter();
@@ -863,7 +890,7 @@ export class FileUploadClass {
 	}
 
 	async _doInsert(
-		fileData: OptionalId<IUpload>,
+		fileData: Omit<OptionalId<IUpload>, '_updatedAt'>,
 		content: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {
@@ -888,7 +915,7 @@ export class FileUploadClass {
 	}
 
 	async insert(
-		fileData: OptionalId<IUpload>,
+		fileData: Omit<OptionalId<IUpload>, '_updatedAt'>,
 		streamOrBuffer: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {

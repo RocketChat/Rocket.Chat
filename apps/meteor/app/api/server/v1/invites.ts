@@ -250,6 +250,7 @@ const invites = API.v1
 		},
 		async function action() {
 			const { token } = this.bodyParams;
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			return API.v1.success(await useInviteToken(this.userId, token));
 		},
 	)

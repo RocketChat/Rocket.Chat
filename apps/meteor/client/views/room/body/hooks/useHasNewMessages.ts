@@ -28,10 +28,10 @@ export const useHasNewMessages = (
 		chat.composer?.focus();
 	}, [setShouldJumpToBottom, chat.composer]);
 
-	const handleJumpToRecentButtonClick = useCallback(() => {
-		setShouldJumpToBottom(true);
+	const handleJumpToRecentButtonClick = useCallback(async () => {
 		RoomHistoryManager.clear(rid);
-		RoomHistoryManager.getMoreIfIsEmpty(rid);
+		await RoomHistoryManager.getMoreIfIsEmpty(rid);
+		setShouldJumpToBottom(true);
 	}, [setShouldJumpToBottom, rid]);
 
 	const handleComposerResize = useCallback((): void => {
@@ -48,6 +48,12 @@ export const useHasNewMessages = (
 				}
 
 				if (msg.u._id === uid) {
+					// If there are more next messages, jump to the recent messages
+					if (RoomHistoryManager.hasMoreNext(rid)) {
+						return handleJumpToRecentButtonClick();
+					}
+					setShouldJumpToBottom(true);
+					setHasNewMessages(false);
 					return;
 				}
 
@@ -59,26 +65,10 @@ export const useHasNewMessages = (
 			rid,
 		);
 
-		clientCallbacks.add(
-			'afterSaveMessage',
-			(msg: IMessage) => {
-				if (msg.tmid) {
-					return;
-				}
-				if (msg.u._id === uid) {
-					setShouldJumpToBottom(true);
-					setHasNewMessages(false);
-				}
-			},
-			clientCallbacks.priority.MEDIUM,
-			rid,
-		);
-
 		return () => {
 			clientCallbacks.remove('streamNewMessage', rid);
-			clientCallbacks.remove('afterSaveMessage', rid);
 		};
-	}, [isAtBottom, rid, setShouldJumpToBottom, uid]);
+	}, [handleJumpToRecentButtonClick, isAtBottom, rid, setShouldJumpToBottom, uid]);
 
 	const debouncedClearNewMessagesOnScroll = useDebouncedCallback(
 		() => {

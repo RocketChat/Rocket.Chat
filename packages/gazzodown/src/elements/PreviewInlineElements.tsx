@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { Fragment } from 'react';
 
 import BoldSpan from './BoldSpan';
@@ -17,7 +16,7 @@ type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];
 };
 
-const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactElement => (
+const PreviewInlineElements = ({ children }: PreviewInlineElementsProps) => (
 	<>
 		{children.map((child, index) => {
 			switch (child.type) {

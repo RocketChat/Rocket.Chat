@@ -13,7 +13,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useMemo, useState, useCallback, useId } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -46,7 +46,7 @@ const ThreadList = () => {
 	const [searchText, setSearchText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		(event: FormEvent<HTMLInputElement>) => {
+		(event: ChangeEvent<HTMLInputElement>) => {
 			setSearchText(event.currentTarget.value);
 		},
 		[setSearchText],
