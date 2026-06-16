@@ -56,6 +56,6 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 			}
 		},
 		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
-		passportOAuthCallback(siteUrl),
+		passportOAuthCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
 	);
 };

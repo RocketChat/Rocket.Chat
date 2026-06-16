@@ -20,11 +20,13 @@ const LoginServicesButton = <T extends LoginService>({
 	setError,
 	buttonColor,
 	buttonLabelColor,
+	loginStyle,
 	enableModernOAuthFlow,
 	...props
 }: T & {
 	className?: string;
 	disabled?: boolean;
+	loginStyle?: 'popup' | 'redirect' | '';
 	setError?: Dispatch<SetStateAction<LoginErrorState>>;
 	enableModernOAuthFlow?: boolean;
 }): ReactElement => {
@@ -36,6 +38,15 @@ const LoginServicesButton = <T extends LoginService>({
 			const url = new URL(window.location.href);
 			const queryParams = url.searchParams;
 			const loginClient = queryParams.get('loginClient');
+
+			if (loginStyle === 'popup') {
+				window.open(
+					`/oauth/${service}${loginClient ? `?loginClient=${loginClient}` : ''}`,
+					'oauth',
+					'popup=yes,width=500,height=700,left=100,top=100',
+				);
+				return;
+			}
 
 			const redirectUrl = new URL(`/oauth/${service}`, window.location.origin);
 
@@ -53,7 +64,7 @@ const LoginServicesButton = <T extends LoginService>({
 			}
 			setError?.([e.error, e.reason]);
 		});
-	}, [handler, setError, service, enableModernOAuthFlow]);
+	}, [handler, setError, service, enableModernOAuthFlow, loginStyle]);
 
 	return (
 		<Button
