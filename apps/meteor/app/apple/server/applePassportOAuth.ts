@@ -26,8 +26,12 @@ settings.watchMultiple(
 		'Accounts_OAuth_Apple_kid',
 		'Accounts_OAuth_Use_Modern_Flow',
 	],
-	async ([enabled, clientId, serverSecret, iss, kid]) => {
+	async ([enabled, clientId, serverSecret, iss, kid, useModernFlow]) => {
 		passport.unuse('apple');
+
+		if (!useModernFlow) {
+			return;
+		}
 
 		if (!enabled) {
 			return ServiceConfiguration.configurations.removeAsync({

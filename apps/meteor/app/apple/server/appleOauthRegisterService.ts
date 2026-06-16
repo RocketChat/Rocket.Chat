@@ -1,7 +1,6 @@
 import { createPrivateKey, sign } from 'node:crypto';
 
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import passport from 'passport';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { settings } from '../../settings/server';
@@ -39,11 +38,8 @@ settings.watchMultiple(
 		'Accounts_OAuth_Apple_secretKey',
 		'Accounts_OAuth_Apple_iss',
 		'Accounts_OAuth_Apple_kid',
-		'Accounts_OAuth_Use_Modern_Flow',
 	],
 	async ([enabled, clientId, serverSecret, iss, kid]) => {
-		passport.unuse('apple');
-
 		if (!enabled) {
 			return ServiceConfiguration.configurations.removeAsync({
 				service: 'apple',
