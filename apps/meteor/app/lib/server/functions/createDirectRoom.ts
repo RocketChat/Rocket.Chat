@@ -82,6 +82,9 @@ export async function createDirectRoom(
 
 	const isNewRoom = !room;
 
+	// Mirror setUserActiveStatus: a 1-on-1 DM containing a deactivated user is read-only
+	const isReadOnlyForDeactivatedMember = uids.length === 2 && roomMembers.some((member) => member.active === false);
+
 	const roomInfo = {
 		t: 'd',
 		usernames,
@@ -90,6 +93,7 @@ export async function createDirectRoom(
 		ts: new Date(),
 		uids,
 		...roomExtraData,
+		...(isReadOnlyForDeactivatedMember && { ro: true, reactWhenReadOnly: false }),
 	};
 
 	if (isNewRoom) {

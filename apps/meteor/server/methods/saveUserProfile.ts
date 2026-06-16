@@ -82,12 +82,8 @@ async function saveUserProfile(
 		}
 	}
 
-	if (settings.statusText || settings.statusText === '') {
-		await setUserStatusMethod(user, undefined, settings.statusText);
-	}
-
-	if (settings.statusType) {
-		await setUserStatusMethod(user, settings.statusType as UserStatus, undefined);
+	if (settings.statusType || settings.statusText != null) {
+		await setUserStatusMethod(user, settings.statusType as UserStatus, settings.statusText);
 	}
 
 	if (user && (settings.bio || settings.bio === '')) {

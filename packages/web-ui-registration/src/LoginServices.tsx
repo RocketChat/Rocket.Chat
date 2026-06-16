@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
-import { useMemo, type Dispatch, type ReactElement, type SetStateAction } from 'react';
+import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { LoginErrorState } from './LoginForm';
@@ -8,13 +8,7 @@ import LoginServicesButton from './LoginServicesButton';
 
 const servicesToBeShownOnDesktop = ['saml', 'cas', 'ldap'];
 
-const LoginServices = ({
-	disabled,
-	setError,
-}: {
-	disabled?: boolean;
-	setError: Dispatch<SetStateAction<LoginErrorState>>;
-}): ReactElement | null => {
+const LoginServices = ({ disabled, setError }: { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> }) => {
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');

@@ -2,7 +2,7 @@ import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
-import { useEffectEvent, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +47,7 @@ const NavBarSearch = () => {
 		state.close();
 	}, [resetField, state]);
 
-	const handleClearText = useEffectEvent(() => {
+	const handleClearText = useStableCallback(() => {
 		resetField('filterText');
 		setFocus('filterText');
 	});

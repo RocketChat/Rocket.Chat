@@ -18,6 +18,8 @@ export const defaultFields = {
 	bio: 1,
 	reason: 1,
 	statusText: 1,
+	statusSource: 1,
+	statusExpiresAt: 1,
 	avatarETag: 1,
 	federated: 1,
 	statusLivechat: 1,
@@ -109,6 +111,11 @@ export async function getFullUserDataByUniqueSearchTerm(
 	}
 
 	const fields = getFields(canViewAllInfo);
+
+	// When PDP type is not local, Rocket.Chat doesn't manage ABAC attributes, so there's no point in fetching them
+	if (settings.get('ABAC_PDP_Type') !== 'local') {
+		delete fields.abacAttributes;
+	}
 
 	const options = {
 		projection: {

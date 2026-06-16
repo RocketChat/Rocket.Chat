@@ -233,9 +233,11 @@ export class NegotiationManager {
 			.process(this.webrtcProcessor)
 			// No need to handle errors here as they are already handled by the 'error' event
 			.catch(() => null);
+
+		this.emitter.emit('negotiation-started');
 	}
 
-	protected isConfigured(): this is WebRTCNegotiationManager {
+	public isConfigured(): this is WebRTCNegotiationManager {
 		if (this.call.state === 'hangup' || this.call.hidden) {
 			this.config.logger?.debug('Ignoring WebRTC negotiations due to call state.');
 			return false;

@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService } from '@rocket.chat/ui-contexts';
-import type { ReactElement, SetStateAction, Dispatch } from 'react';
+import type { SetStateAction, Dispatch } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +29,7 @@ const LoginServicesButton = <T extends LoginService>({
 	loginStyle?: 'popup' | 'redirect' | '';
 	setError?: Dispatch<SetStateAction<LoginErrorState>>;
 	enableModernOAuthFlow?: boolean;
-}): ReactElement => {
+}) => {
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
