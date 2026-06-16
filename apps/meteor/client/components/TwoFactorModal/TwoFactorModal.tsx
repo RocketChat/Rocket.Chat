@@ -36,17 +36,9 @@ const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFac
 	}
 
 	if (props.method === Method.EMAIL) {
-		const { emailOrUsername, challengeId } = props;
+		// const { emailOrUsername, challengeId } = props;
 
-		return (
-			<TwoFactorEmail
-				onConfirm={onConfirm}
-				onClose={onClose}
-				emailOrUsername={emailOrUsername}
-				challengeId={challengeId}
-				invalidAttempt={invalidAttempt}
-			/>
-		);
+		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} {...props} />;
 	}
 
 	if (props.method === Method.PASSWORD) {
