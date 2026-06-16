@@ -190,8 +190,8 @@ export const isUnifiedSearchProps = ajvQuery.compile<UnifiedSearch>(UnifiedSearc
 export type SearchAnswer = {
 	query: string;
 	messages: {
-		_id?: string;
-		text: string;
+		_id: string;
+		text?: string;
 		username?: string;
 		roomName?: string;
 		ts?: string;
@@ -221,7 +221,7 @@ const SearchAnswerSchema = {
 					ts: { type: 'string', nullable: true },
 					score: { type: 'number', nullable: true },
 				},
-				required: ['text'],
+				required: ['_id'],
 				additionalProperties: false,
 			},
 		},

@@ -282,10 +282,6 @@ const SearchPage = (): ReactElement => {
 		() =>
 			intelligent.slice(0, 12).map((item) => ({
 				_id: item._id,
-				text: item.text,
-				username: item.u?.username,
-				roomName: item.room?.fname || item.room?.name,
-				ts: item.ts ? new Date(item.ts).toISOString() : undefined,
 				score: item.score,
 			})),
 		[intelligent],
@@ -294,7 +290,7 @@ const SearchPage = (): ReactElement => {
 		() =>
 			JSON.stringify({
 				query: debouncedQuery,
-				messages: answerMessages.map(({ _id, text, username, roomName, ts, score }) => ({ _id, text, username, roomName, ts, score })),
+				messages: answerMessages,
 			}),
 		[answerMessages, debouncedQuery],
 	);

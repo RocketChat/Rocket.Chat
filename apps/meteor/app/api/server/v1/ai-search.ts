@@ -6,7 +6,7 @@ import {
 } from '@rocket.chat/ai-search';
 import { AISearch } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
 	isSearchAnswerProps,
@@ -14,7 +14,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import type { UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
+import type { SearchAnswer, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -232,6 +232,43 @@ const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_
 	return new Map(rooms.map((room) => [room._id, room]));
 };
 
+const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAnswer['messages']) => {
+	const messageIds = [...new Set(messages.map(({ _id }) => _id).filter(Boolean))];
+	if (!messageIds.length) {
+		throw new Meteor.Error('error-invalid-search-answer-sources', 'Search answer sources are not available');
+	}
+
+	const scoreByMessageId = new Map(messages.map(({ _id, score }) => [_id, score]));
+	const docs = await Messages.findVisibleByIds(messageIds, {
+		projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
+	}).toArray();
+	const normalizedDocs = await normalizeMessagesForUser(docs, userId);
+	const docsById = new Map(normalizedDocs.map((message: IMessage) => [message._id, message]));
+	const rooms = await getRoomMap(normalizedDocs.map((message: IMessage) => message.rid));
+
+	const answerMessages = messageIds
+		.map((messageId) => docsById.get(messageId))
+		.filter((message): message is IMessage => Boolean(message?.msg))
+		.map((message) => {
+			const room = rooms.get(message.rid);
+			const score = scoreByMessageId.get(message._id);
+
+			return {
+				text: message.msg,
+				username: message.u?.username,
+				roomName: room?.fname || room?.name,
+				ts: message.ts?.toISOString(),
+				...(Number.isFinite(score) && { score }),
+			};
+		});
+
+	if (!answerMessages.length) {
+		throw new Meteor.Error('error-invalid-search-answer-sources', 'Search answer sources are not available');
+	}
+
+	return answerMessages;
+};
+
 API.v1.get(
 	'search.unified',
 	{
@@ -403,17 +440,12 @@ API.v1.post(
 	},
 	async function action() {
 		const { query, messages } = this.bodyParams;
+		const answerMessages = await getSearchAnswerMessagesForUser(this.userId, messages);
 		let answer;
 		try {
 			answer = await AISearch.answer({
 				query,
-				messages: messages.map(({ text, username, roomName, ts, score }) => ({
-					text,
-					username,
-					roomName,
-					ts,
-					score,
-				})),
+				messages: answerMessages,
 			});
 		} catch (error) {
 			const message = error instanceof Error ? error.message : '';
