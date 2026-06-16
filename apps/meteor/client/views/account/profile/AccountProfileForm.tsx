@@ -257,15 +257,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									disabled={!allowUserStatusMessageChange}
 									flexGrow={1}
 									error={errors.statusText?.message}
-									className={css`
-										align-items: center;
-
-										& > .rcx-input-box__addon {
-											order: -1;
-											margin-inline-end: 0.5rem;
-										}
-									`}
-									addon={
+									startAddon={
 										<Controller
 											control={control}
 											name='statusType'
