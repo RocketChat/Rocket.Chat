@@ -154,6 +154,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult>;
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult>;
 	updateDraftByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], draft: string | undefined): Promise<null | WithId<ISubscription>>;
+	updateDmFolderByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], folder: string | undefined): Promise<null | WithId<ISubscription>>;
 
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	findByToken(token: string, options?: FindOptions): FindCursor<ISubscription>;

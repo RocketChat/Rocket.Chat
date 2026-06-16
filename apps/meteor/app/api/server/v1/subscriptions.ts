@@ -6,10 +6,13 @@ import {
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
+	isSubscriptionsSaveDmFolderProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
+
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../lib/server/lib/notifyListener';
 
 import { readMessages } from '../../../../server/lib/readMessages';
 import { getSubscriptions } from '../../../../server/publications/subscription';
@@ -170,6 +173,31 @@ API.v1.post(
 			'firstUnreadMessage' in this.bodyParams ? this.bodyParams.firstUnreadMessage : undefined,
 			'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined,
 		);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'subscriptions.saveDmFolder',
+	{
+		authRequired: true,
+		body: isSubscriptionsSaveDmFolderProps,
+		response: {
+			200: voidSuccessResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { roomId, dmFolder } = this.bodyParams;
+
+		const subscription = await Subscriptions.updateDmFolderByRoomIdAndUserId(roomId, this.userId, dmFolder || undefined);
+		if (!subscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
+		}
+
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(roomId, this.userId);
 
 		return API.v1.success();
 	},

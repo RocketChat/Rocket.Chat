@@ -106,6 +106,25 @@ const SubscriptionsUnreadSchema = {
 
 export const isSubscriptionsUnreadProps = ajvQuery.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
+type SubscriptionsSaveDmFolder = { roomId: IRoom['_id']; dmFolder?: string };
+
+const SubscriptionsSaveDmFolderSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		dmFolder: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isSubscriptionsSaveDmFolderProps = ajv.compile<SubscriptionsSaveDmFolder>(SubscriptionsSaveDmFolderSchema);
+
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
@@ -126,5 +145,9 @@ export type SubscriptionsEndpoints = {
 
 	'/v1/subscriptions.unread': {
 		POST: (params: SubscriptionsUnread) => void;
+	};
+
+	'/v1/subscriptions.saveDmFolder': {
+		POST: (params: SubscriptionsSaveDmFolder) => void;
 	};
 };
