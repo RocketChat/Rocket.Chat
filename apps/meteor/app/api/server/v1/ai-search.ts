@@ -6,7 +6,7 @@ import {
 } from '@rocket.chat/ai-search';
 import { AISearch } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isSearchAnswerProps,
@@ -232,6 +232,19 @@ const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_
 	return new Map(rooms.map((room) => [room._id, room]));
 };
 
+const getAccessibleRoomIds = async (userId: string, roomIds: string[]): Promise<Set<string>> => {
+	const uniqueRoomIds = [...new Set(roomIds)].filter(Boolean);
+	if (!uniqueRoomIds.length) {
+		return new Set();
+	}
+
+	const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
+		projection: { rid: 1 },
+	}).toArray();
+
+	return new Set(subscriptions.map(({ rid }) => rid));
+};
+
 const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAnswer['messages']) => {
 	const messageIds = [...new Set(messages.map(({ _id }) => _id).filter(Boolean))];
 	if (!messageIds.length) {
@@ -242,7 +255,12 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 	const docs = await Messages.findVisibleByIds(messageIds, {
 		projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
 	}).toArray();
-	const normalizedDocs = await normalizeMessagesForUser(docs, userId);
+	const accessibleRoomIds = await getAccessibleRoomIds(
+		userId,
+		docs.map((message) => message.rid),
+	);
+	const accessibleDocs = docs.filter((message) => accessibleRoomIds.has(message.rid));
+	const normalizedDocs = await normalizeMessagesForUser(accessibleDocs, userId);
 	const docsById = new Map(normalizedDocs.map((message: IMessage) => [message._id, message]));
 	const rooms = await getRoomMap(normalizedDocs.map((message: IMessage) => message.rid));
 
