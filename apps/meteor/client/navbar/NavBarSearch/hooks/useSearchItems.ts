@@ -125,7 +125,14 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 	// Merge reactively (outside the query) so local results render the instant the user types
 	// and server results fold in — deduped — once they arrive.
 	const items = useMemo(() => {
-		const fromServer = serverResults ?? [];
+		// Server results are keyed on the *debounced* term, so while the user is still typing
+		// (or via placeholderData) they may belong to a previous search. Drop the ones that no
+		// longer match the current text so stale, non-matching results aren't rendered.
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
+			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
+
+		const fromServer = (serverResults ?? []).filter(matchesFilter);
 		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 		return Array.from(new Set([...exact, ...localRooms, ...fromServer])) as SubscriptionWithRoom[];
 	}, [serverResults, localRooms, name]);
