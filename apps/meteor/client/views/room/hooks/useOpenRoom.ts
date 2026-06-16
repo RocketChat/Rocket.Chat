@@ -211,11 +211,13 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
 			}
 
-			// LegacyRoomManager resolves the room by name to start the message stream, which the
-			// composer waits on (via `streamActive`). Passing the rid here makes the lookup fail and
-			// leaves the composer stuck loading, so use the room name.
-			if (room.name) {
-				LegacyRoomManager.open({ typeName: room.t + room.name, rid });
+			// LegacyRoomManager starts the message stream that the composer waits on (via `streamActive`).
+			// It resolves the room through `findRoom`, which matches channels/groups by name but DMs by
+			// rid (DM rooms have no usable `name`). Passing the wrong identifier leaves the composer stuck
+			// loading, so pick per room type.
+			const openIdentifier = room.t === 'd' ? rid : room.name;
+			if (openIdentifier) {
+				LegacyRoomManager.open({ typeName: room.t + openIdentifier, rid });
 			}
 
 			if (rid === RoomManager.opened) {

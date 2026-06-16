@@ -22,6 +22,8 @@ export const videoConfProviders = {
 	},
 
 	getActiveProvider(): string | undefined {
+		// The internal pexip provider lives outside the `providers` map (it's gated by a setting, not
+		// registered by an app), so not having provider apps only skips the default provider check
 		if (providers.size !== 0) {
 			const defaultProvider = settings.get<string>('VideoConf_Default_Provider');
 

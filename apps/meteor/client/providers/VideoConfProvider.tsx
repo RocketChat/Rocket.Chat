@@ -1,4 +1,4 @@
-import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouter, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactNode } from 'react';
@@ -6,13 +6,18 @@ import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
+import { absoluteUrl } from '../lib/absoluteUrl';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
+
+// The internal Pexip integration (core provider) replaces the external Pexip app.
+const PEXIP_PROVIDER_NAME = 'core.pexip';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }) => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const router = useRouter();
 	const { t } = useTranslation();
 	const logLevel = useSetting<number>('Log_Level', 0);
 
@@ -20,10 +25,18 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }) => {
 
 	useEffect(
 		() =>
-			VideoConfManager.on('call/join', (props) => {
-				handleOpenCall(props.url, props.providerName);
+			VideoConfManager.on('call/join', ({ url, callId, providerName }) => {
+				// When the internal Pexip integration is the provider, open the in-product conference
+				// page (persistent chat + call) in a new tab — mirroring voice-call escalation — instead
+				// of the external provider URL.
+				if (providerName === PEXIP_PROVIDER_NAME) {
+					handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName);
+					return;
+				}
+
+				handleOpenCall(url, providerName);
 			}),
-		[handleOpenCall],
+		[handleOpenCall, router],
 	);
 
 	useEffect(
