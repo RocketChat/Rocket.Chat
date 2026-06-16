@@ -170,3 +170,64 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	return result;
 }
+
+// Opens a room when the `rid` is already known (e.g. resolved from a conference record), skipping
+// the type+name resolution that `useOpenRoom` does. Mirrors its store/subscription side effects.
+export function useOpenRoomById(rid: IRoom['_id']) {
+	const user = useUser();
+	const hasPreviewPermission = usePermission('preview-c-room');
+	const getRoomById = useMethod('getRoomById');
+	const openRoom = useOpenRoomMutation();
+
+	return useQuery({
+		queryKey: ['rooms', rid, 'open', user?._id, user?.username],
+
+		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
+			let roomData: IRoom;
+			try {
+				roomData = await getRoomById(rid);
+			} catch (error) {
+				throw new RoomNotFoundError(undefined, { rid });
+			}
+
+			if (!roomData?._id) {
+				throw new RoomNotFoundError(undefined, { rid });
+			}
+
+			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
+			unsetKeys.forEach((key) => {
+				delete roomData[key];
+			});
+			Rooms.state.store(roomData);
+
+			const room = Rooms.state.get(roomData._id);
+			if (!room) {
+				throw new TypeError('room is undefined');
+			}
+
+			const sub = Subscriptions.state.find((record) => record.rid === rid);
+
+			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
+				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
+			}
+
+			// LegacyRoomManager resolves the room by name to start the message stream, which the
+			// composer waits on (via `streamActive`). Passing the rid here makes the lookup fail and
+			// leaves the composer stuck loading, so use the room name.
+			if (room.name) {
+				LegacyRoomManager.open({ typeName: room.t + room.name, rid });
+			}
+
+			if (rid === RoomManager.opened) {
+				return { rid };
+			}
+
+			if (!!user?._id && sub && !sub.open) {
+				await openRoom.mutateAsync({ roomId: rid, userId: user._id });
+			}
+
+			return { rid };
+		},
+		retry: 0,
+	});
+}

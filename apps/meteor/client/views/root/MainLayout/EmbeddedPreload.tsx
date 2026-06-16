@@ -1,4 +1,4 @@
-import type { RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
 import { useEndpoint, useMethod, useRouter, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,12 +15,27 @@ import NotFoundPage from '../../notFound/NotFoundPage';
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
-const EmbeddedPreload = ({ children, reference, type }: { children: ReactNode; reference?: string; type?: RoomType }) => {
+const EmbeddedPreload = ({
+	children,
+	reference,
+	type,
+	rid,
+}: {
+	children: ReactNode;
+	reference?: string;
+	type?: RoomType;
+	rid?: IRoom['_id'];
+}) => {
 	const ready = useMainReady();
 	const router = useRouter();
 	const uid = useUserId();
 
 	const roomParams = useMemo(() => {
+		// When opening by room id we resolve the room directly, not via type/name params.
+		if (rid) {
+			return null;
+		}
+
 		if (reference && type) {
 			return { reference, type };
 		}
@@ -41,30 +56,37 @@ const EmbeddedPreload = ({ children, reference, type }: { children: ReactNode; r
 		}
 
 		return directives.extractOpenRoomParams(router.getRouteParameters());
-	}, [reference, router, type]);
+	}, [reference, router, type, rid]);
 
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
+	const getRoomById = useMethod('getRoomById');
 	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 
-	const shouldFetch = !!roomParams && !!uid;
+	const shouldFetch = (!!roomParams || !!rid) && !!uid;
 
 	const {
 		isPending: isLoading,
 		isSuccess,
 		isError,
 	} = useQuery({
-		queryKey: roomParams ? roomsQueryKeys.roomReference(roomParams.reference, roomParams.type, uid ?? undefined) : [],
+		// eslint-disable-next-line no-nested-ternary
+		queryKey: rid
+			? [...roomsQueryKeys.room(rid), 'embedded-preload', uid ?? undefined]
+			: roomParams
+				? roomsQueryKeys.roomReference(roomParams.reference, roomParams.type, uid ?? undefined)
+				: [],
 		queryFn: async () => {
-			if (!roomParams) {
-				return null;
+			let roomData: Awaited<ReturnType<typeof getRoomById>> | Awaited<ReturnType<typeof getRoomByTypeAndName>> | null = null;
+			if (rid) {
+				roomData = await getRoomById(rid);
+			} else if (roomParams) {
+				roomData = await getRoomByTypeAndName(roomParams.type, roomParams.reference);
 			}
 
-			const roomData = await getRoomByTypeAndName(roomParams.type, roomParams.reference);
-			if (roomData?._id) {
-				Rooms.state.store(roomData);
-			} else {
+			if (!roomData?._id) {
 				return null;
 			}
+			Rooms.state.store(roomData);
 
 			// Populate Rooms store and return same shape as useOpenRoom so the shared
 			// React Query cache entry is usable when RoomOpenerEmbedded mounts.
@@ -92,11 +114,11 @@ const EmbeddedPreload = ({ children, reference, type }: { children: ReactNode; r
 		}
 	}, [shouldFetch, isSuccess, isError]);
 
-	// When an explicit room target is requested (e.g. the embedded conference chat) and it can't be
-	// resolved, render a 404 instead of mounting the children. Mounting them would re-fetch the same
-	// room through `useOpenRoom` and, combined with the forced cached-store readiness above, loops on
-	// `getRoomByTypeAndName`. MainLayout passes no reference/type, so it keeps rendering children.
-	if (reference && type && isError) {
+	// When an explicit room target is requested (e.g. the embedded conference chat, by rid or by
+	// type/name) and it can't be resolved, render a 404 instead of mounting the children. Mounting
+	// them would re-fetch the same room and, combined with the forced cached-store readiness above,
+	// loops on the room lookup. MainLayout passes no target, so it keeps rendering children.
+	if ((rid || (reference && type)) && isError) {
 		return <NotFoundPage />;
 	}
 

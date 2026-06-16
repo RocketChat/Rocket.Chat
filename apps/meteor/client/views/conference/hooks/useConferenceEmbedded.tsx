@@ -5,7 +5,14 @@ import { useConferenceCallUrl } from './useConferenceCallUrl';
 
 export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
+	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const getConferenceCallUrl = useConferenceCallUrl();
+
+	// The chat room is identified by the conference record's `rid`, not a hardcoded type/name.
+	const { data: info, isPending: isInfoPending } = useQuery({
+		queryKey: ['conference-info', callId],
+		queryFn: async () => getConferenceInfo({ callId }),
+	});
 
 	const { data, isPending } = useQuery({
 		queryKey: ['conference-embedded', callId],
@@ -13,7 +20,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	});
 
 	return {
-		room: { type: 'c', reference: 'general', loading: isPending } as const,
+		room: { rid: info?.rid, loading: isInfoPending } as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
 			providerName: data?.providerName,

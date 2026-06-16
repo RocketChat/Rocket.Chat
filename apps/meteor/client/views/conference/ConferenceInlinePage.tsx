@@ -14,7 +14,7 @@ const ConferenceInlinePage = ({ callId }: ConferenceInlinePageProps) => {
 	return (
 		<Box bg='surface-light' width='full' height='full' display='flex'>
 			<Box width='30%' display='flex' flexDirection='column' minWidth={350} bg='tint' borderInlineEndWidth={1} borderColor='divider'>
-				<ConferenceChat type={room.type} reference={room.reference} loading={room.loading} />
+				<ConferenceChat rid={room.rid} loading={room.loading} />
 			</Box>
 
 			<Box width='70%'>
