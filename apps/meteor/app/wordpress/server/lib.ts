@@ -32,6 +32,12 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 		return;
 	}
 
+	delete config.identityPath;
+	delete config.identityTokenSentVia;
+	delete config.authorizePath;
+	delete config.tokenPath;
+	delete config.scope;
+
 	passport.unuse(serviceKey);
 
 	const serverType = settings.get('Accounts_OAuth_Wordpress_server_type');
