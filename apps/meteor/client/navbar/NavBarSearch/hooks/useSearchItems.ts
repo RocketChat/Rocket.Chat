@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useMethod, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -47,7 +47,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
-	const getSpotlight = useMethod('spotlight');
+	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 
 	return useQuery({
 		queryKey: ['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
@@ -57,7 +57,11 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 				return localRooms;
 			}
 
-			const spotlight = await getSpotlight(name, usernamesFromClient, type);
+			const spotlight = await getSpotlight({
+				query: name,
+				usernames: usernamesFromClient.join(','),
+				type: JSON.stringify(type),
+			});
 
 			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
 				index === arr.findIndex((user) => _id === user._id);
