@@ -1,4 +1,4 @@
-import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -67,7 +67,6 @@ import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
 import { canEditExtension } from '../../../lib/server/functions/saveUser/validateUserEditing';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
@@ -1539,6 +1538,8 @@ API.v1.get(
 				status: 1,
 				utcOffset: 1,
 				statusText: 1,
+				statusSource: 1,
+				statusExpiresAt: 1,
 				avatarETag: 1,
 			},
 		};
@@ -1943,6 +1944,7 @@ API.v1
 			body: ajv.compile<{
 				status?: UserStatus;
 				message?: string;
+				expiresAt?: string;
 				userId?: string;
 				username?: string;
 				user?: string;
@@ -1951,6 +1953,7 @@ API.v1
 				properties: {
 					status: { type: 'string', enum: ['online', 'away', 'offline', 'busy'] },
 					message: { type: 'string', nullable: true },
+					expiresAt: { type: 'string', nullable: true },
 					userId: { type: 'string' },
 					username: { type: 'string' },
 					user: { type: 'string' },
@@ -1998,47 +2001,37 @@ API.v1
 				return API.v1.forbidden();
 			}
 
-			const { _id, username, roles, name } = user;
-			let { statusText, status } = user;
-
-			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user, this.bodyParams.message, { emit: false });
-				statusText = this.bodyParams.message;
+			const validStatus = ['online', 'away', 'offline', 'busy'];
+			if (this.bodyParams.status && !validStatus.includes(this.bodyParams.status)) {
+				throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					method: 'users.setStatus',
+				});
 			}
 
-			if (this.bodyParams.status) {
-				const validStatus = ['online', 'away', 'offline', 'busy'];
-				if (validStatus.includes(this.bodyParams.status)) {
-					status = this.bodyParams.status;
+			const { status, message, expiresAt } = this.bodyParams;
 
-					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-							method: 'users.setStatus',
-						});
-					}
-
-					await Users.updateOne(
-						{ _id: user._id },
-						{
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						},
-					);
-
-					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-				} else {
-					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-						method: 'users.setStatus',
-					});
-				}
+			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
+			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
+				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
+					method: 'users.setStatus',
+				});
 			}
 
-			void api.broadcast('presence.status', {
-				user: { status, _id, username, statusText, roles, name },
-				previousStatus: user.status,
-			});
+			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
+			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
+			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
+
+			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+					method: 'users.setStatus',
+				});
+			}
+
+			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
+
+			if (status) {
+				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
+			}
 
 			return API.v1.success();
 		},
@@ -2049,12 +2042,14 @@ API.v1
 			authRequired: true,
 			query: isUsersGetStatusParamsGET,
 			response: {
-				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string }>({
+				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string; statusSource?: string; statusExpiresAt?: string }>({
 					type: 'object',
 					properties: {
 						_id: { type: 'string' },
 						status: statusType,
 						connectionStatus: { type: 'string', nullable: true },
+						statusSource: { type: 'string', nullable: true },
+						statusExpiresAt: { type: 'string', nullable: true },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['_id', 'status', 'success'],
@@ -2068,9 +2063,10 @@ API.v1
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				return API.v1.success({
 					_id: this.userId,
-					// message: user.statusText,
 					connectionStatus: (this.user.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 					status: (this.user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					...(this.user.statusSource && { statusSource: this.user.statusSource }),
+					...(this.user.statusExpiresAt && { statusExpiresAt: this.user.statusExpiresAt.toISOString() }),
 				});
 			}
 
@@ -2078,8 +2074,9 @@ API.v1
 
 			return API.v1.success({
 				_id: user._id,
-				// message: user.statusText,
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				...(user.statusSource && { statusSource: user.statusSource }),
+				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
 			});
 		},
 	);

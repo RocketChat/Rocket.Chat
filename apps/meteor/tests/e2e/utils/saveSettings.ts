@@ -9,12 +9,4 @@ export const saveSettings = (
 		_id: ISetting['_id'];
 		value: ISetting['value'];
 	}[],
-): Promise<APIResponse> =>
-	api.post('/method.call/saveSettings', {
-		message: JSON.stringify({
-			msg: 'method',
-			id: '1',
-			method: 'saveSettings',
-			params: [changes],
-		}),
-	});
+): Promise<APIResponse> => api.post('/settings', { settings: changes });

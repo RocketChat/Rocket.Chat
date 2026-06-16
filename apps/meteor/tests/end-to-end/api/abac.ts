@@ -3167,10 +3167,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-			]);
+			await seedBulkDecisionByEntity([], 'DECISION_PERMIT');
 
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)

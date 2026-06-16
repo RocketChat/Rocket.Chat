@@ -2237,7 +2237,7 @@
   "LDAP_Sync_Now_Description": "Ez elindítja a **Háttérben történő szinkronizálás** műveletet most, anélkül hogy a következő ütemezett szinkronizálásra várna.  \nEz a művelet aszinkron, további információkért nézze meg a naplókat.",
   "LDAP_Sync_User_Active_State": "Felhasználó aktív állapotának szinkronizálása",
   "LDAP_Sync_User_Active_State_Both": "Felhasználók engedélyezése és letiltása",
-  "LDAP_Sync_User_Active_State_Description": "Annak meghatározása, hogy a felhasználókat engedélyezni vagy letiltani kell-e a Rocket.Chaten az LDAP-állapot alapján. A „pwdAccountLockedTime” attribútum lesz használva annak meghatározásához, hogy a felhasználó le van-e tiltva.",
+  "LDAP_Sync_User_Active_State_Description": "Annak meghatározása, hogy a felhasználókat engedélyezni vagy letiltani kell-e a Rocket.Chaten az LDAP-állapot alapján.",
   "LDAP_Sync_User_Active_State_Disable": "Felhasználók letiltása",
   "LDAP_Sync_User_Active_State_Nothing": "Ne csináljon semmit",
   "LDAP_Sync_User_Avatar": "Felhasználó profilképének szinkronizálása",

@@ -1,4 +1,49 @@
+import { api } from '@rocket.chat/core-services';
+import { Settings, Users } from '@rocket.chat/models';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
+import { Accounts } from 'meteor/accounts-base';
 import { MongoInternals } from 'meteor/mongo';
+
+const { _expireTokens: expireTokensOriginal } = Accounts;
+
+Accounts._expireTokens = async () => {
+	const loginExpiration: number | undefined = await Settings.getValueById('Accounts_LoginExpiration');
+	const oldestValidDate = new Date(Date.now() - getLoginExpirationInMs(loginExpiration));
+
+	const users = await Users.find(
+		{
+			$or: [
+				{ 'services.resume.loginTokens.when': { $lt: oldestValidDate } },
+				{ 'services.resume.loginTokens.when': { $lt: +oldestValidDate } },
+			],
+		},
+		{ projection: { services: 1 } },
+	).toArray();
+
+	const updates: { _id: string; validTokens: any[] }[] = [];
+
+	users.forEach(({ _id, services }) => {
+		const loginTokens = services?.resume?.loginTokens;
+
+		// remove all tokens that are expired
+		const validTokens = loginTokens?.filter((token: any) => token.when >= oldestValidDate) || [];
+
+		updates.push({ _id, validTokens });
+	});
+
+	await expireTokensOriginal.call(Accounts);
+
+	updates.forEach(({ _id, validTokens }) => {
+		void api.broadcast('watch.users', {
+			clientAction: 'updated',
+			id: _id,
+			diff: {
+				'services.resume.loginTokens': validTokens,
+			},
+			unset: {},
+		});
+	});
+};
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -82,7 +127,7 @@ export const processOnChange = (diff: Record<string, any>, id: string): void => 
 	const cbs = userCallbacks.get(id);
 	if (cbs) {
 		[...cbs]
-			.filter(({ hashedToken }) => tokens === undefined || !tokens.includes(hashedToken))
+			.filter(({ hashedToken }) => !tokens?.includes(hashedToken))
 			.forEach((item) => {
 				item.callbacks.removed(id);
 				cbs.delete(item);

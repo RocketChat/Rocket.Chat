@@ -63,7 +63,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		}
 	};
 
-	editUploadDescription = (uploadId: Upload['id'], description: string) => {
+	editUploadAltText = (uploadId: Upload['id'], altText: string) => {
 		this.set(
 			this.uploads.map((upload) => {
 				if (upload.id !== uploadId) {
@@ -72,9 +72,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 				return {
 					...upload,
-					description,
+					altText,
 					...(isEncryptedUpload(upload) && {
-						metadataForEncryption: { ...upload.metadataForEncryption, description },
+						metadataForEncryption: { ...upload.metadataForEncryption, altText },
 					}),
 				};
 			}),

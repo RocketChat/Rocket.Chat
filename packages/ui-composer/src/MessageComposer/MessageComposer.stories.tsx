@@ -1,8 +1,7 @@
 import { Button, IconButton } from '@rocket.chat/fuselage';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
-import '@rocket.chat/icons/dist/rocketchat.css';
 import {
 	MessageComposer,
 	MessageComposerAction,
@@ -20,7 +19,6 @@ import {
 } from '.';
 
 export default {
-	title: 'Components/MessageComposer',
 	component: MessageComposer,
 } satisfies Meta<typeof MessageComposer>;
 
@@ -44,108 +42,122 @@ const MessageToolbarActions = () => (
 	</MessageComposerToolbarActions>
 );
 
-export const Default: StoryFn<typeof MessageComposer> = () => (
-	<MessageComposer>
-		<MessageComposerInput placeholder='Text' />
-		<MessageComposerToolbar>
-			<MessageToolbarActions />
-		</MessageComposerToolbar>
-	</MessageComposer>
-);
+export const Default: StoryObj<typeof MessageComposer> = {
+	render: () => (
+		<MessageComposer>
+			<MessageComposerInput placeholder='Text' />
+			<MessageComposerToolbar>
+				<MessageToolbarActions />
+			</MessageComposerToolbar>
+		</MessageComposer>
+	),
+};
 
-export const Expandable: StoryFn<typeof MessageComposer> = () => (
-	<MessageComposer>
-		<MessageComposerInputExpandable
-			dimensions={{
-				inlineSize: 400,
-				blockSize: 120,
-			}}
-			placeholder='Type a message...'
-		/>
-		<MessageComposerToolbar>
-			<MessageToolbarActions />
-		</MessageComposerToolbar>
-	</MessageComposer>
-);
+export const Expandable: StoryObj<typeof MessageComposer> = {
+	render: () => (
+		<MessageComposer>
+			<MessageComposerInputExpandable
+				dimensions={{
+					inlineSize: 400,
+					blockSize: 120,
+				}}
+				placeholder='Type a message...'
+			/>
+			<MessageComposerToolbar>
+				<MessageToolbarActions />
+			</MessageComposerToolbar>
+		</MessageComposer>
+	),
+};
 
-export const ToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
+export const ToolbarActions: StoryObj<typeof MessageComposerToolbarActions> = {
+	render: () => <MessageToolbarActions />,
+};
 
-export const WithHints: StoryFn<typeof MessageComposer> = () => (
-	<>
-		<MessageComposerHint
-			icon='pencil'
-			helperText={
-				<>
-					<strong>esc</strong> to cancel · <strong>enter</strong> to save
-				</>
-			}
-		>
-			Editing message
-		</MessageComposerHint>
+export const WithHints: StoryObj<typeof MessageComposer> = {
+	render: () => (
+		<>
+			<MessageComposerHint
+				icon='pencil'
+				helperText={
+					<>
+						<strong>esc</strong> to cancel · <strong>enter</strong> to save
+					</>
+				}
+			>
+				Editing message
+			</MessageComposerHint>
+			<MessageComposer>
+				<MessageComposerInput placeholder='Text' />
+				<MessageComposerToolbar>
+					<MessageToolbarActions />
+					<MessageComposerToolbarSubmit>
+						<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+					</MessageComposerToolbarSubmit>
+				</MessageComposerToolbar>
+			</MessageComposer>
+		</>
+	),
+};
+
+export const WithSubmit: StoryObj<typeof MessageComposer> = {
+	render: () => (
 		<MessageComposer>
 			<MessageComposerInput placeholder='Text' />
 			<MessageComposerToolbar>
 				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>
-					<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+					<Button small>Preview</Button>
+					<Button primary small>
+						Send
+					</Button>
 				</MessageComposerToolbarSubmit>
 			</MessageComposerToolbar>
 		</MessageComposer>
-	</>
-);
+	),
+};
 
-export const WithSubmit: StoryFn<typeof MessageComposer> = () => (
-	<MessageComposer>
-		<MessageComposerInput placeholder='Text' />
-		<MessageComposerToolbar>
-			<MessageToolbarActions />
-			<MessageComposerToolbarSubmit>
-				<Button small>Preview</Button>
-				<Button primary small>
-					Send
-				</Button>
-			</MessageComposerToolbarSubmit>
-		</MessageComposerToolbar>
-	</MessageComposer>
-);
+export const WithFiles: StoryObj<typeof MessageComposer> = {
+	render: () => (
+		<MessageComposer>
+			<MessageComposerInput placeholder='Text' />
+			<MessageComposerFileGroup>
+				<MessageComposerFile
+					fileTitle='antique-pocket-clock-500x500.zip'
+					fileSubtitle='58.33 KB - application/zip'
+					fileFormat='zip'
+					actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+					onClick={action('click')}
+				/>
+				<MessageComposerFile
+					disabled
+					fileTitle='file.png'
+					fileSubtitle='2 MB'
+					fileFormat='png'
+					actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+					onClick={action('click')}
+				/>
+				<MessageComposerFileError
+					fileTitle='file.png'
+					fileFormat='png'
+					error={new Error('Something went wrong')}
+					actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+					onClick={action('click')}
+				/>
+			</MessageComposerFileGroup>
+			<MessageComposerToolbar>
+				<MessageToolbarActions />
+				<MessageComposerToolbarSubmit>
+					<Button small>Preview</Button>
+					<Button primary small>
+						Send
+					</Button>
+				</MessageComposerToolbarSubmit>
+			</MessageComposerToolbar>
+		</MessageComposer>
+	),
+};
 
-export const WithFiles: StoryFn<typeof MessageComposer> = () => (
-	<MessageComposer>
-		<MessageComposerInput placeholder='Text' />
-		<MessageComposerFileGroup>
-			<MessageComposerFile
-				fileTitle='antique-pocket-clock-500x500.zip'
-				fileSubtitle='58.33 KB - application/zip'
-				fileFormat='zip'
-				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
-				onClick={action('click')}
-			/>
-			<MessageComposerFile
-				disabled
-				fileTitle='file.png'
-				fileSubtitle='2 MB'
-				fileFormat='png'
-				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
-				onClick={action('click')}
-			/>
-			<MessageComposerFileError
-				fileTitle='file.png'
-				fileFormat='png'
-				error={new Error('Something went wrong')}
-				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
-				onClick={action('click')}
-			/>
-		</MessageComposerFileGroup>
-		<MessageComposerToolbar>
-			<MessageToolbarActions />
-			<MessageComposerToolbarSubmit>
-				<Button small>Preview</Button>
-				<Button primary small>
-					Send
-				</Button>
-			</MessageComposerToolbarSubmit>
-		</MessageComposerToolbar>
-	</MessageComposer>
-);
-
-export const Loading: StoryFn<typeof MessageComposer> = () => <MessageComposerSkeleton />;
+export const Loading: StoryObj<typeof MessageComposer> = {
+	render: () => <MessageComposerSkeleton />,
+};
