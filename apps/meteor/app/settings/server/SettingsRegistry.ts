@@ -45,8 +45,8 @@ const getGroupDefaults = (_id: string, options: ISettingAddGroupOptions = {}): I
 	i18nDescription: `${_id}_Description`,
 	...options,
 	sorter: options.sorter || 0,
-	blocked: options.blocked ?? blockedSettings.has(_id),
-	hidden: options.hidden ?? hiddenSettings.has(_id),
+	blocked: blockedSettings.has(_id),
+	hidden: hiddenSettings.has(_id),
 	type: 'group',
 	...(options.displayQuery && { displayQuery: JSON.stringify(options.displayQuery) }),
 });
@@ -206,6 +206,9 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting group
 	 */
+	async addGroup(_id: string, cb?: addGroupCallback): Promise<void>;
+
+	// eslint-disable-next-line no-dupe-class-members
 	async addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): Promise<void> {
 		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');
