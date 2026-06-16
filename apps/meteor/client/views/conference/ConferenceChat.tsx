@@ -9,11 +9,12 @@ import EmbeddedPreload from '../root/MainLayout/EmbeddedPreload';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceChatProps = {
+	callId: string;
 	rid?: string;
 	loading: boolean;
 };
 
-const ConferenceChat = ({ rid, loading }: ConferenceChatProps) => {
+const ConferenceChat = ({ callId, rid, loading }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -41,7 +42,10 @@ const ConferenceChat = ({ rid, loading }: ConferenceChatProps) => {
 					<Box is='h1' fontScale='h2' color='default'>
 						{t('Chat')}
 					</Box>
-					<Button icon='user-plus' onClick={() => setModal(<AddParticipantsModal rid={rid} onClose={() => setModal(null)} />)}>
+					<Button
+						icon='user-plus'
+						onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
+					>
 						{t('Add_participants')}
 					</Button>
 				</Box>

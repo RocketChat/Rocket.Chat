@@ -1,5 +1,6 @@
 import type { VideoConferenceInstructions, VideoConference, VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 
+import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps';
 import type { VideoConfCancelProps } from './VideoConfCancelProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
@@ -12,6 +13,7 @@ export * from './VideoConfListProps';
 export * from './VideoConfStartProps';
 export * from './VideoConfJoinProps';
 export * from './VideoConfCancelProps';
+export * from './VideoConfAddParticipantsProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
@@ -24,6 +26,10 @@ export type VideoConferenceEndpoints = {
 
 	'/v1/video-conference.cancel': {
 		POST: (params: VideoConfCancelProps) => void;
+	};
+
+	'/v1/video-conference.add-participants': {
+		POST: (params: VideoConfAddParticipantsProps) => { rid: string };
 	};
 
 	'/v1/video-conference.info': {

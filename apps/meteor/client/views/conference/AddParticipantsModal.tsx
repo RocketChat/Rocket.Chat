@@ -22,7 +22,7 @@ import {
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -41,13 +41,15 @@ const keyOf = (participant: SelectedParticipant) =>
 	participant.kind === 'user' ? `user:${participant.username}` : `number:${participant.number}`;
 
 type AddParticipantsModalProps = {
+	callId: string;
 	rid: string;
 	onClose: () => void;
 };
 
-const AddParticipantsModal = ({ rid, onClose }: AddParticipantsModalProps) => {
+const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const [filter, setFilter] = useState('');
 	const [selected, setSelected] = useState<SelectedParticipant[]>([]);
@@ -57,23 +59,29 @@ const AddParticipantsModal = ({ rid, onClose }: AddParticipantsModalProps) => {
 	// The room is already loaded into the store by the conference chat (EmbeddedPreload).
 	const room = Rooms.use((state) => state.get(rid));
 	const isPrivate = room?.t === 'p';
+	// A DM can't grow, so adding participants spins up a discussion server-side instead of inviting.
+	const isDirect = room?.t === 'd';
 
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
 	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
+	const addParticipants = useEndpoint('POST', '/v1/video-conference.add-participants');
 
-	// Exclude users already in the room from the autocomplete so they can't be selected again.
+	// Exclude users already in the room from the autocomplete so they can't be selected again. DMs
+	// expose their members on the room doc; other room types are fetched from the members endpoint.
 	const getMembers = useEndpoint('GET', isPrivate ? '/v1/groups.members' : '/v1/channels.members');
 	const membersQuery = useQuery({
-		enabled: !!room,
+		enabled: !!room && !isDirect,
 		queryKey: ['conference', 'add-participants', 'members', rid, room?.t],
 		queryFn: () => getMembers({ roomId: rid, count: 100 }),
 	});
 
-	const memberUsernames = useMemo(
-		() => (membersQuery.data?.members ?? []).map((member) => member.username).filter((username): username is string => !!username),
-		[membersQuery.data],
-	);
+	const memberUsernames = useMemo(() => {
+		if (isDirect) {
+			return room?.usernames ?? [];
+		}
+		return (membersQuery.data?.members ?? []).map((member) => member.username).filter((username): username is string => !!username);
+	}, [isDirect, room?.usernames, membersQuery.data]);
 
 	const selectedUsernames = useMemo(
 		() => selected.flatMap((participant) => (participant.kind === 'user' ? [participant.username] : [])),
@@ -131,19 +139,29 @@ const AddParticipantsModal = ({ rid, onClose }: AddParticipantsModalProps) => {
 
 	const handleRemove = (key: string) => setSelected((prev) => prev.filter((participant) => keyOf(participant) !== key));
 
-	const handleAdd = async () => {
+	// 'invite' adds the users to the current room (they see its history); 'discussion' spins up a new
+	// discussion off the room instead, so the new participants don't get the room's history. DMs only
+	// support 'discussion' (they can't grow).
+	const handleAdd = async (mode: 'invite' | 'discussion') => {
 		if (!selected.length) {
 			return;
 		}
 		setAdding(true);
 		try {
-			// Phone numbers aren't wired into the room yet; only invite the selected users for now.
-			const usersToInvite = selected.flatMap((participant) => (participant.kind === 'user' ? [participant.username] : []));
-			await Promise.all(
-				usersToInvite.map((username) =>
-					isPrivate ? inviteToGroup({ roomId: rid, username }) : inviteToChannel({ roomId: rid, username }),
-				),
-			);
+			// Phone numbers aren't wired into the room yet; only add the selected users for now.
+			const usersToAdd = selected.flatMap((participant) => (participant.kind === 'user' ? [participant.username] : []));
+
+			if (mode === 'discussion') {
+				// The server creates the discussion (existing members + the new ones) and repoints the
+				// conference at it. Refresh the conference info so the chat panel switches to the new room.
+				await addParticipants({ callId, users: usersToAdd });
+				await queryClient.invalidateQueries({ queryKey: ['conference-info', callId] });
+			} else {
+				await Promise.all(
+					usersToAdd.map((username) => (isPrivate ? inviteToGroup({ roomId: rid, username }) : inviteToChannel({ roomId: rid, username }))),
+				);
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
 			onClose();
 		} catch (error) {
@@ -229,9 +247,20 @@ const AddParticipantsModal = ({ rid, onClose }: AddParticipantsModalProps) => {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary loading={adding} disabled={!selected.length} onClick={handleAdd}>
-						{t('Add')}
-					</Button>
+					{isDirect ? (
+						<Button primary loading={adding} disabled={!selected.length} onClick={() => handleAdd('discussion')}>
+							{t('Add')}
+						</Button>
+					) : (
+						<>
+							<Button loading={adding} disabled={!selected.length} onClick={() => handleAdd('discussion')}>
+								{t('Create_discussion')}
+							</Button>
+							<Button primary loading={adding} disabled={!selected.length} onClick={() => handleAdd('invite')}>
+								{t('Add_users')}
+							</Button>
+						</>
+					)}
 				</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>

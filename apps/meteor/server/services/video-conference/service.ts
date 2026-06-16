@@ -4,7 +4,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Room, Message } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -1307,17 +1307,90 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		await this.createDiscussionForConference(this.getDiscussionDisplayName(), call, createdBy);
+	}
+
+	private getDiscussionDisplayName(): string {
 		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('[date] Video Call Chat');
-		let displayName;
 		const date = new Date().toISOString().substring(0, 10);
 
-		if (name.includes('[date]')) {
-			displayName = name.replace('[date]', date);
-		} else {
-			displayName = `${date} ${name}`;
+		return name.includes('[date]') ? name.replace('[date]', date) : `${date} ${name}`;
+	}
+
+	// Creates a discussion off the conference's room and repoints the conference's `rid` at it so the
+	// chat continues there without exposing the parent room's history to the new participants. For a
+	// DM (which can't grow past two people) the discussion keeps the DM members; for other rooms it
+	// keeps the current conference participants. In both cases the newly selected users are added.
+	public async createConferenceDiscussionWithParticipants(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1 } });
+		if (!call) {
+			throw new Error('invalid-video-conference');
 		}
 
-		await this.createDiscussionForConference(displayName, call, createdBy);
+		const baseRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'usernames'>>(call.rid, {
+			projection: { t: 1, usernames: 1 },
+		});
+		if (!baseRoom) {
+			throw new Error('invalid-room');
+		}
+
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Error('invalid-user');
+		}
+
+		const parent = await this.getRoomForDiscussion(baseRoom._id);
+		const type = await roomCoordinator.getRoomDirectives(parent.t).getDiscussionType(parent);
+		if (!type) {
+			throw new Error('error-invalid-discussion-type');
+		}
+
+		// Carry over the current participants so they keep the chat: DMs expose them on the room doc,
+		// while channels/groups read them from the room's subscriptions (the conference's `users` list
+		// is only populated by app-based providers, so it's unreliable for the internal provider). The
+		// newly selected users are added on top.
+		const existingMembers =
+			baseRoom.t === 'd'
+				? baseRoom.usernames || []
+				: (await Subscriptions.findByRoomIdWhenUsernameExists(baseRoom._id, { projection: { 'u.username': 1 } }).toArray())
+						.map((subscription) => subscription.u.username)
+						.filter((username): username is string => !!username);
+		const members = [...new Set([...existingMembers, ...usernames])].filter(Boolean);
+
+		const name = this.getDiscussionDisplayName();
+
+		const discussion = await createRoom(
+			type,
+			Random.id(),
+			user,
+			members,
+			false,
+			false,
+			{
+				fname: name,
+				prid: parent._id,
+				encrypted: false,
+			},
+			{
+				creator: user._id,
+			},
+		);
+
+		// Leave a "discussion created" pointer in the original room so its members can follow along.
+		await Message.saveSystemMessage('discussion-created', parent._id, name, user, { drid: discussion._id });
+
+		await VideoConferenceModel.setDataById(callId, { rid: discussion._id });
+
+		// Notify the other conference participants so their chat panel follows the conference to the
+		// new room. The discussion already has its members (createRoom above), matching the ordering
+		// fix the streamer relies on.
+		void api.broadcast('video-conference.discussionUpdated', { callId, discussionRid: discussion._id });
+
+		return discussion._id;
 	}
 
 	private async getRoomForDiscussion(
