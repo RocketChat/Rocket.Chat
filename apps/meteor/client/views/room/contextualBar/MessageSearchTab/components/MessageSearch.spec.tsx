@@ -1,7 +1,7 @@
 import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
 import * as stories from './MessageSearch.stories';
 import type { MessageSearchItem } from '../hooks/useMessageSearchQuery';
@@ -28,8 +28,7 @@ jest.mock('../../../../../../app/utils/client', () => ({
 	getURL: (url: string) => url,
 }));
 
-// TODO: Create a <FakeMessageListProvider> to mock the MessageListProvider
-jest.mock('../../../MessageList/providers/MessageListProvider', () => ({ children }: { children: ReactNode }) => <>{children}</>);
+jest.mock('../../../MessageList/providers/MessageListProvider', () => ({ children }: PropsWithChildren) => <>{children}</>);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
