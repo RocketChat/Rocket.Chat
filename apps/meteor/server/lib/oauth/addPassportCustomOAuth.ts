@@ -9,7 +9,11 @@ import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAut
 import { settings } from '../../../app/settings/server';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
-export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAuthConfiguration & { clientSecret: string }>) => {
+export const addPassportCustomOAuth = (
+	serviceName: string,
+	config: Partial<OAuthConfiguration & { clientSecret: string }>,
+	isCustomOAuth: boolean = false,
+) => {
 	passport.unuse(serviceName);
 
 	if (!config.clientId || !config.clientSecret || !config.serverURL) {
@@ -30,7 +34,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/oauth/${serviceName}`,
-		allowPassportOAuthMiddleware(serviceName, true),
+		allowPassportOAuthMiddleware(serviceName, isCustomOAuth),
 		(req, _res, next) => {
 			const { loginClient } = req.query;
 			if (loginClient === 'mobile' || loginClient === 'desktop') {
@@ -49,7 +53,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
-		allowPassportOAuthMiddleware(serviceName, true),
+		allowPassportOAuthMiddleware(serviceName, isCustomOAuth),
 		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
 		passportOAuthCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
 	);

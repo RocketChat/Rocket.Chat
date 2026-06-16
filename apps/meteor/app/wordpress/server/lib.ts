@@ -58,10 +58,10 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			}
 			break;
 		case 'wordpress-com':
-			config.identityPath = 'https://public-api.wordpress.com/rest/v1/me';
+			config.identityPath = '/rest/v1/me';
 			config.identityTokenSentVia = 'header' as OAuthConfiguration['identityTokenSentVia'];
-			config.authorizePath = 'https://public-api.wordpress.com/oauth2/authorize';
-			config.tokenPath = 'https://public-api.wordpress.com/oauth2/token';
+			config.authorizePath = '/oauth2/authorize';
+			config.tokenPath = '/oauth2/token';
 			config.scope = 'auth';
 			break;
 		default:

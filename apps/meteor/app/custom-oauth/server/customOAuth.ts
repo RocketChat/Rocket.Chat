@@ -106,6 +106,10 @@ export class CustomOAuthStrategy extends Strategy {
 			this._oauth2.useAuthorizationHeaderforGET(true);
 		}
 
+		if (this.identityTokenSentVia === 'header') {
+			this._oauth2.useAuthorizationHeaderforGET(true);
+		}
+
 		if (config.accessTokenParam && config.accessTokenParam !== 'access_token') {
 			this._oauth2.setAccessTokenName(config.accessTokenParam);
 		}

@@ -103,7 +103,7 @@ export async function updateOAuthServices(): Promise<void> {
 				};
 
 				new CustomOAuth(serviceKey, config);
-				addPassportCustomOAuth(serviceKey, config);
+				addPassportCustomOAuth(serviceKey, config, true);
 			}
 			if (serviceName === 'Facebook') {
 				(data as FacebookOAuthConfiguration).appId = data.clientId as string;
