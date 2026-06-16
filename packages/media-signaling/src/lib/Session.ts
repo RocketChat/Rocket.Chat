@@ -220,6 +220,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		const call = this.getOrCreateCallBySignal(signal);
+		if (!call) {
+			return;
+		}
 
 		if (signal.type === 'notification' && signal.signedContractId) {
 			if (signal.signedContractId === this._sessionId) {
@@ -355,11 +358,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall {
+	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall | null {
 		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
 		const existingCall = this.getExistingCallBySignal(signal);
 		if (existingCall) {
 			return existingCall;
+		}
+
+		// Notifications that do not cause state change can be ignored if the call is still unknown
+		if (signal.type === 'notification' && ['escalated', 'trying'].includes(signal.notification)) {
+			return null;
 		}
 
 		return this.createCall(signal.callId);
@@ -661,6 +669,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('ended', () => this.onEndedCall(call));
 		call.emitter.on('screenShareRequestChange', (requested: boolean) => this.onScreenShareRequestChange(call, requested));
 		call.emitter.on('streamChange', () => this.onSessionStateChange());
+		call.emitter.on('escalated', () => this.onSessionStateChange());
 
 		return call;
 	}

@@ -10,7 +10,7 @@ import type { CallActorType } from './common';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -52,11 +52,15 @@ export const callAnswerList = [
 
 export type CallAnswer = (typeof callAnswerList)[number];
 
-export type CallNotification =
-	| 'accepted' // notify that the call has been accepted by both actors
-	| 'active' // notify that call activity was confirmed
-	| 'hangup' // notify that the call is over;
-	| 'trying'; // notify that the other client is connecting but still need more time
+export const callNotificationList = [
+	'accepted', // notify that the call has been accepted by both actors
+	'active', // notify that call activity was confirmed
+	'hangup', // notify that the call is over;
+	'trying', // notify that the other client is connecting but still need more time
+	'escalated', // notify that the call was escalated to a video-conference
+];
+
+export type CallNotification = (typeof callNotificationList)[number];
 
 export type CallRejectedReason =
 	| 'invalid-call-id' // the call id can't be used for a new call

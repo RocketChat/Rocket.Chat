@@ -151,6 +151,21 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async flagAsEscalatedByCallId(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				ended: false,
+				escalatedAt: { $exists: false },
+			},
+			{
+				$set: {
+					escalatedAt: new Date(),
+				},
+			},
+		);
+	}
+
 	public async setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult> {
 		return this.updateOne(
 			{
@@ -204,6 +219,25 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					$gt: new Date(),
 				},
 				uids: uid,
+			},
+			options,
+		);
+	}
+
+	public findAllNotOverByOppositeSipExtension<T extends Document = IMediaCall>(
+		sipExtension: string,
+		options?: FindOptions<T>,
+	): FindCursor<T> {
+		return this.find(
+			{
+				ended: false,
+				expiresAt: {
+					$gt: new Date(),
+				},
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension, 'callee.type': 'sip' },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension, 'caller.type': 'sip' },
+				],
 			},
 			options,
 		);
