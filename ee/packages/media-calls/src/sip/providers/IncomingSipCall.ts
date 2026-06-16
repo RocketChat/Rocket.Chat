@@ -21,11 +21,7 @@ import { SipError, SipErrorCodes } from '../errorCodes';
 import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 export class IncomingSipCall extends BaseSipCall {
-	private sipDialog: Srf.Dialog | null;
-
 	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
-
-	private processedTransfer: boolean;
 
 	constructor(
 		session: SipServerSession,
@@ -40,6 +36,7 @@ export class IncomingSipCall extends BaseSipCall {
 		this.sipDialog = null;
 		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
+		this.processedEscalation = false;
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
@@ -172,6 +169,10 @@ export class IncomingSipCall extends BaseSipCall {
 			return this.processTransferredCall(call);
 		}
 
+		if (call.escalatedAt) {
+			return this.processEscalatedCall(call);
+		}
+
 		if (call.ended) {
 			return this.processEndedCall(call);
 		}
@@ -181,51 +182,6 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 
 		logger.debug({ msg: 'no changes detected', method: 'IncomingSipCall.reflectCall' });
-	}
-
-	protected async processTransferredCall(call: IMediaCall): Promise<void> {
-		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
-			return;
-		}
-
-		if (!this.sipDialog || this.processedTransfer) {
-			if (call.ended) {
-				return this.processEndedCall(call);
-			}
-			return;
-		}
-
-		logger.debug({ msg: 'IncomingSipCall.processTransferredCall', callId: call._id, lastCallState: this.lastCallState });
-		this.processedTransfer = true;
-
-		try {
-			// Sip targets can only be referred to other sip users
-			const newCallee = await mediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
-			if (!newCallee) {
-				throw new Error('invalid-transfer');
-			}
-
-			const referTo = this.session.geContactUri(newCallee);
-			const referredBy = this.session.geContactUri(call.transferredBy);
-
-			const res = await this.sipDialog.request({
-				method: 'REFER',
-				headers: {
-					'Refer-To': referTo,
-					'Referred-By': referredBy,
-				},
-			});
-
-			if (res.status === 202) {
-				logger.debug({ msg: 'REFER was accepted', method: 'IncomingSipCall.processTransferredCall' });
-			}
-		} catch (err) {
-			logger.error({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', err });
-			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
-			}
-			return this.processEndedCall(call);
-		}
 	}
 
 	protected async processEndedCall(call: IMediaCall): Promise<void> {

@@ -1,4 +1,7 @@
 import type {
+	AtLeast,
+	ExternalVideoConference,
+	IGroupVideoConference,
 	IRoom,
 	IStats,
 	IUser,
@@ -44,4 +47,12 @@ export interface IVideoConfService {
 	): Promise<boolean>;
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
+	joinCall(
+		call: ExternalVideoConference,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
+		options: VideoConferenceJoinOptions,
+	): Promise<string>;
+	createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'createdBy' | 'mediaCallIds'>>,
+	): Promise<IGroupVideoConference | null>;
 }

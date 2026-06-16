@@ -121,7 +121,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		 *    Since the Call instance is only created when we receive "something" from the server, this would mean we received signals out of order, or missed one.
 		 */
 
-		return this.ignored || this.contractState === 'ignored' || !this.initialized;
+		return this.ignored || this.contractState === 'ignored' || !this._initialized;
 	}
 
 	public get muted(): boolean {
@@ -246,6 +246,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private enabledFeatures: CallFeature[] | null;
 
+	private escalated: boolean;
+
 	private _flags: CallFlag[];
 
 	public get flags(): CallFlag[] {
@@ -299,6 +301,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			activeTimestamp: this.activeTimestamp,
 			tempCallId: this.tempCallId,
 			hidden: this.hidden,
+			escalated: this.escalated,
 			ringing: this.ringing,
 
 			localParticipant: this.localParticipant,
@@ -334,6 +337,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
 		this.enabledFeatures = null;
+		this.escalated = false;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -389,7 +393,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		supportedFeatures: CallFeature[],
 		contactInfo?: CallContact,
 	): Promise<void> {
-		if (this.initialized) {
+		if (this._initialized) {
 			return;
 		}
 
@@ -1220,6 +1224,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			case 'hangup':
 				return this.flagAsEnded('remote');
+			case 'escalated':
+				return this.flagAsEscalated();
 		}
 	}
 
@@ -1277,6 +1283,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.changeState('hangup');
+	}
+
+	private flagAsEscalated(): void {
+		if (this.escalated) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.flagAsEscalated');
+
+		this.escalated = true;
+		this.emitter.emit('escalated');
 	}
 
 	private addStateTimeout(state: ClientState, timeout: number, callback?: () => void): void {
