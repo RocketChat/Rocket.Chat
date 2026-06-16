@@ -226,7 +226,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 		this._oauth2.get(this.identityPath, accessToken, (err, body, res) => {
 			if (err) {
-				return done(err);
+				return done(JSON.stringify(err));
 			}
 
 			if ((res && res.statusCode !== 200) || !body) {
