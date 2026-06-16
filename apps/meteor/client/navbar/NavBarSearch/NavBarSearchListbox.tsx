@@ -1,13 +1,14 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Throbber, Tile } from '@rocket.chat/fuselage';
+import { Box, Tile } from '@rocket.chat/fuselage';
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
 import { useSearchItems } from './hooks/useSearchItems';
@@ -63,11 +64,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 					{items.map((item) => (
 						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
 					))}
-					{isLoading && (
-						<Box pi={12} pbs={8} display='flex' justifyContent='center' role='presentation' aria-hidden>
-							<Throbber />
-						</Box>
-					)}
+					{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
 				</div>
 			</CustomScrollbars>
 		</Tile>
