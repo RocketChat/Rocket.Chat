@@ -2,14 +2,11 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import useTryToJumpToThreadMessage from './useTryToJumpToThreadMessage';
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomManager } from '../../../../lib/RoomManager';
+import { useGoToRoom } from '../../hooks/useGoToRoom';
 
-jest.mock('../../../../../app/ui-utils/client', () => ({
-	RoomHistoryManager: {
-		getSurroundingMessages: jest.fn().mockResolvedValue(undefined),
-		isLoaded: jest.fn().mockReturnValue(false),
-		getMore: jest.fn().mockResolvedValue(undefined),
-	},
+jest.mock('../../hooks/useGoToRoom', () => ({
+	useGoToRoom: jest.fn(),
 }));
 
 jest.mock('../../../../lib/RoomManager', () => ({
@@ -39,15 +36,21 @@ jest.mock('../../../../stores', () => ({
 	},
 }));
 
-const mockedRoomHistoryManager = jest.mocked(RoomHistoryManager);
+const mockedUseGoToRoom = jest.mocked(useGoToRoom);
+const mockedGoToRoom = jest.fn().mockResolvedValue(undefined);
+
+beforeEach(() => {
+	mockedUseGoToRoom.mockReturnValue(mockedGoToRoom);
+});
 
 afterEach(() => {
 	jest.clearAllMocks();
+	(RoomManager as { opened: string | undefined }).opened = undefined;
 });
 
 describe('useTryToJumpToThreadMessage', () => {
 	describe('early return when msg param is absent or jumpContext is jumpToUnread', () => {
-		it('should not navigate or load messages when msg search parameter is absent', () => {
+		it('should not navigate when msg search parameter is absent', () => {
 			const endpointSpy = jest.fn();
 
 			renderHook(() => useTryToJumpToThreadMessage(), {
@@ -55,11 +58,10 @@ describe('useTryToJumpToThreadMessage', () => {
 			});
 
 			expect(endpointSpy).not.toHaveBeenCalled();
-			expect(mockedRoomHistoryManager.getSurroundingMessages).not.toHaveBeenCalled();
-			expect(mockedRoomHistoryManager.getMore).not.toHaveBeenCalled();
+			expect(mockedGoToRoom).not.toHaveBeenCalled();
 		});
 
-		it('should not navigate or load messages when jumpContext is jumpToUnread', async () => {
+		it('should not navigate when jumpContext is jumpToUnread', async () => {
 			const threadMessage = {
 				_id: 'msg-1',
 				rid: 'room-1',
@@ -86,16 +88,13 @@ describe('useTryToJumpToThreadMessage', () => {
 
 			await waitFor(async () => {
 				await new Promise((resolve) => setTimeout(resolve, 300));
-				expect(mockedRoomHistoryManager.getMore).not.toHaveBeenCalled();
+				expect(mockedGoToRoom).not.toHaveBeenCalled();
 			});
-
-			expect(mockedRoomHistoryManager.getSurroundingMessages).not.toHaveBeenCalled();
-			expect(mockedRoomHistoryManager.getMore).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('when jumpContext is absent', () => {
-		it('should load more messages when jumpContext is null', async () => {
+		it('should open the thread when jumpContext is null', async () => {
 			const threadMessage = {
 				_id: 'msg-1',
 				rid: 'room-1',
@@ -105,8 +104,6 @@ describe('useTryToJumpToThreadMessage', () => {
 				msg: 'Thread reply',
 				_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 			};
-
-			mockedRoomHistoryManager.isLoaded.mockReturnValue(false);
 
 			const endpointSpy = jest.fn().mockResolvedValue({ message: threadMessage });
 
@@ -123,10 +120,11 @@ describe('useTryToJumpToThreadMessage', () => {
 			});
 
 			await waitFor(() => {
-				expect(mockedRoomHistoryManager.getMore).toHaveBeenCalledWith('room-1');
+				expect(mockedGoToRoom).toHaveBeenCalledWith('room-1', {
+					routeParamsOverrides: { tab: 'thread', context: 'parent-msg-1' },
+					replace: false,
+				});
 			});
-
-			expect(mockedRoomHistoryManager.getSurroundingMessages).not.toHaveBeenCalled();
 		});
 	});
 });

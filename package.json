@@ -142,7 +142,6 @@
 		"minimatch@npm:^9.0.4": "9.0.9",
 		"minimatch@npm:^10.0.0": "10.2.5",
 		"nodemailer@npm:^8.0.8": "8.0.8",
-		"mailparser/nodemailer": "7.0.13",
 		"normalize-package-data@npm:2.5.0/semver": "5.7.2",
 		"make-dir@npm:2.1.0/semver": "5.7.2",
 		"utf7/semver": "5.7.2",

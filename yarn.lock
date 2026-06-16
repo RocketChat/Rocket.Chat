@@ -9567,7 +9567,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~9.39.4"
     express: "npm:^4.21.2"
-    hono: "npm:4.12.23"
+    hono: "npm:4.12.25"
     jest: "npm:~30.2.0"
     qs: "npm:^6.15.2"
     supertest: "npm:~7.1.4"
@@ -10158,7 +10158,7 @@ __metadata:
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
-    hono: "npm:4.12.23"
+    hono: "npm:4.12.25"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -10186,7 +10186,7 @@ __metadata:
     lodash.debounce: "npm:^4.0.8"
     lodash.escape: "npm:^4.0.1"
     lodash.get: "npm:^4.4.2"
-    mailparser: "npm:~3.9.9"
+    mailparser: "npm:~3.9.10"
     marked: "npm:^4.3.0"
     mem: "npm:^8.1.1"
     meteor-node-stubs: "npm:~1.2.27"
@@ -23746,10 +23746,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:4.12.23":
-  version: 4.12.23
-  resolution: "hono@npm:4.12.23"
-  checksum: 10/721a7f0728fafe229ea84d5f0f3a2575b44dce5eb2047e49f4e7929257bb59511c80adefbe09637480ca3b65ad553510d7cd75c7dc696a916f141aefcbcb2667
+"hono@npm:4.12.25":
+  version: 4.12.25
+  resolution: "hono@npm:4.12.25"
+  checksum: 10/0cbdcdfdfb45b43cc915beaa44604170bb73b45e647927917714ec222347e7f44c944708471a45b4733cfd20b03c53820593db5b3b19663b935afca9cf984817
   languageName: node
   linkType: hard
 
@@ -27611,9 +27611,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mailparser@npm:~3.9.9":
-  version: 3.9.9
-  resolution: "mailparser@npm:3.9.9"
+"mailparser@npm:~3.9.10":
+  version: 3.9.10
+  resolution: "mailparser@npm:3.9.10"
   dependencies:
     "@zone-eu/mailsplit": "npm:5.4.12"
     encoding-japanese: "npm:2.2.0"
@@ -27622,10 +27622,10 @@ __metadata:
     iconv-lite: "npm:0.7.2"
     libmime: "npm:5.3.8"
     linkify-it: "npm:5.0.1"
-    nodemailer: "npm:8.0.10"
+    nodemailer: "npm:9.0.0"
     punycode.js: "npm:2.3.1"
     tlds: "npm:1.261.0"
-  checksum: 10/e0cccacded20cc38d812f702d3c603f866a438b21fd90853e7456e2938389bdbcbd093152eb229616bc9f2631b6c8b6f657258a3c686b090c009a6287e2a6780
+  checksum: 10/427aefc17df534eeac22cb6ab6c87442115fbb000b173eea51e9286e00694c2b2e48e7b2920f8d312c59faf3c1d0babcb06f2e1c2552e207777991d31444649e
   languageName: node
   linkType: hard
 
@@ -29098,17 +29098,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:7.0.13":
-  version: 7.0.13
-  resolution: "nodemailer@npm:7.0.13"
-  checksum: 10/4ae37bfb6896f1555de150c1098a7c1b28eb1da240a4c7adede81a8af0dcc184298cfbf804930599c076ea574428e0c18c6b28f0dc2072cebb30c1da5fd0b688
-  languageName: node
-  linkType: hard
-
 "nodemailer@npm:8.0.8":
   version: 8.0.8
   resolution: "nodemailer@npm:8.0.8"
   checksum: 10/b4d2d095355751ab4baa7047c35845a05a42eec734218e69fb36d16e9efaa0804d41741e39bbe0e22dfd416a9be835b09b82df624fd5da2b5d7aa8ca5a449e55
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:9.0.0":
+  version: 9.0.0
+  resolution: "nodemailer@npm:9.0.0"
+  checksum: 10/c72598e599c13e5c7d1c49e46eb6a448e615ea5abe4ba6a1c7fae1c42941689adecbdcd5b19dd6ff2d36758274832895086b0414cc6031f50a69d9e612895597
   languageName: node
   linkType: hard
 
