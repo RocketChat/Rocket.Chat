@@ -1,4 +1,4 @@
-import type { RoomType, UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import {
 	AutoComplete,
 	Box,
@@ -21,10 +21,12 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEndpoint, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Rooms } from '../../stores';
 
 // Mirrors the VoIP widget's PeerAutocomplete: a typed value becomes a synthetic top option so the
 // user can add a raw phone number that isn't a known user.
@@ -39,12 +41,11 @@ const keyOf = (participant: SelectedParticipant) =>
 	participant.kind === 'user' ? `user:${participant.username}` : `number:${participant.number}`;
 
 type AddParticipantsModalProps = {
-	type: RoomType;
-	reference: string;
+	rid: string;
 	onClose: () => void;
 };
 
-const AddParticipantsModal = ({ type, reference, onClose }: AddParticipantsModalProps) => {
+const AddParticipantsModal = ({ rid, onClose }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -53,25 +54,20 @@ const AddParticipantsModal = ({ type, reference, onClose }: AddParticipantsModal
 	const [adding, setAdding] = useState(false);
 	const debouncedFilter = useDebouncedValue(filter, 300);
 
-	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
+	// The room is already loaded into the store by the conference chat (EmbeddedPreload).
+	const room = Rooms.use((state) => state.get(rid));
+	const isPrivate = room?.t === 'p';
+
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
 	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
 
-	const roomQuery = useQuery({
-		queryKey: ['conference', 'add-participants', 'room', type, reference],
-		queryFn: () => getRoomByTypeAndName(type, reference),
-	});
-
-	const rid = roomQuery.data?._id;
-	const isPrivate = roomQuery.data?.t === 'p';
-
 	// Exclude users already in the room from the autocomplete so they can't be selected again.
 	const getMembers = useEndpoint('GET', isPrivate ? '/v1/groups.members' : '/v1/channels.members');
 	const membersQuery = useQuery({
-		enabled: !!rid,
-		queryKey: ['conference', 'add-participants', 'members', rid],
-		queryFn: () => getMembers({ roomId: rid as string, count: 100 }),
+		enabled: !!room,
+		queryKey: ['conference', 'add-participants', 'members', rid, room?.t],
+		queryFn: () => getMembers({ roomId: rid, count: 100 }),
 	});
 
 	const memberUsernames = useMemo(
@@ -87,7 +83,7 @@ const AddParticipantsModal = ({ type, reference, onClose }: AddParticipantsModal
 	const exceptions = useMemo(() => [...memberUsernames, ...selectedUsernames], [memberUsernames, selectedUsernames]);
 
 	const usersQuery = useQuery({
-		enabled: !!rid,
+		enabled: !!room,
 		queryKey: ['conference', 'add-participants', 'autocomplete', debouncedFilter, exceptions],
 		queryFn: async () => {
 			const { items } = await getUsers({ selector: JSON.stringify({ term: debouncedFilter, exceptions }) });
@@ -136,7 +132,7 @@ const AddParticipantsModal = ({ type, reference, onClose }: AddParticipantsModal
 	const handleRemove = (key: string) => setSelected((prev) => prev.filter((participant) => keyOf(participant) !== key));
 
 	const handleAdd = async () => {
-		if (!rid || !selected.length) {
+		if (!selected.length) {
 			return;
 		}
 		setAdding(true);
@@ -233,7 +229,7 @@ const AddParticipantsModal = ({ type, reference, onClose }: AddParticipantsModal
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary loading={adding} disabled={!rid || !selected.length} onClick={handleAdd}>
+					<Button primary loading={adding} disabled={!selected.length} onClick={handleAdd}>
 						{t('Add')}
 					</Button>
 				</ModalFooterControllers>
