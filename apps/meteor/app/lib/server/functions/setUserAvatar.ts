@@ -14,6 +14,19 @@ import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 
+const sanitizeAvatarUrl = (url: string): string => {
+	try {
+		const parsedUrl = new URL(url);
+		parsedUrl.username = '';
+		parsedUrl.password = '';
+		parsedUrl.search = '';
+		parsedUrl.hash = '';
+		return parsedUrl.toString();
+	} catch {
+		return 'invalid-avatar-url';
+	}
+};
+
 export const setAvatarFromServiceWithValidation = async (
 	userId: string,
 	dataURI: string,
@@ -100,67 +113,132 @@ export async function setUserAvatar(
 
 	const { buffer, type } = await (async (): Promise<{ buffer: Buffer; type: string }> => {
 		if (service === 'url' && typeof dataURI === 'string') {
-			let response: Response;
+			const sanitizedUrl = sanitizeAvatarUrl(dataURI);
+			const controller = new AbortController();
+			const AVATAR_FETCH_TIMEOUT_MS = 30_000;
+			const timer = setTimeout(() => controller.abort(), AVATAR_FETCH_TIMEOUT_MS);
 
 			try {
-				response = await fetch(dataURI, {
-					ignoreSsrfValidation: false,
-					allowList: settings.get<string>('SSRF_Allowlist'),
-				});
-			} catch (e) {
-				SystemLogger.info({
-					msg: 'Not a valid response from the avatar url',
-					url: encodeURI(dataURI),
-					err: e,
-				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
-					function: 'setUserAvatar',
-					url: dataURI,
-				});
-			}
+				let response: Response;
 
-			if (response.status !== 200) {
-				if (response.status !== 404) {
-					SystemLogger.info({
-						msg: 'Error while handling the setting of the avatar from a url',
-						url: encodeURI(dataURI),
-						username: user.username,
-						status: response.status,
+				try {
+					response = await fetch(dataURI, {
+						ignoreSsrfValidation: false,
+						allowList: settings.get<string>('SSRF_Allowlist'),
+						signal: controller.signal,
 					});
-					throw new Meteor.Error(
-						'error-avatar-url-handling',
-						`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
-						{ function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username },
-					);
+				} catch (e) {
+					if (controller.signal.aborted) {
+						throw new Meteor.Error('error-avatar-url-timeout', `Avatar URL timed out after ${AVATAR_FETCH_TIMEOUT_MS}ms: ${sanitizedUrl}`, {
+							function: 'setUserAvatar',
+							url: sanitizedUrl,
+						});
+					}
+					SystemLogger.info({
+						msg: 'Not a valid response from the avatar url',
+						url: sanitizedUrl,
+						err: e,
+					});
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
+						function: 'setUserAvatar',
+						url: sanitizedUrl,
+					});
 				}
 
-				SystemLogger.info({
-					msg: 'Not a valid response from the avatar url',
-					status: response.status,
-					url: dataURI,
-				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
-					function: 'setUserAvatar',
-					url: dataURI,
-				});
-			}
+				if (response.status !== 200) {
+					void (response.body as any)?.cancel?.();
+					if (response.status !== 404) {
+						SystemLogger.info({
+							msg: 'Error while handling the setting of the avatar from a url',
+							url: sanitizedUrl,
+							username: user.username,
+							status: response.status,
+						});
+						throw new Meteor.Error(
+							'error-avatar-url-handling',
+							`Error while handling avatar setting from a URL (${sanitizedUrl}) for ${user.username}`,
+							{ function: 'RocketChat.setUserAvatar', url: sanitizedUrl, username: user.username },
+						);
+					}
 
-			if (!/image\/.+/.test(response.headers.get('content-type') || '')) {
-				SystemLogger.info({
-					msg: 'Not a valid content-type from the provided avatar url',
-					contentType: response.headers.get('content-type'),
-					url: dataURI,
-				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
-					function: 'setUserAvatar',
-					url: dataURI,
-				});
-			}
+					SystemLogger.info({
+						msg: 'Not a valid response from the avatar url',
+						status: response.status,
+						url: sanitizedUrl,
+					});
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
+						function: 'setUserAvatar',
+						url: sanitizedUrl,
+					});
+				}
 
-			return {
-				buffer: Buffer.from(await response.arrayBuffer()),
-				type: response.headers.get('content-type') || '',
-			};
+				const ALLOWED_AVATAR_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+				const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+				if (!ALLOWED_AVATAR_MIME_TYPES.includes(contentType)) {
+					void (response.body as any)?.cancel?.();
+					SystemLogger.info({
+						msg: 'Not a valid content-type from the provided avatar url',
+						contentType: response.headers.get('content-type'),
+						url: sanitizedUrl,
+					});
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
+						function: 'setUserAvatar',
+						url: sanitizedUrl,
+					});
+				}
+
+				const maxSize = settings.get<number>('FileUpload_MaxFileSize') ?? 104857600;
+				const isUnlimitedMaxSize = maxSize <= 0;
+
+				const contentLengthHeader = response.headers.get('content-length');
+				if (!isUnlimitedMaxSize && contentLengthHeader) {
+					const declaredSize = parseInt(contentLengthHeader, 10);
+					if (!Number.isNaN(declaredSize) && declaredSize > maxSize) {
+						void (response.body as any)?.cancel?.();
+						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
+							function: 'setUserAvatar',
+							url: sanitizedUrl,
+						});
+					}
+				}
+
+				if (!response.body) {
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
+						function: 'setUserAvatar',
+						url: sanitizedUrl,
+					});
+				}
+
+				const chunks: Buffer[] = [];
+				let downloaded = 0;
+				for await (const chunk of response.body) {
+					const part = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as unknown as Uint8Array);
+					downloaded += part.length;
+					if (!isUnlimitedMaxSize && downloaded > maxSize) {
+						void (response.body as any)?.cancel?.();
+						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
+							function: 'setUserAvatar',
+							url: sanitizedUrl,
+						});
+					}
+					chunks.push(part);
+				}
+
+				return {
+					buffer: Buffer.concat(chunks),
+					type: contentType,
+				};
+			} catch (e) {
+				if (controller.signal.aborted && !(e instanceof Meteor.Error)) {
+					throw new Meteor.Error('error-avatar-url-timeout', `Avatar URL timed out after ${AVATAR_FETCH_TIMEOUT_MS}ms: ${sanitizedUrl}`, {
+						function: 'setUserAvatar',
+						url: sanitizedUrl,
+					});
+				}
+				throw e;
+			} finally {
+				clearTimeout(timer);
+			}
 		}
 
 		if (service === 'rest') {
