@@ -11,6 +11,7 @@ import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 import { Rooms } from '../../../stores';
+import NotFoundPage from '../../notFound/NotFoundPage';
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
@@ -90,6 +91,14 @@ const EmbeddedPreload = ({ children, reference, type }: { children: ReactNode; r
 			RoomsCachedStore.setReady(true);
 		}
 	}, [shouldFetch, isSuccess, isError]);
+
+	// When an explicit room target is requested (e.g. the embedded conference chat) and it can't be
+	// resolved, render a 404 instead of mounting the children. Mounting them would re-fetch the same
+	// room through `useOpenRoom` and, combined with the forced cached-store readiness above, loops on
+	// `getRoomByTypeAndName`. MainLayout passes no reference/type, so it keeps rendering children.
+	if (reference && type && isError) {
+		return <NotFoundPage />;
+	}
 
 	if (!ready || (shouldFetch && isLoading)) {
 		return <PageLoading />;
