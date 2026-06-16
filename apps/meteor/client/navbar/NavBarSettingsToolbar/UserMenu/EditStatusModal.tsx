@@ -1,5 +1,4 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
@@ -147,15 +146,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 										disabled={!allowUserStatusMessageChange}
 										flexGrow={1}
 										placeholder={defaultStatusLabel}
-										className={css`
-											align-items: center;
-
-											& > .rcx-input-box__addon {
-												order: -1;
-												margin-inline-end: 0.5rem;
-											}
-										`}
-										addon={
+										startAddon={
 											<Controller
 												control={control}
 												name='statusType'
