@@ -75,18 +75,19 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const isAtBottom = useRef<boolean | null>(null);
+	const prevItemsLengthRef = useRef(0);
 
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
 	const messagesLength = messages.length;
 	useEffect(() => {
 		setKeepAtBottom(() => {
-			if (virtualizerRef.current) {
+			if (virtualizerRef.current && !msgJumpParam) {
 				virtualizerRef.current.scrollToIndex(messagesLength + 1, {
 					align: 'end',
 				});
 			}
 		});
-	}, [messagesLength, setKeepAtBottom]);
+	}, [messagesLength, setKeepAtBottom, msgJumpParam]);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef);
 
@@ -109,6 +110,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	useEffect(() => {
 		lastThreadJumpKeyRef.current = undefined;
+		prevItemsLengthRef.current = 0;
 	}, [mainMessage._id]);
 
 	useEffect(() => {
@@ -120,15 +122,31 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			setShouldJumpToBottom(false);
 			return;
 		}
+
+		// Scroll to bottom when current user's optimistic (temp) message is appended.
+		// Fires before server confirmation, giving immediate scroll feedback.
+		const prev = prevItemsLengthRef.current;
+		prevItemsLengthRef.current = items.length;
+		if (items.length > prev && uid) {
+			const lastItem = items.at(-1);
+			if (lastItem?.temp && lastItem.u._id === uid) {
+				setShouldJumpToBottom(true);
+			}
+		}
+
 		if (isAtBottom.current === true && lastScrollSizeRef.current !== handle?.scrollSize) {
 			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
 			setShouldJumpToBottom(true);
 		}
 		if (shouldJumpToBottom) {
+			// Optimistically mark as at-bottom before the scroll executes (rAF).
+			// This ensures the ResizeObserver in useKeepAtBottom re-scrolls if
+			// quote/attachment content grows between now and when Virtua fires the scroll.
+			isAtBottom.current = true;
 			handle.scrollToIndex(items.length, { align: 'end' });
 			setShouldJumpToBottom(false);
 		}
-	}, [loading, items.length, msgJumpParam, threadMsgTargetIndex, shouldJumpToBottom, setShouldJumpToBottom]);
+	}, [items, loading, msgJumpParam, threadMsgTargetIndex, shouldJumpToBottom, setShouldJumpToBottom, uid]);
 
 	useEffect(() => {
 		if (threadMsgTargetIndex < 0 || !msgJumpParam) {
@@ -160,13 +178,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				setMessageJumpQueryStringParameter(null);
 			}
 		};
-		const timeoutId = setTimeout(() => {
+		setTimeout(() => {
 			clearMsgJumpParam();
 		}, 500);
-		return () => {
-			clearMsgJumpParam();
-			clearTimeout(timeoutId);
-		};
 	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {
