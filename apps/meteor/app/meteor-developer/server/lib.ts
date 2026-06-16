@@ -18,7 +18,7 @@ const config: Partial<OAuthConfiguration> = {
 	},
 };
 
-const serviceKey = 'meteor-developer';
+const serviceKey = 'meteor';
 
 const configureMeteorDeveloperOAuth = (): void => {
 	passport.unuse(serviceKey);
