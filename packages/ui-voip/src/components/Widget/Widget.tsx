@@ -10,7 +10,7 @@ import { type LastKnownPosition } from '../../providers/useWidgetPositionTracker
 
 // TODO: Initial position from the draggable api instead of style props
 // TODO: A11Y
-const WidgetBase = styled('dialog')`
+const WidgetBase = styled('div')`
 	position: fixed;
 	padding: 0;
 	right: 2em;
@@ -49,6 +49,7 @@ const Widget = ({ children, onChangePosition, restorePosition, ...props }: Widge
 				<WidgetBase
 					{...props}
 					ref={draggableRef}
+					role='dialog'
 					aria-labelledby='rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info'
 				>
 					{children}
