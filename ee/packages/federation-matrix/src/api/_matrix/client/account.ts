@@ -4,6 +4,7 @@ import { ajv } from '@rocket.chat/rest-typings';
 import type { ClientRouter } from './_shared';
 import { isMatrixErrorProps, license, tags } from './_shared';
 import { createOrUpdateFederatedUser } from '../../../helpers/createOrUpdateFederatedUser';
+import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../../helpers/parseXmppUserId';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const RegisterBodySchema = {
@@ -73,20 +74,46 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				}
 
 				const serverName = federationSDK.getConfig('serverName');
-				const userId = `@${body.username}:${serverName}`;
 
-				// TODO may need to parse name and username, currently they're saved as @_xmpp_prince=2fmychannel=40conference.xmpp.host:rc.host
+				const decoded = decodeXmppUserId(body.username);
+
+				if (!isFullXmppUserId(decoded)) {
+					await createOrUpdateFederatedUser({
+						username: body.username,
+						origin: serverName,
+					});
+
+					return {
+						statusCode: 200,
+						body: {
+							user_id: body.username,
+						},
+					};
+				}
+
+				const decodedUsername = parseXmppUserId(decoded);
+				if (!decodedUsername.resource) {
+					return {
+						statusCode: 400,
+						body: {
+							errcode: '',
+							error: '',
+						},
+					};
+				}
+
+				const username = `@${decodedUsername.resource}:${serverName}`;
 
 				await createOrUpdateFederatedUser({
-					username: userId,
-					name: userId,
+					username,
+					// name: decodedUsername.resource,
 					origin: serverName,
 				});
 
 				return {
 					statusCode: 200,
 					body: {
-						user_id: userId,
+						user_id: username,
 					},
 				};
 			},

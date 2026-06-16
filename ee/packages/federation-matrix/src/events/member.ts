@@ -83,6 +83,15 @@ async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 			return user;
 		}
 
+		const as = federationSDK.getAppServiceForUser(userId);
+		if (as) {
+			const user = await Users.findOneByUsername(userId);
+			if (!user) {
+				throw new Error('AppService user not found for creating user');
+			}
+			return user;
+		}
+
 		if (isLocal) {
 			throw new Error(`Local user ${username} not found for Matrix ID: ${userId}`);
 		}

@@ -2,6 +2,8 @@ import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
+import { decodeXmppUserId, parseXmppUserId } from '../../helpers/parseXmppUserId';
+
 export const isAppServiceAuthenticatedMiddleware = () =>
 	createMiddleware(async (c: Context, next) => {
 		try {
@@ -56,7 +58,22 @@ export const isAppServiceAuthenticatedMiddleware = () =>
 				);
 			}
 
-			c.set('impersonatedUserId', userId);
+			const serverName = federationSDK.getConfig('serverName');
+
+			const decoded = decodeXmppUserId(userId);
+
+			const decodedUsername = parseXmppUserId(decoded);
+			if (!decodedUsername.resource) {
+				return c.json(
+					{
+						errcode: 'M_INVALID_USER_ID',
+						error: 'Invalid user id',
+					},
+					400,
+				);
+			}
+
+			c.set('impersonatedUserId', `${decodedUsername.resource}:${serverName}`);
 
 			return next();
 		} catch (error) {

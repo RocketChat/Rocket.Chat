@@ -301,7 +301,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const userId = c.req.param('userId');
+				const userId = c.get('impersonatedUserId');
 				const body = await c.req.json();
 
 				if (!userId) {
