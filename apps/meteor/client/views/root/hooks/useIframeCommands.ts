@@ -81,7 +81,7 @@ export const useIframeCommands = () => {
 					data.redirectUrl = null;
 				}
 
-				if (typeof data.service === 'string' && window.ServiceConfiguration) {
+				if (window.ServiceConfiguration) {
 					const customOauth = loginServices.getLoginService(data.service);
 
 					if (customOauth) {
