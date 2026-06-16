@@ -7,6 +7,7 @@ import {
 	isVideoConfCancelProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
+	isVideoConfAddParticipantsProps,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
@@ -56,6 +57,16 @@ const cancelResponseSchema = ajv.compile<void>({
 	type: 'object',
 	properties: { success: { type: 'boolean', enum: [true] } },
 	required: ['success'],
+	additionalProperties: false,
+});
+
+const addParticipantsResponseSchema = ajv.compile<{ rid: string }>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['rid', 'success'],
 	additionalProperties: false,
 });
 
@@ -244,6 +255,36 @@ API.v1.post(
 
 		await VideoConf.cancel(userId, callId);
 		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.add-participants',
+	{
+		authRequired: true,
+		body: isVideoConfAddParticipantsProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: addParticipantsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, users } = this.bodyParams;
+		const { userId } = this;
+
+		const call = await VideoConf.get(callId);
+		if (!call) {
+			return API.v1.failure('invalid-params');
+		}
+
+		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+			return API.v1.failure('invalid-params');
+		}
+
+		const rid = await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
+		return API.v1.success({ rid });
 	},
 );
 

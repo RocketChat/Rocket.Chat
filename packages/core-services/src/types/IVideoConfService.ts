@@ -47,6 +47,11 @@ export interface IVideoConfService {
 		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
 	): Promise<boolean>;
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
+	createConferenceDiscussionWithParticipants(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 	joinCall(
 		call: ExternalVideoConference,
