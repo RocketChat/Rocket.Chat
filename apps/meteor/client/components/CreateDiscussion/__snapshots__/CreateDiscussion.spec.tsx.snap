@@ -215,6 +215,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                           aria-haspopup="listbox"
                           aria-invalid="false"
                           aria-labelledby="react-aria-:r4:-label"
+                          autocomplete="off"
                           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
                           id="react-aria-:r4:"
                           name="usernames"
