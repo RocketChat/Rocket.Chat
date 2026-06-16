@@ -2,6 +2,7 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import passport from 'passport';
 import type { DoneCallback, Profile } from 'passport';
 
+import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from './passportOAuthCallback';
 import { verifyFunction } from './verifyFunction';
 import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAuth';
@@ -29,6 +30,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/oauth/${serviceName}`,
+		allowPassportOAuthMiddleware(serviceName, true),
 		(req, _res, next) => {
 			const { loginClient } = req.query;
 			if (loginClient === 'mobile' || loginClient === 'desktop') {
@@ -47,14 +49,7 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
-		(_req, _res, next) => {
-			const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
-			if (isPassportFlowEnabled) {
-				next();
-			} else {
-				next('router');
-			}
-		},
+		allowPassportOAuthMiddleware(serviceName, true),
 		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
 		passportOAuthCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
 	);

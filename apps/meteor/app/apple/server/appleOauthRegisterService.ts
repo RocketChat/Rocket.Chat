@@ -9,6 +9,7 @@ import type { Profile } from 'passport-apple';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { oAuthRouter } from '../../../server/configuration/configurePassport';
+import { allowPassportOAuthMiddleware } from '../../../server/lib/oauth/allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from '../../../server/lib/oauth/passportOAuthCallback';
 import { settings } from '../../settings/server';
 import { config } from '../lib/config';
@@ -23,6 +24,7 @@ settings.watchMultiple(
 		'Accounts_OAuth_Apple_secretKey',
 		'Accounts_OAuth_Apple_iss',
 		'Accounts_OAuth_Apple_kid',
+		'Accounts_OAuth_Use_Modern_Flow',
 	],
 	async ([enabled, clientId, serverSecret, iss, kid]) => {
 		if (!enabled) {
@@ -110,6 +112,7 @@ settings.watchMultiple(
 		);
 
 		const callbackHandler = [
+			allowPassportOAuthMiddleware('apple'),
 			express.urlencoded({ extended: true }),
 			passport.authenticate('apple', { failWithError: true, session: true, keepSessionInfo: true }),
 			passportOAuthCallback(settings.get<string>('Site_Url')),
@@ -117,6 +120,7 @@ settings.watchMultiple(
 
 		oAuthRouter.get(
 			'/oauth/apple',
+			allowPassportOAuthMiddleware('apple'),
 			(req, _res, next) => {
 				const { loginClient } = req.query;
 				if (loginClient === 'mobile' || loginClient === 'desktop') {
