@@ -10,6 +10,8 @@ import { settings } from '../../settings/server';
 const config: Partial<OAuthConfiguration> = {
 	serverURL: 'https://gitlab.com',
 	identityPath: '/api/v4/user',
+	authorizePath: '/oauth/authorize',
+	tokenPath: '/oauth/token',
 	scope: 'read_user',
 	mergeUsers: false,
 	addAutopublishFields: {
