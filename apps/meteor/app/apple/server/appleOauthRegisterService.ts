@@ -27,8 +27,9 @@ settings.watchMultiple(
 		'Accounts_OAuth_Use_Modern_Flow',
 	],
 	async ([enabled, clientId, serverSecret, iss, kid]) => {
+		passport.unuse('apple');
+
 		if (!enabled) {
-			passport.unuse('apple');
 			return ServiceConfiguration.configurations.removeAsync({
 				service: 'apple',
 			});
@@ -50,7 +51,11 @@ settings.watchMultiple(
 			return;
 		}
 
-		passport.unuse('apple');
+		if (!clientId) {
+			return ServiceConfiguration.configurations.removeAsync({
+				service: 'apple',
+			});
+		}
 
 		passport.use(
 			'apple',
