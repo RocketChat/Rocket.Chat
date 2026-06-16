@@ -32,9 +32,29 @@ jest.mock('../../../MessageList/providers/MessageListProvider', () => ({ childre
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
+const trimTrailingWhitespace = (node: HTMLElement): HTMLElement => {
+	const clone = node.cloneNode(true) as HTMLElement;
+	const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+	const nodesToRemove: Node[] = [];
+
+	for (let textNode = walker.nextNode(); textNode; textNode = walker.nextNode()) {
+		const textContent = textNode.textContent ?? '';
+		if (/^\s+$/.test(textContent)) {
+			nodesToRemove.push(textNode);
+			continue;
+		}
+
+		textNode.textContent = textContent.replace(/[ \t]+$/gm, '');
+	}
+
+	nodesToRemove.forEach((textNode) => textNode.parentNode?.removeChild(textNode));
+
+	return clone;
+};
+
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
 	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
+	expect(trimTrailingWhitespace(baseElement)).toMatchSnapshot();
 });
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {

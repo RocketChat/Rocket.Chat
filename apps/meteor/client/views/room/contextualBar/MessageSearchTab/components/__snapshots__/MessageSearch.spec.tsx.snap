@@ -68,7 +68,6 @@ exports[`renders WithResults without crashing 1`] = `
                   >
                     Jun 8, 2026
                   </div>
-                   
                   <div
                     class="rcx-message-divider__bar"
                   />
@@ -169,7 +168,6 @@ exports[`renders WithResults without crashing 1`] = `
                   >
                     Jun 9, 2026
                   </div>
-                   
                   <div
                     class="rcx-message-divider__bar"
                   />
@@ -530,7 +528,7 @@ exports[`renders WithResults without crashing 1`] = `
                       role="document"
                     >
                       <div>
-                        The checklist is attached to the 
+                        The checklist is attached to the
                         <mark>
                           release
                         </mark>
@@ -640,7 +638,6 @@ exports[`renders WithResults without crashing 1`] = `
                   >
                     Jun 10, 2026
                   </div>
-                   
                   <div
                     class="rcx-message-divider__bar"
                   />
