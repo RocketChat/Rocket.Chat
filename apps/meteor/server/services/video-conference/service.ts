@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
@@ -770,6 +772,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			providerName,
 		});
 
+		await this.maybeAddSipAliasToCall(callId, providerName);
+
 		await this.runNewVideoConferenceEvent(callId);
 
 		await this.maybeCreateDiscussion(callId, user);
@@ -825,6 +829,86 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await subscriptions.forEach((subscription) => this.notifyUser(subscription.u._id, action, params));
 	}
 
+	private makeSipAlias(): string {
+		const result: number[] = [];
+		const buffer = new Uint8Array(16);
+		crypto.getRandomValues(buffer);
+
+		let bufferIndex = 0;
+
+		const nextByte = (): number => {
+			if (bufferIndex >= buffer.length) {
+				crypto.getRandomValues(buffer);
+				bufferIndex = 0;
+			}
+			return buffer[bufferIndex++];
+		};
+
+		while (result.length === 0) {
+			const value = nextByte();
+			if (value < 252) {
+				result.push((value % 9) + 1);
+			}
+		}
+
+		while (result.length < 8) {
+			const value = nextByte();
+			if (value < 250) {
+				result.push(value % 10);
+			}
+		}
+
+		return result.join('');
+	}
+
+	private async addSipAlias(callId: string, attempt = 0): Promise<string | null> {
+		const alias = this.makeSipAlias();
+
+		try {
+			await VideoConferenceModel.setSipAliasById(callId, alias);
+			return alias;
+		} catch (err) {
+			if (err && typeof err === 'object' && err instanceof Error && err.message.includes('E11000')) {
+				if (attempt >= 20) {
+					logger.error({ msg: 'Failed to generate a unique SIP alias for this conference.', err });
+					return null;
+				}
+				return this.addSipAlias(callId, attempt + 1);
+			}
+
+			logger.error({ msg: 'Failed to add Sip Alias to video conference', err });
+			return null;
+		}
+	}
+
+	private async maybeAddSipAliasToCall(callId: string, providerName: string): Promise<void> {
+		if (providerName !== 'core.pexip') {
+			return;
+		}
+
+		if (!settings.get('Pexip_Integration_SIP_AddAlias')) {
+			return;
+		}
+
+		await this.addSipAlias(callId);
+	}
+
+	public async createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'createdBy' | 'mediaCallIds'>>,
+	): Promise<IGroupVideoConference | null> {
+		const providerName = 'core.pexip';
+
+		const callId = await VideoConferenceModel.createGroup({
+			...data,
+			// TODO: custom title
+			title: 'Escalated Media Call',
+			providerName,
+		});
+
+		await this.maybeAddSipAliasToCall(callId, providerName);
+		return VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
+	}
+
 	private async startGroup(
 		providerName: string,
 		user: IUser,
@@ -844,6 +928,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			providerName,
 		});
+
+		await this.maybeAddSipAliasToCall(callId, providerName);
 
 		await this.runNewVideoConferenceEvent(callId);
 
@@ -905,7 +991,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async joinCall(
+	public async joinCall(
 		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,

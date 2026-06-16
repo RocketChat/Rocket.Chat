@@ -151,6 +151,21 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async flagAsEscalatedByCallId(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				ended: false,
+				escalatedAt: { $exists: false },
+			},
+			{
+				$set: {
+					escalatedAt: new Date(),
+				},
+			},
+		);
+	}
+
 	public async setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult> {
 		return this.updateOne(
 			{

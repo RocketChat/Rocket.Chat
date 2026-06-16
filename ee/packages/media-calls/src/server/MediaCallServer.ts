@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, MediaCallContact } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
 	CallFeature,
@@ -146,8 +146,32 @@ export class MediaCallServer implements IMediaCallServer {
 		return this.settings.permissionCheck(uid, callType);
 	}
 
-	public isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean {
-		return this.settings.isFeatureAvailableForUser(uid, feature);
+	public isFeatureAvailableForParticipants(feature: CallFeature, participants: MediaCallContact[]): boolean {
+		if (!this.settings.isFeatureEnabled(feature)) {
+			return false;
+		}
+
+		if (feature === 'conference-escalation') {
+			// Conference escalation is only implemented on SIP calls
+			return this.isSipCallParticipants(participants);
+		}
+
+		return true;
+	}
+
+	private isSipCallParticipants(participants: MediaCallContact[]): boolean {
+		// On sip calls, one participant is an internal user and the other is a sip extension; The order depends on the call direction
+		const sipUser = participants.find(({ type }) => type === 'sip');
+		if (!sipUser) {
+			return false;
+		}
+
+		const internalUser = participants.find(({ type }) => type === 'user');
+		if (!internalUser) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
