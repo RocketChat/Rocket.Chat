@@ -102,10 +102,6 @@ export class CustomOAuthStrategy extends Strategy {
 			this.emailPath = this.serverURL + this.emailPath;
 		}
 
-		if (config.tokenSentVia === 'header') {
-			this._oauth2.useAuthorizationHeaderforGET(true);
-		}
-
 		if (this.identityTokenSentVia === 'header') {
 			this._oauth2.useAuthorizationHeaderforGET(true);
 		}
