@@ -9,6 +9,7 @@ import type { ClientRouter } from './_shared';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	MATRIX_USER_ID_PATTERN,
+	internalError,
 	isEmptyObjectResponseProps,
 	isImpersonationQueryProps,
 	isMatrixErrorProps,
@@ -200,14 +201,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 						},
 					};
 				} catch (error) {
-					console.error('Failed to create room', error);
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to create room',
-						},
-					};
+					return internalError('Failed to create room', error);
 				}
 			},
 		)
@@ -281,13 +275,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 							},
 						};
 					}
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to leave room',
-						},
-					};
+					return internalError('Failed to leave room', error, { roomId, senderId });
 				}
 			},
 		)
@@ -321,13 +309,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 						body: {},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to invite user',
-						},
-					};
+					return internalError('Failed to invite user', error, { roomId, senderId });
 				}
 			},
 		)
@@ -361,13 +343,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 						body: {},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to kick user',
-						},
-					};
+					return internalError('Failed to kick user', error, { roomId, senderId });
 				}
 			},
 		);

@@ -6,6 +6,7 @@ import type { ClientRouter } from './_shared';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	MATRIX_USER_ID_PATTERN,
+	internalError,
 	isEmptyObjectResponseProps,
 	isImpersonationQueryProps,
 	isMatrixErrorProps,
@@ -77,13 +78,7 @@ export const addUserRoutes = (router: ClientRouter) => {
 					body: {},
 				};
 			} catch (error) {
-				return {
-					statusCode: 500,
-					body: {
-						errcode: 'M_UNKNOWN',
-						error: 'Failed to update per-room displayname',
-					},
-				};
+				return internalError('Failed to update per-room displayname', error, { roomId, userId });
 			}
 		},
 	);

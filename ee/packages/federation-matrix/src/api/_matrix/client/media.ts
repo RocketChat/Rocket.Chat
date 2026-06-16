@@ -2,7 +2,7 @@ import { Upload } from '@rocket.chat/core-services';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
-import { isMatrixErrorProps, license, tags } from './_shared';
+import { internalError, isMatrixErrorProps, license, tags } from './_shared';
 import { MatrixMediaService } from '../../../services/MatrixMediaService';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
@@ -122,10 +122,7 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						body: buffer,
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
-					};
+					return internalError('Failed to download media', error);
 				}
 			},
 		)
@@ -198,10 +195,7 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						body: buffer,
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
-					};
+					return internalError('Failed to generate media thumbnail', error);
 				}
 			},
 		)

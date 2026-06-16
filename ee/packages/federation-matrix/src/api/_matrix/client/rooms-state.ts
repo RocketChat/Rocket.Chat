@@ -3,7 +3,16 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
-import { MATRIX_ROOM_ID_PATTERN, isImpersonationQueryProps, isMatrixErrorProps, isRoomIdParamsProps, license, tags } from './_shared';
+import {
+	MATRIX_ROOM_ID_PATTERN,
+	internalError,
+	notImplemented,
+	isImpersonationQueryProps,
+	isMatrixErrorProps,
+	isRoomIdParamsProps,
+	license,
+	tags,
+} from './_shared';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const JoinedMembersResponseSchema = {
@@ -96,13 +105,7 @@ const getRoomStateEvent = async (roomId: RoomID, eventType: string, stateKey = '
 			body: pe.getContent(),
 		};
 	} catch (error) {
-		return {
-			statusCode: 500 as const,
-			body: {
-				errcode: 'M_UNKNOWN',
-				error: 'Failed to fetch state event',
-			},
-		};
+		return internalError('Failed to fetch state event', error);
 	}
 };
 
@@ -144,13 +147,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 						body: { joined },
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch joined members',
-						},
-					};
+					return internalError('Failed to fetch joined members', error, { roomId });
 				}
 			},
 		)
@@ -183,13 +180,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 						body: events,
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch room state',
-						},
-					};
+					return internalError('Failed to fetch room state', error, { roomId });
 				}
 			},
 		)
@@ -281,21 +272,9 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 					}
 
 					// TODO: extend SDK to send arbitrary state events
-					return {
-						statusCode: 501,
-						body: {
-							errcode: 'M_UNRECOGNIZED',
-							error: `State event type ${eventType} not yet implemented`,
-						},
-					};
+					return notImplemented(`State event type ${eventType} not yet implemented`, { roomId, eventType });
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to send state event',
-						},
-					};
+					return internalError('Failed to send state event', error);
 				}
 			},
 		);

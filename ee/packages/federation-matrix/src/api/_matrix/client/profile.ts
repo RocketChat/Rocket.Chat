@@ -4,6 +4,8 @@ import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
 import {
+	internalError,
+	notImplemented,
 	isEmptyObjectResponseProps,
 	isImpersonationQueryProps,
 	isMatrixErrorProps,
@@ -84,13 +86,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 						},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch profile',
-						},
-					};
+					return internalError('Failed to fetch profile', error, { userId });
 				}
 			},
 		)
@@ -115,13 +111,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				const field = c.req.param('field');
 
 				if (!field) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch profile',
-						},
-					};
+					return internalError('Failed to fetch profile', undefined, { userId, reason: 'missing field parameter' });
 				}
 
 				try {
@@ -143,13 +133,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 						},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch profile',
-						},
-					};
+					return internalError('Failed to fetch profile', error, { userId, field });
 				}
 			},
 		)
@@ -239,13 +223,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				}
 
 				// TODO(federation-sdk): setUserProfile(userId, {displayname?, avatar_url?}) — global, propagates to rooms
-				return {
-					statusCode: 501,
-					body: {
-						errcode: 'M_UNRECOGNIZED',
-						error: 'Global profile update not yet implemented',
-					},
-				};
+				return notImplemented('Global profile update not yet implemented', { userId });
 			},
 		);
 };

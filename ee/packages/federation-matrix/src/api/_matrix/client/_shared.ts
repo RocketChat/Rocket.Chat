@@ -3,7 +3,30 @@ import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
+import { logger } from '../../logger';
+
 export type ClientRouter = Router<'/client', any>;
+
+// Logs an error and returns the matching Matrix 500 response. Use inside handler-local
+// catch blocks that swallow the error. The same message is used for both the log and
+// the response body, avoiding duplication.
+export const internalError = (msg: string, err?: unknown, context?: Record<string, unknown>) => {
+	logger.error({ msg, err, ...context });
+	return {
+		statusCode: 500 as const,
+		body: { errcode: 'M_UNKNOWN', error: msg },
+	};
+};
+
+// Logs a warning and returns the matching Matrix 501 response. Use for endpoints/branches
+// that are deliberately not implemented yet, so hits on those paths stay visible in the logs.
+export const notImplemented = (msg: string, context?: Record<string, unknown>) => {
+	logger.warn({ msg, ...context });
+	return {
+		statusCode: 501 as const,
+		body: { errcode: 'M_UNRECOGNIZED', error: msg },
+	};
+};
 
 // TODO: remove before merge — diagnostic catch-all logger for AS bridge integration
 export const catchAllClient = () =>

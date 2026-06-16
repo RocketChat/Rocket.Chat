@@ -5,6 +5,7 @@ import type { ClientRouter } from './_shared';
 import { isMatrixErrorProps, license, tags } from './_shared';
 import { createOrUpdateFederatedUser } from '../../../helpers/createOrUpdateFederatedUser';
 import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../../helpers/parseXmppUserId';
+import { logger } from '../../logger';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const RegisterBodySchema = {
@@ -93,6 +94,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 
 				const decodedUsername = parseXmppUserId(decoded);
 				if (!decodedUsername.resource) {
+					logger.warn({ msg: 'Could not derive resource from full XMPP user id during AS registration', username: body.username });
 					return {
 						statusCode: 400,
 						body: {

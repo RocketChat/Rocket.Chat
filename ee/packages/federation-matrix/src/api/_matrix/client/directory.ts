@@ -4,6 +4,8 @@ import { ajv } from '@rocket.chat/rest-typings';
 import type { ClientRouter } from './_shared';
 import {
 	MATRIX_ROOM_ID_PATTERN,
+	internalError,
+	notImplemented,
 	isEmptyObjectResponseProps,
 	isImpersonationQueryProps,
 	isMatrixErrorProps,
@@ -77,13 +79,7 @@ export const addDirectoryRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async () => {
 				// TODO(federation-sdk): resolveAlias(roomAlias) → {roomId, servers}
-				return {
-					statusCode: 501,
-					body: {
-						errcode: 'M_UNRECOGNIZED',
-						error: 'Room alias resolution not yet implemented',
-					},
-				};
+				return notImplemented('Room alias resolution not yet implemented');
 			},
 		)
 
@@ -106,13 +102,7 @@ export const addDirectoryRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async () => {
 				// TODO(federation-sdk): createAlias(alias, roomId, sender)
-				return {
-					statusCode: 501,
-					body: {
-						errcode: 'M_UNRECOGNIZED',
-						error: 'Room alias creation not yet implemented',
-					},
-				};
+				return notImplemented('Room alias creation not yet implemented');
 			},
 		)
 
@@ -146,13 +136,7 @@ export const addDirectoryRoutes = (router: ClientRouter) => {
 						},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to list public rooms',
-						},
-					};
+					return internalError('Failed to list public rooms', error);
 				}
 			},
 		);

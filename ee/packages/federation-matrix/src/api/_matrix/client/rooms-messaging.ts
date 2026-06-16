@@ -8,6 +8,8 @@ import type { ClientRouter } from './_shared';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	MATRIX_USER_ID_PATTERN,
+	internalError,
+	notImplemented,
 	isEmptyObjectResponseProps,
 	isImpersonationQueryProps,
 	isMatrixErrorProps,
@@ -15,7 +17,6 @@ import {
 	license,
 	tags,
 } from './_shared';
-import { logger } from '../../logger';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const SendEventParamsSchema = {
@@ -150,13 +151,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 
 				if (eventType !== 'm.room.message') {
 					// TODO: support additional event types (m.reaction, m.room.redaction, etc.)
-					return {
-						statusCode: 501,
-						body: {
-							errcode: 'M_UNRECOGNIZED',
-							error: 'Only m.room.message is supported in v1',
-						},
-					};
+					return notImplemented('Only m.room.message is supported in v1', { eventType });
 				}
 
 				if (typeof body.body !== 'string' || typeof body.msgtype !== 'string') {
@@ -217,13 +212,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to send message',
-						},
-					};
+					return internalError('Failed to send message', error, { roomId });
 				}
 			},
 		)
@@ -270,13 +259,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to fetch messages',
-						},
-					};
+					return internalError('Failed to fetch messages', error, { roomId });
 				}
 			},
 		)
@@ -338,13 +321,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						body: {},
 					};
 				} catch (error) {
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to send typing notification',
-						},
-					};
+					return internalError('Failed to send typing notification', error, { roomId, userId });
 				}
 			},
 		)
@@ -400,15 +377,8 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						statusCode: 200,
 						body: {},
 					};
-				} catch (err) {
-					logger.error({ msg: 'Failed to send read receipt', roomId, senderId, err });
-					return {
-						statusCode: 500,
-						body: {
-							errcode: 'M_UNKNOWN',
-							error: 'Failed to send read receipt',
-						},
-					};
+				} catch (error) {
+					return internalError('Failed to send read receipt', error, { roomId, senderId });
 				}
 			},
 		);
