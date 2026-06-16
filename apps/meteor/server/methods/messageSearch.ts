@@ -54,11 +54,6 @@ const getUserIdsByUsernames = async (usernames: string[]): Promise<string[] | un
 		},
 	).toArray();
 
-	const foundUsernames = new Set(users.map(({ username }) => username));
-	if (requestedUsernames.some((values) => !values.some((username) => foundUsernames.has(username)))) {
-		return [];
-	}
-
 	return users.map(({ _id }) => _id);
 };
 
@@ -70,7 +65,7 @@ const getRoomIdsByNames = async (roomNames: string[]): Promise<string[] | undefi
 
 	const rooms = await Promise.all(normalizedRoomNames.map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })));
 
-	return rooms.some((room) => !room) ? [] : rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId));
+	return rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId));
 };
 
 const mergeDateFilter = (current: unknown, startDate?: Date, endDate?: Date): Record<string, Date> => {
@@ -81,6 +76,17 @@ const mergeDateFilter = (current: unknown, startDate?: Date, endDate?: Date): Re
 		...(startDate && { $gte: startDate }),
 		...(endDate && { $lte: endDate }),
 	};
+};
+
+const getRoomSearchScope = async (userId: string | undefined, filters?: MessageSearchFilters): Promise<string[]> => {
+	const roomNameIds = await getRoomIdsByNames(filters?.roomNames || []);
+	const hasRoomFilter = Boolean(filters?.rids?.length || roomNameIds);
+	const filterRoomIds = [...new Set([...(filters?.rids || []), ...(roomNameIds || [])].filter(Boolean))];
+	const subscribedRoomIds = userId
+		? (await Subscriptions.findByUserId(userId).toArray()).map((subscription: ISubscription) => subscription.rid)
+		: [];
+
+	return hasRoomFilter ? subscribedRoomIds.filter((roomId) => filterRoomIds.includes(roomId)) : subscribedRoomIds;
 };
 
 export const messageSearch = async function (
@@ -145,16 +151,11 @@ export const messageSearch = async function (
 		$ne: true, // don't return _hidden messages
 	};
 
-	const filterRoomIds = [...(filters?.rids || []), ...((await getRoomIdsByNames(filters?.roomNames || [])) || [])].filter(Boolean);
-
 	if (rid) {
 		query.rid = rid;
 	} else {
-		const subscribedRoomIds = user?._id
-			? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid)
-			: [];
 		query.rid = {
-			$in: filterRoomIds.length ? subscribedRoomIds.filter((roomId) => filterRoomIds.includes(roomId)) : subscribedRoomIds,
+			$in: await getRoomSearchScope(user?._id, filters),
 		};
 	}
 
