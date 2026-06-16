@@ -72,15 +72,6 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
 				index === arr.findIndex((user) => _id === user._id);
 
-			const roomFilter = (room: { t: string; uids?: string[]; _id: string; name?: string }): boolean =>
-				!localRooms.find(
-					(item) =>
-						(room.t === 'd' && room.uids && room.uids.length > 1 && room.uids?.includes(item._id)) ||
-						[item.rid, item._id].includes(room._id),
-				);
-			const usersFilter = (user: { _id: string }): boolean =>
-				!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
-
 			const userMap = (user: {
 				_id: string;
 				name: string;
@@ -110,9 +101,11 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 				uids?: string[] | undefined;
 			}[];
 
+			// Local subscriptions are deduped reactively in the merge below (against the *current*
+			// localRooms), so server results aren't filtered against them here.
 			const resultsFromServer: resultsFromServerType = [];
-			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersFilter).map(userMap));
-			resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).map(userMap));
+			resultsFromServer.push(...spotlight.rooms);
 
 			return resultsFromServer;
 		},
@@ -132,7 +125,19 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
 			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
 
-		const fromServer = (serverResults ?? []).filter(matchesFilter);
+		// Single source of truth for local/server dedup: drop any server result already present as a
+		// local subscription, checked against the *current* localRooms. The query isn't keyed on
+		// localRooms (to avoid refetching on every subscription change), so subscriptions that load
+		// in after the fetch would otherwise render twice — once from localRooms, once from server.
+		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[] }): boolean =>
+			localRooms.some((room) => {
+				const sameRoom = [room.rid, room._id].includes(item._id);
+				const sameGroupDM = item.t === 'd' && !!item.uids && item.uids.length > 1 && item.uids.includes(room._id);
+				const sameDirectDM = item.t === 'd' && room.t === 'd' && !!room.uids && room.uids.length === 2 && room.uids.includes(item._id);
+				return sameRoom || sameGroupDM || sameDirectDM;
+			});
+
+		const fromServer = (serverResults ?? []).filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
 		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 		return Array.from(new Set([...exact, ...localRooms, ...fromServer])) as SubscriptionWithRoom[];
 	}, [serverResults, localRooms, name]);
