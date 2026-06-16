@@ -12,7 +12,7 @@ import { oAuthRouter } from '../../configuration/configurePassport';
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
 		const Strategy = config.strategy;
-		const siteUrl = settings.get<string>('Site_Url');
+		const siteUrl = settings.get<string>('Site_Url').replace(/\/$/, '');
 
 		passport.unuse(config.provider);
 

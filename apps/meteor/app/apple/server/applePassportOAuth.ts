@@ -70,7 +70,7 @@ settings.watchMultiple(
 					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
 					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
 					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
-					callbackURL: `${settings.get<string>('Site_Url')}/_oauth/apple`,
+					callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/apple`,
 					scope: ['name', 'email'],
 					passReqToCallback: false,
 					state: false,
@@ -124,7 +124,7 @@ settings.watchMultiple(
 			allowPassportOAuthMiddleware('apple'),
 			express.urlencoded({ extended: true }),
 			passport.authenticate('apple', { failWithError: true, session: true, keepSessionInfo: true }),
-			passportOAuthCallback(settings.get<string>('Site_Url')),
+			passportOAuthCallback(settings.get<string>('Site_Url').replace(/\/$/, '')),
 		];
 
 		oAuthRouter.get(

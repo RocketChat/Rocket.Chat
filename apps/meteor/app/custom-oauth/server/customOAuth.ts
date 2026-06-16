@@ -63,7 +63,7 @@ export class CustomOAuthStrategy extends Strategy {
 			tokenURL: config.serverURL + config.tokenPath,
 			clientID: config.clientId,
 			clientSecret: config.clientSecret,
-			callbackURL: `${settings.get<string>('Site_Url')}/_oauth/${name}`,
+			callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/${name}`,
 			state: true,
 			pkce: config.pkce ?? true,
 			scope: config.scope,

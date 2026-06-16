@@ -30,7 +30,7 @@ export const addPassportCustomOAuth = (
 		),
 	);
 
-	const siteUrl = settings.get<string>('Site_Url');
+	const siteUrl = settings.get<string>('Site_Url').replace(/\/$/, '');
 
 	oAuthRouter.get(
 		`/oauth/${serviceName}`,
