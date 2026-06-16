@@ -65,7 +65,10 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 		mode: 'onChange',
 		defaultValues: {
 			statusText: initialStatusText,
-			statusType: user?.statusDefault ?? UserStatusType.ONLINE,
+			statusType:
+				user?.status === UserStatusType.AWAY && user?.statusDefault === UserStatusType.AWAY
+					? UserStatusType.AWAY
+					: (user?.statusDefault ?? UserStatusType.ONLINE),
 			duration: initialExpiration ? 'custom' : '',
 			customDate: initialDate.toLocaleDateString('en-CA'),
 			customTime: initialDate.toTimeString().slice(0, 5),
