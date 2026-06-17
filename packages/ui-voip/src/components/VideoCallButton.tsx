@@ -13,11 +13,11 @@ const VideoCallButton = ({ escalated, loading, onClick }: VideoCallButtonProps) 
 	return (
 		<>
 			{escalated ? (
-				<Button primary w='full' icon='video' loading={loading} aria-busy={loading} onClick={() => onClick()}>
+				<Button primary icon='video' loading={loading} aria-busy={loading} onClick={() => onClick()}>
 					{t('Join_video_call')}
 				</Button>
 			) : (
-				<Button w='full' icon='video' loading={loading} aria-busy={loading} onClick={() => onClick()}>
+				<Button icon='video' loading={loading} aria-busy={loading} onClick={() => onClick()}>
 					{t('Start_a_video_call')}
 				</Button>
 			)}
