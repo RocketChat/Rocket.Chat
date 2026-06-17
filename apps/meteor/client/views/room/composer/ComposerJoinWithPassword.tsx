@@ -10,7 +10,7 @@ const ComposerJoinWithPassword = () => {
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const joinChannelEndpoint = useEndpoint('POST', '/v1/channels.join');
+	const joinChannelEndpoint = useEndpoint('POST', '/v1/rooms.join');
 	const {
 		control,
 		handleSubmit,
