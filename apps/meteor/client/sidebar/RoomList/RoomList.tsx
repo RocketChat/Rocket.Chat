@@ -24,10 +24,6 @@ const RoomList = () => {
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
-	console.log('DEBUG SIDEBAR DATA:', {
-    roomList: roomList.map(r => ({ name: r.name, t: r.t, unread: r.unread, alert: r.alert })),
-    groupedUnreadInfo
-});
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
