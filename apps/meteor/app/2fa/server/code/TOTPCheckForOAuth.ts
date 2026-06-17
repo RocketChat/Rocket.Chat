@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { TOTPCheck } from './TOTPCheck';
 

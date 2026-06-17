@@ -4,6 +4,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 import type { DoneCallback } from 'passport';
 import type { VerifyFunction, StrategyOptions } from 'passport-oauth2';
 import { Strategy } from 'passport-oauth2';

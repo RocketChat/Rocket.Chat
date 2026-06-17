@@ -2,6 +2,7 @@ import type { IMethodConnection } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 import { isTwoFactorChallengesSendEmailCodeParamsPOST, isTwoFactorChallengesVerifyChallengeParamsPOST } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { emailCheckForOAuth, getTwoFAMethodForOAuth } from '../../../../server/lib/oauth/twoFactorAuth';
 import { getUserForCheck, rememberAuthorizationByToken } from '../../../2fa/server/code';

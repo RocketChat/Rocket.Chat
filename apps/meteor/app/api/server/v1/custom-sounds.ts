@@ -15,6 +15,7 @@ import {
 	validateInternalErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../../lib/constants';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -126,7 +127,7 @@ const customSoundsEndpoints = API.v1
 
 			const filter = {
 				...query,
-				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			};
 
 			const { cursor, totalCount } = CustomSounds.findPaginated(filter, {
