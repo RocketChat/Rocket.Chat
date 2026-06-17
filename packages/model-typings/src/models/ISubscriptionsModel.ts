@@ -177,6 +177,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
 
 	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document>;
+	enableAutoTranslateByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document>;
 	findByAutoTranslateAndUserId(
 		userId: ISubscription['u']['_id'],
 		autoTranslate?: ISubscription['autoTranslate'],
