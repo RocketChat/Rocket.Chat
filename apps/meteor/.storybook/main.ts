@@ -31,11 +31,6 @@ export default baseConfig({
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
 		};
 
-		config.module?.rules?.push({
-			test: /\.info$/,
-			type: 'json',
-		});
-
 		// Strip the `env` option that addon-webpack5-compiler-swc injects on swc-loader;
 		// it conflicts with `jsc.target` from `.swcrc` (Meteor's Modern Build Stack).
 		for (const rule of (config.module?.rules ?? []) as any[]) {
@@ -45,8 +40,9 @@ export default baseConfig({
 		}
 
 		config.plugins?.push(
-			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
+			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.ts')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
+			new webpack.NormalModuleReplacementPlugin(/rocketchat\.info$/, require.resolve('./mocks/rocketchat.info.ts')),
 		);
 
 		return config;
