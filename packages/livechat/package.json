@@ -37,7 +37,7 @@
 		"ajv-formats": "^3.0.1",
 		"css-vars-ponyfill": "^2.4.9",
 		"date-fns": "~4.1.0",
-		"dompurify": "~3.4.1",
+		"dompurify": "~3.4.7",
 		"emoji-mart": "^3.0.1",
 		"history": "~5.3.0",
 		"i18next": "~23.4.9",
@@ -51,7 +51,7 @@
 		"whatwg-fetch": "^3.6.20"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.29.0",
+		"@babel/core": "~7.29.6",
 		"@babel/preset-env": "~7.29.5",
 		"@babel/preset-react": "~7.28.5",
 		"@babel/preset-typescript": "~7.28.5",
@@ -109,7 +109,7 @@
 		"url-loader": "^4.1.1",
 		"webpack": "~5.104.1",
 		"webpack-cli": "~5.1.4",
-		"webpack-dev-server": "~5.2.3"
+		"webpack-dev-server": "~5.2.5"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage-tokens": "*",

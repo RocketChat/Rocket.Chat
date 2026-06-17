@@ -28,9 +28,9 @@ describe('useDecryptedMessage', () => {
 
 	it('should return the original message for non-E2EE messages', () => {
 		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(false);
-		const message = { msg: 'Hello, world!' };
+		const message: any = { msg: 'Hello, world!' };
 
-		const { result } = renderHook(() => useDecryptedMessage(message as any));
+		const { result } = renderHook(() => useDecryptedMessage(message));
 
 		expect(result.current).toBe('Hello, world!');
 		expect(e2e.decryptMessage).not.toHaveBeenCalled();
@@ -39,8 +39,8 @@ describe('useDecryptedMessage', () => {
 	it('should return decrypted message for E2EE messages', async () => {
 		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(true);
 		(e2e.decryptMessage as jest.Mock).mockResolvedValue({ msg: 'Decrypted message' });
-		const message = { msg: 'Encrypted message' };
-		const { result } = renderHook(() => useDecryptedMessage(message as any));
+		const message: any = { msg: 'Encrypted message' };
+		const { result } = renderHook(() => useDecryptedMessage(message));
 
 		await waitFor(() => {
 			expect(result.current).not.toBe('E2E_message_encrypted_placeholder');
@@ -55,15 +55,14 @@ describe('useDecryptedMessage', () => {
 		(e2e.decryptMessage as jest.Mock).mockResolvedValue({
 			attachments: [{ description: 'Attachment description' }],
 		});
-		const message = { msg: 'Encrypted message with attachment' };
+		const message: any = { msg: 'Encrypted message with attachment' };
 
-		const { result } = renderHook(() => useDecryptedMessage(message as any));
+		const { result } = renderHook(() => useDecryptedMessage(message));
 
 		await waitFor(() => {
-			expect(result.current).toBe('E2E_message_encrypted_placeholder');
+			expect(result.current).toBe('Attachment description');
 		});
 
-		expect(result.current).toBe('Attachment description');
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 
@@ -72,9 +71,9 @@ describe('useDecryptedMessage', () => {
 		(e2e.decryptMessage as jest.Mock).mockResolvedValue({
 			attachments: [{}],
 		});
-		const message = { msg: 'Encrypted message with attachment' };
+		const message: any = { msg: 'Encrypted message with attachment' };
 
-		const { result } = renderHook(() => useDecryptedMessage(message as any));
+		const { result } = renderHook(() => useDecryptedMessage(message));
 
 		await waitFor(() => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
