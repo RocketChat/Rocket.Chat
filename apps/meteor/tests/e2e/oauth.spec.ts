@@ -117,6 +117,7 @@ test.describe('OAuth', () => {
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Proxy_services', 'test')).status()).toBe(200);
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect')).status()).toBe(200);
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
+			await expect((await setSettingValueById(api, 'Accounts_OAuth_Use_Modern_Flow', false)).status()).toBe(200);
 			await expect.poll(() => getOAuthServiceLoginStyle(api, customOAuthService)).toBe('redirect');
 		});
 
@@ -124,6 +125,7 @@ test.describe('OAuth', () => {
 			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false);
 			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect');
 			await setSettingValueById(api, 'Accounts_OAuth_Proxy_services', '');
+			await expect((await setSettingValueById(api, 'Accounts_OAuth_Use_Modern_Flow', true)).status()).toBe(200);
 		});
 
 		test('redirect login through the proxy', async ({ page }) => {
