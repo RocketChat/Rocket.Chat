@@ -1043,20 +1043,21 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async joinXMPPChatRoom(roomAlias: string, user: IUser): Promise<void> {
+	async joinXMPPChatRoom(roomAlias: string, user: IUser): Promise<boolean> {
 		try {
 			if (isUserNativeFederated(user)) {
 				throw new Error('Federated users cannot join XMPP chat rooms');
 			}
 
-			const result = await federationSDK.joinXMPPChatRoom(roomAlias, userIdSchema.parse(`@${user.username}:${this.serverName}`));
-
-			console.log(result);
+			await federationSDK.joinXMPPChatRoom(roomAlias, userIdSchema.parse(`@${user.username}:${this.serverName}`));
 
 			this.logger.info({ msg: 'User joined XMPP chat room successfully', username: user.username, roomAlias });
+
+			return true;
 		} catch (err) {
-			this.logger.error({ msg: 'Failed to join XMPP chat room', err });
-			throw err;
+			this.logger.error({ msg: 'Failed to join XMPP chat room', err, username: user.username, roomAlias });
+
+			return false;
 		}
 	}
 

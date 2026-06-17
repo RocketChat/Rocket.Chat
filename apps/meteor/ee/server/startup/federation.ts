@@ -6,6 +6,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
 import { slashCommands } from '../../../server/lib/utils/slashCommand';
 import { StreamerCentral } from '../../../server/modules/streamer/streamer.module';
 import { settings } from '../../../server/settings';
@@ -96,14 +97,36 @@ export const startFederationService = async (): Promise<void> => {
 
 	slashCommands.add({
 		command: 'xmpp',
-		callback: async ({ params, message: _message, userId }: SlashCommandCallbackParams<'xmpp'>): Promise<void> => {
+		callback: async ({ params, message, userId }: SlashCommandCallbackParams<'xmpp'>): Promise<void> => {
+			// the helper advertises `#channel`, so accept the leading # and strip it before joining
+			const channel = params.trim().replace(/^#/, '');
+			if (!channel) {
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+					msg: i18n.t('Federation_XMPP_Join_Channel_Required', {
+						lng: settings.get('Language') || 'en',
+					}),
+				});
+				return;
+			}
+
 			const user = await Users.findOneById(userId);
 			if (!user) {
 				logger.error({ msg: 'User not found for joining xmpp room', userId });
 				return;
 			}
 
-			await FederationMatrixService.joinXMPPChatRoom(params.trim(), user);
+			const joined = await FederationMatrixService.joinXMPPChatRoom(channel, user);
+
+			const lng = settings.get<string>('Language') || 'en';
+			if (joined) {
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+					msg: `${i18n.t('Federation_XMPP_Join_Channel_Success', { lng })}`,
+				});
+			} else {
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+					msg: `${i18n.t('Federation_XMPP_Join_Channel_Failed', { lng })}`,
+				});
+			}
 		},
 		options: {
 			description: 'Join xmpp rooms',
