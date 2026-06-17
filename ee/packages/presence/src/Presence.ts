@@ -84,8 +84,17 @@ export class Presence extends ServiceClass implements IPresence {
 	override async started(): Promise<void> {
 		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
-			const affectedUsers = await this.removeLostConnections();
-			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+			const lock = await this.api?.lock('presence.removeLostConnections', 5000);
+			if(!lock){
+				return;
+			}
+
+			try {
+				const affectedUsers = await this.removeLostConnections();
+				affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+			} finally {
+				await lock.release();
+			}
 		}, 10000);
 
 		try {
