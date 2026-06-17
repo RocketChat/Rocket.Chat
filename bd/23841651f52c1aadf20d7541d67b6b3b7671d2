@@ -1,0 +1,21 @@
+apps/meteor/client/navbar/NavBarSearch/hooks/useSearchItems.ts
+  s_50e0fc0b720393::t_c279a983874dbb 104-105,107-108
+  s_50e0fc0b720393::t_e464995a4ee6f9 128-131,133-138,140
+  s_50e0fc0b720393::t_ea706ecc9f157a 132,139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "bd23841651f52c1aadf20d7541d67b6b3b7671d2",
+  "prompts": {},
+  "sessions": {
+    "s_50e0fc0b720393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "de151620-0687-46ad-b6fb-0f6d68377396",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
