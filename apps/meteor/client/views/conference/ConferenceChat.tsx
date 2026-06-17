@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import AddParticipantsModal from './AddParticipantsModal';
 import ConferenceRoom from './ConferenceRoom';
+import ConferenceRoomPreload from './ConferenceRoomPreload';
 import NotFoundPage from '../notFound/NotFoundPage';
-import EmbeddedPreload from '../root/MainLayout/EmbeddedPreload';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceChatProps = {
@@ -28,7 +28,7 @@ const ConferenceChat = ({ callId, rid, loading }: ConferenceChatProps) => {
 
 	return (
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} height='full'>
-			<EmbeddedPreload rid={rid}>
+			<ConferenceRoomPreload rid={rid}>
 				<Box
 					is='header'
 					display='flex'
@@ -51,7 +51,7 @@ const ConferenceChat = ({ callId, rid, loading }: ConferenceChatProps) => {
 				</Box>
 
 				<ConferenceRoom rid={rid} />
-			</EmbeddedPreload>
+			</ConferenceRoomPreload>
 		</Box>
 	);
 };
