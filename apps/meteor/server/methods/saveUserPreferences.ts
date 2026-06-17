@@ -224,6 +224,14 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 			if (response.modifiedCount) {
 				void notifyOnSubscriptionChangedByAutoTranslateAndUserId(user._id);
 			}
+
+			const workspaceLanguage = rcSettings.get('Language');
+			if (language !== 'default' && language !== workspaceLanguage) {
+				const enableResponse = await Subscriptions.enableAutoTranslateByUserId(user._id, language);
+				if (enableResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedByAutoTranslateAndUserId(user._id);
+				}
+			}
 		}
 	});
 };
