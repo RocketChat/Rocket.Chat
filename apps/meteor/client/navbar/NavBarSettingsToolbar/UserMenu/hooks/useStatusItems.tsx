@@ -103,7 +103,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 				id: 'current-custom-status',
 				status: <UserStatus status={user.status} />,
 				content: (
-					<Box display='flex' flexDirection='column' rowGap={4}>
+					<>
 						<MarkdownText content={user.statusText} parseEmoji variant='inline' />
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
@@ -111,7 +111,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 								{customStatusExpiration}
 							</Box>
 						)}
-					</Box>
+					</>
 				),
 				addon: <RadioButton checked readOnly />,
 			});
