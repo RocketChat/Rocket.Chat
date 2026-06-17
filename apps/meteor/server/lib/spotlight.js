@@ -1,9 +1,9 @@
 import { Team } from '@rocket.chat/core-services';
-import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions as SubscriptionsRaw, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -226,16 +226,12 @@ export class Spotlight {
 		};
 
 		// Exact match for username only
-		// TODO: these exact-match branches push the user without filtering against `usernames`
-		// (the exclusion list), so an exact username query bypasses the exclusion that the
-		// findByActiveUsersExcept paths below honor. Evaluate filtering exactMatch against
-		// `usernames` here so the exclusion applies uniformly.
 		if (rid && canListInsiders) {
 			const exactMatch = await Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
 				projection: options.projection,
 				readPreference: options.readPreference,
 			});
-			if (exactMatch) {
+			if (exactMatch && !usernames.includes(exactMatch.username)) {
 				users.push(exactMatch);
 				this.processLimitAndUsernames(options, usernames, users);
 			}
@@ -246,7 +242,7 @@ export class Spotlight {
 				projection: options.projection,
 				readPreference: options.readPreference,
 			});
-			if (exactMatch) {
+			if (exactMatch && !usernames.includes(exactMatch.username)) {
 				users.push(this.mapOutsiders(exactMatch));
 				this.processLimitAndUsernames(options, usernames, users);
 			}
