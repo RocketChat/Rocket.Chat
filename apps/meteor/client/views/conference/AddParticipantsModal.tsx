@@ -3,11 +3,13 @@ import {
 	AutoComplete,
 	Box,
 	Button,
+	CheckBox,
 	Field,
 	FieldDescription,
 	FieldRow,
 	Icon,
 	IconButton,
+	Label,
 	Modal,
 	ModalClose,
 	ModalContent,
@@ -23,7 +25,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Rooms } from '../../stores';
@@ -54,6 +56,10 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	const [filter, setFilter] = useState('');
 	const [selected, setSelected] = useState<SelectedParticipant[]>([]);
 	const [adding, setAdding] = useState(false);
+	// Checked: add the users to the current room (keeping its history). Unchecked: create a discussion
+	// so the new participants don't get the room's history. Not offered for DMs (always a discussion).
+	const [keepHistory, setKeepHistory] = useState(true);
+	const keepHistoryId = useId();
 	const debouncedFilter = useDebouncedValue(filter, 300);
 
 	// The room is already loaded into the store by the conference chat (EmbeddedPreload).
@@ -243,24 +249,31 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 						))}
 					</Box>
 				)}
+
+				{/* DMs always create a discussion, so the choice only applies to channels/groups. */}
+				{!isDirect && (
+					<Box mbs={16} display='flex' alignItems='center'>
+						<CheckBox id={keepHistoryId} checked={keepHistory} onChange={() => setKeepHistory((prev) => !prev)} />
+						<Label htmlFor={keepHistoryId} mis={8}>
+							{t('Keep_chat_history')}{' '}
+							<Box is='span' color='danger'>
+								*
+							</Box>
+						</Label>
+					</Box>
+				)}
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					{isDirect ? (
-						<Button primary loading={adding} disabled={!selected.length} onClick={() => handleAdd('discussion')}>
-							{t('Add')}
-						</Button>
-					) : (
-						<>
-							<Button loading={adding} disabled={!selected.length} onClick={() => handleAdd('discussion')}>
-								{t('Create_discussion')}
-							</Button>
-							<Button primary loading={adding} disabled={!selected.length} onClick={() => handleAdd('invite')}>
-								{t('Add_users')}
-							</Button>
-						</>
-					)}
+					<Button
+						primary
+						loading={adding}
+						disabled={!selected.length}
+						onClick={() => handleAdd(!isDirect && keepHistory ? 'invite' : 'discussion')}
+					>
+						{t('Add')}
+					</Button>
 				</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>
