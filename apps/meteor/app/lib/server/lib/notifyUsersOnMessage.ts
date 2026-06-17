@@ -95,6 +95,15 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const userIds = [...new Set([...mentionIds, ...highlightIds])];
 	const unreadCount = getUnreadSettingCount(room.t);
 	const unreadAllMessages = unreadCount === 'all_messages';
+	console.log('SETTINGS RAW', settings.get('Unread_Count'));
+	console.log('UNREAD CHECK', {
+    roomType: room.t,
+    unreadCount,
+    unreadAllMessages,
+    toAll,
+    toHere,
+    message: message.msg
+});
 
 	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
