@@ -1,5 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { isTruthy } from '@rocket.chat/tools';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +26,7 @@ const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextP
 	const expirationText = useExpirationText(statusExpiresAt);
 
 	const statusLabel = status ? t(STATUS_LABEL_KEYS[status] ?? STATUS_LABEL_KEYS[UserStatus.OFFLINE]) : undefined;
-	const headline = [statusLabel, statusText].filter(Boolean).join(' - ');
+	const headline = [statusLabel, statusText].filter(isTruthy).join(' - ');
 
 	if (!headline && !expirationText) {
 		return null;
