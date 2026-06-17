@@ -22,33 +22,30 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 	}
 
 	try {
-		const { result } = await sdk.rest.get('/v1/chat.syncMessages', {
-			roomId: rid,
-			lastUpdate: lastMessage.ts.toISOString(),
-		});
+		const subscription = Subscriptions.state.find((record) => record.rid === rid);
+		const oldest = lastMessage.ts.toISOString();
 
-		if (result?.updated?.length) {
-			const subscription = Subscriptions.state.find((record) => record.rid === rid);
-			// `/v1/chat.syncMessages` returns everything changed since `lastUpdate` by
-			// `_updatedAt`, which includes edits to older messages. We only want to
-			// upsert messages that are genuinely new (created after our newest loaded
-			// message) or that are already loaded (so edits stay in sync), otherwise we
-			// would inject stale messages into the room history.
-			await Promise.all(
-				result.updated
-					.map(mapMessageFromApi)
-					.filter((msg) => msg.ts.getTime() > lastMessage.ts.getTime() || Messages.state.has(msg._id))
-					.map((msg) => upsertMessage({ msg, subscription })),
-			);
-		}
+		// `/v1/chat.history` clamps `count` to the server's `API_Upper_Count_Limit`,
+		// so a single request can silently drop missed messages when many were sent
+		// while offline. Page through with `offset` until a short page is returned.
+		const pageSize = 100;
+		for (let offset = 0; ; offset += pageSize) {
+			const { messages } = await sdk.rest.get('/v1/chat.history', {
+				roomId: rid,
+				oldest,
+				inclusive: 'false',
+				count: pageSize,
+				offset,
+			});
 
-		// Drop messages that were deleted while the connection was down, but only if
-		// they are currently loaded.
-		result?.deleted?.forEach(({ _id }) => {
-			if (Messages.state.has(_id)) {
-				Messages.state.delete(_id);
+			if (messages.length) {
+				await Promise.all(messages.map((msg) => upsertMessage({ msg: mapMessageFromApi(msg), subscription })));
 			}
-		});
+
+			if (messages.length < pageSize) {
+				break;
+			}
+		}
 	} catch (error) {
 		console.error('Error loading missed messages:', error);
 	}
