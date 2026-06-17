@@ -646,64 +646,6 @@ const ChatSyncMessagesSchema = {
 
 export const isChatSyncMessagesProps = ajvQuery.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
-type ChatHistory = {
-	roomId: IRoom['_id'];
-	latest?: string;
-	oldest?: string;
-	inclusive?: 'true' | 'false';
-	count?: number;
-	offset?: number;
-	unreads?: 'true' | 'false';
-	showThreadMessages?: 'true' | 'false';
-};
-
-const ChatHistorySchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		latest: {
-			type: 'string',
-			minLength: 1,
-			nullable: true,
-		},
-		oldest: {
-			type: 'string',
-			minLength: 1,
-			nullable: true,
-		},
-		inclusive: {
-			type: 'string',
-			enum: ['true', 'false'],
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		unreads: {
-			type: 'string',
-			enum: ['true', 'false'],
-			nullable: true,
-		},
-		showThreadMessages: {
-			type: 'string',
-			enum: ['true', 'false'],
-			nullable: true,
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isChatHistoryProps = ajvQuery.compile<ChatHistory>(ChatHistorySchema);
-
 type ChatSyncThreadMessages = PaginatedRequest<{
 	tmid: string;
 	updatedSince: string;
@@ -1046,13 +988,6 @@ export type ChatEndpoints = {
 					previous: string | null;
 				};
 			};
-		};
-	};
-	'/v1/chat.history': {
-		GET: (params: ChatHistory) => {
-			messages: IMessage[];
-			firstUnread?: IMessage;
-			unreadNotLoaded?: number;
 		};
 	};
 	'/v1/chat.postMessage': {

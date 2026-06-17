@@ -3,8 +3,7 @@ import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { LegacyRoomManager, upsertMessage } from '../../../../app/ui-utils/client';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
-import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import { callWithErrorHandling } from '../../../lib/utils/callWithErrorHandling';
 import { Messages, Subscriptions } from '../../../stores';
 
 /**
@@ -22,29 +21,14 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 	}
 
 	try {
-		const subscription = Subscriptions.state.find((record) => record.rid === rid);
-		const oldest = lastMessage.ts.toISOString();
-
-		// `/v1/chat.history` clamps `count` to the server's `API_Upper_Count_Limit`,
-		// so a single request can silently drop missed messages when many were sent
-		// while offline. Page through with `offset` until a short page is returned.
-		const pageSize = 100;
-		for (let offset = 0; ; offset += pageSize) {
-			const { messages } = await sdk.rest.get('/v1/chat.history', {
-				roomId: rid,
-				oldest,
-				inclusive: 'false',
-				count: pageSize,
-				offset,
-			});
-
-			if (messages.length) {
-				await Promise.all(messages.map((msg) => upsertMessage({ msg: mapMessageFromApi(msg), subscription })));
-			}
-
-			if (messages.length < pageSize) {
-				break;
-			}
+		// TODO(ddp-removal): this should move to `/v1/chat.syncMessages` so reconnect
+		// also reconciles edits/deletions made while offline, but that endpoint queries
+		// by `_updatedAt` (+ trash collection) and is currently too slow for this path.
+		// Evaluate/optimize the query before migrating; for now keep the DDP method.
+		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
+		if (result) {
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
+			await Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 	} catch (error) {
 		console.error('Error loading missed messages:', error);

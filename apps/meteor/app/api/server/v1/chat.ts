@@ -17,7 +17,6 @@ import {
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
 	isChatGetMentionedMessagesProps,
-	isChatHistoryProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
@@ -26,7 +25,6 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
-	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -41,7 +39,6 @@ import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
-import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { getSingleMessage } from '../../../lib/server/methods/getSingleMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
@@ -686,56 +683,6 @@ const chatEndpoints = API.v1
 					cursor: 'cursor' in result ? result.cursor : undefined,
 				},
 			});
-		},
-	)
-	.get(
-		'chat.history',
-		{
-			authRequired: true,
-			query: isChatHistoryProps,
-			response: {
-				200: ajv.compile<{
-					messages: IMessage[];
-					firstUnread?: IMessage;
-					unreadNotLoaded?: number;
-				}>({
-					type: 'object',
-					properties: {
-						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						firstUnread: { $ref: '#/components/schemas/IMessage' },
-						unreadNotLoaded: { type: 'number' },
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['messages', 'success'],
-					additionalProperties: false,
-				}),
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				403: validateForbiddenErrorResponse,
-			},
-		},
-		async function action() {
-			const { roomId, latest, oldest, inclusive, unreads, showThreadMessages } = this.queryParams;
-
-			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
-
-			const result = await getChannelHistory({
-				rid: roomId,
-				fromUserId: this.userId,
-				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest ? new Date(oldest) : undefined,
-				inclusive: inclusive === 'true',
-				offset,
-				count,
-				unreads: unreads === 'true',
-				showThreadMessages: showThreadMessages === 'true',
-			});
-
-			if (!result) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success('messages' in result ? result : { messages: result });
 		},
 	)
 	.get(
