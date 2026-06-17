@@ -1,5 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AriaAttributes } from 'react';
 import { useState } from 'react';
@@ -23,9 +23,9 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgent = useEffectEvent((e: string) => setUserId(e));
+	const handleAgent = useStableCallback((e: string) => setUserId(e));
 
-	const handleSave = useEffectEvent(async () => {
+	const handleSave = useStableCallback(async () => {
 		if (!userId) {
 			return;
 		}

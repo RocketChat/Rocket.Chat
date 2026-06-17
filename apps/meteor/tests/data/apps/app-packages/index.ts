@@ -13,3 +13,5 @@ export const appUpdateStatusTest = path.resolve(__dirname, './update-status-test
 export const appExternalIdTest = path.resolve(__dirname, './external-id-test_0.0.1.zip');
 
 export const messageReactionTest = path.resolve(__dirname, './message-updater-test_0.0.1.zip');
+
+export const appPresenceStateTest = path.resolve(__dirname, './presence-state-test_0.0.1.zip');

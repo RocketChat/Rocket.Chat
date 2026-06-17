@@ -3,7 +3,6 @@ import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fu
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -22,7 +21,7 @@ type ThreadMessageProps = {
 	showUserAvatar: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps) => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);

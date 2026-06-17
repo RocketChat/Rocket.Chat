@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import { sanitizeUrl } from './sanitizeUrl';
@@ -47,7 +46,7 @@ type ImageElementProps = {
 	alt: MessageParser.Markup;
 };
 
-const ImageElement = ({ src, alt }: ImageElementProps): ReactElement => {
+const ImageElement = ({ src, alt }: ImageElementProps) => {
 	const plainAlt = useMemo(() => flattenMarkup(alt), [alt]);
 	const safeSrc = sanitizeUrl(src);
 

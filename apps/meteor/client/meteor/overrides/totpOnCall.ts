@@ -52,7 +52,7 @@ const withAsyncTOTP = <T extends (name: string, ...args: any[]) => Promise<any>>
 		} catch (error: unknown) {
 			return process2faAsyncReturn({
 				error,
-				onCode: (twoFactorCode, twoFactorMethod) => Meteor.callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
+				onCode: (twoFactorCode, twoFactorMethod) => callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
 				emailOrUsername: undefined,
 			});
 		}

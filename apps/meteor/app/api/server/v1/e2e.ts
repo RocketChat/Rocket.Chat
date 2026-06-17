@@ -16,6 +16,7 @@ import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSug
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
 import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
 import { getUsersOfRoomWithoutKeyMethod } from '../../../e2e/server/methods/getUsersOfRoomWithoutKey';
+import { requestSubscriptionKeysMethod } from '../../../e2e/server/methods/requestSubscriptionKeys';
 import { setRoomKeyIDMethod } from '../../../e2e/server/methods/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../../e2e/server/methods/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
@@ -192,6 +193,24 @@ const e2eEndpoints = API.v1
 			const { rid, keyID } = this.bodyParams;
 
 			await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'e2e.requestSubscriptionKeys',
+		{
+			authRequired: true,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+				}),
+			},
+		},
+
+		async function action() {
+			await requestSubscriptionKeysMethod(this.userId);
 
 			return API.v1.success();
 		},

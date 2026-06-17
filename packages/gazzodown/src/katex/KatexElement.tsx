@@ -1,5 +1,4 @@
 import katex from 'katex';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import 'katex/dist/katex.css';
@@ -8,7 +7,7 @@ type KatexElementProps = {
 	code: string;
 };
 
-const KatexElement = ({ code }: KatexElementProps): ReactElement => {
+const KatexElement = ({ code }: KatexElementProps) => {
 	const html = useMemo(
 		() =>
 			katex.renderToString(code, {

@@ -18,11 +18,10 @@ import {
 	FieldError,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import { GenericModal, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +52,7 @@ type EmailInboxFormProps = {
 	inboxData?: IEmailInboxPayload;
 };
 
-const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
+const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -94,7 +93,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		mode: 'all',
 	});
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const deleteInbox = async (): Promise<void> => {
 			try {
 				await deleteInboxAction();
@@ -114,7 +113,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		);
 	});
 
-	const handleSave = useEffectEvent(
+	const handleSave = useStableCallback(
 		async ({
 			active,
 			name,
@@ -173,7 +172,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		},
 	);
 
-	const checkEmailExists = useEffectEvent(async (email: string) => {
+	const checkEmailExists = useStableCallback(async (email: string) => {
 		if (!email) {
 			return;
 		}
@@ -223,7 +222,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 									<Controller
 										control={control}
 										name='active'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
+										render={({ field: { onChange, value, ref } }) => (
 											<ToggleSwitch id={activeField} ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>

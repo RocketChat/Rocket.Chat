@@ -1,8 +1,6 @@
-/* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +16,7 @@ type UserInfoActionsProps = {
 	backToList?: () => void;
 };
 
-const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsProps): ReactElement => {
+const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsProps) => {
 	const { t } = useTranslation();
 	const {
 		data: isMemberData,
@@ -60,7 +58,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	}, [menuOptions, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, action]: [string, UserInfoActionType]): ReactElement => (
+		const mapAction = ([key, action]: [string, UserInfoActionType]) => (
 			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
 		);
 

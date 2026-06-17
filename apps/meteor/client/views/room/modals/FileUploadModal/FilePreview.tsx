@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';
 import { MAX_FILE_SIZE_PREVIEW } from '../../../../lib/constants';
@@ -41,14 +39,14 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 
 type FilePreviewProps = {
 	file: File;
-	description?: string;
+	altText?: string;
 };
 
-const FilePreview = ({ file, description }: FilePreviewProps): ReactElement => {
+const FilePreview = ({ file, altText }: FilePreviewProps) => {
 	const fileType = getFileType(file.type);
 
 	if (shouldShowMediaPreview(file, fileType)) {
-		return <MediaPreview file={file} fileType={fileType as FilePreviewType} description={description} />;
+		return <MediaPreview file={file} fileType={fileType as FilePreviewType} altText={altText} />;
 	}
 
 	return <GenericPreview file={file} />;

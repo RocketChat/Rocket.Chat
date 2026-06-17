@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
@@ -23,7 +22,7 @@ type StrikeSpanProps = {
 	children: MessageBlock[];
 };
 
-const StrikeSpan = ({ children }: StrikeSpanProps): ReactElement => (
+const StrikeSpan = ({ children }: StrikeSpanProps) => (
 	<>
 		{children.map((block, index) => {
 			if (
@@ -40,7 +39,7 @@ const StrikeSpan = ({ children }: StrikeSpanProps): ReactElement => (
 	</>
 );
 
-const renderBlockComponent = (block: MessageBlock, index: number): ReactElement | null => {
+const renderBlockComponent = (block: MessageBlock, index: number) => {
 	switch (block.type) {
 		case 'EMOJI':
 			return <EmojiElement key={index} {...block} />;

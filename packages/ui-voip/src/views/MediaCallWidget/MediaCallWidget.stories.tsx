@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import MediaCallWidget from './MediaCallWidget';
 import { useMediaCallView, useWidgetExternalControls } from '../../context';
@@ -18,7 +18,6 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 const meta = {
-	title: 'V2/MediaCallWidget',
 	component: MediaCallWidget,
 	args: {
 		state: 'closed',
@@ -36,21 +35,23 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () => {
-	const { sessionState, onCall } = useMediaCallView();
-	const { toggleWidget } = useWidgetExternalControls();
-	const { state } = sessionState;
-	return (
-		<>
-			<Button onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
-				Toggle widget
-			</Button>
-			<Button onClick={() => onCall()} disabled={state !== 'closed'}>
-				Receive call
-			</Button>
-			<MediaCallWidget />
-		</>
-	);
+export const MediaCallWidgetManualTesting: Story = {
+	render: () => {
+		const { sessionState, onCall } = useMediaCallView();
+		const { toggleWidget } = useWidgetExternalControls();
+		const { state } = sessionState;
+		return (
+			<>
+				<Button onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
+					Toggle widget
+				</Button>
+				<Button onClick={() => onCall()} disabled={state !== 'closed'}>
+					Receive call
+				</Button>
+				<MediaCallWidget />
+			</>
+		);
+	},
 };
 
 export const NewCall: Story = {

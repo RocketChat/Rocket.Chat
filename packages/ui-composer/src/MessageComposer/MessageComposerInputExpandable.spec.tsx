@@ -1,4 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import MessageComposerInputExpandable from './MessageComposerInputExpandable';
 
@@ -11,6 +13,7 @@ test('should show expand button when dimensions.blockSize > 100', () => {
 			}}
 			placeholder='Type a message...'
 		/>,
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	const expandButton = screen.getByRole('button');
@@ -27,13 +30,14 @@ test('should not show expand button when dimensions.blockSize <= 100', () => {
 			}}
 			placeholder='Type a message...'
 		/>,
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	const expandButton = screen.queryByRole('button');
 	expect(expandButton).not.toBeInTheDocument();
 });
 
-test('should expand input when expand button is clicked', () => {
+test('should expand input when expand button is clicked', async () => {
 	render(
 		<MessageComposerInputExpandable
 			dimensions={{
@@ -42,6 +46,7 @@ test('should expand input when expand button is clicked', () => {
 			}}
 			placeholder='Type a message...'
 		/>,
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	const expandButton = screen.getByRole('button');
@@ -51,7 +56,7 @@ test('should expand input when expand button is clicked', () => {
 	expect(textarea).not.toHaveStyle({ height: '500px' });
 
 	// Click to expand
-	fireEvent.click(expandButton);
+	await userEvent.click(expandButton);
 
 	// Should be expanded now
 	expect(textarea).toHaveStyle({ height: '500px' });
@@ -59,7 +64,7 @@ test('should expand input when expand button is clicked', () => {
 	expect(expandButton).toHaveAttribute('title', 'Collapse');
 });
 
-test('should collapse input when collapse button is clicked', () => {
+test('should collapse input when collapse button is clicked', async () => {
 	render(
 		<MessageComposerInputExpandable
 			dimensions={{
@@ -68,17 +73,18 @@ test('should collapse input when collapse button is clicked', () => {
 			}}
 			placeholder='Type a message...'
 		/>,
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	const expandButton = screen.getByRole('button');
 	const textarea = screen.getByRole('textbox');
 
 	// Expand first
-	fireEvent.click(expandButton);
+	await userEvent.click(expandButton);
 	expect(textarea).toHaveStyle({ height: '500px' });
 
 	// Click to collapse
-	fireEvent.click(expandButton);
+	await userEvent.click(expandButton);
 
 	// Should be collapsed now
 	expect(textarea).not.toHaveStyle({ height: '500px' });
@@ -86,7 +92,7 @@ test('should collapse input when collapse button is clicked', () => {
 	expect(expandButton).toHaveAttribute('title', 'Expand');
 });
 
-test('should auto-collapse when input is cleared', () => {
+test('should auto-collapse when input is cleared', async () => {
 	render(
 		<MessageComposerInputExpandable
 			dimensions={{
@@ -95,21 +101,22 @@ test('should auto-collapse when input is cleared', () => {
 			}}
 			placeholder='Type a message...'
 		/>,
+		{ wrapper: mockAppRoot().build() },
 	);
 
 	const expandButton = screen.getByRole('button');
 	const textarea = screen.getByRole('textbox');
 
 	// Expand first
-	fireEvent.click(expandButton);
+	await userEvent.click(expandButton);
 	expect(textarea).toHaveStyle({ height: '500px' });
 
 	// Type some text
-	fireEvent.change(textarea, { target: { value: 'Some text' } });
+	await userEvent.type(textarea, 'Some text');
 	expect(textarea).toHaveStyle({ height: '500px' });
 
 	// Clear the text
-	fireEvent.change(textarea, { target: { value: '' } });
+	await userEvent.clear(textarea);
 
 	// Should auto-collapse
 	expect(textarea).not.toHaveStyle({ height: '500px' });

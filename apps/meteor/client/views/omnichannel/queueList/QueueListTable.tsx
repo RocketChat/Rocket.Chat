@@ -15,13 +15,12 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const QueueListTable = (): ReactElement => {
+const QueueListTable = () => {
 	const t = useTranslation();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'servedBy' | 'department' | 'total' | 'status'>('servedBy');

@@ -1,4 +1,4 @@
-import type { Dispatch, Reducer, ReactElement } from 'react';
+import type { Dispatch, Reducer, ReactNode } from 'react';
 import { createContext, useReducer } from 'react';
 
 import type { initialStateType } from './initialState';
@@ -9,7 +9,7 @@ export default function createCtx<ActionType>(reducer: Reducer<initialStateType,
 		state: initialState,
 		dispatch: defaultDispatch,
 	});
-	const Provider = (props: { children: ReactElement }) => {
+	const Provider = (props: { children: ReactNode }) => {
 		const [state, dispatch] = useReducer(reducer, initialState);
 		return <context.Provider value={{ state, dispatch }} {...props} />;
 	};

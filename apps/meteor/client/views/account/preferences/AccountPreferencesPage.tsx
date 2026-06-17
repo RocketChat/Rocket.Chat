@@ -3,7 +3,6 @@ import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId } from 'react';
-import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -18,7 +17,7 @@ import type { AccountPreferencesData } from './useAccountPreferencesValues';
 import { useAccountPreferencesValues } from './useAccountPreferencesValues';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 
-const AccountPreferencesPage = (): ReactElement => {
+const AccountPreferencesPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');

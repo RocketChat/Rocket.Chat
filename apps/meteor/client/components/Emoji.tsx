@@ -1,5 +1,4 @@
 import styled from '@rocket.chat/styled';
-import type { ReactElement } from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../lib/utils/renderEmoji';
 
@@ -20,7 +19,7 @@ const EmojiComponent = styled('span', ({ fillContainer: _fillContainer, ...props
 			: ''}
 `;
 
-function Emoji({ emojiHandle, className = undefined, fillContainer }: EmojiProps): ReactElement {
+function Emoji({ emojiHandle, className = undefined, fillContainer }: EmojiProps) {
 	const { className: emojiClassName, image, ...props } = getEmojiClassNameAndDataTitle(emojiHandle);
 
 	return (

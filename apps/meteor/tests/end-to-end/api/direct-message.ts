@@ -58,6 +58,63 @@ describe('[Direct Messages]', () => {
 
 	after(() => deleteUser(user));
 
+	describe('/im.blockUser', () => {
+		const fetchOwnSubscription = async (roomId: IRoom['_id']) => {
+			const res = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId }).expect(200);
+			return res.body.subscription;
+		};
+
+		it('should return unauthorized when not authenticated', async () => {
+			await request.post(api('im.blockUser')).send({ roomId: directMessage._id, block: true }).expect(401);
+		});
+
+		it('should return bad request when roomId is missing', async () => {
+			await request.post(api('im.blockUser')).set(credentials).send({ block: true }).expect(400);
+		});
+
+		it('should return bad request when block flag is missing', async () => {
+			await request.post(api('im.blockUser')).set(credentials).send({ roomId: directMessage._id }).expect(400);
+		});
+
+		it('should block the other DM participant and flip the subscription blocker flag', async () => {
+			await request
+				.post(api('im.blockUser'))
+				.set(credentials)
+				.send({ roomId: directMessage._id, block: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const subscription = await fetchOwnSubscription(directMessage._id);
+			expect(subscription).to.have.property('blocker', true);
+		});
+
+		it('should unblock the other DM participant and clear the subscription blocker flag', async () => {
+			await request
+				.post(api('im.blockUser'))
+				.set(credentials)
+				.send({ roomId: directMessage._id, block: false })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const subscription = await fetchOwnSubscription(directMessage._id);
+			expect(Boolean(subscription.blocker)).to.equal(false);
+		});
+
+		it('should fail when called on a non-DM room', async () => {
+			await request
+				.post(api('im.blockUser'))
+				.set(credentials)
+				.send({ roomId: 'GENERAL', block: true })
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
 	describe('/im.setTopic', () => {
 		it('should set the topic of the DM with a string', (done) => {
 			void request

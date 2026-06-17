@@ -3,13 +3,12 @@ import { Box } from '@rocket.chat/fuselage';
 import { ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentEdit from './AgentEdit';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
+const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }) => {
 	const { t } = useTranslation();
 
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });

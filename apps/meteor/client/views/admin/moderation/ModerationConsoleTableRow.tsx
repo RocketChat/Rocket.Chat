@@ -12,7 +12,7 @@ export type ModerationConsoleRowProps = {
 	isDesktopOrLarger: boolean;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps): JSX.Element => {
+const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps) => {
 	const { userId: _id, rooms, name, count, ts } = report;
 	const username = report.username ? normalizeUsername(report.username) : undefined;
 

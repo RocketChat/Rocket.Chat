@@ -18,8 +18,8 @@ export const useDropdownVisibility = <T extends HTMLElement>({
 	reference,
 	target,
 }: {
-	reference: RefObject<T>;
-	target: RefObject<T>;
+	reference: RefObject<T | null>;
+	target: RefObject<T | null>;
 }): {
 	isVisible: boolean;
 	toggle: (state?: boolean) => void;
