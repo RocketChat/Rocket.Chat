@@ -9,6 +9,7 @@ import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
+import { useRoomMessages } from '../../contexts/RoomContext';
 import { clearHighlightMessage, setHighlightMessage } from '../providers/messageHighlightSubscription';
 
 type UseTryToJumpToMessageProps = {
@@ -20,6 +21,8 @@ type UseTryToJumpToMessageProps = {
 
 const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
+
+	const { isLoadingMoreMessages } = useRoomMessages();
 
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 
@@ -47,25 +50,23 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			setIsJumpingToMessage(false);
 			return;
 		}
-
 		if (!virtualizerRef.current) {
 			return;
 		}
-
 		setIsJumpingToMessage(true);
 
-		if (RoomHistoryManager.isLoading(rid) || messages.length === 0) {
+		if (isLoadingMoreMessages || messages.length === 0) {
 			return;
 		}
-
 		const loadedMessage = messages.find((message) => message._id === messageJumpParam);
 		if (!loadedMessage) {
-			if (message) {
+			// Do not load surrounding messages for thread messages that have a tshow: true
+			// as these are previews on the main list and will be handled by useTryToJumpToThreadMessage
+			if (message && (!isThreadMessage(message) || isThreadMainMessage(message))) {
 				RoomHistoryManager.getSurroundingChannelMessages(message);
 			}
 			return;
 		}
-
 		const messageIndex = messages.indexOf(loadedMessage);
 
 		// TODO: Calculate the offset of the page, for the message to be in the center of the page
@@ -83,7 +84,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
 		}, 500);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message]);
+	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isLoadingMoreMessages]);
 };
 
 export default useTryToJumpToMessage;
