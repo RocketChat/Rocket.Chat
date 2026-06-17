@@ -84,7 +84,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			flexDirection='column'
 			{...getSplitStyles(showChat)}
 		>
-			{escalated ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+			{!escalated ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
 
 			{escalated ? <VideoEscalatedView /> : <PeerCardsView user={user} shouldWrapCards={shouldWrapCards} />}
 
