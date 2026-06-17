@@ -11,7 +11,8 @@ export const useConferenceEmbedded = (callId: string) => {
 	const subscribeToVideoConference = useStream('video-conference');
 	const queryClient = useQueryClient();
 
-	// The chat room is identified by the conference record's `rid`, not a hardcoded type/name.
+	// The chat room comes from the conference record: show `discussionRid` when it's set (a discussion
+	// was created), otherwise the conference's `rid` (the original room). The `rid` never changes.
 	const { data: info, isPending: isInfoPending } = useQuery({
 		queryKey: ['conference-info', callId],
 		queryFn: async () => getConferenceInfo({ callId }),
@@ -33,7 +34,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	});
 
 	return {
-		room: { rid: info?.rid, loading: isInfoPending } as const,
+		room: { rid: info?.discussionRid || info?.rid, loading: isInfoPending } as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
 			providerName: data?.providerName,

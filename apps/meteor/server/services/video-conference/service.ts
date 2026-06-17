@@ -1383,12 +1383,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Leave a "discussion created" pointer in the original room so its members can follow along.
 		await Message.saveSystemMessage('discussion-created', parent._id, name, user, { drid: discussion._id });
 
-		await VideoConferenceModel.setDataById(callId, { rid: discussion._id });
-
-		// Notify the other conference participants so their chat panel follows the conference to the
-		// new room. The discussion already has its members (createRoom above), matching the ordering
-		// fix the streamer relies on.
-		void api.broadcast('video-conference.discussionUpdated', { callId, discussionRid: discussion._id });
+		// The conference's `rid` always stays the original room; the chat to display is driven by
+		// `discussionRid`. This sets it and broadcasts `discussionUpdated` so participants navigate.
+		await this.assignDiscussionToConference(callId, discussion._id);
 
 		return discussion._id;
 	}
@@ -1458,7 +1455,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-room-id');
 		}
 
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, messages: 1 } });
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, messages: 1 } });
 		if (!call) {
 			return;
 		}
@@ -1475,6 +1472,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		} finally {
 			void api.broadcast('video-conference.discussionUpdated', { callId, discussionRid: rid });
+			// Also refresh the in-room conference message block, which listens on `notify-room/videoconf`
+			// (the same channel used when users join), so its "Join discussion" button updates.
+			this.notifyVideoConfUpdate(call.rid, callId);
 		}
 	}
 
