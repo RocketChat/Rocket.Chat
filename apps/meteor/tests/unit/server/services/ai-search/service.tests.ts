@@ -261,9 +261,7 @@ describe('AISearchService', () => {
 				ok: true,
 				status: 200,
 				json: async () => ({
-					results: [
-						{ metadata: { room_id: 'allowed', msg_id: 'hidden-msg' }, text: 'pipeline text should not leak', score: 0.1 },
-					],
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'hidden-msg' }, text: 'pipeline text should not leak', score: 0.1 }],
 				}),
 				text: async () => '',
 			});
