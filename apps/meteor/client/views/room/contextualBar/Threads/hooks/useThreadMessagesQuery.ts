@@ -1,7 +1,7 @@
 import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
 import { useEndpoint, useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
@@ -112,7 +112,29 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		};
 	}, [tmid, roomId, queryClient, subscribeToRoomMessages, subscribeToNotifyRoom]);
 
-	return useInfiniteQuery({
+	const loadMessageAround = useCallback(
+		async (messageId: string) => {
+			const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
+
+			const { messages, total, offset } = await getThreadMessages({
+				tmid,
+				aroundId: messageId,
+				count,
+				sort: JSON.stringify({ ts: 1 }),
+			});
+
+			const filtered = filterThreadMessages(messages, tmid);
+			const processed = (await processMessages(filtered)) as IThreadMessage[];
+
+			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
+				pages: [{ items: processed, itemCount: total }],
+				pageParams: [offset],
+			});
+		},
+		[queryClient, getThreadMessages, roomId, tmid, count],
+	);
+
+	const query = useInfiniteQuery({
 		queryKey,
 		queryFn: async ({ pageParam: offset }) => {
 			if (offset === 0) {
@@ -148,13 +170,27 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, allPages) => {
-			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
-			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			const next = lastPageParam + count;
+			return next < lastPage.itemCount ? next : undefined;
 		},
-		select: ({ pages }) => ({
-			messages: pages.flatMap((page) => page.items),
-			itemCount: pages.at(-1)?.itemCount ?? 0,
-		}),
+		getPreviousPageParam: (_firstPage, _allPages, firstPageParam) => {
+			return firstPageParam > 0 ? Math.max(0, firstPageParam - count) : undefined;
+		},
+		select: ({ pages }) => {
+			const byId = new Map<string, IThreadMessage>();
+			for (const page of pages) {
+				for (const item of page.items) {
+					byId.set(item._id, item);
+				}
+			}
+			const messages = Array.from(byId.values()).sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
+			return {
+				messages,
+				itemCount: pages.at(-1)?.itemCount ?? 0,
+			};
+		},
 	});
+
+	return { ...query, loadMessageAround };
 };

@@ -65,26 +65,29 @@ export const mutateThreadMessagesInfiniteData = (
 		}
 
 		const items = old.pages.flatMap((page) => page.items);
-		const lastPage = old.pages.at(-1) ?? { items: [], itemCount: 0 };
+		const originalPageLengths = old.pages.map((page) => page.items.length);
+		const oldTotal = old.pages.at(-1)?.itemCount ?? 0;
 
 		const beforeMutationItemsLength = items.length;
 		mutation(items);
 		const afterMutationItemsLength = items.length;
 
-		const pageSize = lastPage.items.length || items.length;
-		if (pageSize === 0) {
-			return old;
+		const itemCountDelta = beforeMutationItemsLength - afterMutationItemsLength;
+		const newTotal = Math.max(0, oldTotal - itemCountDelta);
+
+		const pages: ThreadMessagesPage[] = [];
+		let cursor = 0;
+		for (let pageIndex = 0; pageIndex < old.pages.length; pageIndex++) {
+			const isLastPage = pageIndex === old.pages.length - 1;
+			const take = isLastPage ? items.length - cursor : Math.min(originalPageLengths[pageIndex], items.length - cursor);
+			const slice = items.slice(cursor, cursor + Math.max(0, take));
+			cursor += slice.length;
+			pages.push({ items: slice, itemCount: newTotal });
 		}
 
-		const newPageCount = Math.ceil(items.length / pageSize);
-		const itemCountDelta = beforeMutationItemsLength - afterMutationItemsLength;
-
 		return {
-			pages: Array.from({ length: newPageCount }, (_, pageIndex) => ({
-				items: items.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-				itemCount: lastPage.itemCount - itemCountDelta,
-			})),
-			pageParams: Array.from({ length: newPageCount }, (_, pageIndex) => pageIndex * pageSize),
+			pages,
+			pageParams: old.pageParams,
 		};
 	});
 };

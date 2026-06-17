@@ -6,7 +6,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
-import { Fragment, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -63,7 +63,17 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
 
-	const { data, isLoading: loading, fetchNextPage, hasNextPage, isFetchingNextPage } = useThreadMessagesQuery(mainMessage._id);
+	const {
+		data,
+		isLoading: loading,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		fetchPreviousPage,
+		hasPreviousPage,
+		isFetchingPreviousPage,
+		loadMessageAround,
+	} = useThreadMessagesQuery(mainMessage._id);
 	const messages = data?.messages ?? [];
 
 	const loadMoreMessages = useDebouncedCallback(
@@ -74,6 +84,16 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		},
 		100,
 		[hasNextPage, isFetchingNextPage, fetchNextPage],
+	);
+
+	const loadPreviousMessages = useDebouncedCallback(
+		() => {
+			if (hasPreviousPage && !isFetchingPreviousPage) {
+				void fetchPreviousPage();
+			}
+		},
+		100,
+		[hasPreviousPage, isFetchingPreviousPage, fetchPreviousPage],
 	);
 
 	const room = useRoom();
@@ -90,6 +110,16 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const isAtBottom = useRef<boolean | null>(null);
 	const prevItemsLengthRef = useRef(0);
 
+	// When older replies are prepended (loading previous pages), virtua must shift the
+	// scroll position so the viewport stays anchored on the same message instead of
+	// jumping. The flag is armed near the top in onScroll and reset after every commit,
+	// so appends at the bottom (new messages) don't shift.
+	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
+	const isPrepend = useRef(false);
+	useLayoutEffect(() => {
+		isPrepend.current = false;
+	});
+
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
 	const messagesLength = messages.length;
 	useEffect(() => {
@@ -101,9 +131,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			}
 		});
 	}, [messagesLength, setKeepAtBottom, msgJumpParam]);
+	const loadingWindowKeyRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
-		if (loading || isFetchingNextPage || !hasNextPage || !msgJumpParam) {
+		if (loading || !msgJumpParam || isFetchingNextPage || isFetchingPreviousPage) {
 			return;
 		}
 		if (msgJumpParam === mainMessage._id) {
@@ -112,8 +143,13 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		if (messages.some((message) => message._id === msgJumpParam)) {
 			return;
 		}
-		void fetchNextPage();
-	}, [loading, isFetchingNextPage, hasNextPage, msgJumpParam, messages, mainMessage._id, fetchNextPage]);
+		const windowKey = `${mainMessage._id}:${msgJumpParam}`;
+		if (loadingWindowKeyRef.current === windowKey) {
+			return;
+		}
+		loadingWindowKeyRef.current = windowKey;
+		void loadMessageAround(msgJumpParam);
+	}, [loading, isFetchingNextPage, isFetchingPreviousPage, msgJumpParam, messages, mainMessage._id, loadMessageAround]);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef);
 
@@ -136,6 +172,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	useEffect(() => {
 		lastThreadJumpKeyRef.current = undefined;
+		loadingWindowKeyRef.current = undefined;
 		prevItemsLengthRef.current = 0;
 	}, [mainMessage._id]);
 
@@ -239,14 +276,19 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				<MessageListProvider>
 					<VList
 						ref={virtualizerRef}
+						shift={isPrepend.current === true}
 						style={{ height: '100%' }}
 						aria-label={t('Thread_message_list')}
-						aria-busy={loading || isFetchingNextPage}
+						aria-busy={loading || isFetchingNextPage || isFetchingPreviousPage}
 						role='list'
 						keepMounted={keepMountedMessages}
 						onScroll={(offset) => {
 							const handle = virtualizerRef.current;
 							if (!handle) return;
+
+							if (offset < 200 && hasPreviousPage) {
+								isPrepend.current = true;
+							}
 
 							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
 							if (handle.scrollSize >= handle.viewportSize) {
@@ -281,6 +323,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 											firstUnread={firstUnread}
 											system={system}
 										/>
+										{index === 0 && hasPreviousPage ? (
+											<li className='load-more'>
+												{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadPreviousMessages} />}
+											</li>
+										) : null}
 									</Fragment>
 								);
 							})
