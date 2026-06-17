@@ -6,7 +6,7 @@ import { lazy, Suspense, useEffect, useMemo } from 'react';
 
 import { SubscriptionsCachedStore } from '../../cachedStores';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
-import { useOpenRoomById } from '../room/hooks/useOpenRoom';
+import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
 
 const RoomProvider = lazy(() => import('../room/providers/RoomProvider'));
 const Room = lazy(() => import('../room/Room'));
