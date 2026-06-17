@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { action } from 'storybook/actions';
 
 import VideoCallWidgetAction from './VideoCallWidgetAction';
 
@@ -17,7 +17,7 @@ const meta = {
 			.buildStoryDecorator(),
 	],
 	args: {
-		onClick: fn(),
+		onClick: action('onClick'),
 	},
 } satisfies Meta<typeof VideoCallWidgetAction>;
 
