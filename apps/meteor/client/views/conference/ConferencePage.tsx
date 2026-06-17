@@ -1,6 +1,6 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 
-import ConferenceInlinePage from './ConferenceInlinePage';
+import ConferenceEmbeddedPage from './ConferenceEmbeddedPage';
 import ConferencePageError from './ConferencePageError';
 import ConferenceRedirectPage from './ConferenceRedirectPage';
 
@@ -21,7 +21,7 @@ const ConferencePage = () => {
 	}
 
 	if (id) {
-		return <ConferenceInlinePage callId={id} />;
+		return <ConferenceEmbeddedPage callId={id} />;
 	}
 
 	return <ConferencePageError />;

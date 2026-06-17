@@ -4,11 +4,11 @@ import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 
-type ConferenceInlinePageProps = {
+type ConferenceEmbeddedPageProps = {
 	callId: string;
 };
 
-const ConferenceInlinePage = ({ callId }: ConferenceInlinePageProps) => {
+const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference } = useConferenceEmbedded(callId);
 
 	return (
@@ -24,4 +24,4 @@ const ConferenceInlinePage = ({ callId }: ConferenceInlinePageProps) => {
 	);
 };
 
-export default ConferenceInlinePage;
+export default ConferenceEmbeddedPage;
