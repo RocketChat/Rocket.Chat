@@ -1,6 +1,6 @@
 import { useTooltipClose, useTooltipOpen, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { UserStatusText } from '../components/UserStatusText';
 
@@ -36,5 +36,5 @@ export function useUserStatusTooltip(uid: string | undefined): UserStatusTooltip
 		[uid, openTooltip, presence],
 	);
 
-	return { onMouseEnter, onMouseLeave: closeTooltip };
+	return useMemo(() => ({ onMouseEnter, onMouseLeave: closeTooltip }), [onMouseEnter, closeTooltip]);
 }
