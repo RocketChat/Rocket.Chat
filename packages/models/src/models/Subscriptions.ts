@@ -723,35 +723,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
-		const query = {
-			'u._id': userId,
-			'autoTranslate': true,
-		};
+	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document> {
+		const query = { 'u._id': userId };
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				autoTranslateLanguage: language,
-			},
-		};
+		if (language) {
+			return this.updateMany(query, { $set: { autoTranslate: true, autoTranslateLanguage: language } });
+		}
 
-		return this.updateMany(query, update);
-	}
-
-	enableAutoTranslateByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
-		const query = {
-			'u._id': userId,
-			'autoTranslate': { $ne: true },
-		};
-
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				autoTranslate: true,
-				autoTranslateLanguage: language,
-			},
-		};
-
-		return this.updateMany(query, update);
+		return this.updateMany(query, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
 	findByAutoTranslateAndUserId(
