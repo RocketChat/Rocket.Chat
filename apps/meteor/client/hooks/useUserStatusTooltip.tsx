@@ -1,6 +1,6 @@
 import { useTooltipClose, useTooltipOpen, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { UserStatusText } from '../components/UserStatusText';
 
@@ -15,25 +15,25 @@ export function useUserStatusTooltip(uid: string | undefined): UserStatusTooltip
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
 
-	const tooltipNode = useMemo(() => {
-		if (!uid) {
-			return null;
-		}
-		return <UserStatusText status={presence?.status} statusText={presence?.statusText} statusExpiresAt={presence?.statusExpiresAt} />;
-	}, [uid, presence?.status, presence?.statusText, presence?.statusExpiresAt]);
-
 	const onMouseEnter = useCallback(
 		(e: MouseEvent<HTMLElement>) => {
-			if (!tooltipNode) {
+			if (!uid) {
 				return;
 			}
 
 			// TODO: Workaround - need to find a proper way to display the tooltip
 			// when it's more than simple string
 			const target = e.currentTarget;
-			setTimeout(() => openTooltip(tooltipNode, target), 0);
+			setTimeout(
+				() =>
+					openTooltip(
+						<UserStatusText status={presence?.status} statusText={presence?.statusText} statusExpiresAt={presence?.statusExpiresAt} />,
+						target,
+					),
+				0,
+			);
 		},
-		[tooltipNode, openTooltip],
+		[uid, openTooltip, presence],
 	);
 
 	return { onMouseEnter, onMouseLeave: closeTooltip };
