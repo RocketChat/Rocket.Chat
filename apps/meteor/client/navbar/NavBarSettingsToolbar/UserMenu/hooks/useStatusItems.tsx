@@ -5,7 +5,7 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
@@ -76,68 +76,81 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 	const handleCustomStatus = useCustomStatusModalHandler();
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
-	if (presenceDisabled || !allowUserStatusMessageChange) {
-		return [
-			{
-				id: 'presence-disabled',
+	return useMemo<GenericMenuItemProps[]>(() => {
+		if (presenceDisabled || !allowUserStatusMessageChange) {
+			return [
+				{
+					id: 'presence-disabled',
+					content: (
+						<Box fontScale='p2'>
+							<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
+								{t('User_status_disabled')}
+							</Box>
+							<Box is='a' color='info' onClick={handleStatusDisabledModal}>
+								{t('Learn_more')}
+							</Box>
+						</Box>
+					),
+				},
+			];
+		}
+
+		const items: GenericMenuItemProps[] = [];
+
+		// Top: user's currently-active custom status (display only — clicking does nothing, already selected).
+		if (user?.statusText) {
+			items.push({
+				id: 'current-custom-status',
+				status: <UserStatus status={user.status} />,
 				content: (
-					<Box fontScale='p2'>
-						<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
-							{t('User_status_disabled')}
-						</Box>
-						<Box is='a' color='info' onClick={handleStatusDisabledModal}>
-							{t('Learn_more')}
-						</Box>
+					<Box display='flex' flexDirection='column' rowGap={4}>
+						<MarkdownText content={user.statusText} parseEmoji variant='inline' />
+						{customStatusExpiration && (
+							<Box color='secondary-info' display='flex' alignItems='center'>
+								<Icon name='clock' size='x16' mie={4} />
+								{customStatusExpiration}
+							</Box>
+						)}
 					</Box>
 				),
-			},
-		];
-	}
+				addon: <RadioButton checked readOnly />,
+			});
+		}
 
-	const items: GenericMenuItemProps[] = [];
-
-	// Top: user's currently-active custom status (display only — clicking does nothing, already selected).
-	if (user?.statusText) {
+		// Always: "Custom Status" action - opens the edit modal.
 		items.push({
-			id: 'current-custom-status',
-			status: <UserStatus status={user.status} />,
-			content: (
-				<Box display='flex' flexDirection='column' rowGap={4}>
-					<MarkdownText content={user.statusText} parseEmoji variant='inline' />
-					{customStatusExpiration && (
-						<Box color='secondary-info' display='flex' alignItems='center'>
-							<Icon name='clock' size='x16' mie={4} />
-							{customStatusExpiration}
-						</Box>
-					)}
-				</Box>
-			),
-			addon: <RadioButton checked readOnly />,
+			id: 'custom-status-edit',
+			icon: 'edit',
+			content: t('Custom_Status'),
+			onClick: handleCustomStatus,
 		});
-	}
 
-	// Always: "Custom Status" action - opens the edit modal.
-	items.push({
-		id: 'custom-status-edit',
-		icon: 'edit',
-		content: t('Custom_Status'),
-		onClick: handleCustomStatus,
-	});
+		// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
+		const isPresetSelected = (statusType: UserStatusEnum): boolean => !user?.statusText && user?.status === statusType;
+		const presetItems = (statuses ?? [])
+			.filter((s) => userStatuses.isValidType(s.id))
+			.filter((s) => s.statusType !== UserStatusEnum.AWAY || isPresetSelected(UserStatusEnum.AWAY))
+			.map(
+				(status): GenericMenuItemProps => ({
+					id: status.id,
+					status: <UserStatus status={status.statusType} />,
+					content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+					addon: <RadioButton checked={isPresetSelected(status.statusType)} readOnly />,
+					onClick: () => setStatusMutation.mutate(status),
+				}),
+			);
 
-	// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
-	const isPresetSelected = (statusType: UserStatusEnum): boolean => !user?.statusText && user?.status === statusType;
-	const presetItems = (statuses ?? [])
-		.filter((s) => userStatuses.isValidType(s.id))
-		.filter((s) => s.statusType !== UserStatusEnum.AWAY || isPresetSelected(UserStatusEnum.AWAY))
-		.map(
-			(status): GenericMenuItemProps => ({
-				id: status.id,
-				status: <UserStatus status={status.statusType} />,
-				content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
-				addon: <RadioButton checked={isPresetSelected(status.statusType)} readOnly />,
-				onClick: () => setStatusMutation.mutate(status),
-			}),
-		);
-
-	return [...items, ...presetItems];
+		return [...items, ...presetItems];
+	}, [
+		presenceDisabled,
+		allowUserStatusMessageChange,
+		t,
+		handleStatusDisabledModal,
+		user?.status,
+		user?.statusText,
+		customStatusExpiration,
+		statuses,
+		handleCustomStatus,
+		setStatusMutation,
+	]);
 };
