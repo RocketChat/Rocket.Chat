@@ -1,8 +1,8 @@
 import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
-import { LayoutContext, useLayout, useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { lazy, Suspense, useEffect, useMemo } from 'react';
+import { useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NotSubscribedRoom from './NotSubscribedRoom';
@@ -30,8 +30,6 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps) => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const uid = useUserId();
 	const subscribeToNotifyUser = useStream('notify-user');
-	const layoutContext = useLayout();
-	const layoutContextEmbedded = useMemo(() => ({ ...layoutContext, isEmbedded: true }), [layoutContext]);
 
 	const rid = data?.rid;
 
@@ -52,49 +50,47 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<LayoutContext.Provider value={layoutContextEmbedded}>
-			<Box display='flex' w='full' h='full'>
-				<Suspense fallback={<RoomSkeleton />}>
-					{isLoading && <RoomSkeleton />}
-					{isSuccess && (
-						<RoomProvider rid={data.rid}>
-							<Room />
-						</RoomProvider>
-					)}
-					{isError &&
-						(() => {
-							if (error instanceof OldUrlRoomError) {
-								return <RoomSkeleton />;
-							}
+		<Box display='flex' w='full' h='full'>
+			<Suspense fallback={<RoomSkeleton />}>
+				{isLoading && <RoomSkeleton />}
+				{isSuccess && (
+					<RoomProvider rid={data.rid}>
+						<Room />
+					</RoomProvider>
+				)}
+				{isError &&
+					(() => {
+						if (error instanceof OldUrlRoomError) {
+							return <RoomSkeleton />;
+						}
 
-							if (error instanceof RoomNotFoundError) {
-								return <RoomNotFound />;
-							}
+						if (error instanceof RoomNotFoundError) {
+							return <RoomNotFound />;
+						}
 
-							if (error instanceof NotSubscribedToRoomError) {
-								return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
-							}
+						if (error instanceof NotSubscribedToRoomError) {
+							return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
+						}
 
-							if (error instanceof NotAuthorizedError) {
-								return <NotAuthorizedPage />;
-							}
+						if (error instanceof NotAuthorizedError) {
+							return <NotAuthorizedPage />;
+						}
 
-							return (
-								<RoomLayout
-									header={<Header />}
-									body={
-										<States>
-											<StatesIcon name='circle-exclamation' variation='danger' />
-											<StatesTitle>{t('core.Error')}</StatesTitle>
-											<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
-										</States>
-									}
-								/>
-							);
-						})()}
-				</Suspense>
-			</Box>
-		</LayoutContext.Provider>
+						return (
+							<RoomLayout
+								header={<Header />}
+								body={
+									<States>
+										<StatesIcon name='circle-exclamation' variation='danger' />
+										<StatesTitle>{t('core.Error')}</StatesTitle>
+										<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
+									</States>
+								}
+							/>
+						);
+					})()}
+			</Suspense>
+		</Box>
 	);
 };
 
