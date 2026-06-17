@@ -19,6 +19,7 @@ import type {
 	Db,
 	CountDocumentsOptions,
 	FindOptions,
+	WithId,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -328,6 +329,29 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				mediaCallIds: callId,
 			},
 			options || {},
+		);
+	}
+
+	public async addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null> {
+		return this.findOneAndUpdate(
+			{
+				providerName,
+				sipAlias,
+				status: VideoConferenceStatus.STARTED,
+				mediaCallIds: { $not: { $eq: mediaCallId } },
+			},
+			{
+				$addToSet: {
+					mediaCallIds: mediaCallId,
+				},
+			},
+			{
+				returnDocument: 'after',
+			},
 		);
 	}
 

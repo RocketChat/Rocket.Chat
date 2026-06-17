@@ -7,7 +7,7 @@ import type {
 	VideoConferenceStatus,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions, WithId } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -77,6 +77,12 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setSipAliasById(callId: string, sipAlias: string): Promise<void>;
 
 	unsetSipAliasById(callId: string): Promise<void>;
+
+	addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null>;
 
 	findOneByProviderNameAndSipAlias<T extends VideoConference>(
 		providerName: string,

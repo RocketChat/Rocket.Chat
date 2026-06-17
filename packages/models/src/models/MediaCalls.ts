@@ -224,6 +224,25 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public findAllNotOverByOppositeSipExtension<T extends Document = IMediaCall>(
+		sipExtension: string,
+		options?: FindOptions<T>,
+	): FindCursor<T> {
+		return this.find(
+			{
+				ended: false,
+				expiresAt: {
+					$gt: new Date(),
+				},
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension, 'callee.type': 'sip' },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension, 'caller.type': 'sip' },
+				],
+			},
+			options,
+		);
+	}
+
 	public async hasUnfinishedCalls(): Promise<boolean> {
 		const count = await this.countDocuments({ ended: false }, { limit: 1 });
 		return count > 0;

@@ -5,6 +5,7 @@ import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseCallProvider } from '../../base/BaseCallProvider';
+import { UserActorAgent } from '../../internal/agents/UserActorAgent';
 import { logger } from '../../logger';
 import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -51,7 +52,38 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		const newContact = await this.detectSipInitiatedTransfer(callingNumber);
 
 		if (newContact) {
-			return this.updateRemoteContact(newContact);
+			const header = req.has('p-asserted-identity') ? req.get('p-asserted-identity') : req.get('from');
+			if (header && this.session.isPexipIdentity(header)) {
+				await this.processEscalatedRemotely(callingNumber);
+			}
+
+			await this.updateRemoteContact(newContact);
+		}
+	}
+
+	protected async processEscalatedRemotely(sipAlias: string): Promise<void> {
+		if (this.call.escalatedAt) {
+			return;
+		}
+
+		const updateResult = await MediaCalls.flagAsEscalatedByCallId(this.call._id);
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		const conference = await VideoConferenceModel.addMediaCallIdByProviderNameAndSipAlias('core.pexip', sipAlias, this.call._id);
+		if (!conference) {
+			// TODO: maybe rollback `flagAsEscalatedByCallId` ?
+			return;
+		}
+
+		const { oppositeAgent } = this.agent;
+		if (oppositeAgent && oppositeAgent instanceof UserActorAgent) {
+			await oppositeAgent.sendSignal({
+				callId: this.call._id,
+				type: 'notification',
+				notification: 'escalated',
+			});
 		}
 	}
 
@@ -280,7 +312,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			return;
 		}
 
-		const conference = await VideoConferenceModel.findOneByMediaCallId(call._id, { projection: { sipAlias: 1 } });
+		const conference = await VideoConferenceModel.findOneByMediaCallId(call._id, { projection: { sipAlias: 1, mediaCallIds: 1 } });
 		if (!conference) {
 			logger.debug({
 				msg: 'Could not find Conference for escalated voice call',
@@ -291,9 +323,9 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			return;
 		}
 
-		const { sipAlias: conferenceAlias } = conference;
+		const { sipAlias: conferenceAlias, mediaCallIds } = conference;
 
-		if (!conferenceAlias) {
+		if (!conferenceAlias || !mediaCallIds) {
 			logger.debug({
 				msg: 'Escalated Conference does not have a SIP Alias',
 				method: 'processEscalatedCall',
@@ -308,6 +340,11 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		this.processedEscalation = true;
 
 		try {
+			// If the conference is already associated with two voice calls, then the remote SIP leg is already in it, do not refer
+			if (mediaCallIds.length >= 2) {
+				return;
+			}
+
 			await this.session.sendReferRequest(this.sipDialog, { conferenceAlias });
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processEscalatedCall', err, type: this.constructor.name });

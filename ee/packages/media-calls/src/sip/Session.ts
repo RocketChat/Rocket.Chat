@@ -121,6 +121,19 @@ export class SipServerSession {
 		return `sip:${alias}@${host}${portStr}`;
 	}
 
+	public isPexipIdentity(identity: string): boolean {
+		if (!identity) {
+			return false;
+		}
+
+		const { host } = this.settings.sip.pexipServer;
+		if (!host) {
+			return false;
+		}
+
+		return identity.includes(host);
+	}
+
 	public async sendReferRequest(
 		sipDialog: Srf.Dialog,
 		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact; conferenceAlias?: string },
