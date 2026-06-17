@@ -55,7 +55,11 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 
-	const { data: serverResults, isFetching } = useQuery({
+	const {
+		data: serverResults,
+		isFetching,
+		isPlaceholderData,
+	} = useQuery({
 		// Keyed on the debounced term only, so typing doesn't refetch on every keystroke.
 		queryKey: ['sidebar/search/spotlight', debouncedName, mention, type],
 
@@ -137,10 +141,18 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 				return sameRoom || sameGroupDM || sameDirectDM;
 			});
 
-		const fromServer = (serverResults ?? []).filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		// When local subscriptions already fill the limit the server query is disabled, but React Query
+		// keeps the last results around — ignore them so a full local list isn't padded with stale rows.
+		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
+		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
 		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 		return Array.from(new Set([...exact, ...localRooms, ...fromServer])) as SubscriptionWithRoom[];
 	}, [serverResults, localRooms, name]);
 
-	return { items, isLoading: isFetching };
+	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
+	// already show — only surface loading while there's no usable data for the current term yet, i.e.
+	// the very first fetch (serverResults undefined) or a new term still showing placeholder data.
+	const isLoading = isFetching && (isPlaceholderData || serverResults === undefined);
+
+	return { items, isLoading };
 };

@@ -1,5 +1,4 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
-import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
@@ -51,8 +50,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			width='100%'
 			flexDirection='column'
 		>
-			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} />
-			<VisuallyHidden role='status'>{isLoading ? t('Loading') : ''}</VisuallyHidden>
+			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
