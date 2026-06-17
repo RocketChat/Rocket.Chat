@@ -738,6 +738,22 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
+	enableAutoTranslateByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
+		const query = {
+			'u._id': userId,
+			'autoTranslate': { $ne: true },
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				autoTranslate: true,
+				autoTranslateLanguage: language,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	findByAutoTranslateAndUserId(
 		userId: ISubscription['u']['_id'],
 		autoTranslate: ISubscription['autoTranslate'] = true,
