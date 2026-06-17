@@ -10,7 +10,6 @@ import {
 	ContextualbarTitle,
 	VirtualizedScrollbars,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -60,9 +59,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 								data={bannedUsers}
 								overscan={50}
 								endReached={loadMoreBannedUsers}
-								itemContent={(_index, user): ReactElement => (
-									<BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />
-								)}
+								itemContent={(_index, user) => <BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />}
 							/>
 						</VirtualizedScrollbars>
 					</Box>

@@ -1,9 +1,10 @@
+import { LDAPEnterprise } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import type { IPolicyDecisionPoint } from './types';
+import type { IPolicyDecisionPoint, ReevaluationUser } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	async isAvailable(): Promise<boolean> {
@@ -79,6 +80,10 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
 		throw new Error('evaluateUserRooms is not implemented for LocalPDP');
+	}
+
+	async reevaluateUsers(users: ReevaluationUser[]): Promise<void> {
+		await LDAPEnterprise.syncUsersAbacAttributesByIds(users.map((user) => user._id));
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {

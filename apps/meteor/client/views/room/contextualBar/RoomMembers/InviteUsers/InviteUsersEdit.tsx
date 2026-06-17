@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import EditInviteLink from './EditInviteLink';
 import InviteUsersWrapper from './InviteUsersWrapper';
 
@@ -10,7 +8,7 @@ type InviteUsersEditProps = {
 	daysAndMaxUses: { days: string; maxUses: string };
 };
 
-const InviteUsersEdit = ({ onClickBackLink, onClickNewLink, onClose, daysAndMaxUses }: InviteUsersEditProps): ReactElement => {
+const InviteUsersEdit = ({ onClickBackLink, onClickNewLink, onClose, daysAndMaxUses }: InviteUsersEditProps) => {
 	return (
 		<InviteUsersWrapper onClickBack={onClickBackLink} onClose={onClose}>
 			<EditInviteLink onClickNewLink={onClickNewLink} daysAndMaxUses={daysAndMaxUses} />

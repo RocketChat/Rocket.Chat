@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 import { useEffect } from 'react';
 
-export const usePreventDefault = (ref: RefObject<Element>): { ref: RefObject<Element> } => {
+export const usePreventDefault = (ref: RefObject<Element | null>): { ref: RefObject<Element | null> } => {
 	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
 	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
 

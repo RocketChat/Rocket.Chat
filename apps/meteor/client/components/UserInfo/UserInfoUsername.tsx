@@ -1,15 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 import { UserCardUsername } from '../UserCard';
 
 type UserInfoUsernameProps = {
 	username: IUser['username'];
-	status: ReactElement;
+	status: ReactNode;
 } & ComponentProps<typeof Box>;
 
-const UserInfoUsername = ({ username, status, ...props }: UserInfoUsernameProps): ReactElement => (
+const UserInfoUsername = ({ username, status, ...props }: UserInfoUsernameProps) => (
 	<UserCardUsername name={username} status={status} {...props} />
 );
 

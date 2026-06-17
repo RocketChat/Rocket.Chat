@@ -11,6 +11,7 @@ export type * from './RoomType';
 export type * from './IInvite';
 export type * from './IRocketChatRecord';
 export * from './UserStatus';
+export type * from './PresenceStatusCode';
 export type * from './userAction';
 export * from './IBanner';
 export type * from './IStats';
@@ -134,5 +135,3 @@ export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';
 
 export { schemas } from './Ajv';
-
-export type * from './ITwoFactorChallenge';

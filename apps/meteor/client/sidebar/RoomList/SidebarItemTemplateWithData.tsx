@@ -3,7 +3,7 @@ import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.ch
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
@@ -111,7 +111,7 @@ const SidebarItemTemplateWithData = ({
 			aria-current={selected ? 'page' : undefined}
 			href={href}
 			onClick={(): void => {
-				!selected && sidebar.toggle();
+				if (!selected) sidebar.toggle();
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
@@ -124,7 +124,7 @@ const SidebarItemTemplateWithData = ({
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? (): ReactElement => (
+					? () => (
 							<RoomMenu
 								alert={alert}
 								threadUnread={unreadCount.threads > 0}
@@ -162,7 +162,6 @@ const keys: (keyof RoomListRowProps)[] = [
 	'videoConfActions',
 ];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;

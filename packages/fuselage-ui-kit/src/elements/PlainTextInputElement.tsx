@@ -1,6 +1,5 @@
 import { TextAreaInput, TextInput } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
@@ -9,7 +8,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type PlainTextInputElementProps = BlockProps<UiKit.PlainTextInputElement>;
 
-const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps): ReactElement => {
+const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 

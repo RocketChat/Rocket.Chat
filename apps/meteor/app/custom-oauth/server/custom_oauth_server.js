@@ -23,9 +23,6 @@ const logger = new Logger('CustomOAuth');
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];
 
-/**
- * @deprecated in favor of new Passport OAuth implementation.
- */
 export class CustomOAuth {
 	constructor(name, options) {
 		logger.debug({ msg: 'Init CustomOAuth', name, options });

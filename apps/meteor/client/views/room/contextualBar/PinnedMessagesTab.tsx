@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageListTab from './MessageListTab';
@@ -9,7 +8,7 @@ import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
 
-const PinnedMessagesTab = (): ReactElement => {
+const PinnedMessagesTab = () => {
 	const getPinnedMessages = useEndpoint('GET', '/v1/chat.getPinnedMessages');
 
 	const room = useRoom();

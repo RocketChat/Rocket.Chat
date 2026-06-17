@@ -1,6 +1,6 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import { format } from 'date-fns';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ type TimePickerProps = {
 	onChange: (date: Date) => void;
 };
 
-const TimePicker = ({ value, onChange }: TimePickerProps): ReactElement => {
+const TimePicker = ({ value, onChange }: TimePickerProps) => {
 	const { t } = useTranslation();
 	const fieldId = useId();
 

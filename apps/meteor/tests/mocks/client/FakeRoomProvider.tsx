@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { RoomContext } from '../../../client/views/room/contexts/RoomContext';
@@ -12,7 +12,7 @@ type FakeRoomProviderProps = {
 	subscriptionOverrides?: Partial<ISubscription>;
 };
 
-const FakeRoomProvider = ({ children, roomOverrides, subscriptionOverrides }: FakeRoomProviderProps): ReactElement => {
+const FakeRoomProvider = ({ children, roomOverrides, subscriptionOverrides }: FakeRoomProviderProps) => {
 	return (
 		<RoomContext.Provider
 			value={useMemo(() => {

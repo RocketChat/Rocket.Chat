@@ -38,7 +38,19 @@ const ShieldSvgSchema = {
 
 export const isShieldSvgProps = ajv.compile<ShieldSvg>(ShieldSvgSchema);
 
-type Spotlight = { query: string };
+type SpotlightType = {
+	users?: boolean;
+	mentions?: boolean;
+	rooms?: boolean;
+	includeFederatedRooms?: boolean;
+};
+
+type Spotlight = {
+	query: string;
+	usernames?: string;
+	type?: string;
+	rid?: string;
+};
 
 const SpotlightSchema = {
 	type: 'object',
@@ -46,12 +58,39 @@ const SpotlightSchema = {
 		query: {
 			type: 'string',
 		},
+		usernames: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			nullable: true,
+		},
+		rid: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['query'],
 	additionalProperties: false,
 };
 
 export const isSpotlightProps = ajvQuery.compile<Spotlight>(SpotlightSchema);
+
+const parseSpotlightUsernames = (usernames?: string): string[] | undefined =>
+	usernames ? usernames.split(',').filter(Boolean) : undefined;
+const parseSpotlightType = (raw?: string): SpotlightType | undefined => {
+	if (!raw) return undefined;
+	try {
+		const parsed = JSON.parse(raw) as SpotlightType;
+		return parsed && typeof parsed === 'object' ? parsed : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+export { parseSpotlightUsernames, parseSpotlightType };
+export type { SpotlightType };
 
 type Directory = PaginatedRequest<{
 	text: string;
@@ -185,8 +224,9 @@ export type MiscEndpoints = {
 
 	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
-			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>)[];
-			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
+			users: (Pick<Required<IUser>, 'name' | '_id' | 'username'> &
+				Partial<Pick<IUser, 'status' | 'statusText' | 'avatarETag'>> & { nickname?: string; outside?: boolean })[];
+			rooms: (Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'> & { uids?: string[]; usernames?: string[]; fname?: string })[];
 		};
 	};
 

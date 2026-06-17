@@ -12,8 +12,9 @@ import {
 	ModalClose,
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
@@ -41,25 +42,22 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 	</AnimatedVisibility>
 );
 
+type StoryArgs = {
+	blocks: readonly UiKit.LayoutBlock[];
+	errors: Record<string, string>;
+	visible: boolean;
+};
+
 export default {
-	title: 'Surfaces/Modal',
 	argTypes: {
 		blocks: { control: 'object' },
 		errors: { control: 'object' },
-		visible: { control: 'boolean', defaultValue: true },
+		visible: { control: 'boolean' },
 	},
-};
-
-const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
-	const story = ({
-		blocks,
-		errors,
-		visible,
-	}: {
-		blocks: readonly UiKit.LayoutBlock[];
-		errors: Record<string, string>;
-		visible: boolean;
-	}) => (
+	args: {
+		visible: true,
+	},
+	render: ({ blocks, errors, visible }) => (
 		<DemoModal visible={visible}>
 			<UiKitContext.Provider
 				value={{
@@ -72,14 +70,15 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
 				{UiKitModal(blocks)}
 			</UiKitContext.Provider>
 		</DemoModal>
-	);
-	story.args = {
+	),
+} satisfies Meta<StoryArgs>;
+
+const createStory = (blocks: readonly UiKit.LayoutBlock[], errors: Record<string, string> = {}): StoryObj<StoryArgs> => ({
+	args: {
 		blocks,
 		errors,
-	};
-
-	return story;
-};
+	},
+});
 
 export const Divider = createStory(payloads.divider);
 

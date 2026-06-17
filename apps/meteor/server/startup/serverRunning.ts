@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { License } from '@rocket.chat/license';
 // import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
@@ -24,6 +25,7 @@ const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 const skipMongoDbDeprecationCheck =
 	['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase()) ||
 	process.env.TEST_MODE === 'true' ||
+	process.env.TEST_MODE === 'api' ||
 	process.env.NODE_ENV === 'development';
 // const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
@@ -47,7 +49,8 @@ Meteor.startup(async () => {
 			`     MongoDB Engine: ${mongoStorageEngine}`,
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
-			`           Site URL: ${settings.get('Site_Url')}`,
+			`           Site URL: ${settings.get<string>('Site_Url')}`,
+			`    Hashed Site URL: ${License.getHashedWorkspaceUrl()}`,
 		];
 
 		if (Info.commit?.hash) {

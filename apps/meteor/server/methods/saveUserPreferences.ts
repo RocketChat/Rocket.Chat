@@ -5,6 +5,7 @@ import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
@@ -52,6 +53,7 @@ type UserPreferences = {
 	notifyCalendarEvents: boolean;
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
+	utcOffset?: number;
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -127,6 +129,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		notifyCalendarEvents: Match.Optional(Boolean),
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
+		utcOffset: Match.Optional(Number),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 
@@ -148,6 +151,12 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 	if (settings.language != null) {
 		await Users.setLanguage(user._id, settings.language);
+	}
+
+	// utcOffset lives at the user-document root (not under settings.preferences)
+	if (settings.utcOffset != null) {
+		await Users.setUtcOffset(user._id, settings.utcOffset);
+		delete settings.utcOffset;
 	}
 
 	// Keep compatibility with old values
@@ -221,6 +230,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 Meteor.methods<ServerMethods>({
 	async saveUserPreferences(settings) {
+		methodDeprecationLogger.method('saveUserPreferences', '9.0.0', '/v1/users.setPreferences');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveUserPreferences' });

@@ -1,6 +1,6 @@
 import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +28,7 @@ const AutoCompleteDepartment = ({
 	showArchived = false,
 	disabled,
 	...props
-}: AutoCompleteDepartmentProps): ReactElement | null => {
+}: AutoCompleteDepartmentProps) => {
 	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState<string>('');
 

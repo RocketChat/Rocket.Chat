@@ -144,7 +144,7 @@ const rateLimiterDictionary: Record<
 	}
 > = {};
 
-export const generateConnection = (
+const generateConnection = (
 	ipAddress: string,
 	httpHeaders: Record<string, any>,
 ): {
@@ -345,6 +345,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			},
 		};
 	}
+
+	public internalError(): InternalError<never>;
+
+	public internalError<T>(msg: T): InternalError<T>;
 
 	public internalError<T>(msg?: T): InternalError<T> {
 		return {

@@ -4,7 +4,6 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import type { ReactElement } from 'react';
 import { memo, useEffect, useState } from 'react';
 
 import CreateOAuthModal from './CreateOAuthModal';
@@ -17,7 +16,7 @@ type OAuthGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 
-function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): ReactElement {
+function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();

@@ -9,6 +9,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../functions/disableCustomScripts';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { notifyOnSettingChanged } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -20,6 +21,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	saveSetting: twoFactorRequired(async function (_id: string, value: SettingValue, editor: SettingEditor) {
+		methodDeprecationLogger.method('saveSetting', '9.0.0', '/v1/settings/:_id');
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
@@ -74,9 +76,9 @@ Meteor.methods<ServerMethods>({
 			useragent: this.connection?.httpHeaders['user-agent'] || '',
 		});
 
-		(await auditSettingOperation(Settings.updateValueAndEditorById, _id, value as SettingValue, editor)).modifiedCount &&
+		(await auditSettingOperation(Settings.updateValueAndEditorById, _id, value, editor)).modifiedCount &&
 			setting &&
-			void notifyOnSettingChanged({ ...setting, editor, value: value as SettingValue });
+			void notifyOnSettingChanged({ ...setting, editor, value });
 
 		return true;
 	}),
