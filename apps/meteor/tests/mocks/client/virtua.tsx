@@ -23,7 +23,17 @@ type MockVirtualizerProps = {
 };
 
 export const Virtualizer = forwardRef(function MockVirtualizer(
-	{ children, bufferSize, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className, shift: _shift, ...props }: MockVirtualizerProps,
+	{
+		children,
+		bufferSize,
+		onScroll,
+		as: asRoot = 'div',
+		item: asItem = 'div',
+		style,
+		className,
+		shift: _shift,
+		...props
+	}: MockVirtualizerProps,
 	ref: Ref<unknown>,
 ) {
 	useImperativeHandle(ref, () => mockVirtualizerHandle);
@@ -55,6 +65,7 @@ type MockVListProps = {
 	[key: string]: unknown;
 };
 
+// eslint-disable-next-line react/no-multi-comp
 export const VList = forwardRef(function MockVList(
 	{ children, onScroll, shift: _shift, keepMounted: _keepMounted, ...props }: MockVListProps,
 	ref: Ref<unknown>,

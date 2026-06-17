@@ -3,9 +3,9 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { mockVirtualizerHandle } from '../../../../tests/mocks/client/virtua';
 import { MessageList } from './MessageList';
 import { useMessages } from './hooks/useMessages';
+import { mockVirtualizerHandle } from '../../../../tests/mocks/client/virtua';
 import { RoomManager } from '../../../lib/RoomManager';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 

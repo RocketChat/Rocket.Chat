@@ -3,8 +3,8 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 
-import { mockVirtualizerHandle } from '../../../tests/mocks/client/virtua';
 import PaginatedVirtualList from './PaginatedVirtualList';
+import { mockVirtualizerHandle } from '../../../tests/mocks/client/virtua';
 
 jest.mock('virtua', () => require('../../../tests/mocks/client/virtua'));
 
