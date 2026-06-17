@@ -18,7 +18,7 @@ const VideoCallWidgetAction = ({ escalated, loading, onClick }: VideoCallWidgetA
 					{t('Switched_to_video_call')}
 				</Box>
 			)}
-			<VideoCallButton escalated={escalated} loading={loading} onClick={onClick} />
+			<VideoCallButton w='full' escalated={escalated} loading={loading} onClick={onClick} />
 		</Box>
 	);
 };
