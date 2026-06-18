@@ -18,6 +18,7 @@ test.describe.serial('rooms.join', () => {
 	// TODO: the ui does not invalidate the room subscription cache after joining, so the user needs to refresh to see the joined state. This should be fixed and then this test should be re-enabled
 	test.skip('public channels without preview-c-room', () => {
 		let targetChannel: string;
+		let poHomeChannel: HomeChannel;
 
 		test.beforeEach(async ({ api }) => {
 			targetChannel = await createTargetChannel(api);
@@ -25,6 +26,7 @@ test.describe.serial('rooms.join', () => {
 		});
 
 		test.beforeEach(async ({ page }) => {
+			poHomeChannel = new HomeChannel(page);
 			await page.goto(`/channel/${targetChannel}`);
 		});
 
@@ -134,18 +136,13 @@ test.describe.serial('rooms.join', () => {
 			await api.post('/groups.delete', { roomId: group._id });
 		});
 
-		test('should let a parent member join a discussion in a private channel', async ({ page }) => {
-			await page.goto(`/channel/${discussion.name}`);
+		test.only('should let a parent member join a discussion in a private channel', async ({ page }) => {
+			await page.goto(`/group/${discussion.name}`);
 
-			await expect(poHomeChannel.btnJoinChannel).toBeVisible();
-			await poHomeChannel.btnJoinChannel.click();
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+			await poHomeChannel.composer.btnJoinRoom.click();
 
-			// TODO: the "not subscribed" screen does not invalidate the subscription
-			// cache after joining, so reload to observe the joined state. Drop the
-			// reload once that UI bug is fixed.
-			await page.reload();
-
-			await expect(poHomeChannel.btnJoinChannel).not.toBeVisible();
+			await expect(poHomeChannel.composer.btnJoinRoom).not.toBeVisible();
 			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 		});
 	});
