@@ -132,7 +132,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 
 	const actions = (
 		<VideoConfMessageActions>
-			{data.discussionRid && <VideoConfMessageAction icon='discussion' title={t('Join_discussion')} onClick={openDiscussion} />}
+			{data.discussionRid && <VideoConfMessageAction primary icon='discussion' title={t('Join_discussion')} onClick={openDiscussion} />}
 			<VideoConfMessageAction icon='info' onClick={openCallInfo} />
 		</VideoConfMessageActions>
 	);

@@ -3,7 +3,6 @@ import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
 	Message,
-	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
 	MessageName,
@@ -18,9 +17,10 @@ import {
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
@@ -36,20 +36,20 @@ const VideoConfListItem = ({
 	className?: string[];
 	reload: () => void;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
+	const settingName = useSetting<string>('VideoConf_Persistent_Chat_Discussion_Name', t('[date] Video Call Chat'));
 
 	const {
 		_id: callId,
-		createdBy: { name, username, _id },
+		createdBy: { _id },
 		users,
 		createdAt,
 		endedAt,
 		discussionRid,
 	} = videoConfData;
 
-	const displayName = useUserDisplayName({ name, username });
 	const joinedUsers = users.filter((user) => user._id !== _id);
 
 	const hovered = css`
@@ -69,6 +69,11 @@ const VideoConfListItem = ({
 
 	const goToRoom = useGoToRoom();
 
+	const name = useMemo(() => {
+		const date = new Date().toISOString().substring(0, 10);
+		return settingName.includes('[date]') ? settingName.replace('[date]', date) : `${date} ${settingName}`;
+	}, [settingName]);
+
 	return (
 		<Box
 			color='default'
@@ -79,20 +84,31 @@ const VideoConfListItem = ({
 			pb={8}
 		>
 			<Message {...props}>
-				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
-						<MessageName title={username}>{displayName}</MessageName>
+						<MessageName title={name}>{name}</MessageName>
 						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
 					</MessageHeader>
 					<MessageBody clamp={2} />
-					<Box display='flex'></Box>
 					<MessageBlock flexDirection='row' alignItems='center'>
 						<ButtonGroup>
-							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
-								{endedAt ? t('Call_ended') : t('Join_call')}
-							</Button>
-							{discussionRid && (
+							{!endedAt ? (
+								<Button primary small icon='video' alignItems='center' display='flex' onClick={handleJoinConference}>
+									{t('Join_call')}
+								</Button>
+							) : (
+								<Button
+									small
+									alignItems='center'
+									display='flex'
+									icon='discussion'
+									disabled={!discussionRid}
+									onClick={discussionRid ? () => goToRoom(discussionRid) : undefined}
+								>
+									{t('Call_chat')}
+								</Button>
+							)}
+							{!endedAt && discussionRid && (
 								<IconButton
 									small
 									icon='discussion'
@@ -120,9 +136,7 @@ const VideoConfListItem = ({
 									)}
 								</AvatarStack>
 								<Box mis={4}>
-									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
-										: t('joined')}
+									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS ? `+${joinedUsers.length - VIDEOCONF_STACK_MAX_USERS}` : null}
 								</Box>
 							</Box>
 						)}
