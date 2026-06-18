@@ -19,7 +19,6 @@ import { useScreenShareStreams } from './useScreenShareStreams';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
 import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
-// import type { AvailableViews } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';

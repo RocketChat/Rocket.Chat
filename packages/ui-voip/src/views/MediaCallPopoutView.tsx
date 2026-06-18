@@ -13,12 +13,9 @@ import {
 	PeerCard,
 	StreamCard,
 	useShouldWrapCards,
-	// CARD_LIST_SECTION_MAX_HEIGHT,
 	ActionStrip,
-	// ActionToggleChat,
 } from '../components';
 import { useMediaCallView } from '../context/MediaCallViewContext';
-// import useRegisterView from '../context/useRegisterView';
 import { usePlayMediaStream } from '../providers/usePlayMediaStream';
 
 type MediaCallPopoutViewProps = {
