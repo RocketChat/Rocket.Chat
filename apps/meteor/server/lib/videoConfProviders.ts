@@ -22,17 +22,16 @@ export const videoConfProviders = {
 	},
 
 	getActiveProvider(): string | undefined {
-		if (providers.size === 0) {
-			return;
-		}
-		const defaultProvider = settings.get<string>('VideoConf_Default_Provider');
+		if (providers.size !== 0) {
+			const defaultProvider = settings.get<string>('VideoConf_Default_Provider');
 
-		if (defaultProvider) {
-			if (this.isProviderAvailable(defaultProvider)) {
-				return defaultProvider;
+			if (defaultProvider) {
+				if (this.isProviderAvailable(defaultProvider)) {
+					return defaultProvider;
+				}
+
+				return;
 			}
-
-			return;
 		}
 
 		if (this.isProviderAvailable('core.pexip')) {
