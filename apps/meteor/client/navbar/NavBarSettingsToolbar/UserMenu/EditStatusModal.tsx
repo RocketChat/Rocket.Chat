@@ -153,9 +153,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 											<Controller
 												control={control}
 												name='statusType'
-												render={({ field: { value, onChange } }) => (
-													<UserStatusMenu margin='none' initialStatus={value} onChange={onChange} placement='bottom-start' />
-												)}
+												render={({ field: { value, onChange } }) => <UserStatusMenu initialStatus={value} onChange={onChange} />}
 											/>
 										}
 									/>
