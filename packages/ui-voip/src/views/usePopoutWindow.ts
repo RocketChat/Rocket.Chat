@@ -33,40 +33,38 @@ const changeTheme = (ownerDocument: Document, theme?: string) => {
 };
 
 const openExternalWindow = async (callId: string, theme: string) => {
-	try {
-		const externalWindow = window.open('/voice-call-popup.html', callId, 'width=800,height=500,popup');
+	const externalWindow = window.open('/voice-call-popup.html', callId, 'width=800,height=500,popup');
 
-		if (!externalWindow) {
-			throw new Error('No window was opened');
+	if (!externalWindow) {
+		throw new Error('No window was opened');
+	}
+
+	changeTheme(externalWindow.document, theme);
+
+	await new Promise((resolve) => {
+		if (externalWindow.document.readyState === 'loading') {
+			externalWindow.document.onreadystatechange = () => {
+				if (externalWindow.document.readyState === 'complete') {
+					resolve(true);
+				}
+			};
 		}
 
-		changeTheme(externalWindow.document, theme);
-
-		await new Promise((resolve) => {
-			if (externalWindow.document.readyState === 'loading') {
-				externalWindow.document.onreadystatechange = () => {
-					if (externalWindow.document.readyState === 'complete') {
-						resolve(true);
-					}
-				};
-			}
-
-			externalWindow.addEventListener('DOMContentLoaded', () => {
-				resolve(true);
-			});
-
-			externalWindow.document.onload = () => {
-				resolve(true);
-			};
+		externalWindow.addEventListener('DOMContentLoaded', () => {
+			resolve(true);
 		});
 
-		const root = await createRootElement(externalWindow);
-		return { root, externalWindow };
-	} catch (error) {
-		// This should maybe throw instead of returning null
-		console.error('Failed to open external window', error);
-		return null;
-	}
+		externalWindow.document.onload = () => {
+			resolve(true);
+		};
+
+		// In case the other listeners never finish, resolve the promise so it isn't stuck forever
+		const LISTENERS_TIMEOUT = 1000;
+		setTimeout(() => resolve(true), LISTENERS_TIMEOUT);
+	});
+
+	const root = await createRootElement(externalWindow);
+	return { root, externalWindow };
 };
 
 export type PopoutContainer = { root: HTMLDivElement; ownerDocument: Document };
@@ -93,15 +91,17 @@ export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowRetu
 				return;
 			}
 
-			const result = await openExternalWindow(callId, theme);
-
-			if (result) {
+			try {
+				const result = await openExternalWindow(callId, theme);
+				if (!result) {
+					onBeforeUnload();
+				}
 				const { root, externalWindow } = result;
 				popoutRef.current = { root, externalWindow, closing: false };
 				setContainer({ root, ownerDocument: externalWindow.document });
-				return;
+			} catch (error) {
+				onBeforeUnload();
 			}
-			onBeforeUnload();
 		},
 		[onBeforeUnload, theme],
 	);
