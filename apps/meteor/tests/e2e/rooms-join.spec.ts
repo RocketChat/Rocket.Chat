@@ -136,7 +136,7 @@ test.describe.serial('rooms.join', () => {
 			await api.post('/groups.delete', { roomId: group._id });
 		});
 
-		test.only('should let a parent member join a discussion in a private channel', async ({ page }) => {
+		test('should let a parent member join a discussion in a private channel', async ({ page }) => {
 			await page.goto(`/group/${discussion.name}`);
 
 			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
