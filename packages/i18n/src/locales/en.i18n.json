@@ -2224,6 +2224,7 @@
   "Failed_to_generate_invite_link": "Failed to generate invite link",
   "Failed_to_transfer_call": "Failed to transfer call",
   "Failed_to_validate_invite_token": "Failed to validate invite token",
+  "Failed_to_open_call_window": "Failed to open call window",
   "Failure": "Failure",
   "Fallback_forward_department": "Fallback department for forwarding",
   "Fallback_forward_department_description": "Allows you to define a fallback department which will receive the chats forwarded to this one in case there's no online agents at the moment",

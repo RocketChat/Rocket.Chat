@@ -1,4 +1,5 @@
 import { useThemeMode } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,7 @@ const createRootElement = async (externalWindow: Window) => {
 
 	const landingPageRoot = externalWindow.document.getElementById('root');
 	if (!landingPageRoot) {
+		externalWindow.close();
 		throw new Error('usePopoutWindow - createRootElement - landingPageRoot not found');
 	}
 
@@ -59,7 +61,7 @@ const openExternalWindow = async (callId: string, theme: string) => {
 		};
 
 		// In case the other listeners never finish, resolve the promise so it isn't stuck forever
-		const LISTENERS_TIMEOUT = 1000;
+		const LISTENERS_TIMEOUT = 500;
 		setTimeout(() => resolve(true), LISTENERS_TIMEOUT);
 	});
 
@@ -82,6 +84,7 @@ export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowRetu
 	const popoutRef = useRef<PopoutRef | null>(null);
 	const [container, setContainer] = useState<PopoutContainer | null>(null);
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [, , theme] = useThemeMode();
 
@@ -100,10 +103,12 @@ export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowRetu
 				popoutRef.current = { root, externalWindow, closing: false };
 				setContainer({ root, ownerDocument: externalWindow.document });
 			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: t('Failed_to_open_call_window') });
+				console.error('Failed to open popout', error);
 				onBeforeUnload();
 			}
 		},
-		[onBeforeUnload, theme],
+		[onBeforeUnload, theme, dispatchToastMessage, t],
 	);
 
 	const closePopoutWindow = useCallback(() => {
