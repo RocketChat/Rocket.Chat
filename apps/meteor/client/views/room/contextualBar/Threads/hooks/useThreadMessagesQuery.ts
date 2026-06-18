@@ -1,4 +1,5 @@
-import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IThreadMainMessage, IThreadMessage, Serialized } from '@rocket.chat/core-typings';
+import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useEndpoint, useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
@@ -22,7 +23,7 @@ const processMessages = async (messages: IMessage[]): Promise<IMessage[]> => {
 	return Promise.all(messages.map((msg) => onClientMessageReceived(msg)));
 };
 
-const filterThreadMessages = (messages: IMessage[], tmid: IThreadMainMessage['_id']): IThreadMessage[] => {
+const filterThreadMessages = (messages: Serialized<IMessage>[], tmid: IThreadMainMessage['_id']): IThreadMessage[] => {
 	return messages
 		.map((m) => mapMessageFromApi(m))
 		.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);
