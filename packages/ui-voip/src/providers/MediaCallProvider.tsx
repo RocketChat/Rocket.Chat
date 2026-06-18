@@ -17,8 +17,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 				<AnchorPortal id='rcx-media-call-widget-portal'>
 					<MediaCallWidget />
 				</AnchorPortal>
-				<MediaCallPopout />
 			</MediaCallViewProvider>
+			<MediaCallPopout />
 			{children}
 		</MediaCallInstanceProvider>
 	);

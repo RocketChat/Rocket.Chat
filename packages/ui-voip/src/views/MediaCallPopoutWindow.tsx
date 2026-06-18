@@ -1,12 +1,13 @@
 import { Box, OwnerDocument as FuselageOwnerDocument } from '@rocket.chat/fuselage';
 import { OwnerDocument as StyledOwnerDocument } from '@rocket.chat/styled';
-import { TooltipProvider, useUserDisplayName } from '@rocket.chat/ui-client';
+import { ModalProvider, ModalRegion, TooltipProvider, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import MediaCallPopoutView from './MediaCallPopoutView';
 import type { PopoutContainer } from './usePopoutWindow';
+import MediaCallViewProvider from '../providers/MediaCallViewProvider';
 
 type MediaCallPopoutWindowProps = {
 	container: PopoutContainer;
@@ -14,6 +15,7 @@ type MediaCallPopoutWindowProps = {
 };
 const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWindowProps) => {
 	const [fullscreen, setFullscreen] = useState(false);
+	const [region] = useState(() => Symbol());
 
 	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -47,23 +49,29 @@ const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWind
 	const contextValue = useMemo(() => ({ document: ownerDocument }), [ownerDocument]);
 
 	return (
-		<FuselageOwnerDocument.Provider value={contextValue}>
-			<StyledOwnerDocument.Provider value={contextValue}>
-				<TooltipProvider ownerDocument={ownerDocument}>
-					{createPortal(
-						<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
-							<MediaCallPopoutView
-								user={ownUser}
-								onClickClosePopout={onClosePopout}
-								onClickFullscreen={onClickFullscreen}
-								fullscreen={fullscreen}
-							/>
-						</Box>,
-						root,
-					)}
-				</TooltipProvider>
-			</StyledOwnerDocument.Provider>
-		</FuselageOwnerDocument.Provider>
+		<ModalProvider region={region}>
+			<MediaCallViewProvider>
+				<FuselageOwnerDocument.Provider value={contextValue}>
+					<StyledOwnerDocument.Provider value={contextValue}>
+						<TooltipProvider ownerDocument={ownerDocument}>
+							{createPortal(
+								<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
+									<MediaCallPopoutView
+										onClickTestButton={() => console.log(ownerDocument.defaultView?.navigator.mediaDevices.getDisplayMedia())}
+										user={ownUser}
+										onClickClosePopout={onClosePopout}
+										onClickFullscreen={onClickFullscreen}
+										fullscreen={fullscreen}
+									/>
+									<ModalRegion />
+								</Box>,
+								root,
+							)}
+						</TooltipProvider>
+					</StyledOwnerDocument.Provider>
+				</FuselageOwnerDocument.Provider>
+			</MediaCallViewProvider>
+		</ModalProvider>
 	);
 };
 

@@ -1,13 +1,22 @@
 import { useCallback, useEffect, useLayoutEffect } from 'react';
 
-import { useMediaCallInstance, useMediaCallView } from '../context';
+import { useMediaCallInstance, usePeekMediaSessionState, usePeekMediaSessionCallId } from '../context';
 import MediaCallPopoutWindow from './MediaCallPopoutWindow';
 import { usePopoutWindow } from './usePopoutWindow';
+import { useSetPopoutWindow } from '../providers/useMediaSessionInstance';
 
 const MediaCallPopout = () => {
-	const { currentViews } = useMediaCallInstance();
-	const { sessionState, onClosePopout } = useMediaCallView();
+	const { currentViews, unregisterView } = useMediaCallInstance();
+	const callState = usePeekMediaSessionState();
+	const callId = usePeekMediaSessionCallId();
+
+	const onClosePopout = useCallback(() => {
+		unregisterView('popout');
+	}, [unregisterView]);
+
 	const { container, closePopoutWindow, openPopoutWindow } = usePopoutWindow(onClosePopout);
+
+	useSetPopoutWindow(container?.ownerDocument.defaultView || undefined);
 
 	const onClosePopoutAndWindow = useCallback(() => {
 		onClosePopout();
@@ -15,19 +24,19 @@ const MediaCallPopout = () => {
 	}, [onClosePopout, closePopoutWindow]);
 
 	useLayoutEffect(() => {
-		if (sessionState.state !== 'ongoing') {
+		if (callState !== 'ongoing') {
 			onClosePopout();
 		}
-	}, [sessionState.state, onClosePopout]);
+	}, [callState, onClosePopout]);
 
 	useEffect(() => {
-		if (currentViews.includes('popout')) {
+		if (currentViews.includes('popout') && callId) {
 			// TODO: Fix this title
-			void openPopoutWindow('Call with Peer X');
+			void openPopoutWindow(callId);
 			return;
 		}
 		closePopoutWindow();
-	}, [currentViews, openPopoutWindow, closePopoutWindow]);
+	}, [currentViews, openPopoutWindow, closePopoutWindow, callId]);
 
 	if (!container) {
 		return null;

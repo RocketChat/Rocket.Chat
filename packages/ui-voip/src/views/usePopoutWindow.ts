@@ -37,9 +37,9 @@ const changeTheme = (ownerDocument: Document, theme?: string) => {
 	}
 };
 
-const openExternalWindow = async (title: string, theme: string) => {
+const openExternalWindow = async (callId: string, theme: string) => {
 	try {
-		const externalWindow = window.open(`/voice-call-popup.html`, title, 'width=800,height=500,popup');
+		const externalWindow = window.open(`/voice-call-popup.html`, callId, 'width=800,height=500,popup');
 		if (!externalWindow) {
 			throw new Error('No window was opened');
 		}
@@ -57,7 +57,7 @@ const openExternalWindow = async (title: string, theme: string) => {
 
 export type PopoutContainer = { root: HTMLDivElement; ownerDocument: Document };
 type PopoutRef = { root: HTMLDivElement; externalWindow: Window; closing: boolean };
-type OpenPopoutWindow = (title: string) => Promise<void>;
+type OpenPopoutWindow = (callId: string) => Promise<void>;
 type ClosePopoutWindow = () => void;
 
 type UsePopoutWindowReturn = {
@@ -74,12 +74,12 @@ export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowRetu
 	const [, , theme] = useThemeMode();
 
 	const openPopoutWindow = useCallback(
-		async (title: string) => {
+		async (callId: string) => {
 			if (!!popoutRef.current && popoutRef.current.externalWindow?.closed === false) {
 				return;
 			}
 
-			const result = await openExternalWindow(title, theme);
+			const result = await openExternalWindow(callId, theme);
 
 			if (result) {
 				const { root, externalWindow } = result;
