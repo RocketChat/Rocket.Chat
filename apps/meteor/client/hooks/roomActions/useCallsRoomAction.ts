@@ -23,7 +23,7 @@ export const useCallsRoomAction = () => {
 			id: 'calls',
 			groups: ['channel', 'group', 'team', 'direct', 'direct_multiple'],
 			icon: 'phone',
-			title: 'Calls',
+			title: 'Conference_call_history',
 			...(federated && {
 				tooltip: t('core.Video_Call_unavailable_for_this_type_of_room'),
 				disabled: true,
