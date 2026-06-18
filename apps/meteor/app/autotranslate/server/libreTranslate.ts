@@ -2,8 +2,8 @@ import type { IMessage, MessageAttachment, IProviderMetadata, ITranslationResult
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { libreLogger } from './logger';
 import { i18n } from '../../../server/lib/i18n';
-import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
 
 interface ILibreTranslateLanguage {
@@ -18,7 +18,7 @@ const toLanguageTag = (code: string): string => {
 	try {
 		return new Intl.Locale(code).toString();
 	} catch (err) {
-		SystemLogger.error({ msg: 'Invalid language code returned by LibreTranslate', code, err });
+		libreLogger.error({ msg: 'Invalid language code returned by LibreTranslate', code, err });
 		return code;
 	}
 };
@@ -72,36 +72,32 @@ class LibreTranslateAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target];
 		}
 
-		// SECURITY: the URL comes from a setting only an admin can change, so disabling SSRF validation is safe here.
-		const request = await fetch(`${this.apiEndPointUrl}/languages`, {
-			ignoreSsrfValidation: true,
-			timeout: REQUEST_TIMEOUT,
-		});
-		if (!request.ok) {
-			throw new Error('Failed to fetch supported languages');
-		}
-
-		const result = (await request.json()) as ILibreTranslateLanguage[];
-
-		this.supportedLanguages[target || 'en'] = result.map(({ code, name }) => ({
-			language: toLanguageTag(code),
-			name,
-		}));
-		return this.supportedLanguages[target || 'en'];
-	}
-
-	private async _getSupportedLanguagesSafe(): Promise<ISupportedLanguage[]> {
 		try {
-			return await this.getSupportedLanguages('en');
+			// SECURITY: the URL comes from a setting only an admin can change, so disabling SSRF validation is safe here.
+			const request = await fetch(`${this.apiEndPointUrl}/languages`, {
+				ignoreSsrfValidation: true,
+				timeout: REQUEST_TIMEOUT,
+			});
+			if (!request.ok) {
+				throw new Error('Failed to fetch supported languages');
+			}
+
+			const result = (await request.json()) as ILibreTranslateLanguage[];
+
+			this.supportedLanguages[target || 'en'] = result.map(({ code, name }) => ({
+				language: toLanguageTag(code),
+				name,
+			}));
+			return this.supportedLanguages[target || 'en'];
 		} catch (err) {
-			SystemLogger.error({ msg: 'Error fetching supported languages', err });
+			libreLogger.error({ msg: 'Error fetching supported languages', err });
 			return [];
 		}
 	}
 
 	private resolveTargetLanguage(language: string, supportedLanguages: ISupportedLanguage[]): string {
-		if (language.indexOf('-') !== -1 && !supportedLanguages.find((supported) => supported.language === language)) {
-			return language.substr(0, 2);
+		if (language.includes('-') && !supportedLanguages.find((supported) => supported.language === language)) {
+			return language.slice(0, 2);
 		}
 		return language;
 	}
@@ -113,10 +109,8 @@ class LibreTranslateAutoTranslate extends AutoTranslate {
 			source: 'auto',
 			target: targetLanguage,
 			format: 'text',
+			...(this.apiKey && { api_key: this.apiKey }),
 		};
-		if (this.apiKey) {
-			body.api_key = this.apiKey;
-		}
 
 		// SECURITY: the URL comes from a setting only an admin can change, so disabling SSRF validation is safe here.
 		const result = await fetch(`${this.apiEndPointUrl}/translate`, {
@@ -145,7 +139,7 @@ class LibreTranslateAutoTranslate extends AutoTranslate {
 		}
 
 		const msgs = message.msg.split('\n');
-		const supportedLanguages = await this._getSupportedLanguagesSafe();
+		const supportedLanguages = await this.getSupportedLanguages('en');
 		for (const targetLanguage of targetLanguages) {
 			const language = this.resolveTargetLanguage(targetLanguage, supportedLanguages);
 			try {
@@ -154,7 +148,7 @@ class LibreTranslateAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 			} catch (err) {
-				SystemLogger.error({ msg: 'Error translating message', err });
+				libreLogger.error({ msg: 'Error translating message', err });
 			}
 		}
 		return translations;
@@ -166,7 +160,7 @@ class LibreTranslateAutoTranslate extends AutoTranslate {
 			return translations;
 		}
 
-		const supportedLanguages = await this._getSupportedLanguagesSafe();
+		const supportedLanguages = await this.getSupportedLanguages('en');
 		for (const targetLanguage of targetLanguages) {
 			const language = this.resolveTargetLanguage(targetLanguage, supportedLanguages);
 			try {
@@ -175,7 +169,7 @@ class LibreTranslateAutoTranslate extends AutoTranslate {
 					translations[language] = translatedText;
 				}
 			} catch (err) {
-				SystemLogger.error({ msg: 'Error translating message attachment', err });
+				libreLogger.error({ msg: 'Error translating message attachment', err });
 			}
 		}
 		return translations;
