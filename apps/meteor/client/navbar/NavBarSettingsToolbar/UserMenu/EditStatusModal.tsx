@@ -1,14 +1,7 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
 	InputBox,
-	Select,
 	Margins,
 	Modal,
 	Button,
@@ -20,6 +13,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select } from '@rocket.chat/fuselage-forms';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
@@ -113,9 +107,9 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
-				<Box display='flex' flexDirection='column' rowGap={12}>
+				<FieldGroup>
 					<Field>
-						<FieldLabel htmlFor={`${modalId}-status-message`}>{t('Status')}</FieldLabel>
+						<FieldLabel>{t('Status')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
@@ -129,8 +123,6 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 								render={({ field }) => (
 									<TextInput
 										{...field}
-										id={`${modalId}-status-message`}
-										aria-label={t('Status')}
 										error={errors.statusText?.message}
 										disabled={!allowUserStatusMessageChange}
 										flexGrow={1}
@@ -150,7 +142,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 						{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={`${modalId}-clear-after`}>{t('Status_clear_after')}</FieldLabel>
+						<FieldLabel>{t('Status_clear_after')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
@@ -176,12 +168,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 									},
 								}}
 								render={({ field: { value, onChange } }) => (
-									<Select
-										id={`${modalId}-clear-after`}
-										value={value}
-										options={durationOptions}
-										onChange={(next) => onChange(String(next))}
-									/>
+									<Select value={value} options={durationOptions} onChange={(next) => onChange(String(next))} />
 								)}
 							/>
 						</FieldRow>
@@ -221,7 +208,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 						{errors.duration && <FieldError>{errors.duration.message}</FieldError>}
 						<FieldHint>{t(isStatusFromCall ? 'Status_new_status_warning_after_call' : 'Status_new_status_warning')}</FieldHint>
 					</Field>
-				</Box>
+				</FieldGroup>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>

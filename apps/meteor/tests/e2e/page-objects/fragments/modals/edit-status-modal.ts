@@ -20,7 +20,7 @@ export class EditStatusModal extends Modal {
 	}
 
 	private get durationSelect() {
-		return this.root.locator('[id$="-clear-after"]');
+		return this.root.getByLabel('Clear status after');
 	}
 
 	get customDateInput() {

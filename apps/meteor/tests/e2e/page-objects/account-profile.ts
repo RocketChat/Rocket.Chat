@@ -49,7 +49,7 @@ export class AccountProfile extends Account {
 	}
 
 	get selectClearStatusAfter(): Locator {
-		return this.page.locator('//label[contains(text(), "Clear status after")]/..//button');
+		return this.page.getByLabel('Clear status after');
 	}
 
 	async chooseClearStatusAfter(option: string): Promise<void> {
