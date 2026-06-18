@@ -737,7 +737,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			}));
 		}
 
-		return this.updateMany({ 'u._id': userId }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+		return this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
 	findByAutoTranslateAndUserId(
