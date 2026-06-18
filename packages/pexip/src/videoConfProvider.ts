@@ -98,7 +98,10 @@ export class PexipVideoConfProvider {
 	public async getVideoConferenceInfo(call: VideoConference, user: IVideoConferenceUser | undefined): Promise<Array<IBlock>> {
 		const lines: Array<string> = [];
 
-		lines.push(`**URL:** ${call.url}`);
+		// Show the in-product conference address (the `/conference/:id` page) rather than the raw Pexip
+		// URL, so sharing it opens the internal conference experience.
+		const siteUrl = this.pexip.settings.workspace.siteUrl.replace(/\/+$/, '');
+		lines.push(`**URL:** ${siteUrl}/conference/${call._id}`);
 
 		const [hostPin, guestPin] = await this.pexip.createPinsForCall(call);
 
