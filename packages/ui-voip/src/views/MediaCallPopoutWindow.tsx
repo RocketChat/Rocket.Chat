@@ -57,7 +57,6 @@ const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWind
 							{createPortal(
 								<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
 									<MediaCallPopoutView
-										onClickTestButton={() => console.log(ownerDocument.defaultView?.navigator.mediaDevices.getDisplayMedia())}
 										user={ownUser}
 										onClickClosePopout={onClosePopout}
 										onClickFullscreen={onClickFullscreen}
