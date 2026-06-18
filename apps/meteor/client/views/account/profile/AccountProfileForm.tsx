@@ -261,9 +261,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										<Controller
 											control={control}
 											name='statusType'
-											render={({ field: { value, onChange } }) => (
-												<UserStatusMenu margin='none' onChange={onChange} initialStatus={value} />
-											)}
+											render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
 										/>
 									}
 								/>
@@ -335,7 +333,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
 					<FieldHint>{t('Status_new_status_warning')}</FieldHint>
 				</Field>
-				<Divider mbs={24} mbe={0} width='full' borderBlockStartColor='stroke-extra-light' />
+				<Divider mbs={24} mbe={0} />
 				<Field>
 					<FieldLabel>{t('Nickname')}</FieldLabel>
 					<FieldRow>

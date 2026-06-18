@@ -36,7 +36,7 @@ const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextP
 		<>
 			{headline && <MarkdownText content={headline} parseEmoji={true} variant='inline' />}
 			{expirationText && (
-				<Box color='secondary-info' display='flex' alignItems='center'>
+				<Box fontScale='c1' display='flex' alignItems='center'>
 					<Icon name='clock' size='x16' mie={4} />
 					{expirationText}
 				</Box>
