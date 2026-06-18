@@ -8,11 +8,6 @@ const createRootElement = async (externalWindow: Window) => {
 	newRoot.style.width = '100%';
 	newRoot.style.height = '100%';
 
-	// await for page to load so that the root exists
-	await new Promise((resolve) => {
-		externalWindow.onload = resolve;
-	});
-
 	const landingPageRoot = externalWindow.document.getElementById('root');
 	if (!landingPageRoot) {
 		throw new Error('usePopoutWindow - createRootElement - landingPageRoot not found');
@@ -39,12 +34,31 @@ const changeTheme = (ownerDocument: Document, theme?: string) => {
 
 const openExternalWindow = async (callId: string, theme: string) => {
 	try {
-		const externalWindow = window.open(`/voice-call-popup.html`, callId, 'width=800,height=500,popup');
+		const externalWindow = window.open('/voice-call-popup.html', callId, 'width=800,height=500,popup');
+
 		if (!externalWindow) {
 			throw new Error('No window was opened');
 		}
 
 		changeTheme(externalWindow.document, theme);
+
+		await new Promise((resolve) => {
+			if (externalWindow.document.readyState === 'loading') {
+				externalWindow.document.onreadystatechange = () => {
+					if (externalWindow.document.readyState === 'complete') {
+						resolve(true);
+					}
+				};
+			}
+
+			externalWindow.addEventListener('DOMContentLoaded', () => {
+				resolve(true);
+			});
+
+			externalWindow.document.onload = () => {
+				resolve(true);
+			};
+		});
 
 		const root = await createRootElement(externalWindow);
 		return { root, externalWindow };
