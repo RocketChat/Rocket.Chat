@@ -1670,7 +1670,7 @@
   "Custom_Sound_Has_Been_Deleted": "The custom sound has been deleted.",
   "Custom_Sound_Info": "Custom Sound Info",
   "Custom_Sound_Saved_Successfully": "Custom sound saved successfully",
-  "Custom_Status": "Custom Status",
+  "Custom_Status": "Custom...",
   "Custom_time_range": "Custom time range",
   "Custom_Translations": "Custom Translations",
   "Custom_Translations_Description": "Should be a valid JSON where keys are languages containing a dictionary of key and translations. Example: `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
