@@ -1,6 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { appUpdateTest, appUpdateTestBroken, appUpdateTestFaulty } from '../../data/apps/app-packages';
@@ -20,6 +20,8 @@ const APP_USERNAME = 'app-update-test.bot';
 		await cleanupApps();
 		app = await installLocalTestPackage(appUpdateTest);
 	});
+
+	after(() => cleanupApps());
 
 	describe('[App user presence]', () => {
 		it('should keep the app user online after the app is updated', async () => {
