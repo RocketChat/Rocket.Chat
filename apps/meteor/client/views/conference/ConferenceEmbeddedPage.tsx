@@ -24,7 +24,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} />
 			</Box>
 
-			<Box width='70%'>
+			<Box width='70%' display='flex' flexDirection='column'>
 				<ConferenceIframe url={conference.url} loading={conference.loading} />
 			</Box>
 		</Box>
