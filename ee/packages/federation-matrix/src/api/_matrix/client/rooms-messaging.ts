@@ -1,4 +1,6 @@
 import { api, FederationMatrix, Room } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { FileMessageContent, FileMessageType, PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -309,8 +311,21 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						};
 					}
 
+					const user = await Users.findOneByUsername<Pick<IUser, 'name' | 'username' | 'federated' | 'federation'>>(userId, {
+						projection: { name: 1, username: 1, federated: 1, federation: 1 },
+					});
+					if (!user || !isUserNativeFederated(user)) {
+						return {
+							statusCode: 404,
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'User not found',
+							},
+						};
+					}
+
 					void api.broadcast('user.activity', {
-						user: userId,
+						user: user.name || user.username,
 						isTyping: body.typing,
 						roomId: matrixRoom._id,
 					});
