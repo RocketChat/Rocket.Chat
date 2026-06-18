@@ -13,10 +13,12 @@ export type Signals = {
 type MediaCallInstanceContextValue = {
 	instance: MediaSignalingSession | undefined;
 	signalEmitter: Emitter<Signals>;
-	audioElement: RefObject<HTMLAudioElement> | undefined;
+	audioElement: RefObject<HTMLAudioElement | null> | undefined;
 	openRoomId: string | undefined;
+	inRoomView: boolean;
 	setOpenRoomId: (openRoomId: string | undefined) => void;
 	getAutocompleteOptions: (filter: string) => Promise<PeerAutocompleteOptions[]>;
+	setInRoomView: (inRoomView: boolean) => void;
 };
 
 export const MediaCallInstanceContext = createContext<MediaCallInstanceContextValue>({
@@ -26,6 +28,8 @@ export const MediaCallInstanceContext = createContext<MediaCallInstanceContextVa
 	openRoomId: undefined,
 	setOpenRoomId: () => undefined,
 	getAutocompleteOptions: () => Promise.resolve([]),
+	inRoomView: false,
+	setInRoomView: () => undefined,
 });
 
 export const useMediaCallInstance = (): MediaCallInstanceContextValue => useContext(MediaCallInstanceContext);

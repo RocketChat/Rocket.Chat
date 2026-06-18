@@ -1,5 +1,5 @@
-import http from 'http';
-import https from 'https';
+import http from 'node:http';
+import https from 'node:https';
 
 import { api } from '@rocket.chat/core-services';
 import type { IImport, MessageAttachment, IUpload, IImporterShortSelection } from '@rocket.chat/core-typings';

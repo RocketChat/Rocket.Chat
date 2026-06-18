@@ -1,5 +1,79 @@
 # @rocket.chat/apps-engine
 
+## 1.63.0
+
+### Minor Changes
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Remove files that weren't accessible to apps at development time
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40604](https://github.com/RocketChat/Rocket.Chat/pull/40604)) Adds the capability for fetching a user by their sip extension to the apps
+
+## 1.63.0-rc.0
+
+### Minor Changes
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Remove files that weren't accessible to apps at development time
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40604](https://github.com/RocketChat/Rocket.Chat/pull/40604)) Adds the capability for fetching a user by their sip extension to the apps
+
+## 1.62.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#40125](https://github.com/RocketChat/Rocket.Chat/pull/40125)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#39883](https://github.com/RocketChat/Rocket.Chat/pull/39883)) Fixes the issue of the lacking MessageUpdater not being available to apps during runtime
+
+## 1.61.1
+
+### Patch Changes
+
+- ([#40130](https://github.com/RocketChat/Rocket.Chat/pull/40130) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+## 1.62.0-rc.0
+
+### Minor Changes
+
+- ([#39535](https://github.com/RocketChat/Rocket.Chat/pull/39535)) Adds externalIds field to livechat visitors for external platform identification.
+
+- ([#40093](https://github.com/RocketChat/Rocket.Chat/pull/40093)) Adds new API endpoints to load the user's current voice call state from the server
+
+### Patch Changes
+
+- ([#40125](https://github.com/RocketChat/Rocket.Chat/pull/40125)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#39883](https://github.com/RocketChat/Rocket.Chat/pull/39883)) Fixes the issue of the lacking MessageUpdater not being available to apps during runtime
+
+## 1.61.0
+
+### Minor Changes
+
+- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 1.61.0-rc.0
+
+### Minor Changes
+
+- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 1.60.0
 
 ### Minor Changes

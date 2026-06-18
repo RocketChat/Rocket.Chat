@@ -6,7 +6,7 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
-import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useMediaUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
+import { useOpenEncryptedPdf } from './hooks/useOpenEncryptedPdf';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
@@ -35,26 +36,38 @@ const GenericFileAttachment = ({
 	const getURL = useMediaUrl();
 	const uid = useId();
 	const { t } = useTranslation();
+	const openEncryptedPdf = useOpenEncryptedPdf();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleTitleClick = (event: UIEvent): void => {
+	const handleTitleClick = async (event: UIEvent): Promise<void> => {
 		if (!link) {
 			return;
 		}
 
-		if (openDocumentViewer && format === 'PDF') {
-			event.preventDefault();
+		const isEncrypted = link.includes('/file-decrypt/');
 
-			const url = new URL(getURL(link), window.location.origin);
-			url.searchParams.set('contentDisposition', 'inline');
-			openDocumentViewer(url.toString(), format, '');
-			return;
-		}
+		try {
+			if (format === 'PDF' && openDocumentViewer) {
+				event.preventDefault();
 
-		if (link.includes('/file-decrypt/')) {
-			event.preventDefault();
+				if (isEncrypted) {
+					await openEncryptedPdf(link, title, size, format, openDocumentViewer);
+					return;
+				}
 
-			registerDownloadForUid(uid, t, title);
-			forAttachmentDownload(uid, link);
+				const url = new URL(getURL(link), window.location.origin);
+				url.searchParams.set('contentDisposition', 'inline');
+				openDocumentViewer(url.toString(), format, '');
+				return;
+			}
+
+			if (isEncrypted) {
+				event.preventDefault();
+				registerDownloadForUid(uid, t, title);
+				forAttachmentDownload(uid, link);
+			}
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('FileUpload_Error_Trying_To_Open_File') });
 		}
 	};
 

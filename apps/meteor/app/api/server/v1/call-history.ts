@@ -1,3 +1,4 @@
+import { CallHistory as CallHistoryService } from '@rocket.chat/core-services';
 import type { CallHistoryItem, CallHistoryItemState, IMediaCall } from '@rocket.chat/core-typings';
 import { CallHistory, MediaCalls } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
@@ -9,7 +10,6 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -19,7 +19,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 type CallHistoryList = PaginatedRequest<{
 	filter?: string;
 	direction?: CallHistoryItem['direction'];
-	state?: CallHistoryItemState[] | CallHistoryItemState;
+	state?: CallHistoryItemState[];
 }>;
 
 const CallHistoryListSchema = {
@@ -42,20 +42,10 @@ const CallHistoryListSchema = {
 			enum: ['inbound', 'outbound'],
 		},
 		state: {
-			// our clients serialize arrays as `state=value1&state=value2`, but if there's a single value the parser doesn't know it is an array, so we need to support both arrays and direct values
-			// if a client tries to send a JSON array, our parser will treat it as a string and the type validation will reject it
-			// This means this param won't work from Swagger UI
-			oneOf: [
-				{
-					type: 'array',
-					items: {
-						$ref: '#/components/schemas/CallHistoryItemState',
-					},
-				},
-				{
-					$ref: '#/components/schemas/CallHistoryItemState',
-				},
-			],
+			type: 'array',
+			items: {
+				$ref: '#/components/schemas/CallHistoryItemState',
+			},
 		},
 	},
 	required: [],
@@ -114,37 +104,17 @@ const callHistoryListEndpoints = API.v1.get(
 
 		const { direction, state, filter } = this.queryParams;
 
-		const filterText = typeof filter === 'string' && filter.trim();
+		const searchTerm = typeof filter === 'string' && filter.trim();
 
-		const stateFilter = state && ensureArray(state);
-		const query = {
-			uid: this.userId,
-			...(direction && { direction }),
-			...(stateFilter?.length && { state: { $in: stateFilter } }),
-			...(filterText && {
-				$or: [
-					{
-						external: false,
-						contactName: { $regex: escapeRegExp(filterText), $options: 'i' },
-					},
-					{
-						external: false,
-						contactUsername: { $regex: escapeRegExp(filterText), $options: 'i' },
-					},
-					{
-						external: true,
-						contactExtension: { $regex: escapeRegExp(filterText), $options: 'i' },
-					},
-				],
-			}),
-		};
-
-		const { cursor, totalCount } = CallHistory.findPaginated(query, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-		});
-		const [items, total] = await Promise.all([cursor.toArray(), totalCount]);
+		const { items, total } = await CallHistoryService.search(
+			this.userId,
+			{
+				...(searchTerm && { searchTerm }),
+				...(direction && { direction }),
+				...(state && { inStates: ensureArray(state) }),
+			},
+			{ count, offset, sort },
+		);
 
 		return API.v1.success({
 			items,

@@ -1,4 +1,4 @@
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import { License } from '@rocket.chat/license';
 
 import { API } from '../../../../../app/api/server';

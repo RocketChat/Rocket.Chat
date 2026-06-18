@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	useUserRoom,
 	useAtLeastOnePermission,
@@ -9,15 +9,15 @@ import {
 	useUserSubscription,
 	useRoomToolbox,
 } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, MouseEvent, ReactElement } from 'react';
+import type { ChangeEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import * as Federation from '../../../../lib/federation/Federation';
-import { useMembersList } from '../../../hooks/useMembersList';
-import UserInfoWithData from '../UserInfo';
 import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
 import RoomMembers from './RoomMembers';
+import * as Federation from '../../../../lib/federation/Federation';
+import { useMembersList } from '../../../hooks/useMembersList';
+import UserInfoWithData from '../UserInfo';
 
 enum ROOM_MEMBERS_TABS {
 	INFO = 'user-info',
@@ -28,7 +28,7 @@ enum ROOM_MEMBERS_TABS {
 
 type validRoomType = 'd' | 'p' | 'c';
 
-const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
+const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
 	const user = useUser();
 	const room = useUserRoom(rid);
 	const { closeTab } = useRoomToolbox();
@@ -55,7 +55,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { data, fetchNextPage, isPending, refetch, hasNextPage } = useMembersList(
+	const { data, fetchNextPage, isPending, isSuccess, refetch, hasNextPage } = useMembersList(
 		useMemo(() => ({ rid, type, limit: 20, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
 
@@ -73,7 +73,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const openUserInfo = useEffectEvent((e: MouseEvent<HTMLElement>) => {
+	const openUserInfo = useStableCallback((e: MouseEvent<HTMLElement>) => {
 		const { userid: userId, invitationdate: invitationDate } = e.currentTarget.dataset;
 		setState({
 			tab: ROOM_MEMBERS_TABS.INFO,
@@ -81,15 +81,15 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		});
 	});
 
-	const openInvite = useEffectEvent(() => {
+	const openInvite = useStableCallback(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.INVITE });
 	});
 
-	const openAddUser = useEffectEvent(() => {
+	const openAddUser = useStableCallback(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.ADD });
 	});
 
-	const handleBack = useEffectEvent(() => {
+	const handleBack = useStableCallback(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.LIST });
 	});
 
@@ -118,7 +118,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
-			loading={isPending}
+			isPending={isPending}
+			isSuccess={isSuccess}
 			type={type}
 			text={text}
 			setText={handleTextChange}

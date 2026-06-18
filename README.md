@@ -25,13 +25,13 @@ Every day, tens of millions of users in over 150 countries and in organizations 
 
 Rocket.Chat provides endless possibilities. Here’s an overview of the features you benefit from:
 
-💬 [**Team collaboration**](https://docs.rocket.chat/docs/collaborate-using-rocketchat): A single point for secure internal and cross-company collaboration with role-based access control.
+- [**Deployment and workspace management**](https://docs.rocket.chat/docs/deploy-rocketchat): Flexible and reliable self-hosted, cloud, and air-gapped deployment options with scalable architecture and performance monitoring.
 
-🎯 [**Omnichannel citizen engagement**](https://docs.rocket.chat/docs/omnichannel): Seamless digital interactions with your citizens and customers across platforms like WhatsApp, SMS, and more.
+- [**Security and sovereignty**](https://docs.rocket.chat/docs/secure-rocketchat): Rocket.Chat is secure by design, with features such as identity management, end-to-end encryption, and role and attribute-based access control.
 
-🦾 [**Optimization**](https://docs.rocket.chat/docs/optimize-your-workspace): Enhance productivity with self-hosted AI and a customizable and accessible workspace.
+- [**Team collaboration**](https://docs.rocket.chat/docs/collaborate-using-rocketchat): Unified collaboration experience for asynchronous and real-time communication with seamless messaging options, voice calls, and federation.
 
-🤖 [**Extend and integrate**](https://docs.rocket.chat/docs/extend-and-integrate-rocketchat-capabilities): Install and use public apps from the Rocket.Chat Marketplace, build your own apps, and embed the workspace into your platform.
+- [**Extend and integrate**](https://docs.rocket.chat/docs/extend-and-integrate-rocketchat-capabilities): Install public apps from the Rocket.Chat Marketplace, build your own apps with Apps-Engine, and integrate with external systems.
 
 <img src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp" data-canonical-src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp"  />
 

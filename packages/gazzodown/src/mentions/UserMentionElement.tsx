@@ -1,6 +1,5 @@
 import { MessageHighlight } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +12,7 @@ type UserMentionElementProps = {
 const handleUserMention = (mention: string | undefined, withSymbol: boolean | undefined): string | undefined =>
 	withSymbol ? `@${mention}` : mention;
 
-const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
+const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 	const { t } = useTranslation();
 	const { resolveUserMention, onUserMentionClick, ownUserId, useRealName, showMentionSymbol, triggerProps } =
 		useContext(MarkupInteractionContext);

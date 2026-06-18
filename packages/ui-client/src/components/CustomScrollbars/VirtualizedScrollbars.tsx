@@ -6,7 +6,7 @@ import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
 type VirtualizedScrollbarsProps = {
 	overflowX?: boolean;
-	children: ReactElement;
+	children: ReactElement<any>;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps>(function VirtualizedScrollbars(

@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageMetricsItem, MessageMetricsFollowing } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { useCallback } from 'react';
 
 import ThreadMetricsBadge from './ThreadMetricsUnreadBadge';
@@ -16,7 +16,7 @@ type ThreadMetricsFollowProps = {
 	all: boolean;
 };
 
-const ThreadMetricsFollow = ({ following, mid, rid, unread, mention, all }: ThreadMetricsFollowProps): ReactElement => {
+const ThreadMetricsFollow = ({ following, mid, rid, unread, mention, all }: ThreadMetricsFollowProps) => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();

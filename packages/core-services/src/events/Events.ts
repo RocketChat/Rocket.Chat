@@ -3,7 +3,6 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type {
 	IEmailInbox,
 	IEmoji,
-	IInquiry,
 	IInstanceStatus,
 	IIntegration,
 	IIntegrationHistory,
@@ -72,7 +71,7 @@ export type EventSignatures = {
 	'license.sync'(): void;
 	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;
 
-	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
+	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: ILivechatInquiryRecord }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
@@ -159,7 +158,7 @@ export type EventSignatures = {
 		};
 	}): void;
 	'presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
 	'watch.messages'(data: { message: IMessage }): void;
@@ -255,7 +254,7 @@ export type EventSignatures = {
 			  }
 			| {
 					clientAction: 'updated';
-					diff: Record<string, number>;
+					diff: Record<string, any>;
 					unset: Record<string, number>;
 			  }
 		),

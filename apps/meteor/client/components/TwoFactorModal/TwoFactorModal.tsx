@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import TwoFactorEmail from './TwoFactorEmailModal';
 import TwoFactorPassword from './TwoFactorPasswordModal';
 import TwoFactorTotp from './TwoFactorTotpModal';
@@ -10,7 +8,7 @@ export enum Method {
 	PASSWORD = 'password',
 }
 
-export type OnConfirm = (code: string, method: Method) => void;
+export type OnConfirm = (code: string, method: Method) => void | Promise<void>;
 
 type TwoFactorModalProps = {
 	onConfirm: OnConfirm;
@@ -26,7 +24,7 @@ type TwoFactorModalProps = {
 	  }
 );
 
-const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps): ReactElement => {
+const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps) => {
 	if (props.method === Method.TOTP) {
 		return <TwoFactorTotp onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
 	}

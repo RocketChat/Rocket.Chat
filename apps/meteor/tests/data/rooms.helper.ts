@@ -129,6 +129,11 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
  * @param config - Optional request configuration for custom domains
  * @returns Promise resolving to the method call response
  */
+// TODO(ddp-removal): swap /api/v1/method.call/addUsersToRoom for the per-type
+// REST endpoints (/v1/channels.invite or /v1/groups.invite). The federation
+// suite still asserts the legacy DDP error shape (`message` field with a
+// stringified `{ error: { error } }`); migrating requires updating those
+// expectations to the REST envelope (`{ success: false, error }`).
 export const addUserToRoom = ({
 	usernames,
 	rid,
@@ -169,6 +174,10 @@ export const addUserToRoom = ({
  * @returns Promise resolving to the method call response
  * @note The slash command expects parameters: { cmd: string, params: string, msg: IMessage, triggerId: string }
  */
+// TODO(ddp-removal): swap /api/v1/method.call/slashCommand for
+// POST /v1/commands.run. Same caveat as addUserToRoom: federation specs
+// inspect the DDP-style `message` payload and need to be ported to the
+// REST envelope first.
 export const addUserToRoomSlashCommand = ({
 	usernames,
 	rid,

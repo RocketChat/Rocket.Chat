@@ -617,7 +617,7 @@ const POSTLivechatTagsSaveSuccessResponseSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatTagsSaveSuccessResponse = ajv.compile<ILivechatTag>(POSTLivechatTagsSaveSuccessResponseSchema);
+export const POSTLivechatTagsSaveSuccessResponse = ajv.compile<Omit<ILivechatTag, '_updatedAt'>>(POSTLivechatTagsSaveSuccessResponseSchema);
 
 type POSTLivechatTagsDeleteParams = {
 	id: string;
@@ -3484,7 +3484,7 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		departmentId: {
-			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
 		},
 		open: {
 			anyOf: [

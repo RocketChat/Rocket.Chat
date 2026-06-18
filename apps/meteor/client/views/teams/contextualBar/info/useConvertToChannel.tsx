@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 		},
 	});
 
-	const onClickConvertToChannel = useEffectEvent(() => {
+	const onClickConvertToChannel = useStableCallback(() => {
 		if (!userId || !teamId) {
 			throw new Error('Invalid teamId or userId');
 		}

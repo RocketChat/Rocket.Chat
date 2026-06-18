@@ -1,6 +1,5 @@
 import { MessageHighlight } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +11,7 @@ type ChannelMentionElementProps = {
 
 const handleChannelMention = (mention: string, withSymbol: boolean | undefined): string => (withSymbol ? `#${mention}` : mention);
 
-const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactElement => {
+const ChannelMentionElement = ({ mention }: ChannelMentionElementProps) => {
 	const { t } = useTranslation();
 	const { resolveChannelMention, onChannelMentionClick, showMentionSymbol } = useContext(MarkupInteractionContext);
 

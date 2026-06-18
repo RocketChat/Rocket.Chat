@@ -31,10 +31,13 @@ export const roomsQueryKeys = {
 		!type && !filter
 			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
 			: ([...roomsQueryKeys.room(rid), 'members', roomType, type, filter] as const),
+	bannedUsers: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'banned-users'] as const,
 	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
 	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
 	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
 	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,
+	threadMessages: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'messages'] as const,
+	threadMainMessage: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'main-message'] as const,
 };
 
 export const subscriptionsQueryKeys = {

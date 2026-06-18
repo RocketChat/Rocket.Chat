@@ -17,7 +17,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import {
 	useMessageListShowRealName,
 	useMessageListShowUsername,
@@ -42,7 +43,7 @@ type SystemMessageProps = {
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;
 
-const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps) => {
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
@@ -63,19 +64,31 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+		if (!isSelecting) return;
+
+		if (!(e.code === 'Space' || e.code === 'Enter')) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
+
+	const checkboxLabel = getCheckboxLabel(message, t);
+
 	return (
 		<MessageSystem
 			role='listitem'
 			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={isSelected}
 			data-system-message-type={message.t}
 			{...props}
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
-				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>

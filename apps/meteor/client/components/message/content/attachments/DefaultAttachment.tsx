@@ -1,6 +1,6 @@
 import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isActionAttachment } from '@rocket.chat/core-typings';
-import type { ReactNode, ComponentProps, ReactElement } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 
 import { ActionAttachment } from './default/ActionAttachtment';
 import FieldsAttachment from './default/FieldsAttachment';
@@ -16,6 +16,7 @@ import AttachmentThumb from './structure/AttachmentThumb';
 import AttachmentTitle from './structure/AttachmentTitle';
 import MarkdownText from '../../../MarkdownText';
 import { useCollapse } from '../../hooks/useCollapse';
+import CollapsibleContent from '../collapsible/CollapsibleContent';
 
 const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
@@ -26,8 +27,8 @@ const applyMarkdownIfRequires = (
 
 type DefaultAttachmentProps = MessageAttachmentDefault;
 
-const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => {
-	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
+const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
+	const [collapsed, toggleCollapse] = useCollapse(!!attachment.collapsed);
 
 	return (
 		<AttachmentBlock
@@ -66,7 +67,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 						>
 							{attachment.title}
 						</AttachmentTitle>{' '}
-						{collapse}
+						<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 					</AttachmentRow>
 				)}
 				{!collapsed && (
@@ -96,7 +97,9 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 								})}
 							/>
 						)}
-						{attachment.image_url && <AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} />}
+						{attachment.image_url && (
+							<AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} alt={attachment.image_alt || ''} />
+						)}
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
 					</>

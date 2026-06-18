@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { PageHeader } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
@@ -13,7 +12,7 @@ import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 import UpdateRocketChatButton from './UpdateRocketChatButton';
 
-const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }): ReactElement | null => {
+const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }) => {
 	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';

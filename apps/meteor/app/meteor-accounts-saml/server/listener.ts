@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import bodyParser from 'body-parser';
 import express from 'express';
@@ -66,11 +66,13 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
 		SystemLogger.error({ err });
 
-		const url = Meteor.absoluteUrl('home');
-		res.writeHead(302, {
-			Location: url,
-		});
-		res.end();
+		if (!res.headersSent) {
+			const url = Meteor.absoluteUrl('home');
+			res.writeHead(302, {
+				Location: url,
+			});
+			res.end();
+		}
 	}
 };
 

@@ -1,5 +1,4 @@
 import { useRoomAvatarPath } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import type { BaseAvatarProps } from './BaseAvatar';
@@ -15,7 +14,7 @@ type RoomAvatarProps = Pick<BaseAvatarProps, 'size'> & {
 	};
 };
 
-const RoomAvatar = function RoomAvatar({ room, url, size }: RoomAvatarProps): ReactElement {
+const RoomAvatar = function RoomAvatar({ room, url, size }: RoomAvatarProps) {
 	const getRoomPathAvatar = useRoomAvatarPath();
 	const urlFromContext = getRoomPathAvatar(room);
 

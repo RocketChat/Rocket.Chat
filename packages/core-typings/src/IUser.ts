@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
-import type { UserStatus } from './UserStatus';
+import type { PresenceSource, UserStatus } from './UserStatus';
 import type { Serialized } from './utils';
 
 export interface ILoginToken {
@@ -187,10 +187,17 @@ export interface IUser extends IRocketChatRecord {
 	language?: string;
 	statusDefault?: UserStatus;
 	statusText?: string;
+	statusSource?: PresenceSource;
+	statusExpiresAt?: Date;
+	previousState?: {
+		statusDefault: UserStatus;
+		statusText: string;
+		statusSource: PresenceSource;
+		statusExpiresAt?: Date;
+	};
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt: Date;
 	e2e?: {
 		private_key: string;
 		public_key: string;

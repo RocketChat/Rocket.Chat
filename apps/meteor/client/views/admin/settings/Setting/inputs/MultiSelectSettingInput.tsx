@@ -1,6 +1,5 @@
 import { FieldLabel, MultiSelectFiltered, MultiSelect, Field, FieldRow, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -25,7 +24,7 @@ function MultiSelectSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 	autocomplete,
-}: MultiSelectSettingInputProps): ReactElement {
+}: MultiSelectSettingInputProps) {
 	const { t } = useTranslation();
 
 	const handleChange = (value: string[]): void => {

@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';

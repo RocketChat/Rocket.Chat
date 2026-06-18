@@ -15,11 +15,15 @@ export interface IUser {
 	status: string;
 	statusConnection: UserStatusConnection;
 	statusText?: string;
+	statusDefault?: string;
+	statusSource?: 'internal' | 'external' | 'manual';
+	statusExpiresAt?: Date;
 	utcOffset: number;
 	createdAt: Date;
 	updatedAt: Date;
 	lastLoginAt: Date;
 	settings?: IUserSettings;
 	appId?: string;
+	sipExtension?: string;
 	customFields?: { [key: string]: any };
 }

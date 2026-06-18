@@ -1,24 +1,21 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
-import type { UploadsAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	uploadsStore: UploadsAPI;
 	isMicrophoneDenied?: boolean;
 };
 
-const AudioMessageRecorder = ({ rid, uploadsStore, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderProps) => {
 	const { t } = useTranslation();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
@@ -26,7 +23,7 @@ const AudioMessageRecorder = ({ rid, uploadsStore, isMicrophoneDenied }: AudioMe
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
 
-	const stopRecording = useEffectEvent(async () => {
+	const stopRecording = useStableCallback(async () => {
 		if (recordingInterval) {
 			clearInterval(recordingInterval);
 		}
@@ -44,13 +41,13 @@ const AudioMessageRecorder = ({ rid, uploadsStore, isMicrophoneDenied }: AudioMe
 		return blob;
 	});
 
-	const handleUnmount = useEffectEvent(async () => {
+	const handleUnmount = useStableCallback(async () => {
 		if (state === 'recording') {
 			await stopRecording();
 		}
 	});
 
-	const handleRecord = useEffectEvent(async () => {
+	const handleRecord = useStableCallback(async () => {
 		chat?.composer?.setRecordingMode(true);
 
 		if (recordingRoomId && recordingRoomId !== rid) {
@@ -77,13 +74,13 @@ const AudioMessageRecorder = ({ rid, uploadsStore, isMicrophoneDenied }: AudioMe
 		}
 	});
 
-	const handleCancelButtonClick = useEffectEvent(async () => {
+	const handleCancelButtonClick = useStableCallback(async () => {
 		await stopRecording();
 	});
 
 	const chat = useChat();
 
-	const handleDoneButtonClick = useEffectEvent(async () => {
+	const handleDoneButtonClick = useStableCallback(async () => {
 		setState('loading');
 
 		const blob = await stopRecording();
@@ -91,7 +88,7 @@ const AudioMessageRecorder = ({ rid, uploadsStore, isMicrophoneDenied }: AudioMe
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
-		await chat?.flows.uploadFiles({ files: [file], uploadsStore });
+		await chat?.flows.uploadFiles({ files: [file] });
 	});
 
 	useEffect(() => {

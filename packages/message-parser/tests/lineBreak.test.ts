@@ -25,5 +25,5 @@ test2
 		[paragraph([plain('test')]), lineBreak(), lineBreak(), lineBreak(), paragraph([plain('test2')])],
 	],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

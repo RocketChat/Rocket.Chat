@@ -7,13 +7,17 @@ import type { CloudConfirmationPollData, CloudRegistrationIntentData, CloudRegis
 import type { ICustomSound } from './ICustomSound';
 import type { ICustomUserStatus } from './ICustomUserStatus';
 import type { IEmailInbox } from './IEmailInbox';
+import type { IEmojiCustom } from './IEmojiCustom';
+import type { IIntegration } from './IIntegration';
+import type { IIntegrationHistory } from './IIntegrationHistory';
 import type { IInvite } from './IInvite';
+import type { IMeApiUser } from './IMeApiUser';
 import type { IMessage } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { IRole } from './IRole';
-import type { IRoom, IDirectoryChannelResult } from './IRoom';
+import type { IRoom, IDirectoryChannelResult, IRoomAdmin } from './IRoom';
 import type { ISubscription } from './ISubscription';
 import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
@@ -28,6 +32,7 @@ export const schemas = typia.json.schemas<
 			| ISubscription
 			| IInvite
 			| ICustomSound
+			| IEmojiCustom
 			| IMessage
 			| IOAuthApps
 			| IPermission
@@ -37,6 +42,7 @@ export const schemas = typia.json.schemas<
 			| ICalendarEvent
 			| IRole
 			| IRoom
+			| IRoomAdmin
 			| IDirectoryChannelResult
 			| IUser
 			| IDirectoryUserResult
@@ -49,6 +55,9 @@ export const schemas = typia.json.schemas<
 			| IModerationAudit
 			| IModerationReport
 			| IBanner
+			| IIntegration
+			| IIntegrationHistory
+			| IMeApiUser
 		),
 		CallHistoryItem,
 		ICustomUserStatus,

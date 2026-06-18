@@ -9,8 +9,8 @@ import type { NativeNotificationParameters } from './push';
 type FCMDataField = Record<string, any>;
 
 type FCMNotificationField = {
-	title: string;
-	body: string;
+	title?: string;
+	body?: string;
 	image?: string;
 };
 
@@ -140,13 +140,13 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 
 	// then we will create the notification field
 	const notificationField: FCMNotificationField = {
-		title: notification.title,
-		body: notification.text,
+		...(notification.title && { title: notification.title }),
+		...(notification.text && { body: notification.text }),
 	};
 
 	// then we will create the message
 	const message: FCMMessage = {
-		notification: notificationField,
+		...(Object.keys(notificationField).length && { notification: notificationField }),
 		data,
 		android: {
 			priority: 'HIGH',
@@ -185,7 +185,7 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 
 		const removeToken = () => {
 			const { token } = fcmRequest.message;
-			token && _removeToken({ gcm: token });
+			token && _removeToken(token);
 		};
 
 		const response = fetchWithRetry(url, removeToken, {

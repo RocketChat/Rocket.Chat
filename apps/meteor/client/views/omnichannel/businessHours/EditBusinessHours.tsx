@@ -1,6 +1,7 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { canonicalizeTimezone } from '@rocket.chat/tools';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -14,7 +15,7 @@ import { useRemoveBusinessHour } from './useRemoveBusinessHour';
 
 const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | undefined) => ({
 	name: businessHourData?.name || '',
-	timezoneName: businessHourData?.timezone?.name || 'America/Sao_Paulo',
+	timezoneName: canonicalizeTimezone(businessHourData?.timezone?.name || 'America/Sao_Paulo'),
 	daysOpen: (businessHourData?.workHours || defaultWorkHours()).filter(({ open }) => !!open).map(({ day }) => day),
 	daysTime: (businessHourData?.workHours || defaultWorkHours())
 		.filter(({ open }) => !!open)
@@ -51,7 +52,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 		formState: { isDirty },
 	} = methods;
 
-	const handleSave = useEffectEvent(async ({ departments, ...data }: BusinessHoursFormData) => {
+	const handleSave = useStableCallback(async ({ departments, ...data }: BusinessHoursFormData) => {
 		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
 		try {
