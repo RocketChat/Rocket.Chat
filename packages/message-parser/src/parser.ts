@@ -28,6 +28,9 @@ import {
 	emoji,
 	autoEmail,
 	phoneChecker,
+	timestamp,
+	timestampFromHours,
+	timestampFromIsoTime,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
@@ -371,6 +374,15 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		if (ch === '<') {
+			const tsResult = tryTimestamp(scanner);
+			if (tsResult !== null) {
+				nodes.push(tsResult);
+				prevChar = '>';
+				continue;
+			}
+		}
+
 		// Angle bracket link
 		if (ch === '<') {
 			const result = tryAngleBracketLink(scanner);
@@ -586,6 +598,15 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			if (result !== null) {
 				nodes.push(result);
 				prevChar = ']';
+				continue;
+			}
+		}
+
+		if (ch === '<') {
+			const tsResult = tryTimestamp(scanner);
+			if (tsResult !== null) {
+				nodes.push(tsResult);
+				prevChar = '>';
 				continue;
 			}
 		}
@@ -1691,4 +1712,173 @@ function tryPhone(scanner: Scanner): Inlines | null {
 	// phoneChecker returns a tel: LINK when number has >= 5 digits,
 	// or PLAIN_TEXT otherwise (region still consumed → stays plain text).
 	return phoneChecker('+' + pn.text, pn.number);
+}
+
+// ─── Timestamp ─────────────────────────────────────────────────────────────
+function readExactDigits(scanner: Scanner, n: number): string | null {
+	const s = scanner.save();
+	for (let i = 0; i < n; i++) {
+		if (!isDigit(scanner.char())) {
+			scanner.restore(s);
+			return null;
+		}
+		scanner.advance();
+	}
+	return scanner.sliceFrom(s);
+}
+
+function tryTimezone(scanner: Scanner): string | null {
+	const s = scanner.save();
+	const sign = scanner.char();
+	if (sign !== '+' && sign !== '-') return null;
+	scanner.advance();
+	const h = readExactDigits(scanner, 2);
+	if (h === null || scanner.char() !== ':') {
+		scanner.restore(s);
+		return null;
+	}
+	scanner.advance();
+	const m = readExactDigits(scanner, 2);
+	if (m === null) {
+		scanner.restore(s);
+		return null;
+	}
+	return sign + h + ':' + m;
+}
+
+function tryIso(scanner: Scanner, withMs: boolean): string | null {
+	const s = scanner.save();
+	const year = readExactDigits(scanner, 4);
+	if (year === null || scanner.char() !== '-') {
+		scanner.restore(s);
+		return null;
+	}
+	scanner.advance();
+	const month = readExactDigits(scanner, 2);
+	if (month === null || scanner.char() !== '-') {
+		scanner.restore(s);
+		return null;
+	}
+	scanner.advance();
+	const day = readExactDigits(scanner, 2);
+	if (day === null || scanner.char() !== 'T') {
+		scanner.restore(s);
+		return null;
+	}
+	scanner.advance();
+	const hours = readExactDigits(scanner, 2);
+	if (hours === null || scanner.char() !== ':') {
+		scanner.restore(s);
+		return null;
+	}
+	scanner.advance();
+	const minutes = readExactDigits(scanner, 2);
+	if (minutes === null || scanner.char() !== ':') {
+		scanner.restore(s);
+		return null;
+	}
+	scanner.advance();
+	const seconds = readExactDigits(scanner, 2);
+	if (seconds === null) {
+		scanner.restore(s);
+		return null;
+	}
+	let milliseconds: string | undefined;
+	if (withMs) {
+		if (scanner.char() !== '.') {
+			scanner.restore(s);
+			return null;
+		}
+		scanner.advance();
+		const ms = readExactDigits(scanner, 3);
+		if (ms === null) {
+			scanner.restore(s);
+			return null;
+		}
+		milliseconds = ms;
+	}
+	const timezone = tryTimezone(scanner) ?? undefined;
+	return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone });
+}
+
+function tryRelTime(scanner: Scanner): string | null {
+	// HH:MM:SS
+	{
+		const s = scanner.save();
+		const h = readExactDigits(scanner, 2);
+		if (h !== null && scanner.char() === ':') {
+			scanner.advance();
+			const m = readExactDigits(scanner, 2);
+			if (m !== null && scanner.char() === ':') {
+				scanner.advance();
+				const sec = readExactDigits(scanner, 2);
+				if (sec !== null) {
+					const tz = tryTimezone(scanner) ?? undefined;
+					return timestampFromHours(h, m, sec, tz);
+				}
+			}
+		}
+		scanner.restore(s);
+	}
+	// HH:MM
+	{
+		const s = scanner.save();
+		const h = readExactDigits(scanner, 2);
+		if (h !== null && scanner.char() === ':') {
+			scanner.advance();
+			const m = readExactDigits(scanner, 2);
+			if (m !== null) {
+				const tz = tryTimezone(scanner) ?? undefined;
+				return timestampFromHours(h, m, undefined, tz);
+			}
+		}
+		scanner.restore(s);
+	}
+	return null;
+}
+
+function parseTimestampDate(scanner: Scanner): string | null {
+	// Unixtime: exactly 10 digits
+	const u = readExactDigits(scanner, 10);
+	if (u !== null) return u;
+	// ISO8601 with, then without, milliseconds
+	const isoMs = tryIso(scanner, true);
+	if (isoMs !== null) return isoMs;
+	const iso = tryIso(scanner, false);
+	if (iso !== null) return iso;
+	// Relative HH:MM[:SS]
+	return tryRelTime(scanner);
+}
+
+function tryTimestamp(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	if (!scanner.matches('<t:')) return null;
+	scanner.advance(3);
+
+	const date = parseTimestampDate(scanner);
+	if (date === null) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// "<t:" date ":" format ">"
+	if (scanner.char() === ':') {
+		scanner.advance();
+		const fmt = scanner.char();
+		if (fmt !== '' && 'tTdDfFR'.includes(fmt) && scanner.charAt(1) === '>') {
+			scanner.advance(2);
+			return timestamp(date, fmt as any);
+		}
+		scanner.restore(start);
+		return null;
+	}
+
+	// "<t:" date ">"
+	if (scanner.char() === '>') {
+		scanner.advance();
+		return timestamp(date);
+	}
+
+	scanner.restore(start);
+	return null;
 }
