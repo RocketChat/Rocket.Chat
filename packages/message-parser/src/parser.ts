@@ -27,6 +27,7 @@ import {
 	bigEmoji,
 	emoji,
 	autoEmail,
+	phoneChecker,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
@@ -390,6 +391,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Phone (+number) — only at a word boundary
+		if (ch === '+' && (prevChar === '' || isSpace(prevChar))) {
+			const result = tryPhone(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
+				continue;
+			}
+		}
+
 		// Email (local@domain) — before bare URL / autolink so it claims the @-region
 		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
 			const result = tryEmail(scanner);
@@ -595,6 +606,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			if (result !== null) {
 				nodes.push(result);
 				prevChar = '|';
+				continue;
+			}
+		}
+
+		// Phone (+number) — only at a word boundary
+		if (ch === '+' && (prevChar === '' || isSpace(prevChar))) {
+			const result = tryPhone(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
 				continue;
 			}
 		}
@@ -1572,4 +1593,102 @@ function tryEmail(scanner: Scanner): Inlines | null {
 
 	// autoEmail validates the TLD via tldts (same logic the grammar uses):
 	return autoEmail(local + '@' + domain);
+}
+
+// ─── Phone ─────────────────────────────────────────────────────────────────
+function parsePhoneDigits(scanner: Scanner): string | null {
+	const s = scanner.save();
+	while (!scanner.isEnd() && isDigit(scanner.char())) {
+		scanner.advance();
+	}
+	const d = scanner.sliceFrom(s);
+	return d.length > 0 ? d : null;
+}
+
+function parsePhonePrefix(scanner: Scanner): { text: string; number: string } | null {
+	if (scanner.char() === '(') {
+		const s = scanner.save();
+		scanner.advance();
+		const d = parsePhoneDigits(scanner);
+		if (d !== null && scanner.char() === ')') {
+			scanner.advance();
+			return { text: '(' + d + ')', number: d };
+		}
+		scanner.restore(s);
+	}
+	const d = parsePhoneDigits(scanner);
+	if (d !== null) {
+		return { text: d, number: d };
+	}
+	return null;
+}
+
+function parsePhoneNumber(scanner: Scanner): { text: string; number: string } | null {
+	// prefix "-" digits
+	{
+		const s = scanner.save();
+		const p = parsePhonePrefix(scanner);
+		if (p !== null && scanner.char() === '-') {
+			scanner.advance();
+			const d = parsePhoneDigits(scanner);
+			if (d !== null) {
+				return { text: p.text + '-' + d, number: p.number + d };
+			}
+		}
+		scanner.restore(s);
+	}
+	// prefix digits "-" digits
+	{
+		const s = scanner.save();
+		const p = parsePhonePrefix(scanner);
+		if (p !== null) {
+			const d1 = parsePhoneDigits(scanner);
+			if (d1 !== null && scanner.char() === '-') {
+				scanner.advance();
+				const d2 = parsePhoneDigits(scanner);
+				if (d2 !== null) {
+					return { text: p.text + d1 + '-' + d2, number: p.number + d1 + d2 };
+				}
+			}
+		}
+		scanner.restore(s);
+	}
+	// prefix digits
+	{
+		const s = scanner.save();
+		const p = parsePhonePrefix(scanner);
+		if (p !== null) {
+			const d = parsePhoneDigits(scanner);
+			if (d !== null) {
+				return { text: p.text + d, number: p.number + d };
+			}
+		}
+		scanner.restore(s);
+	}
+	// digits
+	{
+		const d = parsePhoneDigits(scanner);
+		if (d !== null) {
+			return { text: d, number: d };
+		}
+	}
+	return null;
+}
+
+function tryPhone(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	if (scanner.char() !== '+') {
+		return null;
+	}
+	scanner.advance(); // consume '+'
+
+	const pn = parsePhoneNumber(scanner);
+	if (pn === null) {
+		scanner.restore(start);
+		return null;
+	}
+
+	// phoneChecker returns a tel: LINK when number has >= 5 digits,
+	// or PLAIN_TEXT otherwise (region still consumed → stays plain text).
+	return phoneChecker('+' + pn.text, pn.number);
 }
