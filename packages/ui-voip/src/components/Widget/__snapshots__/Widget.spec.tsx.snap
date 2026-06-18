@@ -7,9 +7,10 @@ exports[`renders FullWidget without crashing 1`] = `
       data-focus-scope-start="true"
       hidden=""
     />
-    <dialog
+    <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
       class="rcx-css-1rau14i"
+      role="dialog"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
@@ -119,7 +120,7 @@ exports[`renders FullWidget without crashing 1`] = `
           </button>
         </div>
       </footer>
-    </dialog>
+    </div>
     <span
       data-focus-scope-end="true"
       hidden=""
