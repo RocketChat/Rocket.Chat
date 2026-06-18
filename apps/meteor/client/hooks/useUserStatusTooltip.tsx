@@ -9,7 +9,7 @@ type UserStatusTooltipHandlers = {
 	onMouseLeave: () => void;
 };
 
-export function useUserStatusTooltip(uid: string | undefined): UserStatusTooltipHandlers {
+export function useUserStatusTooltip(uid: string | undefined, title: string): UserStatusTooltipHandlers {
 	const presence = useUserPresence(uid);
 
 	const openTooltip = useTooltipOpen();
@@ -17,24 +17,19 @@ export function useUserStatusTooltip(uid: string | undefined): UserStatusTooltip
 
 	const onMouseEnter = useCallback(
 		(e: MouseEvent<HTMLElement>) => {
+			const target = e.currentTarget;
+
 			if (!uid) {
-				return;
+				return openTooltip(title, target);
 			}
 
-			// TODO: Workaround - need to find a proper way to display the tooltip
-			// when it's more than simple string
-			const target = e.currentTarget;
-			setTimeout(
-				() =>
-					openTooltip(
-						<UserStatusText status={presence?.status} statusText={presence?.statusText} statusExpiresAt={presence?.statusExpiresAt} />,
-						target,
-					),
-				0,
+			openTooltip(
+				<UserStatusText status={presence?.status} statusText={presence?.statusText} statusExpiresAt={presence?.statusExpiresAt} />,
+				target,
 			);
 		},
-		[uid, openTooltip, presence],
+		[uid, openTooltip, presence, title],
 	);
 
-	return useMemo(() => ({ onMouseEnter, onMouseLeave: closeTooltip }), [onMouseEnter, closeTooltip]);
+	return useMemo(() => ({ 'data-tooltip': '', onMouseEnter, 'onMouseLeave': closeTooltip }), [onMouseEnter, closeTooltip]);
 }
