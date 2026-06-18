@@ -1,0 +1,14 @@
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  h_4c386397e672f4 2-3,314-326,328
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "61be1137943c60d2cd6543f3011ae0813909c852",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
