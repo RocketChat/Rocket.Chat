@@ -707,8 +707,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			};
 		} else {
 			update = {
-				$unset: {
-					autoTranslate: 1,
+				$set: {
+					autoTranslate: false,
 				},
 			};
 		}
@@ -724,13 +724,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document> {
-		const query = { 'u._id': userId };
-
 		if (language) {
-			return this.updateMany(query, { $set: { autoTranslate: true, autoTranslateLanguage: language } });
+			return Promise.all([
+				this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $set: { autoTranslateLanguage: language } }),
+				this.updateMany(
+					{ 'u._id': userId, 'autoTranslate': { $exists: false } },
+					{ $set: { autoTranslate: true, autoTranslateLanguage: language } },
+				),
+			]).then(([updateResult, enableResult]) => ({
+				...updateResult,
+				modifiedCount: updateResult.modifiedCount + enableResult.modifiedCount,
+			}));
 		}
 
-		return this.updateMany(query, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+		return this.updateMany({ 'u._id': userId }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
 	findByAutoTranslateAndUserId(
