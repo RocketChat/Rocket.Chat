@@ -62,7 +62,6 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 		clearErrors,
 		formState: { errors },
 	} = useForm<StatusFormValues>({
-		mode: 'onChange',
 		defaultValues: {
 			statusText: initialStatusText,
 			statusType:
