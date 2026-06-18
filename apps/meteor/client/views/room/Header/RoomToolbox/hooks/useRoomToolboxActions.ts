@@ -72,10 +72,10 @@ const actionToMenuItem = (
 export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxContextValue, 'actions' | 'openTab'>) => {
 	const { t } = useTranslation();
 	const { roomToolboxExpanded } = useLayout();
-	const layoutConfigRaw = useSetting('Room_Toolbox_Layout', '');
+	const layoutConfigJSON = useSetting('Room_Toolbox_Layout', '');
 	const isLayoutPreviewEnabled = useFeaturePreview('roomToolboxLayout');
 
-	const layoutConfig = useMemo(() => parseLayoutConfig(layoutConfigRaw), [layoutConfigRaw]);
+	const layoutConfig = useMemo(() => parseLayoutConfig(layoutConfigJSON), [layoutConfigJSON]);
 
 	if (isLayoutPreviewEnabled && layoutConfig) {
 		try {
