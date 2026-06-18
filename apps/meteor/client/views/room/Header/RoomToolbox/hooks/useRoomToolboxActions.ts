@@ -23,9 +23,6 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
 			return null;
 		}
-		if (parsed.items !== undefined && !Array.isArray(parsed.items)) {
-			return null;
-		}
 		if (Array.isArray(parsed.items)) {
 			const items = parsed.items as unknown[];
 			const validItems = items.every((item: unknown): boolean => {
@@ -42,6 +39,8 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 			if (!validItems) {
 				return null;
 			}
+		} else if (parsed.items !== undefined) {
+			return null;
 		}
 		if (
 			parsed.maxVisibleNormal !== undefined &&
