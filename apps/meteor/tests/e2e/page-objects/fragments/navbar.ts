@@ -119,6 +119,10 @@ export class Navbar {
 		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
 	}
 
+	get btnCustomStatus(): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Custom...' });
+	}
+
 	getUserProfileMenuOption(name: string): Locator {
 		return this.userMenu.getByRole('menuitemcheckbox', { name });
 	}
@@ -249,7 +253,7 @@ export class Navbar {
 
 	async openEditStatusModal(): Promise<void> {
 		await this.btnUserMenu.click();
-		await this.userMenu.getByRole('menuitemcheckbox', { name: 'Custom Status' }).click();
+		await this.btnCustomStatus.click();
 	}
 
 	async changeUserCustomStatusWithExpiration(options: {

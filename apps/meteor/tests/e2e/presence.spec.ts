@@ -81,14 +81,14 @@ test.describe.serial('Presence', () => {
 
 			await test.step('Custom Status entry visible while no status is set', async () => {
 				await poHomeChannel.navbar.btnUserMenu.click();
-				await expect(poHomeChannel.navbar.userMenu.getByRole('menuitemcheckbox', { name: 'Custom Status' })).toBeVisible();
+				await expect(poHomeChannel.navbar.btnCustomStatus).toBeVisible();
 				await page.keyboard.press('Escape');
 			});
 
 			await test.step('after setting a status, Custom Status entry stays visible alongside the active row', async () => {
 				await poHomeChannel.navbar.changeUserCustomStatus(text);
 				await poHomeChannel.navbar.btnUserMenu.click();
-				await expect(poHomeChannel.navbar.userMenu.getByRole('menuitemcheckbox', { name: 'Custom Status' })).toBeVisible();
+				await expect(poHomeChannel.navbar.btnCustomStatus).toBeVisible();
 				await expect(poHomeChannel.navbar.userMenu).toContainText(text);
 				await page.keyboard.press('Escape');
 			});

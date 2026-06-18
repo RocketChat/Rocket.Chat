@@ -117,7 +117,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
-		// Always: "Custom Status" action - opens the edit modal.
+		// Always: "Custom..." action - opens the edit modal.
 		items.push({
 			id: 'custom-status-edit',
 			icon: 'edit',
