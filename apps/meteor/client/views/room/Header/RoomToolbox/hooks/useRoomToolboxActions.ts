@@ -75,7 +75,10 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const layoutConfigJSON = useSetting('Room_Toolbox_Layout', '');
 	const isLayoutPreviewEnabled = useFeaturePreview('roomToolboxLayout');
 
-	const layoutConfig = useMemo(() => parseLayoutConfig(layoutConfigJSON), [layoutConfigJSON]);
+	const layoutConfig = useMemo(
+		() => (isLayoutPreviewEnabled ? parseLayoutConfig(layoutConfigJSON) : null),
+		[isLayoutPreviewEnabled, layoutConfigJSON],
+	);
 
 	if (isLayoutPreviewEnabled && layoutConfig) {
 		try {
