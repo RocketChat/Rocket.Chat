@@ -3,7 +3,7 @@ import AuthenticationCheck from '../root/MainLayout/AuthenticationCheck';
 
 const ConferenceRoute = () => {
 	return (
-		<AuthenticationCheck guest>
+		<AuthenticationCheck guest={false}>
 			<ConferencePage />
 		</AuthenticationCheck>
 	);
