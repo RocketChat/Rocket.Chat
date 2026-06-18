@@ -3,6 +3,7 @@ import { useCallback, useEffect, useLayoutEffect } from 'react';
 import { useMediaCallInstance, usePeekMediaSessionState, usePeekMediaSessionCallId } from '../context';
 import MediaCallPopoutWindow from './MediaCallPopoutWindow';
 import { usePopoutWindow } from './usePopoutWindow';
+import { useSetPopoutWindow } from '../providers/useMediaSessionInstance';
 
 const MediaCallPopout = () => {
 	const { currentViews, unregisterView } = useMediaCallInstance();
@@ -14,6 +15,8 @@ const MediaCallPopout = () => {
 	}, [unregisterView]);
 
 	const { container, closePopoutWindow, openPopoutWindow } = usePopoutWindow(onClosePopout);
+
+	useSetPopoutWindow(container?.ownerDocument.defaultView || undefined);
 
 	const onClosePopoutAndWindow = useCallback(() => {
 		onClosePopout();
