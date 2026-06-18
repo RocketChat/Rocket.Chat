@@ -13,10 +13,19 @@ export const useConferenceEmbedded = (callId: string) => {
 
 	// The chat room comes from the conference record: show `discussionRid` when it's set (a discussion
 	// was created), otherwise the conference's `rid` (the original room). The `rid` never changes.
-	const { data: info, isPending: isInfoPending } = useQuery({
+	const {
+		data: info,
+		isPending: isInfoPending,
+		error: infoError,
+	} = useQuery({
 		queryKey: ['conference-info', callId],
 		queryFn: async () => getConferenceInfo({ callId }),
+		retry: false,
 	});
+
+	// The info endpoint fails when the conference can't be loaded — the user can't access its room
+	// (or it doesn't exist). Either way there's nothing to show, so surface the unauthorized screen.
+	const unauthorized = !!infoError;
 
 	// When a participant changes the conference's room (e.g. adds people and creates a discussion),
 	// the server broadcasts `discussionUpdated`; refetch so every participant's chat follows along.
@@ -34,7 +43,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	});
 
 	return {
-		room: { rid: info?.discussionRid || info?.rid, loading: isInfoPending } as const,
+		room: { rid: info?.discussionRid || info?.rid, loading: isInfoPending, unauthorized } as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
 			providerName: data?.providerName,
