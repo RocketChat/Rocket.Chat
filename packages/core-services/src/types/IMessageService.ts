@@ -44,6 +44,12 @@ export interface IMessageService {
 	): Promise<IMessage>;
 	beforeSave(param: { message: IMessage; room: IRoom; user: IUser; previewUrls?: string[]; parseUrls?: boolean }): Promise<IMessage>;
 	sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert?: boolean): Promise<IMessage>;
+	insertMessage(
+		user: Pick<IUser, '_id' | 'username'>,
+		message: IMessage,
+		rid: IRoom['_id'],
+		upsert?: boolean,
+	): Promise<IMessage | boolean>;
 	deleteMessage(user: IUser, message: IMessage): Promise<void>;
 	updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void>;
 	reactToMessage(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void>;

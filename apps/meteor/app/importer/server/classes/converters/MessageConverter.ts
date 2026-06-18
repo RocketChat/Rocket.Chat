@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IImportMessageRecord, IMessage as IDBMessage, IImportMessage, IImportMessageReaction } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -5,7 +6,6 @@ import limax from 'limax';
 
 import type { UserIdentification, MentionedChannel } from './ConverterCache';
 import { RecordConverter } from './RecordConverter';
-import { insertMessage } from '../../../../lib/server/functions/insertMessage';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 
 export type MessageConversionCallbacks = IConversionCallbacks & { afterImportAllMessagesFn?: (roomIds: string[]) => Promise<void> };
@@ -69,7 +69,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const msgObj = await this.buildMessageObject(data, rid, creator);
 
 		try {
-			await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
+			await Message.insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 		} catch (err) {
 			this._logger.error({ msg: 'Failed to import message', timestamp: msgObj.ts, roomId: rid, err });
 		}
