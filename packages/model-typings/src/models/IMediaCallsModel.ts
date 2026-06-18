@@ -32,6 +32,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	findAllNotOverByOppositeSipExtension<T extends Document = IMediaCall>(sipExtension: string, options?: FindOptions<T>): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean>;
 	updateParticipantsById(
 		callId: string,
 		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },

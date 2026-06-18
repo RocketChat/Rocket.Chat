@@ -4194,6 +4194,8 @@
   "Pexip_Integration_Customization": "Customization",
   "Pexip_Integration_Enabled": "Enable Pexip Integration",
   "Pexip_Integration_Enabled_Description": "When enabled, Pexip will be registered as a Conference Call provider. You may need to set it as your default provider on the conference settings if you have multiple providers.",
+  "Pexip_Integration_Escalation_Params": "Additional Params for Escalated Calls",
+  "Pexip_Integration_Escalation_Params_Description": "Set additional params to be used exclusively on conferences initiated from Voice Calls.",
   "Pexip_Integration_Guest_Pin": "Static Guest Pin",
   "Pexip_Integration_Guest_Pin_Description": "A pin code to grant meeting access to guests. Leave empty to generate a new unique pin for every meeting.",
   "Pexip_Integration_Host_Pin": "Static Host Pin",

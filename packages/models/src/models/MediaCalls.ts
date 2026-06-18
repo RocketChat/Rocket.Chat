@@ -260,6 +260,17 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return count > 0;
 	}
 
+	public async isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				uids: uid,
+				_id: { $in: callIds },
+			},
+			{ limit: 1 },
+		);
+		return count > 0;
+	}
+
 	public async updateParticipantsById(
 		callId: string,
 		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },

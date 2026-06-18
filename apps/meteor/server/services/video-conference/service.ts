@@ -25,6 +25,7 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	RequiredField,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -1086,6 +1087,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return 'Rocket.Chat';
 	}
 
+	private requireCallUrl(call: ExternalVideoConference): asserts call is RequiredField<ExternalVideoConference, 'url'> {
+		if (!call.url) {
+			throw new Error('Call url is missing');
+		}
+	}
+
 	private async getUrl(
 		call: ExternalVideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
@@ -1099,6 +1106,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			call.url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(call._id, call.url);
 		}
+		this.requireCallUrl(call);
 
 		const userData = user && {
 			_id: user._id,
