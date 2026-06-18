@@ -187,17 +187,6 @@ export class XmppAppserviceTestBridgeClient {
 		});
 	}
 
-	async sendTyping(
-		roomAlias: string,
-		typing: { sender: string; displayName?: string; typing?: boolean; timeout?: number },
-	): Promise<{ roomId: string; userId: string; typing: boolean }> {
-		const localAlias = toXmppAppserviceLocalAlias(roomAlias);
-		return requestJson(`${this.baseUrl}/__rooms/${encodeURIComponent(localAlias)}/typing`, {
-			method: 'POST',
-			body: JSON.stringify(typing),
-		});
-	}
-
 	async setRoomJoinFailure(roomAlias: string, options: { enabled?: boolean; statusCode?: number; error?: string } = {}): Promise<void> {
 		const localAlias = toXmppAppserviceLocalAlias(roomAlias);
 		await requestJson(`${this.baseUrl}/__rooms/${encodeURIComponent(localAlias)}/failure`, {

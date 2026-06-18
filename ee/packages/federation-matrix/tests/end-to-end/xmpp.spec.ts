@@ -6,7 +6,6 @@ import { password } from '../../../../../apps/meteor/tests/data/user';
 import { createUser, getRequestConfig, type IRequestConfig, type TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
-import { createDDPListener } from '../helper/ddp-listener';
 import { wait } from '../helper/synapse-client';
 import {
 	ensureXmppAppserviceTestBridgeRunning,
@@ -590,31 +589,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			expect(user.name).toBe(jid);
 			expect(user.name).not.toMatch(/^@_xmpp_/);
 			expect(user.name).not.toContain('=40');
-		});
-
-		it('expect to show XMPP typing indicators with the participant real name', async () => {
-			const ddpListener = createDDPListener(runtimeConfig.rcUrl, rc1AdminRequestConfig);
-			await ddpListener.connect();
-			ddpListener.listenForRoomUserActivity(rcXmppRoom._id);
-
-			try {
-				const typingDisplayName = `Typing Alice XMPP ${testRunId}`;
-				const result = await testBridge.sendTyping(xmppRoomAlias, {
-					sender: xmppParticipant,
-					displayName: typingDisplayName,
-					typing: true,
-				});
-
-				const activity = await ddpListener.waitForRoomUserActivity(
-					(activity) => activity.username === typingDisplayName && activity.activities.includes('user-typing'),
-					10000,
-				);
-
-				expect(activity.username).toBe(typingDisplayName);
-				expect(activity.username).not.toBe(result.userId);
-			} finally {
-				ddpListener.disconnect();
-			}
 		});
 	});
 

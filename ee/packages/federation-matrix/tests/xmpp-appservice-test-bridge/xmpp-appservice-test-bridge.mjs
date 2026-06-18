@@ -56,9 +56,23 @@ function sendNoContent(res) {
 }
 
 function getBearerToken(req) {
-	const auth = req.headers.authorization || '';
-	const match = auth.match(/^Bearer\s+(.+)$/i);
-	return match?.[1] || null;
+	const auth = req.headers.authorization;
+	if (typeof auth !== 'string') {
+		return null;
+	}
+
+	const schemeEnd = auth.indexOf(' ');
+	if (schemeEnd === -1) {
+		return null;
+	}
+
+	const scheme = auth.slice(0, schemeEnd);
+	if (scheme.toLowerCase() !== 'bearer') {
+		return null;
+	}
+
+	const token = auth.slice(schemeEnd + 1).trimStart();
+	return token || null;
 }
 
 function requireHomeserverToken(req, res) {
@@ -314,33 +328,6 @@ async function sendXmppMessage(localAlias, sender, body, displayName) {
 	};
 }
 
-async function sendXmppTyping(localAlias, sender, displayName, typing = true, timeout = 30000) {
-	const room = roomsByAlias.get(localAlias);
-	if (!room) {
-		throw new Error(`No XMPP appservice test room for alias ${localAlias}`);
-	}
-
-	const userId = await ensureXmppUser(sender);
-	await updateXmppUserDisplayName(userId, displayName);
-	await ensureUserJoined(room, userId);
-
-	await requestToHomeserver(
-		'PUT',
-		`/_matrix/client/v3/rooms/${encodeURIComponent(room.roomId)}/typing/${encodeURIComponent(userId)}`,
-		{
-			typing,
-			timeout,
-		},
-		{ userId },
-	);
-
-	return {
-		roomId: room.roomId,
-		userId,
-		typing,
-	};
-}
-
 async function handleAppserviceRoomQuery(req, res, encodedAlias) {
 	if (!requireHomeserverToken(req, res)) {
 		return;
@@ -405,25 +392,6 @@ async function handleTestMessage(req, res, localAlias) {
 	}
 }
 
-async function handleTestTyping(req, res, localAlias) {
-	const body = await readBody(req);
-	if (!body.sender) {
-		sendJson(res, 400, {
-			error: 'Expected JSON body with sender',
-		});
-		return;
-	}
-
-	try {
-		const result = await sendXmppTyping(localAlias, body.sender, body.displayName, body.typing ?? true, body.timeout);
-		sendJson(res, 200, result);
-	} catch (error) {
-		sendJson(res, 500, {
-			error: error instanceof Error ? error.message : 'Failed to send XMPP appservice test typing event',
-		});
-	}
-}
-
 async function handleTestFailure(req, res, localAlias) {
 	const body = await readBody(req);
 	if (body.enabled === false) {
@@ -482,12 +450,6 @@ async function handleRequest(req, res) {
 		const testMessageMatch = pathname.match(/^\/__rooms\/([^/]+)\/messages$/);
 		if (req.method === 'POST' && testMessageMatch) {
 			await handleTestMessage(req, res, decodeURIComponent(testMessageMatch[1]));
-			return;
-		}
-
-		const testTypingMatch = pathname.match(/^\/__rooms\/([^/]+)\/typing$/);
-		if (req.method === 'POST' && testTypingMatch) {
-			await handleTestTyping(req, res, decodeURIComponent(testTypingMatch[1]));
 			return;
 		}
 
