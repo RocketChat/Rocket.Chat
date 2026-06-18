@@ -33,7 +33,7 @@ const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextP
 	}
 
 	return (
-		<Box>
+		<>
 			{headline && <MarkdownText content={headline} parseEmoji={true} variant='inline' />}
 			{expirationText && (
 				<Box color='secondary-info' display='flex' alignItems='center'>
@@ -41,7 +41,7 @@ const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextP
 					{expirationText}
 				</Box>
 			)}
-		</Box>
+		</>
 	);
 };
 
