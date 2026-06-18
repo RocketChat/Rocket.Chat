@@ -1,7 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useLayout, useUserId } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
@@ -44,6 +44,7 @@ type RoomListRowProps = {
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
+	userId?: string;
 
 	room: SubscriptionWithRoom;
 	id?: string;
@@ -69,9 +70,10 @@ const SidebarItemTemplateWithData = ({
 	t,
 	isAnonymous,
 	videoConfActions,
+	userId,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
-	const dmUserId = getUidDirectMessage(room, useUserId());
+	const dmUserId = getUidDirectMessage(room, userId);
 	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId);
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
