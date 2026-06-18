@@ -73,11 +73,12 @@ const SidebarItemTemplateWithData = ({
 	userId,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
-	const dmUserId = getUidDirectMessage(room, userId);
-	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId);
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
+
+	const dmUserId = getUidDirectMessage(room, userId);
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
 
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 

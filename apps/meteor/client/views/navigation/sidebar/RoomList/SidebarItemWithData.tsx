@@ -36,7 +36,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
 	const dmUserId = getUidDirectMessage(room, useUserId());
-	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId);
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
