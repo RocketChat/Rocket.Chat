@@ -403,6 +403,7 @@ export const createMessageSettings = () =>
 			group: 'Message',
 			section: 'AutoTranslate_LibreTranslate',
 			public: false,
+			secret: true,
 			i18nLabel: 'AutoTranslate_APIKey',
 			enableQuery: [
 				{
