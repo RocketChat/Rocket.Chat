@@ -15,8 +15,7 @@ import { test, expect } from './utils/test';
 test.describe.serial('rooms.join', () => {
 	test.use({ storageState: Users.user1.state });
 
-	// TODO: the ui does not invalidate the room subscription cache after joining, so the user needs to refresh to see the joined state. This should be fixed and then this test should be re-enabled
-	test.skip('public channels without preview-c-room', () => {
+	test.describe('public channels without preview-c-room', () => {
 		let targetChannel: string;
 		let poHomeChannel: HomeChannel;
 
