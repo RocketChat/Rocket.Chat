@@ -1,7 +1,7 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
-import type { RoomToolboxContextValue } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig, RoomToolboxContextValue } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -81,42 +81,41 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	);
 
 	if (isLayoutPreviewEnabled && layoutConfig) {
-		try {
-			const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
+		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
 
-			if (!roomToolboxExpanded) {
-				const orderedOverflowActions = [...engineVisible, ...engineSections.flatMap((section) => section.items)];
+		const typedFeatured = featuredActions as RoomToolboxActionConfig[];
+		const typedVisible = engineVisible as RoomToolboxActionConfig[];
 
-				const sectionsMap = new Map<string, MenuSection>();
-				for (const item of orderedOverflowActions) {
-					const group = item.type ?? '';
-					const menuItem = actionToMenuItem(item, openTab, t);
-					const existing = sectionsMap.get(group);
-					if (existing) {
-						existing.items.push(menuItem);
-					} else {
-						sectionsMap.set(group, {
-							id: group,
-							title: group === 'apps' ? t('Apps') : '',
-							items: [menuItem],
-						});
-					}
+		if (!roomToolboxExpanded) {
+			const orderedOverflowActions = [...typedVisible, ...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[])];
+
+			const sectionsMap = new Map<string, MenuSection>();
+			for (const item of orderedOverflowActions) {
+				const group = item.type ?? '';
+				const menuItem = actionToMenuItem(item, openTab, t);
+				const existing = sectionsMap.get(group);
+				if (existing) {
+					existing.items.push(menuItem);
+				} else {
+					sectionsMap.set(group, {
+						id: group,
+						title: group === 'apps' ? t('Apps') : '',
+						items: [menuItem],
+					});
 				}
-				const hiddenActions = Array.from(sectionsMap.values());
-
-				return { featuredActions, visibleActions: [], hiddenActions };
 			}
+			const hiddenActions = Array.from(sectionsMap.values());
 
-			const hiddenActions = engineSections.map((section) => ({
-				id: section.id,
-				title: section.id === 'apps' ? t('Apps') : '',
-				items: section.items.map((item) => actionToMenuItem(item, openTab, t)),
-			}));
-
-			return { featuredActions, visibleActions: engineVisible, hiddenActions };
-		} catch {
-			// intentional: silent fallback
+			return { featuredActions: typedFeatured, visibleActions: [], hiddenActions };
 		}
+
+		const hiddenActions = engineSections.map((section) => ({
+			id: section.id,
+			title: section.id === 'apps' ? t('Apps') : '',
+			items: (section.items as RoomToolboxActionConfig[]).map((item) => actionToMenuItem(item, openTab, t)),
+		}));
+
+		return { featuredActions: typedFeatured, visibleActions: typedVisible, hiddenActions };
 	}
 
 	const normalActions = actions.filter((action) => !action.featured && action.type !== 'apps');
