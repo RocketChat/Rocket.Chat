@@ -2,6 +2,7 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import { useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 
 import { useNotificationAllowed } from './useNotificationAllowed';
 import { getUserAvatarURL } from '../../../app/utils/client';
@@ -10,8 +11,9 @@ import { stripTags } from '../../../lib/utils/stringUtils';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 export const useNotification = () => {
-	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');
+	const requireInteractionPreference = useUserPreference('desktopNotificationRequireInteraction');
 	const router = useRouter();
+	const joinCall = useVideoConfJoinCall();
 	const notificationAllowed = useNotificationAllowed();
 
 	const notify = useStableCallback(async (notification: INotificationDesktop) => {
@@ -21,6 +23,9 @@ export const useNotification = () => {
 		if (!notification.payload) {
 			return;
 		}
+
+		// A notification can opt into staying until interacted with, on top of the user preference.
+		const requireInteraction = Boolean(notification.requireInteraction || requireInteractionPreference);
 
 		const { rid, name: roomName, _id: msgId } = notification.payload;
 		if (!rid) {
@@ -39,6 +44,7 @@ export const useNotification = () => {
 			canReply: true,
 			silent: true,
 			requireInteraction,
+			...(notification.actions?.length ? { actions: notification.actions } : {}),
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
@@ -57,6 +63,16 @@ export const useNotification = () => {
 						msg: response,
 					}),
 			);
+
+			// "Join" action (desktop app): join the call the same way the ongoing-call banner does.
+			const { conferenceId } = notification.payload;
+			if (conferenceId) {
+				n.addEventListener('action', () => {
+					n.close();
+					window.focus();
+					joinCall(conferenceId);
+				});
+			}
 		}
 
 		n.onclick = () => {
