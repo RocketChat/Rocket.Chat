@@ -1,4 +1,5 @@
 import { useLanguage } from '@rocket.chat/ui-contexts';
+import { isSameDay } from 'date-fns';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,10 +27,6 @@ function parseExpiresAt(value?: unknown): Date | undefined {
 	}
 
 	return undefined;
-}
-
-function isSameDay(a: Date, b: Date): boolean {
-	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
 export function useExpirationText(statusExpiresAt?: Date | string): string | undefined {
