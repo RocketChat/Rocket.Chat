@@ -156,20 +156,9 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const userId = c.req.param('userId');
-				const senderId = c.get('impersonatedUserId') as string;
+				const userId = c.get('impersonatedUserId') as string;
 
 				const body = await c.req.json();
-
-				if (userId !== senderId) {
-					return {
-						statusCode: 403,
-						body: {
-							errcode: 'M_FORBIDDEN',
-							error: "Cannot edit another user's profile",
-						},
-					};
-				}
 
 				const user = await Users.findOneByUsername(userId);
 				if (!user) {
