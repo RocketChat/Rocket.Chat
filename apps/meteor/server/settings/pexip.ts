@@ -25,6 +25,13 @@ export function createPexipSettings(): Promise<void> {
 			i18nDescription: `Pexip_Integration_Meeting_Url_Description`,
 		});
 
+		await this.add('Pexip_Integration_Escalation_Params', 'join=1&muteCamera=true', {
+			type: 'string',
+			public: true,
+			invalidValue: '',
+			i18nDescription: `Pexip_Integration_Escalation_Params_Description`,
+		});
+
 		await this.section('Pexip_Integration_API', async function () {
 			await this.add('Pexip_Integration_API_Username', '', {
 				type: 'string',
@@ -129,6 +136,7 @@ export function getPexipSettings(): PexipSettings {
 		enabled: settings.get<boolean>('Pexip_Integration_Enabled'),
 		baseUrl: settings.get<string>('Pexip_Integration_Base_Url'),
 		meetingUrl: settings.get<string>('Pexip_Integration_Meeting_Url'),
+		escalationParams: settings.get<string>('Pexip_Integration_Escalation_Params'),
 		api: {
 			username: settings.get<string>('Pexip_Integration_API_Username'),
 			password: settings.get<string>('Pexip_Integration_API_Password'),
