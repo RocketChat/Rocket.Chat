@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 
 import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
+import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 
 type ConferenceEmbeddedPageProps = {
@@ -10,6 +11,12 @@ type ConferenceEmbeddedPageProps = {
 
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference } = useConferenceEmbedded(callId);
+
+	// No access to the conference's room — show the unauthorized screen for the whole page rather
+	// than a broken split with a "not found" chat panel.
+	if (room.unauthorized) {
+		return <ConferenceUnauthorizedPage />;
+	}
 
 	return (
 		<Box bg='surface-light' width='full' height='full' display='flex'>
