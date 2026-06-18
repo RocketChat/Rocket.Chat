@@ -1387,6 +1387,34 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// `discussionRid`. This sets it and broadcasts `discussionUpdated` so participants navigate.
 		await this.assignDiscussionToConference(callId, discussion._id);
 
+		// Let the newly invited users know with a desktop notification; clicking it opens the discussion.
+		const invitedUsers = await Users.find<Pick<IUser, '_id' | 'language'>>(
+			{ username: { $in: usernames } },
+			{ projection: { language: 1 } },
+		).toArray();
+
+		for (const invited of invitedUsers) {
+			const text = i18n.t('You_were_invited_to_a_conference', { lng: invited.language });
+			void api.broadcast('notify.desktop', invited._id, {
+				title: name,
+				text,
+				// Keep the invite on screen until the user acts on it.
+				requireInteraction: true,
+				// "Join call" button opens the conference directly (desktop app); clicking the body opens the discussion.
+				actions: [{ action: 'join', title: i18n.t('Join_call', { lng: invited.language }) }],
+				payload: {
+					_id: discussion._id,
+					rid: discussion._id,
+					sender: { _id: user._id, username: user.username as string, name: user.name },
+					type: discussion.t,
+					name: discussion.name,
+					conferenceId: callId,
+					message: { msg: text },
+					audioNotificationValue: '',
+				},
+			});
+		}
+
 		return discussion._id;
 	}
 
