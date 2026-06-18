@@ -156,11 +156,11 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const userId = c.get('impersonatedUserId') as string;
+				const username = c.get('impersonatedUserId') as string;
 
 				const body = await c.req.json();
 
-				const user = await Users.findOneByUsername(userId);
+				const user = await Users.findOneByUsername(username);
 				if (!user) {
 					return {
 						statusCode: 404,
@@ -199,14 +199,15 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const userId = c.req.param('userId');
-				const senderId = c.get('impersonatedUserId') as string;
+				const username = c.get('impersonatedUserId') as string;
 
-				if (userId !== senderId) {
+				const user = await Users.findOneByUsername(username);
+				if (!user) {
 					return {
-						statusCode: 403,
+						statusCode: 404,
 						body: {
-							errcode: 'M_FORBIDDEN',
-							error: "Cannot edit another user's profile",
+							errcode: 'M_NOT_FOUND',
+							error: 'User not found',
 						},
 					};
 				}

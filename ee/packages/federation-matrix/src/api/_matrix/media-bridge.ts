@@ -76,11 +76,11 @@ export const getMatrixMediaBridgeRoutes = () => {
 				isAppServiceAuthenticatedMiddleware(),
 				async (c) => {
 					try {
-						const senderId = c.get('impersonatedUserId') as string;
+						const senderUsername = c.get('impersonatedUserId') as string;
 						const fileName = c.req.query('filename') || `upload-${Date.now()}`;
 						const mimeType = c.req.header('content-type') || 'application/octet-stream';
 
-						const user = await Users.findOneByUsername(senderId, { projection: { _id: 1 } });
+						const user = await Users.findOneByUsername(senderUsername, { projection: { _id: 1 } });
 						if (!user) {
 							return {
 								statusCode: 401,

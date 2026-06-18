@@ -148,7 +148,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
 				const eventType = c.req.param('eventType');
-				const senderId = c.get('impersonatedUserId') as UserID;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
 				if (eventType !== 'm.room.message') {
@@ -188,7 +188,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 							url: body.url,
 							info: body.info,
 						};
-						const event = await federationSDK.sendFileMessage(roomId, fileContent, senderId);
+						const event = await federationSDK.sendFileMessage(roomId, fileContent, senderUsername);
 
 						await FederationMatrix.saveFederationMessage({
 							event: event.event as PduForType<'m.room.message'>,
@@ -203,7 +203,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						};
 					}
 
-					const event = await federationSDK.sendMessage(roomId, body.body, body.formatted_body ?? body.body, senderId);
+					const event = await federationSDK.sendMessage(roomId, body.body, body.formatted_body ?? body.body, senderUsername);
 
 					await FederationMatrix.saveFederationMessage({ event: event.event as PduForType<'m.room.message'>, event_id: event.eventId });
 
@@ -286,10 +286,10 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const userId = c.get('impersonatedUserId');
+				const username = c.get('impersonatedUserId');
 				const body = await c.req.json();
 
-				if (!userId) {
+				if (!username) {
 					return {
 						statusCode: 400,
 						body: {
@@ -311,7 +311,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						};
 					}
 
-					const user = await Users.findOneByUsername<Pick<IUser, 'name' | 'username' | 'federated' | 'federation'>>(userId, {
+					const user = await Users.findOneByUsername<Pick<IUser, 'name' | 'username' | 'federated' | 'federation'>>(username, {
 						projection: { name: 1, username: 1, federated: 1, federation: 1 },
 					});
 					if (!user || !isUserNativeFederated(user)) {
@@ -330,13 +330,13 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						roomId: matrixRoom._id,
 					});
 
-					await federationSDK.sendTypingNotification(roomId, userId, body.typing === true);
+					await federationSDK.sendTypingNotification(roomId, username, body.typing === true);
 					return {
 						statusCode: 200,
 						body: {},
 					};
 				} catch (error) {
-					return internalError('Failed to send typing notification', error, { roomId, userId });
+					return internalError('Failed to send typing notification', error, { roomId, userId: username });
 				}
 			},
 		)
@@ -361,10 +361,10 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const senderId = c.get('impersonatedUserId') as string;
+				const senderUsername = c.get('impersonatedUserId') as string;
 
 				try {
-					const matrixUser = await Users.findOneByUsername(senderId);
+					const matrixUser = await Users.findOneByUsername(senderUsername);
 					if (!matrixUser) {
 						return {
 							statusCode: 404,
@@ -393,7 +393,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						body: {},
 					};
 				} catch (error) {
-					return internalError('Failed to send read receipt', error, { roomId, senderId });
+					return internalError('Failed to send read receipt', error, { roomId, senderUsername });
 				}
 			},
 		);

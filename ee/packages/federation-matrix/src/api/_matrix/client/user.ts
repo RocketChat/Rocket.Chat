@@ -1,5 +1,6 @@
-import type { RoomID, UserID } from '@rocket.chat/federation-sdk';
+import type { RoomID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
+import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
@@ -55,22 +56,22 @@ export const addUserRoutes = (router: ClientRouter) => {
 		isAppServiceAuthenticatedMiddleware(),
 		async (c) => {
 			const roomId = c.req.param('roomId') as RoomID;
-			const userId = c.req.param('userId') as UserID;
-			const senderId = c.get('impersonatedUserId') as string;
+			const senderUsername = c.get('impersonatedUserId') as string;
 			const body = await c.req.json();
 
-			if (userId !== senderId) {
+			const user = await Users.findOneByUsername(senderUsername);
+			if (!user) {
 				return {
-					statusCode: 403,
+					statusCode: 404,
 					body: {
-						errcode: 'M_FORBIDDEN',
-						error: "Cannot edit another user's per-room profile",
+						errcode: 'M_NOT_FOUND',
+						error: 'User not found',
 					},
 				};
 			}
 
 			try {
-				await federationSDK.updateUserProfile(roomId, userId, {
+				await federationSDK.updateUserProfile(roomId, senderUsername, {
 					displayname: body.displayname ?? undefined,
 				});
 				return {
@@ -78,7 +79,7 @@ export const addUserRoutes = (router: ClientRouter) => {
 					body: {},
 				};
 			} catch (error) {
-				return internalError('Failed to update per-room displayname', error, { roomId, userId });
+				return internalError('Failed to update per-room displayname', error, { roomId, senderUsername });
 			}
 		},
 	);

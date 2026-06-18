@@ -134,11 +134,11 @@ export const addAccountRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const userId = c.get('impersonatedUserId') as string;
+				const username = c.get('impersonatedUserId') as string;
 				return {
 					statusCode: 200,
 					body: {
-						user_id: userId,
+						user_id: username,
 					},
 				};
 			},

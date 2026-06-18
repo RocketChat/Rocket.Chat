@@ -143,12 +143,12 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const senderId = c.get('impersonatedUserId') as UserID;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
 				const serverName = federationSDK.getConfig('serverName');
 
-				const user = await Users.findOneByUsername(senderId, { projection: { _id: 1 } });
+				const user = await Users.findOneByUsername(senderUsername, { projection: { _id: 1 } });
 				if (!user) {
 					throw new Error('User not found for creating room');
 				}
@@ -163,7 +163,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 					const result = await federationSDK.createRoomV2({
 						name,
 						alias: body.room_alias_name,
-						owner: senderId,
+						owner: senderUsername,
 						joinRule,
 					});
 
@@ -173,7 +173,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 						await Room.create<IRoomNativeFederated>(user._id, {
 							type: joinRule === 'public' ? 'c' : 'p',
 							name,
-							members: [senderId],
+							members: [senderUsername],
 							options: {
 								forceNew: true, // an invite means the room does not exist yet
 								creator: user._id,
@@ -191,7 +191,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 					}
 
 					for (const invitee of (body.invite ?? []) as string[]) {
-						await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderId, body.is_direct);
+						await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderUsername, body.is_direct);
 					}
 
 					return {
@@ -257,10 +257,10 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const senderId = c.get('impersonatedUserId') as UserID;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
 
 				try {
-					await federationSDK.leaveRoom(roomId, senderId);
+					await federationSDK.leaveRoom(roomId, senderUsername);
 					return {
 						statusCode: 200,
 						body: {},
@@ -275,7 +275,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 							},
 						};
 					}
-					return internalError('Failed to leave room', error, { roomId, senderId });
+					return internalError('Failed to leave room', error, { roomId, senderId: senderUsername });
 				}
 			},
 		)
@@ -299,17 +299,17 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const senderId = c.get('impersonatedUserId') as UserID;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
 				try {
-					await federationSDK.inviteUserToRoom(body.user_id as UserID, roomId, senderId);
+					await federationSDK.inviteUserToRoom(body.user_id as UserID, roomId, senderUsername);
 					return {
 						statusCode: 200,
 						body: {},
 					};
 				} catch (error) {
-					return internalError('Failed to invite user', error, { roomId, senderId });
+					return internalError('Failed to invite user', error, { roomId, senderUsername });
 				}
 			},
 		)
@@ -333,17 +333,17 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const senderId = c.get('impersonatedUserId') as UserID;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
 				try {
-					await federationSDK.kickUser(roomId, body.user_id as UserID, senderId, body.reason);
+					await federationSDK.kickUser(roomId, body.user_id as UserID, senderUsername, body.reason);
 					return {
 						statusCode: 200,
 						body: {},
 					};
 				} catch (error) {
-					return internalError('Failed to kick user', error, { roomId, senderId });
+					return internalError('Failed to kick user', error, { roomId, senderUsername });
 				}
 			},
 		);

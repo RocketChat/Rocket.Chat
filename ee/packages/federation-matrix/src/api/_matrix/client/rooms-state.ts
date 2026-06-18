@@ -252,19 +252,19 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
 				const eventType = c.req.param('eventType');
-				const senderId = c.get('impersonatedUserId') as UserID;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
 				try {
 					if (eventType === 'm.room.name' && typeof body.name === 'string') {
-						const event = await federationSDK.updateRoomName(roomId, body.name, senderId);
+						const event = await federationSDK.updateRoomName(roomId, body.name, senderUsername);
 						return {
 							statusCode: 200,
 							body: { event_id: event.eventId },
 						};
 					}
 					if (eventType === 'm.room.topic' && typeof body.topic === 'string') {
-						await federationSDK.setRoomTopic(roomId, senderId, body.topic);
+						await federationSDK.setRoomTopic(roomId, senderUsername, body.topic);
 						return {
 							statusCode: 200,
 							body: { event_id: '' },
@@ -272,9 +272,9 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 					}
 
 					// TODO: extend SDK to send arbitrary state events
-					return notImplemented(`State event type ${eventType} not yet implemented`, { roomId, eventType });
+					return notImplemented(`State event type ${eventType} not yet implemented`, { roomId, eventType, senderUsername });
 				} catch (error) {
-					return internalError('Failed to send state event', error);
+					return internalError('Failed to send state event', error, { roomId, eventType, senderUsername });
 				}
 			},
 		);
