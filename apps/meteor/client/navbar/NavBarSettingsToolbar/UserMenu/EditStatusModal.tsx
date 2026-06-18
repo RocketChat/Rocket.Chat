@@ -58,8 +58,6 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 	const {
 		control,
 		handleSubmit,
-		setError,
-		clearErrors,
 		formState: { errors },
 	} = useForm<StatusFormValues>({
 		defaultValues: {
@@ -91,17 +89,6 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 			customDate,
 			customTime,
 		});
-		if (duration === 'custom') {
-			if (!expiresAt) {
-				setError('duration', { message: t('Status_choose_date_and_time') });
-				return;
-			}
-			if (expiresAt <= new Date()) {
-				setError('duration', { message: t('Status_expiration_must_be_future') });
-				return;
-			}
-		}
-		clearErrors('duration');
 		try {
 			await setUserStatus({
 				message: statusText,
@@ -168,15 +155,32 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 							<Controller
 								control={control}
 								name='duration'
+								rules={{
+									deps: ['customDate', 'customTime'],
+									validate: (value, { customDate, customTime }) => {
+										if (value !== 'custom') {
+											return true;
+										}
+										const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === value)?.getExpiresAt?.({
+											now: new Date(),
+											customDate,
+											customTime,
+										});
+										if (!expiresAt) {
+											return t('Status_choose_date_and_time');
+										}
+										if (expiresAt <= new Date()) {
+											return t('Status_expiration_must_be_future');
+										}
+										return true;
+									},
+								}}
 								render={({ field: { value, onChange } }) => (
 									<Select
 										id={`${modalId}-clear-after`}
 										value={value}
 										options={durationOptions}
-										onChange={(next) => {
-											onChange(String(next));
-											clearErrors('duration');
-										}}
+										onChange={(next) => onChange(String(next))}
 									/>
 								)}
 							/>
@@ -193,10 +197,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 												type='date'
 												flexGrow={1}
 												value={value}
-												onChange={(e: ChangeEvent<HTMLInputElement>) => {
-													onChange(e.currentTarget.value);
-													clearErrors('duration');
-												}}
+												onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
 												min={new Date().toLocaleDateString('en-CA')}
 											/>
 										)}
@@ -210,10 +211,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps): ReactElement => {
 												type='time'
 												flexGrow={1}
 												value={value}
-												onChange={(e: ChangeEvent<HTMLInputElement>) => {
-													onChange(e.currentTarget.value);
-													clearErrors('duration');
-												}}
+												onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
 											/>
 										)}
 									/>
