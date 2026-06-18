@@ -93,19 +93,15 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
                     >
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          <img
-                            alt="🛴"
-                            class="emojione"
-                            src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
-                            title=":scooter:"
-                          />
-                           currently working on User Card
-                        </div>
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
                       </div>
                     </div>
                   </div>
@@ -394,19 +390,15 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
                     >
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          <img
-                            alt="🛴"
-                            class="emojione"
-                            src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
-                            title=":scooter:"
-                          />
-                           currently working on User Card
-                        </div>
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
                       </div>
                     </div>
                   </div>
@@ -709,19 +701,15 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
                     >
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          <img
-                            alt="🛴"
-                            class="emojione"
-                            src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
-                            title=":scooter:"
-                          />
-                           currently working on User Card
-                        </div>
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
                       </div>
                     </div>
                   </div>
@@ -1070,19 +1058,15 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
                     >
                       <div
-                        class="rcx-box rcx-box--full"
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          <img
-                            alt="🛴"
-                            class="emojione"
-                            src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
-                            title=":scooter:"
-                          />
-                           currently working on User Card
-                        </div>
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
                       </div>
                     </div>
                   </div>
