@@ -8,14 +8,15 @@ import { useRoom } from '../contexts/RoomContext';
 import { useVideoConfList } from '../contextualBar/VideoConference/VideoConfList/useVideoConfList';
 
 // Discussions created when adding conference participants don't carry the call's message block, so
-// surface a banner pointing back to the ongoing call. The conference's `discussionRid` is this room
-// and its `rid` is the parent, so we list the parent's conferences and match by discussion.
+// surface a banner pointing back to the ongoing call. We list by the discussion's own id (the list
+// matches conferences whose `discussionRid` is this room) — invited users may not have access to the
+// parent room the conference originated in.
 const OngoingConferenceBanner = (): ReactElement | null => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const joinCall = useVideoConfJoinCall();
 
-	const { data } = useVideoConfList({ roomId: room.prid ?? '' });
+	const { data } = useVideoConfList({ roomId: room._id });
 
 	const ongoingCall = data?.videoConfs.find(
 		(call) => call.discussionRid === room._id && call.status === VideoConferenceStatus.STARTED && !call.endedAt,

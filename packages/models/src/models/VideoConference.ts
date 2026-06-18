@@ -43,8 +43,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
 	): FindPaginated<FindCursor<VideoConference>> {
+		// Match conferences started in this room (`rid`) and those whose discussion is this room
+		// (`discussionRid`), so a discussion room resolves the conference it belongs to — its members
+		// may not have access to the parent room the conference originated in.
 		return this.findPaginated(
-			{ rid },
+			{ $or: [{ rid }, { discussionRid: rid }] },
 			{
 				sort: { createdAt: -1 },
 				skip: offset,
