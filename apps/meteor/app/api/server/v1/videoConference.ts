@@ -200,7 +200,12 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
+		// Users invited to a conference only belong to its discussion (`discussionRid`), not the parent
+		// room the conference originated in — accept access to either so they can join from the banner.
+		const canAccess =
+			(await canAccessRoomIdAsync(call.rid, userId)) || (!!call.discussionRid && (await canAccessRoomIdAsync(call.discussionRid, userId)));
+
+		if (!canAccess) {
 			return API.v1.failure('invalid-params');
 		}
 
@@ -309,7 +314,13 @@ API.v1.get(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+		// Invited users only belong to the conference's discussion (`discussionRid`), not the parent
+		// room it originated in — accept access to either so they can open the conference page.
+		const canAccess =
+			!!userId &&
+			((await canAccessRoomIdAsync(call.rid, userId)) ||
+				(!!call.discussionRid && (await canAccessRoomIdAsync(call.discussionRid, userId))));
+		if (!canAccess) {
 			return API.v1.failure('invalid-params');
 		}
 
