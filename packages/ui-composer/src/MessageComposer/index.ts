@@ -11,6 +11,7 @@ import MessageComposerToolbar from './MessageComposerToolbar';
 import MessageComposerToolbarActions from './MessageComposerToolbarActions';
 import MessageComposerToolbarSubmit from './MessageComposerToolbarSubmit';
 import RichTextComposerInput from './RichTextComposerInput';
+import RichTextComposerInputExpandable from './RichTextComposerInputExpandable';
 
 export {
 	MessageComposer,
@@ -26,6 +27,7 @@ export {
 	MessageComposerHint,
 	MessageComposerButton,
 	RichTextComposerInput,
+	RichTextComposerInputExpandable,
 };
 
 export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader, MessageComposerFileGroup } from './MessageComposerFile';

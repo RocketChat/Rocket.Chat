@@ -13,7 +13,7 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
 	MessageComposerHint,
-	RichTextComposerInput,
+	RichTextComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -555,7 +555,8 @@ const RichTextMessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<RichTextComposerInput
+				<RichTextComposerInputExpandable
+					dimensions={newSizes}
 					ref={newMergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
