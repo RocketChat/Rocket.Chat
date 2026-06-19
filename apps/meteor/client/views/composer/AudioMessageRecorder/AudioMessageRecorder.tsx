@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
@@ -20,14 +20,14 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
 	const [time, setTime] = useState('00:00');
-	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+	const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
 
 	const stopRecording = useStableCallback(async () => {
-		if (recordingInterval) {
-			clearInterval(recordingInterval);
+		if (recordingIntervalRef.current) {
+			clearInterval(recordingIntervalRef.current);
 		}
-		setRecordingInterval(null);
+		recordingIntervalRef.current = null;
 		setRecordingRoomId(null);
 
 		setTime('00:00');
@@ -58,15 +58,13 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 			await audioRecorder.start();
 			chat?.action.performContinuously('recording');
 			const startTime = new Date();
-			setRecordingInterval(
-				setInterval(() => {
-					const now = new Date();
-					const distance = (now.getTime() - startTime.getTime()) / 1000;
-					const minutes = Math.floor(distance / 60);
-					const seconds = Math.floor(distance % 60);
-					setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-				}, 1000),
-			);
+			recordingIntervalRef.current = setInterval(() => {
+				const now = new Date();
+				const distance = (now.getTime() - startTime.getTime()) / 1000;
+				const minutes = Math.floor(distance / 60);
+				const seconds = Math.floor(distance % 60);
+				setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+			}, 1000);
 			setRecordingRoomId(rid);
 		} catch (error) {
 			console.log(error);
@@ -95,6 +93,9 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 		handleRecord();
 
 		return () => {
+			if (recordingIntervalRef.current) {
+				clearInterval(recordingIntervalRef.current);
+			}
 			handleUnmount();
 		};
 	}, [handleUnmount, handleRecord]);

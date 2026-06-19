@@ -43,7 +43,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 
 	const [time, setTime] = useState<string | undefined>('00:00');
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
-	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+	const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
 	const cameraStarted = useVideoRecorderCameraStarted();
 	const sendButtonDisabled = !(cameraStarted && !isRecording);
@@ -51,10 +51,10 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	const chat = useChat();
 
 	const stopVideoRecording = async (rid: IRoom['_id'], tmid?: IMessage['_id']) => {
-		if (recordingInterval) {
-			clearInterval(recordingInterval);
+		if (recordingIntervalRef.current) {
+			clearInterval(recordingIntervalRef.current);
 		}
-		setRecordingInterval(null);
+		recordingIntervalRef.current = null;
 		VideoRecorder.stopRecording();
 		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 		setRecordingState('idle');
@@ -69,15 +69,13 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 			setTime('00:00');
 			const startTime = new Date();
-			setRecordingInterval(
-				setInterval(() => {
-					const now = new Date();
-					const distance = (now.getTime() - startTime.getTime()) / 1000;
-					const minutes = Math.floor(distance / 60);
-					const seconds = Math.floor(distance % 60);
-					setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-				}, 1000),
-			);
+			recordingIntervalRef.current = setInterval(() => {
+				const now = new Date();
+				const distance = (now.getTime() - startTime.getTime()) / 1000;
+				const minutes = Math.floor(distance / 60);
+				const seconds = Math.floor(distance % 60);
+				setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+			}, 1000);
 		}
 	};
 
@@ -109,6 +107,9 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		VideoRecorder.start(videoRef.current ?? undefined, (success) => (!success ? handleCancel() : undefined));
 
 		return () => {
+			if (recordingIntervalRef.current) {
+				clearInterval(recordingIntervalRef.current);
+			}
 			VideoRecorder.stop();
 		};
 	}, [dispatchToastMessage, handleCancel, t]);
