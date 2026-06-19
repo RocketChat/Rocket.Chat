@@ -179,7 +179,18 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				return response;
 			}
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+			const locationUrl = new URL(followRedirect(response, redirectCount), currentUrl);
+
+			// If the redirect location's hostname matches the pinned IP,
+			// it means node-fetch resolved a relative redirect against the pinned URL.
+			// We should restore the original hostname to preserve SNI on the next request.
+			if (locationUrl.hostname === url.hostname) {
+				const current = new URL(currentUrl);
+				locationUrl.hostname = current.hostname;
+				locationUrl.port = current.port;
+			}
+
+			currentUrl = locationUrl.toString();
 
 			// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
 			response.body.resume();
