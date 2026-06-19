@@ -1,15 +1,13 @@
+import PageLoading from '../root/PageLoading';
+
 type ConferenceIframeProps = {
 	url: string | undefined;
-	loading: boolean;
+	loading?: boolean;
 };
 
 const ConferenceIframe = ({ url, loading }: ConferenceIframeProps) => {
-	if (!url) {
-		return <div>No conference URL provided.</div>;
-	}
-
 	if (loading) {
-		return <div>Loading...</div>;
+		return <PageLoading />;
 	}
 
 	return (

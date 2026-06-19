@@ -23,10 +23,6 @@ export const useConferenceEmbedded = (callId: string) => {
 		retry: false,
 	});
 
-	// The info endpoint fails when the conference can't be loaded — the user can't access its room
-	// (or it doesn't exist). Either way there's nothing to show, so surface the unauthorized screen.
-	const unauthorized = !!infoError;
-
 	// When a participant changes the conference's room (e.g. adds people and creates a discussion),
 	// the server broadcasts `discussionUpdated`; refetch so every participant's chat follows along.
 	useEffect(
@@ -37,17 +33,18 @@ export const useConferenceEmbedded = (callId: string) => {
 		[callId, subscribeToVideoConference, queryClient],
 	);
 
-	const { data, isPending } = useQuery({
+	const { data, isPending, error } = useQuery({
 		queryKey: ['conference-embedded', callId],
 		queryFn: async () => joinConference({ callId, state: { mic: true, cam: false } }),
 	});
 
 	return {
-		room: { rid: info?.discussionRid || info?.rid, loading: isInfoPending, unauthorized } as const,
+		room: { rid: info?.discussionRid || info?.rid, loading: isInfoPending, error: infoError } as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
 			providerName: data?.providerName,
 			loading: isPending,
+			error,
 		} as const,
 	};
 };
