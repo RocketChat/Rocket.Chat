@@ -29,7 +29,7 @@ function parseExpiresAt(value?: unknown): Date | undefined {
 	return undefined;
 }
 
-export function useExpirationText(statusExpiresAt?: Date | string): string | undefined {
+export function useExpirationText(statusExpiresAt?: Date | string) {
 	const { t } = useTranslation();
 	const language = useLanguage();
 	const formatTime = useFormatTime();
