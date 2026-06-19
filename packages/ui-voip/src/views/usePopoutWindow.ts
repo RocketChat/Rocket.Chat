@@ -148,6 +148,7 @@ export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowRetu
 			}
 			onBeforeUnload();
 			popoutRef.current = null;
+			setContainer(null);
 		};
 
 		externalWindow.addEventListener('beforeunload', handleBeforeUnload);

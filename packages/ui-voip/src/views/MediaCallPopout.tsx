@@ -30,11 +30,13 @@ const MediaCallPopout = () => {
 	}, [callState, onClosePopout]);
 
 	useEffect(() => {
-		if (currentViews.includes('popout') && callId) {
-			queueMicrotask(() => void openPopoutWindow(callId));
-			return;
-		}
-		closePopoutWindow();
+		queueMicrotask(() => {
+			if (currentViews.includes('popout') && callId) {
+				void openPopoutWindow(callId);
+				return;
+			}
+			closePopoutWindow();
+		});
 	}, [currentViews, openPopoutWindow, closePopoutWindow, callId]);
 
 	if (!container) {

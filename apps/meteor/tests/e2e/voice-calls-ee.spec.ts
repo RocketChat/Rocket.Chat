@@ -418,7 +418,7 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 			await expect(user1.poHomeChannel.voiceCalls.popout.content).toBeVisible();
 
 			await user2.poHomeChannel.voiceCalls.openPopoutWidget();
-			await expect(user1.poHomeChannel.voiceCalls.popout.content).toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.popout.content).toBeVisible();
 		});
 
 		await test.step('start screen sharing with both users', async () => {

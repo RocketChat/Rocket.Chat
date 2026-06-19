@@ -211,7 +211,10 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 const mediaSession = new MediaSessionStore();
 
 export const useSetPopoutWindow = (popoutWindow?: Window) => {
-	mediaSession.setPopoutWindow(popoutWindow);
+	useEffect(() => {
+		mediaSession.setPopoutWindow(popoutWindow);
+		return () => mediaSession.setPopoutWindow(undefined);
+	});
 };
 
 export const useMediaSessionInstance = (userId?: string) => {
