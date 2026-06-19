@@ -53,6 +53,8 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 		if (newContact) {
 			const header = req.has('p-asserted-identity') ? req.get('p-asserted-identity') : req.get('from');
+
+			// If the call's updated identity includes the pexip SIP host, treat it as an escalated call.
 			if (header && this.session.isPexipIdentity(header)) {
 				await this.processEscalatedRemotely(callingNumber);
 			}
@@ -61,19 +63,23 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		}
 	}
 
+	/**
+	 * Flag a call as escalated by peer based on a contact change on the SIP negotiation
+	 */
 	protected async processEscalatedRemotely(sipAlias: string): Promise<void> {
-		if (this.call.escalatedAt) {
+		// The call might have already been flagged as escalated by the event sink, so do nothing in that case
+		if (this.call.escalatedByPeerAt) {
 			return;
 		}
 
-		const updateResult = await MediaCalls.flagAsEscalatedByCallId(this.call._id);
+		const updateResult = await MediaCalls.flagAsRemotelyEscalatedByCallId(this.call._id);
 		if (!updateResult.modifiedCount) {
 			return;
 		}
 
 		const conference = await VideoConferenceModel.addMediaCallIdByProviderNameAndSipAlias('core.pexip', sipAlias, this.call._id);
 		if (!conference) {
-			// TODO: maybe rollback `flagAsEscalatedByCallId` ?
+			// TODO: maybe rollback `flagAsRemotelyEscalatedByCallId` ?
 			return;
 		}
 
@@ -300,13 +306,16 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		}
 	}
 
+	/**
+	 * The call has been flagged as escalated by a rocket.chat user, so update the SIP dialog accordingly
+	 */
 	protected async processEscalatedCall(call: IMediaCall): Promise<void> {
 		if (this.lastCallState === 'hangup' || !call.escalatedAt) {
 			return;
 		}
 
-		if (!this.sipDialog || this.processedEscalation) {
-			if (call.ended) {
+		if (!this.sipDialog || this.processedEscalation || call.escalatedByPeerAt) {
+			if (call.ended || call.escalatedByPeerAt) {
 				return this.processEndedCall(call);
 			}
 			return;
@@ -336,6 +345,14 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			return;
 		}
 
+		// Check again to avoid race conditions
+		if (this.processedEscalation) {
+			if (call.ended) {
+				return this.processEndedCall(call);
+			}
+			return;
+		}
+
 		logger.debug({ msg: 'Processing Call Escalation', callId: call._id, lastCallState: this.lastCallState, type: this.constructor.name });
 		this.processedEscalation = true;
 
@@ -343,7 +360,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			// If the conference is already associated with two voice calls, then the remote SIP leg is already in it, do not refer
 			if (mediaCallIds.length >= 2) {
 				if (!call.ended) {
-					void mediaCallDirector.hangupByServer(call, 'escalated-remotely');
+					void mediaCallDirector.hangupByServer(call, 'remote-conference-escalation');
 				}
 				return;
 			}

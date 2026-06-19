@@ -42,4 +42,5 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
 	): Promise<UpdateResult>;
 	flagAsEscalatedByCallId(callId: string): Promise<UpdateResult>;
+	flagAsRemotelyEscalatedByCallId(callId: string): Promise<UpdateResult>;
 }
