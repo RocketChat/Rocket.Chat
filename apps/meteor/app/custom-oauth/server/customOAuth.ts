@@ -17,7 +17,11 @@ import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server/cached';
 
 const logger = new Logger('CustomOAuth');
-const BeforeUpdateOrCreateUserFromExternalService: ((serviceName: string, serviceData: Record<string, any>) => Promise<void>)[] = [];
+const BeforeUpdateOrCreateUserFromExternalService = new Map<
+	string,
+	(serviceName: string, serviceData: Record<string, any>) => Promise<void>
+>();
+const CustomOAuthInstances = new Map<string, CustomOAuthStrategy>();
 
 export class CustomOAuthStrategy extends Strategy {
 	options: StrategyOptions;
@@ -247,7 +251,7 @@ export class CustomOAuthStrategy extends Strategy {
 	}
 
 	addHookToProcessUser() {
-		BeforeUpdateOrCreateUserFromExternalService.push(async (serviceName, serviceData) => {
+		BeforeUpdateOrCreateUserFromExternalService.set(this.name, async (serviceName, serviceData) => {
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -337,32 +341,37 @@ export class CustomOAuthStrategy extends Strategy {
 			}
 		});
 
-		Accounts.validateNewUser((user: IUser & { email: string }) => {
-			if (!user.services?.[this.name as keyof NonNullable<IUser['services']>]?.id) {
-				return true;
-			}
-
-			if (this.usernameField) {
-				user.username = user.services[this.name as keyof NonNullable<IUser['services']>].username;
-			}
-
-			if (this.emailField) {
-				user.email = user.services[this.name as keyof NonNullable<IUser['services']>].email;
-			}
-
-			if (this.nameField) {
-				user.name = user.services[this.name as keyof NonNullable<IUser['services']>].name;
-			}
-
-			return true;
-		});
+		CustomOAuthInstances.set(this.name, this);
 	}
 }
+
+Accounts.validateNewUser((user: IUser & { email: string }) => {
+	for (const [name, instance] of CustomOAuthInstances) {
+		const service = user.services?.[name as keyof NonNullable<IUser['services']>];
+		if (!service?.id) {
+			continue;
+		}
+
+		if (instance.usernameField) {
+			user.username = service.username;
+		}
+
+		if (instance.emailField) {
+			user.email = service.email;
+		}
+
+		if (instance.nameField) {
+			user.name = service.name;
+		}
+	}
+
+	return true;
+});
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args) {
-	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
+	for (const hook of BeforeUpdateOrCreateUserFromExternalService.values()) {
 		await hook.apply(this, args as unknown as [string, Record<string, any>]);
 	}
 
