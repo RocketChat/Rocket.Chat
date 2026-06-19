@@ -44,8 +44,8 @@ export async function handlePassportIdentityToken(identityToken: string): Promis
 		throw new Error('Invalid token issuer');
 	}
 
-	if (exp && exp < Math.floor(Date.now() / 1000)) {
-		throw new Error('identityToken has expired');
+	if (typeof exp !== 'number' || Math.floor(Date.now() / 1000) >= exp) {
+		throw new Error('identityToken is expired or missing expiration');
 	}
 
 	const serviceData = {
