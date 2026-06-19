@@ -1,6 +1,6 @@
 import { parse, type Options, type Root } from '@rocket.chat/message-parser';
 
-import { parseAST } from './messageParser';
+import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
 export type CursorHistory = {
@@ -87,9 +87,8 @@ export const resolveComposerBox = (event: Event, parseOptions: Options) => {
 	// Parse the safetext
 	const ast = parseMessage(safeText, parseOptions);
 
-	// Parse the AST
-	const html = parseAST(ast);
-	console.log(ast);
+	// Render the AST through the gazzodown-alt WYSIWYG components
+	const html = renderComposerMarkup(ast, parseOptions);
 
 	// Restore the substituted links
 	let finalHtml = restoreLinks(html, matches);
