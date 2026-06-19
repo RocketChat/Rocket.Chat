@@ -38,9 +38,14 @@ export async function handlePassportIdentityToken(identityToken: string): Promis
 		throw new Error('identityToken does not have a payload');
 	}
 
-	const { iss, sub } = decodedToken.payloadObj as any;
-	if (!iss) {
-		throw new Error('Insufficient data in auth response token');
+	const { iss, sub, exp } = decodedToken.payloadObj as any;
+
+	if (iss !== 'https://appleid.apple.com') {
+		throw new Error('Invalid token issuer');
+	}
+
+	if (exp && exp < Math.floor(Date.now() / 1000)) {
+		throw new Error('identityToken has expired');
 	}
 
 	const serviceData = {
