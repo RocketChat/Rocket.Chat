@@ -18,6 +18,7 @@ export interface IUser {
 	statusDefault?: string;
 	statusSource?: 'internal' | 'external' | 'manual';
 	statusExpiresAt?: Date;
+	statusId?: string;
 	utcOffset: number;
 	createdAt: Date;
 	updatedAt: Date;

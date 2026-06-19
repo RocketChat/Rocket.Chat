@@ -1103,6 +1103,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				IUser,
 				| '_id'
 				| 'username'
+				| 'type'
 				| 'roles'
 				| 'status'
 				| 'statusDefault'
@@ -1110,6 +1111,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				| 'statusText'
 				| 'statusExpiresAt'
 				| 'statusConnection'
+				| 'statusId'
 				| 'previousState'
 			>
 		>(
@@ -1117,6 +1119,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{
 				projection: {
 					username: 1,
+					type: 1,
 					roles: 1,
 					status: 1,
 					statusDefault: 1,
@@ -1124,6 +1127,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					statusText: 1,
 					statusExpiresAt: 1,
 					statusConnection: 1,
+					statusId: 1,
 					previousState: 1,
 				},
 				sort: { statusExpiresAt: 1 },

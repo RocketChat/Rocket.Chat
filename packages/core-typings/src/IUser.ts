@@ -189,11 +189,13 @@ export interface IUser extends IRocketChatRecord {
 	statusText?: string;
 	statusSource?: PresenceSource;
 	statusExpiresAt?: Date;
+	statusId?: string;
 	previousState?: {
 		statusDefault: UserStatus;
 		statusText: string;
 		statusSource: PresenceSource;
 		statusExpiresAt?: Date;
+		statusId?: string;
 	};
 	oauth?: {
 		authorizedClients: string[];

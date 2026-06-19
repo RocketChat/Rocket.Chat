@@ -21,32 +21,32 @@ const CalendarEventMock = {
 	findEventsToNotify: sinon.stub(),
 	flagNotificationSent: sinon.stub(),
 	findOneByExternalIdAndUserId: sinon.stub(),
-	findEventsToScheduleNow: sinon.stub(),
 	findNextFutureEvent: sinon.stub(),
-	findInProgressEvents: sinon.stub(),
+	findOverlappingEvents: sinon.stub(),
+};
+
+const PresenceMock = {
+	setActiveState: sinon.stub().resolves(),
+	endActiveState: sinon.stub().resolves(),
 };
 
 const UsersMock = {
-	findOne: sinon.stub(),
-};
-
-const statusEventManagerMock = {
-	removeCronJobs: sinon.stub().resolves(),
-	cancelUpcomingStatusChanges: sinon.stub().resolves(),
-	applyStatusChange: sinon.stub().resolves(),
+	findOneById: sinon.stub().resolves({ language: 'en' }),
 };
 
 const getUserPreferenceMock = sinon.stub();
 
 const serviceMocks = {
-	'./statusEvents/cancelUpcomingStatusChanges': { cancelUpcomingStatusChanges: statusEventManagerMock.cancelUpcomingStatusChanges },
-	'./statusEvents/removeCronJobs': { removeCronJobs: statusEventManagerMock.removeCronJobs },
-	'./statusEvents/applyStatusChange': { applyStatusChange: statusEventManagerMock.applyStatusChange },
 	'../../../app/settings/server': { settings: settingsMock },
-	'@rocket.chat/core-services': { api, ServiceClassInternal: class {} },
+	'@rocket.chat/core-services': {
+		api,
+		ServiceClassInternal: class {},
+		Presence: PresenceMock,
+	},
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
 	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
 	'../../../app/utils/server/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
+	'../../lib/i18n': { i18n: { t: sinon.stub().returns('In a meeting') } },
 };
 
 const { CalendarService } = proxyquire.noCallThru().load('../../../../../server/services/calendar/service', serviceMocks);
@@ -68,7 +68,7 @@ describe('CalendarService', () => {
 		service = new CalendarService();
 		stubServiceMethods();
 		setupCalendarEventMocks();
-		setupStatusEventManagerMocks();
+		setupPresenceMocks();
 		setupOtherMocks();
 	});
 
@@ -102,11 +102,9 @@ describe('CalendarService', () => {
 			}),
 			flagNotificationSent: sinon.stub().resolves(),
 			findOneByExternalIdAndUserId: sinon.stub().resolves(null),
-			findEventsToScheduleNow: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
 			findNextFutureEvent: sinon.stub().resolves(null),
-			findInProgressEvents: sinon.stub().returns({
+			findOverlappingEvents: sinon.stub().returns({
+				next: sinon.stub().resolves(null),
 				toArray: sinon.stub().resolves([]),
 			}),
 		};
@@ -114,8 +112,11 @@ describe('CalendarService', () => {
 		Object.assign(CalendarEventMock, freshMocks);
 	}
 
-	function setupStatusEventManagerMocks() {
-		Object.values(statusEventManagerMock).forEach((stub) => stub.resetHistory());
+	function setupPresenceMocks() {
+		PresenceMock.setActiveState.resetHistory();
+		PresenceMock.endActiveState.resetHistory();
+		UsersMock.findOneById.resetHistory();
+		UsersMock.findOneById.resolves({ language: 'en' });
 	}
 
 	function setupOtherMocks() {
@@ -227,7 +228,7 @@ describe('CalendarService', () => {
 			sinon.assert.calledWith(CalendarEventMock.updateEvent, fakeEventId, sinon.match.has('subject', 'Updated Subject'));
 		});
 
-		it('should update cron jobs when start/end times change', async () => {
+		it('should reschedule the status change when start/end times change', async () => {
 			const fakeEvent = {
 				_id: fakeEventId,
 				uid: fakeUserId,
@@ -246,13 +247,12 @@ describe('CalendarService', () => {
 				endTime: newEndTime,
 			});
 
-			sinon.assert.calledOnce(statusEventManagerMock.removeCronJobs);
 			sinon.assert.calledOnce(service.setupNextStatusChange);
 		});
 	});
 
 	describe('#delete', () => {
-		it('should delete an event and remove cron jobs', async () => {
+		it('should delete an event', async () => {
 			const fakeEvent = {
 				_id: fakeEventId,
 				uid: fakeUserId,
@@ -264,8 +264,63 @@ describe('CalendarService', () => {
 
 			await service.delete(fakeEventId);
 
-			sinon.assert.calledOnce(statusEventManagerMock.removeCronJobs);
 			sinon.assert.calledWith(CalendarEventMock.deleteOne, { _id: fakeEventId });
+		});
+
+		it('should lower the busy expiry to the remaining active event when deleting an overlapping in-progress event', async () => {
+			const t = Date.now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 60 * 1000),
+				endTime: new Date(t + 120 * 60 * 1000),
+			});
+			CalendarEventMock.findOverlappingEvents.returns({
+				next: sinon.stub().resolves(null),
+				toArray: sinon.stub().resolves([{ _id: 'remaining', endTime: new Date(t + 30 * 60 * 1000) }]),
+			});
+
+			await service.delete(fakeEventId);
+
+			sinon.assert.calledOnce(PresenceMock.setActiveState);
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+			const [uid, state] = PresenceMock.setActiveState.firstCall.args;
+			expect(uid).to.equal(fakeUserId);
+			expect(state.statusExpiresAt.getTime()).to.equal(t + 30 * 60 * 1000);
+		});
+
+		it('should end the busy state when deleting the only active in-progress event', async () => {
+			const t = Date.now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 60 * 1000),
+				endTime: new Date(t + 60 * 60 * 1000),
+			});
+			CalendarEventMock.findOverlappingEvents.returns({
+				next: sinon.stub().resolves(null),
+				toArray: sinon.stub().resolves([]),
+			});
+
+			await service.delete(fakeEventId);
+
+			sinon.assert.calledOnceWithExactly(PresenceMock.endActiveState, fakeUserId, 'calendar');
+			sinon.assert.notCalled(PresenceMock.setActiveState);
+		});
+
+		it('should not touch presence when deleting an event that is not in progress', async () => {
+			const t = Date.now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t + 60 * 60 * 1000),
+				endTime: new Date(t + 120 * 60 * 1000),
+			});
+
+			await service.delete(fakeEventId);
+
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+			sinon.assert.notCalled(PresenceMock.setActiveState);
 		});
 	});
 
@@ -331,8 +386,8 @@ describe('CalendarService', () => {
 
 				try {
 					await method();
-					sinon.assert.calledWith(hasStub, 'calendar-next-status-change');
-					sinon.assert.calledWith(removeStub, 'calendar-next-status-change');
+					sinon.assert.calledWith(hasStub, 'calendar-status-scheduler');
+					sinon.assert.calledWith(removeStub, 'calendar-status-scheduler');
 					sinon.assert.notCalled(addAtTimestampStub);
 				} finally {
 					cronJobsMock.has = originalHas;
@@ -342,34 +397,17 @@ describe('CalendarService', () => {
 			});
 		});
 
-		it('should schedule a single chain job to handle all events when busy status setting is enabled', async () => {
+		it('should schedule a job at the next event start time', async () => {
 			await testPrivateMethod(service, 'doSetupNextStatusChange', async (method) => {
 				settingsMock.set('Calendar_BusyStatus_Enabled', true);
-
-				const startOfNextMinute = new Date();
-				startOfNextMinute.setSeconds(0, 0);
-				startOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
-
-				const endOfNextMinute = new Date(startOfNextMinute);
-				endOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
-
-				const eventStartingSoon = {
-					_id: 'soon123',
-					uid: fakeUserId,
-					startTime: startOfNextMinute,
-					endTime: new Date(startOfNextMinute.getTime() + 3600000), // 1 hour later
-				};
 
 				const futureEvent = {
 					_id: 'future123',
 					uid: fakeUserId,
-					startTime: endOfNextMinute,
-					endTime: new Date(endOfNextMinute.getTime() + 3600000), // 1 hour later
+					startTime: new Date(Date.now() + 60000),
+					endTime: new Date(Date.now() + 3660000),
 				};
 
-				CalendarEventMock.findEventsToScheduleNow.returns({
-					toArray: sinon.stub().resolves([eventStartingSoon]),
-				});
 				CalendarEventMock.findNextFutureEvent.resolves(futureEvent);
 
 				const originalHas = cronJobsMock.has;
@@ -387,14 +425,8 @@ describe('CalendarService', () => {
 				try {
 					await method();
 
-					sinon.assert.calledWith(hasStub, 'calendar-next-status-change');
-					sinon.assert.notCalled(removeStub);
-
 					sinon.assert.calledOnce(addAtTimestampStub);
-
-					sinon.assert.calledWith(addAtTimestampStub, 'calendar-next-status-change', futureEvent.startTime, sinon.match.func);
-
-					sinon.assert.neverCalledWith(addAtTimestampStub, sinon.match(/^calendar-status-/), sinon.match.any, sinon.match.any);
+					sinon.assert.calledWith(addAtTimestampStub, 'calendar-status-scheduler', futureEvent.startTime, sinon.match.func);
 				} finally {
 					cronJobsMock.has = originalHas;
 					cronJobsMock.remove = originalRemove;
@@ -403,21 +435,10 @@ describe('CalendarService', () => {
 			});
 		});
 
-		it('should fetch events at execution time rather than scheduling them individually', async () => {
+		it('should not schedule a job when there are no future events', async () => {
 			await testPrivateMethod(service, 'doSetupNextStatusChange', async (method) => {
 				settingsMock.set('Calendar_BusyStatus_Enabled', true);
 
-				const now = new Date();
-				const startOfNextMinute = new Date(now);
-				startOfNextMinute.setSeconds(0, 0);
-				startOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
-
-				const endOfNextMinute = new Date(startOfNextMinute);
-				endOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
-
-				CalendarEventMock.findEventsToScheduleNow.returns({
-					toArray: sinon.stub().resolves([]),
-				});
 				CalendarEventMock.findNextFutureEvent.resolves(null);
 
 				const originalHas = cronJobsMock.has;
@@ -435,14 +456,7 @@ describe('CalendarService', () => {
 				try {
 					await method();
 
-					sinon.assert.calledWith(addAtTimestampStub, 'calendar-next-status-change', endOfNextMinute, sinon.match.func);
-
-					const callback = addAtTimestampStub.firstCall.args[2];
-					const doSetupNextStatusChangeStub = sinon.stub(service, 'doSetupNextStatusChange').resolves();
-					await callback();
-
-					sinon.assert.calledOnce(doSetupNextStatusChangeStub);
-					doSetupNextStatusChangeStub.restore();
+					sinon.assert.notCalled(addAtTimestampStub);
 				} finally {
 					cronJobsMock.has = originalHas;
 					cronJobsMock.remove = originalRemove;
@@ -452,14 +466,170 @@ describe('CalendarService', () => {
 		});
 	});
 
-	describe('Overlapping events', () => {
-		it('should cancel upcoming status changes for a user', async () => {
-			const customDate = new Date('2025-02-01');
+	describe('Private: processEventStart', () => {
+		// await directly: testPrivateMethod doesn't await its callback, so async assertions wouldn't fail
+		const callProcessEventStart = (event: unknown) => (service as any).processEventStart(event);
 
-			await service.cancelUpcomingStatusChanges(fakeUserId, customDate);
+		it('should set statusExpiresAt to the latest endTime among overlapping active events', async () => {
+			const now = Date.now();
+			const event = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(now - 1000),
+				endTime: new Date(now + 60 * 60 * 1000),
+			};
 
-			sinon.assert.calledOnce(statusEventManagerMock.cancelUpcomingStatusChanges);
-			sinon.assert.calledWith(statusEventManagerMock.cancelUpcomingStatusChanges, fakeUserId, customDate);
+			CalendarEventMock.findOverlappingEvents.returns({
+				next: sinon.stub().resolves(null),
+				toArray: sinon.stub().resolves([
+					{ _id: 'later', endTime: new Date(now + 120 * 60 * 1000) },
+					{ _id: 'earlier', endTime: new Date(now + 30 * 60 * 1000) },
+				]),
+			});
+
+			await callProcessEventStart(event);
+
+			sinon.assert.calledOnce(PresenceMock.setActiveState);
+			const [uid, state] = PresenceMock.setActiveState.firstCall.args;
+			expect(uid).to.equal(fakeUserId);
+			expect(state.statusSource).to.equal('external');
+			expect(state.statusExpiresAt.getTime()).to.equal(now + 120 * 60 * 1000);
+			expect(state.statusId).to.equal('calendar');
+		});
+
+		it('should use the event own endTime when there are no overlapping events', async () => {
+			const now = Date.now();
+			const endTime = new Date(now + 60 * 60 * 1000);
+			const event = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(now - 1000),
+				endTime,
+			};
+
+			await callProcessEventStart(event);
+
+			sinon.assert.calledOnce(PresenceMock.setActiveState);
+			const [, state] = PresenceMock.setActiveState.firstCall.args;
+			expect(state.statusExpiresAt.getTime()).to.equal(endTime.getTime());
+		});
+
+		it('should not apply busy status when the event has no endTime', async () => {
+			const event = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(),
+			};
+
+			await callProcessEventStart(event);
+
+			sinon.assert.notCalled(PresenceMock.setActiveState);
+		});
+	});
+
+	describe('Private: reconcileInProgressEvent', () => {
+		const callReconcile = (eventId: string) => (service as any).reconcileInProgressEvent(eventId);
+		const now = () => Date.now();
+
+		it('applies the busy claim for an in-progress event using its endTime', async () => {
+			const t = now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 60 * 1000),
+				endTime: new Date(t + 60 * 60 * 1000),
+			});
+
+			await callReconcile(fakeEventId);
+
+			sinon.assert.calledOnce(PresenceMock.setActiveState);
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+			const [uid, state] = PresenceMock.setActiveState.firstCall.args;
+			expect(uid).to.equal(fakeUserId);
+			expect(state.statusSource).to.equal('external');
+			expect(state.statusExpiresAt.getTime()).to.equal(t + 60 * 60 * 1000);
+		});
+
+		it('extends the busy claim to the latest end among overlapping in-progress events', async () => {
+			const t = now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 60 * 1000),
+				endTime: new Date(t + 30 * 60 * 1000),
+			});
+			CalendarEventMock.findOverlappingEvents.returns({
+				next: sinon.stub().resolves(null),
+				toArray: sinon.stub().resolves([{ _id: 'longer', endTime: new Date(t + 90 * 60 * 1000) }]),
+			});
+
+			await callReconcile(fakeEventId);
+
+			sinon.assert.calledOnce(PresenceMock.setActiveState);
+			const [, state] = PresenceMock.setActiveState.firstCall.args;
+			expect(state.statusExpiresAt.getTime()).to.equal(t + 90 * 60 * 1000);
+		});
+
+		it('does nothing for an event that has not started yet', async () => {
+			const t = now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t + 60 * 60 * 1000),
+				endTime: new Date(t + 120 * 60 * 1000),
+			});
+
+			await callReconcile(fakeEventId);
+
+			sinon.assert.notCalled(PresenceMock.setActiveState);
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+		});
+
+		it('does nothing for an event that has already ended', async () => {
+			const t = now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 120 * 60 * 1000),
+				endTime: new Date(t - 60 * 60 * 1000),
+			});
+
+			await callReconcile(fakeEventId);
+
+			sinon.assert.notCalled(PresenceMock.setActiveState);
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+		});
+
+		it('does nothing for a non-busy event', async () => {
+			const t = now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 60 * 1000),
+				endTime: new Date(t + 60 * 60 * 1000),
+				busy: false,
+			});
+
+			await callReconcile(fakeEventId);
+
+			sinon.assert.notCalled(PresenceMock.setActiveState);
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+		});
+
+		it('does nothing when busy status is disabled', async () => {
+			settingsMock.set('Calendar_BusyStatus_Enabled', false);
+			const t = now();
+			CalendarEventMock.findOne.resolves({
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: new Date(t - 60 * 1000),
+				endTime: new Date(t + 60 * 60 * 1000),
+			});
+
+			await callReconcile(fakeEventId);
+
+			sinon.assert.notCalled(PresenceMock.setActiveState);
+			sinon.assert.notCalled(PresenceMock.endActiveState);
 		});
 	});
 });
