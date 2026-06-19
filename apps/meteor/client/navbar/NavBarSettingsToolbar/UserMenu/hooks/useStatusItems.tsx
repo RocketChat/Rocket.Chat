@@ -98,13 +98,14 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		const items: GenericMenuItemProps[] = [];
 
 		// Top: user's currently-active custom status (display only — clicking does nothing, already selected).
-		if (user?.statusText) {
+		if (user?.statusText || customStatusExpiration) {
+			const contentValue = user?.statusText || (user?.status ? t(user.status) : undefined);
 			items.push({
 				id: 'current-custom-status',
-				status: <UserStatus status={user.status} />,
+				status: <UserStatus status={user?.status} />,
 				content: (
 					<>
-						<MarkdownText content={user.statusText} parseEmoji variant='inline' />
+						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
 								<Icon name='clock' size='x16' mie={4} />
@@ -126,7 +127,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		});
 
 		// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
-		const isPresetSelected = (statusType: UserStatusEnum): boolean => !user?.statusText && user?.status === statusType;
+		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
+			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
 			.filter((s) => userStatuses.isValidType(s.id))
 			.filter((s) => s.statusType !== UserStatusEnum.AWAY || isPresetSelected(UserStatusEnum.AWAY))
