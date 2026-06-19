@@ -5622,6 +5622,8 @@
   "Update_EnableChecker_Description": "Checks automatically for new updates / important messages from the Rocket.Chat developers and receives notifications when available. The notification appears once per new version as a clickable banner and as a message from the Rocket.Cat bot, both visible only for administrators.",
   "Update_LatestAvailableVersion": "Update Latest Available Version",
   "Until": "Until",
+  "Until_date": "Until {{date}}",
+  "Until_time": "Until {{time}}",
   "Update_anyway": "Update anyway",
   "Update_every": "Update every",
   "Update_to_access_marketplace": "Update to access marketplace",

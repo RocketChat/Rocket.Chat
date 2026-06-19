@@ -43,13 +43,13 @@ export function useExpirationText(statusExpiresAt?: Date | string) {
 
 		const now = new Date();
 		if (isSameDay(expiresAt, now)) {
-			return `${t('Until')} ${formatTime(expiresAt)}`;
+			return t('Until_time', { time: formatTime(expiresAt) });
 		}
 
 		if (expiresAt.getFullYear() === now.getFullYear()) {
-			return `${t('Until')} ${new Intl.DateTimeFormat(language, { month: 'long', day: 'numeric' }).format(expiresAt)}`;
+			return t('Until_date', { date: new Intl.DateTimeFormat(language, { month: 'long', day: 'numeric' }).format(expiresAt) });
 		}
 
-		return `${t('Until')} ${formatDate(expiresAt)}`;
+		return t('Until_date', { date: formatDate(expiresAt) });
 	}, [statusExpiresAt, t, language, formatTime, formatDate]);
 }
