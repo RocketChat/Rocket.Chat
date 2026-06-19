@@ -1,7 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExpirationText } from '../../hooks/useExpirationText';
@@ -21,7 +20,7 @@ type UserStatusTextProps = {
 	statusExpiresAt?: Date | string;
 };
 
-const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextProps): ReactElement | null => {
+const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextProps) => {
 	const { t } = useTranslation();
 	const expirationText = useExpirationText(statusExpiresAt);
 
