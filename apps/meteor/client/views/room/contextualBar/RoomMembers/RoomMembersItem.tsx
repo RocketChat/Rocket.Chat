@@ -49,7 +49,7 @@ const RoomMembersItem = ({
 	const preventPropagation = usePreventPropagation();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
-	const statusTooltipHandlers = useUserStatusTooltip(_id, nameOrUsername);
+	const statusTooltipHandlers = useUserStatusTooltip(_id);
 
 	const handleMenuEvent = isReduceMotionEnabled
 		? {
