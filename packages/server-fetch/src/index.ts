@@ -192,7 +192,10 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			if (locationUrl.hostname === url.hostname) {
 				const current = new URL(currentUrl);
 				locationUrl.hostname = current.hostname;
-				if (!locationUrl.port || locationUrl.port === url.port) {
+				// Explicitly check for an empty port string, or check against url.port.
+				// Note that node-fetch may resolve default ports (e.g., 80/443) differently based on the URL scheme.
+				// We check explicitly against the original url's port to prevent overwriting explicit redirect ports.
+				if (locationUrl.port === '' || locationUrl.port === url.port) {
 					locationUrl.port = current.port;
 				}
 			}
