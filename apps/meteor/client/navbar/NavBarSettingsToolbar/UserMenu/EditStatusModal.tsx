@@ -7,10 +7,11 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ComponentProps } from 'react';
 import { useEffect, useMemo } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { getUserStatusInitialValues } from '../../../lib/getUserInitialStatus';
 import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
 
 type EditStatusModalProps = {
@@ -20,9 +21,9 @@ type EditStatusModalProps = {
 type StatusFormValues = {
 	statusText: string;
 	statusType: UserStatusType;
-	duration: string;
-	customDate: string;
-	customTime: string;
+	statusDuration: string;
+	statusCustomDate: string;
+	statusCustomTime: string;
 };
 
 const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
@@ -31,38 +32,23 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [customStatus, setCustomStatus] = useLocalStorage<string>('Local_Custom_Status', '');
-	const initialStatusText = user?.statusText ?? customStatus ?? '';
-
-	const initialExpiration = user?.statusExpiresAt && new Date(user.statusExpiresAt) > new Date() ? new Date(user.statusExpiresAt) : null;
-	const initialDate = initialExpiration ?? new Date();
 
 	const {
 		control,
 		handleSubmit,
 		setValue,
-		formState: { errors },
+		watch,
+		formState: { errors, isDirty },
 	} = useForm<StatusFormValues>({
-		defaultValues: {
-			statusText: initialStatusText,
-			statusType:
-				user?.status === UserStatusType.AWAY && user?.statusDefault === UserStatusType.AWAY
-					? UserStatusType.AWAY
-					: (user?.statusDefault ?? UserStatusType.ONLINE),
-			duration: initialExpiration ? 'custom' : '',
-			customDate: initialDate.toLocaleDateString('en-CA'),
-			customTime: initialDate.toTimeString().slice(0, 5),
-		},
+		defaultValues: getUserStatusInitialValues(user, customStatus),
 	});
 
-	const duration = useWatch({ control, name: 'duration' });
-	const statusType = useWatch({ control, name: 'statusType' });
-	const statusText = useWatch({ control, name: 'statusText' });
-
+	const { statusDuration, statusType, statusText } = watch();
 	const isExpirationDisabled = statusType === UserStatusType.ONLINE && !statusText.trim();
 
 	useEffect(() => {
 		if (isExpirationDisabled) {
-			setValue('duration', '', { shouldValidate: true });
+			setValue('statusDuration', '', { shouldValidate: true });
 		}
 	}, [isExpirationDisabled, setValue]);
 
@@ -70,15 +56,19 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 
 	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
-	const defaultStatusLabel = `${t(statusType)} (${t('Default')})`;
-
 	const durationOptions: SelectOption[] = useMemo(() => STATUS_DURATION_OPTIONS.map(({ value, labelKey }) => [value, t(labelKey)]), [t]);
 
-	const handleSaveStatus = async ({ statusText, statusType, duration, customDate, customTime }: StatusFormValues): Promise<void> => {
-		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === duration)?.getExpiresAt?.({
+	const handleSaveStatus = async ({
+		statusText,
+		statusType,
+		statusDuration,
+		statusCustomDate,
+		statusCustomTime,
+	}: StatusFormValues): Promise<void> => {
+		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
 			now: new Date(),
-			customDate,
-			customTime,
+			customDate: statusCustomDate,
+			customTime: statusCustomTime,
 		});
 		try {
 			await setUserStatus({
@@ -101,7 +91,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 			title={t('Status_set_your_status')}
 			onCancel={onClose}
 			confirmText={t('Save')}
-			confirmDisabled={!!errors.statusText}
+			confirmDisabled={!isDirty}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSaveStatus)} {...props} />}
 		>
 			<FieldGroup>
@@ -123,7 +113,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 									error={errors.statusText?.message}
 									disabled={!allowUserStatusMessageChange}
 									flexGrow={1}
-									placeholder={defaultStatusLabel}
+									placeholder={t(statusType)}
 									startAddon={
 										<Controller
 											control={control}
@@ -143,17 +133,17 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 					<FieldRow>
 						<Controller
 							control={control}
-							name='duration'
+							name='statusDuration'
 							rules={{
-								deps: ['customDate', 'customTime'],
-								validate: (value, { customDate, customTime }) => {
+								deps: ['statusCustomDate', 'statusCustomTime'],
+								validate: (value, { statusCustomDate, statusCustomTime }) => {
 									if (value !== 'custom') {
 										return true;
 									}
 									const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === value)?.getExpiresAt?.({
 										now: new Date(),
-										customDate,
-										customTime,
+										customDate: statusCustomDate,
+										customTime: statusCustomTime,
 									});
 									if (!expiresAt) {
 										return t('Status_choose_date_and_time');
@@ -174,12 +164,12 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 							)}
 						/>
 					</FieldRow>
-					{duration === 'custom' && (
+					{statusDuration === 'custom' && (
 						<Box display='flex' mi='neg-x4' mbs={8}>
 							<Margins inline={4}>
 								<Controller
 									control={control}
-									name='customDate'
+									name='statusCustomDate'
 									render={({ field: { value, onChange } }) => (
 										<InputBox
 											aria-label={t('Status_expiration_date')}
@@ -193,7 +183,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 								/>
 								<Controller
 									control={control}
-									name='customTime'
+									name='statusCustomTime'
 									render={({ field: { value, onChange } }) => (
 										<InputBox
 											aria-label={t('Status_expiration_time')}
@@ -207,7 +197,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 							</Margins>
 						</Box>
 					)}
-					{errors.duration && <FieldError>{errors.duration.message}</FieldError>}
+					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
 					<FieldHint>{t(isStatusFromCall ? 'Status_new_status_warning_after_call' : 'Status_new_status_warning')}</FieldHint>
 				</Field>
 			</FieldGroup>
