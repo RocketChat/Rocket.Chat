@@ -1,6 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
+import { LayoutContext } from '@rocket.chat/ui-contexts';
+import type { LayoutContextValue, RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
+import React from 'react';
 
 import { useRoomToolboxActions } from './useRoomToolboxActions';
 
@@ -39,6 +41,132 @@ describe('useRoomToolboxActions', () => {
 			wrapper: mockAppRoot().build(),
 		});
 		expect(result.current.featuredActions).toMatchObject(actions.filter((action) => action.featured));
+	});
+
+	describe('with roomToolboxLayout feature preview enabled', () => {
+		const mockLayoutConfig = JSON.stringify({
+			maxVisibleNormal: 2,
+			items: [
+				{ id: 'team-info', featured: false, order: 1 },
+				{ id: 'thread', featured: true, order: 10 },
+				{ id: 'discussions', featured: false, order: 2 },
+				{ id: 'rocket-search', featured: false, order: 3 },
+			],
+		});
+
+		it('should respect custom featured and visible ordering', () => {
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
+					.build(),
+			});
+
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
+
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(['team-info', 'discussions']);
+
+			const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
+			expect(hiddenIds).toContain('rocket-search');
+		});
+
+		it.each([
+			['invalid JSON', '{ invalid json }'],
+			['a JSON array', '[]'],
+			['non-array items', JSON.stringify({ items: {} })],
+			['items with invalid item types', JSON.stringify({ items: [null] })],
+		])('should fall back to legacy behavior if config is %s', (_, layoutConfigValue) => {
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout', layoutConfigValue)
+					.build(),
+			});
+
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
+		});
+
+		it('should fall back to legacy behavior if feature preview is disabled', () => {
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: false }])
+					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
+					.build(),
+			});
+
+			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
+		});
+
+		it('should handle unexpanded layout properly (roomToolboxExpanded = false)', () => {
+			const mockLayoutContextValue: LayoutContextValue = {
+				isEmbedded: false,
+				showTopNavbarEmbeddedLayout: false,
+				isTablet: false,
+				isMobile: false,
+				roomToolboxExpanded: false,
+				navbar: {
+					searchExpanded: false,
+				},
+				sidebar: {
+					overlayed: false,
+					setOverlayed: () => undefined,
+					isCollapsed: false,
+					shouldToggle: false,
+					toggle: () => undefined,
+					collapse: () => undefined,
+					expand: () => undefined,
+					close: () => undefined,
+				},
+				sidePanel: {
+					displaySidePanel: true,
+					closeSidePanel: () => undefined,
+					openSidePanel: () => undefined,
+				},
+				size: {
+					sidebar: '240px',
+					contextualBar: '380px',
+				},
+				contextualBarPosition: 'relative',
+				contextualBarExpanded: false,
+				hiddenActions: {
+					roomToolbox: [],
+					messageToolbox: [],
+					composerToolbox: [],
+					userToolbox: [],
+				},
+			};
+
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: ({ children }) => {
+					const Parent = mockAppRoot()
+						.withSetting('Accounts_AllowFeaturePreview', true)
+						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+						.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
+						.build();
+					return React.createElement(
+						Parent,
+						null,
+						React.createElement(LayoutContext.Provider, { value: mockLayoutContextValue }, children),
+					);
+				},
+			});
+
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
+
+			expect(result.current.visibleActions).toEqual([]);
+
+			const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
+			expect(hiddenIds).toContain('team-info');
+			expect(hiddenIds).toContain('discussions');
+			expect(hiddenIds).toContain('rocket-search');
+		});
 	});
 });
 
