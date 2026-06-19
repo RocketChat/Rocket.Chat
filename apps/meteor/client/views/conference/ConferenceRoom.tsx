@@ -6,11 +6,11 @@ import { lazy, Suspense, useEffect, useMemo } from 'react';
 
 import { SubscriptionsCachedStore } from '../../cachedStores';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
+import RoomSkeleton from '../room/RoomSkeleton';
 import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
 
 const RoomProvider = lazy(() => import('../room/providers/RoomProvider'));
 const Room = lazy(() => import('../room/Room'));
-const RoomSkeleton = lazy(() => import('../room/RoomSkeleton'));
 const RoomNotFound = lazy(() => import('../room/RoomNotFound'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
