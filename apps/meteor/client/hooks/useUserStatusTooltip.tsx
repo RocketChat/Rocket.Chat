@@ -4,12 +4,7 @@ import { useCallback, useMemo } from 'react';
 
 import { UserStatusText } from '../components/UserStatusText';
 
-type UserStatusTooltipHandlers = {
-	onMouseEnter: (e: MouseEvent<HTMLElement>) => void;
-	onMouseLeave: () => void;
-};
-
-export function useUserStatusTooltip(uid: string | undefined, title: string): UserStatusTooltipHandlers {
+export function useUserStatusTooltip(uid: string | undefined, title?: string) {
 	const presence = useUserPresence(uid);
 
 	const openTooltip = useTooltipOpen();
