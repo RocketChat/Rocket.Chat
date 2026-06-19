@@ -1,4 +1,4 @@
-import { MeteorError, Presence, Team, Calendar } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -29,7 +29,7 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -2027,10 +2027,6 @@ API.v1
 			}
 
 			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
-
-			if (status) {
-				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-			}
 
 			return API.v1.success();
 		},

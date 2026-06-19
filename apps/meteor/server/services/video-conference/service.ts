@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
+import { api, Presence, ServiceClassInternal, Room } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -25,6 +25,7 @@ import type {
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import {
+	UserStatus,
 	VideoConferenceStatus,
 	isDirectVideoConference,
 	isGroupVideoConference,
@@ -322,8 +323,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('Invalid User');
 		}
 
-		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(userId, {
-			projection: { username: 1, name: 1, avatarETag: 1 },
+		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'language'>>>(userId, {
+			projection: { username: 1, name: 1, avatarETag: 1, language: 1 },
 		});
 		if (!user) {
 			throw new Error('Invalid User');
@@ -334,6 +335,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			username: user.username,
 			name: user.name,
 			avatarETag: user.avatarETag,
+			language: user.language,
 			ts: ts || new Date(),
 		});
 	}
@@ -502,6 +504,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
+
+		await this.clearPresenceForCall(call);
+
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
@@ -511,12 +516,28 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async expireCall(callId: VideoConference['_id']): Promise<void> {
-		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'messages'>>(callId, { projection: { messages: 1 } });
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'messages' | 'users'>>(callId, {
+			projection: { messages: 1, users: 1 },
+		});
 		if (!call) {
 			return;
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
+
+		await this.clearPresenceForCall(call);
+	}
+
+	// clears the busy claim this conference set for each participant (id-scoped, so it never touches
+	// a manual/calendar status or another active call a participant may hold)
+	private async clearPresenceForCall(call: Pick<VideoConference, '_id' | 'users'>): Promise<void> {
+		await Promise.all(
+			call.users.map((user) =>
+				Presence.endActiveState(user._id, call._id).catch((err) =>
+					logger.error({ msg: 'Failed to clear presence for user after video conference', uid: user._id, err }),
+				),
+			),
+		);
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
@@ -574,6 +595,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		return message._id;
+	}
+
+	private getLanguageForUser(language?: string): string {
+		return language || settings.get('Language') || 'en';
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
@@ -1067,7 +1092,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async addUserToCall(
 		call: Optional<VideoConference, 'providerData'>,
-		{ _id, username, name, avatarETag, ts }: AtLeast<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
+		{
+			_id,
+			username,
+			name,
+			avatarETag,
+			language,
+			ts,
+		}: AtLeast<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> & { language?: string; ts?: Date },
 	): Promise<void> {
 		// If the call has a discussion, ensure the user is subscribed to it;
 		// This is done even if the user has already joined the call before, so they can be added back if they had left the discussion.
@@ -1080,6 +1112,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.addUserById(call._id, { _id, username, name, avatarETag, ts });
+
+		await Presence.setActiveState(_id, {
+			statusDefault: UserStatus.BUSY,
+			statusText: i18n.t('Presence_status_in_a_meeting', { lng: this.getLanguageForUser(language) }),
+			statusSource: 'internal',
+			statusId: call._id,
+		}).catch((err) => logger.error({ msg: 'Failed to set presence for user joining video conference', uid: _id, err }));
 
 		if (call.type === 'direct') {
 			return this.updateDirectCall(call as IDirectVideoConference, _id);

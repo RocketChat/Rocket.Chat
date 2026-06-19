@@ -177,6 +177,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			IUser,
 			| '_id'
 			| 'username'
+			| 'type'
 			| 'roles'
 			| 'status'
 			| 'statusDefault'
@@ -184,6 +185,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			| 'statusText'
 			| 'statusExpiresAt'
 			| 'statusConnection'
+			| 'statusId'
 			| 'previousState'
 		>
 	>;
