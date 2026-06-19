@@ -6,7 +6,7 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ComponentProps } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
@@ -39,6 +39,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 	const {
 		control,
 		handleSubmit,
+		setValue,
 		formState: { errors },
 	} = useForm<StatusFormValues>({
 		defaultValues: {
@@ -55,6 +56,15 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 
 	const duration = useWatch({ control, name: 'duration' });
 	const statusType = useWatch({ control, name: 'statusType' });
+	const statusText = useWatch({ control, name: 'statusText' });
+
+	const isExpirationDisabled = statusType === UserStatusType.ONLINE && !statusText.trim();
+
+	useEffect(() => {
+		if (isExpirationDisabled) {
+			setValue('duration', '', { shouldValidate: true });
+		}
+	}, [isExpirationDisabled, setValue]);
 
 	const isStatusFromCall = user?.statusSource === 'internal' || user?.statusSource === 'external';
 
@@ -155,7 +165,12 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 								},
 							}}
 							render={({ field: { value, onChange } }) => (
-								<Select value={value} options={durationOptions} onChange={(next) => onChange(String(next))} />
+								<Select
+									value={value}
+									options={durationOptions}
+									onChange={(next) => onChange(String(next))}
+									disabled={isExpirationDisabled}
+								/>
 							)}
 						/>
 					</FieldRow>
