@@ -1,4 +1,4 @@
-import type { IUser, MediaCallContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, MediaCallContact } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
 	CallFeature,
@@ -18,7 +18,7 @@ import type {
 	VoipPushNotificationEventType,
 } from '../definition/IMediaCallServer';
 import { CallRejectedError } from '../definition/common';
-import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams } from '../definition/common';
+import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams, MediaCallHeader } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
@@ -130,6 +130,13 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public async hangupExpiredCalls(): Promise<void> {
 		return mediaCallDirector.hangupExpiredCalls();
+	}
+
+	public async hangupEscalatedCall(call: MediaCallHeader, endedBy?: IMediaCall['endedBy']): Promise<boolean> {
+		return mediaCallDirector.hangupDetachedCall(call, {
+			reason: 'conference-escalation',
+			...(endedBy && { endedBy }),
+		});
 	}
 
 	public scheduleExpirationCheck(): void {

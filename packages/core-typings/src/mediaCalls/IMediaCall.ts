@@ -68,6 +68,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	uids: IUser['_id'][];
 
 	escalatedAt?: Date;
+	escalatedByPeerAt?: Date;
 
 	/** The list of features that may be used in this call. Values are final once the call is accepted. */
 	features: string[];

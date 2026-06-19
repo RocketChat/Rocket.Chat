@@ -447,12 +447,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const { callId } = params;
 
 		const call = await MediaCalls.findOneById(callId);
-		if (!call?.acceptedAt) {
+		if (!call?.acceptedAt || call.ended) {
 			throw new Error('not-found');
 		}
 
 		if (!call.uids.includes(uid)) {
 			throw new Error('not-found');
+		}
+		if (!call.features.includes('conference-escalation')) {
+			throw new Error('feature-not-available');
 		}
 
 		const user = await Users.findOneById(uid);
@@ -460,11 +463,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('internal-error');
 		}
 
-		// if (!call.features.includes('conference-escalation')) {
-		// 	throw new Error('feature-not-available');
-		// }
-
 		const url = await this.escalateVoiceCallToConference(user, call);
+
+		// If the peer has also escalated this call, then we can hangup as we join the conference
+		if (call.escalatedByPeerAt) {
+			void callServer.hangupEscalatedCall(call, { type: 'user', id: user._id }).catch((err) => {
+				logger.error({ msg: 'Unexpected error while hanging up a fully escalated voice call', err });
+			});
+		}
+
 		return url;
 	}
 
@@ -484,18 +491,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		return result;
 	}
 
-	private async findExistingConferenceForCall(call: IMediaCall): Promise<VideoConference | null> {
-		const existingConference = await VideoConferenceModel.findOneByMediaCallId(call._id);
-		if (existingConference) {
-			return existingConference;
-		}
-
-		// TODO: find some call escalated from the other side?
-		return null;
-	}
-
 	private async getOrCreateConferenceForEscalatingCall(call: IMediaCall, user: IUser): Promise<VideoConference | null> {
-		const existingConference = await this.findExistingConferenceForCall(call);
+		const existingConference = await VideoConferenceModel.findOneByMediaCallId(call._id);
 		if (existingConference) {
 			return existingConference;
 		}
@@ -546,5 +543,23 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				notification: 'escalated',
 			});
 		}
+	}
+
+	public async flagAsRemotelyEscalatedByCallId(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId, { projection: { _id: 1, escalatedByPeerAt: 1, uids: 1 } });
+		if (!call || call.escalatedByPeerAt) {
+			return;
+		}
+
+		const updateResult = await MediaCalls.flagAsRemotelyEscalatedByCallId(call._id);
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		if (!call.escalatedAt) {
+			await this.notifyEscalatedCall(call);
+		}
+
+		// TODO: maybe hangup if escalatedAt is already set?
 	}
 }

@@ -82,6 +82,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		providerName: string,
 		sipAlias: string,
 		mediaCallId: string,
+		options?: { minCreatedAt?: Date; maxCreatedAt?: Date },
 	): Promise<WithId<VideoConference> | null>;
 
 	findOneByProviderNameAndSipAlias<T extends VideoConference>(

@@ -1,8 +1,8 @@
-import type { IUser, MediaCallContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, MediaCallContact } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-import type { InternalCallParams, SignalProcessingOptions } from './common';
+import type { InternalCallParams, MediaCallHeader, SignalProcessingOptions } from './common';
 
 export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
 export type VoipPushNotificationEventType = 'new' | 'answer' | 'end';
@@ -60,6 +60,7 @@ export interface IMediaCallServer {
 	hangupExpiredCalls(): Promise<void>;
 	scheduleExpirationCheck(): void;
 	configure(settings: IMediaCallServerSettings): void;
+	hangupEscalatedCall(call: MediaCallHeader, endedBy?: IMediaCall['endedBy']): Promise<boolean>;
 
 	requestCall(params: InternalCallParams): Promise<void>;
 
