@@ -247,7 +247,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
-				<Divider mbs={24} mbe={0} width='full' borderBlockStartColor='stroke-extra-light' />
+				<Divider mbs={24} mbe={0} />
 				<Field>
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
