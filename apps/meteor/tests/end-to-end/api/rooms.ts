@@ -1966,6 +1966,159 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('[/rooms.join]', () => {
+		let testChannel: IRoom;
+		let testGroup: IRoom;
+		let testChannelWithCode: IRoom;
+		let testDiscussion: IRoom;
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		before(async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+			testChannel = (await createRoom({ type: 'c', name: `rooms.join.channel.${Date.now()}` })).body.channel;
+			testGroup = (await createRoom({ type: 'p', name: `rooms.join.group.${Date.now()}` })).body.group;
+			testChannelWithCode = (await createRoom({ type: 'c', name: `rooms.join.code.${Date.now()}` })).body.channel;
+			testDiscussion = (
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({ prid: testChannel._id, t_name: `rooms.join.discussion.${Date.now()}` })
+			).body.discussion;
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				deleteRoom({ type: 'c', roomId: testChannelWithCode._id }),
+				deleteUser(testUser),
+				updatePermission('join-without-join-code', ['admin', 'bot', 'app']),
+			]),
+		);
+
+		it('should fail when the room does not exist', (done) => {
+			void request
+				.post(api('rooms.join'))
+				.set(testUserCredentials)
+				.send({ roomId: 'invalid-room-id' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+
+		it('should join a public channel by roomId', (done) => {
+			void request
+				.post(api('rooms.join'))
+				.set(testUserCredentials)
+				.send({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('room._id', testChannel._id);
+				})
+				.end(done);
+		});
+
+		it('should join a public channel by roomName', (done) => {
+			void request
+				.post(api('rooms.join'))
+				.set(testUserCredentials)
+				.send({ roomName: testChannel.name })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('room._id', testChannel._id);
+				})
+				.end(done);
+		});
+
+		it('should join a discussion (a room with a parent room) by roomId', (done) => {
+			void request
+				.post(api('rooms.join'))
+				.set(testUserCredentials)
+				.send({ roomId: testDiscussion._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('room._id', testDiscussion._id);
+					expect(res.body).to.have.nested.property('room.prid', testChannel._id);
+				})
+				.end(done);
+		});
+
+		it('should fail to join a private group the user cannot access', (done) => {
+			void request
+				.post(api('rooms.join'))
+				.set(testUserCredentials)
+				.send({ roomId: testGroup._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				})
+				.end(done);
+		});
+
+		describe('with a join code', () => {
+			before(async () => {
+				await request.post(api('channels.setJoinCode')).set(credentials).send({ roomId: testChannelWithCode._id, joinCode: '123' });
+				await updatePermission('join-without-join-code', []);
+			});
+
+			it('should fail to join without a join code', (done) => {
+				void request
+					.post(api('rooms.join'))
+					.set(testUserCredentials)
+					.send({ roomId: testChannelWithCode._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-code-required');
+					})
+					.end(done);
+			});
+
+			it('should fail to join with an incorrect join code', (done) => {
+				void request
+					.post(api('rooms.join'))
+					.set(testUserCredentials)
+					.send({ roomId: testChannelWithCode._id, joinCode: 'WRONG' })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-code-invalid');
+					})
+					.end(done);
+			});
+
+			it('should join with the correct join code', (done) => {
+				void request
+					.post(api('rooms.join'))
+					.set(testUserCredentials)
+					.send({ roomId: testChannelWithCode._id, joinCode: '123' })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('room._id', testChannelWithCode._id);
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/rooms.autocomplete.channelAndPrivate]', () => {
 		let testChannel: IRoom;
 

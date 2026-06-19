@@ -20,7 +20,7 @@
 		"@rocket.chat/fuselage": "^0.79.0",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/icons": "^0.48.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
