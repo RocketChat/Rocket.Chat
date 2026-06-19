@@ -5749,6 +5749,7 @@
   "User_management": "User Management",
   "User_mentions_only": "User mentions only",
   "User_menu": "User menu",
+  "User_must_exist_and_have_permission": "The user must exist and have the {{permission}} permission.",
   "User_muted": "User Muted",
   "User_muted_by": "User {{user_muted}} muted by {{user_by}}.",
   "User_not_found": "User not found",
