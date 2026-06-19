@@ -1,4 +1,4 @@
-import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -20,7 +20,7 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 
 			return {
 				items: data.map(
-					(videoConf): VideoConference => ({
+					(videoConf) => ({
 						...videoConf,
 						_updatedAt: new Date(videoConf._updatedAt),
 						createdAt: new Date(videoConf.createdAt),
