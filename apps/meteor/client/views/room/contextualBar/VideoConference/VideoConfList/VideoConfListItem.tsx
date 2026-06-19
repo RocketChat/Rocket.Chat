@@ -1,4 +1,4 @@
-import type { VideoConference } from '@rocket.chat/core-typings';
+import type { VideoConferenceWithDiscussion } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
@@ -32,14 +32,14 @@ const VideoConfListItem = ({
 	reload,
 	...props
 }: {
-	videoConfData: VideoConference;
+	videoConfData: VideoConferenceWithDiscussion;
 	className?: string[];
 	reload: () => void;
 }) => {
 	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
-	const settingName = useSetting<string>('VideoConf_Persistent_Chat_Discussion_Name', t('[date] Video Call Chat'));
+	const settingName = useSetting<string>('VideoConf_Persistent_Chat_Discussion_Name', t('__param__Video_Call_Chat', { param: '[date]' }));
 
 	const {
 		_id: callId,
@@ -48,6 +48,8 @@ const VideoConfListItem = ({
 		createdAt,
 		endedAt,
 		discussionRid,
+		discussionTitle,
+		discussionLastMessage,
 	} = videoConfData;
 
 	const joinedUsers = users.filter((user) => user._id !== _id);
@@ -70,9 +72,13 @@ const VideoConfListItem = ({
 	const goToRoom = useGoToRoom();
 
 	const name = useMemo(() => {
-		const date = new Date().toISOString().substring(0, 10);
+		if (discussionTitle) {
+			return discussionTitle;
+		}
+
+		const date = createdAt.toISOString().substring(0, 10);
 		return settingName.includes('[date]') ? settingName.replace('[date]', date) : `${date} ${settingName}`;
-	}, [settingName]);
+	}, [settingName, createdAt, discussionTitle]);
 
 	return (
 		<Box
@@ -89,7 +95,7 @@ const VideoConfListItem = ({
 						<MessageName title={name}>{name}</MessageName>
 						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
 					</MessageHeader>
-					<MessageBody clamp={2} />
+					<MessageBody clamp={2}>{discussionLastMessage?.msg}</MessageBody>
 					<MessageBlock flexDirection='row' alignItems='center'>
 						<ButtonGroup>
 							{!endedAt ? (

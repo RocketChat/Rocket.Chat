@@ -1,4 +1,9 @@
-import type { VideoConferenceInstructions, VideoConference, VideoConferenceCapabilities } from '@rocket.chat/core-typings';
+import type {
+	VideoConferenceInstructions,
+	VideoConference,
+	VideoConferenceWithDiscussion,
+	VideoConferenceCapabilities,
+} from '@rocket.chat/core-typings';
 
 import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps';
 import type { VideoConfCancelProps } from './VideoConfCancelProps';
@@ -37,7 +42,9 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.list': {
-		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConference[] }>;
+		GET: (params: VideoConfListProps) => PaginatedResult<{
+			data: VideoConferenceWithDiscussion[];
+		}>;
 	};
 
 	'/v1/video-conference.capabilities': {

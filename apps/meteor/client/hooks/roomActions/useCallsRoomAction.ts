@@ -22,14 +22,14 @@ export const useCallsRoomAction = () => {
 		return {
 			id: 'calls',
 			groups: ['channel', 'group', 'team', 'direct', 'direct_multiple'],
-			icon: 'phone',
+			icon: 'history',
 			title: 'Conference_call_history',
 			...(federated && {
 				tooltip: t('core.Video_Call_unavailable_for_this_type_of_room'),
 				disabled: true,
 			}),
 			tabComponent: VideoConfList,
-			order: 999,
+			order: 8,
 		};
 	}, [licensed, federated, t]);
 };

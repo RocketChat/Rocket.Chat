@@ -52,7 +52,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				<ContextualbarIcon name='phone' />
+				<ContextualbarIcon name='history' />
 				<ContextualbarTitle>{t('Conference_call_history')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
@@ -71,7 +71,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
 							</States>
 						)}
-						{!loading && total === 0 && (
+						{!error && !loading && total === 0 && (
 							<ContextualbarEmptyContent
 								icon='phone'
 								title={t('No_history')}

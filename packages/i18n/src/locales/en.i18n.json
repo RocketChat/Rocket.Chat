@@ -7303,6 +7303,7 @@
   "__count__without__department__": "{{count}} without department",
   "__count__without__tags__": "{{count}} without tags",
   "__departments__departments_and__count__conversations__period__": "{{departments}} departments and {{count}} conversations, {{period}}",
+  "__param__Video_Call_Chat": "{{param}} Video Call Chat",
   "__roomName__encryption_keys_need_to_be_updated": "{{roomName}} encryption keys need to be updated to give you access. Another room member needs to be online for this to happen.",
   "__roomName__is_encrypted": "{{roomName}} is encrypted",
   "__roomName__was_added_to_favorites": "{{roomName}} was added to favorites",
