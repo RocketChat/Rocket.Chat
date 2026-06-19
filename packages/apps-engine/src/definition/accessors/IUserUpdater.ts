@@ -17,7 +17,7 @@ export interface IUserUpdater {
 	deactivate(userId: IUser['id'], confirmRelinquish: boolean): Promise<boolean>;
 	setActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 	): Promise<void>;
-	endActiveState(userId: IUser['id']): Promise<void>;
+	endActiveState(userId: IUser['id'], statusId?: string): Promise<void>;
 }

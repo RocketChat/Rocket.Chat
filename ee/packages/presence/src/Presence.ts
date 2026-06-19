@@ -17,6 +17,7 @@ type PresenceUser = Pick<
 	IUser,
 	| '_id'
 	| 'username'
+	| 'type'
 	| 'roles'
 	| 'status'
 	| 'statusDefault'
@@ -24,6 +25,7 @@ type PresenceUser = Pick<
 	| 'statusText'
 	| 'statusExpiresAt'
 	| 'statusConnection'
+	| 'statusId'
 	| 'previousState'
 >;
 
@@ -314,7 +316,7 @@ export class Presence extends ServiceClass implements IPresence {
 	 */
 	async setActiveState(
 		userId: string,
-		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 	): Promise<boolean> {
 		return this.updatePresenceAndReschedule(userId, {
 			type: 'setActive',
@@ -326,11 +328,11 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	/**
-	 * Ends the current active claim. Restores previous if valid, otherwise
-	 * falls back to system-managed.
+	 * Ends a presence claim. With `statusId`, only that claim is affected (so concurrent voice/video
+	 * claims end in either order); without it, the displaced claim is restored.
 	 */
-	async endActiveState(userId: string): Promise<boolean> {
-		return this.updatePresenceAndReschedule(userId, { type: 'endActive' });
+	async endActiveState(userId: string, statusId?: string): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, { type: 'endActive', ...(statusId && { statusId }) });
 	}
 
 	/**
@@ -358,6 +360,7 @@ export class Presence extends ServiceClass implements IPresence {
 				? await Users.findOneById<PresenceUser>(uidOrUser, {
 						projection: {
 							username: 1,
+							type: 1,
 							roles: 1,
 							status: 1,
 							statusDefault: 1,
@@ -365,6 +368,7 @@ export class Presence extends ServiceClass implements IPresence {
 							statusText: 1,
 							statusExpiresAt: 1,
 							statusConnection: 1,
+							statusId: 1,
 							previousState: 1,
 						},
 					})
