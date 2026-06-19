@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 // TODO: CRITICAL fix the race condition between the room composer and thread composer
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useSafeRefCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
 import {
 	MessageComposerAction,
@@ -13,7 +13,7 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
 	MessageComposerHint,
-	RichTextComposerInput,
+	RichTextComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -60,7 +60,7 @@ type TypingState = {
 	hideplaceholder: boolean;
 };
 
-const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): TypingState => {
+const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
 	const target = event.target as HTMLDivElement;
 	const { childNodes } = target;
 
@@ -245,7 +245,7 @@ const RichTextMessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
+	const handleOpenEmojiPicker = useStableCallback((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -257,7 +257,7 @@ const RichTextMessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleSendMessage = useEffectEvent(() => {
+	const handleSendMessage = useStableCallback(() => {
 		const text = chat.composer?.text ?? '';
 		// Sanitize the innerText by reducing multiple instances of linebreaks
 		const cleanedText = text.replace(/\n{2,}/g, (match) => '\n'.repeat((match.length + 1) / 2));
@@ -306,7 +306,7 @@ const RichTextMessageBox = ({
 		}
 	};
 
-	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
+	const keyboardEventHandler = useStableCallback((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLDivElement;
@@ -439,7 +439,7 @@ const RichTextMessageBox = ({
 		mutationFn: async () => onJoin?.(),
 	});
 
-	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLDivElement>) => {
+	const handlePaste = useStableCallback((event: ClipboardEvent<HTMLDivElement>) => {
 		const { clipboardData } = event;
 
 		if (!clipboardData) {
@@ -483,20 +483,17 @@ const RichTextMessageBox = ({
 	const popup = useComposerBoxPopup(popupOptions);
 
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLDivElement) => {
-				if (node === null) {
-					return;
-				}
-				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-				node.addEventListener('keydown', eventHandler);
+		useCallback((node: HTMLDivElement) => {
+			if (node === null) {
+				return;
+			}
+			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+			node.addEventListener('keydown', eventHandler);
 
-				return () => {
-					node.removeEventListener('keydown', eventHandler);
-				};
-			},
-			[keyboardEventHandler],
-		),
+			return () => {
+				node.removeEventListener('keydown', eventHandler);
+			};
+		}, []),
 	);
 
 	/* const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef); */
@@ -555,7 +552,8 @@ const RichTextMessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<RichTextComposerInput
+				<RichTextComposerInputExpandable
+					dimensions={newSizes}
 					ref={newMergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'

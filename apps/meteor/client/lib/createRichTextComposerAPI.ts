@@ -1,12 +1,12 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Options } from '@rocket.chat/message-parser';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import type { RefObject } from 'react';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
-import { escapeHTML } from './messageParser';
 import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
