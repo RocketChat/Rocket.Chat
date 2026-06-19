@@ -52,23 +52,30 @@ export const configurePassport = (settings: ICachedSettings) => {
 	oAuthApp.use(oAuthPaths, passport.session());
 	oAuthApp.use(oAuthPaths, bodyParser.urlencoded({ extended: true }));
 
-	const oauthRateLimiter = rateLimit({
-		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
-		max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
-		skip: () =>
-			process.env.TEST_MODE === 'true' ||
-			process.env.TEST_MODE === 'api' ||
-			settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
-			(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
-		handler: (_req, res) => {
-			res.status(429).json({
-				success: false,
-				error: 'Too many requests. Please try again later.',
-			});
-		},
+	const createOAuthRateLimiter = () =>
+		rateLimit({
+			windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
+			max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+			skip: () =>
+				process.env.TEST_MODE === 'true' ||
+				process.env.TEST_MODE === 'api' ||
+				settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
+				(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
+			handler: (_req, res) => {
+				res.status(429).json({
+					success: false,
+					error: 'Too many requests. Please try again later.',
+				});
+			},
+		});
+
+	let oauthRateLimiter = createOAuthRateLimiter();
+
+	settings.watchMultiple(['API_Enable_Rate_Limiter_Limit_Time_Default', 'API_Enable_Rate_Limiter_Limit_Calls_Default'], () => {
+		oauthRateLimiter = createOAuthRateLimiter();
 	});
 
-	oAuthRouter.use(oAuthPaths, oauthRateLimiter);
+	oAuthRouter.use(oAuthPaths, (req, res, next) => oauthRateLimiter(req, res, next));
 
 	// Register OAuth Routes
 	oAuthApp.use(oAuthRouter);
