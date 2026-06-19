@@ -1,4 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Button, Divider, Icon, InputBox, Margins } from '@rocket.chat/fuselage';
@@ -25,7 +26,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -63,12 +64,22 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		watch,
 		handleSubmit,
 		reset,
+		setValue,
 		setError,
 		clearErrors,
 		formState: { errors, dirtyFields },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username, name: userFullName, statusDuration } = watch();
+	const { email, avatar, username, name: userFullName, statusDuration, statusType, statusText } = watch();
+
+	const isExpirationDisabled = statusType === UserStatus.ONLINE && !statusText?.trim();
+
+	useEffect(() => {
+		if (isExpirationDisabled) {
+			setValue('statusDuration', '');
+			clearErrors('statusDuration');
+		}
+	}, [isExpirationDisabled, setValue, clearErrors]);
 
 	const statusDurationOptions: SelectOption[] = useMemo(
 		() => STATUS_DURATION_OPTIONS.map(({ value, labelKey }) => [value, t(labelKey)]),
@@ -292,7 +303,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								<Select
 									value={value}
 									options={statusDurationOptions}
-									disabled={!allowUserStatusMessageChange}
+									disabled={!allowUserStatusMessageChange || isExpirationDisabled}
 									onChange={(next) => {
 										onChange(String(next));
 										clearErrors('statusDuration');
