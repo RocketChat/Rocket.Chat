@@ -4,16 +4,15 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const createRootElement = async (externalWindow: Window) => {
+const createRootElement = (externalWindow: Window) => {
+	const landingPageRoot = externalWindow.document.querySelector('#root');
+	if (!landingPageRoot) {
+		throw new Error('usePopoutWindow - createRootElement - landingPageRoot not found');
+	}
+
 	const newRoot = externalWindow.document.createElement('div');
 	newRoot.style.width = '100%';
 	newRoot.style.height = '100%';
-
-	const landingPageRoot = externalWindow.document.getElementById('root');
-	if (!landingPageRoot) {
-		externalWindow.close();
-		throw new Error('usePopoutWindow - createRootElement - landingPageRoot not found');
-	}
 
 	landingPageRoot.appendChild(newRoot);
 
@@ -43,29 +42,49 @@ const openExternalWindow = async (callId: string, theme: string) => {
 
 	changeTheme(externalWindow.document, theme);
 
-	await new Promise((resolve) => {
-		if (externalWindow.document.readyState === 'loading') {
-			externalWindow.document.onreadystatechange = () => {
-				if (externalWindow.document.readyState === 'complete') {
-					resolve(true);
+	const root = await new Promise<HTMLDivElement>((resolve, reject) => {
+		let createRootTimeout: NodeJS.Timeout | null = null;
+		let attempt = 1;
+		let created = false;
+		const attemptCreateRoot = () => {
+			// In case `onload` runs after the root has been created already
+			if (created === true) {
+				return;
+			}
+
+			if (createRootTimeout) {
+				clearTimeout(createRootTimeout);
+			}
+
+			try {
+				const root = createRootElement(externalWindow);
+				created = true;
+				resolve(root);
+			} catch (error) {
+				// arround ~ 5 seconds total timeout
+				if (attempt > 9) {
+					reject(error as Error);
+					externalWindow.close();
+					return;
 				}
-			};
-		}
-
-		externalWindow.addEventListener('DOMContentLoaded', () => {
-			resolve(true);
-		});
-
-		externalWindow.document.onload = () => {
-			resolve(true);
+				attempt += 1;
+				createRootTimeout = setTimeout(attemptCreateRoot, attempt * 100);
+			}
 		};
 
-		// In case the other listeners never finish, resolve the promise so it isn't stuck forever
-		const LISTENERS_TIMEOUT = 500;
-		setTimeout(() => resolve(true), LISTENERS_TIMEOUT);
+		// DOMContentLoaded nor readyState can be used because they have already fired
+		// onload takes longer to fire but could also have already been fired
+		externalWindow.onload = () => {
+			attemptCreateRoot();
+		};
+
+		// If onload takes too long to start it could mean it has already fired
+		// So we start polling for the element. It could still not have been fired.
+		setTimeout(() => {
+			attemptCreateRoot();
+		}, 500);
 	});
 
-	const root = await createRootElement(externalWindow);
 	return { root, externalWindow };
 };
 
