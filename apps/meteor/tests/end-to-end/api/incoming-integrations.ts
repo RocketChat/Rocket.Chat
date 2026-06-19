@@ -957,7 +957,7 @@ describe('[Incoming Integrations]', () => {
 					name: 'Incoming test update attempt',
 					enabled: true,
 					alias: 'test update attempt',
-					username: 'rocket.chat',
+					username: 'rocket.cat',
 					scriptEnabled: true,
 					overrideDestinationChannelEnabled: true,
 					channel: '#general',
