@@ -2,7 +2,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ICronJobsService } from '@rocket.chat/core-services';
 import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
-import { CronJobs, CronHistory } from '@rocket.chat/models';
+import { CronJobs, CronHistory, AppScheduler } from '@rocket.chat/models';
 
 import { deriveStatus } from './deriveStatus';
 
@@ -14,9 +14,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		count?: number;
 	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
 		const { cursor, totalCount } = CronJobs.findPaginated(
-			{
-				name: { $not: /^Apps-/ },
-			},
+			{},
 			{
 				sort: { name: 1 },
 				skip: pagination?.offset,
@@ -43,10 +41,8 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		offset?: number;
 		count?: number;
 	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
-		const { cursor, totalCount } = CronJobs.findPaginated(
-			{
-				name: /^Apps-/,
-			},
+		const { cursor, totalCount } = AppScheduler.findPaginated(
+			{},
 			{
 				sort: { name: 1 },
 				skip: pagination?.offset,
