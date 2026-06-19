@@ -66,12 +66,16 @@ test.describe.serial('Presence', () => {
 		});
 
 		test('should not save custom status as `undefined` if nothing changes', async ({ page }) => {
-			await test.step('change to empty status', async () => {
-				await poHomeChannel.navbar.changeUserCustomStatus();
-				expect(await page.evaluate(() => localStorage.getItem('fuselage-localStorage-Local_Custom_Status'))).not.toBe('undefined');
+			await poHomeChannel.navbar.openEditStatusModal();
+
+			const { editStatusModal } = poHomeChannel.navbar;
+
+			await test.step('Save stays disabled while the form is untouched', async () => {
+				await expect(editStatusModal.btnSubmit).toBeDisabled();
 			});
-			await test.step('save without changes', async () => {
-				await poHomeChannel.navbar.changeUserCustomStatus();
+
+			await test.step('closing without changes leaves stored status untouched', async () => {
+				await editStatusModal.close();
 				expect(await page.evaluate(() => localStorage.getItem('fuselage-localStorage-Local_Custom_Status'))).not.toBe('undefined');
 			});
 		});
@@ -107,6 +111,8 @@ test.describe.serial('Presence', () => {
 
 			const { editStatusModal } = poHomeChannel.navbar;
 
+			await editStatusModal.setStatusMessage('available');
+
 			await editStatusModal.selectDuration('Choose date and time');
 			await expect(editStatusModal.customDateInput).toBeVisible();
 			await expect(editStatusModal.customTimeInput).toBeVisible();
@@ -122,6 +128,8 @@ test.describe.serial('Presence', () => {
 			await poHomeChannel.navbar.openEditStatusModal();
 
 			const { editStatusModal } = poHomeChannel.navbar;
+
+			await editStatusModal.setStatusMessage('available');
 
 			await editStatusModal.selectDuration('Choose date and time');
 
@@ -139,6 +147,8 @@ test.describe.serial('Presence', () => {
 			await poHomeChannel.navbar.openEditStatusModal();
 
 			const { editStatusModal } = poHomeChannel.navbar;
+
+			await editStatusModal.setStatusMessage('available');
 
 			await editStatusModal.selectDuration('Choose date and time');
 			await editStatusModal.customDateInput.fill('');
@@ -171,7 +181,7 @@ test.describe.serial('Presence', () => {
 			});
 
 			await test.step('clear status', async () => {
-				await poHomeChannel.navbar.changeUserCustomStatus('');
+				await poHomeChannel.navbar.changeUserStatus('online');
 			});
 		});
 
@@ -192,7 +202,7 @@ test.describe.serial('Presence', () => {
 			});
 
 			await test.step('clear status and verify expiration is removed', async () => {
-				await poHomeChannel.navbar.changeUserCustomStatus('');
+				await poHomeChannel.navbar.changeUserStatus('online');
 
 				await poHomeChannel.navbar.btnUserMenu.click();
 				await expect(poHomeChannel.navbar.userMenu).not.toContainText('Until');

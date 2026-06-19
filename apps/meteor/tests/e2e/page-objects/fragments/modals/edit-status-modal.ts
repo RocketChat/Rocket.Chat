@@ -48,6 +48,10 @@ export class EditStatusModal extends Modal {
 		await this.page!.getByRole('option', { name: status }).click();
 	}
 
+	async setStatusMessage(message: string): Promise<void> {
+		await this.statusMessageInput.fill(message);
+	}
+
 	async selectDuration(duration: string): Promise<void> {
 		await this.durationSelect.click();
 		await this.page!.getByRole('option', { name: new RegExp(duration) }).click();
@@ -55,7 +59,7 @@ export class EditStatusModal extends Modal {
 
 	async changeStatusMessage(statusMessage?: string): Promise<void> {
 		if (statusMessage !== undefined) {
-			await this.statusMessageInput.fill(statusMessage);
+			await this.setStatusMessage(statusMessage);
 		}
 		await this.save();
 		await this.toastMessages.dismissToast();
@@ -78,7 +82,7 @@ export class EditStatusModal extends Modal {
 			await this.selectStatusType(statusType);
 		}
 		if (message !== undefined) {
-			await this.statusMessageInput.fill(message);
+			await this.setStatusMessage(message);
 		}
 		await this.selectDuration(duration);
 		if (customDate) {
