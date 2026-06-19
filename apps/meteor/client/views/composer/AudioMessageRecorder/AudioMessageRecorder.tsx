@@ -22,6 +22,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	const [time, setTime] = useState('00:00');
 	const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
+	const isMountedRef = useRef(true);
 
 	const stopRecording = useStableCallback(async () => {
 		if (recordingIntervalRef.current) {
@@ -56,6 +57,9 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 
 		try {
 			await audioRecorder.start();
+			if (!isMountedRef.current) {
+				return;
+			}
 			chat?.action.performContinuously('recording');
 			const startTime = new Date();
 			recordingIntervalRef.current = setInterval(() => {
@@ -93,6 +97,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 		handleRecord();
 
 		return () => {
+			isMountedRef.current = false;
 			if (recordingIntervalRef.current) {
 				clearInterval(recordingIntervalRef.current);
 			}
