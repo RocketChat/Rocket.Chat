@@ -79,6 +79,7 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	ICronJobsModel,
+	IAppSchedulerModel,
 	IAbacAttributesModel,
 	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
@@ -111,6 +112,7 @@ import {
 	SamlUsedAssertionsRaw,
 	CronHistoryRaw,
 	CronJobsRaw,
+	AppSchedulerRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -208,6 +210,7 @@ export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLeve
 export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const CronJobs = proxify<ICronJobsModel>('ICronJobsModel');
+export const AppScheduler = proxify<IAppSchedulerModel>('IAppSchedulerModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
@@ -248,6 +251,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 	registerModel('ICronJobsModel', () => new CronJobsRaw(db));
+	registerModel('IAppSchedulerModel', () => new AppSchedulerRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
