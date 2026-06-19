@@ -24,13 +24,13 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 	const appActions = actionsBase.filter((a) => a.type === 'apps');
 	const nonAppActions = actionsBase.filter((a) => a.type !== 'apps');
 
-	if (!config || !config.items || config.items.length === 0) {
+	if (!config?.items || config.items.length === 0) {
 		const hiddenActions: RoomToolboxHiddenSection[] = [];
 		if (appActions.length > 0) {
 			hiddenActions.push({ id: 'apps', items: appActions });
 		}
 		return {
-			featuredActions: [],
+			featuredActions: [] as RoomToolboxBaseAction[],
 			visibleActions: nonAppActions,
 			hiddenActions,
 		};
