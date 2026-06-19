@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Options } from '@rocket.chat/message-parser';
 import { Accounts } from 'meteor/accounts-base';
+import type { RefObject } from 'react';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
@@ -9,9 +10,17 @@ import { escapeHTML } from './messageParser';
 import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
+import { settings } from '../../../../client/lib/settings';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string, parseOptions: Options): ComposerAPI => {
+export const createRichTextComposerAPI = (
+	input: HTMLDivElement,
+	storageID: string,
+	parseOptions: Options,
+	composerRef: RefObject<HTMLElement | null>,
+	{ rid, tmid }: { rid: string; tmid?: string },
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -202,32 +211,31 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		setEditing(editing);
 	};
 
-	const [formatters, stopFormatterTracker] = (() => {
+	const [formatters, stopFormatterSubscription] = (() => {
 		let actions: FormattingButton[] = [];
 
-		const c = Tracker.autorun(() => {
+		const recompute = (): void => {
 			actions = formattingButtons.filter(({ condition }) => !condition || condition());
 			emitter.emit('formatting');
-		});
+		};
+		recompute();
+		const stop = settings.observe('*', recompute);
 
 		return [
 			{
 				get: () => actions,
 				subscribe: (callback: () => void) => emitter.on('formatting', callback),
 			},
-			c,
+			stop,
 		];
 	})();
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
-		input.removeEventListener('input', (event: Event) => {
-			resolveComposerBox(event, parseOptions);
-		});
-		stopFormatterTracker.stop();
+		stopFormatterSubscription();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 		// Sanitize the innerText by reducing multiple instances of linebreaks
 		const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
@@ -250,14 +258,13 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 			if (endPatternFound) {
 				insertText(selectedText);
 
-				/* Get current selection range */
-				const { selectionStart } = getSelectionRange(input);
+				const { selectionStart: newSelStart } = getSelectionRange(input);
 
 				if (!document.execCommand?.('insertText', false, selectedText)) {
 					input.innerText = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
 				}
 
-				const newStart = selectionStart - startPattern.length;
+				const newStart = newSelStart - startPattern.length;
 				const newEnd = newStart + selectedText.length;
 
 				setSelectionRange(input, newStart, newEnd);
@@ -266,11 +273,11 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 				triggerEvent(input, 'change');
 
 				focus();
-				return;
+				return { selectionStart: newStart, selectionEnd: newEnd, value: input.innerText };
 			}
 		}
 
-		// Explictly set the selection range and send focus back to the editor again
+		// Explicitly set the selection range and send focus back to the editor again
 		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
 		setSelectionRange(input, selectionStart, selectionEnd);
 		focus();
@@ -288,6 +295,8 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
+
+		return { selectionStart: newStart, selectionEnd: newEnd, value: input.innerText };
 	};
 
 	const insertNewLine = (): void => insertText('\n');
@@ -392,5 +401,7 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		composerRef,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };
