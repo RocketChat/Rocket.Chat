@@ -233,12 +233,16 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	private async processStatusChangesAtTime(): Promise<void> {
 		const processTime = new Date();
 
-		const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
-		for await (const event of eventsStartingNow) {
-			if (event.busy === false) {
-				continue;
+		try {
+			const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
+			for await (const event of eventsStartingNow) {
+				if (event.busy === false) {
+					continue;
+				}
+				await this.processEventStart(event);
 			}
-			await this.processEventStart(event);
+		} catch (err) {
+			logger.error({ msg: 'Failed to process calendar status changes', err });
 		}
 
 		await this.doSetupNextStatusChange();
