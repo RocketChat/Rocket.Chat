@@ -12,7 +12,7 @@ import {
 } from './utils';
 import { test, expect } from './utils/test';
 
-test.describe.serial('rooms.join', () => {
+test.describe.serial('Join rooms', () => {
 	test.use({ storageState: Users.user1.state });
 
 	test.describe('public channels without preview-c-room', () => {
