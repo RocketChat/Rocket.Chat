@@ -228,19 +228,16 @@ import { SynapseClient } from '../helper/synapse-client';
 			describe('Go to the members list and try to add a federated user', () => {
 				it('should not allow and show an error message', async () => {
 					// RC view: Attempt to add a federated user to the non-federated room
-					const response = await addUserToRoom({
+					const [response] = await addUserToRoom({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
 						rid: nonFederatedChannel._id,
+						type: 'c',
 						config: rc1AdminRequestConfig,
 					});
 
 					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-					expect(messageData).toHaveProperty('error');
-					expect(messageData.error).toHaveProperty('error', 'error-federated-users-in-non-federated-rooms');
+					expect(response.body).toHaveProperty('error');
+					expect(response.body.error).toMatch(/error-federated-users-in-non-federated-rooms/);
 
 					// RC view: Verify the federated user was NOT added to the room's member list
 					const federatedUserInRoom = await findRoomMember(
@@ -249,10 +246,12 @@ import { SynapseClient } from '../helper/synapse-client';
 						{ initialDelay: 0 },
 						rc1AdminRequestConfig,
 					);
+
 					expect(federatedUserInRoom).toBeNull();
 
 					// RC view: Verify room remains non-federated
 					const roomInfo = await getRoomInfo(nonFederatedChannel._id, rc1AdminRequestConfig);
+
 					expect(roomInfo.room).not.toHaveProperty('federated', true);
 				});
 			});

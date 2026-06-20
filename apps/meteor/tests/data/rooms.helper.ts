@@ -129,55 +129,56 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
  * @param config - Optional request configuration for custom domains
  * @returns Promise resolving to the method call response
  */
-// TODO(ddp-removal): swap /api/v1/method.call/addUsersToRoom for the per-type
-// REST endpoints (/v1/channels.invite or /v1/groups.invite). The federation
-// suite still asserts the legacy DDP error shape (`message` field with a
-// stringified `{ error: { error } }`); migrating requires updating those
-// expectations to the REST envelope (`{ success: false, error }`).
 export const addUserToRoom = ({
 	usernames,
 	rid,
+	type,
 	userCredentials,
 	config,
 }: {
 	usernames: string[];
 	rid: IRoom['_id'];
+	type: 'c' | 'p';
 	userCredentials?: Credentials;
 	config?: IRequestConfig;
 }) => {
+	if (!usernames || usernames.length === 0) {
+		throw new Error('"usernames" is required in "addUserToRoom" test helper');
+	}
+
+	if (!rid) {
+		throw new Error('"rid" is required in "addUserToRoom" test helper');
+	}
+
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || userCredentials || credentials;
 
-	return requestInstance
-		.post(methodCall('addUsersToRoom'))
-		.set(credentialsInstance)
-		.send({
-			message: JSON.stringify({
-				method: 'addUsersToRoom',
-				params: [{ rid, users: usernames }],
-				id: 'id',
-				msg: 'method',
+	const endpoint = type === 'c' ? 'channels.invite' : 'groups.invite';
+
+	return Promise.all(
+		usernames.map((username) =>
+			requestInstance.post(api(endpoint)).set(credentialsInstance).send({
+				roomId: rid,
+				username,
 			}),
-		});
+		),
+	);
 };
 
 /**
- * Adds users to a room using the /invite slash command via method.call.
+ * Adds users to a room using the /invite slash command via the REST API.
  *
- * Executes the /invite slash command using the DDP method call to add users to a room.
- * This simulates the user experience of using slash commands in the UI.
- * Supports both local and federated users, with proper error handling for federation restrictions.
+ * Executes the /invite slash command using the commands.run REST endpoint
+ * to simulate the user experience of using slash commands in the UI.
+ * Supports both local and federated users, with proper error handling
+ * for federation restrictions.
  *
  * @param usernames - Array of usernames to add to the room
  * @param rid - The unique identifier of the room
  * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the method call response
- * @note The slash command expects parameters: { cmd: string, params: string, msg: IMessage, triggerId: string }
+ * @returns Promise resolving to the REST API response
+ * @note Uses the /api/v1/commands.run endpoint with the invite command
  */
-// TODO(ddp-removal): swap /api/v1/method.call/slashCommand for
-// POST /v1/commands.run. Same caveat as addUserToRoom: federation specs
-// inspect the DDP-style `message` payload and need to be ported to the
-// REST envelope first.
 export const addUserToRoomSlashCommand = ({
 	usernames,
 	rid,
@@ -190,6 +191,7 @@ export const addUserToRoomSlashCommand = ({
 	if (!usernames || usernames.length === 0) {
 		throw new Error('"usernames" is required in "addUserToRoomSlashCommand" test helper');
 	}
+
 	if (!rid) {
 		throw new Error('"rid" is required in "addUserToRoomSlashCommand" test helper');
 	}
@@ -198,25 +200,13 @@ export const addUserToRoomSlashCommand = ({
 	const credentialsInstance = config?.credentials || credentials;
 
 	return requestInstance
-		.post(methodCall('slashCommand'))
+		.post(api('commands.run'))
 		.set(credentialsInstance)
 		.send({
-			message: JSON.stringify({
-				method: 'slashCommand',
-				params: [
-					{
-						cmd: 'invite',
-						params: usernames.join(' '),
-						msg: {
-							rid,
-							_id: `test-${Date.now()}`,
-						},
-						triggerId: `test-trigger-${Date.now()}`,
-					},
-				],
-				id: 'id',
-				msg: 'method',
-			}),
+			command: 'invite',
+			params: usernames.join(' '),
+			roomId: rid,
+			triggerId: `test-trigger-${Date.now()}`,
 		});
 };
 
