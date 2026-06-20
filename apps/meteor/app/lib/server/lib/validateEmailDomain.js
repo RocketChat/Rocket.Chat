@@ -21,7 +21,7 @@ settings.watch('Accounts_BlockedDomainsList', (value) => {
 	emailDomainBlackList = value
 		.split(',')
 		.filter(Boolean)
-		.map((domain) => domain.trim());
+		.map((domain) => domain.trim().toLowerCase());
 });
 settings.watch('Accounts_AllowedDomainsList', (value) => {
 	if (!value) {
@@ -32,7 +32,7 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 	emailDomainWhiteList = value
 		.split(',')
 		.filter(Boolean)
-		.map((domain) => domain.trim());
+		.map((domain) => domain.trim().toLowerCase());
 });
 
 export const validateEmailDomain = async function (email) {
@@ -43,7 +43,8 @@ export const validateEmailDomain = async function (email) {
 		});
 	}
 
-	const emailDomain = email.substr(email.lastIndexOf('@') + 1);
+	// Email domains are case-insensitive (RFC 1035/5321), so normalize before comparing against the allow/deny lists.
+	const emailDomain = email.substr(email.lastIndexOf('@') + 1).toLowerCase();
 
 	if (emailDomainWhiteList.length && !emailDomainWhiteList.includes(emailDomain)) {
 		throw new Meteor.Error('error-invalid-domain', 'The email domain is not in whitelist', {
