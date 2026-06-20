@@ -7254,7 +7254,7 @@ __metadata:
 
 "@react-aria/overlays@patch:@react-aria/overlays@npm%3A3.25.0#~/.yarn/patches/@react-aria-overlays-npm-3.25.0-2628866e6e.patch":
   version: 3.25.0
-  resolution: "@react-aria/overlays@patch:@react-aria/overlays@npm%3A3.25.0#~/.yarn/patches/@react-aria-overlays-npm-3.25.0-2628866e6e.patch::version=3.25.0&hash=8f84db"
+  resolution: "@react-aria/overlays@patch:@react-aria/overlays@npm%3A3.25.0#~/.yarn/patches/@react-aria-overlays-npm-3.25.0-2628866e6e.patch::version=3.25.0&hash=0606e2"
   dependencies:
     "@react-aria/focus": "npm:^3.19.1"
     "@react-aria/i18n": "npm:^3.12.5"
@@ -7270,7 +7270,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/0a13ca74216d854e8fb7d3e055398eabfe8cb972f8ccc12fbd5dc59716a2dac8eb16897cecb03b936a60f2b79c64f27e23fa563059ef181f753f751890c63230
+  checksum: 10/6514dc8005f0577b61d07e555ae81afd9dbfdc880b0fc24771febf4c59445e8d6048844f6ee72dfe071eeb1d1d5c0a6feb1c1395a5e708e20c1f404c016886bb
   languageName: node
   linkType: hard
 

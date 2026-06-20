@@ -866,6 +866,8 @@
   "AutoTranslate_Enabled_Description": "Enabling auto-translation will allow people with the `auto-translate` permission to have all messages automatically translated into their selected language. Fees may apply.",
   "AutoTranslate_Enabled_for_room": "Auto-translate enabled for #{{roomName}}",
   "AutoTranslate_Google": "Google",
+  "AutoTranslate_LibreTranslate": "LibreTranslate",
+  "AutoTranslate_LibreTranslate_API_URL": "LibreTranslate API URL",
   "AutoTranslate_Microsoft": "Microsoft",
   "AutoTranslate_Microsoft_API_Key": "Ocp-Apim-Subscription-Key",
   "AutoTranslate_ServiceProvider": "Service Provider",
