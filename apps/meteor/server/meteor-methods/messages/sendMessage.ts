@@ -66,7 +66,7 @@ export async function executeSendMessage(
 		message.msg = message.msg.replace(/\0/g, '');
 	}
 
-	if (!message.msg?.trim() && !message.attachments?.length && !message.blocks?.length) {
+	if ((typeof message.msg !== 'string' || !message.msg.trim()) && !message.attachments?.length && !message.blocks?.length) {
 		throw new Meteor.Error('error-invalid-message', 'Message cannot be empty', {
 			method: 'sendMessage',
 		});
