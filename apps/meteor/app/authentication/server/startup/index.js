@@ -496,30 +496,10 @@ Accounts.validateNewUser((user) => {
 	return true;
 });
 
-Accounts.validateNewUser((user) => {
-	if (user.type === 'visitor') {
-		return true;
-	}
-
-	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
-	if (_.isEmpty(domainWhiteList?.trim())) {
-		return true;
-	}
-
-	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim().toLowerCase());
-
-	if (user.emails && user.emails.length > 0) {
-		// Email domains are case-insensitive (RFC 1035/5321); compare against the allowed-domains list case-insensitively.
-		const email = user.emails[0].address.toLowerCase();
-		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
-
-		if (inWhiteList === false) {
-			throw new Meteor.Error('error-invalid-domain');
-		}
-	}
-
-	return true;
-});
+// Reuse the shared allowed-domains check (`validateEmailDomain` above) so the logic
+// lives in a single place and cannot drift. This hook also gates OAuth/external
+// account creation.
+Accounts.validateNewUser((user) => validateEmailDomain(user));
 
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {
