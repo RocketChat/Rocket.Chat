@@ -1,6 +1,5 @@
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type { VideoConference, IVideoConferenceUser, RequiredField } from '@rocket.chat/core-typings';
-import { MediaCalls } from '@rocket.chat/models';
 
 import type { Pexip } from './Pexip';
 import { logger } from './logger';
@@ -48,23 +47,22 @@ export class PexipVideoConfProvider {
 
 	public async customizeUrl(call: RequiredField<VideoConference, 'url'>, user: IVideoConferenceUser | undefined): Promise<string> {
 		const pin = await this.getPinForUser(call, user);
-		const escalationParams = this.getEscalationParams();
+		const extraParams = this.getEscalationParams();
 
 		const { url: userUrl } = call;
 
 		const url = new URL(userUrl);
-		if (user) {
-			const { _id: uid, name } = user;
 
-			if (escalationParams?.size && (await this.isEscalatedUser(call, uid))) {
-				for (const [key, value] of escalationParams) {
-					url.searchParams.set(key, value);
-				}
+		// Apply the configured conference params (default `join=1&muteCamera=true`) to every Pexip
+		// conference URL, so the embedded iframe auto-joins with the camera muted.
+		if (extraParams?.size) {
+			for (const [key, value] of extraParams) {
+				url.searchParams.set(key, value);
 			}
+		}
 
-			if (name) {
-				url.searchParams.set('name', name);
-			}
+		if (user?.name) {
+			url.searchParams.set('name', user.name);
 		}
 
 		url.searchParams.set('pin', pin);
@@ -78,16 +76,6 @@ export class PexipVideoConfProvider {
 			logger.error({ msg: 'Failed to parse Pexip Escalation Params', err });
 			return null;
 		}
-	}
-
-	private async isEscalatedUser(conference: VideoConference, uid: string): Promise<boolean> {
-		const { mediaCallIds } = conference;
-
-		if (!mediaCallIds?.length) {
-			return false;
-		}
-
-		return MediaCalls.isUserInCallIds(uid, mediaCallIds);
 	}
 
 	public async onNewVideoConference(call: VideoConference): Promise<void> {
