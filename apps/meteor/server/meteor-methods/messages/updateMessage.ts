@@ -23,22 +23,6 @@ export async function executeUpdateMessage(
 		return;
 	}
 
-	if (originalMessage.t === 'rm') {
-		throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
-			method: 'updateMessage',
-			action: 'Message_editing',
-		});
-	}
-
-	if (typeof message.msg === 'string') {
-		message.msg = message.msg.replace(/\0/g, '');
-	}
-
-	if (message.msg !== undefined && !message.msg?.trim() && !originalMessage.attachments?.length && !originalMessage.blocks?.length) {
-		throw new Meteor.Error('error-invalid-message', 'Message cannot be empty', {
-			method: 'updateMessage',
-		});
-	}
 
 	Object.entries(message).forEach(([key, value]) => {
 		if (!allowedEditedFields.includes(key) && value !== originalMessage[key as keyof IMessage]) {

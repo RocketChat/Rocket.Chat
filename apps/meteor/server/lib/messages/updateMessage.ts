@@ -25,6 +25,23 @@ export const updateMessage = async function (
 		throw new Error('Invalid message ID.');
 	}
 
+	if (originalMessage.t === 'rm') {
+		throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
+			method: 'updateMessage',
+			action: 'Message_editing',
+		});
+	}
+
+	if (typeof message.msg === 'string') {
+		message.msg = message.msg.replace(/\0/g, '');
+	}
+
+	if (message.msg !== undefined && !message.msg?.trim() && !originalMessage.attachments?.length && !originalMessage.blocks?.length) {
+		throw new Meteor.Error('error-invalid-message', 'Message cannot be empty', {
+			method: 'updateMessage',
+		});
+	}
+
 	let messageData: IMessage = Object.assign({}, originalMessage, message);
 
 	// For the Rocket.Chat Apps :)
