@@ -46,9 +46,10 @@ type AddParticipantsModalProps = {
 	callId: string;
 	rid: string;
 	onClose: () => void;
+	onDialOut?: (destination: string) => void;
 };
 
-const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProps) => {
+const AddParticipantsModal = ({ callId, rid, onClose, onDialOut }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -154,18 +155,25 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 		}
 		setAdding(true);
 		try {
-			// Phone numbers aren't wired into the room yet; only add the selected users for now.
 			const usersToAdd = selected.flatMap((participant) => (participant.kind === 'user' ? [participant.username] : []));
+			const numbersToDial = selected.flatMap((participant) => (participant.kind === 'number' ? [participant.number] : []));
 
-			if (mode === 'discussion') {
-				// The server creates the discussion (existing members + the new ones) and repoints the
-				// conference at it. Refresh the conference info so the chat panel switches to the new room.
-				await addParticipants({ callId, users: usersToAdd });
-				await queryClient.invalidateQueries({ queryKey: ['conference-info', callId] });
-			} else {
-				await Promise.all(
-					usersToAdd.map((username) => (isPrivate ? inviteToGroup({ roomId: rid, username }) : inviteToChannel({ roomId: rid, username }))),
-				);
+			// Dial each phone number / SIP destination into the conference via the Pexip iframe API.
+			numbersToDial.forEach((number) => onDialOut?.(number));
+
+			if (usersToAdd.length) {
+				if (mode === 'discussion') {
+					// The server creates the discussion (existing members + the new ones) and repoints the
+					// conference at it. Refresh the conference info so the chat panel switches to the new room.
+					await addParticipants({ callId, users: usersToAdd });
+					await queryClient.invalidateQueries({ queryKey: ['conference-info', callId] });
+				} else {
+					await Promise.all(
+						usersToAdd.map((username) =>
+							isPrivate ? inviteToGroup({ roomId: rid, username }) : inviteToChannel({ roomId: rid, username }),
+						),
+					);
+				}
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
