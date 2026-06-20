@@ -35,6 +35,9 @@ export const updateMessage = async function (
 	if (typeof message.msg === 'string') {
 		message.msg = message.msg.replace(/\0/g, '');
 	}
+	if (typeof message.attachments?.[0]?.description === 'string') {
+		message.attachments[0].description = message.attachments[0].description.replace(/\0/g, '');
+	}
 
 	if (message.msg !== undefined && (typeof message.msg !== 'string' || !message.msg.trim()) && !originalMessage.attachments?.length && !originalMessage.blocks?.length) {
 		throw new Meteor.Error('error-invalid-message', 'Message cannot be empty', {
