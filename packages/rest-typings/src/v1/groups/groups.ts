@@ -12,7 +12,6 @@ import type { GroupsCreateProps } from './GroupsCreateProps';
 import type { GroupsDeleteProps } from './GroupsDeleteProps';
 import type { GroupsFilesProps } from './GroupsFilesProps';
 import type { GroupsGetIntegrationsProps } from './GroupsGetIntegrationsProps';
-import type { GroupsHistoryProps } from './GroupsHistoryProps';
 import type { GroupsInfoProps } from './GroupsInfoProps';
 import type { GroupsInviteProps } from './GroupsInviteProps';
 import type { GroupsKickProps } from './GroupsKickProps';
@@ -53,11 +52,6 @@ export type GroupsEndpoints = {
 			members: IUser[];
 			total: number;
 		};
-	};
-	'/v1/groups.history': {
-		GET: (params: GroupsHistoryProps) => PaginatedResult<{
-			messages: IMessage[];
-		}>;
 	};
 	'/v1/groups.archive': {
 		POST: (params: GroupsArchiveProps) => void;

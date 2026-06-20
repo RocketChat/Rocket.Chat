@@ -1,5 +1,6 @@
 export type * from './groups';
 
+export * from './BaseProps';
 export * from './GroupsArchiveProps';
 export * from './GroupsCloseProps';
 export * from './GroupsConvertToTeamProps';
@@ -36,4 +37,3 @@ export * from './GroupsSetReadOnlyProps';
 export * from './GroupsSetTopicProps';
 export * from './GroupsSetTypeProps';
 export * from './GroupsModeratorsProps';
-export * from './GroupsHistoryProps';
