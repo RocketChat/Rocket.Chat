@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -12,9 +12,11 @@ type ConferenceChatProps = {
 	callId: string;
 	rid?: string;
 	loading: boolean;
+	onClose?: () => void;
+	onDialOut?: (destination: string) => void;
 };
 
-const ConferenceChat = ({ callId, rid, loading }: ConferenceChatProps) => {
+const ConferenceChat = ({ callId, rid, loading, onClose, onDialOut }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -39,14 +41,19 @@ const ConferenceChat = ({ callId, rid, loading }: ConferenceChatProps) => {
 					borderBlockEndWidth={1}
 					borderBlockEndColor='divider'
 				>
-					<Box is='h1' fontScale='h2' color='default'>
-						{t('Chat')}
+					<Box display='flex' alignItems='center'>
+						{onClose && <IconButton mie={8} small icon='cross' title={t('Close')} onClick={onClose} />}
+						<Box is='h1' fontScale='h2' color='default'>
+							{t('Chat')}
+						</Box>
 					</Box>
 					<Button
 						icon='user-plus'
-						onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
+						onClick={() =>
+							setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} onDialOut={onDialOut} />)
+						}
 					>
-						{t('Add_participants')}
+						{t('Add_people')}
 					</Button>
 				</Box>
 
