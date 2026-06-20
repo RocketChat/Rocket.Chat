@@ -82,6 +82,19 @@ export const updateMessage = async function (
 
 	messageData = await Message.beforeSave({ message: messageData, room, user, previewUrls, parseUrls });
 
+	if (typeof messageData.msg === 'string') {
+		messageData.msg = messageData.msg.replace(/\0/g, '');
+	}
+	if (typeof messageData.attachments?.[0]?.description === 'string') {
+		messageData.attachments[0].description = messageData.attachments[0].description.replace(/\0/g, '');
+	}
+
+	if (messageData.msg !== undefined && (typeof messageData.msg !== 'string' || !messageData.msg.trim()) && !messageData.attachments?.length && !messageData.blocks?.length) {
+		throw new Meteor.Error('error-invalid-message', 'Message cannot be empty', {
+			method: 'updateMessage',
+		});
+	}
+
 	if (messageData.customFields) {
 		validateCustomMessageFields({
 			customFields: messageData.customFields,
