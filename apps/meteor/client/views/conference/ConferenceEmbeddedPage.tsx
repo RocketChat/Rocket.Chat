@@ -137,20 +137,26 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	return (
 		<Box bg='surface-light' width='full' height='full' display='flex'>
-			{/* Keep the chat mounted while hidden so its room/composer state survives toggling. */}
+			{/* Keep the chat mounted while hidden so its room/composer state survives toggling. The outer
+			box animates its width to slide the panel in/out; the inner box keeps a fixed minimum width and
+			is clipped by `overflow: hidden`, so the content slides instead of reflowing as it collapses. */}
 			<Box
-				width='30%'
-				display={chatVisible ? 'flex' : 'none'}
+				display='flex'
 				flexDirection='column'
-				minWidth={350}
+				flexShrink={0}
+				width={chatVisible ? '30%' : '0'}
+				minWidth={chatVisible ? 350 : 0}
 				bg='tint'
-				borderInlineEndWidth={1}
+				borderInlineEndWidth={chatVisible ? 1 : 0}
 				borderColor='divider'
+				style={{ overflow: 'hidden', transition: 'width 200ms ease, min-width 200ms ease' }}
 			>
-				<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onClose={closeChat} onDialOut={dialOut} />
+				<Box display='flex' flexDirection='column' width='100%' minWidth={350} height='full'>
+					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onClose={closeChat} onDialOut={dialOut} />
+				</Box>
 			</Box>
 
-			<Box width={chatVisible ? '70%' : 'full'} display='flex' flexDirection='column' position='relative'>
+			<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
 				<ConferenceIframe url={conference.url} loading={conference.loading} />
 			</Box>
 		</Box>
