@@ -35,8 +35,12 @@ export const updateMessage = async function (
 	if (typeof message.msg === 'string') {
 		message.msg = message.msg.replace(/\0/g, '');
 	}
-	if (typeof message.attachments?.[0]?.description === 'string') {
-		message.attachments[0].description = message.attachments[0].description.replace(/\0/g, '');
+	if (Array.isArray(message.attachments)) {
+		for (const attachment of message.attachments) {
+			if (typeof attachment.description === 'string') {
+				attachment.description = attachment.description.replace(/\0/g, '');
+			}
+		}
 	}
 
 	if (message.msg !== undefined && (typeof message.msg !== 'string' || !message.msg.trim()) && !originalMessage.attachments?.length && !originalMessage.blocks?.length) {
@@ -85,8 +89,12 @@ export const updateMessage = async function (
 	if (typeof messageData.msg === 'string') {
 		messageData.msg = messageData.msg.replace(/\0/g, '');
 	}
-	if (typeof messageData.attachments?.[0]?.description === 'string') {
-		messageData.attachments[0].description = messageData.attachments[0].description.replace(/\0/g, '');
+	if (Array.isArray(messageData.attachments)) {
+		for (const attachment of messageData.attachments) {
+			if (typeof attachment.description === 'string') {
+				attachment.description = attachment.description.replace(/\0/g, '');
+			}
+		}
 	}
 
 	if (messageData.msg !== undefined && (typeof messageData.msg !== 'string' || !messageData.msg.trim()) && !messageData.attachments?.length && !messageData.blocks?.length) {
@@ -110,8 +118,8 @@ export const updateMessage = async function (
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
-	await Messages.updateOne(
-		{ _id },
+	const updateResult = await Messages.updateOne(
+		{ _id, t: { $ne: 'rm' } },
 		{
 			$set: {
 				...editedMessage,
@@ -119,6 +127,13 @@ export const updateMessage = async function (
 			...(!editedMessage.md && { $unset: { md: 1 } }),
 		},
 	);
+
+	if (updateResult.matchedCount === 0) {
+		throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
+			method: 'updateMessage',
+			action: 'Message_editing',
+		});
+	}
 
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
