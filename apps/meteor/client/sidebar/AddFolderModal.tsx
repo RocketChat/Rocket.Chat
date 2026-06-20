@@ -11,10 +11,12 @@ import {
 	Box,
 	Icon,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from 'react-i18next';
 import { useEndpoint, useToastMessageDispatch, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import type { KeyboardEvent } from 'react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { subscriptionsQueryKeys } from '../lib/queryKeys';
 
 type AddFolderModalProps = {
@@ -57,20 +59,17 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 	const [newFolderName, setNewFolderName] = useState('');
 
 	const filteredFolders = useMemo(() => {
-		return existingFolders.filter((folder) =>
-			folder.toLowerCase().includes(search.toLowerCase())
-		);
+		return existingFolders.filter((folder) => folder.toLowerCase().includes(search.toLowerCase()));
 	}, [existingFolders, search]);
 
-	const handleSaveToExisting = async () => {
-		if (!selectedFolder) return;
+	const saveFolder = async (folderName: string) => {
 		setIsSaving(true);
 		try {
-			await saveDmFolder({ roomId: rid, dmFolder: selectedFolder });
-			
+			await saveDmFolder({ roomId: rid, dmFolder: folderName });
+
 			// Update local cache
 			queryClient.setQueryData(subscriptionsQueryKeys.subscription(rid), (sub: any) =>
-				sub ? { ...sub, dmFolder: selectedFolder } : undefined
+				sub ? { ...sub, dmFolder: folderName } : undefined,
 			);
 			queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
 
@@ -80,42 +79,39 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 			});
 			onClose();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			let message = t('Something_went_wrong', 'Something went wrong');
+			if (error instanceof Error) {
+				message = error.message;
+			} else if (typeof error === 'string') {
+				message = error;
+			}
+			dispatchToastMessage({ type: 'error', message });
 		} finally {
 			setIsSaving(false);
 		}
+	};
+
+	const handleSaveToExisting = async () => {
+		if (!selectedFolder) return;
+		await saveFolder(selectedFolder);
 	};
 
 	const handleCreateNewFolder = async () => {
 		const trimmedName = newFolderName.trim();
 		if (!trimmedName) return;
-		setIsSaving(true);
-		try {
-			await saveDmFolder({ roomId: rid, dmFolder: trimmedName });
+		await saveFolder(trimmedName);
+	};
 
-			// Update local cache
-			queryClient.setQueryData(subscriptionsQueryKeys.subscription(rid), (sub: any) =>
-				sub ? { ...sub, dmFolder: trimmedName } : undefined
-			);
-			queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
-
-			dispatchToastMessage({
-				type: 'success',
-				message: t('Folder_saved_successfully'),
-			});
-			onClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			setIsSaving(false);
+	const handleKeyDown = (e: KeyboardEvent, folder: string) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			setSelectedFolder(folder);
 		}
 	};
 
 	return (
 		<Modal>
-			<Box
-				style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-			>
+			<Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 				<ModalHeader>
 					<ModalTitle>{t('Add_to_Folder', 'Add to Folder')}</ModalTitle>
 					<ModalClose onClick={onClose} />
@@ -126,16 +122,16 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 							value={search}
 							onChange={(e: any) => setSearch(e.target.value)}
 							placeholder={t('Search_Folders', 'Search Folders')}
-							addon={<Icon name="magnifier" size="x20" />}
+							addon={<Icon name='magnifier' size='x20' />}
 						/>
 					</Box>
 
-					<Box mbe={8} fontScale="h4" color="default">
+					<Box mbe={8} fontScale='h4' color='default'>
 						{t('All_Folders', 'All Folders')}
 					</Box>
 
 					<Box
-						maxHeight="250px"
+						maxHeight='250px'
 						style={{
 							overflowY: 'auto',
 							border: '1px solid #ddd',
@@ -147,20 +143,27 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 							filteredFolders.map((folder) => {
 								const isSelected = selectedFolder === folder;
 								const count = folderCounts[folder] || 0;
-								const subtitle = count === 1 ? t('1_conversation', '1 conversation') : t('count_conversations', { defaultValue: `${count} conversations`, count });
+								const subtitle =
+									count === 1
+										? t('1_conversation', '1 conversation')
+										: t('count_conversations', { defaultValue: `${count} conversations`, count });
 
 								return (
 									<Box
 										key={folder}
-										display="flex"
-										alignItems="center"
-										padding="10px 12px"
+										display='flex'
+										alignItems='center'
+										padding='10px 12px'
 										style={{
 											cursor: 'pointer',
 											backgroundColor: isSelected ? 'rgba(31, 108, 235, 0.12)' : 'transparent',
 											transition: 'background-color 0.15s ease',
 										}}
+										role='button'
+										tabIndex={0}
+										aria-label={folder}
 										onClick={() => setSelectedFolder(folder)}
+										onKeyDown={(e: KeyboardEvent) => handleKeyDown(e, folder)}
 										onMouseEnter={(e: any) => {
 											if (!isSelected) {
 												e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.04)';
@@ -174,25 +177,25 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 									>
 										{/* Styled Rounded Cover Icon on the Left */}
 										<Box
-											display="flex"
-											alignItems="center"
-											justifyContent="center"
-											width="40px"
-											height="40px"
-											borderRadius="6px"
-											bg="neutral-200"
-											color="hint"
-											mie="12px"
+											display='flex'
+											alignItems='center'
+											justifyContent='center'
+											width='40px'
+											height='40px'
+											borderRadius='6px'
+											bg='neutral-200'
+											color='hint'
+											mie='12px'
 										>
-											<Icon name="folder" size="x24" />
+											<Icon name='folder' size='x24' />
 										</Box>
 
 										{/* Folder Details */}
-										<Box display="flex" flexDirection="column" style={{ flexGrow: 1 }}>
-											<Box fontScale="p1" style={{ fontWeight: 600, color: isSelected ? '#1f6ceb' : 'inherit' }}>
+										<Box display='flex' flexDirection='column' style={{ flexGrow: 1 }}>
+											<Box fontScale='p1' style={{ fontWeight: 600, color: isSelected ? '#1f6ceb' : 'inherit' }}>
 												{folder}
 											</Box>
-											<Box fontScale="p2" color="hint" style={{ fontSize: '12px' }}>
+											<Box fontScale='p2' color='hint' style={{ fontSize: '12px' }}>
 												{subtitle}
 											</Box>
 										</Box>
@@ -200,7 +203,7 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 								);
 							})
 						) : (
-							<Box padding="24px 12px" color="hint" textAlign="center">
+							<Box padding='24px 12px' color='hint' textAlign='center'>
 								{t('No_folders_found', 'No folders found')}
 							</Box>
 						)}
@@ -209,16 +212,18 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 					{/* Inline New Folder Section */}
 					{isCreatingNew ? (
 						<Box
-							display="flex"
-							flexDirection="column"
-							padding="12px"
-							border="1px solid #eee"
-							borderRadius="6px"
-							mbs="12px"
+							display='flex'
+							flexDirection='column'
+							padding='12px'
+							border='1px solid #eee'
+							borderRadius='6px'
+							mbs='12px'
 							style={{ backgroundColor: '#fafafa' }}
 						>
-							<Box fontScale="p2" mbe={8} style={{ fontWeight: 600 }}>{t('New_Folder', 'New Folder')}</Box>
-							<Box display="flex" alignItems="center" gap="8px" mbe={8}>
+							<Box fontScale='p2' mbe={8} style={{ fontWeight: 600 }}>
+								{t('New_Folder', 'New Folder')}
+							</Box>
+							<Box display='flex' alignItems='center' gap='8px' mbe={8}>
 								<TextInput
 									placeholder={t('Enter_folder_name', 'Enter folder name')}
 									value={newFolderName}
@@ -226,40 +231,37 @@ const AddFolderModal = ({ rid, onClose, defaultCreateNew = false }: AddFolderMod
 									style={{ flexGrow: 1 }}
 								/>
 							</Box>
-							<ButtonGroup align="end">
-								<Button small onClick={() => { setIsCreatingNew(false); setNewFolderName(''); }}>
-									{t('Cancel')}
-								</Button>
+							<ButtonGroup align='end'>
 								<Button
 									small
-									primary
-									disabled={!newFolderName.trim() || isSaving}
-									onClick={handleCreateNewFolder}
+									onClick={() => {
+										setIsCreatingNew(false);
+										setNewFolderName('');
+									}}
 								>
+									{t('Cancel')}
+								</Button>
+								<Button small primary disabled={!newFolderName.trim() || isSaving} onClick={handleCreateNewFolder}>
 									{t('Create')}
 								</Button>
 							</ButtonGroup>
 						</Box>
 					) : (
-						<Box display="flex" justifyContent="flex-end" mbs="12px">
+						<Box display='flex' justifyContent='flex-end' mbs='12px'>
 							<Button
 								onClick={() => setIsCreatingNew(true)}
 								style={{ borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '6px' }}
 							>
-								<Icon name="plus" size="x16" />
+								<Icon name='plus' size='x16' />
 								{t('New_Folder', 'New Folder')}
 							</Button>
 						</Box>
 					)}
 				</ModalContent>
 				<ModalFooter>
-					<ButtonGroup align="end">
+					<ButtonGroup align='end'>
 						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button
-							primary
-							disabled={!selectedFolder || isSaving || isCreatingNew}
-							onClick={handleSaveToExisting}
-						>
+						<Button primary disabled={!selectedFolder || isSaving || isCreatingNew} onClick={handleSaveToExisting}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>

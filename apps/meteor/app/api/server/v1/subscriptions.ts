@@ -192,7 +192,7 @@ API.v1.post(
 	async function action() {
 		const { roomId, dmFolder } = this.bodyParams;
 
-		const subscription = await Subscriptions.updateDmFolderByRoomIdAndUserId(roomId, this.userId, dmFolder || undefined);
+		const subscription = await Subscriptions.updateDmFolderByRoomIdAndUserId(roomId, this.userId, dmFolder ?? undefined);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
 		}

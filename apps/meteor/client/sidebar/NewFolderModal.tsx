@@ -13,10 +13,12 @@ import {
 	ButtonGroup,
 	Box,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from 'react-hook-form';
 import { useEndpoint, useToastMessageDispatch, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
 import { subscriptionsQueryKeys } from '../lib/queryKeys';
 
 type NewFolderModalProps = {
@@ -32,11 +34,22 @@ const NewFolderModal = ({ rid, onClose }: NewFolderModalProps) => {
 	const subscription = useUserSubscription(rid);
 	const saveDmFolder = useEndpoint('POST', '/v1/subscriptions.saveDmFolder');
 
-	const { control, handleSubmit, formState: { isSubmitting } } = useForm({
+	const {
+		control,
+		handleSubmit,
+		reset,
+		formState: { isSubmitting },
+	} = useForm({
 		defaultValues: {
 			folderName: subscription?.dmFolder || '',
 		},
 	});
+
+	useEffect(() => {
+		reset({
+			folderName: subscription?.dmFolder || '',
+		});
+	}, [subscription, reset]);
 
 	const onSubmit = async (data: { folderName: string }) => {
 		try {
@@ -49,11 +62,9 @@ const NewFolderModal = ({ rid, onClose }: NewFolderModalProps) => {
 				return;
 			}
 			await saveDmFolder({ roomId: rid, dmFolder: folder });
-			
+
 			// Update local cache
-			queryClient.setQueryData(subscriptionsQueryKeys.subscription(rid), (sub: any) =>
-				sub ? { ...sub, dmFolder: folder } : undefined
-			);
+			queryClient.setQueryData(subscriptionsQueryKeys.subscription(rid), (sub: any) => (sub ? { ...sub, dmFolder: folder } : undefined));
 			queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
 
 			dispatchToastMessage({
@@ -62,17 +73,19 @@ const NewFolderModal = ({ rid, onClose }: NewFolderModalProps) => {
 			});
 			onClose();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			let message = t('Something_went_wrong', 'Something went wrong');
+			if (error instanceof Error) {
+				message = error.message;
+			} else if (typeof error === 'string') {
+				message = error;
+			}
+			dispatchToastMessage({ type: 'error', message });
 		}
 	};
 
 	return (
 		<Modal>
-			<Box
-				is="form"
-				onSubmit={handleSubmit(onSubmit)}
-				style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-			>
+			<Box is='form' onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 				<ModalHeader>
 					<ModalTitle>{t('New_Folder', 'New Folder')}</ModalTitle>
 					<ModalClose onClick={onClose} />
@@ -82,23 +95,19 @@ const NewFolderModal = ({ rid, onClose }: NewFolderModalProps) => {
 						<FieldLabel>{t('Folder_Name', 'Folder Name')}</FieldLabel>
 						<FieldRow>
 							<Controller
-								name="folderName"
+								name='folderName'
 								control={control}
 								render={({ field }) => (
-									<TextInput
-										{...field}
-										placeholder={t('Enter_folder_name', 'Enter folder name')}
-										addon={<Box is="span" color="hint" />}
-									/>
+									<TextInput {...field} placeholder={t('Enter_folder_name', 'Enter folder name')} addon={<Box is='span' color='hint' />} />
 								)}
 							/>
 						</FieldRow>
 					</Field>
 				</ModalContent>
 				<ModalFooter>
-					<ButtonGroup align="end">
+					<ButtonGroup align='end'>
 						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary type="submit" disabled={isSubmitting}>
+						<Button primary type='submit' disabled={isSubmitting}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
