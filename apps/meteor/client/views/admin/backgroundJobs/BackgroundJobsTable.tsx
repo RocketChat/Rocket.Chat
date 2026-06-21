@@ -1,33 +1,147 @@
-import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '@rocket.chat/ui-client';
-import { useState } from 'react';
+import { Tag, Box, Pagination } from '@rocket.chat/fuselage';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableCell,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	GenericTableRow,
+	usePagination,
+} from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import BackgroundJobsTableFilters from './BackgroundJobsTableFilters';
+import GenericNoResults from '../../../components/GenericNoResults';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
 
 type BackgroundJobsTableProps = {
 	tab: BackgroundJobsTab;
 };
 
-const BackgroundJobsTable = ({ tab: _tab }: BackgroundJobsTableProps) => {
+const statusVariant = (status?: string) => {
+	switch (status) {
+		case 'running':
+			return 'primary';
+		case 'scheduled':
+			return 'secondary-info';
+		case 'completed':
+			return 'featured';
+		case 'failed':
+			return 'danger';
+		case 'disabled':
+			return 'warning';
+		default:
+			return undefined;
+	}
+};
+
+const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 	const { t } = useTranslation();
 	const [, setSearchTerm] = useState('');
+	const formatDateAndTime = useFormatDateAndTime();
+	const timeAgo = useTimeAgo();
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	useEffect(() => {
+		setCurrent(0);
+	}, [tab, setCurrent]);
+
+	const getCoreJobs = useEndpoint('GET', '/v1/cron.jobs');
+	const getAppJobs = useEndpoint('GET', '/v1/cron.appjobs');
+
+	const { data, isLoading, isSuccess, isError } = useQuery({
+		queryKey: ['cron-jobs', tab, current, itemsPerPage],
+		queryFn: async () => {
+			const params = { offset: current, count: itemsPerPage };
+			if (tab === 'apps') {
+				return getAppJobs(params);
+			}
+			if (tab === 'omnichannel') {
+				return { jobs: [], total: 0 };
+			}
+			return getCoreJobs(params);
+		},
+		meta: {
+			apiErrorToastMessage: true,
+		},
+	});
+
+	const jobs = data?.jobs || [];
 
 	return (
 		<>
 			<BackgroundJobsTableFilters setSearchTerm={setSearchTerm} />
-			<GenericTable>
-				<GenericTableHeader>
-					<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell>{t('Last Run')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell>{t('Next Run')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell>{t('Fail Count')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell>{t('Actions')}</GenericTableHeaderCell>
-				</GenericTableHeader>
-				<GenericTableBody></GenericTableBody>
-			</GenericTable>
+			{isError && (
+				<Box display='flex' justifyContent='center' height='full'>
+					<GenericNoResults icon='warning' title={t('Something_went_wrong')} />
+				</Box>
+			)}
+			{isSuccess && jobs.length === 0 && (
+				<Box display='flex' justifyContent='center' height='full'>
+					<GenericNoResults title={t('No_background_jobs_found')} />
+				</Box>
+			)}
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>
+						<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Last Run')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Next Run')}</GenericTableHeaderCell>
+					</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={5} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{isSuccess && jobs.length > 0 && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>
+							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Last Run')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Next Run')}</GenericTableHeaderCell>
+						</GenericTableHeader>
+						<GenericTableBody>
+							{jobs.map((job) => (
+								<GenericTableRow key={job._id} tabIndex={0}>
+									<GenericTableCell withTruncatedText fontScale='p2'>
+										{job.name}
+									</GenericTableCell>
+									<GenericTableCell>
+										<Box display='flex'>
+											<Tag variant={statusVariant(job.status)} textTransform='capitalize'>
+												{job.status ? t(job.status) : t('Unknown')}
+											</Tag>
+										</Box>
+									</GenericTableCell>
+									<GenericTableCell withTruncatedText>{job.repeatInterval || '—'}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{job.lastRunAt ? timeAgo(job.lastRunAt) : '—'}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{job.nextRunAt ? formatDateAndTime(job.nextRunAt) : '—'}</GenericTableCell>
+								</GenericTableRow>
+							))}
+						</GenericTableBody>
+					</GenericTable>
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
+				</>
+			)}
 		</>
 	);
 };
