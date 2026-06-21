@@ -7,7 +7,7 @@ import type { IFileUploadContext } from './IFileUploadContext';
  * register as a handler of the `IPreFileUpload`
  * event
  *
- * This event is triggered prior to an upload succesfully
+ * This event is triggered prior to an upload successfully
  * being saved to the database, but *after* all its contents
  * have been retrieved by Rocket.Chat.
  *

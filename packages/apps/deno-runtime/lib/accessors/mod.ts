@@ -66,7 +66,7 @@ export class AppAccessors {
 								return {};
 							}
 
-							// If the prop is inteded to be overriden by the caller
+							// If the prop is intended to be overridden by the caller
 							if (prop in overrides) {
 								return overrides[prop].apply(undefined, params);
 							}
