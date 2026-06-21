@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 export const Meteor = {
 	Device: {
 		isDesktop: () => false,
@@ -32,7 +33,7 @@ export const Tracker = {
 	autorun: () => ({
 		stop: () => {},
 	}),
-	nonreactive: (fn) => fn(),
+	nonreactive: (fn: () => any) => fn(),
 	Dependency: () => {},
 };
 
@@ -50,11 +51,11 @@ export const Mongo = {
 	}),
 };
 
-export const ReactiveVar = (val) => {
+export const ReactiveVar = (val: unknown) => {
 	let currentVal = val;
 	return {
 		get: () => currentVal,
-		set: (val) => {
+		set: (val: unknown) => {
 			currentVal = val;
 		},
 	};
@@ -93,3 +94,5 @@ export const Session = {
 	get: () => {},
 	set: () => {},
 };
+
+export const DDPCommon = {};

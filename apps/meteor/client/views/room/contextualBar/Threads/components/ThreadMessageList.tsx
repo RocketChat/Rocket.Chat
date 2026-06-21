@@ -81,13 +81,13 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const messagesLength = messages.length;
 	useEffect(() => {
 		setKeepAtBottom(() => {
-			if (virtualizerRef.current) {
+			if (virtualizerRef.current && !msgJumpParam) {
 				virtualizerRef.current.scrollToIndex(messagesLength + 1, {
 					align: 'end',
 				});
 			}
 		});
-	}, [messagesLength, setKeepAtBottom]);
+	}, [messagesLength, setKeepAtBottom, msgJumpParam]);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef);
 
@@ -178,13 +178,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				setMessageJumpQueryStringParameter(null);
 			}
 		};
-		const timeoutId = setTimeout(() => {
+		setTimeout(() => {
 			clearMsgJumpParam();
 		}, 500);
-		return () => {
-			clearMsgJumpParam();
-			clearTimeout(timeoutId);
-		};
 	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {

@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async joinRoom(rid, code) {
-		methodDeprecationLogger.method('joinRoom', '9.0.0', '/v1/channels.join');
+		methodDeprecationLogger.method('joinRoom', '9.0.0', '/v1/rooms.join');
 		check(rid, String);
 
 		const user = await Meteor.userAsync();

@@ -78,6 +78,12 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
+				const isDefinitivelyNotFound = error && typeof error === 'object' && 'error' in error && error.error === 'error-invalid-room';
+
+				if (!isDefinitivelyNotFound) {
+					throw error;
+				}
+
 				if (type !== 'd') {
 					throw new RoomNotFoundError(undefined, { type, reference });
 				}
@@ -137,7 +143,16 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			return { rid: room._id };
 		},
-		retry: 0,
+		retry: (failureCount, error) => {
+			const unrecoverableErrors = [RoomNotFoundError, OldUrlRoomError, NotAuthorizedError, NotSubscribedToRoomError];
+
+			if (unrecoverableErrors.some((e) => error instanceof e)) {
+				return false;
+			}
+
+			return failureCount < 4;
+		},
+		retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
 	});
 
 	const queryClient = useQueryClient();
