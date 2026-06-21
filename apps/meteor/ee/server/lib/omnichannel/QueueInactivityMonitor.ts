@@ -138,13 +138,13 @@ export class OmnichannelQueueInactivityMonitorClass {
 			this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
 
 			await CronHistory.updateOne({ _id: insertedId }, { $set: { finishedAt: new Date() } });
-		} catch (error: any) {
+		} catch (error: unknown) {
 			await CronHistory.updateOne(
 				{ _id: insertedId },
 				{
 					$set: {
 						finishedAt: new Date(),
-						error: error?.stack ? error.stack : error,
+						error: error instanceof Error && error.stack ? error.stack : String(error),
 					},
 				},
 			);
