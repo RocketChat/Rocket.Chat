@@ -63,6 +63,54 @@ describe('CreateDiscussion', () => {
 		expect(results).toHaveNoViolations();
 	});
 
+	describe('Encrypted flag submission', () => {
+		it('should send encrypted: true to the API when the encrypted toggle is enabled for an unencrypted parent room', async () => {
+			const createDiscussionEndpoint = jest.fn().mockReturnValue({
+				success: true,
+				discussion: {
+					...createFakeRoom({ _id: 'discussion-id', t: 'p' as const, prid: room2._id }),
+					rid: 'discussion-id',
+				} as any,
+			});
+
+			const appRootWithSpy = mockAppRoot()
+				.withEndpoint('POST', '/v1/rooms.createDiscussion', createDiscussionEndpoint)
+				.withEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate', () => ({ items: [room1, room2] }) as any)
+				.withTranslations('en', 'core', {
+					Encrypted: 'Encrypted',
+					Name: 'Name',
+					Create: 'Create',
+					Discussion_target_channel: 'Parent channel or team',
+				})
+				.build();
+
+			render(<CreateDiscussion onClose={jest.fn()} />, { wrapper: appRootWithSpy });
+
+			const parentRoomSelect = screen.getByRole('textbox', { name: 'Parent channel or team' });
+			await userEvent.click(parentRoomSelect);
+			await waitFor(() => {
+				expect(screen.getByText('Unencrypted Room 2')).toBeInTheDocument();
+			});
+			await userEvent.click(screen.getByText('Unencrypted Room 2'));
+
+			await userEvent.type(screen.getByLabelText('Name'), 'My secret discussion');
+
+			await userEvent.click(screen.getByRole('checkbox', { name: 'Encrypted' }));
+
+			await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+
+			await waitFor(() => {
+				expect(createDiscussionEndpoint).toHaveBeenCalledWith(
+					expect.objectContaining({
+						prid: room2._id,
+						t_name: 'My secret discussion',
+						encrypted: true,
+					}),
+				);
+			});
+		});
+	});
+
 	describe('Encrypted parent room behavior', () => {
 		it('should disable encrypted toggle and first message field when parent room is encrypted', () => {
 			render(<CreateDiscussion onClose={jest.fn()} encryptedParentRoom={true} />, { wrapper: appRoot });
