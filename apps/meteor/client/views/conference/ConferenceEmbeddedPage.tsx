@@ -1,11 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
+import { SideRail, SideRailActions, SideRailAction, SideRailPanel } from './components';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { usePexipPlugin } from './hooks/usePexipPlugin';
 import PageLoading from '../root/PageLoading';
@@ -16,17 +19,27 @@ type ConferenceEmbeddedPageProps = {
 
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference } = useConferenceEmbedded(callId);
+	const { t } = useTranslation();
 
 	const subscription = useUserSubscription(room.rid ?? '');
 	const hasUnread = Boolean(subscription && subscription.unread > 0);
 
-	const [chatVisible, setChatVisible] = useState(true);
+	const breakpoints = useBreakpoints();
+	const overlayPanel = !breakpoints.includes('md');
 
-	const { closeChat, dialOut } = usePexipPlugin({
+	const [activePanel, setActivePanel] = useState<string | null>('chat');
+
+	const togglePanel = useCallback((panel: string) => {
+		setActivePanel((prev) => (prev === panel ? null : panel));
+	}, []);
+
+	const { dialOut } = usePexipPlugin({
 		conferenceUrl: conference.url,
 		hasUnread,
-		chatVisible,
-		onToggleChat: setChatVisible,
+		chatVisible: activePanel === 'chat',
+		onToggleChat: (active) => {
+			setActivePanel(active ? 'chat' : null);
+		},
 	});
 
 	// No access to the conference's room — show the unauthorized screen for the whole page rather
@@ -45,24 +58,15 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	return (
 		<Box bg='surface-light' width='full' height='full' display='flex'>
-			{/* Keep the chat mounted while hidden so its room/composer state survives toggling. The outer
-			box animates its width to slide the panel in/out; the inner box keeps a fixed minimum width and
-			is clipped by `overflow: hidden`, so the content slides instead of reflowing as it collapses. */}
-			<Box
-				display='flex'
-				flexDirection='column'
-				flexShrink={0}
-				width={chatVisible ? '30%' : '0'}
-				minWidth={chatVisible ? 350 : 0}
-				bg='tint'
-				borderInlineEndWidth={chatVisible ? 1 : 0}
-				borderColor='divider'
-				style={{ overflow: 'hidden', transition: 'width 200ms ease, min-width 200ms ease' }}
-			>
-				<Box display='flex' flexDirection='column' width='100%' minWidth={350} height='full'>
-					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onClose={closeChat} onDialOut={dialOut} />
-				</Box>
-			</Box>
+			<SideRail>
+				<SideRailActions>
+					<SideRailAction icon='message' label={t('Chat')} pressed={activePanel === 'chat'} onClick={() => togglePanel('chat')} />
+				</SideRailActions>
+
+				<SideRailPanel visible={activePanel === 'chat'} overlay={overlayPanel}>
+					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onDialOut={dialOut} />
+				</SideRailPanel>
+			</SideRail>
 
 			<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
 				<ConferenceIframe url={conference.url} loading={conference.loading} />

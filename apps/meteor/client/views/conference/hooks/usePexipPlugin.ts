@@ -30,10 +30,13 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 	}, []);
 
 	// Closing the chat from its own header must also flip the plugin's button to inactive.
-	const closeChat = useCallback(() => {
-		onToggleChat(false);
-		postToPlugin('toggle-chat-button-state', { active: false });
-	}, [onToggleChat, postToPlugin]);
+	const handleChatToggle = useCallback(
+		(active: boolean) => {
+			onToggleChat(active);
+			postToPlugin('toggle-chat-button-state', { active });
+		},
+		[onToggleChat, postToPlugin],
+	);
 
 	// Dial a phone number / SIP destination into the conference via the Pexip plugin.
 	const dialOut = useCallback(
@@ -80,8 +83,7 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 					break;
 				case 'toggle-chat': {
 					const active = data.active === true;
-					onToggleChat(active);
-					postToPlugin('toggle-chat-button-state', { active });
+					handleChatToggle(active);
 					break;
 				}
 				case 'dial-out-success':
@@ -101,12 +103,12 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
-	}, [conferenceUrl, onToggleChat, postToPlugin, dispatchToastMessage, t]);
+	}, [conferenceUrl, handleChatToggle, postToPlugin, dispatchToastMessage, t]);
 
 	// Keep the plugin's unread badge in sync as the discussion's unread count changes.
 	useEffect(() => {
 		postToPlugin('toggle-chat-badge', { visible: hasUnread });
 	}, [hasUnread, postToPlugin]);
 
-	return { closeChat, dialOut };
+	return { dialOut };
 };
