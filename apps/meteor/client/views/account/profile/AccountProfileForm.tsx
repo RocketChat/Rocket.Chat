@@ -148,7 +148,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			customDate: statusCustomDate,
 			customTime: statusCustomTime,
 		});
-		if (allowUserStatusMessageChange && (statusCustomDate || statusCustomTime)) {
+		if (allowUserStatusMessageChange && statusDuration === 'custom') {
 			if (!statusCustomDate || !statusCustomTime || !expiresAt) {
 				setError('statusDuration', { message: t('Status_choose_date_and_time') });
 				return;
