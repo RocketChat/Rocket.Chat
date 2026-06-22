@@ -168,11 +168,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomTime;
 
 		try {
-			if (allowUserStatusMessageChange && statusDirty) {
+			if (statusDirty) {
 				await setUserStatus({
-					message: statusText,
 					status: statusType,
-					...(expiresAt && { expiresAt: expiresAt.toISOString() }),
+					...(allowUserStatusMessageChange && { message: statusText }),
+					...(allowUserStatusMessageChange && expiresAt && { expiresAt: expiresAt.toISOString() }),
 				});
 			}
 
@@ -322,6 +322,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										<InputBox
 											aria-label={t('Status_expiration_date')}
 											type='date'
+											disabled={!allowUserStatusMessageChange}
 											flexGrow={1}
 											value={value}
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -339,6 +340,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										<InputBox
 											aria-label={t('Status_expiration_time')}
 											type='time'
+											disabled={!allowUserStatusMessageChange}
 											flexGrow={1}
 											value={value}
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {

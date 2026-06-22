@@ -1982,12 +1982,6 @@ API.v1
 				),
 			);
 
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
-					method: 'users.setStatus',
-				});
-			}
-
 			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
@@ -2009,6 +2003,12 @@ API.v1
 			}
 
 			const { status, message, expiresAt } = this.bodyParams;
+
+			if (message && !settings.get('Accounts_AllowUserStatusMessageChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+					method: 'users.setStatus',
+				});
+			}
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
 			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {

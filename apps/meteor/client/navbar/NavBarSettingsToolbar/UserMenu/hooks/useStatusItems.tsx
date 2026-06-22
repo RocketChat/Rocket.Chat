@@ -50,18 +50,21 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 	const { t } = useTranslation();
 
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
+	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange', true);
+
 	const fireGlobalStatusEvent = useFireGlobalEvent('user-status-manually-set');
 	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
 	const setStatusMutation = useMutation({
 		mutationFn: async (status: UserStatusDescriptor) => {
-			void setStatus({ status: status.statusType, message: userStatuses.isValidType(status.id) ? '' : status.name });
+			void setStatus({
+				status: status.statusType,
+				...(allowUserStatusMessageChange && { message: userStatuses.isValidType(status.id) ? '' : status.name }),
+			});
 			void clientCallbacks.run('userStatusManuallySet', status);
 			await fireGlobalStatusEvent.mutateAsync(status);
 		},
 	});
-
-	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
-	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange', true);
 
 	const { data: statuses } = useQuery({
 		queryKey: ['user-statuses'],
@@ -77,7 +80,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
-		if (presenceDisabled || !allowUserStatusMessageChange) {
+		if (presenceDisabled) {
 			return [
 				{
 					id: 'presence-disabled',
@@ -118,13 +121,15 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
-		// Always: "Custom..." action - opens the edit modal.
-		items.push({
-			id: 'custom-status-edit',
-			icon: 'edit',
-			content: t('Custom_Status'),
-			onClick: handleCustomStatus,
-		});
+		// "Custom..." action opens the edit modal
+		if (allowUserStatusMessageChange) {
+			items.push({
+				id: 'custom-status-edit',
+				icon: 'edit',
+				content: t('Custom_Status'),
+				onClick: handleCustomStatus,
+			});
+		}
 
 		// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
@@ -143,17 +148,19 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			);
 
 		// Admin-defined custom statuses
-		const customItems = (statuses ?? [])
-			.filter((s) => !userStatuses.isValidType(s.id))
-			.map(
-				(status): GenericMenuItemProps => ({
-					id: status.id,
-					status: <UserStatus status={status.statusType} />,
-					content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
-					addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
-					onClick: () => setStatusMutation.mutate(status),
-				}),
-			);
+		const customItems = allowUserStatusMessageChange
+			? (statuses ?? [])
+					.filter((s) => !userStatuses.isValidType(s.id))
+					.map(
+						(status): GenericMenuItemProps => ({
+							id: status.id,
+							status: <UserStatus status={status.statusType} />,
+							content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+							addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
+							onClick: () => setStatusMutation.mutate(status),
+						}),
+					)
+			: [];
 
 		return [...items, ...presetItems, ...customItems];
 	}, [
