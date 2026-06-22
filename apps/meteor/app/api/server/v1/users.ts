@@ -2010,6 +2010,12 @@ API.v1
 				});
 			}
 
+			if (statusExpiresAt && statusExpiresAt.getTime() <= Date.now()) {
+				throw new Meteor.Error('error-invalid-date', 'expiresAt must be a future date', {
+					method: 'users.setStatus',
+				});
+			}
+
 			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
 			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
 			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
