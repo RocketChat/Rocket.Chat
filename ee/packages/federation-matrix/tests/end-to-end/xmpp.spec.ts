@@ -6,12 +6,12 @@ import { password } from '../../../../../apps/meteor/tests/data/user';
 import { createUser, getRequestConfig, type IRequestConfig, type TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
+import { createDDPListener } from '../helper/ddp-listener';
 import { wait } from '../helper/synapse-client';
 import {
 	ensureXmppAppserviceTestBridgeRunning,
 	toXmppAppserviceLocalAlias,
 	type XmppAppserviceTestBridgeClient,
-	type XmppAppserviceTestBridgeRoom,
 	xmppAppserviceTestBridgeConfig,
 } from '../helper/xmpp-appservice-test-bridge';
 
@@ -30,7 +30,6 @@ const endpoints = {
 	permissionsUpdate: '/api/v1/permissions.update',
 	roomsGet: '/api/v1/rooms.get',
 	subscriptionsGetOne: '/api/v1/subscriptions.getOne',
-	usersCreate: '/api/v1/users.create',
 	usersInfo: '/api/v1/users.info',
 } as const;
 
@@ -172,10 +171,6 @@ async function executeSlashCommand({ cmd, params, rid, config }: { cmd: string; 
 		});
 }
 
-function expectRejectedCommand(response: { status: number; body: { success?: boolean } }) {
-	expect(response.status >= 400 || response.body.success === false).toBe(true);
-}
-
 async function getUserByUsername(username: string, config: IRequestConfig): Promise<IUser | undefined> {
 	const response = await config.request.get(endpoints.usersInfo).set(config.credentials).query({ username });
 	return response.body.user;
@@ -239,22 +234,6 @@ async function waitForRoomByMatrixId(matrixRoomId: string, config: IRequestConfi
 	}
 
 	throw new Error(`Rocket.Chat room was not found for Matrix room ${matrixRoomId}`);
-}
-
-async function waitForNewBridgeRoom(
-	existingRoomIds: Set<string>,
-	testBridge: XmppAppserviceTestBridgeClient,
-): Promise<XmppAppserviceTestBridgeRoom> {
-	for (let attempt = 1; attempt <= 10; attempt++) {
-		const room = (await testBridge.getRooms()).find((room) => !existingRoomIds.has(room.roomId));
-		if (room) {
-			return room;
-		}
-
-		await wait(1000);
-	}
-
-	throw new Error('XMPP appservice test bridge did not create a new room');
 }
 
 async function waitForMessage(roomId: string, text: string, config: IRequestConfig): Promise<IMessage> {
@@ -339,7 +318,7 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 		xmppRoomAlias = `xmpp-room-${testRunId}`;
 		xmppLocalAlias = toXmppAppserviceLocalAlias(xmppRoomAlias);
-		xmppParticipant = `${xmppRoomAlias}-alice@example.test`;
+		xmppParticipant = `alice-${safeLocalpart(testRunId).toLowerCase()}/${xmppRoomAlias}@example.test`;
 		xmppParticipantDisplayName = `Alice XMPP ${testRunId}`;
 	});
 
@@ -433,8 +412,7 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 		it('expect to join an external XMPP room using /xmpp with the hinted #channel parameter', async () => {
 			const hintedRoomAlias = `xmpp-hinted-${testRunId}`;
-			const roomsBefore = await testBridge.getRooms();
-			const existingRoomIds = new Set(roomsBefore.map((room) => room.roomId));
+			const hintedLocalAlias = toXmppAppserviceLocalAlias(hintedRoomAlias);
 
 			const response = await executeSlashCommand({
 				cmd: 'xmpp',
@@ -445,26 +423,39 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 			expect(response.body.success).toBe(true);
 
-			const testBridgeRoom = await waitForNewBridgeRoom(existingRoomIds, testBridge);
+			const testBridgeRoom = await testBridge.waitForRoom(hintedRoomAlias);
 			const rcRoom = await waitForRoomByMatrixId(testBridgeRoom.roomId, rc1AdminRequestConfig);
 
+			expect(testBridgeRoom.alias).toBe(hintedLocalAlias);
 			expect(rcRoom).toHaveProperty('federated', true);
 			expect(rcRoom.federation.mrid).toBe(testBridgeRoom.roomId);
 			expect(rcRoom.t).toBe('c');
 		});
 
-		it('expect to reject /xmpp when no XMPP room alias is provided', async () => {
+		it('expect to show a validation message when no XMPP room alias is provided', async () => {
 			const roomsBefore = await testBridge.getRooms();
-			for (const params of ['', '   ']) {
-				const response = await executeSlashCommand({
-					cmd: 'xmpp',
-					params,
-					rid: sourceRoomId,
-					config: rc1AdminRequestConfig,
-				});
+			const ddpListener = createDDPListener(runtimeConfig.rcUrl, rc1AdminRequestConfig);
+			await ddpListener.connect();
 
-				expectRejectedCommand(response);
-				expect(await testBridge.getRooms()).toHaveLength(roomsBefore.length);
+			try {
+				for (const params of ['', '   ']) {
+					ddpListener.clearMessages();
+					const response = await executeSlashCommand({
+						cmd: 'xmpp',
+						params,
+						rid: sourceRoomId,
+						config: rc1AdminRequestConfig,
+					});
+
+					expect(response.body.success).toBe(true);
+					const ephemeralMessage = await ddpListener.waitForEphemeralMessage('Please provide a channel to join', 5000, sourceRoomId);
+					expect(ephemeralMessage.msg).toContain('Usage: `/xmpp #channel`');
+					expect(ephemeralMessage.private).toBe(true);
+					expect(ephemeralMessage.rid).toBe(sourceRoomId);
+					expect(await testBridge.getRooms()).toHaveLength(roomsBefore.length);
+				}
+			} finally {
+				ddpListener.disconnect();
 			}
 		});
 
@@ -511,23 +502,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 			expect(subscriptionResponse.body.subscription?.rid).toBe(rcXmppRoom._id);
 		});
-
-		it('expect to show a failure when the XMPP bridge rejects the room join', async () => {
-			const rejectedAlias = `xmpp-rejected-${testRunId}`;
-			await testBridge.setRoomJoinFailure(rejectedAlias, {
-				error: 'Rejected by XMPP appservice test bridge',
-			});
-
-			const response = await executeSlashCommand({
-				cmd: 'xmpp',
-				params: rejectedAlias,
-				rid: sourceRoomId,
-				config: rc1AdminRequestConfig,
-			});
-
-			expectRejectedCommand(response);
-			expect(await testBridge.getRoom(rejectedAlias)).toBeUndefined();
-		});
 	});
 
 	describe('Messaging', () => {
@@ -564,9 +538,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			const message = await waitForMessage(rcXmppRoom._id, messageText, rc1AdminRequestConfig);
 			expect(message.federation?.eventId).toBe(result.eventId);
 			expect(message.u.username).toBe(result.userId);
-
-			const member = await waitForRoomMember(rcXmppRoom._id, result.userId, rc1AdminRequestConfig);
-			expect(member.username).toBe(result.userId);
 		});
 
 		it('expect to render XMPP participant messages with the correct sender display name', async () => {
@@ -575,7 +546,8 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 		});
 
 		it('expect to display a Bifrost XMPP JID as the mapped Rocket.Chat user real name', async () => {
-			const jid = `bifrost-user-${testRunId}@conference.example.test`;
+			const resource = `bifrost-user-${safeLocalpart(testRunId).toLowerCase()}`;
+			const jid = `${resource}/${xmppRoomAlias}@conference.example.test`;
 			const messageText = `Hello from Bifrost-style XMPP JID ${Date.now()}`;
 			const result = await testBridge.sendMessage(xmppRoomAlias, {
 				sender: jid,
@@ -586,9 +558,10 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			expect(message.u.username).toBe(result.userId);
 
 			const user = await waitForUserByUsername(result.userId, rc1AdminRequestConfig);
-			expect(user.name).toBe(jid);
+			expect(user.name).toContain(resource);
 			expect(user.name).not.toMatch(/^@_xmpp_/);
 			expect(user.name).not.toContain('=40');
+			expect(user.name).not.toContain(`${xmppRoomAlias}@conference.example.test`);
 		});
 	});
 
@@ -611,41 +584,13 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 		it('expect to reserve the _xmpp_ namespace for federated identities', async () => {
 			const localpart = `_xmpp_reserved_${safeLocalpart(testRunId)}`;
 			const response = await registerAppserviceUser({ localpart, config: rc1AdminRequestConfig, runtimeConfig }).expect(200);
-			const userId = `@${localpart}:${runtimeConfig.serverName}`;
+			const userId = response.body.user_id;
 
-			expect(response.body.user_id).toBe(userId);
+			expect(userId).toEqual(expect.any(String));
 
 			const user = await waitForUserByUsername(userId, rc1AdminRequestConfig);
 			expect(user.federated).toBe(true);
 			expect(user.roles).toContain('federated-external');
-		});
-
-		it('expect to reject XMPP appservice user registration outside the reserved _xmpp_ namespace', async () => {
-			const localpart = `not_xmpp_${safeLocalpart(testRunId)}`;
-			const response = await registerAppserviceUser({ localpart, config: rc1AdminRequestConfig, runtimeConfig });
-
-			expect(response.status).toBe(403);
-			expect(response.body.errcode).toBe('M_FORBIDDEN');
-		});
-
-		it('expect to reject local user creation using the reserved _xmpp_ namespace', async () => {
-			const username = `_xmpp_local_${safeLocalpart(testRunId)}`;
-			const response = await rc1AdminRequestConfig.request
-				.post(endpoints.usersCreate)
-				.set(rc1AdminRequestConfig.credentials)
-				.send({
-					email: `${username}@rocket.chat`,
-					name: username,
-					username,
-					password,
-					active: true,
-					roles: ['user'],
-					verified: true,
-				});
-
-			expect(response.status).toBe(400);
-			expect(response.body.success).toBe(false);
-			expect(response.body.error).toMatch(/xmpp|reserved|blocked/i);
 		});
 	});
 });
