@@ -650,8 +650,11 @@ API.v1.post(
 		const { userId, description } = this.bodyParams;
 
 		const {
-			user: { _id, name, username, createdAt },
+			user: { _id, name, username },
 		} = this;
+
+		const moderator = await Users.findOneById(_id, { projection: { createdAt: 1 } });
+		const createdAt = moderator?.createdAt || new Date();
 
 		const reportedUser = await Users.findOneById(userId, {
 			projection: { _id: 1, name: 1, username: 1, emails: 1, createdAt: 1 },

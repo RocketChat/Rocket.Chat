@@ -22,7 +22,8 @@ export async function logModerationAction({
 	}
 
 	const ts = new Date();
-	const targetAccountAge = Math.floor((ts.getTime() - new Date(targetUser.createdAt).getTime()) / 1000); // in seconds
+	const targetCreatedAt = targetUser.createdAt ? new Date(targetUser.createdAt) : new Date();
+	const targetAccountAge = isNaN(targetCreatedAt.getTime()) ? 0 : Math.floor((ts.getTime() - targetCreatedAt.getTime()) / 1000); // in seconds
 
 	await ModerationAuditLogs.insertOne({
 		ts,
@@ -36,7 +37,7 @@ export async function logModerationAction({
 			_id: targetUser._id,
 			username: targetUser.username || '',
 			name: targetUser.name || '',
-			createdAt: targetUser.createdAt,
+			createdAt: isNaN(targetCreatedAt.getTime()) ? new Date() : targetCreatedAt,
 		},
 		targetAccountAge,
 		reason,
