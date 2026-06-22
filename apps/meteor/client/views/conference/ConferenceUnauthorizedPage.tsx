@@ -14,7 +14,7 @@ const ConferenceUnauthorizedPage = () => {
 	return (
 		<Page background='tint'>
 			<PageHeader title={t('Video_Conference')} />
-			<PageContent>
+			<PageContent display='flex' alignItems='center' justifyContent='center'>
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('You_are_not_authorized_to_view_this_page')}</StatesTitle>
