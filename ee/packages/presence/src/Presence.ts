@@ -4,11 +4,14 @@ import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
 import { normalizeStatusText } from './lib/normalizeStatusText';
 import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
+
+const logger = new Logger('Presence');
 
 const MAX_CONNECTIONS = 200;
 const MAX_TIMEOUT_DELAY_MS = 2 ** 31 - 1;
@@ -146,7 +149,7 @@ export class Presence extends ServiceClass implements IPresence {
 		const delay = Math.min(Math.max(next.statusExpiresAt.getTime() - Date.now(), 0), MAX_TIMEOUT_DELAY_MS);
 		this.expirationTimeout = setTimeout(() => {
 			this.expirationTimeout = undefined;
-			this.handleExpirationJob().catch((err) => console.error('[Presence] Error handling status expiration:', err));
+			this.handleExpirationJob().catch((err) => logger.error({ msg: 'Error handling status expiration', err }));
 		}, delay);
 	}
 
@@ -161,14 +164,15 @@ export class Presence extends ServiceClass implements IPresence {
 		const rejected = results.filter((result) => result.status === 'rejected');
 
 		if (fulfilled.length > 0) {
-			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+			logger.debug({ msg: 'Successfully updated presence for users', count: fulfilled.length });
 		}
 
 		if (rejected.length > 0) {
-			console.error(
-				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
-				rejected.map(({ reason }) => reason),
-			);
+			logger.error({
+				msg: 'Failed to update presence for users',
+				count: rejected.length,
+				reasons: rejected.map(({ reason }): unknown => reason),
+			});
 		}
 	}
 
