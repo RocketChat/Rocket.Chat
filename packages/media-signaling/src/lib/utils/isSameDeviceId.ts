@@ -30,8 +30,8 @@ function normalizeDeviceId(deviceId: ConstrainDOMString | null): { exact: string
 	}
 
 	return {
-		exact: ensureStringArray(deviceId),
-		ideal: [],
+		exact: [],
+		ideal: ensureStringArray(deviceId),
 	};
 }
 
