@@ -1,0 +1,158 @@
+import { render, screen } from '@testing-library/react';
+import { axe } from 'jest-axe';
+import type { CSSProperties, ElementType, HTMLAttributes, ReactNode } from 'react';
+import { Children, createElement, forwardRef } from 'react';
+import type { CustomContainerComponentProps } from 'virtua';
+
+import SidebarVirtualList from './SidebarVirtualList';
+import type { SidebarVirtualListGroup } from './SidebarVirtualList';
+
+type MockVirtualizerProps = {
+	children: ReactNode;
+	bufferSize?: number;
+	as?: ElementType;
+	style?: CSSProperties;
+	className?: string;
+};
+
+jest.mock('virtua', () => {
+	return {
+		Virtualizer: ({ children, bufferSize, as: root = 'div', style, className }: MockVirtualizerProps) =>
+			createElement(
+				root,
+				{ className, 'data-buffer-size': bufferSize, 'data-testid': 'virtual-list', 'style': style ?? { height: '100%' } },
+				Children.toArray(children),
+			),
+	};
+});
+
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	CustomVirtuaScrollbars: forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CustomVirtuaScrollbars(
+		{ children, ...props },
+		ref,
+	) {
+		return (
+			<div ref={ref} {...props}>
+				{children}
+			</div>
+		);
+	}),
+}));
+
+type TestGroup = {
+	title: string;
+};
+
+type TestItem = {
+	_id: string;
+	name: string;
+};
+
+const groups: SidebarVirtualListGroup<TestGroup, TestItem>[] = [
+	{
+		key: 'channels',
+		group: { title: 'Channels' },
+		items: [
+			{ _id: 'general', name: 'general' },
+			{ _id: 'support', name: 'support' },
+		],
+	},
+	{
+		key: 'direct',
+		group: { title: 'Direct Messages' },
+		items: [{ _id: 'alice', name: 'alice' }],
+	},
+];
+
+const defaultProps = {
+	groups,
+	getItemKey: (item: TestItem) => item._id,
+	renderGroup: (group: TestGroup, groupIndex: number) => <div data-testid='virtual-row'>{`group:${groupIndex}:${group.title}`}</div>,
+	renderItem: (item: TestItem, itemIndex: number, group: TestGroup, groupIndex: number) => (
+		<div data-testid='virtual-row'>{`item:${groupIndex}:${itemIndex}:${group.title}:${item.name}`}</div>
+	),
+};
+
+const renderVirtualList = (
+	props: Partial<{
+		groups: SidebarVirtualListGroup<TestGroup, TestItem>[];
+		overscan: number;
+		as: ElementType;
+	}> = {},
+) => render(<SidebarVirtualList {...defaultProps} {...props} />);
+
+describe('SidebarVirtualList', () => {
+	it('renders group rows and item rows in order', () => {
+		renderVirtualList();
+
+		expect(screen.getAllByTestId('virtual-row').map((row) => row.textContent)).toEqual([
+			'group:0:Channels',
+			'item:0:0:Channels:general',
+			'item:0:1:Channels:support',
+			'group:1:Direct Messages',
+			'item:1:0:Direct Messages:alice',
+		]);
+	});
+
+	it('renders a group with no items', () => {
+		renderVirtualList({
+			groups: [
+				{
+					key: 'empty',
+					group: { title: 'Empty Group' },
+					items: [],
+				},
+			],
+		});
+
+		expect(screen.getAllByTestId('virtual-row').map((row) => row.textContent)).toEqual(['group:0:Empty Group']);
+	});
+
+	it('passes overscan to Virtua as buffer size', () => {
+		renderVirtualList({ overscan: 25 });
+
+		expect(screen.getByTestId('virtual-list')).toHaveAttribute('data-buffer-size', '25');
+	});
+
+	it('uses the caller-provided list container', () => {
+		const ListContainer = forwardRef<HTMLDivElement, CustomContainerComponentProps>(function ListContainer({ children, style }, ref) {
+			return (
+				<div ref={ref} role='list' data-testid='custom-list' style={style}>
+					{children}
+				</div>
+			);
+		});
+
+		renderVirtualList({ as: ListContainer });
+
+		expect(screen.getByTestId('custom-list')).toHaveAttribute('role', 'list');
+		expect(screen.getByTestId('custom-list')).toHaveTextContent('group:0:Channels');
+	});
+
+	it('has no accessibility violations for an accessible caller-provided list', async () => {
+		const ListContainer = forwardRef<HTMLDivElement, CustomContainerComponentProps>(function ListContainer({ children, style }, ref) {
+			return (
+				<div ref={ref} role='list' aria-label='Channels' style={style}>
+					{children}
+				</div>
+			);
+		});
+
+		const { container } = render(
+			<SidebarVirtualList
+				groups={groups}
+				as={ListContainer}
+				getItemKey={(item) => item._id}
+				renderGroup={(group) => (
+					<div role='listitem'>
+						<button type='button'>{group.title}</button>
+					</div>
+				)}
+				renderItem={(item) => <div role='listitem'>{item.name}</div>}
+			/>,
+		);
+
+		expect(await axe(container)).toHaveNoViolations();
+	});
+});

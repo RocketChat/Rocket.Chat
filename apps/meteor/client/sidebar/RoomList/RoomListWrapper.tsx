@@ -2,17 +2,25 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ForwardedRef, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { CustomContainerComponentProps } from 'virtua';
 
 import { useSidebarListNavigation } from './useSidebarListNavigation';
 
-export type RoomListWrapperProps = HTMLAttributes<HTMLDivElement>;
+export type RoomListWrapperProps = CustomContainerComponentProps & Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style'>;
 
-const RoomListWrapper = forwardRef(function RoomListWrapper(props: RoomListWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
+const RoomListWrapper = forwardRef(function RoomListWrapper(
+	{ children, style, ...props }: RoomListWrapperProps,
+	ref: ForwardedRef<HTMLDivElement>,
+) {
 	const { t } = useTranslation();
 	const { sidebarListRef } = useSidebarListNavigation();
 	const mergedRefs = useMergedRefs(ref, sidebarListRef);
 
-	return <div role='list' aria-label={t('Channels')} ref={mergedRefs} {...props} />;
+	return (
+		<div {...props} role='list' aria-label={t('Channels')} ref={mergedRefs} style={style}>
+			{children}
+		</div>
+	);
 });
 
 export default RoomListWrapper;
