@@ -33,7 +33,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		setActivePanel((prev) => (prev === panel ? null : panel));
 	}, []);
 
-	const { dialOut } = usePexipPlugin({
+	const { closeChat, dialOut } = usePexipPlugin({
 		conferenceUrl: conference.url,
 		hasUnread,
 		chatVisible: activePanel === 'chat',
@@ -64,7 +64,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				</SideRailActions>
 
 				<SideRailPanel visible={activePanel === 'chat'} overlay={overlayPanel}>
-					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onDialOut={dialOut} />
+					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onClose={closeChat} onDialOut={dialOut} />
 				</SideRailPanel>
 			</SideRail>
 
