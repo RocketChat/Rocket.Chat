@@ -1,5 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoEscalatedView from './VideoEscalatedView';
@@ -85,6 +85,18 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const holdAvailable = features.includes('hold');
 	const transferAvailable = features.includes('transfer');
 
+	const content = useMemo(() => {
+		if (isPopout) {
+			return <PopoutDockPrompt onClosePopout={onClosePopout} />;
+		}
+
+		if (escalated) {
+			return <VideoEscalatedView />;
+		}
+
+		return <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />;
+	}, [isPopout, escalated, user, shouldWrapCards, onClosePopout]);
+
 	if (!peerInfo || !('userId' in peerInfo) || !peerInfo.userId) {
 		return null;
 	}
@@ -103,13 +115,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		>
 			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
 			{!escalated ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
-			{isPopout ? (
-				<PopoutDockPrompt onClosePopout={onClosePopout} />
-			) : escalated ? (
-				<VideoEscalatedView />
-			) : (
-				<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
-			)}
+
+			{content}
+
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>
