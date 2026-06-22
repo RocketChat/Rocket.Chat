@@ -33,7 +33,7 @@ import {
 	timestampFromIsoTime,
 } from './utils';
 import { Scanner } from './scanner';
-import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit } from './chars';
+import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit, matchEmoticon } from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ let skipStrike = false;
 // ─── Main entry point ─────────────────────────────────────────────────────────
 
 export function parse(input: string, options: Options = {}): Root {
-	const bigEmojiRoot = tryBigEmoji(input);
+	const bigEmojiRoot = tryBigEmoji(input, options);
 	if (bigEmojiRoot !== null) {
 		return bigEmojiRoot;
 	}
@@ -263,6 +263,36 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			nodes.push(plain(text));
 			prevChar = text[text.length - 1] ?? '';
 			continue;
+		}
+
+		// Emoticon — only at a word boundary (when emoticons are enabled)
+		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
+			const result = tryEmoticon(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ')';
+				continue;
+			}
+		}
+
+		// Emoticon — only at a word boundary (when emoticons are enabled)
+		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
+			const result = tryEmoticon(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ')';
+				continue;
+			}
+		}
+
+		// Emoticon — only at a word boundary (when emoticons are enabled)
+		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
+			const result = tryEmoticon(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ')';
+				continue;
+			}
 		}
 
 		// KaTeX inline — $ or \(
@@ -491,6 +521,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			nodes.push(plain(text));
 			prevChar = text[text.length - 1] ?? '';
 			continue;
+		}
+
+		// Emoticon — only at a word boundary (when emoticons are enabled)
+		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
+			const result = tryEmoticon(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ')';
+				continue;
+			}
 		}
 
 		// KaTeX inline — $ or \(
@@ -1526,7 +1566,7 @@ function tryEmojiShortCode(scanner: Scanner): Inlines | null {
 
 // Whole-input rule: optional whitespace, then 1-3 shortcode emojis separated
 // by whitespace, then end of input (mirrors `Start = @BigEmoji !.`)
-function tryBigEmoji(input: string): Root | null {
+function tryBigEmoji(input: string, options: Options): Root | null {
 	const scanner = new Scanner(input);
 
 	const skipWhitespace = (): void => {
@@ -1534,26 +1574,25 @@ function tryBigEmoji(input: string): Root | null {
 			scanner.advance();
 		}
 	};
-
 	skipWhitespace();
-
 	const emojis: Inlines[] = [];
 	while (emojis.length < 3 && !scanner.isEnd()) {
-		if (scanner.char() !== ':') {
-			return null;
+		let node: Inlines | null = null;
+		if (scanner.char() === ':') {
+			node = tryEmojiShortCode(scanner);
 		}
-		const node = tryEmojiShortCode(scanner);
+		if (node === null && options.emoticons) {
+			node = matchEmoticon(scanner);
+		}
 		if (node === null) {
 			return null;
 		}
 		emojis.push(node);
 		skipWhitespace();
 	}
-
 	if (emojis.length === 0 || !scanner.isEnd()) {
 		return null;
 	}
-
 	return [bigEmoji(emojis as any)];
 }
 
@@ -1599,7 +1638,7 @@ function tryEmail(scanner: Scanner): Inlines | null {
 	}
 
 	// Trim trailing '.' / '-' back out of the domain ("joe.com." → "joe.com")
-	while (scanner.pos > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
+	while (scanner.save() > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
 		scanner.advance(-1);
 	}
 
@@ -1879,6 +1918,20 @@ function tryTimestamp(scanner: Scanner): Inlines | null {
 		return timestamp(date);
 	}
 
+	scanner.restore(start);
+	return null;
+}
+
+// Inline emoticon: require a trailing boundary (whitespace / newline / end / '*').
+// The preceding boundary is enforced by the caller's prevChar guard.
+export function tryEmoticon(scanner: Scanner): Inlines | null {
+	const start = scanner.save();
+	const node = matchEmoticon(scanner);
+	if (node === null) return null;
+	const after = scanner.char();
+	if (after === '' || isSpace(after) || isNewline(after) || after === '*') {
+		return node;
+	}
 	scanner.restore(start);
 	return null;
 }

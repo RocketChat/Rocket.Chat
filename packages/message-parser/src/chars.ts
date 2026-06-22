@@ -1,3 +1,7 @@
+import { Inlines } from './definitions';
+import { Scanner } from './scanner';
+import { emoticon } from './utils';
+
 // Is this character a line ending?
 export function isNewline(ch: string): boolean {
 	return ch === '\n' || ch === '\r';
@@ -58,4 +62,47 @@ export function isDomainChar(ch: string): boolean {
 
 export function isUrlBodyChar(ch: string): boolean {
 	return ch !== '' && !isWhitespace(ch) && ch !== '"' && ch !== "'" && ch !== '<' && ch !== '>' && ch !== '`';
+}
+
+// ─── Emoticon ──────────────────────────────────────────────────────────────
+export const EMOTICONS: Record<string, string> = {
+	':)': 'slight_smile',
+	':-)': 'slight_smile',
+	':(': 'frowning',
+	':-(': 'frowning',
+	'D:': 'fearful',
+	':D': 'grinning',
+	':-D': 'grinning',
+	':P': 'stuck_out_tongue',
+	':-P': 'stuck_out_tongue',
+	':p': 'stuck_out_tongue',
+	':-p': 'stuck_out_tongue',
+	';)': 'wink',
+	';-)': 'wink',
+	':o': 'open_mouth',
+	':-o': 'open_mouth',
+	':O': 'open_mouth',
+	':-O': 'open_mouth',
+	':|': 'neutral_face',
+	':-|': 'neutral_face',
+	':/': 'confused',
+	':-/': 'confused',
+	':\\': 'confused',
+	':-\\': 'confused',
+	':*': 'kissing_heart',
+	'-_-': 'expressionless',
+};
+
+// Sorted longest-first so e.g. ":-D" wins over ":D", ">:-)" over ">:)".
+export const EMOTICON_KEYS = Object.keys(EMOTICONS).sort((a, b) => b.length - a.length);
+
+// Match (and consume) the longest emoticon at the cursor. No boundary checks.
+export function matchEmoticon(scanner: Scanner): Inlines | null {
+	for (const key of EMOTICON_KEYS) {
+		if (scanner.matches(key)) {
+			scanner.advance(key.length);
+			return emoticon(key, EMOTICONS[key]);
+		}
+	}
+	return null;
 }
