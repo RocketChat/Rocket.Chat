@@ -7,9 +7,9 @@ export const getMarkdownParserLimit = (): number => {
 	const defaultValue = MESSAGE_MAX_PARSE_LENGTH_DEFAULT > 0 ? MESSAGE_MAX_PARSE_LENGTH_DEFAULT : Infinity;
 	if (value === null) return defaultValue;
 
-	const parsed = parseInt(value, 10);
+	const parsed = Number(value);
 
-	if (!Number.isFinite(parsed)) {
+	if (!Number.isInteger(parsed)) {
 		return defaultValue;
 	}
 
