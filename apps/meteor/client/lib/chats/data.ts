@@ -274,10 +274,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.state.find((record) => record.rid === rid);
 
 	const joinRoom = async (): Promise<void> => {
-		// TODO(ddp-removal): only public channels resolve through this endpoint;
-		// private groups, DMs and livechat used to error via DDP too — REST keeps
-		// that behavior. Replace with a unified `/v1/rooms.join` when available.
-		await sdk.rest.post('/v1/channels.join', { roomId: rid });
+		await sdk.rest.post('/v1/rooms.join', { roomId: rid });
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
