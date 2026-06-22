@@ -33,8 +33,8 @@
 		"webpack": "~5.104.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.78.0",
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/fuselage": "^0.79.0",
+		"@rocket.chat/icons": "^0.48.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^9.1.13",
 		"eslint": "~9.39.4",

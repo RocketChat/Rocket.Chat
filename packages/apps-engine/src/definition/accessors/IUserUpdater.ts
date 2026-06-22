@@ -15,4 +15,9 @@ export interface IUserUpdater {
 	updateBio(user: IUser, bio: IUser['bio']): Promise<boolean>;
 	updateCustomFields(user: IUser, customFields: IUser['customFields']): Promise<boolean>;
 	deactivate(userId: IUser['id'], confirmRelinquish: boolean): Promise<boolean>;
+	setActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+	): Promise<void>;
+	endActiveState(userId: IUser['id']): Promise<void>;
 }

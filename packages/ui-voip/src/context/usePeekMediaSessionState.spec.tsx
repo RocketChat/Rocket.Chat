@@ -16,8 +16,9 @@ const createWrapper = (instance: MockInstance | undefined) => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
 		<MediaCallInstanceContext.Provider
 			value={{
-				inRoomView: false,
-				setInRoomView: () => undefined,
+				currentViews: [],
+				registerView: () => undefined,
+				unregisterView: () => undefined,
 				instance: instance as any,
 				signalEmitter: new Emitter<Signals>(),
 				audioElement: undefined,

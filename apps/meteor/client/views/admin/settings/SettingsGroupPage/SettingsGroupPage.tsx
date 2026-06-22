@@ -78,8 +78,7 @@ const SettingsGroupPage = ({
 		}
 
 		try {
-			await dispatch(changes);
-			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
+			await dispatch(changes, () => dispatchToastMessage({ type: 'success', message: t('Settings_updated') }));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

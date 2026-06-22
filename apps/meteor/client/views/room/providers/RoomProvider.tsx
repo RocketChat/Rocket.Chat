@@ -108,7 +108,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps) => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return !room && !subscritionFromLocal ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

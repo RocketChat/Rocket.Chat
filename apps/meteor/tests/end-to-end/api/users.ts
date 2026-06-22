@@ -132,10 +132,11 @@ const preferences = {
 
 const getUserStatus = (userId: IUser['_id']) =>
 	new Promise<{
+		_id: string;
 		status: 'online' | 'offline' | 'away' | 'busy';
-		message?: string;
-		_id?: string;
 		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+		statusSource?: string;
+		statusExpiresAt?: string;
 	}>((resolve) => {
 		void request
 			.get(api('users.getStatus'))
@@ -5611,8 +5612,8 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal(credentials['X-User-Id']);
 				})
 				.end(done);
 		});
@@ -5625,8 +5626,8 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', 'rocket.cat');
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal('rocket.cat');
 				})
 				.end(done);
 		});
@@ -5722,7 +5723,6 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('success', true);
 						void getUserStatus(credentials['X-User-Id']).then((status) => {
 							expect(status.status).to.be.equal('busy');
-							expect(status.message).to.be.equal('test');
 						});
 					})
 					.end(done);
@@ -5763,6 +5763,23 @@ describe('[Users]', () => {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
+		it('should reject a message-only update when status resolves to offline via statusDefault and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+			await request.post(api('users.setStatus')).set(credentials).send({ status: 'offline' }).expect(200);
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({ message: 'still trying to stay invisible' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
 		it('should return an error when the payload is missing all supported fields', (done) => {
 			void request
 				.post(api('users.setStatus'))
@@ -5785,6 +5802,65 @@ describe('[Users]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 				});
+		});
+
+		it('should set status with expiresAt and return statusSource and statusExpiresAt in getStatus', async () => {
+			const expiresAt = new Date(Date.now() + 3600_000).toISOString();
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'focus time',
+					expiresAt,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const status = await getUserStatus(credentials['X-User-Id']);
+			// display status is offline because the test user has no active DDP session;
+			// the busy claim is persisted in statusDefault and takes effect on reconnect
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
+			expect(status).to.have.property('statusExpiresAt');
+			expect(new Date(status.statusExpiresAt!).getTime()).to.be.closeTo(new Date(expiresAt).getTime(), 2000);
+		});
+
+		it('should not return statusExpiresAt when expiresAt is not set', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'online',
+				})
+				.expect(200);
+
+			const status = await getUserStatus(credentials['X-User-Id']);
+			expect(status.status).to.be.equal('online');
+			expect(status).to.not.have.property('statusExpiresAt');
+		});
+
+		it('should update only the status message when no status is provided', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					message: 'message only, no status',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const infoResponse = await request.get(api('users.info')).query({ userId: credentials['X-User-Id'] }).set(credentials).expect(200);
+			expect(infoResponse.body.user).to.have.property('statusText', 'message only, no status');
 		});
 	});
 

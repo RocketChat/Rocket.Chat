@@ -110,10 +110,10 @@ export async function setUserAvatar(
 			} catch (e) {
 				SystemLogger.info({
 					msg: 'Not a valid response from the avatar url',
-					url: encodeURI(dataURI),
+					url: dataURI,
 					err: e,
 				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
+				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
 				});
@@ -123,13 +123,13 @@ export async function setUserAvatar(
 				if (response.status !== 404) {
 					SystemLogger.info({
 						msg: 'Error while handling the setting of the avatar from a url',
-						url: encodeURI(dataURI),
+						url: dataURI,
 						username: user.username,
 						status: response.status,
 					});
 					throw new Meteor.Error(
 						'error-avatar-url-handling',
-						`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
+						`Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`,
 						{ function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username },
 					);
 				}
