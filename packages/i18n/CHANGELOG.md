@@ -1,5 +1,19 @@
 # @rocket.chat/i18n
 
+## 3.2.0-rc.0
+
+### Minor Changes
+
+- ([#40988](https://github.com/RocketChat/Rocket.Chat/pull/40988)) Added Tagalog (`tl`) as a selectable interface language. It appears in the user's **Account → Preferences → Localization → Language** dropdown; interface strings fall back to English until translations are contributed (same approach as other not-yet-translated locales).
+
+- ([#40826](https://github.com/RocketChat/Rocket.Chat/pull/40826)) Shows a confirmation modal when switching attribute store setting
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- ([#40900](https://github.com/RocketChat/Rocket.Chat/pull/40900)) Added LibreTranslate as a message auto-translation provider, alongside Google, DeepL and Microsoft. LibreTranslate can be self-hosted, enabling fully on-premise / offline message auto-translation. Configure the instance URL (and optional API key) under **Admin → Settings → Message → Auto-Translate → LibreTranslate** and select it as the Service Provider.
+
 ## 3.1.0
 
 ### Minor Changes

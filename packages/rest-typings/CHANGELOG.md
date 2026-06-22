@@ -1,5 +1,37 @@
 # @rocket.chat/rest-typings
 
+## 8.6.0-rc.0
+
+### Minor Changes
+
+- ([#40532](https://github.com/RocketChat/Rocket.Chat/pull/40532)) Adds custom-sounds.delete API endpoint.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `POST /v1/chat.delete` now accepts `{ fileId, asUser? }` as an alternative to `{ msgId, roomId, asUser? }`. When `fileId` is provided the server resolves the owning message via `Messages.getMessageByFileId` before running the existing permission and deletion flow.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/e2e.requestSubscriptionKeys` (replaces the deprecated `e2e.requestSubscriptionKeys` DDP method). Auth-gated, no body. Broadcasts `notify.e2e.keyRequest` for every encrypted room the caller is subscribed to without an E2E key, matching the DDP method's behavior. The legacy DDP method remains registered until 9.0.0 with a deprecation log pointing at the new route.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/im.blockUser` (replaces the deprecated `blockUser` / `unblockUser` DDP methods). Body is `{ roomId, block: boolean }` — `block: true` blocks the other DM participant, `block: false` unblocks. Auth-gated and per-room via the `RoomMemberActions.BLOCK` directive (DM-only). Both legacy DDP methods remain registered until 9.0.0 with deprecation logs pointing at the new route.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/settings` for batched admin setting updates (replaces the deprecated `saveSettings` DDP method). Body is `{ settings: { _id, value }[] }`. The endpoint requires authentication, enforces 2FA (`twoFactorRequired: true`), and runs the same per-setting permission chain (`edit-privileged-setting` OR `manage-selected-settings` + per-id permission) and audit/notify side effects the DDP method already performed. The legacy DDP method remains registered until 9.0.0 with a deprecation log pointing at the new route.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `GET /v1/spotlight` now mirrors the DDP `spotlight` method:
+
+  - accepts optional `usernames` (comma-separated string), `type` (JSON-encoded `{ users?, mentions?, rooms?, includeFederatedRooms? }`) and `rid` query params;
+  - response items expose `nickname` / `outside` (users) and `uids` / `usernames` / `fname` (rooms);
+  - `status` on each user is now optional — outside/federated users were already being returned without one and the previous required-field schema rejected them as `Response validation failed`;
+  - the endpoint is no longer auth-gated, allowing anonymous-read flows (e.g. `Accounts_AllowAnonymousRead`) to keep finding public channels through the navbar search.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `POST /v1/users.setPreferences` now accepts an optional `data.utcOffset` (number) field. The value is stored at the user-document root via `Users.setUtcOffset` (not under `settings.preferences`), matching what the legacy `userSetUtcOffset` DDP method did.
+
+- ([#40996](https://github.com/RocketChat/Rocket.Chat/pull/40996)) Added a new `rooms.join` REST endpoint that lets a user join any room type, replicating the behavior of the deprecated `joinRoom` DDP method. Unlike `channels.join`, it resolves all room types through the shared `Room.join` service (access checks, join codes, federation and omnichannel rules). The client now uses `rooms.join` instead of `channels.join`.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  </details>
+
 ## 8.5.0
 
 ### Minor Changes
