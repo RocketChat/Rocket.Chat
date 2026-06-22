@@ -2,7 +2,7 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UserBridge } from '@rocket.chat/apps/dist/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Presence } from '@rocket.chat/core-services';
-import type { UserStatus } from '@rocket.chat/core-typings';
+import type { PresenceSource, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -177,6 +177,27 @@ export class AppUserBridge extends UserBridge {
 		await setUserActiveStatus(uid, false, confirmRelinquish);
 
 		return true;
+	}
+
+	protected async setActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		appId: string,
+	): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is setting active state for user ${userId}`);
+
+		await Presence.setActiveState(userId, {
+			statusDefault: state.statusDefault as UserStatus,
+			statusText: state.statusText,
+			statusSource: state.statusSource as PresenceSource,
+			...(state.statusExpiresAt && { statusExpiresAt: state.statusExpiresAt }),
+		});
+	}
+
+	protected async endActiveState(userId: IUser['id'], appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is ending active state for user ${userId}`);
+
+		await Presence.endActiveState(userId);
 	}
 
 	protected async getActiveUserCount(): Promise<number> {

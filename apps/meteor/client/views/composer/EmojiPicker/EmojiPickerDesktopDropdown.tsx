@@ -17,7 +17,7 @@ const getDropdownContainer = (descendant: HTMLElement | null) => {
 	return document.body;
 };
 
-const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObject<HTMLElement>) => {
+const useDropdownPosition = (reference: RefObject<HTMLElement | null>, target: RefObject<HTMLElement | null>) => {
 	const innerContainer = getDropdownContainer(reference.current);
 	const viewHeight = document.body.getBoundingClientRect().height;
 	const refTop = reference.current?.getBoundingClientRect().top ?? 0;
@@ -32,7 +32,7 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 
 	const maxHeight = useMemo(() => (placement === 'bottom-end' ? '482px' : `${refTop - 12}px`), [placement, refTop]);
 
-	const { style } = usePosition(reference, target, {
+	const { style } = usePosition(reference as RefObject<HTMLElement>, target as RefObject<HTMLElement>, {
 		placement,
 		container: innerContainer,
 	});
@@ -44,7 +44,7 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 
 type EmojiPickerDesktopDropdownProps = {
 	children: ReactNode;
-	reference: RefObject<HTMLElement>;
+	reference: RefObject<HTMLElement | null>;
 };
 
 /**

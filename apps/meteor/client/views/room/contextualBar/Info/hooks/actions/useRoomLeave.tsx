@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useSetModal, useToastMessageDispatch, useEndpoint, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ export const useRoomLeave = (room: IRoom) => {
 
 	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && Boolean(subscription);
 
-	const handleLeave = useEffectEvent(() => {
+	const handleLeave = useStableCallback(() => {
 		const leaveAction = async () => {
 			try {
 				if (room.t === 'c') {

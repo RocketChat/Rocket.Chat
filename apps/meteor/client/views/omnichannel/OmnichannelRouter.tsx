@@ -1,5 +1,5 @@
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
@@ -10,7 +10,7 @@ type OmnichannelRouterProps = {
 	children?: ReactNode;
 };
 
-const OmnichannelRouter = ({ children }: OmnichannelRouterProps): ReactElement => {
+const OmnichannelRouter = ({ children }: OmnichannelRouterProps) => {
 	const router = useRouter();
 
 	useEffect(

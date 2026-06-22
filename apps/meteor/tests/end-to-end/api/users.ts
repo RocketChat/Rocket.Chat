@@ -132,10 +132,11 @@ const preferences = {
 
 const getUserStatus = (userId: IUser['_id']) =>
 	new Promise<{
+		_id: string;
 		status: 'online' | 'offline' | 'away' | 'busy';
-		message?: string;
-		_id?: string;
 		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+		statusSource?: string;
+		statusExpiresAt?: string;
 	}>((resolve) => {
 		void request
 			.get(api('users.getStatus'))
@@ -245,6 +246,22 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error', 'Keys already set [error-keys-already-set]');
 			});
+	});
+
+	describe('[/e2e.requestSubscriptionKeys]', () => {
+		it('should return unauthorized when not authenticated', async () => {
+			await request.post(api('e2e.requestSubscriptionKeys')).expect(401);
+		});
+
+		it('should accept the request and return success for an authenticated user', async () => {
+			await request
+				.post(api('e2e.requestSubscriptionKeys'))
+				.set(userCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 	});
 
 	describe('[/users.create]', () => {
@@ -833,9 +850,11 @@ describe('[Users]', () => {
 	describe('[/users.register]', () => {
 		const email = `email@email${Date.now()}.com`;
 		const username = `myusername${Date.now()}`;
-		let user: IUser;
+		const users: IUser[] = [];
 
-		after(async () => deleteUser(user));
+		after(async () => {
+			await Promise.all(users.map((user) => deleteUser(user)));
+		});
 
 		it('should register new user', (done) => {
 			void request
@@ -844,7 +863,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -853,7 +872,7 @@ describe('[Users]', () => {
 					expect(res.body).to.have.nested.property('user.username', username);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
-					user = res.body.user;
+					users.push(res.body.user);
 				})
 				.end(done);
 		});
@@ -865,7 +884,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -883,7 +902,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -900,7 +919,7 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -919,7 +938,7 @@ describe('[Users]', () => {
 					email: `newuser${Date.now()}@email.com`,
 					name: 'New User',
 					username: `newuser${Date.now()}`,
-					pass: 'P@ssw0rd1234.!',
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -928,6 +947,305 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
 				})
 				.end(done);
+		});
+
+		describe('registration form setting', () => {
+			let previousRegistrationForm: Awaited<ReturnType<typeof getSettingValueById>>;
+
+			beforeEach(async () => {
+				previousRegistrationForm = await getSettingValueById('Accounts_RegistrationForm');
+			});
+
+			afterEach(async () => {
+				await updateSetting('Accounts_RegistrationForm', previousRegistrationForm);
+			});
+
+			it('should reject registration when public registration is disabled', async () => {
+				await updateSetting('Accounts_RegistrationForm', 'Disabled');
+
+				const username = `disabledRegistration_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-user-registration-disabled');
+					});
+
+				const user = await getUserByUsername(username);
+				expect(user).to.be.undefined;
+			});
+		});
+
+		describe('secret URL registration', () => {
+			let previousRegistrationForm: Awaited<ReturnType<typeof getSettingValueById>>;
+			let previousRegistrationFormSecretURL: Awaited<ReturnType<typeof getSettingValueById>>;
+
+			beforeEach(async () => {
+				[previousRegistrationForm, previousRegistrationFormSecretURL] = await Promise.all([
+					getSettingValueById('Accounts_RegistrationForm'),
+					getSettingValueById('Accounts_RegistrationForm_SecretURL'),
+				]);
+
+				await Promise.all([
+					updateSetting('Accounts_RegistrationForm', 'Secret URL'),
+					updateSetting('Accounts_RegistrationForm_SecretURL', 'valid-secret'),
+				]);
+			});
+
+			afterEach(async () => {
+				await Promise.all([
+					updateSetting('Accounts_RegistrationForm', previousRegistrationForm),
+					updateSetting('Accounts_RegistrationForm_SecretURL', previousRegistrationFormSecretURL),
+				]);
+			});
+
+			it('should reject registration without a secret when registration is limited to a secret URL', async () => {
+				const username = `missingSecret_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
+					});
+
+				const user = await getUserByUsername(username);
+				expect(user).to.be.undefined;
+			});
+
+			it('should reject registration with an invalid secret when registration is limited to a secret URL', async () => {
+				const username = `invalidSecret_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+						secret: 'invalid-secret',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
+					});
+
+				const user = await getUserByUsername(username);
+				expect(user).to.be.undefined;
+			});
+
+			it('should register a user with a valid secret when registration is limited to a secret URL', async () => {
+				const username = `validSecret_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+						secret: 'valid-secret',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						users.push(res.body.user);
+					});
+			});
+		});
+
+		describe('manual approval', () => {
+			let previousManuallyApproveNewUsers: Awaited<ReturnType<typeof getSettingValueById>>;
+
+			beforeEach(async () => {
+				previousManuallyApproveNewUsers = await getSettingValueById('Accounts_ManuallyApproveNewUsers');
+			});
+
+			afterEach(async () => {
+				await updateSetting('Accounts_ManuallyApproveNewUsers', previousManuallyApproveNewUsers);
+			});
+
+			it('should register an inactive user and persist the reason when manual approval is enabled', async () => {
+				await updateSetting('Accounts_ManuallyApproveNewUsers', true);
+
+				const username = `manualApproval_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+				const reason = 'I need access to the workspace';
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+						reason,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.active', false);
+						users.push(res.body.user);
+					});
+
+				const user = await getUserByUsername<IUser>(username);
+				expect(user).to.have.property('reason', reason);
+			});
+		});
+
+		describe('allowed email domains', () => {
+			let previousAllowedDomainsList: Awaited<ReturnType<typeof getSettingValueById>>;
+
+			beforeEach(async () => {
+				previousAllowedDomainsList = await getSettingValueById('Accounts_AllowedDomainsList');
+			});
+
+			afterEach(async () => {
+				await updateSetting('Accounts_AllowedDomainsList', previousAllowedDomainsList);
+			});
+
+			it('should reject registration when the email domain is not allowed', async () => {
+				await updateSetting('Accounts_AllowedDomainsList', 'rocket.chat');
+
+				const username = `invalidDomain_${Date.now()}`;
+				const email = `${username}@example.com`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-domain');
+					});
+
+				const user = await getUserByUsername(username);
+				expect(user).to.be.undefined;
+			});
+
+			it('should register a user when the email domain is allowed', async () => {
+				await updateSetting('Accounts_AllowedDomainsList', 'rocket.chat');
+
+				const username = `validDomain_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						users.push(res.body.user);
+					});
+			});
+		});
+
+		describe('custom fields', () => {
+			let previousCustomFields: Awaited<ReturnType<typeof getSettingValueById>>;
+
+			beforeEach(async () => {
+				previousCustomFields = await getSettingValueById('Accounts_CustomFields');
+				await setCustomFields({ customFieldText });
+			});
+
+			afterEach(async () => {
+				await updateSetting('Accounts_CustomFields', previousCustomFields);
+			});
+
+			it('should reject registration when a required custom field is empty', async () => {
+				const username = `missingCustomField_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+						customFields: {
+							customFieldText: '',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						// TODO: assert error-user-registration-custom-field directly after users.register formats this Meteor.Error correctly
+						expect(res.body).to.have.property('errorType', 'error-invalid-body');
+						expect(res.body).to.have.nested.property('body.error', 'error-user-registration-custom-field');
+					});
+
+				const user = await getUserByUsername(username);
+				expect(user).to.be.undefined;
+			});
+
+			it('should save valid custom fields when registering a user', async () => {
+				const username = `validCustomField_${Date.now()}`;
+				const email = `${username}@rocket.chat`;
+
+				await request
+					.post(api('users.register'))
+					.send({
+						email,
+						name: username,
+						username,
+						pass: password,
+						customFields: {
+							customFieldText: 'success',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						users.push(res.body.user);
+					});
+
+				const user = await getUserByUsername<IUser>(username);
+				expect(user).to.have.nested.property('customFields.customFieldText', 'success');
+			});
 		});
 
 		it('should return 400 when body is empty', async () => {
@@ -3605,6 +3923,40 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it('should persist the utcOffset preference on the user document', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { utcOffset: 5 } })
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('me'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('utcOffset', 5);
+				});
+		});
+
+		it('should fail when utcOffset is not a number', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { utcOffset: 'not-a-number' } })
+				.expect(400)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
 		it('should return 401 when not authenticated', async () => {
 			await request
 				.post(api('users.setPreferences'))
@@ -3721,44 +4073,23 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.sendConfirmationEmail]', () => {
-		it('should send email to user (return success), when is a valid email', (done) => {
-			void request
-				.post(api('users.sendConfirmationEmail'))
-				.set(credentials)
-				.send({
-					email: adminEmail,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-
-		it('should not send email to user(return error), when is a invalid email', (done) => {
-			void request
-				.post(api('users.sendConfirmationEmail'))
-				.set(credentials)
-				.send({
-					email: 'invalidEmail',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return 401 when not authenticated', async () => {
-			await request
-				.post(api('users.sendConfirmationEmail'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-				});
+		[
+			{ description: 'authenticated + known email', auth: true, email: adminEmail },
+			{ description: 'unauthenticated + known email', auth: false, email: adminEmail },
+			{ description: 'unauthenticated + unknown email', auth: false, email: 'nobody@example.invalid' },
+		].forEach(({ description, auth, email }) => {
+			it(`should return 200 success for ${description}`, async () => {
+				const req = request.post(api('users.sendConfirmationEmail')).send({ email });
+				if (auth) {
+					req.set(credentials);
+				}
+				await req
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
 		});
 
 		it('should return 400 when body is empty', async () => {
@@ -5281,8 +5612,8 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal(credentials['X-User-Id']);
 				})
 				.end(done);
 		});
@@ -5295,8 +5626,8 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', 'rocket.cat');
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal('rocket.cat');
 				})
 				.end(done);
 		});
@@ -5392,7 +5723,6 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('success', true);
 						void getUserStatus(credentials['X-User-Id']).then((status) => {
 							expect(status.status).to.be.equal('busy');
-							expect(status.message).to.be.equal('test');
 						});
 					})
 					.end(done);
@@ -5433,6 +5763,23 @@ describe('[Users]', () => {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
+		it('should reject a message-only update when status resolves to offline via statusDefault and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+			await request.post(api('users.setStatus')).set(credentials).send({ status: 'offline' }).expect(200);
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({ message: 'still trying to stay invisible' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
 		it('should return an error when the payload is missing all supported fields', (done) => {
 			void request
 				.post(api('users.setStatus'))
@@ -5455,6 +5802,65 @@ describe('[Users]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 				});
+		});
+
+		it('should set status with expiresAt and return statusSource and statusExpiresAt in getStatus', async () => {
+			const expiresAt = new Date(Date.now() + 3600_000).toISOString();
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'focus time',
+					expiresAt,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const status = await getUserStatus(credentials['X-User-Id']);
+			// display status is offline because the test user has no active DDP session;
+			// the busy claim is persisted in statusDefault and takes effect on reconnect
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
+			expect(status).to.have.property('statusExpiresAt');
+			expect(new Date(status.statusExpiresAt!).getTime()).to.be.closeTo(new Date(expiresAt).getTime(), 2000);
+		});
+
+		it('should not return statusExpiresAt when expiresAt is not set', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'online',
+				})
+				.expect(200);
+
+			const status = await getUserStatus(credentials['X-User-Id']);
+			expect(status.status).to.be.equal('online');
+			expect(status).to.not.have.property('statusExpiresAt');
+		});
+
+		it('should update only the status message when no status is provided', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					message: 'message only, no status',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const infoResponse = await request.get(api('users.info')).query({ userId: credentials['X-User-Id'] }).set(credentials).expect(200);
+			expect(infoResponse.body.user).to.have.property('statusText', 'message only, no status');
 		});
 	});
 

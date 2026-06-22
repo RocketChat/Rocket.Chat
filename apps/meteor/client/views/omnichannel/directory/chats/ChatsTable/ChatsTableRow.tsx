@@ -1,6 +1,6 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +39,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 		return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 	};
 
-	const onRowClick = useEffectEvent((id: string) =>
+	const onRowClick = useStableCallback((id: string) =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'chats',
 			context: 'info',

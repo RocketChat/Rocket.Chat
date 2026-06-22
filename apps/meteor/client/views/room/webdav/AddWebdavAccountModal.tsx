@@ -18,7 +18,6 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
@@ -31,7 +30,7 @@ type AddWebdavAccountModalProps = {
 	onConfirm: () => void;
 };
 
-const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProps): ReactElement => {
+const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProps) => {
 	const handleAddWebdavAccount = useMethod('addWebdavAccount');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [isLoading, setIsLoading] = useState(false);

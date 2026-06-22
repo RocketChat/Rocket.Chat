@@ -1,11 +1,11 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../contexts/RoomContext';
 
-const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactElement => {
+const MessageListErrorBoundary = ({ children }: { children: ReactNode }) => {
 	const { t } = useTranslation();
 	const room = useRoom();
 

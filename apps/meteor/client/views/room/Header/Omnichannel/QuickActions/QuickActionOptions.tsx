@@ -17,7 +17,7 @@ type QuickActionOptionsProps = {
 
 const QuickActionOptions = ({ options, room, action, icon, ...props }: QuickActionOptionsProps) => {
 	const { t } = useTranslation();
-	const reference = useRef(null);
+	const reference = useRef<HTMLButtonElement>(null);
 	const target = useRef(null);
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 

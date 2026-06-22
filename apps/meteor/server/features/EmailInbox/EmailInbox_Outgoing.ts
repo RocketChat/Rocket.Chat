@@ -142,7 +142,11 @@ slashCommands.add({
 			return;
 		}
 
-		const emailText = message?.msg || '';
+		const emailText =
+			message?.attachments
+				?.map((a) => a.description)
+				.filter(Boolean)
+				.join('\n\n') || '';
 
 		void sendEmail(
 			inbox,

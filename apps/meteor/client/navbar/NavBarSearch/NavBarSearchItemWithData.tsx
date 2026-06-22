@@ -1,6 +1,6 @@
 import { SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchItem from './NavBarSearchItem';
@@ -12,7 +12,7 @@ import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 type NavBarSearchItemWithDataProps = {
 	room: SubscriptionWithRoom;
 	id: string;
-	AvatarTemplate: ReactElement;
+	AvatarTemplate: ReactNode;
 } & Partial<ComponentProps<typeof NavBarSearchItem>>;
 
 const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSearchItemWithDataProps) => {

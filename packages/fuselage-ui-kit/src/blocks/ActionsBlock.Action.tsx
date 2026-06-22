@@ -4,11 +4,11 @@ import type { ReactElement } from 'react';
 
 type ActionProps = {
 	element: UiKit.ActionsBlock['elements'][number];
-	parser: UiKit.SurfaceRenderer<ReactElement>;
+	parser: UiKit.SurfaceRenderer<ReactElement<any>>;
 	index: number;
 };
 
-const Action = ({ element, parser, index }: ActionProps): ReactElement | null => {
+const Action = ({ element, parser, index }: ActionProps) => {
 	const renderedElement = parser.renderActionsBlockElement(element, index);
 
 	if (!renderedElement) {

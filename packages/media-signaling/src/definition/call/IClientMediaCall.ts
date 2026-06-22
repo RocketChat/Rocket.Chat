@@ -30,6 +30,7 @@ export type CallHangupReason =
 	| 'unavailable' // The actor is not available
 	| 'transfer' // one of the users requested the other be transferred to someone else
 	| 'not-answered' // max ringing duration was reached with no answer from the other user
+	| 'timeout-local-track' // Timeout waiting for the local audio track
 	| 'timeout-remote-sdp' // Timeout waiting for the remote SDP
 	| 'timeout-local-sdp' // Timeout while generating the local SDP + waiting for ICE Gathering
 	| 'timeout-activation' // Timeout connecting to the negotiated session

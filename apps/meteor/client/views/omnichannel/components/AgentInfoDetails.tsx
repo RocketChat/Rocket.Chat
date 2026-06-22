@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode, ComponentProps } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../../../components/UserStatus';
 
@@ -9,7 +9,7 @@ type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
 	shortName?: string;
 };
 
-const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ...props }: AgentInfoDetailsProps): ReactElement => (
+const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ...props }: AgentInfoDetailsProps) => (
 	<Box
 		display='flex'
 		title={name}

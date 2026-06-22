@@ -1,5 +1,4 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import InviteUsersWrapper from './InviteUsersWrapper';
 
@@ -8,7 +7,7 @@ type InviteUsersProps = {
 	onClickBack: (() => void) | undefined;
 };
 
-const InviteUsersLoading = ({ onClose, onClickBack: onClickBackMembers }: InviteUsersProps): ReactElement => (
+const InviteUsersLoading = ({ onClose, onClickBack: onClickBackMembers }: InviteUsersProps) => (
 	<InviteUsersWrapper onClose={onClose} onClickBack={onClickBackMembers}>
 		<Skeleton w='full' />
 	</InviteUsersWrapper>

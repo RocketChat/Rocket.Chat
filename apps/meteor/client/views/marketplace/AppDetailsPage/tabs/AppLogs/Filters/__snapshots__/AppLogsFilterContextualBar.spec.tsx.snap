@@ -87,55 +87,59 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       Time
                     </label>
                     <div
-                      aria-hidden="true"
-                      data-a11y-ignore="aria-hidden-focus"
-                      data-react-aria-prevent-focus="true"
-                      data-testid="hidden-select-container"
-                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      class="rcx-box rcx-box--full rcx-css-1mbgoc8"
                     >
-                      <label>
-                        <select
-                          name="timeFilter"
-                          tabindex="-1"
-                        >
-                          <option />
-                          <option
-                            value="all"
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="timeFilter"
+                            tabindex="-1"
                           >
-                            all
-                          </option>
-                          <option
-                            value="today"
-                          >
-                            today
-                          </option>
-                          <option
-                            value="last5Minutes"
-                          >
-                            last5Minutes
-                          </option>
-                          <option
-                            value="last15Minutes"
-                          >
-                            last15Minutes
-                          </option>
-                          <option
-                            value="last30Minutes"
-                          >
-                            last30Minutes
-                          </option>
-                          <option
-                            value="last1Hour"
-                          >
-                            last1Hour
-                          </option>
-                          <option
-                            value="thisWeek"
-                          >
-                            thisWeek
-                          </option>
-                        </select>
-                      </label>
+                            <option />
+                            <option
+                              value="all"
+                            >
+                              all
+                            </option>
+                            <option
+                              value="today"
+                            >
+                              today
+                            </option>
+                            <option
+                              value="last5Minutes"
+                            >
+                              last5Minutes
+                            </option>
+                            <option
+                              value="last15Minutes"
+                            >
+                              last15Minutes
+                            </option>
+                            <option
+                              value="last30Minutes"
+                            >
+                              last30Minutes
+                            </option>
+                            <option
+                              value="last1Hour"
+                            >
+                              last1Hour
+                            </option>
+                            <option
+                              value="thisWeek"
+                            >
+                              thisWeek
+                            </option>
+                          </select>
+                        </label>
+                      </div>
                     </div>
                     <button
                       aria-expanded="false"
@@ -304,40 +308,44 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       Severity
                     </label>
                     <div
-                      aria-hidden="true"
-                      data-a11y-ignore="aria-hidden-focus"
-                      data-react-aria-prevent-focus="true"
-                      data-testid="hidden-select-container"
-                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      class="rcx-box rcx-box--full rcx-css-1mbgoc8"
                     >
-                      <label>
-                        <select
-                          name="severity"
-                          tabindex="-1"
-                        >
-                          <option />
-                          <option
-                            value="all"
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="severity"
+                            tabindex="-1"
                           >
-                            all
-                          </option>
-                          <option
-                            value="0"
-                          >
-                            0
-                          </option>
-                          <option
-                            value="1"
-                          >
-                            1
-                          </option>
-                          <option
-                            value="2"
-                          >
-                            2
-                          </option>
-                        </select>
-                      </label>
+                            <option />
+                            <option
+                              value="all"
+                            >
+                              all
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                            <option
+                              value="1"
+                            >
+                              1
+                            </option>
+                            <option
+                              value="2"
+                            >
+                              2
+                            </option>
+                          </select>
+                        </label>
+                      </div>
                     </div>
                     <button
                       aria-expanded="false"

@@ -25,13 +25,13 @@ import type {
 	IWebdavAccount,
 	MessageAttachment,
 	ISession,
+	PresenceStatusCode,
 } from '@rocket.chat/core-typings';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
 	'roles': [
 		{
@@ -229,10 +229,12 @@ export interface StreamerEvents {
 				[
 					uid: IUser['_id'],
 					username: IUser['username'],
-					status: 0 | 1 | 2 | 3,
+					status: PresenceStatusCode,
 					statusText: IUser['statusText'],
 					name: IUser['name'],
 					roles: IUser['roles'],
+					statusSource?: IUser['statusSource'],
+					statusExpiresAt?: IUser['statusExpiresAt'],
 				],
 			];
 		},
@@ -297,7 +299,20 @@ export interface StreamerEvents {
 		},
 	];
 
-	'user-presence': [{ key: string; args: [[username: string, statusChanged?: 0 | 1 | 2 | 3, statusText?: string]] }];
+	'user-presence': [
+		{
+			key: string;
+			args: [
+				[
+					username: string,
+					statusChanged?: PresenceStatusCode,
+					statusText?: string,
+					statusSource?: IUser['statusSource'],
+					statusExpiresAt?: IUser['statusExpiresAt'],
+				],
+			];
+		},
+	];
 
 	// TODO: rename to 'integration-history'
 	'integrationHistory': [

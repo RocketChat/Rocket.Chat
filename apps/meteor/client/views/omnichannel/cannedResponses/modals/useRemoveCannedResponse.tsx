@@ -1,5 +1,5 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,7 +14,7 @@ export const useRemoveCannedResponse = (id: IOmnichannelCannedResponse['_id']) =
 	const dispatchToastMessage = useToastMessageDispatch();
 	const removeCannedResponse = useEndpoint('DELETE', '/v1/canned-responses/:_id', { _id: id });
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
 				await removeCannedResponse();

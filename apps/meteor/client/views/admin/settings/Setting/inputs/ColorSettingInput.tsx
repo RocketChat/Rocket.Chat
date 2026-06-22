@@ -1,7 +1,7 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
 import { FieldLabel, FieldRow, FieldHint, Flex, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, Key, ReactElement } from 'react';
+import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +30,7 @@ function ColorSettingInput({
 	onChangeValue,
 	onChangeEditor,
 	onResetButtonClick,
-}: ColorSettingInputProps): ReactElement {
+}: ColorSettingInputProps) {
 	const { t } = useTranslation();
 
 	const handleChange = useCallback(

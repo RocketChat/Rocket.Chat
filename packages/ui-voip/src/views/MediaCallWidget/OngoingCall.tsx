@@ -1,4 +1,5 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Divider, Field, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -13,8 +14,8 @@ import {
 	Timer,
 	DevicePicker,
 	ActionButton,
-	useKeypad,
 	useInfoSlots,
+	Keypad,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 
@@ -24,7 +25,8 @@ const OngoingCall = () => {
 	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
 
-	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
+	const [open, setOpen] = useState(false);
+	const [inputValue, setInputValue] = useState('');
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -54,9 +56,30 @@ const OngoingCall = () => {
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{keypad}
+				{open ? (
+					<Box display='flex' justifyContent='center' alignItems='center' w='100%' flexDirection='column' mbe={8}>
+						<Field mbe={8}>
+							<FieldRow>
+								<TextInput value={inputValue} readOnly small mi={24} />
+							</FieldRow>
+						</Field>
+						<Keypad
+							onKeyPress={(...args) => {
+								setInputValue((inputValue) => inputValue + args[0]);
+								onTone(...args);
+							}}
+						/>
+						<Divider w='100%' />
+					</Box>
+				) : null}
 				<ButtonGroup large>
-					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
+					<ActionButton
+						disabled={connecting || reconnecting}
+						icon='dialpad'
+						label={t('Dialpad')}
+						title={open ? t('Close_dialpad') : t('Open_dialpad')}
+						onClick={() => setOpen((open) => !open)}
+					/>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					<ToggleButton
 						label={t('Hold')}

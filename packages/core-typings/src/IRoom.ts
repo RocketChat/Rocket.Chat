@@ -388,6 +388,10 @@ export type RoomAdminFieldsType =
 
 export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
 
+export type IRoomAbacRedaction = { abacAttributesRedacted?: boolean };
+
+export type IRoomAdminWithAbacRedaction = IRoomAdmin & IRoomAbacRedaction;
+
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
 		enabled?: boolean;

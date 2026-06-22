@@ -2339,7 +2339,7 @@
   "LDAP_Sync_Now_Description": "Tämä käynnistää **taustasynkronoinnin** nyt odottamatta seuraavaa ajoitettua synkronointia.  \nTämä toiminto on asynkroninen, lisätietoja on lokeissa.",
   "LDAP_Sync_User_Active_State": "Synkronoi käyttäjän aktiivinen tila",
   "LDAP_Sync_User_Active_State_Both": "Ota käyttöön ja poista käytöstä käyttäjiä",
-  "LDAP_Sync_User_Active_State_Description": "Määritä, otetaanko käyttäjät käyttöön vai poistetaanko heidät käytöstä Rocket.Chatissa LDAP-tilan perusteella. Määritteen 'pwdAccountLockedTime' avulla määritetään, onko käyttäjä poistettu käytöstä.",
+  "LDAP_Sync_User_Active_State_Description": "Määritä, otetaanko käyttäjät käyttöön vai poistetaanko heidät käytöstä Rocket.Chatissa LDAP-tilan perusteella.",
   "LDAP_Sync_User_Active_State_Disable": "Poista käyttäjät käytöstä",
   "LDAP_Sync_User_Active_State_Nothing": "Älä tee mitään",
   "LDAP_Sync_User_Avatar": "Synkronoi käyttäjän avatar",
