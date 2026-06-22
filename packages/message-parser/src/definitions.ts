@@ -204,26 +204,7 @@ export type Types = {
 	SPOILER_BLOCK: SpoilerBlock;
 };
 
-export type ASTNode =
-	| BigEmoji
-	| Bold
-	| Spoiler
-	| Paragraph
-	| Plain
-	| Italic
-	| Strike
-	| Code
-	| CodeLine
-	| InlineCode
-	| Heading
-	| Quote
-	| SpoilerBlock
-	| Link
-	| UserMention
-	| ChannelMention
-	| Emoji
-	| Color
-	| Tasks;
+export type ASTNode = Types[keyof Types];
 
 export type TypesKeys = keyof Types;
 
