@@ -506,7 +506,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async createConferenceForEscalatingCall(user: IUser, call: IMediaCall): Promise<IGroupVideoConference | null> {
-		const rid = 'GENERAL';
+		// TODO: ensure there are two legs with the same uid pair
+		// TODO: if no DM can be used, use a fixed room from the settings instead
+		const rid = (await this.getRoomIdForExternalCall(call)) || 'GENERAL';
 
 		return VideoConf.createEscalatedConference({
 			rid,
@@ -517,6 +519,43 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			},
 			mediaCallIds: [call._id],
 		});
+	}
+
+	private async getRoomIdForExternalCall(call: IMediaCall): Promise<string | null> {
+		const callerUid = call.caller.uid;
+		const calleeUid = call.callee.uid;
+
+		if (!callerUid || !calleeUid) {
+			return null;
+		}
+
+		try {
+			const uids = [callerUid, calleeUid];
+			const uniqueUids = [...new Set(uids)];
+
+			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uniqueUids, { projection: { _id: 1 } });
+			if (room) {
+				return room._id;
+			}
+
+			const dmCreatorId = call.caller.type === 'user' ? callerUid : calleeUid;
+
+			const usernames = (
+				await Users.findByIds(uids, { projection: { username: 1 } })
+					.map((user) => user.username)
+					.toArray()
+			).filter((username) => username);
+
+			if (usernames.length !== 2) {
+				throw new Error('Invalid usernames for DM.');
+			}
+
+			const newRoom = await createDirectMessage(usernames, dmCreatorId, false);
+			return newRoom.rid;
+		} catch (err) {
+			logger.error({ msg: 'Failed to determine DM room for external call', err });
+			return null;
+		}
 	}
 
 	private async flagAsEscalated(call: IMediaCall): Promise<void> {
