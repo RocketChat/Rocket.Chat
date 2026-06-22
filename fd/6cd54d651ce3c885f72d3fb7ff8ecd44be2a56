@@ -1,0 +1,19 @@
+.changeset/nice-baboons-flash.md
+  s_fd4965b3325454::t_ac38bc759bd6d9 6-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "fd6cd54d651ce3c885f72d3fb7ff8ecd44be2a56",
+  "prompts": {},
+  "sessions": {
+    "s_fd4965b3325454": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d6db71-68d2-4fff-8c32-38e5b464d664",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
