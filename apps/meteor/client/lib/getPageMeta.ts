@@ -8,6 +8,7 @@ export const getPageMeta = (name: string): string | null => {
 		MetaCache.set(name, value);
 		return value;
 	} catch {
+		MetaCache.set(name, null);
 		return null;
 	}
 };
