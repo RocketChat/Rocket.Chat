@@ -128,6 +128,15 @@ export function createPexipSettings(): Promise<void> {
 				i18nDescription: `Pexip_Integration_SIP_Port_Description`,
 			});
 		});
+
+		await this.section('Pexip_Integration_PersistentChat', async function () {
+			await this.add('Pexip_Integration_PersistentChat_ExternalRoom', '', {
+				type: 'roomPick',
+				public: true,
+				invalidValue: '',
+				i18nDescription: `Pexip_Integration_PersistentChat_ExternalRoom_Description`,
+			});
+		});
 	});
 }
 
