@@ -1,0 +1,23 @@
+import { Box, Button } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
+
+type PopoutPanelProps = {
+	onClosePopout: () => void;
+};
+
+const PopoutPanel = ({ onClosePopout }: PopoutPanelProps) => {
+	const { t } = useTranslation();
+
+	return (
+		<Box mb={20} p={24} w='full' display='flex' flexDirection='column' justifyContent='space-between' alignItems='center' is='section'>
+			<Box is='h1' color='font-default' mbe={40}>
+				{t('Call_open_separate_window')}
+			</Box>
+			<Button onClick={onClosePopout} icon='arrow-from-cross-box' large>
+				{t('Show_call_here')}
+			</Button>
+		</Box>
+	);
+};
+
+export default PopoutPanel;
