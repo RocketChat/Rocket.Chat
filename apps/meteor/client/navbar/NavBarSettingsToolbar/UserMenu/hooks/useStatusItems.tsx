@@ -142,7 +142,20 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 				}),
 			);
 
-		return [...items, ...presetItems];
+		// Admin-defined custom statuses
+		const customItems = (statuses ?? [])
+			.filter((s) => !userStatuses.isValidType(s.id))
+			.map(
+				(status): GenericMenuItemProps => ({
+					id: status.id,
+					status: <UserStatus status={status.statusType} />,
+					content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+					addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
+					onClick: () => setStatusMutation.mutate(status),
+				}),
+			);
+
+		return [...items, ...presetItems, ...customItems];
 	}, [
 		presenceDisabled,
 		allowUserStatusMessageChange,
