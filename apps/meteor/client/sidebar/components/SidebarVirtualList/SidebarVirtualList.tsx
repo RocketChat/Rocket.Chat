@@ -1,6 +1,6 @@
 import { CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import type { Key, ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Virtualizer } from 'virtua';
 import type { VirtualizerProps } from 'virtua';
 
@@ -25,10 +25,21 @@ type SidebarVirtualListProps<TGroup, TItem> = {
 	as?: VirtualizerProps['as'];
 };
 
-type SidebarVirtualListRow = {
-	key: string;
-	content: ReactNode;
-};
+type SidebarVirtualListRow<TGroup, TItem> =
+	| {
+			type: 'group';
+			groupKey: string;
+			group: TGroup;
+			groupIndex: number;
+	  }
+	| {
+			type: 'item';
+			groupKey: string;
+			group: TGroup;
+			groupIndex: number;
+			item: TItem;
+			itemIndex: number;
+	  };
 
 function SidebarVirtualList<TGroup, TItem>({
 	groups,
@@ -39,25 +50,42 @@ function SidebarVirtualList<TGroup, TItem>({
 	as,
 }: SidebarVirtualListProps<TGroup, TItem>) {
 	const rows = useMemo(() => {
-		return groups.flatMap<SidebarVirtualListRow>(({ key, group, items }, groupIndex) => [
+		return groups.flatMap<SidebarVirtualListRow<TGroup, TItem>>(({ key, group, items }, groupIndex) => [
 			{
-				key: `group:${key}`,
-				content: renderGroup(group, groupIndex),
+				type: 'group',
+				groupKey: key,
+				group,
+				groupIndex,
 			},
 			...items.map((item, itemIndex) => ({
-				key: `item:${key}:${String(getItemKey(item, itemIndex, group, groupIndex))}`,
-				content: renderItem(item, itemIndex, group, groupIndex),
+				type: 'item' as const,
+				groupKey: key,
+				group,
+				groupIndex,
+				item,
+				itemIndex,
 			})),
 		]);
-	}, [getItemKey, groups, renderGroup, renderItem]);
+	}, [groups]);
+
+	const renderRow = useCallback(
+		(row: SidebarVirtualListRow<TGroup, TItem>) => {
+			if (row.type === 'group') {
+				return <div key={`group:${row.groupKey}`}>{renderGroup(row.group, row.groupIndex)}</div>;
+			}
+
+			const itemKey = getItemKey(row.item, row.itemIndex, row.group, row.groupIndex);
+
+			return <div key={`item:${row.groupKey}:${String(itemKey)}`}>{renderItem(row.item, row.itemIndex, row.group, row.groupIndex)}</div>;
+		},
+		[getItemKey, renderGroup, renderItem],
+	);
 
 	return (
 		<CustomVirtuaScrollbars>
 			<div style={scrollViewportStyle}>
-				<Virtualizer as={as} bufferSize={overscan}>
-					{rows.map(({ key, content }) => (
-						<div key={key}>{content}</div>
-					))}
+				<Virtualizer as={as} data={rows} bufferSize={overscan}>
+					{renderRow}
 				</Virtualizer>
 			</div>
 		</CustomVirtuaScrollbars>

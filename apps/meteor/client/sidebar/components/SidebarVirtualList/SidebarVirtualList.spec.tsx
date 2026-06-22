@@ -7,8 +7,11 @@ import type { CustomContainerComponentProps } from 'virtua';
 import SidebarVirtualList from './SidebarVirtualList';
 import type { SidebarVirtualListGroup } from './SidebarVirtualList';
 
+let mockVisibleIndexes: number[] | undefined;
+
 type MockVirtualizerProps = {
-	children: ReactNode;
+	children: ReactNode | ((item: unknown, index: number) => ReactNode);
+	data?: ArrayLike<unknown>;
 	bufferSize?: number;
 	as?: ElementType;
 	style?: CSSProperties;
@@ -17,12 +20,20 @@ type MockVirtualizerProps = {
 
 jest.mock('virtua', () => {
 	return {
-		Virtualizer: ({ children, bufferSize, as: root = 'div', style, className }: MockVirtualizerProps) =>
-			createElement(
+		Virtualizer: ({ children, data, bufferSize, as: root = 'div', style, className }: MockVirtualizerProps) => {
+			const childrenToRender =
+				typeof children === 'function'
+					? (mockVisibleIndexes ?? Array.from({ length: data?.length ?? 0 }, (_, index) => index)).map((index) =>
+							children(data?.[index], index),
+						)
+					: Children.toArray(children).filter((_, index) => !mockVisibleIndexes || mockVisibleIndexes.includes(index));
+
+			return createElement(
 				root,
 				{ className, 'data-buffer-size': bufferSize, 'data-testid': 'virtual-list', 'style': style ?? { height: '100%' } },
-				Children.toArray(children),
-			),
+				childrenToRender,
+			);
+		},
 	};
 });
 
@@ -79,10 +90,16 @@ const renderVirtualList = (
 		groups: SidebarVirtualListGroup<TestGroup, TestItem>[];
 		overscan: number;
 		as: ElementType;
+		renderGroup: typeof defaultProps.renderGroup;
+		renderItem: typeof defaultProps.renderItem;
 	}> = {},
 ) => render(<SidebarVirtualList {...defaultProps} {...props} />);
 
 describe('SidebarVirtualList', () => {
+	beforeEach(() => {
+		mockVisibleIndexes = undefined;
+	});
+
 	it('renders group rows and item rows in order', () => {
 		renderVirtualList();
 
@@ -107,6 +124,29 @@ describe('SidebarVirtualList', () => {
 		});
 
 		expect(screen.getAllByTestId('virtual-row').map((row) => row.textContent)).toEqual(['group:0:Empty Group']);
+	});
+
+	it('defers item rendering until Virtua requests the row', () => {
+		mockVisibleIndexes = [0];
+
+		const renderGroup = jest.fn((group: TestGroup) => <div data-testid='virtual-row'>{group.title}</div>);
+		const renderItem = jest.fn((item: TestItem) => <div data-testid='virtual-row'>{item.name}</div>);
+
+		renderVirtualList({
+			groups: [
+				{
+					key: 'channels',
+					group: { title: 'Channels' },
+					items: Array.from({ length: 1000 }, (_, index) => ({ _id: `room-${index}`, name: `room-${index}` })),
+				},
+			],
+			renderGroup,
+			renderItem,
+		});
+
+		expect(renderGroup).toHaveBeenCalledTimes(1);
+		expect(renderItem).not.toHaveBeenCalled();
+		expect(screen.getByTestId('virtual-row')).toHaveTextContent('Channels');
 	});
 
 	it('passes overscan to Virtua as buffer size', () => {
