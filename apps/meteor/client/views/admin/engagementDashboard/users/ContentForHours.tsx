@@ -2,8 +2,7 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import moment from 'moment';
-import type { ReactElement } from 'react';
+import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ type ContentForHoursProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps): ReactElement => {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useHourlyChatActivity({ displacement, utc });
 
@@ -50,7 +49,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
 				<Box mi={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
-					{data ? moment(data.day).format(displacement < 7 ? 'dddd' : 'L') : null}
+					{data ? format(new Date(data.day), displacement < 7 ? 'EEEE' : 'P') : null}
 				</Box>
 				<Button square small disabled={displacement === 0} onClick={onNextDateClick}>
 					<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
@@ -85,7 +84,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 									tickPadding: 4,
 									tickRotation: isLgScreen ? 0 : 25,
 									tickValues: 'every 2 hours',
-									format: (hour): string => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
+									format: (hour): string => format(new Date(2000, 0, 1, Number(hour), 0, 0), 'p'),
 								}}
 								axisLeft={null}
 								animate={true}

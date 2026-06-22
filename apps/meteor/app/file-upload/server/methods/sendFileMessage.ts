@@ -15,10 +15,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { isImagePreviewSupported } from './isImagePreviewSupported';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
-import { omit } from '../../../../lib/utils/omit';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
 
@@ -45,7 +45,14 @@ export const parseFileIntoMessageAttachments = async (
 		});
 	}
 
-	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+	const safeMetadata = {
+		...(typeof file.name === 'string' && { name: file.name }),
+		...(typeof file.description === 'string' && { description: file.description }),
+		...(typeof file.typeGroup === 'string' && { typeGroup: file.typeGroup }),
+		...(file.content && typeof file.content === 'object' && { content: file.content }),
+	};
+
+	await Uploads.updateFileMetadata(file._id, user._id, safeMetadata);
 
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 
@@ -66,7 +73,7 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
-			description: file?.description,
+			image_alt: file?.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,
@@ -235,6 +242,7 @@ export const sendFileMessage = async (
 
 Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
+		methodDeprecationLogger.method('sendFileMessage', '9.0.0', '/v1/rooms.mediaConfirm/:rid/:fileId');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

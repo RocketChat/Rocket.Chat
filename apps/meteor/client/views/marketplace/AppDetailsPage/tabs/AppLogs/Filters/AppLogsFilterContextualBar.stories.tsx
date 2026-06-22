@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { action } from 'storybook/actions';
 
 import { AppLogsFilterContextualBar } from './AppLogsFilterContextualBar';
 

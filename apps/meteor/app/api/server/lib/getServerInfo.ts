@@ -1,4 +1,5 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 
 import { getTrimmedServerVersion } from './getTrimmedServerVersion';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -15,6 +16,8 @@ export async function getServerInfo(userId?: string): Promise<IWorkspaceInfo> {
 	const cloudWorkspaceId = settings.get<string | undefined>('Cloud_Workspace_Id');
 
 	return {
+		workspaceUrl: License.getWorkspaceUrl(),
+		hashedWorkspaceUrl: License.getHashedWorkspaceUrl(),
 		version: getTrimmedServerVersion(),
 		...(hasPermissionToViewStatistics && {
 			info: {

@@ -156,7 +156,7 @@ export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 
 export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'p';
 
 export const isABACManagedRoom = (room: Partial<IRoom>): room is IRoom & { abacAttributes: IAbacAttributeDefinition[] } =>
-	Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
+	room?.t === 'p' && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
@@ -385,6 +385,12 @@ export type RoomAdminFieldsType =
 	| 'uids'
 	| 'avatarETag'
 	| 'abacAttributes';
+
+export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
+
+export type IRoomAbacRedaction = { abacAttributesRedacted?: boolean };
+
+export type IRoomAdminWithAbacRedaction = IRoomAdmin & IRoomAbacRedaction;
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {

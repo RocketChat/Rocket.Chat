@@ -1,6 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
 
 import Action from './ActionsBlock.Action';
@@ -9,7 +8,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type ActionsBlockProps = BlockProps<UiKit.ActionsBlock>;
 
-const ActionsBlock = ({ className, block, surfaceRenderer }: ActionsBlockProps): ReactElement => {
+const ActionsBlock = ({ className, block, surfaceRenderer }: ActionsBlockProps) => {
 	const surfaceType = useSurfaceType();
 
 	const [showMoreVisible, setShowMoreVisible] = useState(() => block.elements.length > 5 && surfaceType !== 'banner');

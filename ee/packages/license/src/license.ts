@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 import type {
 	ILicenseTag,
 	LicenseEvents,
@@ -159,6 +161,20 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 
 	public getWorkspaceUrl() {
 		return this.workspaceUrl;
+	}
+
+	public hashWorkspaceUrl(url: string) {
+		return crypto.createHash('sha256').update(url).digest('hex');
+	}
+
+	public getHashedWorkspaceUrl() {
+		const workspaceUrl = this.getWorkspaceUrl();
+
+		if (!workspaceUrl) {
+			return undefined;
+		}
+
+		return this.hashWorkspaceUrl(workspaceUrl);
 	}
 
 	public async revalidateLicense(options: Omit<LicenseValidationOptions, 'isNewLicense'> = {}): Promise<void> {

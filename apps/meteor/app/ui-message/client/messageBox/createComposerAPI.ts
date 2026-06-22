@@ -1,20 +1,22 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Accounts } from 'meteor/accounts-base';
-import { Tracker } from 'meteor/tracker';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
+import { settings } from '../../../../client/lib/settings';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,
-	storageID: string,
+	persistDraft: (value: string) => void,
+	initialDraft: string,
 	quoteChainLimit: number,
-	composerRef: RefObject<HTMLElement>,
+	composerRef: RefObject<HTMLElement | null>,
+	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
@@ -38,19 +40,12 @@ export const createComposerAPI = (
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
-		if (input.value) {
-			Accounts.storageLocation.setItem(storageID, input.value);
-			return;
-		}
-
-		Accounts.storageLocation.removeItem(storageID);
+		persistDraft(input.value);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
-
-	input.addEventListener('input', persist);
 
 	const setText = (
 		text: string,
@@ -200,29 +195,34 @@ export const createComposerAPI = (
 		setEditing(editing);
 	};
 
-	const [formatters, stopFormatterTracker] = (() => {
+	const [formatters, stopFormatterSubscription] = (() => {
 		let actions: FormattingButton[] = [];
 
-		const c = Tracker.autorun(() => {
+		const recompute = (): void => {
 			actions = formattingButtons.filter(({ condition }) => !condition || condition());
 			emitter.emit('formatting');
-		});
+		};
+		recompute();
+		// Coarse-grained: fires on every setting change, but the only condition()
+		// today is Katex_Enabled and the recompute is a cheap zustand read, so the
+		// extra work per unrelated setting change is negligible.
+		const stop = settings.observe('*', recompute);
 
 		return [
 			{
 				get: () => actions,
 				subscribe: (callback: () => void) => emitter.on('formatting', callback),
 			},
-			c,
+			stop,
 		];
 	})();
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
-		stopFormatterTracker.stop();
+		stopFormatterSubscription();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 		const initText = input.value.slice(0, selectionStart);
 		const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -252,7 +252,11 @@ export const createComposerAPI = (
 				triggerEvent(input, 'change');
 
 				focus();
-				return;
+				return {
+					selectionStart: input.selectionStart,
+					selectionEnd: input.selectionEnd,
+					value: input.value,
+				};
 			}
 		}
 
@@ -266,13 +270,21 @@ export const createComposerAPI = (
 		triggerEvent(input, 'change');
 
 		focus();
+
+		return {
+			selectionStart: input.selectionStart,
+			selectionEnd: input.selectionEnd,
+			value: input.value,
+		};
 	};
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
+	setText(initialDraft, {
 		skipFocus: true,
 	});
+
+	input.addEventListener('input', persist);
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
@@ -351,5 +363,6 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

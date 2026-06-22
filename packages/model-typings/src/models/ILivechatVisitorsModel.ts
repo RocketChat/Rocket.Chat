@@ -1,4 +1,4 @@
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { IVisitorExternalIdentifier, ILivechatVisitor } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
 	FindCursor,
@@ -15,6 +15,7 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
+	findByIds(ids: string[], options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 	getVisitorByToken(token: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
 	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
@@ -49,6 +50,16 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
+
+	findOneVisitorByPhoneOrEmailAndAddExternalId(
+		contactData: { phone: string } | { email: string },
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null>;
+
+	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null>;
+
+	updateExternalIdById(_id: string, appId: string, externalId: Omit<IVisitorExternalIdentifier, 'appId'>): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 

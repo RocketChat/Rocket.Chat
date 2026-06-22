@@ -1,14 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { EditRoomFlexTab } from './fragments/edit-room-flextab';
+import { EditAdminRoomFlexTab } from './fragments/flextabs';
 
 export class AdminRooms extends Admin {
-	readonly editRoom: EditRoomFlexTab;
+	readonly editRoom: EditAdminRoomFlexTab;
 
 	constructor(page: Page) {
 		super(page);
-		this.editRoom = new EditRoomFlexTab(page.getByRole('dialog', { name: 'Room Information' }));
+		this.editRoom = new EditAdminRoomFlexTab(page.getByRole('dialog', { name: 'Room Information' }));
 	}
 
 	get adminPageContent(): Locator {

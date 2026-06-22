@@ -116,6 +116,7 @@ export class MockedAppRootBuilder {
 			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
 		getStream: () => () => () => undefined,
+		getStreamAll: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => {
@@ -134,6 +135,7 @@ export class MockedAppRootBuilder {
 		defineRoutes: () => () => undefined,
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
+		getLocationHash: () => '',
 		getRouteName: () => undefined,
 		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),
@@ -249,13 +251,16 @@ export class MockedAppRootBuilder {
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
+		loginWithCustomOauth: () => undefined,
 		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
 		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
 		queryLoginServices: {
 			getCurrentValue: () => this.authServices,
 			subscribe: () => () => undefined,
 		},
-		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
+		getLoginToken: () => null,
+		unstoreLoginToken: () => () => undefined,
+		wipeLocalAuth: () => undefined,
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
@@ -471,6 +476,17 @@ export class MockedAppRootBuilder {
 	withRoom(room: IRoom): this {
 		this.room = room;
 
+		return this;
+	}
+
+	withRouter(overrides: Partial<ContextType<typeof RouterContext>>): this {
+		this.router = { ...this.router, ...overrides };
+		return this;
+	}
+
+	withRouteParameter(name: string, value: string): this {
+		const innerFn = this.router.getRouteParameters;
+		this.router.getRouteParameters = () => ({ ...innerFn(), [name]: value });
 		return this;
 	}
 

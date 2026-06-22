@@ -1,5 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import {
 	CustomFieldsForm,
@@ -14,7 +15,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
@@ -68,7 +69,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
-const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -89,12 +90,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const initialValue = getInitialValues(contactData);
 
 	const {
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, isDirty },
 		control,
 		watch,
 		handleSubmit,
 	} = useForm<ContactFormData>({
-		mode: 'onBlur',
 		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
@@ -165,31 +165,33 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
 
-	const handleSave = async (data: ContactFormData): Promise<void> => {
-		const { name, phones, emails, customFields, contactManager } = data;
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async (data: ContactFormData): Promise<void> => {
+			const { name, phones, emails, customFields, contactManager } = data;
 
-		const payload = {
-			name,
-			phones: phones.map(({ phoneNumber }) => phoneNumber),
-			emails: emails.map(({ address }) => address),
-			customFields,
-			contactManager,
-		};
+			const payload = {
+				name,
+				phones: phones.map(({ phoneNumber }) => phoneNumber),
+				emails: emails.map(({ address }) => address),
+				customFields,
+				contactManager,
+			};
 
-		if (contactData) {
-			await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+			if (contactData) {
+				await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+				await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
+				return;
+			}
+
+			await createContact.mutateAsync(payload);
 			await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
-			return;
-		}
-
-		await createContact.mutateAsync(payload);
-		await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
-	};
+		},
+		{
+			isDirty,
+		},
+	);
 
 	const formId = useId();
-	const nameField = useId();
-	const emailField = useId();
-	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
 		return <ContextualbarSkeleton onClose={onClose} />;
@@ -204,33 +206,19 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
-					<FieldLabel htmlFor={nameField} required>
-						{t('Name')}
-					</FieldLabel>
+					<FieldLabel required>{t('Name')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='name'
 							control={control}
 							rules={{ validate: validateName }}
-							render={({ field }) => (
-								<TextInput
-									id={nameField}
-									{...field}
-									error={errors.name?.message}
-									aria-invalid={errors.name ? 'true' : 'false'}
-									aria-describedby={`${nameField}-error`}
-								/>
-							)}
+							render={({ field }) => <TextInput {...field} error={errors.name?.message} />}
 						/>
 					</FieldRow>
-					{errors.name && (
-						<FieldError id={`${nameField}-error`} role='alert'>
-							{errors.name.message}
-						</FieldError>
-					)}
+					{errors.name && <FieldError>{errors.name.message}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel id={emailField}>{t('Email')}</FieldLabel>
+					<FieldLabel>{t('Email')}</FieldLabel>
 					{emailFields.map((field, index) => (
 						<Fragment key={field.id}>
 							<FieldRow>
@@ -241,24 +229,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 										required: t('Required_field', { field: t('Email') }),
 										validate: validateEmailFormat,
 									}}
-									render={({ field }) => (
-										<TextInput
-											{...field}
-											aria-labelledby={emailField}
-											error={errors.emails?.[index]?.address?.message}
-											aria-invalid={errors.emails?.[index]?.address ? 'true' : 'false'}
-											aria-describedby={`${emailField + index}-error`}
-											aria-required='true'
-										/>
-									)}
+									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />}
 								/>
 								<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} mis={8} icon='trash' />
 							</FieldRow>
-							{errors.emails?.[index]?.address && (
-								<FieldError id={`${emailField + index}-error`} role='alert'>
-									{errors.emails?.[index]?.address?.message}
-								</FieldError>
-							)}
+							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
 						</Fragment>
 					))}
 					<Button
@@ -269,7 +244,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 					</Button>
 				</Field>
 				<Field>
-					<FieldLabel id={phoneField}>{t('Phone')}</FieldLabel>
+					<FieldLabel>{t('Phone')}</FieldLabel>
 					{phoneFields.map((field, index) => (
 						<Fragment key={field.id}>
 							<FieldRow>
@@ -280,24 +255,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 										required: t('Required_field', { field: t('Phone') }),
 										validate: validatePhone,
 									}}
-									render={({ field }) => (
-										<TextInput
-											{...field}
-											aria-labelledby={phoneField}
-											error={errors.phones?.[index]?.phoneNumber?.message}
-											aria-invalid={errors.phones?.[index]?.phoneNumber ? 'true' : 'false'}
-											aria-describedby={`${phoneField + index}-error`}
-											aria-required='true'
-										/>
-									)}
+									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />}
 								/>
 								<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} mis={8} icon='trash' />
 							</FieldRow>
-							{errors.phones?.[index]?.phoneNumber && (
-								<FieldError id={`${phoneField + index}-error`} role='alert'>
-									{errors.phones?.[index]?.phoneNumber?.message}
-								</FieldError>
-							)}
+							{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
 						</Fragment>
 					))}
 					<Button

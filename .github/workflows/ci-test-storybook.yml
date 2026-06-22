@@ -13,6 +13,8 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: true
+      NPM_TOKEN:
+        required: false
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
@@ -24,7 +26,7 @@ jobs:
     name: Test Storybook
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -35,18 +37,9 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
 
-      - name: Restore packages build
-        uses: actions/download-artifact@v8
-        with:
-          name: packages-build
-          path: /tmp
-
-      - name: Unpack packages build
-        shell: bash
-        run: |
-          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+      - uses: ./.github/actions/restore-packages
 
       - uses: ./.github/actions/setup-playwright
 
@@ -55,7 +48,7 @@ jobs:
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:
           flags: unit
           verbose: true

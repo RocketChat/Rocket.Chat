@@ -3,6 +3,7 @@ import type { IRole, IUserInRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	isRoleAddUserToRoleProps,
 	isRoleDeleteProps,
 	isRoleRemoveUserFromRoleProps,
@@ -25,7 +26,7 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 
-const rolesSyncQuerySchema = ajv.compile<{ updatedSince?: string }>({
+const rolesSyncQuerySchema = ajvQuery.compile<{ updatedSince?: string }>({
 	type: 'object',
 	properties: { updatedSince: { type: 'string' } },
 	additionalProperties: false,
@@ -37,10 +38,24 @@ const rolesRoutes = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile<{ roles: IRole[] }>({
+				200: ajv.compile<{ roles: Omit<IRole, '_updatedAt'>[] }>({
 					type: 'object',
 					properties: {
-						roles: { type: 'array', items: { $ref: '#/components/schemas/IRole' } },
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									description: { type: 'string' },
+									mandatory2fa: { type: 'boolean' },
+									name: { type: 'string' },
+									protected: { type: 'boolean' },
+									scope: { type: 'string', enum: ['Users', 'Subscriptions'] },
+								},
+								required: ['_id', 'description', 'name', 'protected', 'scope'],
+							},
+						},
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['roles', 'success'],
@@ -186,9 +201,9 @@ const rolesRoutes = API.v1
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
-				limit: count as number,
+				limit: count,
 				sort: { username: 1 },
-				skip: offset as number,
+				skip: offset,
 				projection,
 			});
 

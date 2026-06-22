@@ -1,16 +1,18 @@
+import { FocusScope } from '@react-aria/focus';
 import { Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
 import type { ComponentProps, ReactNode } from 'react';
 import { useLayoutEffect } from 'react';
-import { FocusScope } from 'react-aria';
 
 import { DragContext } from './WidgetDraggableContext';
 import { useDraggable } from '../../hooks';
+import { type LastKnownPosition } from '../../providers/useWidgetPositionTracker';
 
 // TODO: Initial position from the draggable api instead of style props
 // TODO: A11Y
-const WidgetBase = styled('article')`
+const WidgetBase = styled('div')`
 	position: fixed;
+	padding: 0;
 	right: 2em;
 	top: 11em;
 	display: flex;
@@ -30,10 +32,12 @@ const WidgetBase = styled('article')`
 
 type WidgetProps = {
 	children: ReactNode;
+	restorePosition?: LastKnownPosition | null;
+	onChangePosition?: (position: LastKnownPosition | null) => void;
 } & ComponentProps<typeof WidgetBase>;
 
-const Widget = ({ children, ...props }: WidgetProps) => {
-	const [draggableRef, boundingRef, handleRef] = useDraggable();
+const Widget = ({ children, onChangePosition, restorePosition, ...props }: WidgetProps) => {
+	const [draggableRef, boundingRef, handleRef] = useDraggable({ onChangePosition, restorePosition });
 
 	useLayoutEffect(() => {
 		boundingRef(document.body);
@@ -42,7 +46,12 @@ const Widget = ({ children, ...props }: WidgetProps) => {
 	return (
 		<DragContext.Provider value={{ draggableRef, boundingRef, handleRef }}>
 			<FocusScope autoFocus>
-				<WidgetBase {...props} ref={draggableRef} aria-labelledby='rcx-media-call-widget-title rcx-media-call-widget-caller-info'>
+				<WidgetBase
+					{...props}
+					ref={draggableRef}
+					role='dialog'
+					aria-labelledby='rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info'
+				>
 					{children}
 				</WidgetBase>
 			</FocusScope>

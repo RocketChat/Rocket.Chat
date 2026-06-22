@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import type { IExportOperation } from '@rocket.chat/core-typings';
 import { expect } from 'chai';

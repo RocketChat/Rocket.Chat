@@ -1,9 +1,11 @@
-import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomAbacRedaction, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
+import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../../authorization/server/lib/isABACManagedRoom';
 
 export async function findAdminRooms({
 	uid,
@@ -16,7 +18,7 @@ export async function findAdminRooms({
 	types: Array<RoomType | 'discussions' | 'teams'>;
 	pagination: { offset: number; count: number; sort: Sort };
 }): Promise<{
-	rooms: IRoom[];
+	rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
 	count: number;
 	offset: number;
 	total: number;
@@ -39,22 +41,40 @@ export async function findAdminRooms({
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
+	const [rooms, total] = await Promise.all([
+		cursor
+			.sort(sort || { default: -1, name: 1 })
+			.map(stripABACManagedFieldsForAdmin)
+			.toArray(),
+		totalCount,
+	]);
 
 	return {
-		rooms,
+		rooms: await scopeAdminRoomsForAbac(rooms, uid),
 		count: rooms.length,
 		offset,
 		total,
 	};
 }
 
-export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<Pick<IRoom, RoomAdminFieldsType> | null> {
+export async function findAdminRoom({
+	uid,
+	rid,
+}: {
+	uid: string;
+	rid: string;
+}): Promise<(Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction) | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	return Rooms.findOneById(rid, { projection: adminFields });
+	const room = await Rooms.findOneById(rid, { projection: adminFields });
+	if (!room) {
+		return null;
+	}
+
+	const [scoped] = await scopeAdminRoomsForAbac([stripABACManagedFieldsForAdmin(room)], uid);
+	return scoped ?? null;
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
@@ -153,7 +173,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 	};
 }
 
-export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name: string }): Promise<{
+export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name?: string }): Promise<{
 	items: IRoom[];
 }> {
 	const options: FindOptions<IRoom> = {

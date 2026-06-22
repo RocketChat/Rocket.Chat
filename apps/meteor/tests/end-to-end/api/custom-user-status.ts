@@ -377,7 +377,7 @@ describe('[CustomUserStatus]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The "customUserStatusId" params is required!');
+					expect(res.body).to.have.property('error', "must have required property 'customUserStatusId'");
 				});
 		});
 

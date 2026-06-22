@@ -5,6 +5,7 @@
 	for the *server* pieces of code which does include the shared
 	library files.
 */
+import './afterUserActions';
 import './notifyUsersOnMessage';
 
 export { sendNotification } from './sendNotificationsOnMessage';

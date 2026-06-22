@@ -21,6 +21,10 @@ export class DevicesTable extends Table {
 		super(page.getByRole('table', { name: 'Devices' }));
 	}
 
+	async countRowsForUsername(username: string): Promise<number> {
+		return this.root.getByRole('row').getByRole('cell', { name: username, exact: true }).count();
+	}
+
 	getDeviceRowById(deviceId: string): Locator {
 		return this.findRowByName(deviceId);
 	}

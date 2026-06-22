@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import PreviewCodeBlock from './code/PreviewCodeBlock';
@@ -15,7 +14,7 @@ type PreviewMarkupProps = {
 	tokens: MessageParser.Root;
 };
 
-const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
+const PreviewMarkup = ({ tokens }: PreviewMarkupProps) => {
 	if (isOnlyBigEmojiBlock(tokens)) {
 		return <PreviewBigEmojiBlock emoji={tokens[0].value} />;
 	}
@@ -31,7 +30,7 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 			return <PreviewInlineElements>{firstBlock.value}</PreviewInlineElements>;
 
 		case 'HEADING':
-			return <>{firstBlock.value.map((plain) => plain.value).join('')}</>;
+			return <PreviewInlineElements>{firstBlock.value}</PreviewInlineElements>;
 
 		case 'UNORDERED_LIST':
 		case 'ORDERED_LIST': {

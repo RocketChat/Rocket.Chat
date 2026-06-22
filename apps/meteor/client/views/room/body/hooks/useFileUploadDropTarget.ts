@@ -1,19 +1,15 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { DragEvent, ReactNode } from 'react';
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { useDropTarget } from './useDropTarget';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import type { UploadsAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useIsRoomOverMacLimit } from '../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
-export const useFileUploadDropTarget = (
-	uploadsStore: UploadsAPI,
-): readonly [
+export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
 		onDragEnter: (event: DragEvent<Element>) => void;
 	},
@@ -33,8 +29,11 @@ export const useFileUploadDropTarget = (
 
 	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const user = useUser();
-	const fileUploadAllowedForUser = useReactiveValue(
-		useCallback(() => !roomCoordinator.readOnly(room, { username: user?.username }), [room, user?.username]),
+	const postReadOnly = usePermission('post-readonly', room._id);
+	const fileUploadAllowedForUser = useMemo(
+		() => !roomCoordinator.readOnly(room, { username: user?.username }),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[room, user?.username, postReadOnly],
 	);
 
 	const chat = useChat();
@@ -45,7 +44,7 @@ export const useFileUploadDropTarget = (
 		chat?.composer?.editing.get ?? (() => false),
 	);
 
-	const onFileDrop = useEffectEvent(async (files: File[]) => {
+	const onFileDrop = useStableCallback(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
@@ -66,7 +65,7 @@ export const useFileUploadDropTarget = (
 			return file;
 		});
 
-		chat?.flows.uploadFiles({ files: uploads, uploadsStore });
+		chat?.flows.uploadFiles({ files: uploads });
 	});
 
 	const allOverlayProps = useMemo(() => {

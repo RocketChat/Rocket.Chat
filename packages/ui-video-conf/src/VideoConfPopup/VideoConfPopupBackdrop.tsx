@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 const backdropStyle = css`
 	position: fixed;
@@ -14,7 +14,7 @@ const backdropStyle = css`
 	}
 `;
 
-const VideoConfPopupBackdrop = ({ children }: { children: ReactNode }): ReactElement => (
+const VideoConfPopupBackdrop = ({ children }: { children: ReactNode }) => (
 	<Box m={40} zIndex={99} className={backdropStyle}>
 		{children}
 	</Box>

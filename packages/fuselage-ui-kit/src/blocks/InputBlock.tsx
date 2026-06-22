@@ -1,6 +1,5 @@
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
@@ -8,7 +7,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type InputBlockProps = BlockProps<UiKit.InputBlock>;
 
-const InputBlock = ({ className, block, surfaceRenderer, context }: InputBlockProps): ReactElement => {
+const InputBlock = ({ className, block, surfaceRenderer, context }: InputBlockProps) => {
 	const inputElement = useMemo(
 		() => ({
 			...block.element,

@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import Triggers from '../../lib/triggers';
 
@@ -26,7 +26,7 @@ const ChatFinished = ({ title, greeting, message, onRedirectChat, t }: ChatFinis
 
 	return (
 		<Screen title={title} className={createClassName(styles, 'chat-finished')}>
-			<Screen.Content>
+			<ScreenContent>
 				<p className={createClassName(styles, 'chat-finished__greeting')}>{greeting || defaultGreeting}</p>
 				<p className={createClassName(styles, 'chat-finished__message')}>{message || defaultMessage}</p>
 
@@ -35,8 +35,8 @@ const ChatFinished = ({ title, greeting, message, onRedirectChat, t }: ChatFinis
 						{t('new_chat')}
 					</Button>
 				</ButtonGroup>
-			</Screen.Content>
-			<Screen.Footer />
+			</ScreenContent>
+			<ScreenFooter />
 		</Screen>
 	);
 };

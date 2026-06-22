@@ -1,5 +1,4 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -10,7 +9,7 @@ import { queryClient } from '../../lib/queryClient';
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const AppLayout = lazy(() => import('./AppLayout'));
 
-const AppRoot = (): ReactElement => (
+const AppRoot = () => (
 	<OutermostErrorBoundary>
 		{createPortal(
 			<>

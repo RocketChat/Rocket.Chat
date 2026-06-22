@@ -24,11 +24,17 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	async roomName(room, _userId?) {
-		return room.name || room.fname || (room as any).label;
+		return (room.name || room.fname || (room as any).label) as string;
 	},
 
-	async canAccessUploadedFile({ rc_token: token, rc_rid: rid }) {
-		return token && rid && !!(await LivechatRooms.findOneByIdAndVisitorToken(rid, token));
+	async canAccessUploadedFile({ rc_token: token, rc_rid: rid }, file) {
+		if (!token || !rid) {
+			return false;
+		}
+		if (file?.rid && file.rid !== rid) {
+			return false;
+		}
+		return !!(await LivechatRooms.findOneByIdAndVisitorToken(rid, token));
 	},
 
 	async getNotificationDetails(room, _sender, notificationMessage, userId) {
@@ -43,10 +49,5 @@ roomCoordinator.add(LivechatRoomType, {
 		if (isMessageFromVisitor(message)) {
 			return LivechatVisitors.findOneEnabledById(message.u._id);
 		}
-	},
-
-	getReadReceiptsExtraData(message) {
-		const { token } = message as any;
-		return { token };
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'roomName'>);

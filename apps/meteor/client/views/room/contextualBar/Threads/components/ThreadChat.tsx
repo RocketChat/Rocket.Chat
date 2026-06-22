@@ -51,7 +51,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		closeTab();
 	}, [closeTab]);
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.threadUploads);
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat?.messageEditing.toPreviousMessage();
@@ -86,6 +86,8 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const sendToChannelID = useId();
 	const t = useTranslation();
 
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
+
 	return (
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DateListProvider>
@@ -101,7 +103,11 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					height='full'
 				>
 					<MessageListErrorBoundary>
-						<ThreadMessageList mainMessage={mainMessage} />
+						<ThreadMessageList
+							mainMessage={mainMessage}
+							shouldJumpToBottom={shouldJumpToBottom}
+							setShouldJumpToBottom={setShouldJumpToBottom}
+						/>
 					</MessageListErrorBoundary>
 
 					<RoomComposer aria-label={t('Thread_composer')}>

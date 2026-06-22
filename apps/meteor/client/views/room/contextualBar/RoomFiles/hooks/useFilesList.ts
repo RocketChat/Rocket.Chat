@@ -42,6 +42,7 @@ export const useFilesList = ({ rid, type, text }: { rid: Required<IUpload>['rid'
 				uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
 				modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
 				expiresAt: file.expiresAt ? new Date(file.expiresAt) : undefined,
+				_updatedAt: new Date(file._updatedAt),
 			}));
 
 			for await (const file of items) {
@@ -56,7 +57,7 @@ export const useFilesList = ({ rid, type, text }: { rid: Required<IUpload>['rid'
 								type: decrypted.type,
 							}),
 						);
-						decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
+						decrypted.path = `/file-decrypt${decrypted.path}?key=${encodeURIComponent(key)}`;
 						Object.assign(file, decrypted);
 					}
 				}

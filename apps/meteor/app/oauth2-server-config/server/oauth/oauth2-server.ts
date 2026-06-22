@@ -34,9 +34,9 @@ export async function oAuth2ServerAuth(partialRequest: { authorization?: string;
 		return;
 	}
 
-	const user = await Users.findOneById(accessToken.userId);
+	const user = await Users.findOneActiveById(accessToken.userId);
 
-	if (user == null) {
+	if (!user) {
 		return;
 	}
 
@@ -54,8 +54,8 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	if (token == null) {
 		return res.status(401).send('Invalid Token');
 	}
-	const user = await Users.findOneById(token.userId);
-	if (user == null) {
+	const user = await Users.findOneActiveById(token.userId);
+	if (!user) {
 		return res.status(401).send('Invalid Token');
 	}
 	return res.send({
@@ -75,7 +75,7 @@ API.v1.addAuthMethod((routeContext) => {
 	const authorization = routeContext.request.headers.get('authorization') ?? undefined;
 	const query = isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {};
 	const accessToken = typeof query.access_token === 'string' ? query.access_token : undefined;
-	if (routeContext.queryParams?.access_token) {
+	if (routeContext.queryParams && 'access_token' in routeContext.queryParams) {
 		delete routeContext.queryParams.access_token;
 	}
 

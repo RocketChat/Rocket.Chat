@@ -13,8 +13,8 @@ import {
 	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
-import { memo } from 'react';
+import type { ReactNode } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
@@ -49,8 +49,8 @@ type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
 	email?: string;
 	verified?: boolean;
-	actions: ReactElement;
-	roles: ReactElement[];
+	actions: ReactNode;
+	roles: ReactNode[];
 	reason?: string;
 	invitationDate?: string;
 };
@@ -78,11 +78,13 @@ const UserInfo = ({
 	abacAttributes,
 	invitationDate,
 	...props
-}: UserInfoProps): ReactElement => {
+}: UserInfoProps) => {
 	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
+
+	const usernameId = useId();
 
 	return (
 		<ContextualbarScrollableContent p={24} {...props}>
@@ -128,9 +130,13 @@ const UserInfo = ({
 					)}
 
 					{username && username !== name && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Username')}</InfoPanelLabel>
-							<InfoPanelText data-qa='UserInfoUserName'>{username}</InfoPanelText>
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt' id={usernameId}>
+								{t('Username')}
+							</InfoPanelLabel>
+							<InfoPanelText is='dd' aria-labelledby={usernameId}>
+								{username}
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 

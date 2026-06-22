@@ -2,6 +2,7 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -15,6 +16,7 @@ import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSug
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
 import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
 import { getUsersOfRoomWithoutKeyMethod } from '../../../e2e/server/methods/getUsersOfRoomWithoutKey';
+import { requestSubscriptionKeysMethod } from '../../../e2e/server/methods/requestSubscriptionKeys';
 import { setRoomKeyIDMethod } from '../../../e2e/server/methods/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../../e2e/server/methods/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
@@ -164,7 +166,9 @@ const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWith
 
 const ise2eUpdateGroupKeyParamsPOST = ajv.compile<e2eUpdateGroupKeyParamsPOST>(e2eUpdateGroupKeyParamsPOSTSchema);
 
-const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingForGroupKeyProps>(E2EFetchUsersWaitingForGroupKeySchema);
+const isE2EFetchUsersWaitingForGroupKeyProps = ajvQuery.compile<E2EFetchUsersWaitingForGroupKeyProps>(
+	E2EFetchUsersWaitingForGroupKeySchema,
+);
 
 const isE2EProvideUsersGroupKeyProps = ajv.compile<E2EProvideUsersGroupKeyProps>(E2EProvideUsersGroupKeySchema);
 
@@ -189,6 +193,24 @@ const e2eEndpoints = API.v1
 			const { rid, keyID } = this.bodyParams;
 
 			await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'e2e.requestSubscriptionKeys',
+		{
+			authRequired: true,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+				}),
+			},
+		},
+
+		async function action() {
+			await requestSubscriptionKeysMethod(this.userId);
 
 			return API.v1.success();
 		},
@@ -457,7 +479,6 @@ const e2eEndpoints = API.v1
 			},
 		},
 		async function action() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { public_key, private_key, force } = this.bodyParams;
 
 			await setUserPublicAndPrivateKeysMethod(this.userId, {

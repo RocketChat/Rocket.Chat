@@ -1,6 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import type { ExperimentalTabNavigationBlock } from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useState } from 'react';
 
 import { TabElement } from '../elements/TabElement';
@@ -8,7 +7,7 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
 
-const TabNavigationBlock = (blockProps: TabNavigationBlockProps): ReactElement => {
+const TabNavigationBlock = (blockProps: TabNavigationBlockProps) => {
 	const {
 		block: { tabs },
 		context,

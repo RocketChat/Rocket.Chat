@@ -64,6 +64,42 @@ declare module 'meteor/meteor' {
 			methods: string[];
 		}
 
+		interface IDDPStream {
+			eventCallbacks: {
+				message: Array<(data: string) => void>;
+				reset: Array<() => void>;
+				disconnect: Array<() => void>;
+			};
+			socket?: {
+				onmessage: (data: { type: string; data: string }) => void;
+				_didMessage: (data: string) => void;
+				send: (data: string) => void;
+			};
+			_launchConnectionAsync?: () => void;
+			on: {
+				(key: 'message', callback: (data: string) => void): void;
+				(key: 'reset', callback: () => void): void;
+				(key: 'disconnect', callback: () => void): void;
+			};
+			disconnect(options?: { _permanent?: boolean; _error?: unknown }): void;
+
+			currentStatus: {
+				status: string;
+				connected: boolean;
+				retryCount: number;
+				retryTime?: number;
+				reason?: string;
+			};
+			statusListeners?: { changed(): void };
+			forEachCallback(name: string, cb: (callback: (...args: unknown[]) => void) => void): void;
+			send(data: string): void;
+			status(): IDDPStream['currentStatus'];
+			statusChanged(): void;
+			reconnect(options?: unknown): void;
+			disconnect(options?: { _permanent?: boolean; _error?: unknown }): void;
+			_lostConnection(error?: unknown): void;
+		}
+
 		interface IMeteorConnection {
 			httpHeaders: Record<string, any>;
 			referer: string;
@@ -71,26 +107,14 @@ declare module 'meteor/meteor' {
 			_send(message: IDDPMessage): void;
 
 			_methodInvokers: Record<string, any>;
+			_subsBeingRevived: Record<string, unknown>;
+			_methodsBlockingQuiescence: Record<string, unknown>;
+			_messagesBufferedUntilQuiescence: unknown[];
+			_outstandingMethodBlocks: unknown[];
 
 			_livedata_data(message: IDDPUpdatedMessage): void;
 
-			_stream: {
-				eventCallbacks: {
-					message: Array<(data: string) => void>;
-				};
-				socket: {
-					onmessage: (data: { type: string; data: string }) => void;
-					_didMessage: (data: string) => void;
-					send: (data: string) => void;
-				};
-				_launchConnectionAsync: () => void;
-				on: {
-					(key: 'message', callback: (data: string) => void): void;
-					(key: 'reset', callback: () => void): void;
-				};
-			};
-
-			_outstandingMethodBlocks: unknown[];
+			_stream: IDDPStream | undefined;
 
 			// Updated: onMessage is now inside _streamHandlers
 			_streamHandlers: {
@@ -120,6 +144,8 @@ declare module 'meteor/meteor' {
 			): SubscriptionHandle;
 
 			call(methodName: string, ...args: [...unknown, callback?: (error: Error | null, result: unknown) => void]): void;
+
+			setUserId(uid: string | null): void;
 		}
 
 		const connection: IMeteorConnection;

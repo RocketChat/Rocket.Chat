@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import type { ServerResponse, IncomingMessage } from 'http';
+import crypto from 'node:crypto';
+import type { ServerResponse, IncomingMessage } from 'node:http';
 
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';

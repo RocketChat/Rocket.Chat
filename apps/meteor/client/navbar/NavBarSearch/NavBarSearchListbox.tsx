@@ -1,16 +1,18 @@
+import type { OverlayTriggerAria } from '@react-aria/overlays';
+import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
-import type { OverlayTriggerAria } from 'react-aria';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import type { OverlayTriggerState } from 'react-stately';
 
+import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
 import { useSearchItems } from './hooks/useSearchItems';
 import { useListboxNavigation } from './hooks/useSearchNavigation';
+import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
 type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
@@ -27,14 +29,12 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { resetField, watch } = useFormContext();
 	const { filterText } = watch();
 
-	const debouncedFilter = useDebouncedValue(filterText, 500);
-
-	const handleSelect = useEffectEvent(() => {
+	const handleSelect = useStableCallback(() => {
 		state.close();
 		resetField('filterText');
 	});
 
-	const { data: items = [], isLoading } = useSearchItems(debouncedFilter);
+	const { items, isLoading } = useSearchItems(filterText);
 
 	return (
 		<Tile
@@ -49,23 +49,20 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			display='flex'
 			width='100%'
 			flexDirection='column'
-			aria-live='polite'
-			aria-atomic='true'
-			aria-busy={isLoading}
 		>
+			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={t('Channels')} tabIndex={-1} onKeyDown={handleKeyDown}>
+				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
-						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4}>
+						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 							{filterText ? t('Results') : t('Recent')}
 						</Box>
 					)}
 					{items.map((item) => (
-						<div key={item._id}>
-							<NavBarSearchRow room={item} onClick={handleSelect} />
-						</div>
+						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
 					))}
+					{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
 				</div>
 			</CustomScrollbars>
 		</Tile>

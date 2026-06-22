@@ -1,6 +1,6 @@
 import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -55,7 +55,7 @@ const SettingsPublicWithPaginationSchema = {
 	additionalProperties: false,
 };
 
-export const isSettingsPublicWithPaginationProps = ajv.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
+export const isSettingsPublicWithPaginationProps = ajvQuery.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
 
 type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
 
@@ -85,7 +85,34 @@ const SettingsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isSettingsGetParams = ajv.compile<SettingsGetParams>(SettingsGetSchema);
+export const isSettingsGetParams = ajvQuery.compile<SettingsGetParams>(SettingsGetSchema);
+
+export type SettingsBulkProps = {
+	settings: { _id: ISetting['_id']; value: ISetting['value'] }[];
+};
+
+const SettingsBulkSchema = {
+	type: 'object',
+	properties: {
+		settings: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string', minLength: 1 },
+					value: {},
+				},
+				required: ['_id', 'value'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+	},
+	required: ['settings'],
+	additionalProperties: false,
+};
+
+export const isSettingsBulkProps = ajv.compile<SettingsBulkProps>(SettingsBulkSchema);
 
 export type SettingsEndpoints = {
 	'/v1/settings.public': {
@@ -108,6 +135,7 @@ export type SettingsEndpoints = {
 		GET: (params: SettingsGetParams) => {
 			settings: ISetting[];
 		};
+		POST: (params: SettingsBulkProps) => void;
 	};
 
 	'/v1/settings/:_id': {

@@ -1,36 +1,19 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import i18next from 'i18next';
 import type { ComponentProps } from 'preact';
+import { action } from 'storybook/actions';
 
-import { Screen } from '.';
+import { Screen, ScreenContent, ScreenFooter } from '.';
 import { screenDecorator } from '../../../.storybook/helpers';
 import { FooterOptions } from '../Footer';
-import Menu from '../Menu';
+import { MenuGroup, MenuItem } from '../Menu';
 
 export default {
-	title: 'Components/Screen/Footer',
-	component: Screen.Footer,
+	component: ScreenFooter,
 	decorators: [
 		(storyFn) => (
-			<Screen
-				theme={{
-					color: '',
-					fontColor: '',
-					iconColor: '',
-				}}
-				title={'Title'}
-				notificationsEnabled={true}
-				minimized={false}
-				expanded={false}
-				windowed={false}
-				onEnableNotifications={action('enableNotifications')}
-				onDisableNotifications={action('disableNotifications')}
-				onMinimize={action('minimize')}
-				onRestore={action('restore')}
-				onOpenWindow={action('openWindow')}
-			>
-				<Screen.Content />
+			<Screen title='Title'>
+				<ScreenContent />
 				{storyFn()}
 			</Screen>
 		),
@@ -39,29 +22,35 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies Meta<ComponentProps<typeof Screen.Footer>>;
+} satisfies Meta<ComponentProps<typeof ScreenFooter>>;
 
-export const Empty: StoryFn<ComponentProps<typeof Screen.Footer>> = () => <Screen.Footer />;
-Empty.storyName = 'empty';
+type Story = StoryObj<ComponentProps<typeof ScreenFooter>>;
 
-export const WithChildren: StoryFn<ComponentProps<typeof Screen.Footer>> = () => (
-	<Screen.Footer>Lorem ipsum dolor sit amet, his id atqui repudiare.</Screen.Footer>
-);
-WithChildren.storyName = 'with children';
+export const Empty: Story = {
+	name: 'empty',
+	render: () => <ScreenFooter />,
+};
 
-export const WithOptions: StoryFn<ComponentProps<typeof Screen.Footer>> = () => (
-	<Screen.Footer
-		options={
-			<FooterOptions>
-				<Menu.Group>
-					<Menu.Item onClick={action('changeDepartment')}>{i18next.t('change_department')}</Menu.Item>
-					<Menu.Item onClick={action('removeUserData')}>{i18next.t('forget_remove_my_data')}</Menu.Item>
-					<Menu.Item danger onClick={action('finishChat')}>
-						{i18next.t('finish_this_chat')}
-					</Menu.Item>
-				</Menu.Group>
-			</FooterOptions>
-		}
-	/>
-);
-WithOptions.storyName = 'with options';
+export const WithChildren: Story = {
+	name: 'with children',
+	render: () => <ScreenFooter>Lorem ipsum dolor sit amet, his id atqui repudiare.</ScreenFooter>,
+};
+
+export const WithOptions: Story = {
+	name: 'with options',
+	render: () => (
+		<ScreenFooter
+			options={
+				<FooterOptions>
+					<MenuGroup>
+						<MenuItem onClick={action('changeDepartment')}>{i18next.t('change_department')}</MenuItem>
+						<MenuItem onClick={action('removeUserData')}>{i18next.t('forget_remove_my_data')}</MenuItem>
+						<MenuItem danger onClick={action('finishChat')}>
+							{i18next.t('finish_this_chat')}
+						</MenuItem>
+					</MenuGroup>
+				</FooterOptions>
+			}
+		/>
+	),
+};

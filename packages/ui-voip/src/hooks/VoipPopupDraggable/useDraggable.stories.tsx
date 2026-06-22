@@ -1,8 +1,8 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
-import { within, fireEvent, waitFor, expect, userEvent } from '@storybook/test';
 import { useEffect, useLayoutEffect, useState, type Ref } from 'react';
+import { within, fireEvent, waitFor, expect, userEvent } from 'storybook/test';
 
 import { useDraggable, DEFAULT_BOUNDING_ELEMENT_OPTIONS } from './DraggableCore';
 
@@ -188,7 +188,6 @@ export const DraggableBoxWithControls: Story = {
 };
 
 const meta = {
-	title: 'hooks/useDraggable',
 	component: DraggableBox,
 	parameters: {
 		layout: 'fullscreen',
@@ -328,7 +327,7 @@ export const BoundingBehavior: Story = {
 		await step('should adjust element position when screen is resized and element is cut off', async () => {
 			const handle = await canvas.findByTestId('drag-handle');
 			const draggable = await canvas.findByTestId('draggable-box');
-			const boundingBox = (await canvas.findByTestId('bounding-box')) as HTMLElement;
+			const boundingBox = await canvas.findByTestId('bounding-box');
 
 			const initialRect = boundingBox.getBoundingClientRect();
 

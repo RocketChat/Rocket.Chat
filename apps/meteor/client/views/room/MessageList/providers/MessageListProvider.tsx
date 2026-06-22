@@ -1,6 +1,6 @@
-import { isRoomFederated, isThreadMainMessage } from '@rocket.chat/core-typings';
+import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode, RefCallback } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
@@ -17,14 +17,13 @@ import { useKatex } from '../hooks/useKatex';
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	messageListRef?: RefCallback<HTMLElement | undefined>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
 	};
 };
 
-const MessageListProvider = ({ children, messageListRef, attachmentDimension }: MessageListProviderProps) => {
+const MessageListProvider = ({ children, attachmentDimension }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -39,8 +38,10 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 
 	const { isMobile } = useLayout();
 
+	const federationReadReceipts = useSetting('Federation_Service_EDU_Process_Receipt', false);
+
 	const autoLinkDomains = useSetting('Message_CustomDomain_AutoLink', '');
-	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && !isRoomFederated(room);
+	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && (!isRoomFederated(room) || federationReadReceipts);
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 	const apiEmbedEnabled = useSetting('API_Embed', false);
 	const showRealName = useSetting('UI_Use_Real_Name', false);
@@ -92,7 +93,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			showRoles,
 			showRealName,
 			showUsername,
-			messageListRef,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -141,7 +141,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			reactToMessage,
 			showColors,
 			msgParameter,
-			messageListRef,
 			chat?.emojiPicker,
 			readReceiptsEnabled,
 			readReceiptsStoreUsers,

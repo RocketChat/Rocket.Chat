@@ -7,7 +7,8 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { addPermissions, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { assignRoleToUser } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
@@ -207,6 +208,30 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
+		describe('With both manage-own-incoming-integrations and manage-incoming-integrations', () => {
+			it('should not allow users without a role with the message-impersonate permission to be assigned to new incoming integrations', async () => {
+				await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: adminUsername,
+						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Invalid user [error-invalid-user]');
+					});
+			});
+		});
+
 		describe('Incoming Integration execution', () => {
 			it('should return an error when the user sends an invalid type of integration', (done) => {
 				void request
@@ -362,11 +387,62 @@ describe('[Incoming Integrations]', () => {
 				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
 				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
 			});
+
+			describe('When the user does not have a role with the message-impersonate permission', () => {
+				before(async () => {
+					await addPermissions({
+						'message-impersonate': ['user'],
+					});
+				});
+
+				after(async () => {
+					await addPermissions({
+						'message-impersonate': ['bot', 'app'],
+					});
+				});
+
+				it('should return an error when executing incoming integration', async () => {
+					await request
+						.post(`/hooks/${integration._id}/${integration.token}`)
+						.send({
+							text: 'Example message',
+						})
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'error-user-lacks-message-impersonate-permission');
+						});
+				});
+			});
 		});
 
 		describe('Script integration tests', () => {
 			let withScript: IIntegration;
 			let withScriptDefaultContentType: IIntegration;
+			let withSkipTranspile: IIntegration;
+
+			const sloppyModeScript =
+				'const buildMessage = (obj) => {\n' +
+				'  \n' +
+				'    const template = `[#VALUE](${ obj.test })`;\n' +
+				'  \n' +
+				'    return {\n' +
+				'      text: template\n' +
+				'    };\n' +
+				'  };\n' +
+				'  \n' +
+				'  class Script {\n' +
+				'    process_incoming_request({ request }) {\n' +
+				'      msg = buildMessage(request.content);\n' +
+				'  \n' +
+				'      return {\n' +
+				'        content:{\n' +
+				'              text: msg.text\n' +
+				'        }\n' +
+				'      };\n' +
+				'    }\n' +
+				'  }\n' +
+				'					\n';
 
 			before(async () => {
 				await updatePermission('manage-incoming-integrations', ['admin']);
@@ -410,35 +486,38 @@ describe('[Incoming Integrations]', () => {
 						scriptEnabled: true,
 						overrideDestinationChannelEnabled: false,
 						channel: '#general',
-						script:
-							'const buildMessage = (obj) => {\n' +
-							'  \n' +
-							'    const template = `[#VALUE](${ obj.test })`;\n' +
-							'  \n' +
-							'    return {\n' +
-							'      text: template\n' +
-							'    };\n' +
-							'  };\n' +
-							'  \n' +
-							'  class Script {\n' +
-							'    process_incoming_request({ request }) {\n' +
-							'      msg = buildMessage(request.content);\n' +
-							'  \n' +
-							'      return {\n' +
-							'        content:{\n' +
-							'              text: msg.text\n' +
-							'        }\n' +
-							'      };\n' +
-							'    }\n' +
-							'  }\n' +
-							'					\n',
+						script: sloppyModeScript,
 					})
 					.expect(200);
 				withScriptDefaultContentType = res2.body.integration;
+
+				// Same script but with skipTranspile: true — no Babel, class methods
+				// run in strict mode so `msg = buildMessage(...)` throws ReferenceError.
+				const res3 = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test with skipTranspile',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						skipTranspile: true,
+						overrideDestinationChannelEnabled: false,
+						channel: '#general',
+						script: sloppyModeScript,
+					})
+					.expect(200);
+				withSkipTranspile = res3.body.integration;
 			});
 
 			after(async () => {
-				await Promise.all([removeIntegration(withScript._id, 'incoming'), removeIntegration(withScriptDefaultContentType._id, 'incoming')]);
+				await Promise.all([
+					removeIntegration(withScript._id, 'incoming'),
+					removeIntegration(withScriptDefaultContentType._id, 'incoming'),
+					removeIntegration(withSkipTranspile._id, 'incoming'),
+				]);
 			});
 
 			it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
@@ -485,6 +564,22 @@ describe('[Incoming Integrations]', () => {
 				expect(messagesResult.body).to.have.property('success', true);
 				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
 				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
+			});
+
+			it('should create the skipTranspile integration with scriptCompiled and no scriptError', () => {
+				expect(withSkipTranspile).to.have.property('scriptCompiled');
+				expect(withSkipTranspile).to.not.have.property('scriptError');
+				expect(withSkipTranspile).to.have.property('skipTranspile', true);
+			});
+
+			it('should fail to execute the same sloppy-mode script when skipTranspile is true', async () => {
+				const payload = { test: 'test' };
+
+				await request
+					.post(`/hooks/${withSkipTranspile._id}/${withSkipTranspile.token}`)
+					.set('Content-Type', 'application/json')
+					.send(JSON.stringify(payload))
+					.expect(400);
 			});
 		});
 
@@ -811,11 +906,19 @@ describe('[Incoming Integrations]', () => {
 		let sendUserCredentials: Credentials;
 
 		before(async () => {
+			await addPermissions({
+				'message-impersonate': ['user'],
+			});
 			senderUser = await createUser();
 			sendUserCredentials = await login(senderUser.username, password);
 		});
 
-		after(() => deleteUser(senderUser));
+		after(async () => {
+			await addPermissions({
+				'message-impersonate': ['bot', 'app'],
+			});
+			await deleteUser(senderUser);
+		});
 
 		it('should update an integration by id and return the new data', (done) => {
 			void request
@@ -826,7 +929,7 @@ describe('[Incoming Integrations]', () => {
 					name: 'Incoming test updated',
 					enabled: true,
 					alias: 'test updated',
-					username: 'rocket.cat',
+					username: senderUser.username,
 					scriptEnabled: true,
 					overrideDestinationChannelEnabled: true,
 					channel: '#general',
@@ -843,6 +946,27 @@ describe('[Incoming Integrations]', () => {
 					integration = res.body.integration;
 				})
 				.end(done);
+		});
+
+		it('should not allow users without a role with the message-impersonate permission to be assigned to existing incoming integrations', async () => {
+			await request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test update attempt',
+					enabled: true,
+					alias: 'test update attempt',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid Post As User [error-invalid-post-as-user]');
+				});
 		});
 
 		it('should have integration updated on subsequent gets', (done) => {
@@ -1057,8 +1181,9 @@ describe('[Incoming Integrations]', () => {
 		let integrationMixed2: IIntegration;
 
 		before(async () => {
-			nonMemberUser = await createUser({ username: `g_${Random.id()}` });
+			nonMemberUser = await createUser({ username: `g_${Random.id()}`, roles: ['bot'] });
 			privateTeam = await createTeam(credentials, `private.team.${Random.id()}`, TeamType.PRIVATE);
+			await assignRoleToUser({ username: adminUsername, roleId: 'bot' });
 
 			const [publicInPrivateResponse, privateRoomResponse, publicRoomResponse] = await Promise.all([
 				createRoom({
