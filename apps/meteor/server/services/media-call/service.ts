@@ -9,6 +9,7 @@ import type {
 	VideoConference,
 	AtLeast,
 	IGroupVideoConference,
+	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
 import type {
@@ -512,15 +513,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('Could not find parent room to create the conference on');
 		}
 
-		return VideoConf.createEscalatedConference({
-			rid,
-			createdBy: {
-				_id: user._id,
-				name: user.name as string,
-				username: user.username as string,
+		return VideoConf.createEscalatedConference(
+			{
+				rid,
+				mediaCallIds: [call._id],
 			},
-			mediaCallIds: [call._id],
-		});
+			user as IRegisterUser,
+		);
 	}
 
 	private async getRoomIdForExternalCall(call: IMediaCall): Promise<string | null> {

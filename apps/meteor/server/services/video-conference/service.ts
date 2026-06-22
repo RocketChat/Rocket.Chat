@@ -26,6 +26,7 @@ import type {
 	ExternalVideoConference,
 	IVoIPVideoConference,
 	RequiredField,
+	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -567,7 +568,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfTypes.getTypeForRoom(room, allowRinging);
 	}
 
-	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
+	private async createMessage(
+		call: AtLeast<VideoConference, '_id' | 'rid' | 'providerName'>,
+		createdBy?: IUser,
+		customBlocks?: IMessage['blocks'],
+	): Promise<IMessage['_id']> {
 		const record = {
 			t: 'videoconf',
 			msg: '',
@@ -895,18 +900,37 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async createEscalatedConference(
-		data: Required<Pick<IGroupVideoConference, 'rid' | 'createdBy' | 'mediaCallIds'>>,
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
 	): Promise<IGroupVideoConference | null> {
 		const providerName = 'core.pexip';
+
+		const { _id, name, username } = user;
 
 		const callId = await VideoConferenceModel.createGroup({
 			...data,
 			// TODO: custom title
 			title: 'Escalated Media Call',
 			providerName,
+			createdBy: {
+				_id,
+				name,
+				username,
+			},
 		});
 
 		await this.maybeAddSipAliasToCall(callId, providerName);
+		await this.maybeCreateDiscussion(callId);
+
+		const callData = {
+			_id: callId,
+			providerName,
+			rid: data.rid,
+		};
+
+		const messageId = await this.createMessage(callData, user);
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
+
 		return VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
 	}
 
