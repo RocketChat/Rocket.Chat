@@ -131,10 +131,11 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async setupNextExpiration(): Promise<void> {
+		const next = await Users.findNextStatusExpiration();
+
 		clearTimeout(this.expirationTimeout);
 		this.expirationTimeout = undefined;
 
-		const next = await Users.findNextStatusExpiration();
 		if (!next?.statusExpiresAt) {
 			return;
 		}
