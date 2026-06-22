@@ -168,14 +168,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomTime;
 
 		try {
-			if (statusDirty) {
-				await setUserStatus({
-					status: statusType,
-					...(allowUserStatusMessageChange && { message: statusText }),
-					...(allowUserStatusMessageChange && expiresAt && { expiresAt: expiresAt.toISOString() }),
-				});
-			}
-
 			await updateOwnBasicInfo({
 				data: {
 					name,
@@ -186,6 +178,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				},
 				customFields,
 			});
+
+			if (statusDirty) {
+				await setUserStatus({
+					status: statusType,
+					...(allowUserStatusMessageChange && { message: statusText }),
+					...(allowUserStatusMessageChange && expiresAt && { expiresAt: expiresAt.toISOString() }),
+				});
+			}
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
