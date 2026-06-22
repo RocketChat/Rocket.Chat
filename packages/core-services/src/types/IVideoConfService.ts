@@ -2,6 +2,7 @@ import type {
 	AtLeast,
 	ExternalVideoConference,
 	IGroupVideoConference,
+	IRegisterUser,
 	IRoom,
 	IStats,
 	IUser,
@@ -53,6 +54,7 @@ export interface IVideoConfService {
 		options: VideoConferenceJoinOptions,
 	): Promise<string>;
 	createEscalatedConference(
-		data: Required<Pick<IGroupVideoConference, 'rid' | 'createdBy' | 'mediaCallIds'>>,
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
 	): Promise<IGroupVideoConference | null>;
 }
