@@ -8,6 +8,7 @@ import { filterMarkdown } from '../../app/markdown/lib/markdown';
 jest.mock('./getMarkdownParserLimit');
 jest.mock('../../app/markdown/lib/markdown');
 jest.mock('@rocket.chat/message-parser');
+jest.mock('../../app/utils/rocketchat.info', () => ({}));
 
 const mockedGetMarkdownParserLimit = jest.mocked(getMarkdownParserLimit);
 const mockedFilterMarkdown = jest.mocked(filterMarkdown);
@@ -62,7 +63,10 @@ describe('normalizeThreadMessage', () => {
 
 	it('should return null when msg is empty and attachments have no title', () => {
 		const message = { msg: '', mentions: [], attachments: [{ description: 'desc' }] } as any;
-		expect(normalizeThreadMessage(message)).toBeNull();
+		const result = normalizeThreadMessage(message);
+
+		const { container } = render(<>{result}</>);
+		expect(container.textContent).toBe('desc');
 	});
 
 	it('should return null when parse throws an error', () => {
