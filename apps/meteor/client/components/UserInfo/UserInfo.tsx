@@ -103,7 +103,7 @@ const UserInfo = ({
 				<InfoPanelSection>
 					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
 
-					{statusText && (
+					{(statusText || statusExpiresAt) && (
 						<InfoPanelText>
 							<UserStatusText statusText={statusText} statusExpiresAt={statusExpiresAt} />
 						</InfoPanelText>
