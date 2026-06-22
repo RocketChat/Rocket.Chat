@@ -255,14 +255,19 @@ callbacks.add(
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, { room }) => {
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			if (!isEditedMessage(message)) {
-				return;
-			}
-
-			await FederationMatrix.updateMessage(room, message);
+	async (message: IMessage, { room, user }) => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
 		}
+		if (!isEditedMessage(message)) {
+			return;
+		}
+		// editor is remote -> edit came from federation, don't echo
+		if (isUserNativeFederated(user)) {
+			return;
+		}
+
+		await FederationMatrix.updateMessage(room, message);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-room-message-updated',
