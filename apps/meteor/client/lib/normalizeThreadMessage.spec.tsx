@@ -61,7 +61,7 @@ describe('normalizeThreadMessage', () => {
 		expect(container.textContent).toBe('file.pdf');
 	});
 
-	it('should return null when msg is empty and attachments have no title', () => {
+	it('should return attachment description when msg is empty and attachments have no title', () => {
 		const message = { msg: '', mentions: [], attachments: [{ description: 'desc' }] } as any;
 		const result = normalizeThreadMessage(message);
 
