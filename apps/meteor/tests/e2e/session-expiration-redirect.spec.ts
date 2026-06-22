@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 
 import { URL_MONGODB } from './config/constants';
 import injectInitialData from './fixtures/inject-initial-data';
-import { restoreState, Users } from './fixtures/userStates';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
@@ -25,7 +25,7 @@ test.describe('Session Expiration Redirect', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		targetChannel = await createTargetChannel(api, { members: [Users.user1.data.username] });
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -34,11 +34,10 @@ test.describe('Session Expiration Redirect', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel}`);
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
-	test.afterEach(async ({ page }) => {
+	test.afterEach(async () => {
 		await injectInitialData();
-		await restoreState(page, Users.user1);
 	});
 
 	test('should redirect to login page when server-side token is deleted and user tries to interact', async ({ page }) => {
@@ -60,9 +59,7 @@ test.describe('Session Expiration Redirect', () => {
 		});
 
 		await test.step('should redirect to login page', async () => {
-			const loginForm = page.getByRole('form', { name: 'Login' });
-			await loginForm.waitFor({ state: 'visible', timeout: 20000 });
-			await expect(loginForm).toBeVisible();
+			await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
 		});
 
 		await test.step('verify localStorage was cleared', async () => {
@@ -90,7 +87,7 @@ test.describe('Session Expiration Redirect', () => {
 		});
 
 		await test.step('expect automatic redirect to login page', async () => {
-			await expect(page.getByRole('form', { name: 'Login' })).toBeVisible({ timeout: 10000 });
+			await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
 		});
 
 		await test.step('verify localStorage was cleared', async () => {
