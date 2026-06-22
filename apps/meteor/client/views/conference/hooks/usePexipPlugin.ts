@@ -110,5 +110,5 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 		postToPlugin('toggle-chat-badge', { visible: hasUnread });
 	}, [hasUnread, postToPlugin]);
 
-	return { dialOut };
+	return { closeChat: () => handleChatToggle(false), dialOut };
 };

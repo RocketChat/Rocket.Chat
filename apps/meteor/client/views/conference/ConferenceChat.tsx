@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -12,10 +12,11 @@ type ConferenceChatProps = {
 	callId: string;
 	rid?: string;
 	loading: boolean;
+	onClose?: () => void;
 	onDialOut?: (destination: string) => void;
 };
 
-const ConferenceChat = ({ callId, rid, loading, onDialOut }: ConferenceChatProps) => {
+const ConferenceChat = ({ callId, rid, loading, onClose, onDialOut }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -41,6 +42,7 @@ const ConferenceChat = ({ callId, rid, loading, onDialOut }: ConferenceChatProps
 					borderBlockEndColor='stroke-extra-light'
 				>
 					<Box display='flex' alignItems='center'>
+						{onClose && <IconButton mie={8} small icon='cross' title={t('Close')} onClick={onClose} />}
 						<Box is='h1' fontScale='h2' color='default'>
 							{t('Chat')}
 						</Box>
