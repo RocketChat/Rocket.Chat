@@ -13,6 +13,17 @@ jest.mock('./useSidebarListNavigation', () => ({
 }));
 
 describe('RoomListWrapper', () => {
+	it('uses the legacy Virtuoso item list test id by default', () => {
+		render(
+			<RoomListWrapper style={{ height: '100%' }}>
+				<div>general</div>
+			</RoomListWrapper>,
+		);
+
+		expect(screen.getByTestId('virtuoso-item-list')).toHaveRole('list');
+		expect(screen.getByTestId('virtuoso-item-list')).toHaveAttribute('aria-label', 'Channels');
+	});
+
 	it('forwards Virtua container props', () => {
 		render(
 			<RoomListWrapper data-testid='room-list-wrapper' style={{ height: '100%' }}>

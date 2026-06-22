@@ -46,25 +46,44 @@ type MockSidebarVirtualListProps = {
 		items: typeof rooms;
 	}[];
 	renderGroup: (group: SidebarRoomListGroup, groupIndex: number) => ReactNode;
-	renderItem: (item: (typeof rooms)[number], itemIndex: number, group: SidebarRoomListGroup, groupIndex: number) => ReactNode;
+	renderItem: (
+		item: (typeof rooms)[number],
+		itemIndex: number,
+		group: SidebarRoomListGroup,
+		groupIndex: number,
+		rowIndex: number,
+	) => ReactNode;
 	getItemKey: (item: (typeof rooms)[number]) => string;
 	overscan?: number;
 };
 
-const mockSidebarVirtualList = jest.fn(({ groups, renderGroup, renderItem, getItemKey }: MockSidebarVirtualListProps) => (
-	<div data-testid='sidebar-virtual-list'>
-		{groups.map(({ key, group, items }, groupIndex) => (
-			<section key={key} data-testid='virtual-group'>
-				{renderGroup(group, groupIndex)}
-				{items.map((item, itemIndex) => (
-					<div key={getItemKey(item)} data-testid='virtual-item'>
-						{renderItem(item, itemIndex, group, groupIndex)}
-					</div>
-				))}
-			</section>
-		))}
-	</div>
-));
+const mockSidebarVirtualList = jest.fn(({ groups, renderGroup, renderItem, getItemKey }: MockSidebarVirtualListProps) => {
+	let rowIndex = 0;
+
+	return (
+		<div data-testid='sidebar-virtual-list'>
+			{groups.map(({ key, group, items }, groupIndex) => {
+				rowIndex += 1;
+
+				return (
+					<section key={key} data-testid='virtual-group'>
+						{renderGroup(group, groupIndex)}
+						{items.map((item, itemIndex) => {
+							const itemRowIndex = rowIndex;
+							rowIndex += 1;
+
+							return (
+								<div key={getItemKey(item)} data-testid='virtual-item'>
+									{renderItem(item, itemIndex, group, groupIndex, itemRowIndex)}
+								</div>
+							);
+						})}
+					</section>
+				);
+			})}
+		</div>
+	);
+});
 
 jest.mock('@rocket.chat/fuselage', () => ({
 	Box: forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function Box({ children, ...props }, ref) {
@@ -148,7 +167,11 @@ jest.mock('./RoomListRow', () => ({
 
 jest.mock('./RoomListRowWrapper', () => ({
 	__esModule: true,
-	default: ({ children }: { children: ReactNode }) => <div data-testid='room-row-wrapper'>{children}</div>,
+	default: ({ children, ...props }: { children: ReactNode } & HTMLAttributes<HTMLDivElement>) => (
+		<div data-testid='room-row-wrapper' {...props}>
+			{children}
+		</div>
+	),
 }));
 
 describe('RoomList', () => {
@@ -176,6 +199,7 @@ describe('RoomList', () => {
 			'Empty_Group:0',
 		]);
 		expect(screen.getAllByTestId('room-row-wrapper')).toHaveLength(3);
+		expect(screen.getAllByTestId('room-row-wrapper').map((element) => element.getAttribute('data-index'))).toEqual(['1', '2', '4']);
 		expect(screen.getAllByTestId('room-row').map((element) => element.textContent)).toEqual(['general', 'support', 'alice']);
 	});
 });

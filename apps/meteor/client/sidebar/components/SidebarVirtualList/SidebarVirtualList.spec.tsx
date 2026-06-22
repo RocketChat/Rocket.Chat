@@ -80,8 +80,8 @@ const defaultProps = {
 	groups,
 	getItemKey: (item: TestItem) => item._id,
 	renderGroup: (group: TestGroup, groupIndex: number) => <div data-testid='virtual-row'>{`group:${groupIndex}:${group.title}`}</div>,
-	renderItem: (item: TestItem, itemIndex: number, group: TestGroup, groupIndex: number) => (
-		<div data-testid='virtual-row'>{`item:${groupIndex}:${itemIndex}:${group.title}:${item.name}`}</div>
+	renderItem: (item: TestItem, itemIndex: number, group: TestGroup, groupIndex: number, rowIndex: number) => (
+		<div data-testid='virtual-row'>{`item:${groupIndex}:${itemIndex}:${rowIndex}:${group.title}:${item.name}`}</div>
 	),
 };
 
@@ -105,10 +105,10 @@ describe('SidebarVirtualList', () => {
 
 		expect(screen.getAllByTestId('virtual-row').map((row) => row.textContent)).toEqual([
 			'group:0:Channels',
-			'item:0:0:Channels:general',
-			'item:0:1:Channels:support',
+			'item:0:0:1:Channels:general',
+			'item:0:1:2:Channels:support',
 			'group:1:Direct Messages',
-			'item:1:0:Direct Messages:alice',
+			'item:1:0:4:Direct Messages:alice',
 		]);
 	});
 
@@ -124,6 +124,15 @@ describe('SidebarVirtualList', () => {
 		});
 
 		expect(screen.getAllByTestId('virtual-row').map((row) => row.textContent)).toEqual(['group:0:Empty Group']);
+	});
+
+	it('exposes the legacy Virtuoso group row hook used by E2E locators', () => {
+		renderVirtualList();
+
+		expect(screen.getAllByTestId('virtuoso-top-item-list').map((row) => row.textContent)).toEqual([
+			'group:0:Channels',
+			'group:1:Direct Messages',
+		]);
 	});
 
 	it('defers item rendering until Virtua requests the row', () => {

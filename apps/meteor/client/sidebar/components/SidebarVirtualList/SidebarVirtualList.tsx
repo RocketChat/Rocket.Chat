@@ -19,7 +19,7 @@ export type SidebarVirtualListGroup<TGroup, TItem> = {
 type SidebarVirtualListProps<TGroup, TItem> = {
 	groups: readonly SidebarVirtualListGroup<TGroup, TItem>[];
 	renderGroup: (group: TGroup, groupIndex: number) => ReactNode;
-	renderItem: (item: TItem, itemIndex: number, group: TGroup, groupIndex: number) => ReactNode;
+	renderItem: (item: TItem, itemIndex: number, group: TGroup, groupIndex: number, rowIndex: number) => ReactNode;
 	getItemKey: (item: TItem, itemIndex: number, group: TGroup, groupIndex: number) => Key;
 	overscan?: number;
 	as?: VirtualizerProps['as'];
@@ -69,14 +69,22 @@ function SidebarVirtualList<TGroup, TItem>({
 	}, [groups]);
 
 	const renderRow = useCallback(
-		(row: SidebarVirtualListRow<TGroup, TItem>) => {
+		(row: SidebarVirtualListRow<TGroup, TItem>, rowIndex: number) => {
 			if (row.type === 'group') {
-				return <div key={`group:${row.groupKey}`}>{renderGroup(row.group, row.groupIndex)}</div>;
+				return (
+					<div key={`group:${row.groupKey}`} data-testid='virtuoso-top-item-list'>
+						{renderGroup(row.group, row.groupIndex)}
+					</div>
+				);
 			}
 
 			const itemKey = getItemKey(row.item, row.itemIndex, row.group, row.groupIndex);
 
-			return <div key={`item:${row.groupKey}:${String(itemKey)}`}>{renderItem(row.item, row.itemIndex, row.group, row.groupIndex)}</div>;
+			return (
+				<div key={`item:${row.groupKey}:${String(itemKey)}`}>
+					{renderItem(row.item, row.itemIndex, row.group, row.groupIndex, rowIndex)}
+				</div>
+			);
 		},
 		[getItemKey, renderGroup, renderItem],
 	);

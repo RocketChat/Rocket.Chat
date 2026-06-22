@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomListCollapser from './RoomListCollapser';
@@ -15,7 +14,6 @@ import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
@@ -25,8 +23,6 @@ const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' 
 	if (direction === 'down') return index + 1 < groups.length;
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
 };
-
-const getItemKey = (item: SubscriptionWithRoom) => item._id;
 
 const RoomList = () => {
 	const { t } = useTranslation();
@@ -69,30 +65,6 @@ const RoomList = () => {
 		[groups],
 	);
 
-	const renderGroup = useCallback(
-		(group: SidebarRoomListGroup, index: number) => (
-			<RoomListCollapser
-				group={group}
-				canMoveUp={canMoveGroup(groups, index, 'up')}
-				canMoveDown={canMoveGroup(groups, index, 'down')}
-				onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-				onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-				onClick={() => handleClick(group.key)}
-				onKeyDown={(e) => handleKeyDown(e, group.key)}
-			/>
-		),
-		[allGroupKeys, groups, handleClick, handleKeyDown, moveCategory],
-	);
-
-	const renderItem = useCallback(
-		(item: SubscriptionWithRoom) => (
-			<RoomListRowWrapper>
-				<RoomListRow data={itemData} item={item} />
-			</RoomListRowWrapper>
-		),
-		[itemData],
-	);
-
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
 
@@ -102,9 +74,23 @@ const RoomList = () => {
 				groups={virtualGroups}
 				as={RoomListWrapper}
 				overscan={25}
-				getItemKey={getItemKey}
-				renderGroup={renderGroup}
-				renderItem={renderItem}
+				getItemKey={(item) => item._id}
+				renderGroup={(group, index) => (
+					<RoomListCollapser
+						group={group}
+						canMoveUp={canMoveGroup(groups, index, 'up')}
+						canMoveDown={canMoveGroup(groups, index, 'down')}
+						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
+						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+						onClick={() => handleClick(group.key)}
+						onKeyDown={(e) => handleKeyDown(e, group.key)}
+					/>
+				)}
+				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
+					<RoomListRowWrapper data-index={rowIndex}>
+						<RoomListRow data={itemData} item={item} />
+					</RoomListRowWrapper>
+				)}
 			/>
 		</Box>
 	);

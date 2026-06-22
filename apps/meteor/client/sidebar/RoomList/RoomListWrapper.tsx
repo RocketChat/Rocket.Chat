@@ -6,10 +6,13 @@ import type { CustomContainerComponentProps } from 'virtua';
 
 import { useSidebarListNavigation } from './useSidebarListNavigation';
 
-export type RoomListWrapperProps = CustomContainerComponentProps & Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style'>;
+export type RoomListWrapperProps = CustomContainerComponentProps &
+	Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style'> & {
+		'data-testid'?: string;
+	};
 
 const RoomListWrapper = forwardRef(function RoomListWrapper(
-	{ children, style, ...props }: RoomListWrapperProps,
+	{ children, style, 'data-testid': dataTestId, ...props }: RoomListWrapperProps,
 	ref: ForwardedRef<HTMLDivElement>,
 ) {
 	const { t } = useTranslation();
@@ -17,7 +20,7 @@ const RoomListWrapper = forwardRef(function RoomListWrapper(
 	const mergedRefs = useMergedRefs(ref, sidebarListRef);
 
 	return (
-		<div {...props} role='list' aria-label={t('Channels')} ref={mergedRefs} style={style}>
+		<div {...props} data-testid={dataTestId ?? 'virtuoso-item-list'} role='list' aria-label={t('Channels')} ref={mergedRefs} style={style}>
 			{children}
 		</div>
 	);
