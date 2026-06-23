@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -29,6 +29,7 @@ import { createComposerAPI } from '../../../../../app/ui-message/client/messageB
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
+import type { EditableTextAdapter } from '../../../../components/AutocompletePopup';
 import ComposerBoxPopup from '../../../../components/AutocompletePopup/ComposerBoxPopup';
 import { useComposerBoxPopup } from '../../../../components/AutocompletePopup/hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../../../../components/AutocompletePopup/hooks/useEnablePopupPreview';
@@ -370,7 +371,17 @@ const MessageBox = ({
 	});
 
 	const popupOptions = useComposerPopupOptions();
-	const popup = useComposerBoxPopup(popupOptions);
+	const composer = chat?.composer;
+	const composerAdapter = useMemo(
+		(): EditableTextAdapter | undefined =>
+			composer && {
+				textBeforeCaret: () => composer.substring(0, composer.selection.start),
+				caret: () => composer.selection.start,
+				replaceRange: (text, start, end) => composer.replaceText(text, { start, end }),
+			},
+		[composer],
+	);
+	const popup = useComposerBoxPopup(popupOptions, composerAdapter);
 
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
