@@ -14,18 +14,25 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
+import { useDraft } from './hooks/useDraft';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
+import type { EditableTextAdapter } from '../../../../components/AutocompletePopup';
+import ComposerBoxPopup from '../../../../components/AutocompletePopup/ComposerBoxPopup';
+import { useComposerBoxPopup } from '../../../../components/AutocompletePopup/hooks/useComposerBoxPopup';
+import { useEnablePopupPreview } from '../../../../components/AutocompletePopup/hooks/useEnablePopupPreview';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -38,16 +45,10 @@ import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
-import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useDraft } from './hooks/useDraft';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -370,7 +371,17 @@ const MessageBox = ({
 	});
 
 	const popupOptions = useComposerPopupOptions();
-	const popup = useComposerBoxPopup(popupOptions);
+	const composer = chat?.composer;
+	const composerAdapter = useMemo(
+		(): EditableTextAdapter | undefined =>
+			composer && {
+				textBeforeCaret: () => composer.substring(0, composer.selection.start),
+				caret: () => composer.selection.start,
+				replaceRange: (text, start, end) => composer.replaceText(text, { start, end }),
+			},
+		[composer],
+	);
+	const popup = useComposerBoxPopup(popupOptions, composerAdapter);
 
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(

@@ -1,7 +1,7 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBox, Margins, Box } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select } from '@rocket.chat/fuselage-forms';
+import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Select } from '@rocket.chat/fuselage-forms';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,6 +9,7 @@ import type { ChangeEvent, ComponentProps } from 'react';
 import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import EmojiTextInput from '../../../components/EmojiTextInput';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { getUserStatusInitialValues } from '../../../lib/getUserInitialStatus';
@@ -108,7 +109,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 								},
 							}}
 							render={({ field }) => (
-								<TextInput
+								<EmojiTextInput
 									{...field}
 									error={errors.statusText?.message}
 									disabled={!allowUserStatusMessageChange}

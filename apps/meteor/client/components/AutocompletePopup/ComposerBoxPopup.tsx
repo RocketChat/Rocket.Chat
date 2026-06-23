@@ -29,8 +29,8 @@ function ComposerBoxPopup<
 >({ title, items, focused, select, renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</> }: ComposerBoxPopupProps<T>) {
 	const { t } = useTranslation();
 	const id = useId();
-	const composerBoxPopupRef = useRef<HTMLElement>(null);
-	const popupSizes = useContentBoxSize(composerBoxPopupRef);
+	const popupRef = useRef<HTMLElement>(null);
+	const popupSizes = useContentBoxSize(popupRef);
 
 	const variant = popupSizes && popupSizes.inlineSize < 480 ? 'small' : 'large';
 
@@ -52,6 +52,8 @@ function ComposerBoxPopup<
 		if (item.disabled) {
 			return t('Unavailable_in_encrypted_channels');
 		}
+
+		return undefined;
 	};
 
 	const itemsFlat = useMemo(
@@ -80,7 +82,7 @@ function ComposerBoxPopup<
 
 	return (
 		<Box position='relative'>
-			<Tile ref={composerBoxPopupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id} name='ComposerBoxPopup'>
+			<Tile ref={popupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id} name='ComposerBoxPopup'>
 				{title && (
 					<Box bg='tint' pi={16} pb={8} id={id}>
 						{title}
