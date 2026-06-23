@@ -66,4 +66,7 @@ export interface IVideoConfService {
 		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
 		user: IRegisterUser,
 	): Promise<IGroupVideoConference | null>;
+	getRidForExternalConference(): Promise<string | null>;
+	makePersistentChatUrlForConference(conferenceId: string): Promise<string>;
+	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<string>;
 }

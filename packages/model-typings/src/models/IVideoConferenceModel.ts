@@ -32,7 +32,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		providerName,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
-		Pick<IGroupVideoConference, 'mediaCallIds'>): Promise<string>;
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string>;
 
 	createLivechat({
 		providerName,

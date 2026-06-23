@@ -4,6 +4,7 @@ import {
 	ajv,
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
+	isVideoConfJoinScheduledProps,
 	isVideoConfCancelProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
@@ -50,6 +51,16 @@ const joinResponseSchema = ajv.compile<{ url: string; providerName: string }>({
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['url', 'providerName', 'success'],
+	additionalProperties: false,
+});
+
+const joinScheduledResponseSchema = ajv.compile<{ callId: string }>({
+	type: 'object',
+	properties: {
+		callId: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['callId', 'success'],
 	additionalProperties: false,
 });
 
@@ -290,6 +301,33 @@ API.v1.post(
 
 		const rid = await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
 		return API.v1.success({ rid });
+	},
+);
+
+API.v1.post(
+	'video-conference.join-scheduled',
+	{
+		authRequired: true,
+		body: isVideoConfJoinScheduledProps,
+		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 },
+		response: {
+			200: joinScheduledResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { sipAlias } = this.bodyParams;
+		const { userId } = this;
+
+		let callId: string;
+		try {
+			callId = await VideoConf.initializeOrJoinScheduledConference(sipAlias, userId);
+		} catch {
+			return API.v1.failure('invalid-params');
+		}
+
+		return API.v1.success({ callId });
 	},
 );
 

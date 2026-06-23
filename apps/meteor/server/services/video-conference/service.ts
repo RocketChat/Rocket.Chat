@@ -222,6 +222,92 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		];
 	}
 
+	public async initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<string> {
+		if (!settings.get('Pexip_Integration_Enabled') || !settings.get('Pexip_Integration_SIP_AddAlias')) {
+			throw new Error('feature-disabled');
+		}
+		const providerName = 'core.pexip';
+
+		const existing = await VideoConferenceModel.findOneByProviderNameAndSipAlias('core.pexip', sipAlias, {
+			projection: { discussionRid: 1 },
+		});
+
+		if (existing) {
+			await this.addUserToConferenceDiscussion(existing as Pick<IGroupVideoConference, 'discussionRid'>, uid);
+			return existing._id;
+		}
+
+		const rid = await this.getRidForExternalConference();
+		if (!rid) {
+			throw new Error('invalid-room');
+		}
+
+		const user = await Users.findOneById<IRegisterUser>(uid);
+		if (!user) {
+			throw new Error('invalid-user');
+		}
+
+		const discussionRid = await this.createDiscussionForConferenceData(this.getDiscussionDisplayName(), rid, user);
+
+		const { name, username } = user;
+
+		const callId = await VideoConferenceModel.createGroup({
+			rid,
+			createdBy: {
+				_id: uid,
+				name,
+				username,
+			},
+			// TODO: custom title
+			title: sipAlias,
+			providerName,
+			sipAlias,
+			discussionRid,
+		});
+
+		return callId;
+	}
+
+	public async makePersistentChatUrlForConference(conferenceId: string): Promise<string> {
+		const baseUrl = settings.get<string>('Site_Url');
+
+		return `${baseUrl}/conference/${conferenceId}`;
+	}
+
+	private async addUserToConferenceDiscussion(
+		conference: AtLeast<IGroupVideoConference, 'discussionRid'>,
+		uid: IUser['_id'],
+	): Promise<void> {
+		if (!conference.discussionRid) {
+			return;
+		}
+
+		const { discussionRid } = conference;
+
+		try {
+			await Room.addUserToRoom(discussionRid, { _id: uid });
+		} catch (err) {
+			logger.error({ msg: `Failed to add user to conference's discussion`, discussionRid, uid, err });
+		}
+	}
+
+	public async getRidForExternalConference(): Promise<string | null> {
+		const settingValue = settings.get('Pexip_Integration_PersistentChat_ExternalRoom');
+		if (!settingValue || typeof settingValue !== 'object' || !Array.isArray(settingValue) || !settingValue.length) {
+			return null;
+		}
+
+		for (const value of settingValue) {
+			if (!value || typeof value !== 'object' || !value._id) {
+				continue;
+			}
+
+			return value._id;
+		}
+
+		return null;
+	}
+
 	private async getBlocks(providerName: string, call: any, user?: any) {
 		const provider = videoConfProviders.getVideoConfProviderHandler(providerName);
 		if (provider) {
@@ -1445,18 +1531,24 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		call: AtLeast<VideoConference, '_id' | 'rid' | 'createdBy'>,
 		createdBy?: IUser,
 	): Promise<void> {
-		const room = await this.getRoomForDiscussion(call.rid);
-
-		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
 		const user = call.createdBy._id === createdBy?._id ? createdBy : await Users.findOneById(call.createdBy._id);
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
+		const discussionRid = await this.createDiscussionForConferenceData(name, call.rid, user);
+		return this.assignDiscussionToConference(call._id, discussionRid);
+	}
+
+	private async createDiscussionForConferenceData(name: string, rid: string, createdBy: IUser): Promise<string> {
+		const room = await this.getRoomForDiscussion(rid);
+
+		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
+
 		const discussion = await createRoom(
 			type,
 			Random.id(),
-			user,
+			createdBy,
 			[],
 			false,
 			false,
@@ -1466,14 +1558,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				encrypted: false,
 			},
 			{
-				creator: user._id,
+				creator: createdBy._id,
 				subscriptionExtra: {
 					open: false,
 				},
 			},
 		);
 
-		return this.assignDiscussionToConference(call._id, discussion._id);
+		return discussion._id;
 	}
 
 	public async assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void> {
