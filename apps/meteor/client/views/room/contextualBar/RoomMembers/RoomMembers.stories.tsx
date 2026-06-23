@@ -5,6 +5,21 @@ import { action } from 'storybook/actions';
 
 import RoomMembers from './RoomMembers';
 
+const createMember = (username: string, roles: string[] = ['user']) => ({
+	_id: username,
+	username,
+	status: UserStatus.ONLINE,
+	name: username
+		.split('.')
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(' '),
+	roles,
+	subscription: {
+		_id: `sub-${username}`,
+		ts: '2025-01-01T00:00:00Z',
+	},
+});
+
 export default {
 	component: RoomMembers,
 	parameters: {
@@ -22,6 +37,7 @@ export default {
 		rid: 'GENERAL',
 		isTeam: false,
 		isDirect: false,
+		total: 1,
 	},
 } satisfies Meta<typeof RoomMembers>;
 
@@ -40,6 +56,23 @@ export const Default = {
 					ts: '2025-01-01T00:00:00Z',
 				},
 			},
+		],
+	},
+};
+
+export const GroupedRoles = {
+	args: {
+		isSuccess: true,
+		total: 40,
+		members: [
+			createMember('owner.alpha', ['owner']),
+			createMember('owner.beta', ['owner']),
+			createMember('leader.alpha', ['leader']),
+			createMember('leader.beta', ['leader']),
+			createMember('moderator.alpha', ['moderator']),
+			createMember('moderator.beta', ['moderator']),
+			createMember('moderator.gamma', ['moderator']),
+			...Array.from({ length: 33 }, (_, index) => createMember(`member.${index + 1}`)),
 		],
 	},
 };

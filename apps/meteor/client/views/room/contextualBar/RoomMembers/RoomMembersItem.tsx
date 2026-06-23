@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { MouseEvent } from 'react';
+import type { ComponentProps, MouseEvent } from 'react';
 import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -28,9 +28,11 @@ type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' |
 	useRealName: boolean;
 	reload: () => void;
 	onClickView: (e: MouseEvent<HTMLElement>) => void;
-};
+} & Pick<ComponentProps<typeof Option>, 'is' | 'role'>;
 
 const RoomMembersItem = ({
+	is,
+	role,
 	_id,
 	name,
 	username,
@@ -66,6 +68,8 @@ const RoomMembersItem = ({
 
 	return (
 		<Option
+			is={is}
+			role={role}
 			data-username={username}
 			data-userid={_id}
 			data-invitationdate={invitationDate}
