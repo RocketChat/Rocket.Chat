@@ -9,7 +9,17 @@ const PopoutDockPrompt = ({ onClosePopout }: PopoutDockPromptProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box mb={20} p={24} w='full' display='flex' flexDirection='column' justifyContent='space-between' alignItems='center' is='section'>
+		<Box
+			is='section'
+			mb={20}
+			p={24}
+			w='full'
+			display='flex'
+			flexDirection='column'
+			justifyContent='center'
+			alignItems='center'
+			flexGrow={1}
+		>
 			<Box is='h1' color='font-default' mbe={40}>
 				{t('Call_open_separate_window')}
 			</Box>
