@@ -29,6 +29,7 @@ test.describe.serial('room toolbox layout', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await setSettingValueById(api, 'Room_Toolbox_Layout', '');
 		await setUserPreferences(api, {
 			featuresPreview: [{ name: 'roomToolboxLayout', value: false }],

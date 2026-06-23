@@ -109,13 +109,15 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			return { featuredActions: typedFeatured, visibleActions: [], hiddenActions };
 		}
 
-		const hiddenActions = engineSections.map((section) => ({
-			id: section.id,
-			title: section.id === 'apps' ? t('Apps') : '',
-			items: (section.items as RoomToolboxActionConfig[])
-				.filter((item) => !item.disabled)
-				.map((item) => actionToMenuItem(item, openTab, t)),
-		}));
+		const hiddenActions = engineSections
+			.map((section) => ({
+				id: section.id,
+				title: section.id === 'apps' ? t('Apps') : '',
+				items: (section.items as RoomToolboxActionConfig[])
+					.filter((item) => !item.disabled)
+					.map((item) => actionToMenuItem(item, openTab, t)),
+			}))
+			.filter((section) => section.items.length > 0);
 
 		return { featuredActions: typedFeatured, visibleActions: typedVisible, hiddenActions };
 	}

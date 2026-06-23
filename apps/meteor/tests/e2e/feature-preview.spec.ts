@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import AxeBuilder from '@axe-core/playwright';
 
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
@@ -66,11 +67,15 @@ test.describe.serial('feature preview', () => {
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
-	test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
+	test('should not have any accessibility violations', async ({ page }) => {
 		await page.goto('/account/feature-preview');
 		await page.waitForSelector('#main-content');
 
-		const results = await makeAxeBuilder().include('#main-content').analyze();
+		const results = await new AxeBuilder({ page })
+			.include('#main-content')
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.disableRules(['aria-hidden-focus', 'nested-interactive'])
+			.analyze();
 		expect(results.violations).toEqual([]);
 	});
 
