@@ -148,7 +148,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			customDate: statusCustomDate,
 			customTime: statusCustomTime,
 		});
-		if (allowUserStatusMessageChange && (statusCustomDate || statusCustomTime)) {
+		if (allowUserStatusMessageChange && statusDuration === 'custom') {
 			if (!statusCustomDate || !statusCustomTime || !expiresAt) {
 				setError('statusDuration', { message: t('Status_choose_date_and_time') });
 				return;
@@ -168,14 +168,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomTime;
 
 		try {
-			if (allowUserStatusMessageChange && statusDirty) {
-				await setUserStatus({
-					message: statusText,
-					status: statusType,
-					...(expiresAt && { expiresAt: expiresAt.toISOString() }),
-				});
-			}
-
 			await updateOwnBasicInfo({
 				data: {
 					name,
@@ -186,6 +178,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				},
 				customFields,
 			});
+
+			if (statusDirty) {
+				await setUserStatus({
+					status: statusType,
+					...(allowUserStatusMessageChange && { message: statusText }),
+					...(allowUserStatusMessageChange && expiresAt && { expiresAt: expiresAt.toISOString() }),
+				});
+			}
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
@@ -322,6 +322,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										<InputBox
 											aria-label={t('Status_expiration_date')}
 											type='date'
+											disabled={!allowUserStatusMessageChange}
 											flexGrow={1}
 											value={value}
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -339,6 +340,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										<InputBox
 											aria-label={t('Status_expiration_time')}
 											type='time'
+											disabled={!allowUserStatusMessageChange}
 											flexGrow={1}
 											value={value}
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {

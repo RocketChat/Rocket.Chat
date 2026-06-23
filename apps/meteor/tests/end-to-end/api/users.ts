@@ -5658,7 +5658,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.send({
 						status: 'busy',
-						message: '',
+						message: 'test',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
