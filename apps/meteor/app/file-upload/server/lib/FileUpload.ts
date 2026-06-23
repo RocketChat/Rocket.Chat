@@ -62,16 +62,6 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				// Deprecated: Remove support to usf path
-				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
-					res.writeHead(403);
-					return false;
-				}
-
-				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
-				return true;
-			},
 		};
 	},
 
@@ -97,17 +87,6 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				// UserDataFiles are GDPR data exports — only the owner of the export may download it.
-				const uid = await FileUpload.getRequestUserId(req);
-				if (!uid || uid !== file.userId) {
-					res.writeHead(403);
-					return false;
-				}
-
-				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
-				return true;
-			},
 		};
 	},
 };
@@ -448,31 +427,6 @@ export const FileUpload = {
 			await Avatars.deleteFile(oldAvatar._id);
 		}
 		await Avatars.updateFileNameById(file._id, user.username);
-	},
-
-	async getRequestUserId({ headers = {}, url }: http.IncomingMessage): Promise<string | undefined> {
-		if (!url) {
-			return undefined;
-		}
-
-		const { query } = URL.parse(url, true);
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
-
-		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
-		}
-
-		const uid = rc_uid || (headers['x-user-id'] as string);
-		const authToken = rc_token || (headers['x-auth-token'] as string);
-
-		if (!uid || !authToken) {
-			return undefined;
-		}
-
-		const user = await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } });
-		return user?._id;
 	},
 
 	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
