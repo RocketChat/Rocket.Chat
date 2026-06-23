@@ -22,7 +22,6 @@ import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
-import { UserStatusText } from '../UserStatusText';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
 
@@ -38,8 +37,6 @@ type UserInfoDataProps = Serialized<
 		| 'utcOffset'
 		| 'phone'
 		| 'createdAt'
-		| 'statusText'
-		| 'statusExpiresAt'
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
@@ -49,6 +46,7 @@ type UserInfoDataProps = Serialized<
 
 type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
+	customStatus?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
@@ -71,8 +69,7 @@ const UserInfo = ({
 	verified,
 	createdAt,
 	status,
-	statusText,
-	statusExpiresAt,
+	customStatus,
 	customFields,
 	canViewAllInfo,
 	actions,
@@ -103,11 +100,7 @@ const UserInfo = ({
 				<InfoPanelSection>
 					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
 
-					{(statusText || statusExpiresAt) && (
-						<InfoPanelText>
-							<UserStatusText statusText={statusText} statusExpiresAt={statusExpiresAt} />
-						</InfoPanelText>
-					)}
+					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
 				</InfoPanelSection>
 
 				<InfoPanelSection>
