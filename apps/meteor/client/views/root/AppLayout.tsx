@@ -17,6 +17,7 @@ import { useAutoupdate } from './hooks/useAutoupdate';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
+import { useDesktopRouteNavigation } from './hooks/useDesktopRouteNavigation';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEmojiOne } from './hooks/useEmojiOne';
@@ -75,6 +76,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useDesktopUserRoles();
+	useDesktopRouteNavigation();
 	useStartupEvent();
 	useIframeCommands();
 

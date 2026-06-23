@@ -10,6 +10,7 @@ import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import { SideRail, SideRailActions, SideRailAction, SideRailPanel } from './components';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
+import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { usePexipPlugin } from './hooks/usePexipPlugin';
 import PageLoading from '../root/PageLoading';
 
@@ -20,6 +21,9 @@ type ConferenceEmbeddedPageProps = {
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference } = useConferenceEmbedded(callId);
 	const { t } = useTranslation();
+
+	// Keep this window pinned to the conference — links/navigations go to a new tab or the opener.
+	useConfinedNavigation();
 
 	const subscription = useUserSubscription(room.rid ?? '');
 	const hasUnread = Boolean(subscription && subscription.unread > 0);
