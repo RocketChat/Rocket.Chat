@@ -66,6 +66,14 @@ test.describe.serial('feature preview', () => {
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
+	test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
+		await page.goto('/account/feature-preview');
+		await page.waitForSelector('#main-content');
+
+		const results = await makeAxeBuilder().include('#main-content').analyze();
+		expect(results.violations).toEqual([]);
+	});
+
 	test.describe('Sidepanel', () => {
 		let newChannelModal: CreateNewChannelModal;
 
