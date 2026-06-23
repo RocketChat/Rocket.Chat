@@ -13,7 +13,7 @@ import { allowPassportOAuthMiddleware } from '../../../server/lib/oauth/allowPas
 import { passportOAuthCallback } from '../../../server/lib/oauth/passportOAuthCallback';
 import { settings } from '../../settings/server';
 import { config } from '../lib/config';
-import { handlePassportIdentityToken } from '../lib/handlePassportIdentityToken';
+import { handleIdentityToken } from '../lib/handleIdentityToken';
 
 new AppleCustomOAuth('apple', config);
 
@@ -55,7 +55,7 @@ settings.watchMultiple(
 			return;
 		}
 
-		if (!clientId) {
+		if (typeof clientId !== 'string' || !clientId) {
 			return ServiceConfiguration.configurations.removeAsync({
 				service: 'apple',
 			});
@@ -66,7 +66,7 @@ settings.watchMultiple(
 
 			new AppleStrategy(
 				{
-					clientID: settings.get<string>('Accounts_OAuth_Apple_id'),
+					clientID: clientId,
 					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
 					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
 					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
@@ -75,18 +75,9 @@ settings.watchMultiple(
 					passReqToCallback: false,
 					state: false,
 				},
-				async (accessToken: string, refreshToken: string, idToken: string, profile: Profile, done) => {
+				async (accessToken: string, refreshToken: string, idToken: string, _profile: Profile, done) => {
 					try {
-						const serviceData = await handlePassportIdentityToken(idToken);
-						if (profile?.name) {
-							serviceData.name = `${profile.name.firstName}${profile.name.middleName ? ` ${profile.name.middleName}` : ''}${
-								profile.name.lastName ? ` ${profile.name.lastName}` : ''
-							}`;
-						}
-
-						if (!serviceData.email && profile?.email) {
-							serviceData.email = profile.email;
-						}
+						const serviceData = await handleIdentityToken(idToken, clientId);
 
 						const user = await Accounts.updateOrCreateUserFromExternalService(
 							'apple',
