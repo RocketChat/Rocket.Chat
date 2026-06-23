@@ -151,7 +151,7 @@ exports[`renders Default without crashing 1`] = `
                   style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                 >
                   <li
-                    role="presentation"
+                    role="none"
                     style="list-style: none; z-index: 1; position: sticky; top: 0px;"
                   >
                     <div>
@@ -232,7 +232,6 @@ exports[`renders Default without crashing 1`] = `
                             data-qa="MemberItem-rocket.cat"
                           >
                             rocket.cat
-                             
                           </div>
                           <div
                             class="rcx-box--animated rcx-option__menu-wrapper"
@@ -829,7 +828,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
                   style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                 >
                   <li
-                    role="presentation"
+                    role="none"
                     style="list-style: none; z-index: 1; position: sticky; top: 0px;"
                   >
                     <div>
@@ -910,7 +909,6 @@ exports[`renders WithABACRoom without crashing 1`] = `
                             data-qa="MemberItem-rocket.cat"
                           >
                             rocket.cat
-                             
                           </div>
                           <div
                             class="rcx-box--animated rcx-option__menu-wrapper"
@@ -1129,7 +1127,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                   style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                 >
                   <li
-                    role="presentation"
+                    role="none"
                     style="list-style: none; z-index: 1; position: sticky; top: 0px;"
                   >
                     <div>
@@ -1211,7 +1209,6 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                             data-qa="MemberItem-rocket.cat"
                           >
                             rocket.cat
-                             
                           </div>
                           <div
                             class="rcx-option__column"

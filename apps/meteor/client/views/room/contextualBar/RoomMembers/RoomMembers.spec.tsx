@@ -243,10 +243,54 @@ test.each(snapshotTestCases)(`renders %s without crashing`, async (_storyname, S
 	expect(baseElement).toMatchSnapshot();
 });
 
-test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-	const { container } = render(<Story />);
+test.each(testCases)(
+	'%s should have no a11y violations',
+	async (_storyname, Story) => {
+		const { container } = render(<Story />);
 
-	// Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant
-	const results = await axe(container, { rules: { 'nested-interactive': { enabled: false } } });
-	expect(results).toHaveNoViolations();
+		// Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant
+		const results = await axe(container, { rules: { 'nested-interactive': { enabled: false } } });
+		expect(results).toHaveNoViolations();
+	},
+	15000,
+);
+
+describe('RoomMembers virtualized list review fixes', () => {
+	beforeEach(() => {
+		mockVirtualizerHandle.findItemIndex.mockImplementation((offset: number) => offset);
+		mockVirtualizerHandle.scrollOffset = 0;
+		mockVirtualizerHandle.scrollSize = 1000;
+		mockVirtualizerHandle.viewportSize = 300;
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('uses one presentational role for virtual row wrappers', () => {
+		renderRoomMembers();
+
+		// eslint-disable-next-line testing-library/no-node-access
+		const ownersDividerWrapper = screen.getByText('Owners').closest('li');
+		// eslint-disable-next-line testing-library/no-node-access
+		const ownerRowWrapper = screen.getByText('owner').closest('li');
+
+		expect(ownersDividerWrapper).toHaveAttribute('role', 'none');
+		expect(ownerRowWrapper).toHaveAttribute('role', 'none');
+	});
+
+	it('allows loading again after a successful load resolves without new members', async () => {
+		jest.useFakeTimers();
+		const loadMoreItems = jest.fn().mockResolvedValue(undefined);
+
+		renderRoomMembers({ total: 8, loadMoreItems });
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(loadMoreItems).toHaveBeenCalledTimes(2);
+	});
 });

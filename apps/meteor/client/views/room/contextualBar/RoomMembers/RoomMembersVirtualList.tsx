@@ -50,7 +50,7 @@ const RoomMembersVirtualItem = forwardRef<HTMLLIElement, CustomItemComponentProp
 	return (
 		<li
 			ref={ref}
-			role={isSticky ? 'presentation' : 'none'}
+			role='none'
 			style={{
 				...style,
 				...listItemStyle,
@@ -168,6 +168,8 @@ export const RoomMembersVirtualList = ({
 			try {
 				await loadMoreItems();
 			} catch {
+				// Loading errors are surfaced by the query state; the scroll lock still needs to release.
+			} finally {
 				isEndReachedLockedRef.current = false;
 			}
 		},
