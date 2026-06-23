@@ -11,7 +11,7 @@ export const clientStateList = [
 	'active', // The webrtc call was established
 	'renegotiating', // the webrtc call was established but the client is starting a new negotiation
 	'hangup', // The call is over, or happening in some other client
-];
+] as const;
 
 export type ClientState = (typeof clientStateList)[number];
 
@@ -21,7 +21,7 @@ export const clientContractStateList = [
 	'pre-signed', // the session that requested a call is assuming it will be signed into it
 	'self-signed', // the call has progressed beyond the signing stage without any signature confirmation
 	'ignored', // the server signed a contract from a different session
-];
+] as const;
 
 export type ClientContractState = (typeof clientContractStateList)[number];
 

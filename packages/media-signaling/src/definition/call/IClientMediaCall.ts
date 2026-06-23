@@ -21,7 +21,7 @@ export const callStateList = [
 	'active', // webrtc connection has been established
 	'renegotiating', // a webrtc connection had been established before, but a new one is being negotiated
 	'hangup', // call is over
-];
+] as const;
 
 export type CallState = (typeof callStateList)[number];
 
@@ -44,7 +44,7 @@ export const callHangupReasonList = [
 	'error', // Hanging up because of an unidentified error
 	'unknown', // One of the call's signed users reported they don't know this call
 	'another-client', // One of the call's users requested a hangup from a different client session than the one where the call is happening
-];
+] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];
 
@@ -62,7 +62,7 @@ export const callNotificationList = [
 	'active', // notify that call activity was confirmed
 	'hangup', // notify that the call is over;
 	'trying', // notify that the other client is connecting but still need more time
-];
+] as const;
 
 export type CallNotification = (typeof callNotificationList)[number];
 
@@ -76,7 +76,7 @@ export const callRejectedReasonList = [
 	'busy', // the actor who requested the call is supposedly busy
 	'invalid-call-params', // something is wrong with the params (eg. no valid route between caller and callee)
 	'forbidden', // one of the actors on the call doesn't have permission for it
-];
+] as const;
 
 export type CallRejectedReason = (typeof callRejectedReasonList)[number];
 
