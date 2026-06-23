@@ -9,26 +9,26 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
 import { slashCommands } from '../../../../app/utils/client';
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
+import { createMessageBoxPopupConfig } from '../../../components/AutocompletePopup';
+import type { ComposerBoxPopupEmojiProps } from '../../../components/EmojiAutocomplete/emojiPopupConfig';
+import { ComposerBoxPopupEmoji, createEmojiPopupConfig } from '../../../components/EmojiAutocomplete/emojiPopupConfig';
+import { pipe } from '../../../lib/cachedStores/pipe';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
 import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
-import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
-import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupRoom from '../composer/ComposerBoxPopupRoom';
 import type { ComposerBoxPopupRoomProps } from '../composer/ComposerBoxPopupRoom';
 import type { ComposerBoxPopupSlashCommandProps } from '../composer/ComposerBoxPopupSlashCommand';
 import ComposerBoxPopupSlashCommand from '../composer/ComposerBoxPopupSlashCommand';
 import ComposerBoxPopupUser from '../composer/ComposerBoxPopupUser';
 import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser';
-import { createMessageBoxPopupConfig } from '../../../components/AutocompletePopup/ComposerPopupOption';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext } from '../contexts/ComposerPopupContext';
-import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
-import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
-import { pipe } from '../../../lib/cachedStores/pipe';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
@@ -194,65 +194,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				getValue: (item) => `${item.name || item.fname}`,
 				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
 			}) as any,
-			useEmoji &&
-				createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
-					trigger: ':',
-					title: t('Emoji'),
-					triggerLength: 2,
-					getItemsFromLocal: async (filter: string) => {
-						const exactFinalTone = new RegExp('^tone[1-5]:*$');
-						const colorBlind = new RegExp('tone[1-5]:*$');
-						const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?::|$)$');
-
-						const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
-							const aExact = a._id === key ? 2 : 0;
-							const bExact = b._id === key ? 2 : 0;
-							const aPartial = a._id.startsWith(key) ? 1 : 0;
-							const bPartial = b._id.startsWith(key) ? 1 : 0;
-
-							let aScore = aExact + aPartial;
-							let bScore = bExact + bPartial;
-
-							if (recents.includes(a._id)) {
-								aScore += recents.indexOf(a._id) + 1;
-							}
-							if (recents.includes(b._id)) {
-								bScore += recents.indexOf(b._id) + 1;
-							}
-
-							if (aScore > bScore) {
-								return -1;
-							}
-							if (aScore < bScore) {
-								return 1;
-							}
-							return 0;
-						};
-						const filterRegex = new RegExp(escapeRegExp(filter), 'i');
-						const key = `:${filter}`;
-
-						const recents = recentEmojis.map((item) => `:${item}:`);
-
-						const collection = emoji.list;
-
-						return Object.keys(collection)
-							.map((_id) => {
-								const data = collection[key];
-								return { _id, data };
-							})
-							.filter(
-								({ _id }) =>
-									filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
-							)
-							.sort(emojiSort(recents))
-							.slice(0, 10);
-					},
-					getItemsFromServer: async () => {
-						return [];
-					},
-					getValue: (item) => `${item._id.substring(1)}`,
-					renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
-				}),
+			useEmoji && createEmojiPopupConfig({ t, recentEmojis }),
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 				title: t('Emoji'),
 				trigger: '\\+:',
@@ -293,10 +235,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const collection = emoji.list;
 
 					return Object.keys(collection)
-						.map((_id) => {
-							const data = collection[key];
-							return { _id, data };
-						})
+						.map((_id) => ({ _id }))
 						.filter(
 							({ _id }) =>
 								filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
@@ -381,6 +320,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				title: previewTitle,
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
+				enablePreviewQuery: (filter) => Boolean(slashCommands.commands[(filter as any)?.cmd]?.providesPreview),
 				getItemsFromLocal: async ({ cmd, params }: { cmd: string; params: string; tmid: string }) => {
 					const { preview } = await call({ command: cmd, params, roomId: rid });
 

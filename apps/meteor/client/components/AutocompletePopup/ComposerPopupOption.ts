@@ -1,4 +1,3 @@
-import type { Optional } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
 
 export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id: string; sort?: number }> = {
@@ -17,6 +16,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 
 	matchSelectorRegex?: RegExp;
 	preview?: boolean;
+	enablePreviewQuery?: (filter: unknown) => boolean;
 
 	getValue: (item: T) => string;
 
@@ -25,7 +25,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 };
 
 export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: number }>(
-	partial: Optional<ComposerPopupOption<T>, 'getValue'>,
+	partial: Omit<ComposerPopupOption<T>, 'getValue'> & Partial<Pick<ComposerPopupOption<T>, 'getValue'>>,
 ): ComposerPopupOption<T> => {
 	return {
 		blurOnSelectItem: true,

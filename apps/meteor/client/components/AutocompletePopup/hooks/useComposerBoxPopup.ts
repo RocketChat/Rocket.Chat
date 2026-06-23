@@ -5,7 +5,7 @@ import { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 import type { ComposerPopupOption } from '../ComposerPopupOption';
-import { useChat } from '../../../views/room/contexts/ChatContext';
+import type { EditableTextAdapter } from '../editableTextAdapter';
 
 type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
@@ -14,8 +14,6 @@ type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	  }
 	| undefined
 >;
-
-type ComposerBoxPopupOptions<T extends { _id: string; sort?: number | undefined }> = ComposerPopupOption<T>;
 
 type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 	| {
@@ -52,7 +50,8 @@ const keys = {
 } as const;
 
 export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
-	options: ComposerBoxPopupOptions<T>[],
+	options: ComposerPopupOption<T>[],
+	editor: EditableTextAdapter | undefined,
 ): ComposerBoxPopupResult<T> => {
 	const [optionIndex, setOptionIndex] = useState<number>(-1);
 	const [focused, setFocused] = useState<T | undefined>(undefined);
@@ -67,8 +66,6 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		suspended: boolean;
 	};
 
-	const chat = useChat();
-
 	useEffect(() => {
 		if (!option) {
 			return;
@@ -81,7 +78,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		setFocused((focused) => {
 			const sortedItems = items
 				.filter((item) => item.isSuccess)
-				.flatMap((item) => item.data as T[])
+				.flatMap((item) => item.data)
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
@@ -95,27 +92,28 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		if (commandsRef.current?.select) {
 			commandsRef.current.select(item);
 		} else {
-			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+			const value = editor?.textBeforeCaret();
 			const selector =
 				option.matchSelectorRegex ??
 				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 
 			const result = value?.match(selector);
-			if (!result || !value) {
+			if (!result || !value || !editor) {
 				return;
 			}
 
-			chat?.composer?.replaceText((option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''), {
-				start: value.lastIndexOf(result[1] + result[2]),
-				end: chat?.composer?.selection.start,
-			});
+			editor.replaceRange(
+				(option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''),
+				value.lastIndexOf(result[1] + result[2]),
+				editor.caret(),
+			);
 		}
 		setOptionIndex(-1);
 		setFocused(undefined);
 	});
 
-	const setOptionByInput = useStableCallback((): ComposerBoxPopupOptions<T> | undefined => {
-		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+	const setOptionByInput = useStableCallback((): ComposerPopupOption<T> | undefined => {
+		const value = editor?.textBeforeCaret();
 
 		if (!value) {
 			setOptionIndex(-1);
@@ -194,7 +192,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data as T[])
+					.flatMap((item) => item.data)
 					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
@@ -203,7 +201,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1]) as T;
+				return focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1];
 			});
 			event.preventDefault();
 			event.stopImmediatePropagation();
@@ -213,7 +211,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data as T[])
+					.flatMap((item) => item.data)
 					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
@@ -222,12 +220,14 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0]) as T;
+				return focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0];
 			});
 			event.preventDefault();
 			event.stopImmediatePropagation();
 			return true;
 		}
+
+		return undefined;
 	});
 
 	const clear = useStableCallback(() => {
