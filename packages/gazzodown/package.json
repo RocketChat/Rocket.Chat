@@ -34,7 +34,7 @@
 		"@rocket.chat/fuselage": "^0.79.0",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/icons": "^0.48.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/storybook-config": "workspace:~",

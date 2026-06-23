@@ -7,9 +7,10 @@ exports[`renders FullWidget without crashing 1`] = `
       data-focus-scope-start="true"
       hidden=""
     />
-    <article
-      aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-155a7q5"
+    <div
+      aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-1rau14i"
+      role="dialog"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
@@ -25,6 +26,12 @@ exports[`renders FullWidget without crashing 1`] = `
       <header
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
+        <div
+          id="rcx-media-call-widget-title-prefix"
+          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+        >
+          Voice_call
+        </div>
         <h3
           class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
@@ -113,7 +120,7 @@ exports[`renders FullWidget without crashing 1`] = `
           </button>
         </div>
       </footer>
-    </article>
+    </div>
     <span
       data-focus-scope-end="true"
       hidden=""
