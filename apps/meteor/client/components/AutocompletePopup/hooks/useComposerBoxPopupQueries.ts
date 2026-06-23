@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { useEnablePopupPreview } from './useEnablePopupPreview';
 import type { ComposerPopupOption } from '../ComposerPopupOption';
 
-export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(
-	filter: unknown,
-	popup?: ComposerPopupOption<T>,
-) => {
+export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(filter: unknown, popup?: ComposerPopupOption<T>) => {
 	const [counter, setCounter] = useState(0);
 
 	useEffect(() => {
