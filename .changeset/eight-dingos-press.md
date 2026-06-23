@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes incoming integrations by adding "ignoreSsrfValidation: false"
+Fixes incoming integrations inability of reaching internal hosts by adding "ignoreSsrfValidation: false" to it
