@@ -185,7 +185,9 @@ export class Presence extends ServiceClass implements IPresence {
 
 	override async stopped(): Promise<void> {
 		this.reaper.stop();
+		this.expirationScheduleToken = undefined;
 		clearTimeout(this.expirationTimeout);
+		this.expirationTimeout = undefined;
 		clearTimeout(this.lostConTimeout);
 	}
 
