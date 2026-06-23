@@ -5830,6 +5830,23 @@ describe('[Users]', () => {
 			expect(new Date(status.statusExpiresAt!).getTime()).to.be.closeTo(new Date(expiresAt).getTime(), 2000);
 		});
 
+		it('should reject a past expiresAt date', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					expiresAt: '2020-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-date');
+					expect(res.body.error).to.be.equal('expiresAt must be a future date [error-invalid-date]');
+				});
+		});
+
 		it('should not return statusExpiresAt when expiresAt is not set', async () => {
 			await request
 				.post(api('users.setStatus'))

@@ -1,5 +1,15 @@
 # @rocket.chat/ui-client
 
+## 32.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@32.0.0-rc.0
+  - @rocket.chat/ui-avatar@28.0.0-rc.0
+  </details>
+
 ## 31.0.0
 
 ### Minor Changes
