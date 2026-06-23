@@ -1,0 +1,21 @@
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  s_020fb63a50b2e6::t_96665c3990f6ec 239-241
+  s_020fb63a50b2e6::t_120b19ceed636d 850,857
+  s_020fb63a50b2e6::t_07a1057b55aef7 232,242-244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "f1b3ac3505ea608ccd080d79a968205d6c317956",
+  "prompts": {},
+  "sessions": {
+    "s_020fb63a50b2e6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8d9c30d0-6103-48d0-afc4-9e9990bb636a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
