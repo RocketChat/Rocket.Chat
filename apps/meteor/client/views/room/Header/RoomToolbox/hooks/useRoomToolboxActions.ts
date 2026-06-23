@@ -87,7 +87,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 		const typedVisible = engineVisible as RoomToolboxActionConfig[];
 
 		if (!roomToolboxExpanded) {
-			const orderedOverflowActions = [...typedVisible, ...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[])];
+			const orderedOverflowActions = [...typedVisible, ...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[])].filter((item) => !item.disabled);
 
 			const sectionsMap = new Map<string, MenuSection>();
 			for (const item of orderedOverflowActions) {
@@ -112,7 +112,9 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 		const hiddenActions = engineSections.map((section) => ({
 			id: section.id,
 			title: section.id === 'apps' ? t('Apps') : '',
-			items: (section.items as RoomToolboxActionConfig[]).map((item) => actionToMenuItem(item, openTab, t)),
+			items: (section.items as RoomToolboxActionConfig[])
+				.filter((item) => !item.disabled)
+				.map((item) => actionToMenuItem(item, openTab, t)),
 		}));
 
 		return { featuredActions: typedFeatured, visibleActions: typedVisible, hiddenActions };
