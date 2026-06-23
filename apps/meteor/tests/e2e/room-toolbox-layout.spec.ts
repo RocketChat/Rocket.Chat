@@ -63,22 +63,22 @@ test.describe.serial('room toolbox layout', () => {
 		test.use({ viewport: { width: 640, height: 460 } });
 
 		test('featured action (Threads) remains visible in the header on narrow viewport', async ({ page }) => {
-			poHomeChannel = new HomeChannel(page);
-			await poHomeChannel.gotoChannel(targetChannel);
+			const po = new HomeChannel(page);
+			await po.gotoChannel(targetChannel);
 
-			await expect(poHomeChannel.roomToolbar.btnThreads).toBeVisible();
+			await expect(po.roomToolbar.btnThreads).toBeVisible();
 		});
 
 		test('normal actions (Members, Discussions) collapse into Options dropdown on narrow viewport', async ({ page }) => {
-			poHomeChannel = new HomeChannel(page);
-			await poHomeChannel.gotoChannel(targetChannel);
+			const po = new HomeChannel(page);
+			await po.gotoChannel(targetChannel);
 
-			await expect(poHomeChannel.roomToolbar.btnMembers).not.toBeVisible();
-			await expect(poHomeChannel.roomToolbar.btnDiscussion).not.toBeVisible();
+			await expect(po.roomToolbar.btnMembers).not.toBeVisible();
+			await expect(po.roomToolbar.btnDiscussion).not.toBeVisible();
 
-			await poHomeChannel.roomToolbar.openMoreOptions();
-			await expect(poHomeChannel.roomToolbar.menu.getMenuItem('Members')).toBeVisible();
-			await expect(poHomeChannel.roomToolbar.menu.getMenuItem('Discussions')).toBeVisible();
+			await po.roomToolbar.openMoreOptions();
+			await expect(po.roomToolbar.menu.getMenuItem('Members')).toBeVisible();
+			await expect(po.roomToolbar.menu.getMenuItem('Discussions')).toBeVisible();
 		});
 	});
 
@@ -88,10 +88,10 @@ test.describe.serial('room toolbox layout', () => {
 				featuresPreview: [{ name: 'roomToolboxLayout', value: false }],
 			});
 
-			poHomeChannel = new HomeChannel(page);
-			await poHomeChannel.gotoChannel(targetChannel);
+			const po = new HomeChannel(page);
+			await po.gotoChannel(targetChannel);
 
-			await expect(poHomeChannel.roomToolbar.btnMoreOptions).toBeVisible();
+			await expect(po.roomToolbar.btnMoreOptions).toBeVisible();
 			await expect(page.getByRole('toolbar', { name: 'Primary Room actions' })).toBeVisible();
 
 			await setUserPreferences(api, {
@@ -102,10 +102,10 @@ test.describe.serial('room toolbox layout', () => {
 		test('malformed JSON config: toolbar falls back gracefully without crashing', async ({ api, page }) => {
 			await setSettingValueById(api, 'Room_Toolbox_Layout', '{ invalid json }');
 
-			poHomeChannel = new HomeChannel(page);
-			await poHomeChannel.gotoChannel(targetChannel);
+			const po = new HomeChannel(page);
+			await po.gotoChannel(targetChannel);
 
-			await expect(poHomeChannel.roomToolbar.btnMoreOptions).toBeVisible();
+			await expect(po.roomToolbar.btnMoreOptions).toBeVisible();
 			await expect(page.getByRole('toolbar', { name: 'Primary Room actions' })).toBeVisible();
 
 			await setSettingValueById(api, 'Room_Toolbox_Layout', LAYOUT_CONFIG);
