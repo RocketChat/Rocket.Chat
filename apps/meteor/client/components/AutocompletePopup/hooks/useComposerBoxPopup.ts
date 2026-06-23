@@ -4,8 +4,8 @@ import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
-import { useChat } from '../../contexts/ChatContext';
-import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
+import type { ComposerPopupOption } from '../ComposerPopupOption';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 
 type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
