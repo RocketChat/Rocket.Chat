@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip } from '../components';
-import PeerCardsPanel from './PeerCardsPanel';
+import MediaCallCardList from './MediaCallCardList';
 import { useMediaCallView } from '../context/MediaCallViewContext';
 
 type MediaCallPopoutViewProps = {
@@ -56,7 +56,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 			flexDirection='column'
 			ref={ref}
 		>
-			<PeerCardsPanel user={user} shouldWrapCards={shouldWrapCards} />
+			<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>

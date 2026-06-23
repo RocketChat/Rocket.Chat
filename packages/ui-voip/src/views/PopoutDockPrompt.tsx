@@ -1,11 +1,11 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type PopoutPanelProps = {
+type PopoutDockPromptProps = {
 	onClosePopout: () => void;
 };
 
-const PopoutPanel = ({ onClosePopout }: PopoutPanelProps) => {
+const PopoutDockPrompt = ({ onClosePopout }: PopoutDockPromptProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -20,4 +20,4 @@ const PopoutPanel = ({ onClosePopout }: PopoutPanelProps) => {
 	);
 };
 
-export default PopoutPanel;
+export default PopoutDockPrompt;

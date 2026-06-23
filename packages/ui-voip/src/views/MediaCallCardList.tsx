@@ -4,7 +4,7 @@ import { CardListContainer, CardListSection, PeerCard, StreamCard } from '../com
 import { useMediaCallView } from '../context';
 import { usePlayMediaStream } from '../providers/usePlayMediaStream';
 
-type PeerCardsPanelProps = {
+type MediaCallCardListProps = {
 	shouldWrapCards: boolean;
 	user: {
 		displayName: string;
@@ -12,7 +12,7 @@ type PeerCardsPanelProps = {
 	};
 };
 
-const PeerCardsPanel = ({ user, shouldWrapCards }: PeerCardsPanelProps) => {
+const MediaCallCardList = ({ user, shouldWrapCards }: MediaCallCardListProps) => {
 	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
 	const {
 		sessionState,
@@ -86,4 +86,4 @@ const PeerCardsPanel = ({ user, shouldWrapCards }: PeerCardsPanelProps) => {
 	);
 };
 
-export default PeerCardsPanel;
+export default MediaCallCardList;
