@@ -299,7 +299,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		await Presence.setActiveState(uid, {
 			statusDefault: UserStatus.BUSY,
-			statusText: i18n.t('Presence_status_in_a_meeting', { lng }),
+			statusText: i18n.t('Presence_status_outlook_in_a_meeting', { lng }),
 			statusSource: 'external',
 			statusExpiresAt,
 			statusId: this.name,

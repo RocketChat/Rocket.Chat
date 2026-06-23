@@ -46,7 +46,7 @@ const serviceMocks = {
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
 	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
 	'../../../app/utils/server/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
-	'../../lib/i18n': { i18n: { t: sinon.stub().returns('In a meeting') } },
+	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
 };
 
 const { CalendarService } = proxyquire.noCallThru().load('../../../../../server/services/calendar/service', serviceMocks);
@@ -495,6 +495,7 @@ describe('CalendarService', () => {
 			expect(state.statusSource).to.equal('external');
 			expect(state.statusExpiresAt.getTime()).to.equal(now + 120 * 60 * 1000);
 			expect(state.statusId).to.equal('calendar');
+			expect(state.statusText).to.equal('Outlook: In a meeting');
 		});
 
 		it('should use the event own endTime when there are no overlapping events', async () => {
