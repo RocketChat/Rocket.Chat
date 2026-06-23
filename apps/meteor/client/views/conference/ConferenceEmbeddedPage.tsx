@@ -33,7 +33,11 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		setActivePanel((prev) => (prev === panel ? null : panel));
 	}, []);
 
-	const { closeChat, dialOut } = usePexipPlugin({
+	const {
+		closeChat,
+		dialOut,
+		connected: pluginConnected,
+	} = usePexipPlugin({
 		conferenceUrl: conference.url,
 		hasUnread,
 		chatVisible: activePanel === 'chat',
@@ -59,9 +63,14 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	return (
 		<Box bg='surface-light' width='full' height='full' display='flex'>
 			<SideRail>
-				<SideRailActions>
-					<SideRailAction icon='message' label={t('Chat')} pressed={activePanel === 'chat'} onClick={() => togglePanel('chat')} />
-				</SideRailActions>
+				{/* The Pexip plugin renders its own chat toggle in the in-meeting toolbar; once the user is
+				connected (`connected`), drop this rail's button to avoid a duplicate control. It stays as a
+				fallback during preflight, after disconnect, and when the plugin isn't installed. */}
+				{!pluginConnected && (
+					<SideRailActions>
+						<SideRailAction icon='message' label={t('Chat')} pressed={activePanel === 'chat'} onClick={() => togglePanel('chat')} />
+					</SideRailActions>
+				)}
 
 				<SideRailPanel visible={activePanel === 'chat'} overlay={overlayPanel}>
 					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onClose={closeChat} onDialOut={dialOut} />

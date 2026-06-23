@@ -1,5 +1,5 @@
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Message contract shared with the Pexip "external-chat" plugin. The plugin runs in a sandboxed
@@ -18,6 +18,11 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const pluginWindowRef = useRef<Window | null>(null);
+
+	// True while the user is connected to the call, i.e. the plugin's in-meeting toolbar (and its chat
+	// button) is visible. Only then does the plugin own the chat toggle, so the host can drop its own
+	// (fallback) control; before connecting (preflight) or after disconnecting the toolbar is gone.
+	const [connected, setConnected] = useState(false);
 
 	// Latest values read from inside the (rarely re-bound) message listener without re-subscribing.
 	const chatVisibleRef = useRef(chatVisible);
@@ -81,6 +86,14 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 					postToPlugin('toggle-chat-button-state', { active: chatVisibleRef.current });
 					postToPlugin('toggle-chat-badge', { visible: hasUnreadRef.current });
 					break;
+				case 'connected':
+					// User joined the call; the plugin's toolbar (chat button) is now available.
+					setConnected(true);
+					break;
+				case 'disconnected':
+					// User left/lost the call; the plugin's toolbar is gone — fall back to the host control.
+					setConnected(false);
+					break;
 				case 'toggle-chat': {
 					const active = data.active === true;
 					handleChatToggle(active);
@@ -110,5 +123,5 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 		postToPlugin('toggle-chat-badge', { visible: hasUnread });
 	}, [hasUnread, postToPlugin]);
 
-	return { closeChat: () => handleChatToggle(false), dialOut };
+	return { closeChat: () => handleChatToggle(false), dialOut, connected };
 };
