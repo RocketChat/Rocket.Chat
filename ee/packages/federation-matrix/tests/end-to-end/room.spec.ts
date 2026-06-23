@@ -229,17 +229,19 @@ import { SynapseClient } from '../helper/synapse-client';
 			describe('Go to the members list and try to add a federated user', () => {
 				it('should not allow and show an error message', async () => {
 					// RC view: Attempt to add a federated user to the non-federated room via the REST invite endpoint
-					const response = await addUserToRoom({
+					const [response] = await addUserToRoom({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
 						rid: nonFederatedChannel._id,
 						type: 'p',
 						config: rc1AdminRequestConfig,
 					});
 
-					// The REST endpoint rejects the invite. The exact error depends on whether the federated
-					// user already exists locally (`error-federated-users-in-non-federated-rooms`) or not
-					// (`error-empty-invite-list`) — both surface as a failed REST response.
-					response.forEach((r) => expect(r.body).toHaveProperty('success', false));
+					// The REST endpoint rejects the invite with the federation-specific error: the federated
+					// user already exists locally (a federated DM was created earlier), so it resolves and the
+					// federation guard rejects adding it to a non-federated room.
+					expect(response.status).toBe(400);
+					expect(response.body).toHaveProperty('success', false);
+					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
 
 					// RC view: Verify the federated user was NOT added to the room's member list
 					const federatedUserInRoom = await findRoomMember(
@@ -845,14 +847,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add federated user to the room via the REST invite endpoint
-						const addUserResponse = await addUserToRoom({
+						const [addUserResponse] = await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId],
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
 
-						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
+						expect(addUserResponse.body).toHaveProperty('success', true);
 
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
