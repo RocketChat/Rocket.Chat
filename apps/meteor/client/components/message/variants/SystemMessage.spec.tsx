@@ -77,4 +77,27 @@ describe('SystemMessage', () => {
 		expect(screen.queryByTitle('test-title')).not.toBeInTheDocument();
 		expect(screen.getByText('changed room description to: <button title="test-title">OK</button>')).toBeInTheDocument();
 	});
+
+	it('should wrap long livechat transfer comments', () => {
+		const message = {
+			...createBaseMessage(''),
+			t: 'livechat_transfer_history',
+			transferData: {
+				scope: 'agent',
+				transferredBy: { name: 'Agent One', username: 'agent.one' },
+				transferredTo: { name: 'Agent Two', username: 'agent.two' },
+				comment: 'a-very-long-transfer-comment-that-should-wrap-instead-of-being-truncated',
+			},
+		} as IMessage;
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByRole('document')).toHaveStyle({
+			overflow: 'visible',
+			textOverflow: 'clip',
+			whiteSpace: 'normal',
+			overflowWrap: 'anywhere',
+			wordBreak: 'break-word',
+		});
+	});
 });

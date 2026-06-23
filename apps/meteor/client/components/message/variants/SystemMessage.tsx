@@ -17,7 +17,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
+import type { ComponentProps, CSSProperties, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,6 +42,15 @@ type SystemMessageProps = {
 	message: IMessage;
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;
+
+const wrappingSystemMessageBodyStyle: CSSProperties = {
+	minWidth: 0,
+	overflow: 'visible',
+	textOverflow: 'clip',
+	whiteSpace: 'normal',
+	overflowWrap: 'anywhere',
+	wordBreak: 'break-word',
+};
 
 const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps) => {
 	const { t } = useTranslation();
@@ -74,6 +83,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	};
 
 	const checkboxLabel = getCheckboxLabel(message, t);
+	const shouldWrapMessageBody = message.t === 'livechat_transfer_history';
 
 	return (
 		<MessageSystem
@@ -102,7 +112,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						)}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+						<MessageSystemBody
+							role='document'
+							aria-roledescription={t('system_message_body')}
+							style={shouldWrapMessageBody ? wrappingSystemMessageBodyStyle : undefined}
+						>
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
