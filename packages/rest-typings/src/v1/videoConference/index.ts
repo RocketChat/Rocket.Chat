@@ -9,6 +9,7 @@ import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsPr
 import type { VideoConfCancelProps } from './VideoConfCancelProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
+import type { VideoConfJoinScheduledProps } from './VideoConfJoinScheduledProps';
 import type { VideoConfListProps } from './VideoConfListProps';
 import type { VideoConfStartProps } from './VideoConfStartProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -17,6 +18,7 @@ export * from './VideoConfInfoProps';
 export * from './VideoConfListProps';
 export * from './VideoConfStartProps';
 export * from './VideoConfJoinProps';
+export * from './VideoConfJoinScheduledProps';
 export * from './VideoConfCancelProps';
 export * from './VideoConfAddParticipantsProps';
 
@@ -27,6 +29,10 @@ export type VideoConferenceEndpoints = {
 
 	'/v1/video-conference.join': {
 		POST: (params: VideoConfJoinProps) => { url: string; providerName: string };
+	};
+
+	'/v1/video-conference.join-scheduled': {
+		POST: (params: VideoConfJoinScheduledProps) => { callId: string };
 	};
 
 	'/v1/video-conference.cancel': {

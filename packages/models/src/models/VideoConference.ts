@@ -133,9 +133,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async createGroup({
 		providerName,
 		mediaCallIds,
+		sipAlias,
+		discussionRid,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
-		Pick<IGroupVideoConference, 'mediaCallIds'>): Promise<string> {
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -145,6 +147,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
 			...(mediaCallIds?.length && { mediaCallIds }),
+			...(sipAlias && { sipAlias }),
+			...(discussionRid && { discussionRid }),
 			...callDetails,
 		};
 
