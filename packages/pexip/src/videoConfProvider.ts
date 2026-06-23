@@ -1,5 +1,6 @@
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { MediaCall } from '@rocket.chat/core-services';
+import type { VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import type { VideoConference, IVideoConferenceUser, RequiredField } from '@rocket.chat/core-typings';
 import { MediaCalls } from '@rocket.chat/models';
 
@@ -47,7 +48,13 @@ export class PexipVideoConfProvider {
 		return `${baseUrl}${relativeUrl}`;
 	}
 
-	public async customizeUrl(call: RequiredField<VideoConference, 'url'>, user: IVideoConferenceUser | undefined): Promise<string> {
+	public async customizeUrl(
+		call: RequiredField<VideoConference, 'url'>,
+		user: IVideoConferenceUser | undefined,
+		options?: VideoConferenceJoinOptions,
+	): Promise<string> {
+		logger.debug({ msg: 'Pexip.customizeUrl', options });
+
 		const pin = await this.getPinForUser(call, user);
 		const escalationParams = this.getEscalationParams();
 
@@ -66,6 +73,14 @@ export class PexipVideoConfProvider {
 			if (name) {
 				url.searchParams.set('name', name);
 			}
+		}
+
+		if (options?.mic === false) {
+			url.searchParams.set('muteMicrophone', 'true');
+		}
+
+		if (options?.cam === false) {
+			url.searchParams.set('muteCamera', 'true');
 		}
 
 		url.searchParams.set('pin', pin);

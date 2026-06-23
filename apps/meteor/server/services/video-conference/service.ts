@@ -1231,7 +1231,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
 		if (provider) {
 			// TODO: compensate for the call title?
-			return provider.customizeUrl(call, userData);
+			return provider.customizeUrl(call, userData, options);
 		}
 
 		const callData: VideoConfDataExtended = {

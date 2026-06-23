@@ -89,12 +89,7 @@ export const videoConfProviders = {
 
 	getProviderCapabilities(name: string): VideoConferenceCapabilities | undefined {
 		if (name === 'core.pexip') {
-			return {
-				mic: false,
-				cam: false,
-				title: true,
-				persistentChat: true,
-			};
+			return this.getPexipHandler().capabilities;
 		}
 
 		const key = name.toLowerCase();
