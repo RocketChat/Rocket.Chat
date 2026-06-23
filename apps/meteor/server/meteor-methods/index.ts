@@ -33,7 +33,6 @@ import './integrations/outgoing/addOutgoingIntegration';
 import './integrations/outgoing/deleteOutgoingIntegration';
 import './integrations/outgoing/replayOutgoingIntegration';
 import './integrations/outgoing/updateOutgoingIntegration';
-import './media/deleteCustomSound';
 import './media/deleteEmojiCustom';
 import './media/getS3FileUrl';
 import './media/insertOrUpdateEmoji';
