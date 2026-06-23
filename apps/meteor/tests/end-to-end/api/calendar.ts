@@ -8,6 +8,7 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Calendar Events]', () => {
@@ -672,20 +673,20 @@ describe('[Calendar Events]', () => {
 		});
 
 		// claim apply/clear land asynchronously, so poll instead of asserting on a fixed sleep
-		const waitForStatusSource = async (
+		const waitForStatusSource = (
 			predicate: (source: string | undefined) => boolean,
 			{ timeout = 15000, interval = 500 } = {},
-		): Promise<string | undefined> => {
-			const deadline = Date.now() + timeout;
-			for (;;) {
-				const res = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
-				const source = res.body.statusSource;
-				if (predicate(source) || Date.now() >= deadline) {
-					return source;
+		): Promise<string | undefined> =>
+			withTimeout(async (signal) => {
+				for (;;) {
+					const res = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+					const source = res.body.statusSource;
+					if (predicate(source) || signal.aborted) {
+						return source;
+					}
+					await sleep(interval);
 				}
-				await sleep(interval);
-			}
-		};
+			}, timeout);
 
 		it('should apply a calendar (external) claim for an in-progress event and clear it when removed', async () => {
 			const now = new Date();

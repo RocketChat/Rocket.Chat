@@ -370,13 +370,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async setPresenceForUsers(uids: IUser['_id'][], callId: IMediaCall['_id']): Promise<void> {
+		const users = await Users.findByIds<Pick<IUser, '_id' | 'language'>>(uids, { projection: { language: 1 } }).toArray();
+		const languageByUid = new Map(users.map((user) => [user._id, user.language]));
+
 		await Promise.all(
 			uids.map(async (uid) => {
 				try {
-					const user = await Users.findOneById(uid, { projection: { language: 1 } });
 					await Presence.setActiveState(uid, {
 						statusDefault: UserStatus.BUSY,
-						statusText: i18n.t('Presence_status_on_a_call', { lng: this.getLanguageForUser(user?.language) }),
+						statusText: i18n.t('Presence_status_on_a_call', { lng: this.getLanguageForUser(languageByUid.get(uid)) }),
 						statusSource: 'internal',
 						statusId: callId,
 					});
