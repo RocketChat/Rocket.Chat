@@ -78,8 +78,13 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage, { room }) => {
+	async (message: IMessage, { room, user }) => {
 		if (!message.federation?.eventId) {
+			return;
+		}
+
+		// deletion came from federation — don't echo
+		if (isUserNativeFederated(user)) {
 			return;
 		}
 
