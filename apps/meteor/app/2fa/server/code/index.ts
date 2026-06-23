@@ -97,14 +97,15 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 		return true;
 	}
 
-	if (options.disableRememberMe === true) {
-		return false;
-	}
-
-	// remember user right after their registration
+	// remember user right after their registration, even when remember-me is disabled
+	// (e.g. the Setup Wizard saving settings between steps before any 2FA is configured)
 	const rememberAfterRegistration = user.createdAt && getRememberDate(user.createdAt);
 	if (rememberAfterRegistration && rememberAfterRegistration >= new Date()) {
 		return true;
+	}
+
+	if (options.disableRememberMe === true) {
+		return false;
 	}
 
 	if (!tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
