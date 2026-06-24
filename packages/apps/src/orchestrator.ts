@@ -46,10 +46,7 @@ function requireAppsEngine(): IAppsEngine {
  * semantics: queries resolve to `undefined`/empty and `triggerEvent` resolves to
  * `undefined` while the engine is not yet available.
  */
-export const Apps: IAppsEngine & {
-	/** @deprecated transitional alias for the in-process orchestrator; do not use. */
-	readonly self: IAppServerOrchestrator | undefined;
-} = {
+export const Apps: IAppsEngine = {
 	isLoaded(): boolean {
 		return appsEngine?.isLoaded() ?? false;
 	},
@@ -109,9 +106,5 @@ export const Apps: IAppsEngine & {
 		async sendOutboundMessage(appId, type, message) {
 			return requireAppsEngine().outboundProviders.sendOutboundMessage(appId, type, message);
 		},
-	},
-
-	get self(): IAppServerOrchestrator | undefined {
-		return orchestrator;
 	},
 };

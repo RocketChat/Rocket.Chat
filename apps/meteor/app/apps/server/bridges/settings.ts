@@ -1,4 +1,4 @@
-import { Apps, type IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { ServerSettingBridge } from '@rocket.chat/apps/dist/server/bridges/ServerSettingBridge';
 import type { IReadSettingPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
@@ -54,7 +54,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 
 	protected async getReadableSettingById(id: string, appId: string): Promise<ISetting | null> {
 		this.orch.debugLog(`The app ${appId} is checking if it can read the setting ${id}`);
-		const app = Apps.self?.getManager().getOneById(appId);
+		const app = this.orch.getManager().getOneById(appId);
 		if (!app) {
 			this.orch.debugLog(`The app ${appId} is not found.`);
 			return null;
