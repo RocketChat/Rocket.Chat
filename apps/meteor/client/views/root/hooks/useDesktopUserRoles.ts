@@ -14,7 +14,12 @@ export const useDesktopUserRoles = () => {
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
-		if (!userId) return;
+		// On logout or account switch clear any previously-pushed roles instead of
+		// leaving stale ones cached in the desktop app.
+		if (!userId) {
+			window.RocketChatDesktop?.setUserRoles?.([]);
+			return;
+		}
 		window.RocketChatDesktop?.setUserRoles?.(rolesKey ? rolesKey.split(',') : []);
 	}, [userId, rolesKey]);
 };
