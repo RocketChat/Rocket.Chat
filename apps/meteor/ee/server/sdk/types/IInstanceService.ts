@@ -1,4 +1,4 @@
-import type { AppStatusReport } from '@rocket.chat/core-services';
+import type { AppStatusReport } from '@rocket.chat/apps';
 import type { BrokerNode } from 'moleculer';
 
 export interface IInstanceService {

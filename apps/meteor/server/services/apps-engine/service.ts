@@ -1,6 +1,11 @@
 import { AppEvents, getOrchestrator } from '@rocket.chat/apps';
-import type { AppStatusReport, IAppsEngine, IAppsOutboundProviders, IAppsVideoConfProviders } from '@rocket.chat/apps';
-import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type {
+	AppStatusReport,
+	IAppsEngine,
+	IAppsOutboundProviders,
+	IAppsVideoConfProviders,
+	IAppServerOrchestrator,
+} from '@rocket.chat/apps';
 import type { IGetAppsFilter } from '@rocket.chat/apps/dist/server/IGetAppsFilter';
 import type { AppOutboundCommunicationProviderManager } from '@rocket.chat/apps/dist/server/managers/AppOutboundCommunicationProviderManager';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
@@ -289,8 +294,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		getVideoConferenceInfo: (providerName, call, user) =>
 			this.getVideoConfProviderManager().getVideoConferenceInfo(providerName, call, user),
 		generateUrl: (providerName, call) => this.getVideoConfProviderManager().generateUrl(providerName, call),
-		customizeUrl: (providerName, call, user, options) =>
-			this.getVideoConfProviderManager().customizeUrl(providerName, call, user, options),
+		customizeUrl: (providerName, call, user, options) => this.getVideoConfProviderManager().customizeUrl(providerName, call, user, options),
 		onNewVideoConference: (providerName, call) => this.getVideoConfProviderManager().onNewVideoConference(providerName, call),
 		onVideoConferenceChanged: (providerName, call) => this.getVideoConfProviderManager().onVideoConferenceChanged(providerName, call),
 		onUserJoin: (providerName, call, user) => this.getVideoConfProviderManager().onUserJoin(providerName, call, user),

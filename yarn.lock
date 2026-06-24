@@ -9244,7 +9244,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-services@workspace:packages/core-services"
   dependencies:
-    "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.7.0"
     "@rocket.chat/http-router": "workspace:^"
