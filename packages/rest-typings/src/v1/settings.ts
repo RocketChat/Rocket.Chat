@@ -100,6 +100,7 @@ const SettingsBulkSchema = {
 				type: 'object',
 				properties: {
 					_id: { type: 'string', minLength: 1 },
+					editor: { type: 'string', minLength: 1 },
 					value: {},
 				},
 				required: ['_id', 'value'],
