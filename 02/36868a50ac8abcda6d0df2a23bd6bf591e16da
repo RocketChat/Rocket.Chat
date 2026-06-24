@@ -1,0 +1,20 @@
+apps/meteor/tests/e2e/rooms-join.spec.ts
+  s_1c38a869009653::t_481709bf80a365 58-63,73-75
+  s_1c38a869009653::t_7d01ec3f8ba1d0 102-103,111-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "0236868a50ac8abcda6d0df2a23bd6bf591e16da",
+  "prompts": {},
+  "sessions": {
+    "s_1c38a869009653": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcebbb2f-abbf-480b-854a-19e9ec7db70c",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
