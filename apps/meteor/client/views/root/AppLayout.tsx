@@ -17,11 +17,11 @@ import { useAutoupdate } from './hooks/useAutoupdate';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
-import { useDesktopRouteNavigation } from './hooks/useDesktopRouteNavigation';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEmojiOne } from './hooks/useEmojiOne';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
+import { useExternalRouteNavigation } from './hooks/useExternalRouteNavigation';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
@@ -76,7 +76,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useDesktopUserRoles();
-	useDesktopRouteNavigation();
+	useExternalRouteNavigation();
 	useStartupEvent();
 	useIframeCommands();
 

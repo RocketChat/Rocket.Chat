@@ -2,43 +2,50 @@ import type { RouterContextValue, To } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { NAVIGATE_TO_ROUTE_MESSAGE } from '../../root/hooks/useExternalRouteNavigation';
+
 const OPENER_WINDOW_NAME = 'rocketchat-main';
 
 // Internal app routes are sent to the window that launched the conference, so this window stays on
-// the call. Desktop app: there's no `window.opener` (the conference is a standalone Electron
-// window), so route the main app window through the desktop bridge when it supports it. Browser:
-// reuse/focus the opener tab; otherwise fall back to a new tab.
+// the call and the target opens as an in-app (client-side) navigation rather than a full reload:
+// - desktop app: there's no `window.opener` (the conference is a standalone Electron window), so the
+//   internal video window's bridge routes + focuses the main window;
+// - browser: ask the opener to navigate client-side (postMessage) and focus its tab;
+// - otherwise: open in a new tab.
 const openInOpenerOrTab = (href: string) => {
+	let route: string | undefined;
+	try {
+		const url = new URL(href, window.location.href);
+		route = `${url.pathname}${url.search}${url.hash}`;
+	} catch {
+		route = undefined;
+	}
+
 	// Desktop: the internal video window exposes its own bridge (`window.videoCallWindow`), separate
 	// from `RocketChatDesktop` which only exists in the main app webview.
 	const openInMainWindow = window.videoCallWindow?.openInMainWindow;
-	if (openInMainWindow) {
-		try {
-			const { pathname, search, hash } = new URL(href, window.location.href);
-			openInMainWindow(`${pathname}${search}${hash}`);
-			return;
-		} catch {
-			// Fall through to the browser strategies below.
-		}
+	if (openInMainWindow && route) {
+		openInMainWindow(route);
+		return;
 	}
 
 	const opener = window.opener as Window | null;
-	if (opener && !opener.closed) {
+	if (opener && !opener.closed && route) {
 		try {
-			// `opener.focus()` can't switch the active *tab* (browsers block it). Targeting the opener by
-			// window name with `window.open` reuses that browsing context AND brings its tab to the front.
+			// Tell the main app to navigate client-side (no reload)…
+			opener.postMessage({ type: NAVIGATE_TO_ROUTE_MESSAGE, path: route }, window.location.origin);
+			// …then bring its tab to the front. `opener.focus()` can't switch the active tab, but opening
+			// the opener by window name with an empty URL focuses it without navigating.
 			if (!opener.name) {
 				opener.name = OPENER_WINDOW_NAME;
 			}
-			const reused = window.open(href, opener.name);
-			if (reused) {
-				reused.focus?.();
-				return;
-			}
+			window.open('', opener.name);
+			return;
 		} catch {
 			// Opener not accessible — fall back to a new tab.
 		}
 	}
+
 	window.open(href, '_blank', 'noopener');
 };
 
