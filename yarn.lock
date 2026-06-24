@@ -9403,7 +9403,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -9458,9 +9458,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.79.0":
-  version: 0.79.0
-  resolution: "@rocket.chat/fuselage@npm:0.79.0"
+"@rocket.chat/fuselage@npm:^0.79.1":
+  version: 0.79.1
+  resolution: "@rocket.chat/fuselage@npm:0.79.1"
   dependencies:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/css-supports": "npm:^0.31.25"
@@ -9476,7 +9476,7 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-virtuoso: "*"
-  checksum: 10/a49eaeb195819dcc846ffeaa605484cf5bd9a2f076226bf9185dfadda278eef6ebdf8b107251b466f8692ebac1209b1385c01c1f4b9ce8e667b5f154aa823ecb
+  checksum: 10/112bf6eb1a9b30214fca24c23bff3ae9082adfd21f8d3cefe728ca7f96844d0d203c1bcb1bd3f5dae524290a81aa33a9855102615e922b036fa89a9703c4338f
   languageName: node
   linkType: hard
 
@@ -9487,7 +9487,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -9932,7 +9932,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.6.3"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-forms": "npm:^1.3.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-toastbar": "npm:^0.35.2"
@@ -10815,7 +10815,7 @@ __metadata:
   resolution: "@rocket.chat/storybook-config@workspace:packages/storybook-config"
   dependencies:
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -10910,7 +10910,7 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -10937,7 +10937,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -10994,7 +10994,7 @@ __metadata:
   dependencies:
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -11021,7 +11021,7 @@ __metadata:
     "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-client": 31.0.0
+    "@rocket.chat/ui-client": 32.0.0-rc.0
     react: "*"
     react-dom: "*"
   languageName: unknown
@@ -11034,7 +11034,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
@@ -11093,7 +11093,7 @@ __metadata:
   dependencies:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -11140,7 +11140,7 @@ __metadata:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/desktop-api": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
@@ -11206,7 +11206,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-toastbar": "npm:^0.35.2"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
@@ -11244,7 +11244,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.0"
+    "@rocket.chat/fuselage": "npm:^0.79.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
@@ -11275,7 +11275,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.3.0
-    "@rocket.chat/ui-contexts": 31.0.0
+    "@rocket.chat/ui-contexts": 32.0.0-rc.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
