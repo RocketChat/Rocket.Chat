@@ -1,10 +1,16 @@
-import { Button } from '@rocket.chat/fuselage';
-
 import { useMediaCallView, useMediaCallInstance } from '../../../context';
 import { useAppActionOverrides } from '../context/AppActionOverridesContext';
 import { useMediaCallAppActions } from '../context/MediaCallAppActionsContext';
 
-export const useVisibleAppActions = () => {
+export type VisibleAppAction = {
+	key: string;
+	label: string;
+	variant?: 'danger' | 'default';
+	disabled?: boolean;
+	onClick: () => Promise<void>;
+};
+
+export const useVisibleAppActions = (): VisibleAppAction[] => {
 	const {
 		sessionState: { callId, state: currentCallState },
 	} = useMediaCallView();
@@ -41,10 +47,12 @@ export const useVisibleAppActions = () => {
 				setOverride(action.key, { ...result?.update, disabled });
 			};
 
-			return (
-				<Button medium key={action.key} danger={overridden.variant === 'danger'} disabled={overridden.disabled} onClick={onClick}>
-					{overridden.label}
-				</Button>
-			);
+			return {
+				key: action.key,
+				label: overridden.label,
+				variant: overridden.variant,
+				disabled: overridden.disabled,
+				onClick,
+			};
 		});
 };

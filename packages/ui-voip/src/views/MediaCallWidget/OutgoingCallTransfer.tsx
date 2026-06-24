@@ -1,9 +1,10 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 
 const OutgoingCallTransfer = () => {
 	const { t } = useTranslation();
@@ -12,6 +13,8 @@ const OutgoingCallTransfer = () => {
 		sessionState: { peerInfo, connectionState, transferredBy },
 		onEndCall,
 	} = useMediaCallView();
+
+	const appActions = useVisibleAppActions();
 
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
@@ -30,7 +33,8 @@ const OutgoingCallTransfer = () => {
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
-				<AppActions />
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup stretch>
 					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
 						{t('Cancel')}

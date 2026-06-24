@@ -1,21 +1,25 @@
-import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 
-import { useVisibleAppActions } from '../hooks/useVisibleAppActions';
+import type { VisibleAppAction } from '../hooks/useVisibleAppActions';
 
-const AppActions = () => {
-	const visibleActions = useVisibleAppActions();
+type AppActionsProps = {
+	actions: VisibleAppAction[];
+	vertical?: boolean;
+};
 
-	if (visibleActions.length === 0) {
+const AppActions = ({ actions, vertical }: AppActionsProps) => {
+	if (actions.length === 0) {
 		return null;
 	}
 
 	return (
-		<>
-			<ButtonGroup vertical stretch>
-				{visibleActions}
-			</ButtonGroup>
-			<Divider />
-		</>
+		<ButtonGroup vertical={vertical} stretch={vertical}>
+			{actions.map((action) => (
+				<Button medium key={action.key} danger={action.variant === 'danger'} disabled={action.disabled} onClick={action.onClick}>
+					{action.label}
+				</Button>
+			))}
+		</ButtonGroup>
 	);
 };
 
