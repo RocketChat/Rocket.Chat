@@ -1,10 +1,12 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
+import { useActiveCallWindow } from '../providers/useMediaSessionInstance';
 import { PopupBlockedModal } from '../views';
 
 export const useOpenVideoCall = () => {
 	const setModal = useSetModal();
+	const activeWindow = useActiveCallWindow();
 
 	return useCallback(
 		(url: string, providerName?: string) => {
@@ -15,12 +17,12 @@ export const useOpenVideoCall = () => {
 				return;
 			}
 
-			const popup = window.open(url);
+			const popup = activeWindow.open(url);
 
 			if (popup === null) {
-				setModal(<PopupBlockedModal onClose={() => setModal(null)} onConfirm={() => window.open(url)} />);
+				setModal(<PopupBlockedModal onClose={() => setModal(null)} onConfirm={() => activeWindow.open(url)} />);
 			}
 		},
-		[setModal],
+		[activeWindow, setModal],
 	);
 };

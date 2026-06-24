@@ -3,7 +3,8 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip } from '../components';
+import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip, VideoCallButton } from '../components';
+import EscalatedCallPrompt from './EscalatedCallPrompt';
 import MediaCallCardList from './MediaCallCardList';
 import { useMediaCallView } from '../context/MediaCallViewContext';
 import AppActions from '../experimental/AppActionButtons/components/AppActions';
@@ -29,10 +30,11 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
+		onRequestVideoCall,
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -43,7 +45,11 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 
 	const appActions = useVisibleAppActions();
 
-	const showHeaderActions = appActions.length > 0;
+	const showAppActions = appActions.length > 0;
+
+	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+
+	const showHeaderActions = escalationAvailable && !escalated;
 
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
@@ -62,8 +68,9 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 			flexDirection='column'
 			ref={ref}
 		>
-			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
-			<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
+			{showAppActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
+			{showHeaderActions ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+			{escalationAvailable && escalated ? <EscalatedCallPrompt /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>

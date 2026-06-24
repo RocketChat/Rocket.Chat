@@ -2,7 +2,6 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import VideoEscalatedView from './VideoEscalatedView';
 import {
 	ToggleButton,
 	Timer,
@@ -20,6 +19,7 @@ import { usePeekMediaSessionFeatures } from '../../context/usePeekMediaSessionFe
 import useRegisterView from '../../context/useRegisterView';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import EscalatedCallPrompt from '../EscalatedCallPrompt';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -66,18 +66,20 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const isPopout = currentViews.includes('popout');
 
-	const { muted, held, peerInfo, connectionState, startedAt, escalated } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+
 	useRegisterView('room');
 
 	const appActions = useVisibleAppActions();
 
-	const showHeaderActions = appActions.length > 0;
+	const showAppActions = appActions.length > 0;
 
 	const features = usePeekMediaSessionFeatures();
 
@@ -90,12 +92,14 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			return <PopoutDockPrompt onClosePopout={onClosePopout} />;
 		}
 
-		if (escalated) {
-			return <VideoEscalatedView />;
+		if (escalationAvailable && escalated) {
+			return <EscalatedCallPrompt />;
 		}
 
 		return <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />;
-	}, [isPopout, escalated, user, shouldWrapCards, onClosePopout]);
+	}, [isPopout, escalationAvailable, escalated, user, shouldWrapCards, onClosePopout]);
+
+	const showHeaderActions = escalationAvailable && !escalated;
 
 	if (!peerInfo || !('userId' in peerInfo) || !peerInfo.userId) {
 		return null;
@@ -113,8 +117,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
-			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
-			{!escalated ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+			{showAppActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
+			{showHeaderActions ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
 
 			{content}
 

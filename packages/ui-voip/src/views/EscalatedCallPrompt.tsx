@@ -1,15 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import VideoCallButton from '../../components/VideoCallButton';
-import { useMediaCallView } from '../../context';
+import VideoCallButton from '../components/VideoCallButton';
+import { useMediaCallView } from '../context';
 
-const VideoEscalatedView = () => {
+const EscalatedCallPrompt = () => {
 	const { t } = useTranslation();
 	const { isRequestingVideoCall, onRequestVideoCall } = useMediaCallView();
 
 	return (
 		<Box
+			is='section'
 			display='flex'
 			flexDirection='column'
 			alignItems='center'
@@ -28,4 +29,4 @@ const VideoEscalatedView = () => {
 	);
 };
 
-export default VideoEscalatedView;
+export default EscalatedCallPrompt;
