@@ -1,5 +1,6 @@
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 import type { SessionState } from '../context';
 import { useOpenVideoCall } from './useOpenVideoCall';
@@ -15,7 +16,7 @@ export const useVoiceToVideoEscalation = (sessionState: SessionState) => {
 		mutationFn: requestEscalation,
 	});
 
-	const executeVideoEscalation = async () => {
+	const executeVideoEscalation = useCallback(async () => {
 		if (sessionState.state !== 'ongoing') {
 			return;
 		}
@@ -28,9 +29,9 @@ export const useVoiceToVideoEscalation = (sessionState: SessionState) => {
 		} catch (error) {
 			console.error('Error requesting video escalation', error);
 		}
-	};
+	}, [sessionState, requestVideoEscalation, openVideoCall]);
 
-	const onRequestVideoCall = async () => {
+	const onRequestVideoCall = useCallback(async () => {
 		if (sessionState.escalated) {
 			await executeVideoEscalation();
 			return;
@@ -45,7 +46,7 @@ export const useVoiceToVideoEscalation = (sessionState: SessionState) => {
 				}}
 			/>,
 		);
-	};
+	}, [sessionState.escalated, setModal, executeVideoEscalation]);
 
 	return {
 		isRequestingVideoCall: isPending,
