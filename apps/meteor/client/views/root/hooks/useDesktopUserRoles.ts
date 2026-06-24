@@ -14,8 +14,11 @@ export const useDesktopUserRoles = () => {
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
-		// On logout or account switch clear any previously-pushed roles instead of
-		// leaving stale ones cached in the desktop app.
+		// Clear stale roles on logout/account switch by pushing [] when there is no
+		// user, rather than in an effect cleanup: the cleanup runs on every deps
+		// change (including a roles update while staying logged in), which would
+		// push [] and then the new roles, briefly flickering role-targeted UI.
+		// Handling it inline only clears when the user actually goes away.
 		if (!userId) {
 			window.RocketChatDesktop?.setUserRoles?.([]);
 			return;
