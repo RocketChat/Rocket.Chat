@@ -7,11 +7,9 @@ import VideoConfBlockModal from '../VideoConfBlockModal';
 // if the reference below is lost (e.g. the main app reloaded).
 const CONFERENCE_WINDOW_NAME = 'rocketchat-conference';
 
-// Reference to the conference tab we opened and the conference URL it's showing. Lets us focus the
-// same conference without reloading, navigate it when a different one is requested, and re-open it
-// once it's closed.
+// Reference to the conference tab we opened. Lets us focus the same conference without reloading,
+// navigate it when a different one is requested, and re-open it once it's closed.
 let conferenceWindow: Window | null = null;
-let conferenceWindowUrl: string | null = null;
 
 export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
@@ -22,28 +20,41 @@ export const useVideoConfOpenCall = () => {
 
 			if (!desktopApp?.openInternalVideoChatWindow) {
 				const open = () => {
-					let isSameOrigin = false;
+					let target: URL | undefined;
 					try {
-						isSameOrigin = new URL(callUrl, window.location.href).origin === window.location.origin;
+						const url = new URL(callUrl, window.location.href);
+						if (url.origin === window.location.origin) {
+							target = url;
+						}
 					} catch {
 						// Not a valid/absolute URL — fall back to a plain new tab below.
 					}
 
 					// External provider URLs keep opening in their own tab.
-					if (!isSameOrigin) {
+					if (!target) {
 						return window.open(callUrl);
 					}
 
 					const isAlive = Boolean(conferenceWindow) && !conferenceWindow?.closed;
 
-					// Same conference already open → focus it without reloading (empty URL = no navigation).
-					if (isAlive && conferenceWindowUrl === callUrl) {
-						return window.open('', CONFERENCE_WINDOW_NAME) ?? conferenceWindow;
+					// The conference tab is same-origin, so check what it's *actually* showing rather than
+					// the URL we last passed (which can differ in string form between the start/join paths).
+					// If it's already on this conference, focus it without reloading (empty URL = no navigation).
+					if (isAlive) {
+						let showsSameConference = false;
+						try {
+							showsSameConference = conferenceWindow?.location.pathname === target.pathname;
+						} catch {
+							// Conference tab navigated cross-origin (not our in-product conference).
+						}
+
+						if (showsSameConference) {
+							return window.open('', CONFERENCE_WINDOW_NAME) ?? conferenceWindow;
+						}
 					}
 
 					// New or different conference → open/navigate the shared tab and focus it.
 					conferenceWindow = window.open(callUrl, CONFERENCE_WINDOW_NAME);
-					conferenceWindowUrl = conferenceWindow ? callUrl : null;
 					return conferenceWindow;
 				};
 				const popup = open();
