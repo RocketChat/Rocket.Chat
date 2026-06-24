@@ -26,6 +26,8 @@ test.describe.serial('Join rooms', () => {
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
+			// poHomeChannel.goToRoom cannot be used here because it waits for specific selectors to ensure the whole room is loaded.
+			// Since the user does not have permission to preview the user, there's never a room to wait for.
 			await page.goto(`/channel/${targetChannel}`);
 		});
 
@@ -44,7 +46,7 @@ test.describe.serial('Join rooms', () => {
 		});
 
 		test('should let a non-member join a public channel', async () => {
-			await expect(poHomeChannel.btnJoinChannel).toBeVisible();
+			await expect(poHomeChannel.btnJoinChannel).toBeVisible({ timeout: 10000 });
 			await poHomeChannel.btnJoinChannel.click();
 			await expect(poHomeChannel.btnJoinChannel).not.toBeVisible();
 			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
@@ -66,7 +68,7 @@ test.describe.serial('Join rooms', () => {
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			await page.goto(`/channel/${targetChannel}`);
+			await poHomeChannel.gotoChannel(targetChannel);
 		});
 
 		test.afterEach(async ({ api }) => {
@@ -100,8 +102,8 @@ test.describe.serial('Join rooms', () => {
 			await deleteRoom(api, discussion._id);
 		});
 
-		test('should let a non-member join a discussion', async ({ page }) => {
-			await page.goto(`/channel/${discussion.name}`);
+		test('should let a non-member join a discussion', async () => {
+			await poHomeChannel.gotoChannel(discussion.name);
 
 			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
 
@@ -135,8 +137,8 @@ test.describe.serial('Join rooms', () => {
 			await api.post('/groups.delete', { roomId: group._id });
 		});
 
-		test('should let a parent member join a discussion in a private channel', async ({ page }) => {
-			await page.goto(`/group/${discussion.name}`);
+		test('should let a parent member join a discussion in a private channel', async () => {
+			await poHomeChannel.gotoPrivateChannel(discussion.name);
 
 			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
 			await poHomeChannel.composer.btnJoinRoom.click();
