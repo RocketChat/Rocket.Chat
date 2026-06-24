@@ -43,8 +43,7 @@ export const validateEmailDomain = async function (email) {
 		});
 	}
 
-	// Email domains are case-insensitive (RFC 1035/5321), so normalize before comparing against the allow/deny lists.
-	const emailDomain = email.substr(email.lastIndexOf('@') + 1).toLowerCase();
+	const emailDomain = email.slice(email.lastIndexOf('@') + 1).toLowerCase();
 
 	if (emailDomainWhiteList.length && !emailDomainWhiteList.includes(emailDomain)) {
 		throw new Meteor.Error('error-invalid-domain', 'The email domain is not in whitelist', {
