@@ -1,3 +1,4 @@
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
@@ -16,7 +17,7 @@ export const useExternalRouteNavigation = () => {
 			return undefined;
 		}
 
-		window.RocketChatDesktop?.onNavigateToRoute?.((path) => router.navigate(path));
+		window.RocketChatDesktop?.onNavigateToRoute?.((path) => router.navigate(path as LocationPathname));
 
 		const handleMessage = (event: MessageEvent) => {
 			// Same-origin only — the conference tab runs the same app on the same origin.
@@ -27,7 +28,7 @@ export const useExternalRouteNavigation = () => {
 			if (data?.type !== NAVIGATE_TO_ROUTE_MESSAGE || typeof data.path !== 'string') {
 				return;
 			}
-			router.navigate(data.path);
+			router.navigate(data.path as LocationPathname);
 		};
 
 		window.addEventListener('message', handleMessage);
