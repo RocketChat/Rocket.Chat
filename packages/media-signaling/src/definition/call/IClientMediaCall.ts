@@ -48,6 +48,8 @@ export const callHangupReasonList = [
 ] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];
+export const isCallHangupReason = (reason: string): reason is CallHangupReason =>
+	(callHangupReasonList as readonly string[]).includes(reason);
 
 export const callAnswerList = [
 	'accept', // actor accepts the call
@@ -120,6 +122,7 @@ export interface IClientMediaCall {
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 	isFeatureAvailable(feature: CallFeature): boolean;
 	hasFlag(flag: CallFlag): boolean;
+	shouldSkipSoundEffects(): boolean;
 
 	readonly localParticipant: IClientMediaCallLocalParticipant;
 	readonly remoteParticipants: IClientMediaCallRemoteParticipant[];
