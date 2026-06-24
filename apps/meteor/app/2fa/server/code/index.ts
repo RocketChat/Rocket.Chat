@@ -77,7 +77,11 @@ function getRememberDate(from: Date = new Date()): Date | undefined {
 }
 
 function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
-	const currentToken = Accounts._getLoginToken(connection.id);
+	// Resolve the current login token from both transports:
+	// - DDP: the login flow registers it in `Accounts._accountData`, read via `_getLoginToken`.
+	// - REST: it is not registered in account data, so it is carried on `connection.token`.
+	// Both are needed; REST is the fallback that fixes `bypassTwoFactor` PATs (SUP-1064).
+	const currentToken = Accounts._getLoginToken(connection.id) || connection.token;
 	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
 
 	if (!tokenObject) {
@@ -119,7 +123,9 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 }
 
 async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
-	const currentToken = Accounts._getLoginToken(connection.id);
+	// Same dual-transport resolution as `isAuthorizedForToken`: DDP reads from `Accounts._accountData`
+	// via `_getLoginToken`, REST falls back to the token carried on `connection.token`.
+	const currentToken = Accounts._getLoginToken(connection.id) || connection.token;
 
 	const expires = getRememberDate();
 	if (!expires) {
