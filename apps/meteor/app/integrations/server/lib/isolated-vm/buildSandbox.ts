@@ -119,9 +119,9 @@ export const buildSandbox = (context: Context) => {
 
 	jail.setSync(
 		'serverFetch',
-		new ivm.Reference(async (url: string, options?: any) => {
+		new ivm.Reference(async (url: string, options?: any, allowSelfSignedCerts?: boolean) => {
 			// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
-			const result = await fetch(url, { ...(options ?? {}), ignoreSsrfValidation: true });
+			const result = await fetch(url, { ...(options ?? {}), ignoreSsrfValidation: true }, allowSelfSignedCerts);
 			return makeTransferable(result);
 		}),
 	);
