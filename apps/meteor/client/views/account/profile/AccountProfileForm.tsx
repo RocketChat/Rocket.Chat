@@ -36,7 +36,7 @@ import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
+import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
@@ -65,8 +65,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		handleSubmit,
 		reset,
 		setValue,
-		setError,
-		clearErrors,
 		formState: { errors, dirtyFields },
 	} = useFormContext<AccountProfileFormValues>();
 
@@ -76,10 +74,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	useEffect(() => {
 		if (isExpirationDisabled) {
-			setValue('statusDuration', '');
-			clearErrors('statusDuration');
+			setValue('statusDuration', '', { shouldValidate: true });
 		}
-	}, [isExpirationDisabled, setValue, clearErrors]);
+	}, [isExpirationDisabled, setValue]);
 
 	const statusDurationOptions: SelectOption[] = useMemo(
 		() => STATUS_DURATION_OPTIONS.map(({ value, labelKey }) => [value, t(labelKey)]),
@@ -148,17 +145,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			customDate: statusCustomDate,
 			customTime: statusCustomTime,
 		});
-		if (allowUserStatusMessageChange && statusDuration === 'custom') {
-			if (!statusCustomDate || !statusCustomTime || !expiresAt) {
-				setError('statusDuration', { message: t('Status_choose_date_and_time') });
-				return;
-			}
-			if (expiresAt <= new Date()) {
-				setError('statusDuration', { message: t('Status_expiration_must_be_future') });
-				return;
-			}
-		}
-		clearErrors('statusDuration');
 
 		const statusDirty =
 			dirtyFields.statusText ||
@@ -299,15 +285,17 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						<Controller
 							control={control}
 							name='statusDuration'
+							rules={{
+								deps: ['statusCustomDate', 'statusCustomTime'],
+								validate: (value, { statusCustomDate, statusCustomTime }) =>
+									validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
+							}}
 							render={({ field: { value, onChange } }) => (
 								<Select
 									value={value}
 									options={statusDurationOptions}
 									disabled={!allowUserStatusMessageChange || isExpirationDisabled}
-									onChange={(next) => {
-										onChange(String(next));
-										clearErrors('statusDuration');
-									}}
+									onChange={(next) => onChange(String(next))}
 								/>
 							)}
 						/>
@@ -325,10 +313,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 											disabled={!allowUserStatusMessageChange}
 											flexGrow={1}
 											value={value}
-											onChange={(e: ChangeEvent<HTMLInputElement>) => {
-												onChange(e.currentTarget.value);
-												clearErrors('statusDuration');
-											}}
+											onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
 											min={new Date().toLocaleDateString('en-CA')}
 										/>
 									)}
@@ -343,10 +328,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 											disabled={!allowUserStatusMessageChange}
 											flexGrow={1}
 											value={value}
-											onChange={(e: ChangeEvent<HTMLInputElement>) => {
-												onChange(e.currentTarget.value);
-												clearErrors('statusDuration');
-											}}
+											onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
 										/>
 									)}
 								/>

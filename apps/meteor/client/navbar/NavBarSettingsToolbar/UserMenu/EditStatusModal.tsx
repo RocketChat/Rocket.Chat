@@ -12,7 +12,7 @@ import { Controller, useForm } from 'react-hook-form';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { getUserStatusInitialValues } from '../../../lib/getUserInitialStatus';
-import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
+import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
 
 type EditStatusModalProps = {
 	onClose: () => void;
@@ -136,23 +136,8 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 							name='statusDuration'
 							rules={{
 								deps: ['statusCustomDate', 'statusCustomTime'],
-								validate: (value, { statusCustomDate, statusCustomTime }) => {
-									if (value !== 'custom') {
-										return true;
-									}
-									const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === value)?.getExpiresAt?.({
-										now: new Date(),
-										customDate: statusCustomDate,
-										customTime: statusCustomTime,
-									});
-									if (!expiresAt) {
-										return t('Status_choose_date_and_time');
-									}
-									if (expiresAt <= new Date()) {
-										return t('Status_expiration_must_be_future');
-									}
-									return true;
-								},
+								validate: (value, { statusCustomDate, statusCustomTime }) =>
+									validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
 							}}
 							render={({ field: { value, onChange } }) => (
 								<Select
