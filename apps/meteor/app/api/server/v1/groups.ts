@@ -1,5 +1,12 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
-import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
+import {
+	isRoomNativeFederated,
+	type IIntegration,
+	type IUser,
+	type IRoom,
+	type RoomType,
+	type UserStatus,
+} from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
@@ -35,7 +42,7 @@ import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../helpers/getUserFromParams';
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -583,19 +590,28 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 			}
 
-			const { _id: rid, t: type } = (await Rooms.findOneByIdOrName(idOrName)) || {};
+			const groupRoom = await Rooms.findOneByIdOrName(idOrName);
+			const { _id: rid, t: type } = groupRoom || {};
 
 			if (!rid || type !== 'p') {
 				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
-			const users = await getUserListFromParams(this.bodyParams);
+			// Federated rooms invite by raw username: the federated user record is created
+			// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
+			if (groupRoom && isRoomNativeFederated(groupRoom)) {
+				const usernames = await getUsernameListFromParams(this.bodyParams);
 
-			if (!users.length) {
-				throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
+				await addUsersToRoomMethod(this.userId, { rid, users: usernames }, this.user);
+			} else {
+				const users = await getUserListFromParams(this.bodyParams);
+
+				if (!users.length) {
+					throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
+				}
+
+				await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
 			}
-
-			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
 
 			const room = await Rooms.findOneById(rid, { projection: API.v1.defaultFieldsToExclude });
 

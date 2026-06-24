@@ -9552,7 +9552,7 @@ __metadata:
     "@types/express": "npm:^4.17.25"
     "@types/jest": "npm:~30.0.0"
     "@types/supertest": "npm:~6.0.3"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.20.0"
     eslint: "npm:~9.39.4"
     express: "npm:^4.21.2"
     hono: "npm:4.12.25"
@@ -9700,7 +9700,7 @@ __metadata:
     "@types/react": "npm:~18.3.28"
     "@types/webpack-env": "npm:~1.18.8"
     "@types/whatwg-fetch": "npm:~0.0.33"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.20.0"
     ajv-formats: "npm:^3.0.1"
     autoprefixer: "npm:^9.8.8"
     babel-loader: "npm:~10.0.0"
@@ -9822,7 +9822,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.20.0"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
@@ -10072,7 +10072,7 @@ __metadata:
     "@types/xml-encryption": "npm:~1.2.4"
     "@xmldom/xmldom": "npm:~0.8.13"
     adm-zip: "npm:0.5.17"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.20.0"
     ajv-formats: "npm:~3.0.1"
     archiver: "npm:^7.0.1"
     asterisk-manager: "npm:^0.2.0"
@@ -10759,7 +10759,7 @@ __metadata:
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/jest": "npm:~30.0.0"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.20.0"
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~9.39.4"
     mongodb: "npm:6.16.0"
@@ -16004,43 +16004,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^6.12.4, ajv@npm:^6.12.5":
-  version: 6.12.6
-  resolution: "ajv@npm:6.12.6"
+"ajv@npm:6.15.0":
+  version: 6.15.0
+  resolution: "ajv@npm:6.15.0"
   dependencies:
     fast-deep-equal: "npm:^3.1.1"
     fast-json-stable-stringify: "npm:^2.0.0"
     json-schema-traverse: "npm:^0.4.1"
     uri-js: "npm:^4.2.2"
-  checksum: 10/48d6ad21138d12eb4d16d878d630079a2bda25a04e745c07846a4ad768319533031e28872a9b3c5790fa1ec41aabdf2abed30a56e5a03ebc2cf92184b8ee306c
+  checksum: 10/0916dda09c152fb5857bc1cc7ce61718e9cec5b7faeff44a74f5e324eed8a556e1a84856724ea322a067b436ecad9f74ac8295fd395449788cca52f0c25bd5fb
   languageName: node
   linkType: hard
 
-"ajv@npm:^6.14.0":
-  version: 6.14.0
-  resolution: "ajv@npm:6.14.0"
-  dependencies:
-    fast-deep-equal: "npm:^3.1.1"
-    fast-json-stable-stringify: "npm:^2.0.0"
-    json-schema-traverse: "npm:^0.4.1"
-    uri-js: "npm:^4.2.2"
-  checksum: 10/c71f14dd2b6f2535d043f74019c8169f7aeb1106bafbb741af96f34fdbf932255c919ddd46344043d03b62ea0ccb319f83667ec5eedf612393f29054fe5ce4a5
-  languageName: node
-  linkType: hard
-
-"ajv@npm:^8.0.0, ajv@npm:^8.0.1, ajv@npm:^8.17.1, ajv@npm:^8.9.0":
-  version: 8.17.1
-  resolution: "ajv@npm:8.17.1"
-  dependencies:
-    fast-deep-equal: "npm:^3.1.3"
-    fast-uri: "npm:^3.0.1"
-    json-schema-traverse: "npm:^1.0.0"
-    require-from-string: "npm:^2.0.2"
-  checksum: 10/ee3c62162c953e91986c838f004132b6a253d700f1e51253b99791e2dbfdb39161bc950ebdc2f156f8568035bb5ed8be7bd78289cd9ecbf3381fe8f5b82e3f33
-  languageName: node
-  linkType: hard
-
-"ajv@npm:^8.18.0":
+"ajv@npm:8.20.0, ajv@npm:^8.18.0, ajv@npm:^8.20.0":
   version: 8.20.0
   resolution: "ajv@npm:8.20.0"
   dependencies:
@@ -33058,7 +33034,7 @@ __metadata:
     "@types/fibers": "npm:^3.1.4"
     "@types/node": "npm:~22.19.17"
     "@types/ws": "npm:^8.18.1"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.20.0"
     bcrypt: "npm:^6.0.0"
     body-parser: "npm:^1.20.4"
     colorette: "npm:^2.0.20"
