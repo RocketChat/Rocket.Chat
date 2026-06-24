@@ -15,6 +15,7 @@ import {
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
@@ -73,7 +74,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const screenShareAvailable = supportedFeatures.includes('screen-share');
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
-	const visibleActions = useVisibleAppActions();
+	const appActions = useVisibleAppActions();
+
+	const showHeaderActions = appActions.length > 0;
 
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
@@ -91,7 +94,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
-			{visibleActions.length > 0 && <ActionStrip leftSlot={visibleActions} />}
+			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
 			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
