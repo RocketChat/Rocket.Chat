@@ -17,6 +17,30 @@ import { handleIdentityToken } from '../lib/handleIdentityToken';
 
 new AppleCustomOAuth('apple', config);
 
+type RequestWithAppleProfile = {
+	appleProfile?: {
+		name?: {
+			firstName?: string;
+			middleName?: string;
+			lastName?: string;
+		};
+	};
+};
+
+function isRequestWithAppleProfile(req: object): req is RequestWithAppleProfile {
+	if (
+		'appleProfile' in req &&
+		req.appleProfile &&
+		typeof req.appleProfile === 'object' &&
+		'name' in req.appleProfile &&
+		req.appleProfile.name &&
+		typeof req.appleProfile.name === 'object'
+	) {
+		return true;
+	}
+	return false;
+}
+
 settings.watchMultiple(
 	[
 		'Accounts_OAuth_Apple',
@@ -72,12 +96,17 @@ settings.watchMultiple(
 					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
 					callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/apple`,
 					scope: ['name', 'email'],
-					passReqToCallback: false,
+					passReqToCallback: true,
 					state: false,
 				},
-				async (accessToken: string, refreshToken: string, idToken: string, _profile: Profile, done) => {
+				async (req, accessToken: string, refreshToken: string, idToken: string, _profile: Profile, done) => {
 					try {
 						const serviceData = await handleIdentityToken(idToken, clientId);
+
+						if (isRequestWithAppleProfile(req)) {
+							const appleName = req.appleProfile?.name;
+							serviceData.name = [appleName?.firstName, appleName?.middleName, appleName?.lastName].filter(Boolean).join(' ');
+						}
 
 						const user = await Accounts.updateOrCreateUserFromExternalService(
 							'apple',
