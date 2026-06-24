@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.64.0-rc.0
+
+### Minor Changes
+
+- ([#40791](https://github.com/RocketChat/Rocket.Chat/pull/40791)) Exposes the `isFederated` and `federation` fields for room and user objects in apps
+
 ## 1.63.0
 
 ### Minor Changes

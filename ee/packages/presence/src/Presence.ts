@@ -316,6 +316,13 @@ export class Presence extends ServiceClass implements IPresence {
 		userId: string,
 		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
 	): Promise<boolean> {
+		if (newState.statusExpiresAt) {
+			const expiresAt = new Date(newState.statusExpiresAt).getTime();
+			if (Number.isNaN(expiresAt) || expiresAt <= Date.now()) {
+				throw new Error('statusExpiresAt must be a future date');
+			}
+		}
+
 		return this.updatePresenceAndReschedule(userId, {
 			type: 'setActive',
 			newState: {

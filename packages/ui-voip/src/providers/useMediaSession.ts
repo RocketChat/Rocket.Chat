@@ -230,6 +230,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 		const offCbs = [instance.on('sessionStateChange', updateSessionState), instance.on('hiddenCall', updateSessionState)];
 
+		updateSessionState();
+
 		return () => {
 			offCbs.forEach((offCb) => offCb());
 		};

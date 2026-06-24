@@ -1,5 +1,20 @@
 # @rocket.chat/apps
 
+## 0.7.1-rc.0
+
+### Patch Changes
+
+- ([#40763](https://github.com/RocketChat/Rocket.Chat/pull/40763)) Replaces {} with Object.create(null) to ensure defense-in-depth against prototype pollution
+
+- ([#41009](https://github.com/RocketChat/Rocket.Chat/pull/41009)) Fixes an issue where an app's bot user presence was incorrectly shown as Offline after updating it.
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53, 9ab1cf6e088cc099f4fc2ba9460ce5dd41bd1dc2]:</summary>
+
+  - @rocket.chat/model-typings@2.3.1-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/apps-engine@1.64.0-rc.0
+  </details>
+
 ## 0.7.0
 
 ### Minor Changes
