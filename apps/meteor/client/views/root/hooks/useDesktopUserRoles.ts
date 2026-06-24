@@ -8,21 +8,16 @@ import { useEffect } from 'react';
  * this bridge is unavailable, so `setUserRoles` is called optionally.
  */
 export const useDesktopUserRoles = () => {
-	const user = useUser();
-	const userId = user?._id;
-	const rolesKey = user?.roles?.join(',');
+	// A single canonical value derived from the reactive user. Logout, login and
+	// account switch all surface as a change to this key, so the effect re-runs
+	// and re-pushes only when the roles actually change — no userId branch and no
+	// effect cleanup (which would fire on every deps change and flicker
+	// role-targeted UI). Logged-out and "logged in with no roles" both resolve to
+	// an empty list, which is the correct signal for the desktop either way.
+	const rolesKey = (useUser()?.roles ?? []).join(',');
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
-		// Clear stale roles on logout/account switch by pushing [] when there is no
-		// user, rather than in an effect cleanup: the cleanup runs on every deps
-		// change (including a roles update while staying logged in), which would
-		// push [] and then the new roles, briefly flickering role-targeted UI.
-		// Handling it inline only clears when the user actually goes away.
-		if (!userId) {
-			window.RocketChatDesktop?.setUserRoles?.([]);
-			return;
-		}
 		window.RocketChatDesktop?.setUserRoles?.(rolesKey ? rolesKey.split(',') : []);
-	}, [userId, rolesKey]);
+	}, [rolesKey]);
 };
