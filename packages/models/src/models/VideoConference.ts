@@ -336,23 +336,13 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		providerName: string,
 		sipAlias: string,
 		mediaCallId: string,
-		options: { minCreatedAt?: Date; maxCreatedAt?: Date } = {},
 	): Promise<WithId<VideoConference> | null> {
-		const { minCreatedAt, maxCreatedAt } = options;
-		const filterCreatedAt = Boolean(minCreatedAt || maxCreatedAt);
-
 		return this.findOneAndUpdate(
 			{
 				providerName,
 				sipAlias,
 				status: VideoConferenceStatus.STARTED,
 				mediaCallIds: { $not: { $eq: mediaCallId } },
-				...(filterCreatedAt && {
-					createdAt: {
-						...(minCreatedAt && { $gte: minCreatedAt }),
-						...(maxCreatedAt && { $lte: maxCreatedAt }),
-					},
-				}),
 			},
 			{
 				$addToSet: {
@@ -363,6 +353,14 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				returnDocument: 'after',
 			},
 		);
+	}
+
+	public async addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult> {
+		return this.updateOneById(conferenceId, {
+			$addToSet: {
+				mediaCallIds: mediaCallId,
+			},
+		});
 	}
 
 	public async setSipAliasById(callId: string, sipAlias: string): Promise<void> {

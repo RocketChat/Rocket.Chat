@@ -37,6 +37,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
 	isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean>;
+	isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean>;
 	updateParticipantsById(
 		callId: string,
 		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },

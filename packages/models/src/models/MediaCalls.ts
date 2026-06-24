@@ -287,6 +287,20 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return count > 0;
 	}
 
+	public async isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				_id: { $in: callIds },
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension },
+				],
+			},
+			{ limit: 1 },
+		);
+		return count > 0;
+	}
+
 	public async updateParticipantsById(
 		callId: string,
 		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },

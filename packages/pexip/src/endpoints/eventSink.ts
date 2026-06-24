@@ -1,6 +1,5 @@
-import { VideoConf, MediaCall } from '@rocket.chat/core-services';
+import { VideoConf } from '@rocket.chat/core-services';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import type { ConferenceEndedEventData, EventSinkRequest, ParticipantStatusEventData } from '../definition';
 import { logger } from '../logger';
@@ -29,17 +28,15 @@ export class EventSinkEndpoint extends PexipEndpoint {
 	protected async processParticipantConnected(data: ParticipantStatusEventData): Promise<void> {
 		logger.debug({ msg: 'Pexip Participant Connected', data });
 
-		const { destination_alias: conferenceUri, source_alias: participantUri, protocol, connect_time: participantConnectTime } = data;
+		const { destination_alias: conferenceUri, source_alias: participantUri, protocol } = data;
 		if (protocol !== 'SIP' || !conferenceUri || !participantUri) {
 			return;
 		}
 
-		void this.detectVoiceCallEscalation(conferenceUri, participantUri, participantConnectTime).catch((err) => {
-			logger.debug({ msg: 'Unexpected error checking wether Conference Participant is an escalated voice call.', err });
-		});
+		void this.detectVoiceCallEscalation(conferenceUri, participantUri).catch(() => null);
 	}
 
-	private async detectVoiceCallEscalation(conferenceUri: string, participantUri: string, participantConnectTime: number): Promise<void> {
+	private async detectVoiceCallEscalation(conferenceUri: string, participantUri: string): Promise<void> {
 		const conferenceSipAlias = this.getIdentificationFromAlias(conferenceUri);
 		const participantSipExtension = this.getIdentificationFromAlias(participantUri);
 
@@ -48,39 +45,6 @@ export class EventSinkEndpoint extends PexipEndpoint {
 			return;
 		}
 
-		let connectTime: Date;
-		try {
-			connectTime = new Date(participantConnectTime * 1000);
-			if (isNaN(connectTime.valueOf())) {
-				throw new Error('invalid connect time');
-			}
-		} catch {
-			logger.debug({ msg: 'Participant connect time could not be parsed' });
-			return;
-		}
-
 		logger.debug({ msg: 'Pexip Participant joined via SIP', conferenceSipAlias, participantSipExtension });
-		const mediaCallIds = await MediaCalls.findAllNotOverByOppositeSipExtension(participantSipExtension, { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
-
-		if (mediaCallIds.length !== 1) {
-			logger.debug({ msg: 'Could not identify the media call that the SIP Participant is connecting from', calls: mediaCallIds });
-			return;
-		}
-
-		const [mediaCallId] = mediaCallIds;
-		// call must have been created before the user connected
-		const maxCreatedAt = connectTime;
-		// but no more than 1 minute before
-		const minCreatedAt = new Date(connectTime.valueOf() - 60 * 1000);
-
-		const conference = await VideoConferenceModel.addMediaCallIdByProviderNameAndSipAlias('core.pexip', conferenceSipAlias, mediaCallId, {
-			minCreatedAt,
-			maxCreatedAt,
-		});
-		if (conference) {
-			await MediaCall.flagAsRemotelyEscalatedByCallId(mediaCallId);
-		}
 	}
 }

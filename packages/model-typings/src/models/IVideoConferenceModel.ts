@@ -82,7 +82,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		providerName: string,
 		sipAlias: string,
 		mediaCallId: string,
-		options?: { minCreatedAt?: Date; maxCreatedAt?: Date },
 	): Promise<WithId<VideoConference> | null>;
 
 	findOneByProviderNameAndSipAlias<T extends VideoConference>(
@@ -90,4 +89,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		sipAlias: string,
 		options?: FindOptions<T>,
 	): Promise<T | null>;
+
+	addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult>;
 }
