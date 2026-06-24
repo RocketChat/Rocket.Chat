@@ -103,8 +103,18 @@ export const useConfinedNavigation = () => {
 	}, []);
 
 	// Catch programmatic navigations (mentions, room links, etc.) that don't go through an anchor.
+	// This monkey-patches the shared `router.navigate`. The conference window is a single, isolated
+	// consumer, so only one patch is ever installed at a time — but we still guard the patch/unpatch
+	// to stay safe if that ever stops holding: re-patching an already-wrapped `navigate` is a no-op,
+	// and cleanup only restores when our wrapper is still the live one (so a newer patch is never
+	// clobbered, and a stale wrapper is never reinstated).
 	useEffect(() => {
-		const original = router.navigate;
+		const original = router.navigate as RouterContextValue['navigate'] & { _confined?: boolean };
+
+		// Already wrapped (re-run with the same router) — leave the existing patch in place.
+		if (original._confined) {
+			return undefined;
+		}
 
 		const wrapped = ((toOrDelta: To | number, options?: { replace?: boolean }) => {
 			if (typeof toOrDelta === 'number') {
@@ -127,11 +137,15 @@ export const useConfinedNavigation = () => {
 			}
 
 			openInOpenerOrTab(targetUrl.href);
-		}) as RouterContextValue['navigate'];
+		}) as RouterContextValue['navigate'] & { _confined?: boolean };
+		wrapped._confined = true;
 
 		router.navigate = wrapped;
 		return () => {
-			router.navigate = original;
+			// Only restore if our wrapper is still installed — never clobber a newer patch.
+			if (router.navigate === wrapped) {
+				router.navigate = original;
+			}
 		};
 	}, [router]);
 };
