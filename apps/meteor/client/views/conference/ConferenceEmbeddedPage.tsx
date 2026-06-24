@@ -1,10 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ConferenceChat from './ConferenceChat';
+import ConferenceDisconnectedModal from './ConferenceDisconnectedModal';
 import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
@@ -21,9 +22,27 @@ type ConferenceEmbeddedPageProps = {
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference } = useConferenceEmbedded(callId);
 	const { t } = useTranslation();
+	const setModal = useSetModal();
 
 	// Keep this window pinned to the conference — links/navigations go to a new tab or the opener.
 	useConfinedNavigation();
+
+	// When the user is disconnected from the call, offer a 10s countdown to keep the window open,
+	// otherwise close the conference window/tab.
+	const handleDisconnected = useCallback(() => {
+		const closeWindow = () => {
+			setModal(null);
+			// On desktop the conference is a main-process Electron window that the renderer's
+			// `window.close()` can't close, so prefer the desktop bridge when available.
+			if (window.videoCallWindow?.close) {
+				window.videoCallWindow.close();
+				return;
+			}
+			window.close();
+		};
+
+		setModal(<ConferenceDisconnectedModal onCancel={() => setModal(null)} onClose={closeWindow} />);
+	}, [setModal]);
 
 	const subscription = useUserSubscription(room.rid ?? '');
 	const hasUnread = Boolean(subscription && subscription.unread > 0);
@@ -48,6 +67,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		onToggleChat: (active) => {
 			setActivePanel(active ? 'chat' : null);
 		},
+		onDisconnected: handleDisconnected,
 	});
 
 	// No access to the conference's room — show the unauthorized screen for the whole page rather

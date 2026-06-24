@@ -11,9 +11,11 @@ type UsePexipPluginOptions = {
 	hasUnread: boolean;
 	chatVisible: boolean;
 	onToggleChat: (active: boolean) => void;
+	// Fired when the user is disconnected from the call (only after having connected).
+	onDisconnected?: () => void;
 };
 
-export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggleChat }: UsePexipPluginOptions) => {
+export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggleChat, onDisconnected }: UsePexipPluginOptions) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -29,6 +31,10 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 	chatVisibleRef.current = chatVisible;
 	const hasUnreadRef = useRef(hasUnread);
 	hasUnreadRef.current = hasUnread;
+	const onDisconnectedRef = useRef(onDisconnected);
+	onDisconnectedRef.current = onDisconnected;
+	// Tracks connection inside the listener so `disconnected` only acts after a real `connected`.
+	const wasConnectedRef = useRef(false);
 
 	const postToPlugin = useCallback((action: string, data: Record<string, unknown>) => {
 		pluginWindowRef.current?.postMessage({ action: `${PLUGIN_NS}/${action}`, ...data }, '*');
@@ -88,11 +94,17 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 					break;
 				case 'connected':
 					// User joined the call; the plugin's toolbar (chat button) is now available.
+					wasConnectedRef.current = true;
 					setConnected(true);
 					break;
 				case 'disconnected':
-					// User left/lost the call; the plugin's toolbar is gone — fall back to the host control.
+					// User left/lost the call; the plugin's toolbar is gone — fall back to the host control,
+					// and (if they had connected) let the host react, e.g. close the conference window.
 					setConnected(false);
+					if (wasConnectedRef.current) {
+						wasConnectedRef.current = false;
+						onDisconnectedRef.current?.();
+					}
 					break;
 				case 'toggle-chat': {
 					const active = data.active === true;
