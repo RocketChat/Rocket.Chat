@@ -219,7 +219,7 @@ const _saveUser = (session?: ClientSession) =>
 				oldUser: oldUserData,
 			});
 
-			await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
+			await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 				user: userUpdated,
 				previousUser: oldUserData,
 				performedBy,

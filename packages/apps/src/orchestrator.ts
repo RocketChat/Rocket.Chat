@@ -58,7 +58,7 @@ export const Apps: IAppsEngine & {
 		return appsEngine?.isInitialized() ?? false;
 	},
 
-	async triggerEvent(event: AppEvents, ...payload: unknown[]): Promise<unknown> {
+	async triggerEvent(event: AppEvents, ...payload: unknown[]): Promise<any> {
 		return appsEngine?.triggerEvent(event, ...payload);
 	},
 

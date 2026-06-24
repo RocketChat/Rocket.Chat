@@ -359,7 +359,7 @@ export class QueueManager {
 		});
 
 		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, insertionRoom);
+			await Apps.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, insertionRoom);
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -380,7 +380,7 @@ export class QueueManager {
 			{ _id: guest._id, username: guest.username },
 			{ groupable: false, token: guest.token },
 		);
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
+		void Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 
 		await this.processNewInquiry(inquiry, room, defaultAgent);
 		const newRoom = await LivechatRooms.findOneById(rid);

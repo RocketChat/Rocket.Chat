@@ -186,7 +186,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return Boolean(this.orch?.isLoaded());
 	}
 
-	async triggerEvent(event: AppEvents, ...payload: unknown[]): Promise<unknown> {
+	async triggerEvent(event: AppEvents, ...payload: unknown[]): Promise<any> {
 		return this.orch?.triggerEvent(event, ...payload);
 	}
 

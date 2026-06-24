@@ -50,7 +50,7 @@ export const starMessage = async (user: IUser, message: Pick<IMessage, 'rid' | '
 		void notifyOnRoomChangedById(room._id);
 	}
 
-	await Apps.self?.triggerEvent(AppEvents.IPostMessageStarred, message, user, message.starred);
+	await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, user, message.starred);
 
 	await Messages.updateUserStarById(message._id, user._id, message.starred);
 

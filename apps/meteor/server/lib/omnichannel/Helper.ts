@@ -345,7 +345,7 @@ export const removeAgentFromSubscription = async (rid: string, { _id, username }
 	await Message.saveSystemMessage('ul', rid, username || '', { _id: user._id, username: user.username, name: user.name });
 
 	setImmediate(() => {
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
+		void Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 	});
 };
 
@@ -560,7 +560,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		}
 
 		setImmediate(() => {
-			void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+			void Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 				type: LivechatTransferEventType.AGENT,
 				room: rid,
 				from: oldServedBy?._id,
@@ -604,7 +604,7 @@ export const updateChatDepartment = async ({
 	}
 
 	setImmediate(() => {
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+		void Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
 			room: rid,
 			from: oldDepartmentId,

@@ -39,8 +39,10 @@ export interface IAppsEngine {
 	isLoaded(): boolean;
 	isInitialized(): boolean;
 
-	// hook dispatch — returns undefined when not loaded (passthrough preserved)
-	triggerEvent(event: AppEvents, ...payload: unknown[]): Promise<unknown>;
+	// hook dispatch — returns undefined when not loaded (passthrough preserved).
+	// `Promise<any>` mirrors the orchestrator contract: hook results flow straight
+	// back to callers that merge them into typed payloads (`result ?? original`).
+	triggerEvent(event: AppEvents, ...payload: unknown[]): Promise<any>;
 
 	// ex-core-services query surface (was IAppsEngineService)
 	getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined>;
