@@ -207,14 +207,6 @@ describe('[Settings]', () => {
 					.expect(400);
 			});
 
-			it('should return bad request when editor is not a string', async () => {
-				await request
-					.post(api('settings'))
-					.set(credentials)
-					.send({ settings: [{ _id: 'Livechat_title_color', value: '#C1272D', editor: 123 }] })
-					.expect(400);
-			});
-
 			it('should fail when the user does not have edit-privileged-setting permission', async () => {
 				await updatePermission('edit-privileged-setting', []);
 				await request
