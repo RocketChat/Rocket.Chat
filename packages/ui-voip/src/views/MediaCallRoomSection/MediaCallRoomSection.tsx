@@ -2,7 +2,6 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PeerCardsView from './PeerCardsView';
 import {
 	ToggleButton,
 	Timer,
@@ -16,6 +15,8 @@ import {
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
+import MediaCallCardList from '../MediaCallCardList';
+import PopoutDockPrompt from '../PopoutDockPrompt';
 
 type MediaCallRoomSectionProps = {
 	showChat: boolean;
@@ -84,7 +85,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
-			<PeerCardsView user={user} shouldWrapCards={shouldWrapCards} />
+			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>
