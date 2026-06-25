@@ -97,10 +97,13 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 		return true;
 	}
 
-	// remember user right after their registration, even when remember-me is disabled
+	// Skip 2FA for a freshly registered user who has not set up any 2FA method yet,
+	// until the grace period that starts at registration expires.
 	// (e.g. the Setup Wizard saving settings between steps before any 2FA is configured)
-	const rememberAfterRegistration = user.createdAt && getRememberDate(user.createdAt);
-	if (rememberAfterRegistration && rememberAfterRegistration >= new Date()) {
+	const rememberPeriodEnd = user.createdAt && getRememberDate(user.createdAt);
+	const isWithinRememberPeriod = rememberPeriodEnd && rememberPeriodEnd >= new Date();
+	const hasNoTwoFactorMethod = getAvailableMethodNames(user).length === 0;
+	if (isWithinRememberPeriod && hasNoTwoFactorMethod) {
 		return true;
 	}
 
