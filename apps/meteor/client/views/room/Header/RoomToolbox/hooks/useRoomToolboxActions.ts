@@ -87,7 +87,10 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 		const typedVisible = engineVisible as RoomToolboxActionConfig[];
 
 		if (!roomToolboxExpanded) {
-			const orderedOverflowActions = [...typedVisible, ...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[])].filter((item) => !item.disabled);
+			const orderedOverflowActions = [
+				...typedVisible,
+				...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[]),
+			].filter((item) => !item.disabled);
 
 			const sectionsMap = new Map<string, MenuSection>();
 			for (const item of orderedOverflowActions) {
