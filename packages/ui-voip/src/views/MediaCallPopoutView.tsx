@@ -30,7 +30,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -38,6 +38,10 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
+
+	const holdDisabled = !supportedFeatures.includes('hold');
+	const transferDisabled = !supportedFeatures.includes('transfer');
+	const screenShareDisabled = !supportedFeatures.includes('screen-share');
 
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
@@ -82,18 +86,26 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 				<ToggleButton
 					label={t('Hold')}
 					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-					titles={[t('Hold'), t('Resume')]}
+					titles={[holdDisabled ? t('Call_feature_unsupported') : t('Hold'), t('Resume')]}
 					pressed={held}
+					disabled={connecting || reconnecting || holdDisabled}
 					onToggle={onHold}
 				/>
 				<ToggleButton
 					label={t('Share_screen')}
 					icons={['desktop-arrow-up', 'desktop-cross']}
-					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
+					titles={[screenShareDisabled ? t('Call_feature_unsupported') : t('Share_screen'), t('Stop_sharing_screen')]}
 					pressed={localScreen?.active ?? false}
+					disabled={connecting || reconnecting || screenShareDisabled}
 					onToggle={onToggleScreenSharing}
 				/>
-				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				<ActionButton
+					disabled={connecting || reconnecting || transferDisabled}
+					label={t('Forward')}
+					title={transferDisabled ? t('Call_feature_unsupported') : t('Forward')}
+					icon='arrow-forward'
+					onClick={onForward}
+				/>
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />
 			</ActionStrip>
 		</Box>

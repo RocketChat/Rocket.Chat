@@ -37,7 +37,7 @@ const OngoingCall = () => {
 		widgetPositionTracker,
 		onClosePopout,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.includes('popout');
 
@@ -51,6 +51,9 @@ const OngoingCall = () => {
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
+
+	const holdDisabled = !supportedFeatures.includes('hold');
+	const transferDisabled = !supportedFeatures.includes('transfer');
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -124,8 +127,9 @@ const OngoingCall = () => {
 					<ToggleButton
 						label={t('Hold')}
 						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-						titles={[t('Hold'), t('Resume')]}
+						titles={[holdDisabled ? t('Call_feature_unsupported') : t('Hold'), t('Resume')]}
 						pressed={held}
+						disabled={connecting || reconnecting || holdDisabled}
 						onToggle={onHold}
 					/>
 					<ToggleButton
@@ -133,9 +137,16 @@ const OngoingCall = () => {
 						icons={['desktop-arrow-up', 'desktop-cross']}
 						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 						pressed={localScreen?.active ?? false}
+						disabled={connecting || reconnecting}
 						onToggle={onToggleScreenSharing}
 					/>
-					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+					<ActionButton
+						disabled={connecting || reconnecting || transferDisabled}
+						label={t('Forward')}
+						title={transferDisabled ? t('Call_feature_unsupported') : t('Forward')}
+						icon='arrow-forward'
+						onClick={onForward}
+					/>
 					<ActionButton
 						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
 						icon='phone-off'
