@@ -55,8 +55,12 @@ test.describe.serial('Join rooms', () => {
 		let targetChannel: string;
 		let poHomeChannel: HomeChannel;
 
-		test.beforeEach(async ({ page }) => {
-			poHomeChannel = new HomeChannel(page);
+		// Set the precondition explicitly instead of relying on the previous block's `afterAll`
+		// to have restored the permission. That cross-block coupling is racy: if the restore
+		// hasn't propagated, the user lands on the "not subscribed" screen and the composer's
+		// Join button never renders.
+		test.beforeAll(async ({ api }) => {
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
 		});
 
 		test.beforeEach(async ({ api }) => {
@@ -66,7 +70,9 @@ test.describe.serial('Join rooms', () => {
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			await page.goto(`/channel/${targetChannel}`);
+			// `gotoChannel` waits for the room to finish loading, so the Join-button assertion
+			// below doesn't race the preview render.
+			await poHomeChannel.gotoChannel(targetChannel);
 		});
 
 		test.afterEach(async ({ api }) => {
@@ -93,6 +99,8 @@ test.describe.serial('Join rooms', () => {
 		let discussion: Record<string, string>;
 
 		test.beforeAll(async ({ api }) => {
+			// Don't depend on an earlier block's `afterAll` to restore preview-c-room (racy).
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
 			discussion = await createTargetDiscussion(api);
 		});
 
@@ -100,8 +108,8 @@ test.describe.serial('Join rooms', () => {
 			await deleteRoom(api, discussion._id);
 		});
 
-		test('should let a non-member join a discussion', async ({ page }) => {
-			await page.goto(`/channel/${discussion.name}`);
+		test('should let a non-member join a discussion', async () => {
+			await poHomeChannel.gotoChannel(discussion.name);
 
 			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
 
