@@ -24,6 +24,7 @@ export const CoreModules = [
 	'teams-voip',
 	'outbound-messaging',
 	'abac',
+	'experimental-enterprise-features',
 ] as const;
 
 export type InternalModuleName = (typeof CoreModules)[number];
