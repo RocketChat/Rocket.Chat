@@ -429,6 +429,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setProfile(userId: string, profile: Record<string, unknown>): Promise<UpdateResult>;
 	setBio(userId: string, bio?: string): Promise<UpdateResult>;
 	setNickname(userId: string, nickname?: string): Promise<UpdateResult>;
+	setPhones(userId: string, phones: IUser['phones']): Promise<UpdateResult>;
 	clearSettings(userId: string): Promise<UpdateResult>;
 	setPreferences(userId: string, preferences: Record<string, unknown>): Promise<UpdateResult>;
 	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(userId: string, token: string, hash: string, until: Date): Promise<UpdateResult>;
