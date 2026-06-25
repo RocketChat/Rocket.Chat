@@ -17,6 +17,7 @@ import {
 	license,
 	tags,
 } from './_shared';
+import { getFederatedRoomName } from '../../../helpers/getFederatedRoomName';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const CreateRoomBodySchema = {
@@ -153,15 +154,17 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 					throw new Error('User not found for creating room');
 				}
 
-				const name = body.name || body.room_alias_name || '';
+				// The human-facing name supplied by the Matrix client, which may be empty or
+				// contain characters RC does not allow in a room slug.
+				const displayName = body.name || body.room_alias_name || '';
 
 				// get join room from initial_state (for now since this is what bifrost sends)
 				const joinRule =
-					body.initial_state?.find((e: any) => e.type === 'm.room.join_rules')?.content?.join_rule === 'public' ? 'public' : 'private';
+					body.initial_state?.find((e: any) => e.type === 'm.room.join_rules')?.content?.join_rule === 'public' ? 'public' : 'invite';
 
 				try {
 					const result = await federationSDK.createRoomV2({
-						name,
+						name: displayName,
 						alias: body.room_alias_name,
 						owner: senderUsername,
 						joinRule,
@@ -170,6 +173,11 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 					// TODO after creating the federated room we must create the room for rocket.chat as well
 					const room = await Rooms.findOne({ 'federation.mrid': result.room_id });
 					if (!room) {
+						// Derive the RC name (slug) from the Matrix room id rather than the supplied
+						// name, which may be empty or contain characters RC rejects. Mirrors the invite
+						// flow in events/member.ts and keeps the human-facing name in `fname`.
+						const name = getFederatedRoomName(result.room_id);
+
 						await Room.create<IRoomNativeFederated>(user._id, {
 							type: joinRule === 'public' ? 'c' : 'p',
 							name,
@@ -185,7 +193,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 									mrid: result.room_id,
 									origin: serverName,
 								},
-								fname: name,
+								fname: displayName || name,
 							},
 						});
 					}
@@ -223,11 +231,8 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				// TODO need to first invite and then join?
-
 				await federationSDK.joinUser(c.req.param('roomIdOrAlias'), c.get('impersonatedUserId'));
 
-				// TODO(federation-sdk): joinRoom(userId, roomIdOrAlias) — needs alias resolution + invite-less join
 				return {
 					statusCode: 200,
 					body: {},

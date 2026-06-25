@@ -9,6 +9,7 @@ import mem from 'mem';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
+import { getFederatedRoomName } from '../helpers/getFederatedRoomName';
 import { getUsernameServername } from '../helpers/getUsernameServername';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -235,7 +236,7 @@ async function handleInvite({
 		roomName = senderId;
 		roomFName = senderId;
 	} else {
-		roomName = roomId.replace('!', '').replace(':', '_');
+		roomName = getFederatedRoomName(roomId);
 		roomFName = `${matrixRoomName}:${roomOriginDomain}`;
 	}
 
