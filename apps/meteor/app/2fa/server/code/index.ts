@@ -54,7 +54,7 @@ export async function getUserForCheck(userId: string): Promise<IUser | null> {
 	});
 }
 
-function getFingerprintFromConnection(connection: IMethodConnection): string {
+export function getFingerprintFromConnection(connection: IMethodConnection): string {
 	const data = JSON.stringify({
 		userAgent: connection.httpHeaders['user-agent'],
 		clientAddress: connection.clientAddress,

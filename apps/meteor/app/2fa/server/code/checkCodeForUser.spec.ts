@@ -4,6 +4,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
+const totpEnabled = sinon.stub().returns(false);
 
 class MeteorError extends Error {
 	error: string;
@@ -22,7 +23,11 @@ class TOTPCheck {
 	name = 'totp';
 
 	isEnabled(): boolean {
-		return false;
+		return totpEnabled();
+	}
+
+	async processInvalidCode(): Promise<{ codeGenerated: boolean }> {
+		return { codeGenerated: false };
 	}
 }
 
@@ -54,7 +59,7 @@ class PasswordCheckFallback {
 	}
 }
 
-const { checkCodeForUser } = proxyquire.noCallThru().load('./index', {
+const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru().load('./index', {
 	'@rocket.chat/models': {
 		Users: {
 			findOneById: async () => null,
@@ -104,6 +109,9 @@ describe('checkCodeForUser - post-registration grace window', () => {
 		originalTestMode = process.env.TEST_MODE;
 		delete process.env.TEST_MODE;
 
+		totpEnabled.reset();
+		totpEnabled.returns(false);
+
 		settingsGet.reset();
 		settingsGet.callsFake((key: string) => {
 			switch (key) {
@@ -139,6 +147,19 @@ describe('checkCodeForUser - post-registration grace window', () => {
 		expect(result).to.be.equal(true);
 	});
 
+	it('should still prompt a freshly registered user who already has a 2FA method configured', async () => {
+		totpEnabled.returns(true);
+		const user = buildUser(new Date());
+
+		await expect(
+			checkCodeForUser({
+				user,
+				options: { disableRememberMe: true },
+				connection,
+			}),
+		).to.be.rejectedWith('TOTP Required');
+	});
+
 	it('should still prompt when the post-registration grace window has expired and disableRememberMe is set', async () => {
 		const user = buildUser(new Date(Date.now() - (REMEMBER_FOR_SECONDS + 60) * 1000));
 
@@ -157,7 +178,7 @@ describe('checkCodeForUser - post-registration grace window', () => {
 		user.services.resume.loginTokens[0] = {
 			hashedToken: 'token-hash',
 			twoFactorAuthorizedUntil: new Date(Date.now() + 60 * 1000),
-			twoFactorAuthorizedHash: 'whatever',
+			twoFactorAuthorizedHash: getFingerprintFromConnection(connection),
 		} as (typeof user.services.resume.loginTokens)[number];
 
 		await expect(
