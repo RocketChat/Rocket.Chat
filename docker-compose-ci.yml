@@ -46,8 +46,8 @@ services:
 
   authorization-service:
     build:
-      dockerfile: ee/apps/authorization-service/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/authorization-service
       x-bake:
         platforms:
           - linux/amd64
@@ -66,8 +66,8 @@ services:
 
   account-service:
     build:
-      dockerfile: ee/apps/account-service/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/account-service
       x-bake:
         platforms:
           - linux/amd64
@@ -86,8 +86,8 @@ services:
 
   presence-service:
     build:
-      dockerfile: ee/apps/presence-service/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/presence-service
       x-bake:
         platforms:
           - linux/amd64
@@ -106,8 +106,8 @@ services:
 
   ddp-streamer-service:
     build:
-      dockerfile: ee/apps/ddp-streamer/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/ddp-streamer
       x-bake:
         platforms:
           - linux/amd64
@@ -132,8 +132,8 @@ services:
 
   queue-worker-service:
     build:
-      dockerfile: ee/apps/queue-worker/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/queue-worker
       x-bake:
         platforms:
           - linux/amd64
@@ -152,8 +152,8 @@ services:
 
   omnichannel-transcript-service:
     build:
-      dockerfile: ee/apps/omnichannel-transcript/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/omnichannel-transcript
       x-bake:
         platforms:
           - linux/amd64
