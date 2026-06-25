@@ -18,6 +18,7 @@ import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
+import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 type IncomingSipCallNegotiation = {
 	id: string;
@@ -83,6 +84,12 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
 		logger.debug({ msg: 'incoming call from', callerContact: caller });
+
+		const divertedBy = await this.getDiversionContactFromInvite(req);
+		if (divertedBy) {
+			logger.debug({ msg: 'incoming call diverted by', divertedBy });
+		}
+
 		const webrtcOffer = { type: 'offer', sdp: req.body } as const;
 
 		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
@@ -106,6 +113,7 @@ export class IncomingSipCall extends BaseSipCall {
 			calleeAgent,
 			features: SIP_CALL_FEATURES,
 			sipCallId: req.get('Call-ID'),
+			...(divertedBy && { divertedBy }),
 		});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
@@ -438,6 +446,36 @@ export class IncomingSipCall extends BaseSipCall {
 
 		// If we couldn't even identify an id/extension from the invite, respond with not found
 		throw new SipError(SipErrorCodes.NOT_FOUND);
+	}
+
+	private static async getDiversionContactFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
+		if (!req.has('diversion')) {
+			return null;
+		}
+
+		logger.debug({ msg: 'IncomingSipCall.getDiversionContactFromInvite' });
+
+		const parsed = parseDiversionHeader(req.get('diversion'));
+		if (!parsed) {
+			logger.warn({ msg: 'IncomingSipCall.getDiversionContactFromInvite: failed to parse Diversion header', raw: req.get('diversion') });
+			return null;
+		}
+
+		const { extension, displayName } = parsed;
+
+		const defaultContactInfo: MediaCallContactInformation = {
+			sipExtension: extension,
+			displayName: displayName || extension,
+		};
+
+		const contact = await mediaCallDirector.cast.getContactForExtensionNumber(extension, { requiredType: 'sip' }, defaultContactInfo);
+
+		return {
+			...defaultContactInfo,
+			...contact,
+			type: 'sip',
+			id: extension,
+		};
 	}
 
 	private static async getCallerContactFromInvite(sessionId: string, req: SrfRequest): Promise<MediaCallSignedContact<'sip'>> {
