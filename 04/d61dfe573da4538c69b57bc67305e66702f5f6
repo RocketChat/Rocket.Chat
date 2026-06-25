@@ -1,0 +1,35 @@
+docker-compose-ci.yml
+  s_a657c3e342f692::t_d40788d3a406c7 109-110
+  s_a657c3e342f692::t_313496637f88bb 135-136
+  s_a657c3e342f692::t_150662a6b517e7 49-50
+  s_a657c3e342f692::t_c619497c2dccc7 155-156
+  s_a657c3e342f692::t_f4666809ff5e99 89-90
+  s_a657c3e342f692::t_97d825b109368a 69-70
+ee/apps/Dockerfile
+  s_a657c3e342f692::t_cdb445df030437 1-18,26-55
+  s_a657c3e342f692::t_9c44cb4ca73217 19-25
+.github/actions/build-docker/action.yml
+  s_a657c3e342f692::t_305d2dae636bf2 83,87-98
+  s_a657c3e342f692::t_2e44a88c68cdf8 73-82,84-86,99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "04d61dfe573da4538c69b57bc67305e66702f5f6",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_a657c3e342f692": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0aebf4e9-57b9-4391-8961-8095e2ebfcaa",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
