@@ -535,7 +535,7 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const room = await findRoomByIdOrName({ params: this.queryParams });
+		const room = await findRoomByIdOrName({ params: this.queryParams, checkedArchived: false });
 		const { fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
