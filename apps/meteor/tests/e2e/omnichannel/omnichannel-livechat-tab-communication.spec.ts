@@ -33,8 +33,8 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	});
 
 	test.afterEach(async () => {
-		await pageLivechat1.page.close();
-		await pageLivechat2.page.close();
+		// Both pages share the same context; closing it disposes both pages and avoids leaking the context
+		await pageLivechat1.page.context().close();
 	});
 
 	test.afterAll(async () => {

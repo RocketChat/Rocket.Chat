@@ -54,7 +54,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.afterEach(async () => {
 		await poLiveChat.closeChat();
-		await poLiveChat.page.close();
+		await poLiveChat.page.context().close();
 	});
 
 	test('OC - Queue Management - Waiting Queue Message enabled', async () => {
@@ -82,7 +82,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 		test.afterEach(async () => {
 			await poLiveChat2.closeChat();
-			await poLiveChat2.page.close();
+			await poLiveChat2.page.context().close();
 		});
 
 		test('Update user position on Queue', async () => {
@@ -173,7 +173,7 @@ test.describe('OC - Contact Manager Routing', () => {
 
 	test.afterEach(async () => {
 		await poLiveChat.closeChat();
-		await poLiveChat.page.close();
+		await poLiveChat.page.context().close();
 	});
 
 	test('should route inquiry only to the contact manager', async () => {

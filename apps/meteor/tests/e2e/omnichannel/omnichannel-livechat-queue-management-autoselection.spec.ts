@@ -66,9 +66,9 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 		test.afterEach(async () => {
 			await poLiveChat2.closeChat();
-			await poLiveChat2.page.close();
+			await poLiveChat2.page.context().close();
 			await poLiveChat.closeChat();
-			await poLiveChat.page.close();
+			await poLiveChat.page.context().close();
 		});
 
 		test('Update user position on Queue', async () => {
