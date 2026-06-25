@@ -1,0 +1,16 @@
+packages/i18n/src/locales/en.i18n.json
+  h_4c386397e672f4 2214-2219
+apps/meteor/server/settings/federation-service.ts
+  h_4c386397e672f4 139,147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "b4f1f7c6aee92d5ee2996cd3490f788ac9ce468e",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
