@@ -28,8 +28,9 @@ const enumToFilter: { [k in RoomTypeFilter]: (room: IRoom) => boolean } = {
 };
 
 const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean => {
-	const { roomTypes } = button.when || {};
-	return !roomTypes || roomTypes.some((filter): boolean => enumToFilter[filter]?.(room));
+	const { roomTypes } = (button.when as Extract<IUIActionButton, { context: 'roomAction' }>['when']) || {};
+
+	return !roomTypes || roomTypes.some((filter): boolean => !!enumToFilter[filter]?.(room));
 };
 
 const applyCategoryFilter = (button: IUIActionButton, category: string): boolean => {
@@ -55,7 +56,7 @@ export const useApplyButtonFilters = (category = 'default'): ((button: IUIAction
 	);
 };
 
-export const useApplyButtonAuthFilter = (): ((button: IUIActionButton) => boolean) => {
+export const useApplyButtonAuthFilter = (): ((button: IUIActionButton, room?: IRoom) => boolean) => {
 	const uid = useUserId();
 
 	const { queryAllPermissions, queryAtLeastOnePermission, queryRole } = useContext(AuthorizationContext);
