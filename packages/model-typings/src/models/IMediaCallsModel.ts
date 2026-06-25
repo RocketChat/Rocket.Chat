@@ -35,4 +35,8 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult>;
 }
