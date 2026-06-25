@@ -97,14 +97,17 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 		return true;
 	}
 
-	if (options.disableRememberMe === true) {
-		return false;
+	// Skip 2FA for a freshly registered user who has not set up any 2FA method yet,
+	// until the grace period that starts at registration expires.
+	const rememberPeriodEnd = user.createdAt && getRememberDate(user.createdAt);
+	const isWithinRememberPeriod = rememberPeriodEnd && rememberPeriodEnd >= new Date();
+	const hasNoTwoFactorMethod = getAvailableMethodNames(user).length === 0;
+	if (isWithinRememberPeriod && hasNoTwoFactorMethod) {
+		return true;
 	}
 
-	// remember user right after their registration
-	const rememberAfterRegistration = user.createdAt && getRememberDate(user.createdAt);
-	if (rememberAfterRegistration && rememberAfterRegistration >= new Date()) {
-		return true;
+	if (options.disableRememberMe === true) {
+		return false;
 	}
 
 	if (!tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
