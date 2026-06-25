@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
+import { before, after, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -105,14 +105,10 @@ const connection = {
 describe('checkCodeForUser - post-registration grace window', () => {
 	let originalTestMode: string | undefined;
 
-	beforeEach(() => {
+	before(() => {
 		originalTestMode = process.env.TEST_MODE;
 		delete process.env.TEST_MODE;
 
-		totpEnabled.reset();
-		totpEnabled.returns(false);
-
-		settingsGet.reset();
 		settingsGet.callsFake((key: string) => {
 			switch (key) {
 				case 'Accounts_TwoFactorAuthentication_Enabled':
@@ -127,12 +123,17 @@ describe('checkCodeForUser - post-registration grace window', () => {
 		});
 	});
 
-	afterEach(() => {
+	after(() => {
 		if (originalTestMode === undefined) {
 			delete process.env.TEST_MODE;
 		} else {
 			process.env.TEST_MODE = originalTestMode;
 		}
+	});
+
+	beforeEach(() => {
+		totpEnabled.reset();
+		totpEnabled.returns(false);
 	});
 
 	it('should not prompt a freshly registered user even when disableRememberMe is set (Setup Wizard regression)', async () => {
