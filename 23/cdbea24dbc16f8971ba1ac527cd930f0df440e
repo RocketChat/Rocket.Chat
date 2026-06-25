@@ -1,0 +1,14 @@
+ee/packages/federation-matrix/src/api/_matrix/client/profile.ts
+  h_4c386397e672f4 159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "23cdbea24dbc16f8971ba1ac527cd930f0df440e",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
