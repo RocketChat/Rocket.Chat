@@ -6,6 +6,16 @@ import { CronJobs, CronHistory, AppScheduler } from '@rocket.chat/models';
 
 import { deriveStatus } from './deriveStatus';
 
+const resolveStatus = (job: ICronJobItem) => {
+	if (job.status === 'running') {
+		const derived = deriveStatus(job);
+		if (derived !== 'running') {
+			return derived;
+		}
+	}
+	return job.status ?? deriveStatus(job);
+};
+
 export class CronJobsService extends ServiceClassInternal implements ICronJobsService {
 	protected name = 'cron-jobs';
 
@@ -26,7 +36,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 		const jobs = allJobs.map((job) => ({
 			...job,
-			status: job.status ?? deriveStatus(job),
+			status: resolveStatus(job),
 		}));
 
 		return {
@@ -54,7 +64,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 		const jobs = allJobs.map((job) => ({
 			...job,
-			status: job.status ?? deriveStatus(job),
+			status: resolveStatus(job),
 		}));
 
 		return {

@@ -4,7 +4,7 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { SchedulerBridge } from '@rocket.chat/apps/dist/server/bridges/SchedulerBridge';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
-import { CronHistory } from '@rocket.chat/models';
+import { CronHistory, AppScheduler } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
@@ -17,6 +17,8 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 		delete (data as any).appId;
 
 		data.jobId = job.attrs._id.toString();
+
+		void AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status: 'running' } });
 
 		const { insertedId } = await CronHistory.insertOne({
 			_id: Random.id(),
@@ -38,6 +40,9 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 				},
 			);
 
+			const status = job.attrs.nextRunAt ? 'scheduled' : 'completed';
+			void AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status } });
+
 			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
 			// as Agenda does not remove it from the DB
 			if (job.attrs.type === 'normal') {
@@ -53,6 +58,9 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 					},
 				},
 			);
+
+			void AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status: 'failed' } });
+
 			throw error;
 		}
 	};

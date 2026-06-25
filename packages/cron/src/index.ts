@@ -91,15 +91,16 @@ export class AgendaCronJobs {
 				duration:
 					job.attrs.lastFinishedAt && job.attrs.lastRunAt ? job.attrs.lastFinishedAt.getTime() - job.attrs.lastRunAt.getTime() : undefined,
 			});
-			void CronJobs.updateOne({ _id: job.attrs._id }, { $set: { status: 'completed' } });
 		});
 
 		this.scheduler.on('success', (job: Job) => {
+			const status = job.attrs.nextRunAt ? 'scheduled' : 'completed';
 			logger.debug({
 				msg: `Job "${job.attrs.name}" succeeded`,
 				jobId: job.attrs._id,
 				jobName: job.attrs.name,
 			});
+			void CronJobs.updateOne({ _id: job.attrs._id }, { $set: { status } });
 		});
 
 		this.scheduler.on('fail', (err: unknown, job: Job) => {
