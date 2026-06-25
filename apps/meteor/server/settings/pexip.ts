@@ -18,14 +18,14 @@ export function createPexipSettings(): Promise<void> {
 			i18nDescription: `Pexip_Integration_Base_Url_Description`,
 		});
 
-		await this.add('Pexip_Integration_Meeting_Url', '/webapp/conference?conference={callId}', {
+		await this.add('Pexip_Integration_Meeting_Url', '/webapp/conference?conference={callId}&join=1', {
 			type: 'string',
 			public: true,
 			invalidValue: '',
 			i18nDescription: `Pexip_Integration_Meeting_Url_Description`,
 		});
 
-		await this.add('Pexip_Integration_Escalation_Params', 'join=1&muteCamera=true', {
+		await this.add('Pexip_Integration_Escalation_Params', '', {
 			type: 'string',
 			public: true,
 			invalidValue: '',

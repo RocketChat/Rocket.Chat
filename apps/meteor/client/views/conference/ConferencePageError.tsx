@@ -10,16 +10,17 @@ const ConferencePageError = () => {
 	return (
 		<Page background='tint'>
 			<PageHeader title={t('Video_Conference')} />
-			<PageContent>
+			<PageContent display='flex' alignItems='center' justifyContent='center'>
 				<States>
 					<StatesIcon name='circle-exclamation' variation='danger' />
 					<StatesTitle>{t('Call_not_found')}</StatesTitle>
 					<StatesSubtitle>{t('Call_not_found_error')}</StatesSubtitle>
-					{!user && (
-						<StatesActions>
-							<StatesAction onClick={() => route.push()}>{t('Back_to_login')}</StatesAction>
-						</StatesActions>
-					)}
+					<StatesActions>
+						<StatesAction primary={false} onClick={() => window.close()}>
+							{t('Close')}
+						</StatesAction>
+						{!user && <StatesAction onClick={() => route.push()}>{t('Back_to_login')}</StatesAction>}
+					</StatesActions>
 				</States>
 			</PageContent>
 		</Page>

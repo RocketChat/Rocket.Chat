@@ -123,6 +123,11 @@ type InternalVideoConference = IVoIPVideoConference;
 
 export type VideoConference = ExternalVideoConference | InternalVideoConference;
 
+export type VideoConferenceWithDiscussion = VideoConference & {
+	discussionTitle?: string;
+	discussionLastMessage?: IMessage;
+};
+
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
 
 export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => {

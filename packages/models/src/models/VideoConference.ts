@@ -6,10 +6,12 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	AggregationCursor,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -42,18 +44,40 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): FindPaginated<FindCursor<VideoConference>> {
-		return this.findPaginated(
-			{ rid },
+	): FindPaginated<AggregationCursor<VideoConferenceWithDiscussion>> {
+		// Match conferences started in this room (`rid`) and those whose discussion is this room
+		// (`discussionRid`), so a discussion room resolves the conference it belongs to — its members
+		// may not have access to the parent room the conference originated in.
+		const matchFilter = { $or: [{ rid }, { discussionRid: rid }] };
+		const pipeline: object[] = [
+			{ $match: matchFilter },
+			{ $sort: { createdAt: -1 } },
+			...(offset ? [{ $skip: offset }] : []),
+			...(count ? [{ $limit: count }] : []),
 			{
-				sort: { createdAt: -1 },
-				skip: offset,
-				limit: count,
-				projection: {
-					providerData: 0,
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'discussionRid',
+					foreignField: '_id',
+					as: 'discussionRoom',
+					pipeline: [{ $project: { fname: 1, name: 1, lastMessage: 1 } }],
 				},
 			},
-		);
+			{
+				$addFields: {
+					discussionTitle: {
+						$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+					},
+					discussionLastMessage: { $first: '$discussionRoom.lastMessage' },
+				},
+			},
+			{ $project: { providerData: 0, discussionRoom: 0 } },
+		];
+
+		return {
+			cursor: this.col.aggregate<VideoConferenceWithDiscussion>(pipeline),
+			totalCount: this.col.countDocuments(matchFilter),
+		};
 	}
 
 	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {
@@ -109,9 +133,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async createGroup({
 		providerName,
 		mediaCallIds,
+		sipAlias,
+		discussionRid,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
-		Pick<IGroupVideoConference, 'mediaCallIds'>): Promise<string> {
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -121,6 +147,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
 			...(mediaCallIds?.length && { mediaCallIds }),
+			...(sipAlias && { sipAlias }),
+			...(discussionRid && { discussionRid }),
 			...callDetails,
 		};
 
