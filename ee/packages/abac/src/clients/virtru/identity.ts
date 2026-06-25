@@ -14,7 +14,7 @@ export function buildEntityIdentifier(defaultEntityKey: EntityKeyType, entityKey
 export function getUserEntityKey(defaultEntityKey: EntityKeyType, user: Pick<IUser, '_id' | 'emails' | 'username'>): string | undefined {
 	switch (defaultEntityKey) {
 		case 'emailAddress':
-			return user.emails?.[0]?.address;
+			return user.emails?.find((email) => email.verified)?.address;
 		case 'oidcIdentifier':
 			return user.username;
 	}

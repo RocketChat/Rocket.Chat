@@ -37,6 +37,8 @@ const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	prid: 1,
 	teamId: 1,
 	teamMain: 1,
+	federated: 1,
+	federation: 1,
 	livechatData: 1,
 	waitingResponse: 1,
 	open: 1,

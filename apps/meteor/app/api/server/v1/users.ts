@@ -1942,7 +1942,7 @@ API.v1
 				intervalTimeInMS: 60000,
 			},
 			body: ajv.compile<{
-				status?: UserStatus;
+				status?: Exclude<UserStatus, UserStatus.DISABLED>;
 				message?: string;
 				expiresAt?: string;
 				userId?: string;
@@ -2001,18 +2001,17 @@ API.v1
 				return API.v1.forbidden();
 			}
 
-			const validStatus = ['online', 'away', 'offline', 'busy'];
-			if (this.bodyParams.status && !validStatus.includes(this.bodyParams.status)) {
-				throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-					method: 'users.setStatus',
-				});
-			}
-
 			const { status, message, expiresAt } = this.bodyParams;
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
 			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
 				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
+					method: 'users.setStatus',
+				});
+			}
+
+			if (statusExpiresAt && statusExpiresAt.getTime() <= Date.now()) {
+				throw new Meteor.Error('error-invalid-date', 'expiresAt must be a future date', {
 					method: 'users.setStatus',
 				});
 			}

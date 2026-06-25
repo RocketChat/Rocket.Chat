@@ -8,7 +8,7 @@ import {
 	type SearchFilterSuggestion,
 } from '@rocket.chat/ai-search';
 import { Box, Button, Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
@@ -16,6 +16,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
@@ -62,8 +63,6 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 	const { getValues, resetField, setFocus, setValue, watch } = useFormContext<NavBarSearchFormValues>();
 	const { filterText, appliedFilters } = watch();
 
-	const debouncedFilter = useDebouncedValue(filterText, 500);
-
 	const handleSelect = useStableCallback(() => {
 		state.close();
 		resetField('filterText');
@@ -81,7 +80,7 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 		},
 		isLoading,
 		isFetching,
-	} = useSearchItems(debouncedFilter, appliedFilters, aiSearchActive);
+	} = useSearchItems(filterText, appliedFilters, aiSearchActive);
 	const itemCount = items.rooms.length + items.intelligent.length + items.filterSuggestions.length;
 	const filterSuggestionGroups = useMemo(() => groupFilterSuggestions(items.filterSuggestions), [items.filterSuggestions]);
 
@@ -120,7 +119,7 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 			width='100%'
 			flexDirection='column'
 		>
-			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} />
+			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} isLoading={isLoading} />
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.intelligent.length > 0 && (
@@ -172,6 +171,7 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 					{items.rooms.map((item) => (
 						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
 					))}
+					{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
 				</div>
 			</CustomScrollbars>
 		</Tile>

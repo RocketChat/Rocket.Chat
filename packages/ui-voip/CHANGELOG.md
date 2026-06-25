@@ -1,5 +1,22 @@
 # @rocket.chat/ui-voip
 
+## 22.0.0-rc.0
+
+### Minor Changes
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ebc9c17b6ba63ee754320eadfba20c024c53c18f]:</summary>
+
+  - @rocket.chat/media-signaling@1.1.0-rc.0
+  - @rocket.chat/ui-contexts@32.0.0-rc.0
+  - @rocket.chat/ui-client@32.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@32.0.0-rc.0
+  - @rocket.chat/ui-avatar@28.0.0-rc.0
+  </details>
+
 ## 21.0.0
 
 ### Minor Changes

@@ -12,11 +12,13 @@ import {
 	type SearchFilters,
 	type SearchFilterSuggestion,
 } from '@rocket.chat/ai-search';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -41,6 +43,12 @@ export type NavBarSearchItems = {
 	appliedFilters: SearchFilterChip[];
 	searchText: string;
 	filters: SearchFilters;
+};
+
+type NavBarSearchItemsResult = {
+	data: NavBarSearchItems;
+	isLoading: boolean;
+	isFetching: boolean;
 };
 
 const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
@@ -157,7 +165,7 @@ export const useSearchItems = (
 	filterText: string,
 	appliedSearchFilters: SearchFilters = emptySearchFilters(),
 	aiSearchActive = false,
-): UseQueryResult<NavBarSearchItems, Error> => {
+): NavBarSearchItemsResult => {
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
@@ -175,10 +183,13 @@ export const useSearchItems = (
 	}, [appliedSearchFilters, canUseInlineFilters, filterText]);
 	const appliedFilters = useMemo(() => (canUseInlineFilters ? buildAppliedFilterChips(filters) : []), [canUseInlineFilters, filters]);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
+	const debouncedSearchText = useDebouncedValue(searchText, 500);
+	const [, debouncedMention, debouncedName] = useMemo(() => debouncedSearchText.match(/(@|#)?(.*)/i) || [], [debouncedSearchText]);
 	const activeFilter = useMemo(
 		() => (canUseInlineFilters ? getActiveSearchFilter(filterText) : undefined),
 		[canUseInlineFilters, filterText],
 	);
+	const debouncedUserFilter = useDebouncedValue(activeFilter?.key === 'from' ? activeFilter.value.replace(/^@/, '') : '', 500);
 	const roomLookupText = useMemo(() => {
 		if (!canUseInlineFilters) {
 			return '';
@@ -223,8 +234,8 @@ export const useSearchItems = (
 
 	const usernamesFromClient = localRooms.map(({ t, name }) => (t === 'd' ? name : null)).filter(Boolean) as string[];
 
-	const searchForChannels = mention === '#';
-	const searchForDMs = mention === '@';
+	const searchForChannels = debouncedMention === '#';
+	const searchForDMs = debouncedMention === '@';
 
 	const type = useMemo(() => {
 		if (searchForChannels) {
@@ -238,85 +249,22 @@ export const useSearchItems = (
 
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 
-	return useQuery({
-		queryKey: [
-			'sidebar/search/spotlight',
-			name,
-			searchText,
-			resolvedFilters,
-			filterSuggestions,
-			appliedFilters,
-			usernamesFromClient,
-			type,
-			aiSearchActive,
-			hasIntelligentSearchLicense,
-			aiSearchFeatureEnabled,
-			intelligentSearchEnabled,
-			localRooms.map(({ _id, name }) => _id + name),
-		],
-
+	const {
+		data: serverResults,
+		isFetching: isSpotlightFetching,
+		isPlaceholderData,
+	} = useQuery({
+		queryKey: ['sidebar/search/spotlight', debouncedName, debouncedMention, type],
+		enabled: localRooms.length < LIMIT,
 		queryFn: async () => {
-			let intelligent: UnifiedSearchIntelligentResult[] = [];
-			const shouldSearchIntelligent = Boolean(aiSearchActive && name.trim() && !mention && canUseAISearch && intelligentSearchEnabled);
-			if (shouldSearchIntelligent) {
-				const result = await unifiedSearch({
-					query: name,
-					count: 0,
-					includeSpotlight: false,
-					intelligentCount: 3,
-					includeMessages: false,
-					includeIntelligent: true,
-					...(resolvedFilters.rid && { rid: resolvedFilters.rid }),
-					...(resolvedFilters.rids.length && { rids: resolvedFilters.rids.join(',') }),
-					...(resolvedFilters.roomNames.length && { roomNames: resolvedFilters.roomNames.join(',') }),
-					...(resolvedFilters.fromUsername && { fromUsername: resolvedFilters.fromUsername }),
-					...(resolvedFilters.fromUsernames.length && { fromUsernames: resolvedFilters.fromUsernames.join(',') }),
-					...(resolvedFilters.startDate && { startDate: resolvedFilters.startDate }),
-					...(resolvedFilters.endDate && { endDate: resolvedFilters.endDate }),
-				});
-				intelligent = result.intelligent;
-			}
-
-			const nextFilterSuggestions =
-				activeFilter?.key === 'from'
-					? mergeFilterSuggestions(
-							buildUserFilterSuggestions(
-								filterText,
-								activeFilter,
-								(await usersAutocomplete(buildUsernameAutocompleteQuery(activeFilter.value.replace(/^@/, '')))).items,
-							),
-							filterSuggestions,
-						)
-					: filterSuggestions;
-
-			if (localRooms.length === LIMIT) {
-				return {
-					rooms: localRooms,
-					intelligent,
-					filterSuggestions: nextFilterSuggestions,
-					appliedFilters,
-					searchText,
-					filters: resolvedFilters,
-				};
-			}
-
 			const spotlight = await getSpotlight({
-				query: name,
+				query: debouncedName,
 				usernames: usernamesFromClient.join(','),
 				type: JSON.stringify(type),
 			});
 
 			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
 				index === arr.findIndex((user) => _id === user._id);
-
-			const roomFilter = (room: { t: string; uids?: string[]; _id: string; name?: string }): boolean =>
-				!localRooms.find(
-					(item) =>
-						(room.t === 'd' && room.uids && room.uids.length > 1 && room.uids?.includes(item._id)) ||
-						[item.rid, item._id].includes(room._id),
-				);
-			const usersFilter = (user: { _id: string }): boolean =>
-				!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
 
 			const userMap = (user: {
 				_id: string;
@@ -348,22 +296,91 @@ export const useSearchItems = (
 			}[];
 
 			const resultsFromServer: resultsFromServerType = [];
-			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersFilter).map(userMap));
-			resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).map(userMap));
+			resultsFromServer.push(...spotlight.rooms);
 
-			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
-			return {
-				rooms: dedupeRooms([...exact, ...localRooms, ...resultsFromServer]),
-				intelligent,
-				filterSuggestions: nextFilterSuggestions,
-				appliedFilters,
-				searchText,
-				filters: resolvedFilters,
-			};
+			return resultsFromServer;
 		},
 
 		staleTime: 60_000,
-		placeholderData: (previousData) =>
-			previousData ?? { rooms: localRooms, intelligent: [], filterSuggestions, appliedFilters, searchText, filters: resolvedFilters },
+		placeholderData: (previousData) => previousData,
 	});
+
+	const shouldSearchIntelligent = Boolean(
+		aiSearchActive && debouncedName.trim() && !debouncedMention && canUseAISearch && intelligentSearchEnabled,
+	);
+	const { data: intelligent = [], isFetching: isIntelligentFetching } = useQuery({
+		queryKey: ['sidebar/search/intelligent', debouncedName, resolvedFilters],
+		enabled: shouldSearchIntelligent,
+		queryFn: async () => {
+			const result = await unifiedSearch({
+				query: debouncedName,
+				count: 0,
+				includeSpotlight: false,
+				intelligentCount: 3,
+				includeMessages: false,
+				includeIntelligent: true,
+				...(resolvedFilters.rid && { rid: resolvedFilters.rid }),
+				...(resolvedFilters.rids.length && { rids: resolvedFilters.rids.join(',') }),
+				...(resolvedFilters.roomNames.length && { roomNames: resolvedFilters.roomNames.join(',') }),
+				...(resolvedFilters.fromUsername && { fromUsername: resolvedFilters.fromUsername }),
+				...(resolvedFilters.fromUsernames.length && { fromUsernames: resolvedFilters.fromUsernames.join(',') }),
+				...(resolvedFilters.startDate && { startDate: resolvedFilters.startDate }),
+				...(resolvedFilters.endDate && { endDate: resolvedFilters.endDate }),
+			});
+
+			return result.intelligent;
+		},
+		staleTime: 60_000,
+	});
+
+	const { data: users = [], isFetching: isUsersFetching } = useQuery({
+		queryKey: ['sidebar/search/users-autocomplete', debouncedUserFilter],
+		enabled: canUseInlineFilters && activeFilter?.key === 'from',
+		queryFn: async () => (await usersAutocomplete(buildUsernameAutocompleteQuery(debouncedUserFilter))).items,
+		staleTime: 60_000,
+	});
+
+	const nextFilterSuggestions = useMemo(
+		() =>
+			activeFilter?.key === 'from'
+				? mergeFilterSuggestions(buildUserFilterSuggestions(filterText, activeFilter, users), filterSuggestions)
+				: filterSuggestions,
+		[activeFilter, filterSuggestions, filterText, users],
+	);
+
+	const rooms = useMemo(() => {
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }): boolean =>
+			Boolean((name && filterRegex.test(name)) || (fname && filterRegex.test(fname)));
+		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[] }): boolean =>
+			localRooms.some((room) => {
+				const sameRoom = [room.rid, room._id].includes(item._id);
+				const sameGroupDM = item.t === 'd' && !!item.uids && item.uids.length > 1 && item.uids.includes(room._id);
+				const sameDirectDM = item.t === 'd' && room.t === 'd' && !!room.uids && room.uids.length === 2 && room.uids.includes(item._id);
+				return sameRoom || sameGroupDM || sameDirectDM;
+			});
+
+		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
+		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
+
+		return dedupeRooms([...exact, ...localRooms, ...fromServer]) as SubscriptionWithRoom[];
+	}, [localRooms, name, serverResults]);
+
+	const isLoading = isSpotlightFetching && (isPlaceholderData || serverResults === undefined);
+	const isFetching = isSpotlightFetching || isIntelligentFetching || isUsersFetching;
+
+	return {
+		data: {
+			rooms,
+			intelligent: shouldSearchIntelligent ? intelligent : [],
+			filterSuggestions: nextFilterSuggestions,
+			appliedFilters,
+			searchText,
+			filters: resolvedFilters,
+		},
+		isLoading,
+		isFetching,
+	};
 };
