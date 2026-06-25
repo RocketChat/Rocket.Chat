@@ -1,6 +1,6 @@
 import type { ISamlUsedAssertions, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISamlUsedAssertionsModel } from '@rocket.chat/model-typings';
-import { MongoServerError, type Collection, type Db, type IndexDescription } from 'mongodb';
+import type { MongoServerError, Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
