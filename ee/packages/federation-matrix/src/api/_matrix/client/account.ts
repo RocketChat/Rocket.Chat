@@ -98,8 +98,8 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					return {
 						statusCode: 400,
 						body: {
-							errcode: '',
-							error: '',
+							errcode: 'M_INVALID_USERNAME',
+							error: 'Could not derive a username from the provided XMPP user id',
 						},
 					};
 				}
@@ -108,7 +108,6 @@ export const addAccountRoutes = (router: ClientRouter) => {
 
 				await createOrUpdateFederatedUser({
 					username,
-					// name: decodedUsername.resource,
 					origin: serverName,
 				});
 
