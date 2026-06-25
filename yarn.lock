@@ -10784,7 +10784,6 @@ __metadata:
   resolution: "@rocket.chat/server-fetch@workspace:packages/server-fetch"
   dependencies:
     "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/tools": "workspace:^"
     "@types/jest": "npm:^29.5.14"
     "@types/node-fetch": "npm:~2.6.13"
