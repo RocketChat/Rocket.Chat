@@ -223,8 +223,6 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				console.log('join ->', c.req.param('roomIdOrAlias'), c.req.query(), c.get('impersonatedUserId'));
-
 				// TODO need to first invite and then join?
 
 				await federationSDK.joinUser(c.req.param('roomIdOrAlias'), c.get('impersonatedUserId'));

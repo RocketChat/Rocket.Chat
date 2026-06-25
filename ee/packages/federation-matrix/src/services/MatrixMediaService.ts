@@ -9,15 +9,6 @@ import { Avatars, Uploads } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:media-service');
 
-export interface IRemoteFileReference {
-	name: string;
-	size: number;
-	type: string;
-	mxcUri: string;
-	serverName: string;
-	mediaId: string;
-}
-
 export class MatrixMediaService {
 	static generateMXCUri(fileId: string, serverName: string): string {
 		return `mxc://${serverName}/${fileId}`;
