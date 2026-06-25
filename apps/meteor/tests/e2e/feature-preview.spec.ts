@@ -1,5 +1,5 @@
-import { faker } from '@faker-js/faker';
 import AxeBuilder from '@axe-core/playwright';
+import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
