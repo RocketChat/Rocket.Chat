@@ -1,0 +1,38 @@
+ee/packages/federation-matrix/src/helpers/getFederatedRoomName.ts
+  s_d318195937343a::t_57da0c12d9dacd 1-6
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  h_4c386397e672f4 163
+  s_d318195937343a::t_960d963a748d20 157-159,176-179
+  s_d318195937343a::t_613a707b41187f 20
+  s_d318195937343a::t_bb5579f3a75f6e 180
+ee/packages/federation-matrix/src/events/member.ts
+  s_d318195937343a::t_c9e87dcfa24a16 239
+  s_d318195937343a::t_ed3574a2af16e8 12
+ee/packages/federation-matrix/src/helpers/getFederatedRoomName.spec.ts
+  s_d318195937343a::t_f5d756318747a9 1-19
+packages/i18n/src/locales/en.i18n.json
+  h_4c386397e672f4 2214-2219
+apps/meteor/server/settings/federation-service.ts
+  h_4c386397e672f4 139,147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "2988b32bf1ab806989d8a33a2d20f3c856a5bf53",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d318195937343a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cf0dfe36-fb29-47a6-a8a9-12f71146359d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
