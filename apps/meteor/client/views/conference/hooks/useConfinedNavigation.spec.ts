@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 
 import { useConfinedNavigation } from './useConfinedNavigation';
+import { NAVIGATE_TO_ROUTE_MESSAGE } from '../../root/hooks/useExternalRouteNavigation';
 
 const mockRouter: {
 	navigate: jest.Mock;
@@ -198,19 +199,19 @@ describe('useConfinedNavigation', () => {
 			expect(openSpy).not.toHaveBeenCalled();
 		});
 
-		it('reuses the opener window by name and focuses it when no bridge is present', () => {
-			const focus = jest.fn();
-			openSpy.mockReturnValue({ focus } as any);
-			(window as any).opener = { closed: false, name: 'rocketchat-main', focus: jest.fn() };
+		it('asks the opener to navigate client-side and focuses its tab when no bridge is present', () => {
+			const postMessage = jest.fn();
+			(window as any).opener = { closed: false, name: 'rocketchat-main', postMessage };
 
 			renderHook(() => useConfinedNavigation());
 
 			const anchor = createAnchor('/channel/general');
 			clickAnchor(anchor);
 
-			const expectedHref = new URL('/channel/general', window.location.href).href;
-			expect(openSpy).toHaveBeenCalledWith(expectedHref, 'rocketchat-main');
-			expect(focus).toHaveBeenCalled();
+			// In-app navigation request to the opener (no full reload)…
+			expect(postMessage).toHaveBeenCalledWith({ type: NAVIGATE_TO_ROUTE_MESSAGE, path: '/channel/general' }, window.location.origin);
+			// …then focus the opener tab by name with an empty URL (no navigation).
+			expect(openSpy).toHaveBeenCalledWith('', 'rocketchat-main');
 		});
 
 		it('falls back to a noopener new tab when neither bridge nor opener is available', () => {
