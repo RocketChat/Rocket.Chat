@@ -27,6 +27,19 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
+# `turbo prune` derives the closure from the *whole* workspace graph (incl. devDependencies)
+# and copies each in-scope package's full tree (TS sources, sourcemaps, type decls). None of
+# that is needed at runtime. Trim the build context to the production payload before it is
+# baked into the final image: drop staged workspace packages the production install did not
+# link (dev-only internal deps), library TS sources, sourcemaps, and type declarations.
+RUN set -eu; cd /app; \
+    keep="$(find node_modules/@rocket.chat -maxdepth 1 -type l -exec readlink -f {} \; | sed 's#^/app/##')"; \
+    for d in packages/* ee/packages/*; do \
+      printf '%s\n' "$keep" | grep -qxF "$d" || rm -rf "$d"; \
+    done; \
+    find packages ee/packages -type d -name src -prune -exec rm -rf {} + ; \
+    find packages ee/packages ee/apps \( -name '*.js.map' -o -name '*.d.ts' \) -delete
+
 FROM node:22.22.3-alpine3.23
 
 ARG SERVICE
