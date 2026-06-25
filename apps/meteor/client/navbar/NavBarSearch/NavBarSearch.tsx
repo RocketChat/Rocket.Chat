@@ -18,6 +18,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
+import NavBarSearchAIButton from './NavBarSearchAIButton';
 import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
@@ -37,7 +38,7 @@ const NavBarSearch = () => {
 	const aiSearchActive = Boolean(aiSearchRequested && canSearchWithAIFromTopBar);
 	const aiSearchButtonTooltip = getAISearchButtonTooltip({ hasIntelligentSearchLicense, intelligentSearchEnabled, t });
 
-	const searchLabel = canSearchWithAIFromTopBar ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
+	const searchLabel = aiSearchActive ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
 
 	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
@@ -221,10 +222,8 @@ const NavBarSearch = () => {
 								<Icon name='magnifier' size='x20' aria-label={t('Search')} />
 							)}
 							{aiSearchFeatureEnabled && (
-								<IconButton
-									mini
-									icon='stars'
-									pressed={aiSearchActive}
+								<NavBarSearchAIButton
+									active={aiSearchActive}
 									aria-label={aiSearchButtonTooltip}
 									title={aiSearchButtonTooltip}
 									onClick={handleIntelligentSearchClick}
