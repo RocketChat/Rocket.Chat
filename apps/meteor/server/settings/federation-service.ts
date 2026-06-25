@@ -136,7 +136,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			});
 
 			await this.add('Federation_XMPP_Bridge_HS_Token', '', {
-				type: 'string',
+				type: 'password',
 				enterprise: true,
 				modules: ['federation'],
 				invalidValue: '',
@@ -144,7 +144,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			});
 
 			await this.add('Federation_XMPP_Bridge_AS_Token', '', {
-				type: 'string',
+				type: 'password',
 				enterprise: true,
 				modules: ['federation'],
 				invalidValue: '',
