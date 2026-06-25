@@ -1,6 +1,5 @@
 import { Router } from '@rocket.chat/http-router';
 
-import { catchAllClient } from './_shared';
 import { addAccountRoutes } from './account';
 import { addDirectoryRoutes } from './directory';
 import { addClientMediaRoutes } from './media';
@@ -13,7 +12,7 @@ import { addUserRoutes } from './user';
 import { addVersionsRoutes } from './versions';
 
 export const getClientRoutes = () => {
-	const router = new Router('/client').use(catchAllClient());
+	const router = new Router('/client');
 
 	addVersionsRoutes(router);
 	addAccountRoutes(router);

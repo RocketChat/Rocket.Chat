@@ -1,7 +1,5 @@
 import type { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
-import type { Context } from 'hono';
-import { createMiddleware } from 'hono/factory';
 
 import { logger } from '../../logger';
 
@@ -27,22 +25,6 @@ export const notImplemented = (msg: string, context?: Record<string, unknown>) =
 		body: { errcode: 'M_UNRECOGNIZED', error: msg },
 	};
 };
-
-// TODO: remove before merge — diagnostic catch-all logger for AS bridge integration
-export const catchAllClient = () =>
-	createMiddleware(async (c: Context, next) => {
-		try {
-			const { method } = c.req;
-			const url = new URL(c.req.url);
-			const path = url.pathname + url.search;
-
-			console.log(`Received request: ${method} ${path}`, c.req.header());
-
-			return next();
-		} catch (error) {
-			return c.json({ error: 'Internal Server Error' }, 500);
-		}
-	});
 
 export const tags = ['Federation'];
 export const license: ['federation'] = ['federation'];
