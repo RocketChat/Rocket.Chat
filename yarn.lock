@@ -11041,7 +11041,7 @@ __metadata:
     "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-client": 31.0.0
+    "@rocket.chat/ui-client": 32.0.0-rc.0
     react: "*"
     react-dom: "*"
   languageName: unknown
@@ -11295,7 +11295,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.3.0
-    "@rocket.chat/ui-contexts": 31.0.0
+    "@rocket.chat/ui-contexts": 32.0.0-rc.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -16036,7 +16036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:8.20.0, ajv@npm:^8.18.0, ajv@npm:^8.20.0":
+"ajv@npm:8.20.0, ajv@npm:^8.17.1, ajv@npm:^8.18.0, ajv@npm:^8.20.0":
   version: 8.20.0
   resolution: "ajv@npm:8.20.0"
   dependencies:
