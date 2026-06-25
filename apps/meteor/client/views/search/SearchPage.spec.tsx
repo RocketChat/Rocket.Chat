@@ -39,4 +39,40 @@ describe('AI Search SourceResult', () => {
 			screen.queryByText((_, element) => element?.tagName === 'P' && element.textContent === 'Oranges are green'),
 		).not.toBeInTheDocument();
 	});
+
+	it('clamps an out-of-range relevance score to 100%', () => {
+		render(
+			<SourceResult
+				item={{
+					_id: 'm2',
+					rid: 'r1',
+					msgId: 'm2',
+					text: 'plain text',
+					score: 1.5,
+					u: { name: 'Search User', username: 'search.user' },
+					room: { _id: 'r1', t: 'c', name: 'general', fname: 'General' },
+				}}
+			/>,
+			{ wrapper: mockAppRoot().build() },
+		);
+
+		expect(screen.getByText('100%')).toBeInTheDocument();
+	});
+
+	it('renders as a non-link when the source message has no resolvable room', () => {
+		render(
+			<SourceResult
+				item={{
+					_id: 'm3',
+					msgId: 'm3',
+					text: 'orphan message',
+					u: { name: 'Search User', username: 'search.user' },
+				}}
+			/>,
+			{ wrapper: mockAppRoot().build() },
+		);
+
+		expect(screen.getByText('orphan message')).toBeInTheDocument();
+		expect(screen.queryByRole('link')).not.toBeInTheDocument();
+	});
 });

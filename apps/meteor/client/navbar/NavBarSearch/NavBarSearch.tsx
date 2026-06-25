@@ -1,4 +1,3 @@
-import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import {
@@ -28,7 +27,6 @@ import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
-	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
@@ -169,7 +167,7 @@ const NavBarSearch = () => {
 		return (): void => {
 			unsubscribe();
 		};
-	}, [focusManager, handleEscSearch, setFocus]);
+	}, [handleEscSearch, setFocus]);
 
 	return (
 		<FormProvider {...methods}>

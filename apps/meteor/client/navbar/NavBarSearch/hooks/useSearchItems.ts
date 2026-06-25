@@ -20,6 +20,7 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { getConfig } from '../../../lib/utils/getConfig';
@@ -53,10 +54,13 @@ type NavBarSearchItemsResult = {
 
 const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
 
+type TranslationFn = ReturnType<typeof useTranslation>['t'];
+
 const getDateFilterSuggestions = (
 	filterText: string,
 	activeFilter: ActiveSearchFilter,
 	key: 'after' | 'before',
+	t: TranslationFn,
 ): SearchFilterSuggestion[] => {
 	const today = new Date();
 	const yesterday = new Date(today);
@@ -65,9 +69,9 @@ const getDateFilterSuggestions = (
 	lastWeek.setDate(today.getDate() - 7);
 
 	return [
-		{ label: 'Today', value: formatDate(today) },
-		{ label: 'Yesterday', value: formatDate(yesterday) },
-		{ label: 'Last 7 days', value: formatDate(lastWeek) },
+		{ label: t('Today'), value: formatDate(today) },
+		{ label: t('Yesterday'), value: formatDate(yesterday) },
+		{ label: t('Last_7_days'), value: formatDate(lastWeek) },
 	].map(({ label, value }) => ({
 		key: `${key}-${value}`,
 		group: 'dates',
@@ -82,6 +86,7 @@ const buildFilterSuggestions = (
 	filterText: string,
 	activeFilter: ActiveSearchFilter | undefined,
 	rooms: SubscriptionWithRoom[],
+	t: TranslationFn,
 ): SearchFilterSuggestion[] => {
 	if (!activeFilter) {
 		return [];
@@ -92,7 +97,7 @@ const buildFilterSuggestions = (
 			key: `in-${room.rid || room._id}`,
 			group: 'rooms',
 			title: `#${room.fname || room.name}`,
-			description: 'Search in this room',
+			description: t('Search_in_this_room'),
 			value: applySearchFilterToken(filterText, activeFilter, 'in', room.name || room.fname || ''),
 			icon: 'hash',
 		}));
@@ -104,14 +109,14 @@ const buildFilterSuggestions = (
 				key: 'from-current',
 				group: 'users',
 				title: activeFilter.value ? `from:${activeFilter.value.replace(/^@/, '')}` : 'from:username',
-				description: 'Search messages from this username',
+				description: t('Search_messages_from_this_username'),
 				value: applySearchFilterToken(filterText, activeFilter, 'from', activeFilter.value.replace(/^@/, '')),
 				icon: 'user',
 			},
 		];
 	}
 
-	return getDateFilterSuggestions(filterText, activeFilter, activeFilter.key);
+	return getDateFilterSuggestions(filterText, activeFilter, activeFilter.key, t);
 };
 
 const buildUserFilterSuggestions = (
@@ -122,6 +127,7 @@ const buildUserFilterSuggestions = (
 		name?: string;
 		username: string;
 	}[],
+	t: TranslationFn,
 ): SearchFilterSuggestion[] => {
 	if (activeFilter?.key !== 'from') {
 		return [];
@@ -131,7 +137,7 @@ const buildUserFilterSuggestions = (
 		key: `from-${user._id}`,
 		group: 'users',
 		title: `@${user.username}`,
-		description: user.name || 'Search messages from this user',
+		description: user.name || t('Search_messages_from_this_user'),
 		value: applySearchFilterToken(filterText, activeFilter, 'from', user.username),
 		icon: 'user',
 	}));
@@ -166,6 +172,7 @@ export const useSearchItems = (
 	appliedSearchFilters: SearchFilters = emptySearchFilters(),
 	aiSearchActive = false,
 ): NavBarSearchItemsResult => {
+	const { t } = useTranslation();
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
@@ -228,8 +235,8 @@ export const useSearchItems = (
 		[filters, selectedRooms],
 	);
 	const filterSuggestions = useMemo(
-		() => (canUseInlineFilters ? buildFilterSuggestions(filterText, activeFilter, roomFilterRooms) : []),
-		[activeFilter, canUseInlineFilters, filterText, roomFilterRooms],
+		() => (canUseInlineFilters ? buildFilterSuggestions(filterText, activeFilter, roomFilterRooms, t) : []),
+		[activeFilter, canUseInlineFilters, filterText, roomFilterRooms, t],
 	);
 
 	const usernamesFromClient = localRooms.map(({ t, name }) => (t === 'd' ? name : null)).filter(Boolean) as string[];
@@ -344,9 +351,9 @@ export const useSearchItems = (
 	const nextFilterSuggestions = useMemo(
 		() =>
 			activeFilter?.key === 'from'
-				? mergeFilterSuggestions(buildUserFilterSuggestions(filterText, activeFilter, users), filterSuggestions)
+				? mergeFilterSuggestions(buildUserFilterSuggestions(filterText, activeFilter, users, t), filterSuggestions)
 				: filterSuggestions,
-		[activeFilter, filterSuggestions, filterText, users],
+		[activeFilter, filterSuggestions, filterText, users, t],
 	);
 
 	const rooms = useMemo(() => {

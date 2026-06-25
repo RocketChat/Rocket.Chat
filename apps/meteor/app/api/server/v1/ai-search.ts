@@ -220,6 +220,9 @@ const requireNonEmptyQuery = (value: string): string => {
 	return query;
 };
 
+// These helpers intentionally mirror the ones in AISearchService: the REST layer hydrates
+// rooms/access for the standard message search and the answer-source check, while the service
+// keeps its own copies so it stays self-contained when run as a standalone microservice.
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
 		return new Map();
@@ -251,7 +254,9 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 		throw new Meteor.Error('error-invalid-search-answer-sources', 'Search answer sources are not available');
 	}
 
-	const scoreByMessageId = new Map(messages.map(({ _id, score }) => [_id, score]));
+	const clampScore = (score: number | undefined): number | undefined =>
+		typeof score === 'number' && Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : undefined;
+	const scoreByMessageId = new Map(messages.map(({ _id, score }) => [_id, clampScore(score)]));
 	const docs = await Messages.findVisibleByIds(messageIds, {
 		projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
 	}).toArray();
@@ -458,6 +463,18 @@ API.v1.post(
 	},
 	async function action() {
 		const { query, messages } = this.bodyParams;
+
+		// Gate on feature availability before doing any DB work so a user cannot drive message
+		// lookups for a feature their workspace has not licensed or enabled.
+		const aiSearchStatus = await AISearch.status();
+		if (
+			!aiSearchStatus.hasIntelligentSearchLicense ||
+			!aiSearchStatus.intelligentSearchEnabled ||
+			!aiSearchStatus.answerGenerationConfigured
+		) {
+			throw new Meteor.Error('error-ai-not-enabled', 'AI Search is not enabled');
+		}
+
 		const answerMessages = await getSearchAnswerMessagesForUser(this.userId, messages);
 		let answer;
 		try {

@@ -35,6 +35,11 @@ import { SystemLogger } from '../../lib/logger/system';
 
 const PIPELINE_ROOM_PREFETCH_LIMIT = MAX_PIPELINE_ROOM_FILTER_VALUES + 1;
 
+const DEFAULT_ANSWER_SYSTEM_PROMPT = [
+	"Given below user's query and the search results, provide a concise and accurate answer to the query based on the search results. Make sure to include relevant caveats and context. Add references to the search results in the format [N] after the relevant information. If you are unsure about the answer, say that you are not sure instead of making something up.",
+	"For formatting the answer, use markdown. For code snippets, use markdown code blocks with the appropriate language specified. Keep the answers as concise as possible, while still providing a complete answer to the user's question, and everything in a single column, without using tables or other formatting that may be hard to read in the Rocket.Chat client.",
+].join('\n');
+
 const aiServiceFetch: AIServiceFetch = (url, options) => fetch(url, options as Parameters<typeof fetch>[1]);
 
 const asString = (value: unknown): string => {
@@ -303,6 +308,17 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return [];
 		}
 
+		if (!pipelineRoomScope.isComplete) {
+			// The user is subscribed to more rooms than the pipeline filter can carry, so the query
+			// runs unscoped against the vector index and access is enforced by the mandatory
+			// post-filter in normalizeIntelligentResults. Relevance is degraded; log so it is visible.
+			SystemLogger.warn({
+				msg: 'AI search running unscoped pipeline query for high-room-count user; relying on subscription post-filtering',
+				userId,
+				roomFilterLimit: MAX_PIPELINE_ROOM_FILTER_VALUES,
+			});
+		}
+
 		const pipelineFilters = buildIntelligentSearchPipelineFilters(pipelineRoomScope.roomIds, {
 			...filters,
 			rids: [...(filters.rids || []), ...roomNameIds],
@@ -353,12 +369,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			throw new Error('error-ai-provider-not-configured');
 		}
 
-		const systemPrompt =
-			asString(systemPromptSetting) ||
-			`
-			Given below user's query and the search results, provide a concise and accurate answer to the query based on the search results. Make sure to include relevant caveats and context. Add references to the search results in the format [N] after the relevant information. If you are unsure about the answer, say that you are not sure instead of making something up.
-			For formatting the answer, use markdown. For code snippets, use markdown code blocks with the appropriate language specified. Keep the answers as concise as possible, while still providing a complete answer to the user's question, and everything in a single column, without using tables or other formatting that may be hard to read in the Rocket.Chat client.
-			`;
+		const systemPrompt = asString(systemPromptSetting) || DEFAULT_ANSWER_SYSTEM_PROMPT;
 
 		const sanitizedMessages: SearchAnswerMessage[] = messages.map(({ text, username, roomName, ts, score }) => ({
 			text,

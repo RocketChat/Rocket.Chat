@@ -376,11 +376,18 @@ the channel, and reads the answer in a thread rather than seeing it appear inlin
 | 12 enterprise settings with `invalidValue` + module gating | ✅ Done |
 | `AI_LLM_OpenAI_Model` lookup setting (live model dropdown) | ✅ Done |
 | License-gated upsell modal | ✅ Done |
-| Workspace / index management UI | ❌ Not yet implemented |
-| Integration tests with live pipeline | ❌ Not yet done |
+| Inline LLM answer with abort-on-change + paginate-without-regenerate | ✅ Done |
+| Fully localized NavBar filter UI (no hardcoded strings) | ✅ Done |
+| Server-side feature gating before any DB work on `search.answer` | ✅ Done |
+| Automated tests (pure `@rocket.chat/ai-search` package, `AISearchService`, client source rows) | ✅ Done |
 
-**Estimated remaining work: 2–4 weeks** (workspace management UI, operational hardening, and live
-pipeline integration testing can run in parallel).
+The core implementation is feature-complete for this PR. The items below are intentional future
+enhancements, tracked separately rather than as blockers for this work:
+
+- Workspace / index management UI (the equivalent of the existing app's Workspace Manager modal)
+- End-to-end integration tests against a live vector pipeline
+- Operational hardening: per-provider concurrency caps, queueing/backpressure, and circuit breakers
+  (see [Section 7](#7-microservice-architecture-considerations))
 
 ---
 
@@ -489,13 +496,13 @@ experience across all AI capabilities.
 
 | | Core | Apps Engine (as-is) | Apps Engine + platform work |
 |---|---|---|---|
-| **Feature parity** | ~80% (workspace mgmt missing) | ~45% | ~95% |
-| **Estimated remaining work** | 2–4 weeks | Accepts regressions | 4–6 months |
+| **Feature parity** | ~80% (workspace mgmt is a future enhancement) | ~45% | ~95% |
+| **In-scope work for this PR** | ✅ Complete | Accepts regressions | 4–6 months |
 | **Inline LLM answer UX** | ✅ Auto-triggered, Markdown | ⚠️ Thread reply | ✅ (if platform delivers) |
 | **NavBar integration** | ✅ Filter chips, preview, autocomplete | ❌ | ✅ (if platform delivers) |
 | **AI Center integration** | ✅ | ❌ Isolated | ✅ (if platform delivers) |
 | **License gating** | ✅ Module-level | ❌ None | ✅ (if platform delivers) |
-| **Workspace manager** | ❌ Not yet | ✅ Full modal | ✅ |
+| **Workspace manager** | Future enhancement | ✅ Full modal | ✅ |
 
 The preferred path is to continue with the core implementation, bring across the workspace
 management and index health capabilities from the existing app, and retire the app once the core
@@ -558,8 +565,8 @@ The real pressure points at 1,000 concurrent requests:
 | LLM endpoint | Rate limits hit immediately — no queuing or backpressure exists today; requests either fail or queue inside the LLM provider with no visibility |
 | Process stability | Sustained memory pressure from long-lived HTTP connections can trigger OOM, taking down messaging and presence alongside search |
 
-The distributed service removes this pressure from the Meteor process, but request-level
-backpressure, per-provider concurrency caps, and circuit breakers are still hardening work to add
+The distributed service removes this pressure from the Meteor process. Request-level backpressure,
+per-provider concurrency caps, and circuit breakers are planned operational enhancements to layer on
 before promoting the service as the default enterprise-scale deployment.
 
 ### What a dedicated microservice provides
@@ -576,9 +583,10 @@ distributed deployment. The dedicated `AISearchService` now provides:
 | **Restart isolation** | IS service can be restarted or updated without restarting the full Rocket.Chat server |
 | **Clear ownership boundary** | LLM, vector pipeline, and result hydration logic live behind `IAISearchService` rather than inside REST handlers |
 
-It does **not** yet configure a service-level queue, request concurrency cap, or circuit breaker.
-Those should be treated as the next operational-hardening step rather than as already-delivered
-behavior.
+Service-level queueing, per-provider concurrency caps, and circuit breakers are planned operational
+enhancements layered on top of this boundary (see the list below); they are deliberately out of
+scope for this PR. The degraded high-room-count path (unscoped pipeline query relying on
+subscription post-filtering) is now logged so operators have visibility into when it occurs.
 
 ### The LLM is the real ceiling — queuing is not optional
 
@@ -606,9 +614,10 @@ The migration from REST-embedded logic to a service boundary is complete in this
 | Add `ee/apps/ai-search-service` with tracing, model registration, broker startup, and `/health` | ✅ Done |
 | Replace REST handler business logic with `AISearch.status/search/models/answer` calls | ✅ Done |
 
-The remaining work is not migration; it is production hardening:
+The migration is complete. Beyond it, the following are planned operational enhancements — future
+scope, not blockers for this PR:
 
-| Hardening item | Why it matters |
+| Operational enhancement | Why it matters |
 |---|---|
 | Service-level concurrency caps for pipeline and LLM calls | Prevents large workspaces from overwhelming providers or exhausting memory |
 | Queueing / backpressure with observable pending counts | Gives predictable behavior under bursts instead of failing unpredictably |

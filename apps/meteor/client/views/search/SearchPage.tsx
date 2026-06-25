@@ -8,7 +8,7 @@ import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } 
 import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -28,6 +28,11 @@ type IntelligentResult = {
 
 const roomLookupOptions = { sort: { lm: -1, name: 1 }, limit: 20 } as const;
 const emptyRoomLookupQuery = { _id: '__ai_search_no_room_filter__' };
+
+// Number of results revealed per page, and the upper bound on the source set the AI answer is
+// generated from. Both are tied to the same constant so that paginating ("Show more") only appends
+// results and never changes the answer source set — preventing a redundant answer regeneration.
+const INTELLIGENT_PAGE_SIZE = 8;
 
 const formatMessageTime = (ts: Date | string | undefined): string => {
 	if (!ts) return '';
@@ -210,7 +215,7 @@ const AnswerPanel = ({
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
 	const queryParam = useSearchParameter('q') ?? '';
-	const [intelligentCount, setIntelligentCount] = useState(8);
+	const [intelligentCount, setIntelligentCount] = useState(INTELLIGENT_PAGE_SIZE);
 	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
 	const roomLookupText = parsedSearch.filters.roomNames[parsedSearch.filters.roomNames.length - 1] || '';
 	const roomLookupQuery = useMemo(
@@ -245,7 +250,7 @@ const SearchPage = (): ReactElement => {
 	const generateAnswer = useEndpoint('POST', '/v1/search.answer');
 
 	useEffect(() => {
-		setIntelligentCount(8);
+		setIntelligentCount(INTELLIGENT_PAGE_SIZE);
 	}, [queryParam]);
 
 	const result = useQuery({
@@ -278,9 +283,11 @@ const SearchPage = (): ReactElement => {
 	});
 
 	const intelligent = useMemo(() => (result.data?.intelligent as IntelligentResult[] | undefined) ?? [], [result.data?.intelligent]);
+	// Only the first page of results feeds the AI answer. Revealing more results via "Show more"
+	// appends to the list without changing this slice, so the answer is not regenerated on paginate.
 	const answerMessages = useMemo(
 		() =>
-			intelligent.slice(0, 12).map((item) => ({
+			intelligent.slice(0, INTELLIGENT_PAGE_SIZE).map((item) => ({
 				_id: item._id,
 				score: item.score,
 			})),
@@ -294,18 +301,24 @@ const SearchPage = (): ReactElement => {
 			}),
 		[answerMessages, debouncedQuery],
 	);
+	const answerAbortRef = useRef<AbortController>();
+	const abortPendingAnswer = useCallback((): void => answerAbortRef.current?.abort(), []);
 	const answerMutation = useMutation({
-		mutationFn: () =>
-			generateAnswer({
-				query: debouncedQuery,
-				messages: answerMessages,
-			}),
+		mutationFn: () => {
+			abortPendingAnswer();
+			const controller = new AbortController();
+			answerAbortRef.current = controller;
+			return generateAnswer({ query: debouncedQuery, messages: answerMessages }, { signal: controller.signal });
+		},
 	});
 	const { data: answerData, error: answerError, isPending: answerPending, mutate: mutateAnswer, reset: resetAnswer } = answerMutation;
 
+	// When the query or source set changes, drop the previous answer and abort any in-flight LLM
+	// request so a stale (and costly) generation cannot resolve into the new context.
 	useEffect(() => {
 		resetAnswer();
-	}, [answerKey, resetAnswer]);
+		return abortPendingAnswer;
+	}, [answerKey, resetAnswer, abortPendingAnswer]);
 
 	const canGenerateAnswer = Boolean(result.data?.meta.answerGenerationConfigured && debouncedQuery && intelligent.length > 0);
 	const answerEmptyReason = useMemo(() => {
@@ -398,7 +411,7 @@ const SearchPage = (): ReactElement => {
 							{t('Sources')} · {intelligent.length} {t('Messages')}
 						</Box>
 						{intelligent.length >= intelligentCount && (
-							<Button small onClick={() => setIntelligentCount((current) => current + 8)}>
+							<Button small onClick={() => setIntelligentCount((current) => current + INTELLIGENT_PAGE_SIZE)}>
 								{t('Show_more')}
 							</Button>
 						)}
@@ -418,9 +431,11 @@ const SearchPage = (): ReactElement => {
 							{t('No_results_found')}
 						</Box>
 					)}
-					{intelligent.map((item) => (
-						<SourceResult key={item._id} item={item} />
-					))}
+					<Box role='list'>
+						{intelligent.map((item) => (
+							<SourceResult key={item._id} item={item} />
+						))}
+					</Box>
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>
