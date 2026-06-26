@@ -7,7 +7,6 @@ export type EmojiPackage = {
 	toneList: Record<string, unknown>;
 	render: (message: string) => string;
 	renderPicker: (emojiToRender: string) => string | undefined;
-	ascii?: boolean;
 	sprites?: unknown;
 	list?: string[];
 	_regexpSignature?: string | null;
