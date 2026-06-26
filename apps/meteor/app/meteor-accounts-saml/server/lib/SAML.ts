@@ -509,6 +509,11 @@ export class SAML {
 
 				const safeExpireAt = new Date(baseExpireAt.getTime() + (service.allowedClockDrift || 0));
 
+				if (!profile.assertionId || !profile.issuer) {
+					SAMLUtils.error({ msg: 'Invalid SAML response: missing Assertion ID or Issuer', profile });
+					throw new Error('Invalid SAML response: missing Assertion ID or Issuer.');
+				}
+
 				if (!(await SamlUsedAssertions.markUsed(profile.assertionId, profile.issuer, safeExpireAt))) {
 					SAMLUtils.warn({ msg: 'SAML assertion replay detected', issuer: profile.issuer, assertionId: profile.assertionId });
 					throw new Error('An assertion with the same ID cannot be used more than once.');
