@@ -1,0 +1,26 @@
+ee/packages/federation-matrix/src/api/_matrix/media-bridge.ts
+  h_4c386397e672f4 79,83
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  h_4c386397e672f4 255,260,267,275,277
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  h_4c386397e672f4 146,151,166,176,194,260,263,278,302,306,312,336,340,346
+ee/packages/federation-matrix/src/api/_matrix/client/account.ts
+  h_4c386397e672f4 137,141
+ee/packages/federation-matrix/src/api/_matrix/client/profile.ts
+  h_4c386397e672f4 159,163,202,204-205,207,209-210
+ee/packages/federation-matrix/src/api/_matrix/client/user.ts
+  h_4c386397e672f4 1,3,59,62-63,65,67-68,74,82
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  h_4c386397e672f4 151,191,206,289,292,314,333,339,364,367,396
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "9b9f05af654695fefecea60894bb3c732c51267a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
