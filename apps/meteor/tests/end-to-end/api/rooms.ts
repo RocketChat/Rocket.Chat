@@ -1485,7 +1485,8 @@ describe('[Rooms]', () => {
 			let nonMemberCredentials: Credentials;
 
 			before(async () => {
-				publicArchivedChannel = (await createRoom({ type: 'c', name: `rooms.info.archived.c.${Date.now()}-${Math.random()}` })).body.channel;
+				publicArchivedChannel = (await createRoom({ type: 'c', name: `rooms.info.archived.c.${Date.now()}-${Math.random()}` })).body
+					.channel;
 				privateArchivedGroup = (await createRoom({ type: 'p', name: `rooms.info.archived.p.${Date.now()}-${Math.random()}` })).body.group;
 
 				await request.post(api('channels.archive')).set(credentials).send({ roomId: publicArchivedChannel._id }).expect(200);
