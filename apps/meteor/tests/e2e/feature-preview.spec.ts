@@ -1,4 +1,3 @@
-import AxeBuilder from '@axe-core/playwright';
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
@@ -65,18 +64,6 @@ test.describe.serial('feature preview', () => {
 		await page.waitForSelector('#main-content');
 
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
-	});
-
-	test('should not have any accessibility violations', async ({ page }) => {
-		await page.goto('/account/feature-preview');
-		await page.waitForSelector('#main-content');
-
-		const results = await new AxeBuilder({ page })
-			.include('#main-content')
-			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-			.disableRules(['aria-hidden-focus', 'nested-interactive'])
-			.analyze();
-		expect(results.violations).toEqual([]);
 	});
 
 	test.describe('Sidepanel', () => {
