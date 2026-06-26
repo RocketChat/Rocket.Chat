@@ -8,7 +8,16 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	withGroupBaseProperties,
+	GroupsBaseProps
+} from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -38,6 +47,7 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -907,22 +917,47 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'groups.removeModerator',
-	{ authRequired: true },
+type WithUserId = GroupsBaseProps & { userId: string };
+const withUserIdSchema = withGroupBaseProperties(
 	{
-		async post() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
-
-			const user = await getUserFromParams(this.bodyParams);
-
-			await removeRoomModerator(this.userId, findResult.rid, user._id);
-
-			return API.v1.success();
+		userId: {
+			type: 'string',
 		},
+	},
+	['userId'],
+);
+
+const withUserIdProps = ajv.compile<WithUserId>(withUserIdSchema);
+
+const groupsEndpoints = API.v1.post(
+	'groups.removeModerator',
+	{
+		authRequired: true,
+		body: withUserIdProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
+
+		const user = await getUserFromParams(this.bodyParams);
+
+		await removeRoomModerator(this.userId, findResult.rid, user._id);
+
+		return API.v1.success();
 	},
 );
 
@@ -1316,3 +1351,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type GroupEndpoints = ExtractRoutesFromAPI<typeof groupsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends GroupEndpoints {}
+}
