@@ -26,18 +26,21 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
 			id: 'unread',
 			content: t('Unread'),
 			icon: 'flag',
+			onClick: handleChangeShowUnread,
 			addon: <CheckBox onChange={handleChangeShowUnread} checked={sidebarShowUnread} />,
 		},
 		!secondSidebarEnabled && {
 			id: 'favorites',
 			content: t('Favorites'),
 			icon: 'star',
+			onClick: handleChangeShoFavorite,
 			addon: <CheckBox onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />,
 		},
 		{
 			id: 'types',
 			content: t('Types'),
 			icon: 'group-by-type',
+			onClick: handleChangeGroupByType,
 			addon: <CheckBox onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
 		},
 	].filter(Boolean) as GenericMenuItemProps[];

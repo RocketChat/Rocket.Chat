@@ -29,24 +29,28 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 			id: 'extended',
 			content: t('Extended'),
 			icon: 'extended-view',
+			onClick: setToExtended,
 			addon: <RadioButton onChange={setToExtended} checked={sidebarViewMode === 'extended'} />,
 		},
 		{
 			id: 'medium',
 			content: t('Medium'),
 			icon: 'medium-view',
+			onClick: setToMedium,
 			addon: <RadioButton onChange={setToMedium} checked={sidebarViewMode === 'medium'} />,
 		},
 		{
 			id: 'condensed',
 			content: t('Condensed'),
 			icon: 'condensed-view',
+			onClick: setToCondensed,
 			addon: <RadioButton onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />,
 		},
 		{
 			id: 'avatars',
 			content: t('Avatars'),
 			icon: 'user-rounded',
+			onClick: handleChangeSidebarDisplayAvatar,
 			addon: <ToggleSwitch onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />,
 		},
 	];
