@@ -83,6 +83,7 @@ const renderVirtualList = (
 		items: VirtualListTestItem[];
 		totalCount: number;
 		renderItem: (item: VirtualListTestItem, index: number) => ReactNode;
+		listLabel?: string;
 		overscan?: number;
 		onEndReached?: UseInfiniteQueryResult['fetchNextPage'];
 	}> = {},
@@ -108,6 +109,12 @@ describe('PaginatedVirtualList', () => {
 	it('has no accessibility violations', async () => {
 		const { container } = renderVirtualList();
 		expect(await axe(container)).toHaveNoViolations();
+	});
+
+	it('passes the accessible list label to the virtualized list', () => {
+		renderVirtualList({ listLabel: 'Files list' });
+
+		expect(screen.getByRole('list', { name: 'Files list' })).toBeInTheDocument();
 	});
 
 	it('calls onEndReached when scrolled near the bottom', async () => {
@@ -147,7 +154,21 @@ describe('PaginatedVirtualList', () => {
 		expect(onEndReached).toHaveBeenCalledTimes(1);
 	});
 
-	it('calls onEndReached after a same-size dataset reset', async () => {
+	it('allows onEndReached to retry after a successful load that does not change items', async () => {
+		jest.useFakeTimers();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
+
+		renderVirtualList({ onEndReached });
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(onEndReached).toHaveBeenCalledTimes(2);
+	});
+
+	it('checks onEndReached after a same-size dataset reset', async () => {
 		jest.useFakeTimers();
 		const onEndReached = jest.fn().mockResolvedValue(undefined);
 		const { rerender } = renderVirtualList({ onEndReached });
@@ -159,8 +180,6 @@ describe('PaginatedVirtualList', () => {
 		rerender(
 			<PaginatedVirtualList items={resetItems} totalCount={20} renderItem={(item) => <div>{item._id}</div>} onEndReached={onEndReached} />,
 		);
-		fireEvent.scroll(screen.getByTestId('virtual-list'));
-		await advanceDebouncedScroll();
 
 		expect(onEndReached).toHaveBeenCalledTimes(2);
 	});

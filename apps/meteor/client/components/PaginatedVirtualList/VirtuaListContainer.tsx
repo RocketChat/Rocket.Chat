@@ -1,5 +1,5 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import { forwardRef } from 'react';
+import { createContext, forwardRef, useContext } from 'react';
 
 const listResetStyle = {
 	margin: 0,
@@ -12,12 +12,16 @@ export type VirtuaListContainerProps = {
 	style: CSSProperties;
 } & Omit<HTMLAttributes<HTMLUListElement>, 'children' | 'style'>;
 
+export const VirtuaListLabelContext = createContext<string | undefined>(undefined);
+
 export const VirtuaListContainer = forwardRef<HTMLUListElement, VirtuaListContainerProps>(function VirtuaListContainer(
-	{ children, style, ...props },
+	{ children, style, 'aria-label': ariaLabel, ...props },
 	ref,
 ) {
+	const listLabel = useContext(VirtuaListLabelContext);
+
 	return (
-		<ul {...props} ref={ref} style={{ ...listResetStyle, ...style }}>
+		<ul {...props} ref={ref} aria-label={ariaLabel ?? listLabel} style={{ ...listResetStyle, ...style }}>
 			{children}
 		</ul>
 	);
