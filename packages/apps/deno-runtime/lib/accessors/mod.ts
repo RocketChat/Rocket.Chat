@@ -254,6 +254,7 @@ export class AppAccessors {
 				getRoleReader: () => this.proxify('getReader:getRoleReader'),
 				getContactReader: () => this.proxify('getReader:getContactReader'),
 				getExperimentalReader: () => this.proxify('getReader:getExperimentalReader'),
+				getMediaCallReader: () => this.proxify('getReader:getMediaCallReader'),
 			};
 		}
 

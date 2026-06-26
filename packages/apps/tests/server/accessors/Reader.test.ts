@@ -6,6 +6,7 @@ import type {
 	IEnvironmentRead,
 	IExperimentalRead,
 	ILivechatRead,
+	IMediaCallRead,
 	IMessageRead,
 	INotifier,
 	IPersistenceRead,
@@ -37,13 +38,32 @@ describe('Reader', () => {
 	const role = {} as IRoleRead;
 	const contact = {} as IContactRead;
 	const experimental = {} as IExperimentalRead;
+	const mediaCall = {} as IMediaCallRead;
 
 	it('useReader', () => {
 		assert.doesNotThrow(
-			() => new Reader(env, msg, pr, rm, ur, ni, livechat, upload, cloud, videoConf, contact, oauthApps, thread, role, experimental),
+			() =>
+				new Reader(env, msg, pr, rm, ur, ni, livechat, upload, cloud, videoConf, contact, oauthApps, thread, role, experimental, mediaCall),
 		);
 
-		const rd = new Reader(env, msg, pr, rm, ur, ni, livechat, upload, cloud, videoConf, contact, oauthApps, thread, role, experimental);
+		const rd = new Reader(
+			env,
+			msg,
+			pr,
+			rm,
+			ur,
+			ni,
+			livechat,
+			upload,
+			cloud,
+			videoConf,
+			contact,
+			oauthApps,
+			thread,
+			role,
+			experimental,
+			mediaCall,
+		);
 
 		assert.ok(rd.getEnvironmentReader() !== undefined);
 		assert.ok(rd.getMessageReader() !== undefined);
@@ -55,5 +75,6 @@ describe('Reader', () => {
 		assert.ok(rd.getUploadReader() !== undefined);
 		assert.ok(rd.getVideoConferenceReader() !== undefined);
 		assert.ok(rd.getRoleReader() !== undefined);
+		assert.ok(rd.getMediaCallReader() !== undefined);
 	});
 });
