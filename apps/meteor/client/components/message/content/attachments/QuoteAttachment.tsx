@@ -1,14 +1,17 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Divider, Palette } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
+import AttachmentAuthorMessageLink from './structure/AttachmentAuthorMessageLink';
 import AttachmentAuthorName from './structure/AttachmentAuthorName';
+import AttachmentAuthorTimestamp from './structure/AttachmentAuthorTimestamp';
 import AttachmentContent from './structure/AttachmentContent';
 import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
@@ -35,6 +38,7 @@ type QuoteAttachmentProps = {
 };
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
+	const { t } = useTranslation();
 	const formatTime = useTimeAgo();
 	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
@@ -57,12 +61,16 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
 							{attachment.author_name}
 						</AttachmentAuthorName>
 						{attachment.ts && (
-							<Box
-								fontScale='c1'
-								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'default' } : { color: 'default' })}
-							>
-								{formatTime(attachment.ts)}
-							</Box>
+							<>
+								<Divider vertical />
+								<AttachmentAuthorTimestamp>{formatTime(attachment.ts)}</AttachmentAuthorTimestamp>
+							</>
+						)}
+						{attachment.message_link && (
+							<>
+								<Divider vertical />
+								<AttachmentAuthorMessageLink href={attachment.message_link}>{t('Jump_to_message')}</AttachmentAuthorMessageLink>
+							</>
 						)}
 					</AttachmentAuthor>
 					{attachment.attachments && (
