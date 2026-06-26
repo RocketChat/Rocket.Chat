@@ -33,11 +33,21 @@ RUN yarn workspaces focus --production
 # baked into the final image: drop staged workspace packages the production install did not
 # link (dev-only internal deps), library TS sources, sourcemaps, and type declarations.
 RUN set -eu; cd /app; \
+    # Packages the production install linked (node-modules linker symlinks them under
+    # node_modules/@rocket.chat). This is the source of truth for "needed at runtime".
     keep="$(find node_modules/@rocket.chat -maxdepth 1 -type l -exec readlink -f {} \; | sed 's#^/app/##')"; \
+    # Guard: never proceed with an empty keep-set (e.g. a PnP linker with no symlinks),
+    # which would otherwise delete every workspace package below.
+    [ -n "$keep" ] || { echo 'trim: no linked workspace packages found — aborting'; exit 1; }; \
     for d in packages/* ee/packages/*; do \
-      printf '%s\n' "$keep" | grep -qxF "$d" || rm -rf "$d"; \
+      if printf '%s\n' "$keep" | grep -qxF "$d"; then \
+        # Kept package: drop its TS sources only when it ships a dist/ (its runtime entry).
+        # Packages whose entry point lives in src/ (no dist) keep their sources.
+        [ -d "$d/dist" ] && rm -rf "$d/src" || true; \
+      else \
+        rm -rf "$d"; \
+      fi; \
     done; \
-    find packages ee/packages -type d -name src -prune -exec rm -rf {} + ; \
     find packages ee/packages ee/apps \( -name '*.js.map' -o -name '*.d.ts' \) -delete
 
 FROM node:22.22.3-alpine3.23
