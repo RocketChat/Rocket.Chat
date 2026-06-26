@@ -81,7 +81,7 @@ test.describe.serial('Sidebar', () => {
 					sidebarViewMode: 'extended',
 					sidebarDisplayAvatar: true,
 					sidebarSortby: 'activity',
-					sidebarShowUnread: true,
+					sidebarShowUnread: false,
 				},
 			});
 		});
@@ -134,12 +134,12 @@ test.describe.serial('Sidebar', () => {
 			await page.keyboard.press('Enter');
 
 			const unreadItem = poHomeChannel.navbar.getGroupByMenuItem('Unread');
-			await expect(unreadItem.getByRole('checkbox')).toBeChecked();
+			await expect(unreadItem.getByRole('checkbox')).not.toBeChecked();
 
 			await unreadItem.focus();
 			await page.keyboard.press('Space');
 
-			await expect(poHomeChannel.navbar.getGroupByMenuItem('Unread').getByRole('checkbox')).not.toBeChecked();
+			await expect(poHomeChannel.navbar.getGroupByMenuItem('Unread').getByRole('checkbox')).toBeChecked();
 			await page.keyboard.press('Escape');
 		});
 	});
