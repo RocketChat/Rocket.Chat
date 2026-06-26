@@ -1,0 +1,5 @@
+node_modules/
+.yarn/
+.pnp.*
+.crasher-already-crashed
+*.log

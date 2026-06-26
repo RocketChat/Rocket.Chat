@@ -1,0 +1,9 @@
+{
+  "name": "pinger",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@platformatic/node": "^3.57.0"
+  }
+}

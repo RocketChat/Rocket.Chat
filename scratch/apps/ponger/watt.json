@@ -1,0 +1,8 @@
+{
+  "$schema": "https://schemas.platformatic.dev/@platformatic/node/3.57.0.json",
+  "module": "@platformatic/node",
+  "node": {
+    "main": "main.js",
+    "hasServer": false
+  }
+}

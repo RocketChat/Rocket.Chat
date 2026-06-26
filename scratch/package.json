@@ -1,0 +1,12 @@
+{
+  "name": "watt-spike-scratch",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway spike for Watt/Platformatic discoverability",
+  "dependencies": {
+    "@platformatic/node": "^3.57.0",
+    "@platformatic/runtime": "^3.57.0",
+    "wattpm": "^3.57.0"
+  }
+}

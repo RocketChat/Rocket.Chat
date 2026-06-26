@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.platformatic.dev/@platformatic/runtime/3.57.0.json",
+  "logger": {
+    "level": "info"
+  },
+  "messagingTimeout": 5000,
+  "entrypoint": "pinger",
+  "applications": [
+    {
+      "id": "ponger",
+      "path": "./apps/ponger",
+      "workers": 1,
+      "health": {
+        "maxHeapTotal": "256MB",
+        "maxYoungGeneration": "64MB"
+      }
+    },
+    {
+      "id": "pinger",
+      "path": "./apps/pinger",
+      "workers": 1,
+      "health": {
+        "maxHeapTotal": "128MB",
+        "maxYoungGeneration": "32MB"
+      }
+    }
+  ]
+}

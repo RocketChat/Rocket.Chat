@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schemas.platformatic.dev/@platformatic/runtime/3.57.0.json",
+  "logger": { "level": "info" },
+  "messagingTimeout": 5000,
+  "restartOnError": true,
+  "entrypoint": "crasher",
+  "applications": [
+    {
+      "id": "crasher",
+      "path": "./apps/crasher",
+      "workers": 1,
+      "health": { "maxHeapTotal": "256MB" }
+    }
+  ]
+}

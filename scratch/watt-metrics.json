@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schemas.platformatic.dev/@platformatic/runtime/3.57.0.json",
+  "logger": { "level": "warn" },
+  "metrics": { "enabled": true },
+  "entrypoint": "ponger",
+  "applications": [
+    { "id": "ponger", "path": "./apps/ponger", "workers": 1 }
+  ]
+}
