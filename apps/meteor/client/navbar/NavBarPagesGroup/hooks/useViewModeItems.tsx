@@ -1,8 +1,8 @@
-import { RadioButton, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Box, RadioButton, ToggleSwitch } from '@rocket.chat/fuselage';
 
 export const useViewModeItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
@@ -23,31 +23,30 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 		() => saveUserPreferences({ data: { sidebarDisplayAvatar: !sidebarDisplayAvatar } }),
 		[saveUserPreferences, sidebarDisplayAvatar],
 	);
-
-	return [
-		{
-			id: 'extended',
-			content: t('Extended'),
-			icon: 'extended-view',
-			addon: <RadioButton onChange={setToExtended} checked={sidebarViewMode === 'extended'} />,
-		},
-		{
-			id: 'medium',
-			content: t('Medium'),
-			icon: 'medium-view',
-			addon: <RadioButton onChange={setToMedium} checked={sidebarViewMode === 'medium'} />,
-		},
-		{
-			id: 'condensed',
-			content: t('Condensed'),
-			icon: 'condensed-view',
-			addon: <RadioButton onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />,
-		},
-		{
-			id: 'avatars',
-			content: t('Avatars'),
-			icon: 'user-rounded',
-			addon: <ToggleSwitch onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />,
-		},
-	];
+return [ 
+  { 
+    id: 'extended', 
+    content: <Box mie="x24" flexGrow={1}>{t('Extended')}</Box>, 
+    icon: 'extended-view', 
+    addon: <RadioButton onChange={setToExtended} checked={sidebarViewMode === 'extended'} />, 
+  }, 
+  { 
+    id: 'medium', 
+    content: <Box mie="x24" flexGrow={1}>{t('Medium')}</Box>, 
+    icon: 'medium-view', 
+    addon: <RadioButton onChange={setToMedium} checked={sidebarViewMode === 'medium'} />, 
+  }, 
+  { 
+    id: 'condensed', 
+    content: <Box mie="x24" flexGrow={1}>{t('Condensed')}</Box>, 
+    icon: 'condensed-view', 
+    addon: <RadioButton onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />, 
+  }, 
+  { 
+    id: 'avatars', 
+    content: <Box mie="x24" flexGrow={1}>{t('Avatars')}</Box>, 
+    icon: 'user-rounded', 
+    addon: <ToggleSwitch onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />, 
+  }, 
+];
 };
