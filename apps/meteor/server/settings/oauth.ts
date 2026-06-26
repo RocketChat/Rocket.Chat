@@ -4,7 +4,7 @@ import { settingsRegistry } from '../../app/settings/server';
 
 export const createOauthSettings = () =>
 	settingsRegistry.addGroup('OAuth', async function () {
-		await this.add('Accounts_OAuth_Use_Modern_Flow', true, {
+		await this.add('Accounts_OAuth_Use_Modern_Flow', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Accounts_OAuth_Use_Modern_Flow_Label',
