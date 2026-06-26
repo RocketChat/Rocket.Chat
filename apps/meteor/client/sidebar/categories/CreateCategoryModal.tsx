@@ -40,6 +40,7 @@ const CreateCategoryModal = ({ onClose }: CreateCategoryModalProps) => {
 
 	return (
 		<GenericModal
+			variant='warning'
 			title={t('Create_category')}
 			confirmText={t('Create')}
 			confirmDisabled={!name.trim()}
@@ -48,9 +49,12 @@ const CreateCategoryModal = ({ onClose }: CreateCategoryModalProps) => {
 			onCancel={onClose}
 			onClose={onClose}
 		>
+			<Box mbe={16}>Categories are private custom groupings of rooms.</Box>
 			<FieldGroup>
 				<Field>
-					<FieldLabel htmlFor={nameId}>{t('Name')}</FieldLabel>
+					<FieldLabel required htmlFor={nameId}>
+						{t('Name')}
+					</FieldLabel>
 					<FieldRow>
 						<TextInput
 							id={nameId}

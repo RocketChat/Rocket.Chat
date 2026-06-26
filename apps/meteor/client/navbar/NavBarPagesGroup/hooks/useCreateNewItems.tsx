@@ -1,9 +1,8 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, useAtLeastOnePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
-import CreateCategoryModal from '../../../sidebar/categories/CreateCategoryModal';
 import { useOutboundMessageAccess } from '../../../views/omnichannel/components/outboundMessage/hooks';
 import { useOutboundMessageModal } from '../../../views/omnichannel/components/outboundMessage/modals';
 import CreateChannelModal from '../actions/CreateChannelModal';
@@ -30,7 +29,6 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
 	const outboundMessageModal = useOutboundMessageModal();
-	const setModal = useSetModal();
 
 	const createChannelItem: GenericMenuItemProps = {
 		id: 'channel',
@@ -70,15 +68,6 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 		icon: 'send',
 		onClick: () => outboundMessageModal.open(),
 	};
-	const createCategoryItem: GenericMenuItemProps = {
-		id: 'category',
-		content: t('Category'),
-		icon: 'folder',
-		onClick: () => {
-			const closeModal = (): void => setModal(null);
-			setModal(<CreateCategoryModal onClose={closeModal} />);
-		},
-	};
 
 	return [
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
@@ -86,6 +75,5 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 		...(canCreateChannel ? [createChannelItem] : []),
 		...(canCreateTeam && canCreateChannel ? [createTeamItem] : []),
 		...(canSendOutboundMessage ? [createOutboundMessageItem] : []),
-		createCategoryItem,
 	];
 };
