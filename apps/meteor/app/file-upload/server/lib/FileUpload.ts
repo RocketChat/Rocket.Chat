@@ -35,6 +35,7 @@ import { MultipartUploadHandler } from '../../../api/server/lib/MultipartUploadH
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
+import { getURL } from '../../../utils/server/getURL';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
 
@@ -862,10 +863,42 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			return ufsComplete(fileId, this.name, { session: options?.session });
+			const file = await ufsComplete(fileId, this.name, { session: options?.session });
+
+			// `/ufs` used to serve every store generically; it was replaced by per-store routes.
+			// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
+			// (apps, integrations, …) keeps getting a link that resolves.
+			const path = this.getPublicPath(file);
+			if (path) {
+				const url = getURL(path, { cdn: false, full: true });
+				await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
+				file.path = path;
+				file.url = url;
+			}
+
+			return file;
 		} catch (e) {
 			throw e;
 		}
+	}
+
+	// The modern route depends on which store the file lives in (the old `/ufs` path served all of them).
+	private getPublicPath(file: IUpload): string | undefined {
+		if (this.model === Uploads) {
+			return FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+		}
+		if (this.model === UserDataFiles) {
+			return `/data-export/${file._id}`;
+		}
+		if (this.model === Avatars) {
+			if (file.rid) {
+				return `/avatar/room/${file.rid}`;
+			}
+			if (file.userId) {
+				return `/avatar/uid/${file.userId}`;
+			}
+		}
+		return undefined;
 	}
 
 	async insert(

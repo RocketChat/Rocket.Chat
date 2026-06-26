@@ -1,6 +1,7 @@
 import { Uploads } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
+import { getURL } from '../../../utils/server/getURL';
 
 export class AppUploadsConverter {
 	constructor(orch) {
@@ -19,6 +20,19 @@ export class AppUploadsConverter {
 		}
 
 		const map = {
+			// `url`/`path` are no longer persisted on the upload; derive them from the file id+name,
+			// matching the canonical /file-upload route. Declared before `id`/`name` so the source
+			// fields are still present on the cloned data when these run.
+			url: (upload) => {
+				const relativePath = `/file-upload/${upload._id}/${encodeURI(upload.name || '')}`;
+				delete upload.url;
+				return getURL(relativePath, { cdn: false, full: true });
+			},
+			path: (upload) => {
+				const relativePath = `/file-upload/${upload._id}/${encodeURI(upload.name || '')}`;
+				delete upload.path;
+				return relativePath;
+			},
 			id: '_id',
 			name: 'name',
 			size: 'size',
@@ -30,9 +44,7 @@ export class AppUploadsConverter {
 			extension: 'extension',
 			progress: 'progress',
 			etag: 'etag',
-			path: 'path',
 			token: 'token',
-			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
 			room: async (upload) => {

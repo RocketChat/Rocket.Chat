@@ -44,6 +44,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'../../../../server/ufs/ufs-methods': sinon.stub(),
 	'../../../settings/server': { settings: settingsStub },
 	'../../../utils/lib/mimeTypes': sinon.stub(),
+	'../../../utils/server/getURL': { getURL: sinon.stub() },
 	'../../../utils/server/lib/JWTHelper': {
 		validateAndDecodeJWT: validateAndDecodeJWTStub,
 		generateJWT: sinon.stub(),
