@@ -1,4 +1,4 @@
-import { MeteorError, Presence, Team, Calendar } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -29,7 +29,7 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -1546,7 +1546,7 @@ API.v1.get(
 
 		if (ids) {
 			return API.v1.success({
-				users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
 				full: false,
 			});
 		}
@@ -1982,12 +1982,6 @@ API.v1
 				),
 			);
 
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
-					method: 'users.setStatus',
-				});
-			}
-
 			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
@@ -2002,6 +1996,12 @@ API.v1
 			}
 
 			const { status, message, expiresAt } = this.bodyParams;
+
+			if (message && !settings.get('Accounts_AllowUserStatusMessageChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+					method: 'users.setStatus',
+				});
+			}
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
 			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
@@ -2027,10 +2027,6 @@ API.v1
 			}
 
 			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
-
-			if (status) {
-				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-			}
 
 			return API.v1.success();
 		},
