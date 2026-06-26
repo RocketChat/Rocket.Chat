@@ -1,4 +1,4 @@
-import { TextInput } from '@rocket.chat/fuselage';
+import { Icon, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
@@ -17,7 +17,7 @@ const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: stri
 		setFilter(value);
 	});
 
-	return <TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} flexGrow={0} />;
+	return <TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20' />} />;
 };
 
 export default PermissionsTableFilter;

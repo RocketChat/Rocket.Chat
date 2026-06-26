@@ -1,5 +1,16 @@
 # @rocket.chat/ui-voip
 
+## 22.0.0-rc.1
+
+### Patch Changes
+
+- ([#41060](https://github.com/RocketChat/Rocket.Chat/pull/41060)) Fixes voice call UI not reflecting active call state when a new view mounted while a call was already active (e.g. opening the popout window)
+
+- <details><summary>Updated dependencies [5d5edd8520ddb424bd336e3ec802c1f4a4e7d1ce]:</summary>
+
+  - @rocket.chat/media-signaling@1.1.0-rc.1
+  </details>
+
 ## 22.0.0-rc.0
 
 ### Minor Changes
