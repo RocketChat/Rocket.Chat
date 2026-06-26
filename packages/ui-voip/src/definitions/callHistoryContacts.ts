@@ -1,6 +1,12 @@
-export type CallHistoryExternalContact = {
-	number: string;
-};
+export type CallHistoryExternalContact =
+	| {
+			number: string;
+			name?: string;
+	  }
+	| {
+			number?: string;
+			name: string;
+	  };
 
 export type CallHistoryInternalContact = {
 	_id: string;
