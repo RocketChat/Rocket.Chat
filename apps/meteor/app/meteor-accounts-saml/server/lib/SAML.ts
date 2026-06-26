@@ -505,7 +505,9 @@ export class SAML {
 					throw new Error('No user data collected from IdP response.');
 				}
 
-				const safeExpireAt = new Date((profile.expireAt as Date).getTime() + (service.allowedClockDrift || 0));
+				const baseExpireAt = profile.expireAt instanceof Date ? profile.expireAt : new Date(Date.now() + 300000);
+
+				const safeExpireAt = new Date(baseExpireAt.getTime() + (service.allowedClockDrift || 0));
 
 				if (!(await SamlUsedAssertions.markUsed(profile.assertionId, profile.issuer, safeExpireAt))) {
 					SAMLUtils.warn({ msg: 'SAML assertion replay detected', issuer: profile.issuer, assertionId: profile.assertionId });
