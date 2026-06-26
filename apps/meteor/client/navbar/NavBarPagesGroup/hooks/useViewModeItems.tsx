@@ -30,28 +30,28 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 			content: t('Extended'),
 			icon: 'extended-view',
 			onClick: setToExtended,
-			addon: <RadioButton onChange={setToExtended} checked={sidebarViewMode === 'extended'} />,
+			addon: <RadioButton checked={sidebarViewMode === 'extended'} onChange={() => undefined} />,
 		},
 		{
 			id: 'medium',
 			content: t('Medium'),
 			icon: 'medium-view',
 			onClick: setToMedium,
-			addon: <RadioButton onChange={setToMedium} checked={sidebarViewMode === 'medium'} />,
+			addon: <RadioButton checked={sidebarViewMode === 'medium'} onChange={() => undefined} />,
 		},
 		{
 			id: 'condensed',
 			content: t('Condensed'),
 			icon: 'condensed-view',
 			onClick: setToCondensed,
-			addon: <RadioButton onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />,
+			addon: <RadioButton checked={sidebarViewMode === 'condensed'} onChange={() => undefined} />,
 		},
 		{
 			id: 'avatars',
 			content: t('Avatars'),
 			icon: 'user-rounded',
 			onClick: handleChangeSidebarDisplayAvatar,
-			addon: <ToggleSwitch onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />,
+			addon: <ToggleSwitch checked={sidebarDisplayAvatar} onChange={() => undefined} />,
 		},
 	];
 };
