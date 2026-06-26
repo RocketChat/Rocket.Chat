@@ -94,6 +94,12 @@ No bespoke eager-resolved `IMessage`/`IRoom`/`IUser`; no `*Raw` variants. Relati
 resolution is a *repository* concern (resolve a reference when the app wants to) — **exact
 resolution API deferred** to a later decision.
 
+> **Amended (round 4 — see [TENETS.md](TENETS.md) §6 Public-contract stability):** apps import
+> these entity types **re-exported through the apps package as the sole import surface**, *not*
+> from `@rocket.chat/core-typings` directly. The underlying types remain core's (no divergence,
+> no conversion layer); the re-export is a type-level chokepoint that lets the SDK pin a baseline
+> `core-typings` version per engine major and absorb a core breaking change within a major.
+
 ## 5. Deferred to later decisions (NOT settled this session)
 
 - **Write semantics:** batched/unit-of-work `update`, flush timing, read-your-writes overlay,

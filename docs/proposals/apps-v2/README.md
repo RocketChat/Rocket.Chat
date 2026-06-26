@@ -4,6 +4,9 @@ Numbered design decisions for the v2 apps SDK, captured as we grill through them
 context lives in [`../apps-v2-sdk-design.md`](../apps-v2-sdk-design.md); current-state
 analysis in [`../apps-current-architecture/`](../apps-current-architecture/).
 
+**Read [`TENETS.md`](TENETS.md) first** — the cross-cutting principles that govern every
+decision below. It is the lens for all of `0001`+.
+
 **Resuming the work?** Start with [`NEXT-SESSION.md`](NEXT-SESSION.md) — steering notes,
 remaining pillars, and the specific open forks waiting.
 

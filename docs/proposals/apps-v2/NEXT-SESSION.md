@@ -1,12 +1,16 @@
 # Steering notes — pick up here next session
 
-Last session: grilling round 3 (2026-06-26). Designed the **event-handler model** (`0003`)
-and **declarative event filtering** (`0004`). Rounds 1–2 covered entry (`0001`) and data-access
-reads (`0002`).
+Last session: grilling round 4 (2026-06-26). Set the six **guiding tenets** (`TENETS.md`) —
+added & scoped Isolation and Public-contract stability; pinned the Observability/Auditing seam,
+re-scoped Permissioning's "static analysis" to build-time tooling, and committed Testability's
+test kit to the public contract. Pinned **Watt/Platformatic + worker-thread-per-app** as the
+isolation/orchestration direction. Round 3 designed the event-handler model (`0003`) and
+declarative filtering (`0004`); rounds 1–2 covered entry (`0001`) and data-access reads (`0002`).
 
 ## How to resume
 
-1. Read, in order: `README.md` (index) → `0001` → `0002` → `0003` → `0004`. Self-contained.
+1. Read `TENETS.md` first — the six guiding tenets are the lens for every decision below.
+   Then read, in order: `README.md` (index) → `0001` → `0002` → `0003` → `0004`. Self-contained.
 2. For full background, the current-state analysis is in `../apps-current-architecture/`
    (01 app-facing SDK, 02 engine/state, 03 runtime/bridges) and the running design context is
    `../apps-v2-sdk-design.md`.

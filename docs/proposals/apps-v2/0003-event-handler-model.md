@@ -116,8 +116,13 @@ hot path and must be fast.)
 
 ## 5. Transport invariant — `pre` is subprocess-only
 
-`pre` events are available **only to apps running on the embedded/subprocess transport, never
-over the network transport** — the synchronous-veto latency budget forbids a network hop.
+`pre` events are available **only to apps running on the local (embedded/subprocess) transport,
+never over the network transport** — the synchronous-veto latency budget forbids a network hop.
+
+> **Amended (round 4 — see [TENETS.md](TENETS.md) §5 Isolation):** the local transport is a
+> **worker thread** (Watt/Platformatic orchestration; ITC via `postMessage`/structured-clone is
+> cheaper than subprocess IPC, so the `pre` latency budget is *more* comfortable, not less). The
+> transport excluded for `pre` remains the **network** transport.
 
 Interaction with [0001]'s "one definition, two drivers": a definition that registers **any**
 `pre` handler is **not portable to remote**. A `pre` security filter must never silently
