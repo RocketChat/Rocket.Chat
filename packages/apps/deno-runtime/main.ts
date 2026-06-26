@@ -1,16 +1,17 @@
-if (!Deno.args.includes('--subprocess')) {
-	Deno.stderr.writeSync(
-		new TextEncoder().encode(`
+import process from 'node:process';
+
+if (!process.argv.includes('--subprocess')) {
+	process.stderr.write(`
             This is a Deno wrapper for Rocket.Chat Apps. It is not meant to be executed stand-alone;
             It is instead meant to be executed as a subprocess by the Apps-Engine framework.
-       `),
-	);
-	Deno.exit(1001);
+       `);
+	process.exit(1001);
 }
 
 import { JsonRpcError } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger';
+import { stdoutTransport } from './lib/transports/stdoutTransport';
 import { decoder } from './lib/codec';
 import { Logger } from './lib/logger';
 
@@ -101,7 +102,7 @@ function handleResponse(response: Messenger.JsonRpcResponse): void {
 async function main() {
 	Messenger.sendNotification({ method: 'ready' });
 
-	for await (const message of decoder.decodeStream(Deno.stdin.readable)) {
+	for await (const message of decoder.decodeStream(process.stdin)) {
 		try {
 			// Process PING command first as it is not JSON RPC
 			if (message === COMMAND_PING) {
@@ -129,6 +130,9 @@ async function main() {
 		}
 	}
 }
+
+// This runtime communicates with the Apps-Engine host through stdout
+Messenger.setTransport(stdoutTransport);
 
 registerErrorListeners();
 

@@ -1,10 +1,9 @@
-import { Buffer } from 'node:buffer';
+import { open } from 'node:fs/promises';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext'
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails'
-import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
@@ -42,25 +41,29 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 		assertIsUpload(file);
 		assertString(path);
 
-		using tempFile = await Deno.open(path, { read: true, create: false });
-		let context: IFileUploadContext;
+		const tempFile = await open(path, 'r');
 
-		switch (method) {
-			case 'executePreFileUpload': {
-				const fileContents = await toArrayBuffer(tempFile.readable);
-				context = { file, content: Buffer.from(fileContents) };
-				break;
+		try {
+			let context: IFileUploadContext;
+
+			switch (method) {
+				case 'executePreFileUpload': {
+					context = { file, content: await tempFile.readFile() };
+					break;
+				}
 			}
-		}
 
-		return await handlerFunction.call(
-			wrapAppForRequest(app, request),
-			context,
-			AppAccessorsInstance.getReader(),
-			AppAccessorsInstance.getHttp(),
-			AppAccessorsInstance.getPersistence(),
-			AppAccessorsInstance.getModifier(),
-		);
+			return await handlerFunction.call(
+				wrapAppForRequest(app, request),
+				context,
+				AppAccessorsInstance.getReader(),
+				AppAccessorsInstance.getHttp(),
+				AppAccessorsInstance.getPersistence(),
+				AppAccessorsInstance.getModifier(),
+			);
+		} finally {
+			await tempFile.close();
+		}
 	} catch(e) {
 		if (e?.name === AppsEngineException.name) {
 			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });

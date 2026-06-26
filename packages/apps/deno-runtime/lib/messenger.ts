@@ -1,5 +1,3 @@
-import { writeAll } from '@std/io';
-
 import * as jsonrpc from 'jsonrpc-lite';
 
 import { encoder } from './codec';
@@ -47,7 +45,7 @@ export const Queue = new (class Queue {
 			const message = this.queue.shift();
 
 			if (message) {
-				await Transport.send(message);
+				await transport.send(message);
 			}
 		}
 
@@ -64,34 +62,36 @@ export const Queue = new (class Queue {
 	}
 })();
 
-export const Transport = new (class Transporter {
-	private selectedTransport: Transporter['stdoutTransport'] | Transporter['noopTransport'];
+/**
+ * A platform-dependent component responsible for delivering encoded messages to
+ * the host that controls this runtime.
+ *
+ * Each runtime platform is expected to provide its own implementation and
+ * inject it via {@link setTransport}.
+ */
+export type Transport = {
+	send(message: Uint8Array): Promise<void>;
+};
 
-	constructor() {
-		this.selectedTransport = this.stdoutTransport.bind(this);
-	}
+/**
+ * The default transport. It discards every message, and is used until a
+ * platform injects its own transport via {@link setTransport}.
+ */
+export const noopTransport: Transport = {
+	send: () => Promise.resolve(),
+};
 
-	private async stdoutTransport(message: Uint8Array): Promise<void> {
-		await writeAll(Deno.stdout, message);
-	}
+let transport: Transport = noopTransport;
 
-	private async noopTransport(_message: Uint8Array): Promise<void> {}
-
-	public selectTransport(transport: 'stdout' | 'noop'): void {
-		switch (transport) {
-			case 'stdout':
-				this.selectedTransport = this.stdoutTransport.bind(this);
-				break;
-			case 'noop':
-				this.selectedTransport = this.noopTransport.bind(this);
-				break;
-		}
-	}
-
-	public send(message: Uint8Array): Promise<void> {
-		return this.selectedTransport(message);
-	}
-})();
+/**
+ * Injects the transport implementation to be used when sending messages.
+ *
+ * Platforms must call this during bootstrap to wire up the appropriate
+ * transport. Until then, messages are discarded by the default no-op transport.
+ */
+export function setTransport(newTransport: Transport): void {
+	transport = newTransport;
+}
 
 export function parseMessage(message: string | Record<string, unknown>) {
 	let parsed: jsonrpc.IParsedObject | jsonrpc.IParsedObject[];

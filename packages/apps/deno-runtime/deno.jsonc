@@ -6,7 +6,6 @@
 		"@rocket.chat/apps/": "../",
 		"@std/cli": "jsr:@std/cli@^1.0.9",
 		"@std/io": "jsr:@std/io@^0.225.3",
-		"@std/streams": "jsr:@std/streams@^1.0.16",
 		"acorn": "npm:acorn@8.10.0",
 		"acorn-walk": "npm:acorn-walk@8.2.0",
 		"astring": "npm:astring@1.8.6",
@@ -16,7 +15,7 @@
 	},
 	"unstable": ["detect-cjs","sloppy-imports"],
 	"tasks": {
-		"test": "deno test --no-check --allow-read --allow-write"
+		"test": "deno test --no-check --allow-read --allow-write --allow-env"
 	},
 	"fmt": {
 		"lineWidth": 160,
