@@ -1,5 +1,5 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
-import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useBreakpoints, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, ComponentPropsWithoutRef, FormEvent } from 'react';
 import { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,11 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	ref,
 ) {
 	const { t } = useTranslation();
+	const breakpoints = useBreakpoints();
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
+
+	const isMobile = !breakpoints.includes('lg');
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -24,7 +27,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 
 	return (
 		<Box mb={16} mi='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
-			<Box mi={4} display='flex' flexGrow={1}>
+			<Box mi={4} mbe={isMobile ? 8 : undefined} display='flex' flexGrow={1}>
 				<TextInput
 					{...props}
 					placeholder={placeholder ?? t('Search')}
