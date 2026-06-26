@@ -48,6 +48,21 @@ describe('processPresence', () => {
 			expect(result.values).toMatchObject({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE });
 		});
 
+		test('should not clear a custom status when going OFFLINE (vacation text survives disconnect)', () => {
+			const result = processPresence(
+				user({
+					statusDefault: UserStatus.AWAY,
+					statusSource: 'manual',
+					statusText: 'On vacation',
+					statusExpiresAt: new Date(Date.now() + ONE_HOUR),
+				}),
+				[],
+			);
+			expect(result.values).toEqual({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE });
+			expect(result.values).not.toHaveProperty('statusText');
+			expect(result.clear).toBeUndefined();
+		});
+
 		test('should stay OFFLINE when user is invisible (OFFLINE statusDefault with sessions)', () => {
 			const result = processPresence(user({ statusDefault: UserStatus.OFFLINE }), [session(UserStatus.ONLINE)]);
 			expect(result.values).toMatchObject({ status: UserStatus.OFFLINE, statusConnection: UserStatus.ONLINE });

@@ -2488,12 +2488,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T>(query, options);
 	}
 
-	findNotOfflineByIds(users?: IUser['_id'][], options?: FindOptions<IUser>) {
+	findPresenceUsersByIds(users: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: { $in: users },
-			status: {
-				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
-			},
+			$or: [
+				{ status: { $in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY] } },
+				{ statusText: { $exists: true, $ne: '' } },
+				{ statusExpiresAt: { $exists: true } },
+			],
 		};
 		return this.find(query, options);
 	}
