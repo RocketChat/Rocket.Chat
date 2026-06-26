@@ -11,7 +11,7 @@ export function shortnameToUnicode(text: string): string {
 		if (emoji?.unicode) return emoji.unicode;
 
 		// Fallback to legacy emojione shortcodes for backward compatibility
-		const legacy = legacyEmojioneMap[shortcode];
+		const legacy = Object.hasOwn(legacyEmojioneMap, shortcode) ? legacyEmojioneMap[shortcode] : undefined;
 		if (legacy) return legacy;
 
 		return match;
