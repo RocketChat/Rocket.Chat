@@ -1,8 +1,8 @@
 import { assertEquals, assertThrows } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { applySecureFields } from '../secureFields.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { applySecureFields } from '../secureFields';
 
 const SECURE_FIELDS_KEY = '@@SecureFields';
 
@@ -13,7 +13,7 @@ describe('applySecureFields', () => {
 
 	it('throws when app is unavailable', () => {
 		assertThrows(
-			() => applySecureFields({ foo: 'bar', [SECURE_FIELDS_KEY]: [] } as any),
+			() => applySecureFields({ foo: 'bar', [SECURE_FIELDS_KEY]: [] }),
 			Error,
 			"App unavailable, can't parse object with secure fields",
 		);
@@ -32,7 +32,7 @@ describe('applySecureFields', () => {
 				{ permission: 'abac.read', name: 'abacAttributes', value: { department: 'support' } },
 				{ permission: 'api.read', name: 'apiToken', value: 'secret' },
 			],
-		} as any);
+		});
 
 		assertEquals(parsed, {
 			foo: 'bar',
@@ -50,7 +50,7 @@ describe('applySecureFields', () => {
 		const parsed = applySecureFields({
 			abacAttributes: null,
 			[SECURE_FIELDS_KEY]: [{ permission: 'abac.read', name: 'abacAttributes', value: { tenant: 'alpha' } }],
-		} as any);
+		});
 
 		assertEquals(parsed, {
 			abacAttributes: { tenant: 'alpha' },

@@ -10,19 +10,19 @@ if (!Deno.args.includes('--subprocess')) {
 
 import { JsonRpcError } from 'jsonrpc-lite';
 
-import * as Messenger from './lib/messenger.ts';
-import { decoder } from './lib/codec.ts';
-import { Logger } from './lib/logger.ts';
+import * as Messenger from './lib/messenger';
+import { decoder } from './lib/codec';
+import { Logger } from './lib/logger';
 
-import slashcommandHandler from './handlers/slashcommand-handler.ts';
-import videoConferenceHandler from './handlers/videoconference-handler.ts';
-import apiHandler from './handlers/api-handler.ts';
-import handleApp from './handlers/app/handler.ts';
-import handleScheduler from './handlers/scheduler-handler.ts';
-import registerErrorListeners from './error-handlers.ts';
-import { sendMetrics } from './lib/metricsCollector.ts';
-import outboundMessageHandler from './handlers/outboundcomms-handler.ts';
-import { RequestContext } from './lib/requestContext.ts';
+import slashcommandHandler from './handlers/slashcommand-handler';
+import videoConferenceHandler from './handlers/videoconference-handler';
+import apiHandler from './handlers/api-handler';
+import handleApp from './handlers/app/handler';
+import handleScheduler from './handlers/scheduler-handler';
+import registerErrorListeners from './error-handlers';
+import { sendMetrics } from './lib/metricsCollector';
+import outboundMessageHandler from './handlers/outboundcomms-handler';
+import { RequestContext } from './lib/requestContext';
 
 type Handlers = {
 	app: typeof handleApp;

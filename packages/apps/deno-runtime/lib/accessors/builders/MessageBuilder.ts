@@ -1,22 +1,17 @@
 import { LayoutBlock } from '@rocket.chat/ui-kit';
 
 import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
 import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 
-import { BlockBuilder } from './BlockBuilder.ts';
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import { BlockBuilder } from './BlockBuilder';
 
 export class MessageBuilder implements IMessageBuilder {
-	public kind: _RocketChatAssociationModel.MESSAGE;
+	public kind: RocketChatAssociationModel.MESSAGE;
 
 	private msg: IMessage;
 
@@ -175,7 +170,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getEditor(): IUser {
-		return this.msg.editor;
+		return this.msg.editor!;
 	}
 
 	public setGroupable(groupable: boolean): IMessageBuilder {

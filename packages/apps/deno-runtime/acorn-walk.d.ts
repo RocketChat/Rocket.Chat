@@ -1,4 +1,4 @@
-import type acorn from './acorn.d.ts';
+import type acorn from './acorn.d';
 
 export type FullWalkerCallback<TState> = (
 	node: acorn.AnyNode,

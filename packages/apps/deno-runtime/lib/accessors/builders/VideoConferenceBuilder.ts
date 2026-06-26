@@ -1,20 +1,14 @@
 import type { IVideoConferenceBuilder } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceBuilder';
 import type { IGroupVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
 
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 export type AppVideoConference = Pick<IGroupVideoConference, 'rid' | 'providerName' | 'providerData' | 'title' | 'discussionRid'> & {
 	createdBy: IGroupVideoConference['createdBy']['_id'];
 };
 
 export class VideoConferenceBuilder implements IVideoConferenceBuilder {
-	public kind: _RocketChatAssociationModel.VIDEO_CONFERENCE = RocketChatAssociationModel.VIDEO_CONFERENCE;
+	public kind: RocketChatAssociationModel.VIDEO_CONFERENCE = RocketChatAssociationModel.VIDEO_CONFERENCE;
 
 	protected call: AppVideoConference;
 
@@ -25,7 +19,7 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 	public setData(data: Partial<AppVideoConference>): IVideoConferenceBuilder {
 		this.call = {
 			rid: data.rid!,
-			createdBy: data.createdBy,
+			createdBy: data.createdBy!,
 			providerName: data.providerName!,
 			title: data.title!,
 			discussionRid: data.discussionRid,

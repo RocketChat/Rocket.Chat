@@ -1,10 +1,10 @@
 import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
 import { JsonRpcError, Defined } from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../AppObjectRegistry.ts';
-import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
-import { RequestContext } from '../lib/requestContext.ts';
-import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
+import { AppObjectRegistry } from '../AppObjectRegistry';
+import { AppAccessorsInstance } from '../lib/accessors/mod';
+import { RequestContext } from '../lib/requestContext';
+import { wrapComposedApp } from '../lib/wrapAppForRequest';
 
 export default async function outboundMessageHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;

@@ -9,22 +9,16 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 
-import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
-import * as Messenger from '../../messenger.ts';
+import * as Messenger from '../../messenger';
 
-import { MessageBuilder } from '../builders/MessageBuilder.ts';
-import { RoomBuilder } from '../builders/RoomBuilder.ts';
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
+import { MessageBuilder } from '../builders/MessageBuilder';
+import { RoomBuilder } from '../builders/RoomBuilder';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
 
-import { require } from '../../../lib/require.ts';
-import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
-
-const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyUpdater implements IModifyUpdater {
 	private readonly livechatUpdater: ILivechatUpdater;

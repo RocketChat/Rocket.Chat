@@ -3,7 +3,7 @@ import { assertEquals, assertInstanceOf, assertStrictEquals } from 'https://deno
 import { describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import * as jsonrpc from 'jsonrpc-lite';
 
-import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
+import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 describe('formatErrorResponse', () => {
 	describe('JSON-RPC ErrorObject handling', () => {
