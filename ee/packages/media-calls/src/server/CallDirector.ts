@@ -73,7 +73,7 @@ class MediaCallDirector {
 
 		// To avoid race conditions, load the negotiation before changing the call state
 		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		const negotiation = data.webrtcAnswer ? await MediaCallNegotiations.findLatestByCallId(call._id) : null;
 
 		const { webrtcAnswer, ...acceptData } = data;
 
