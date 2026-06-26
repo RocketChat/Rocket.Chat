@@ -41,6 +41,7 @@ import '../app/message-mark-as-unread/server';
 import '../app/message-pin/server';
 import '../app/message-star/server';
 import '../app/nextcloud/server';
+import '../app/openclaw/server';
 import '../app/oauth2-server-config/server';
 import '../app/push-notifications/server';
 import '../app/retention-policy/server';
