@@ -11,3 +11,5 @@ remaining pillars, and the specific open forks waiting.
 |---|---|---|
 | [0001](0001-app-entry-and-transport-split.md) | App entry point (`defineApp` factory) & transport-agnostic definition | accepted |
 | [0002](0002-data-access-and-read-queries.md) | Data access: unified `ctx` repositories & constrained read-query model | accepted |
+| [0003](0003-event-handler-model.md) | Event-handler model: `(event, ctx)`, returned `Decision`, two write paths, pre/post split, event-name grammar | accepted |
+| [0004](0004-declarative-event-filtering.md) | Declarative host-side event filtering as an optional `on()` arg | accepted |
