@@ -104,7 +104,9 @@ API.v1.addRoute(
 				projection: { _id: 1, username: 1, name: 1, status: 1, statusLivechat: 1, emails: 1, livechat: 1 },
 			});
 
-			// TODO: throw error instead of returning null
+			if (!user) {
+				return API.v1.notFound('User not found');
+			}
 			return API.v1.success({ user });
 		},
 		async delete() {
