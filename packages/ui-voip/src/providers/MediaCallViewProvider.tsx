@@ -24,6 +24,7 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
+import { useVoiceToVideoEscalation } from '../hooks/useVoiceToVideoEscalation';
 import TransferModal from '../views/TransferModal';
 
 type MediaCallViewProviderProps = {
@@ -40,6 +41,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
+
+	const { onRequestVideoCall, isRequestingVideoCall } = useVoiceToVideoEscalation(sessionState);
 
 	useDesktopNotifications(sessionState);
 
@@ -70,14 +73,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 				if (!instance) {
 					return;
 				}
-				return instance.on('endedCall', () => {
-					if (sessionState.hidden) {
+				return instance.on('endedCall', ({ call, wasHidden }) => {
+					if (wasHidden || call.shouldSkipSoundEffects()) {
 						return;
 					}
 					callback();
 				});
 			},
-			[instance, sessionState.hidden],
+			[instance],
 		),
 	);
 
@@ -245,8 +248,33 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		});
 	}, [instance, onChangePosition]);
 
+	useEffect(() => {
+		if (!sessionState.escalated) {
+			return;
+		}
+
+		const state = instance?.getState();
+
+		if (!state?.confirmed) {
+			return;
+		}
+
+		if (!state?.call.hasScreenVideoTrack()) {
+			return;
+		}
+
+		try {
+			state.call.requestScreenShare(false);
+			dispatchToastMessage({ type: 'info', message: t('Screen_sharing_stopped_video_escalation') });
+		} catch (error) {
+			console.error('Error stopping screen share', error);
+		}
+	}, [sessionState.escalated, dispatchToastMessage, t, instance]);
+
 	const contextValue = {
 		sessionState,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onClickDirectMessage,
 		onMute,
 		onHold,

@@ -1,5 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -11,6 +11,7 @@ import {
 	CARD_LIST_SECTION_MAX_HEIGHT,
 	ActionStrip,
 	ActionToggleChat,
+	VideoCallButton,
 } from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
@@ -18,6 +19,7 @@ import { usePeekMediaSessionFeatures } from '../../context/usePeekMediaSessionFe
 import useRegisterView from '../../context/useRegisterView';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import EscalatedCallPrompt from '../EscalatedCallPrompt';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -57,29 +59,46 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onToggleScreenSharing,
 		onOpenPopout,
 		onClosePopout,
+		onRequestVideoCall,
 		streams: { localScreen },
 	} = useMediaCallView();
 	const { currentViews } = useMediaCallInstance();
 
 	const isPopout = currentViews.includes('popout');
 
-	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+
 	useRegisterView('room');
 
 	const appActions = useVisibleAppActions();
 
-	const showHeaderActions = appActions.length > 0;
+	const showAppActions = appActions.length > 0;
 
 	const features = usePeekMediaSessionFeatures();
 
 	const screenShareAvailable = features.includes('screen-share');
 	const holdAvailable = features.includes('hold');
+
+	const content = useMemo(() => {
+		if (isPopout) {
+			return <PopoutDockPrompt onClosePopout={onClosePopout} />;
+		}
+
+		if (escalationAvailable && escalated) {
+			return <EscalatedCallPrompt />;
+		}
+
+		return <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />;
+	}, [isPopout, escalationAvailable, escalated, user, shouldWrapCards, onClosePopout]);
+
+	const showHeaderActions = escalationAvailable && !escalated;
 
 	if (!peerInfo || !('userId' in peerInfo) || !peerInfo.userId) {
 		return null;
@@ -97,8 +116,11 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
-			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
-			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
+			{showAppActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
+			{showHeaderActions ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+
+			{content}
+
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>

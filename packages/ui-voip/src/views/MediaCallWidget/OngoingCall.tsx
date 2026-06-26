@@ -16,6 +16,7 @@ import {
 	ActionButton,
 	useKeypad,
 	useInfoSlots,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
@@ -26,8 +27,9 @@ import { isExternalPeer } from '../../utils/isExternalPeer';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt } = sessionState;
+	const { sessionState, isRequestingVideoCall, onRequestVideoCall, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } =
+		useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt, escalated } = sessionState;
 	const { inline } = useMediaCallWidgetSlot();
 
 	// The floating widget keeps its collapsible DTMF toggle for every ongoing call.
@@ -43,6 +45,7 @@ const OngoingCall = () => {
 
 	const transferDisabled = !supportedFeatures.includes('transfer');
 	const holdDisabled = !supportedFeatures.includes('hold');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
 
 	const appActions = useVisibleAppActions();
 
@@ -63,6 +66,7 @@ const OngoingCall = () => {
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 				<MediaCallDialpad />
+				{videoConfAvailable && <VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>

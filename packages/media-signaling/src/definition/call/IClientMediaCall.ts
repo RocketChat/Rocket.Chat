@@ -10,7 +10,7 @@ import type { CallActorType } from './common';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -47,6 +47,8 @@ export const callHangupReasonList = [
 ] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];
+export const isCallHangupReason = (reason: string): reason is CallHangupReason =>
+	(callHangupReasonList as readonly string[]).includes(reason);
 
 export const callAnswerList = [
 	'accept', // actor accepts the call
@@ -62,6 +64,7 @@ export const callNotificationList = [
 	'active', // notify that call activity was confirmed
 	'hangup', // notify that the call is over;
 	'trying', // notify that the other client is connecting but still need more time
+	'escalated', // notify that the call was escalated to a video-conference
 ] as const;
 
 export type CallNotification = (typeof callNotificationList)[number];
@@ -118,6 +121,7 @@ export interface IClientMediaCall {
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 	isFeatureAvailable(feature: CallFeature): boolean;
 	hasFlag(flag: CallFlag): boolean;
+	shouldSkipSoundEffects(): boolean;
 
 	readonly localParticipant: IClientMediaCallLocalParticipant;
 	readonly remoteParticipants: IClientMediaCallRemoteParticipant[];

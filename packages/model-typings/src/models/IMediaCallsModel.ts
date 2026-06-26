@@ -33,10 +33,15 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall>(options: FindOptions<T> | undefined): FindCursor<T>;
 	findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T>;
+	findAllNotOverByOppositeSipExtension<T extends Document = IMediaCall>(sipExtension: string, options?: FindOptions<T>): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean>;
+	isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean>;
 	updateParticipantsById(
 		callId: string,
 		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
 	): Promise<UpdateResult>;
+	flagAsEscalatedByCallId(callId: string): Promise<UpdateResult>;
+	flagAsRemotelyEscalatedByCallId(callId: string): Promise<UpdateResult>;
 }
