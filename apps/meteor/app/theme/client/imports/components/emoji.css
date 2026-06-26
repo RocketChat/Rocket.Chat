@@ -1,5 +1,8 @@
 /* Global emoji styles */
 .emoji {
+	font-size: 1.375rem;
+	line-height: 1.5rem;
+
 	/* custom emojis */
 	&--custom {
 		height: 1.375rem;
