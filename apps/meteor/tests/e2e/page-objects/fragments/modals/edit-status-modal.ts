@@ -36,11 +36,11 @@ export class EditStatusModal extends Modal {
 	}
 
 	get durationError() {
-		return this.root.getByText('Expiration must be in the future');
+		return this.root.getByRole('alert').filter({ hasText: 'Expiration must be in the future' });
 	}
 
 	get durationMissingError() {
-		return this.root.locator('.rcx-field__error', { hasText: 'Choose date and time' });
+		return this.root.getByRole('alert').filter({ hasText: 'Choose date and time' });
 	}
 
 	async selectStatusType(status: string): Promise<void> {
