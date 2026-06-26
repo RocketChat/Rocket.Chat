@@ -1,8 +1,16 @@
 diff --git a/lib/@types/index.d.ts b/lib/@types/index.d.ts
-index f71a82f458c1432202be8d4585fc70ba94bee4a4..2ad273d1efcaaa54b0a1326ff1c15b6cfc199be3 100644
+index f71a82f458c1432202be8d4585fc70ba94bee4a4..4a6fee9f2aeac1a926d591aabab19f927d1bc3af 100644
 --- a/lib/@types/index.d.ts
 +++ b/lib/@types/index.d.ts
-@@ -101,7 +101,7 @@ declare namespace Srf {
+@@ -40,6 +40,7 @@ declare namespace Srf {
+     stackTime: string;
+     calledNumber: string;
+     callingNumber: string;
++    callingName: string;
+     raw: string;
+     get(name: string): string;
+     has(name: string): boolean;
+@@ -101,7 +102,7 @@ declare namespace Srf {
      local: { uri: string; sdp: string; };
      remote: { uri: string; sdp: string; };
      req: SrfRequest;
@@ -11,7 +19,7 @@ index f71a82f458c1432202be8d4585fc70ba94bee4a4..2ad273d1efcaaa54b0a1326ff1c15b6c
      modify(sdp: string, opts?: { noAck: boolean }): Promise<string>;
      modify(opts: { noAck: boolean }): Promise<string>;
      modify(sdp: string, opts?: { noAck: boolean }, callback?: (err: any, msg: SrfResponse) => void): void;
-@@ -119,12 +119,12 @@ declare namespace Srf {
+@@ -119,12 +120,12 @@ declare namespace Srf {
      on(messageType: "modify", callback: (req: SrfRequest, res: SrfResponse) => void): void;
      once(messageType: string, callback: (msg: SrfResponse) => void): void;
      listeners(messageType: string): any[];
@@ -27,7 +35,7 @@ index f71a82f458c1432202be8d4585fc70ba94bee4a4..2ad273d1efcaaa54b0a1326ff1c15b6c
      headers?: SipMessageHeaders;
    }
  
-@@ -135,6 +135,8 @@ declare namespace Srf {
+@@ -135,6 +136,8 @@ declare namespace Srf {
      localSdp?: string;
      proxy?: string;
      auth?: { username: string; password: string; };
@@ -36,7 +44,7 @@ index f71a82f458c1432202be8d4585fc70ba94bee4a4..2ad273d1efcaaa54b0a1326ff1c15b6c
    }
  
    export interface CreateB2BUAOptions {
-@@ -155,7 +157,7 @@ declare class Srf extends EventEmitter {
+@@ -155,7 +158,7 @@ declare class Srf extends EventEmitter {
    constructor();
    constructor(tags: string | string[]);
    connect(config?: Srf.SrfConfig): Promise<void>;
@@ -45,7 +53,7 @@ index f71a82f458c1432202be8d4585fc70ba94bee4a4..2ad273d1efcaaa54b0a1326ff1c15b6c
    use(callback: (req: Srf.SrfRequest, res: Srf.SrfResponse, next: Function) => void): void;
    use(messageType: string, callback: (req: Srf.SrfRequest, res: Srf.SrfResponse, next: Function) => void): void;
    invite(callback: (req: Srf.SrfRequest, res: Srf.SrfResponse) => void): void;
-@@ -164,12 +166,12 @@ declare class Srf extends EventEmitter {
+@@ -164,12 +167,12 @@ declare class Srf extends EventEmitter {
    proxyRequest(req: Srf.SrfRequest, destination: string | string[], opts?: Srf.ProxyRequestOptions, callback?: (err: any, results: string) => void): void;
    createUAS(req: Srf.SrfRequest, res: Srf.SrfResponse, opts: Srf.CreateUASOptions): Promise<Srf.Dialog>;
    createUAS(req: Srf.SrfRequest, res: Srf.SrfResponse, opts: Srf.CreateUASOptions, callback?: (err: any, dialog: Srf.Dialog) => void): this;

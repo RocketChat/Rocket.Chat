@@ -174,11 +174,26 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
+			const avatarUrl = (() => {
+				if (contact.username) {
+					return getAvatarUrl({ username: contact.username });
+				}
+
+				if (contact.type === 'user' && contact.id) {
+					return getAvatarUrl({ userId: contact.id });
+				}
+
+				return undefined;
+			})();
+
 			if (contact.type === 'sip') {
 				dispatch({
 					type: 'instance_updated',
 					payload: {
-						peerInfo: derivePeerInfoFromInstanceContact(contact),
+						peerInfo: {
+							...derivePeerInfoFromInstanceContact(contact),
+							avatarUrl,
+						},
 						transferredBy,
 						state,
 						muted,
@@ -195,19 +210,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				return;
 			}
 
-			const avatarUrl = (() => {
-				if (contact.username) {
-					return getAvatarUrl({ username: contact.username });
-				}
-
-				if (contact.id) {
-					return getAvatarUrl({ userId: contact.id });
-				}
-
-				return undefined;
-			})();
-
-			const peerInfo = { ...derivePeerInfoFromInstanceContact(contact), avatarUrl };
+			const peerInfo = {
+				...derivePeerInfoFromInstanceContact(contact),
+				avatarUrl,
+			};
 
 			dispatch({
 				type: 'instance_updated',
