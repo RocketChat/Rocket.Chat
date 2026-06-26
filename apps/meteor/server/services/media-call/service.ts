@@ -490,9 +490,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			logger.error({ msg: 'Unexpected error while flagging call as escalated', err });
 		});
 
-		const result = await VideoConf.joinCall(conference, user, { mic: true, cam: false });
+		await VideoConf.joinCall(conference, user, { mic: true, cam: false });
 
-		return result;
+		return VideoConf.makePersistentChatUrlForConference(conference._id);
 	}
 
 	private async getOrCreateConferenceForEscalatingCall(call: IMediaCall, user: IUser): Promise<VideoConference | null> {
@@ -530,7 +530,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const calleeUid = call.callee.uid;
 
 		if (!callerUid || !calleeUid) {
-			return this.parsePersistentChatExternalRoom();
+			return VideoConf.getRidForExternalConference();
 		}
 
 		try {
@@ -558,25 +558,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return newRoom.rid;
 		} catch (err) {
 			logger.error({ msg: 'Failed to determine DM room for external call', err });
-			return this.parsePersistentChatExternalRoom();
+			return VideoConf.getRidForExternalConference();
 		}
-	}
-
-	private parsePersistentChatExternalRoom(): string | null {
-		const settingValue = settings.get('Pexip_Integration_PersistentChat_ExternalRoom');
-		if (!settingValue || typeof settingValue !== 'object' || !Array.isArray(settingValue) || !settingValue.length) {
-			return null;
-		}
-
-		for (const value of settingValue) {
-			if (!value || typeof value !== 'object' || !value._id) {
-				continue;
-			}
-
-			return value._id;
-		}
-
-		return null;
 	}
 
 	private async flagAsEscalated(call: IMediaCall): Promise<void> {
