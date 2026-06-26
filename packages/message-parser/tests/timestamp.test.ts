@@ -1,14 +1,7 @@
 import { parse } from '../src';
+import { paragraph, plain, bold, strike } from './helpers';
 
-const plain = (value: string) => ({ type: 'PLAIN_TEXT' as const, value });
-
-const paragraph = (value: Array<Record<string, unknown>>) => ({ type: 'PARAGRAPH' as const, value });
-
-const bold = (value: Array<Record<string, unknown>>) => ({ type: 'BOLD' as const, value });
-
-const strike = (value: Array<Record<string, unknown>>) => ({ type: 'STRIKE' as const, value });
-
-const timestampNode = (value: string, format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' = 't') => ({
+export const timestampNode = (value: string, format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' = 't') => ({
 	type: 'TIMESTAMP' as const,
 	value: {
 		timestamp: value,
@@ -43,7 +36,6 @@ test.each([
 test.each([
 	['<t:2025-07-22T10:00:00.000+00:00:R>', [paragraph([timestampNode('1753178400', 'R')])]],
 	['<t:2025-07-22T10:00:00+00:00:R>', [paragraph([timestampNode('1753178400', 'R')])]],
-
 	['<t:2025-07-24T20:19:58.154+00:00:R>', [paragraph([timestampNode('1753388398', 'R')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
