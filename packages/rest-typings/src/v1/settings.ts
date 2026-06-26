@@ -88,7 +88,7 @@ const SettingsGetSchema = {
 export const isSettingsGetParams = ajvQuery.compile<SettingsGetParams>(SettingsGetSchema);
 
 export type SettingsBulkProps = {
-	settings: { _id: ISetting['_id']; value: ISetting['value'] }[];
+	settings: { _id: ISetting['_id']; value: ISetting['value']; editor?: ISettingColor['editor'] }[];
 };
 
 const SettingsBulkSchema = {
@@ -100,6 +100,7 @@ const SettingsBulkSchema = {
 				type: 'object',
 				properties: {
 					_id: { type: 'string', minLength: 1 },
+					editor: { type: 'string', enum: ['color', 'expression'] },
 					value: {},
 				},
 				required: ['_id', 'value'],

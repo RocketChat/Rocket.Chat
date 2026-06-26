@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/media-signaling",
 	"description": "Rocket.Chat signaling client for media calls",
-	"version": "1.1.0-rc.0",
+	"version": "1.1.0-rc.1",
 	"license": "MIT",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat/#readme",
 	"repository": {
