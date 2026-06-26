@@ -77,7 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string } | undefined> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -89,6 +89,11 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			...mail,
 		})
 		.then((info) => {
+			// Nodemailer doesn't return an error if the email fails to send, 
+			// so we need to check the response for a messageId to confirm it was sent successfully.
+			if (!info?.messageId) {
+				throw new Error('smtp-send-failed');
+			}
 			logger.info({ msg: 'Message sent', info });
 			return info;
 		})
@@ -163,7 +168,11 @@ slashCommands.add({
 				sender: message.u.username,
 				rid: message.rid,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		).then((info) => {
+			if (info?.messageId) {
+				LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
+			}
+		});
 
 		await Messages.updateOne(
 			{ _id: message._id },
@@ -262,10 +271,6 @@ callbacks.add(
 			return message;
 		}
 
-		if (!inbox) {
-			return message;
-		}
-
 		const replyToMessage = await Messages.findOneById(match.groups.id);
 		if (!replyToMessage || !isIMessageInbox(replyToMessage) || !replyToMessage.email?.messageId) {
 			return message;
@@ -285,7 +290,11 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		).then((info) => {
+			if (info?.messageId) {
+				LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
+			}
+		});
 
 		message.msg = match.groups.text;
 
@@ -338,7 +347,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	void sendEmail(inbox, {
+	sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',
