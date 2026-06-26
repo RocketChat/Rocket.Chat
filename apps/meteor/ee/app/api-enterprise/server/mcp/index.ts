@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
+import './permissions';
 import { handleRpcMessage, type JsonRpcRequest, type McpAuth } from './server';
 import { API } from '../../../../../app/api/server';
 import { settings } from '../../../../../app/settings/server';
@@ -66,6 +67,10 @@ const handleMcpGet = () => {
  *
  * Gated behind the `experimental-enterprise-features` license module: requests are
  * rejected unless the workspace license includes it (the same gate also applies to the
- * `MCP_Enabled` setting).
+ * `MCP_Enabled` setting). Every action additionally requires the `access-mcp` permission.
  */
-API.v1.addRoute('mcp', { authRequired: true, license: ['experimental-enterprise-features'] }, { post: handleMcpPost, get: handleMcpGet });
+API.v1.addRoute(
+	'mcp',
+	{ authRequired: true, permissionsRequired: ['access-mcp'], license: ['experimental-enterprise-features'] },
+	{ post: handleMcpPost, get: handleMcpGet },
+);

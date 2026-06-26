@@ -33,6 +33,7 @@ Authentication is **reused from the REST layer** — no MCP-specific credential 
 
 - The client sends a **Personal Access Token** as `X-User-Id` + `X-Auth-Token` headers on every request (including `initialize`), because the route is `authRequired: true`.
 - The standard auth middleware resolves the user; the action reads `this.user` / `this.userId`. A missing/invalid token yields `401` before any MCP logic runs.
+- Every MCP action additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page.
 
 > When creating the PAT, tick **"Ignore Two Factor Authentication"**, otherwise header auth is rejected with a 2FA challenge.
 
@@ -131,6 +132,7 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 | JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…) | `ee/app/api-enterprise/server/mcp/server.ts` |
 | Tool catalog (curated + extended allow-list, variants, schema normalization) | `ee/app/api-enterprise/server/mcp/catalog.ts` |
 | Tool dispatch (loopback to REST as the user) | `ee/app/api-enterprise/server/mcp/dispatch.ts` |
+| Permission seed (`access-mcp`) | `ee/app/api-enterprise/server/mcp/permissions.ts` |
 | EE module load | `ee/app/api-enterprise/server/index.ts` |
 | Settings (license-gated) | `ee/server/settings/mcp.ts` (registered via `ee/server/startup/mcp.ts`) |
 | License module (`experimental-enterprise-features`) | `packages/core-typings/src/license/LicenseModule.ts` |
