@@ -151,6 +151,17 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
+				if (eventType === 'org.matrix.bridge.ping') {
+					const event = await federationSDK.sendCustomEvent(roomId, eventType, body, senderUsername);
+
+					return {
+						statusCode: 200,
+						body: {
+							event_id: event.eventId,
+						},
+					};
+				}
+
 				if (eventType !== 'm.room.message') {
 					// TODO: support additional event types (m.reaction, m.room.redaction, etc.)
 					return notImplemented('Only m.room.message is supported in v1', { eventType });
