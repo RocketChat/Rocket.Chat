@@ -11,10 +11,12 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import CategoryEmptyHint from '../categories/CategoryEmptyHint';
+import { useSidebarCategories } from '../categories/useSidebarCategories';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { useRoomList } from '../hooks/useRoomList';
+import { useRoomList, isCategoryEmptyHint } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
@@ -23,7 +25,8 @@ const RoomList = () => {
 	const isAnonymous = !useUserId();
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
+	const { categories } = useSidebarCategories();
+	const { groupsCount, groupsList, roomList, groupedUnreadInfo, categoriesByKey } = useRoomList({ collapsedGroups, categories });
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
@@ -58,11 +61,21 @@ const RoomList = () => {
 							onClick={() => handleClick(groupsList[index])}
 							onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
 							groupTitle={groupsList[index]}
+							category={categoriesByKey[groupsList[index]]}
 							unreadCount={groupedUnreadInfo[index]}
 						/>
 					)}
 					{...(roomList.length > 0 && {
-						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
+						itemContent: (index) => {
+							const item = roomList[index];
+							if (!item) {
+								return null;
+							}
+							if (isCategoryEmptyHint(item)) {
+								return <CategoryEmptyHint categoryId={item.categoryEmptyHint.id} categoryName={item.categoryEmptyHint.name} />;
+							}
+							return <RoomListRow data={itemData} item={item} />;
+						},
 					})}
 					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
 				/>

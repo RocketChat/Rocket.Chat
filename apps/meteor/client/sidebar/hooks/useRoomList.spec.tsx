@@ -291,3 +291,68 @@ it('should not add room to unread group if thread unread is an empty array', asy
 	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
 	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeUndefined();
 });
+
+describe('categories', () => {
+	it('should render a category group at the top of the list with its channel', async () => {
+		const categorizedChannel = {
+			...createFakeSubscription({ t: 'c', ...emptyUnread }),
+			...createFakeRoom({ t: 'c' }),
+		} as unknown as SubscriptionWithRoom;
+		const category = { _id: 'category-test', name: 'Engineering', rooms: [categorizedChannel.rid] };
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [], categories: [category] }), {
+			wrapper: getWrapperSettings({ fakeRoom: categorizedChannel }).build(),
+		});
+
+		const { groupsList, groupsCount, roomList, categoriesByKey } = result.current;
+
+		// category is the first group
+		expect(groupsList[0]).toBe('category-test');
+		expect(categoriesByKey['category-test']).toEqual({ id: 'category-test', name: 'Engineering' });
+		// exactly one channel is in the category bucket
+		expect(groupsCount[0]).toBe(1);
+		expect(roomList[0].rid).toBe(categorizedChannel.rid);
+	});
+
+	it('should not duplicate a categorized room in other groups', async () => {
+		const categorizedChannel = {
+			...createFakeSubscription({ t: 'c', ...emptyUnread }),
+			...createFakeRoom({ t: 'c' }),
+		} as unknown as SubscriptionWithRoom;
+		const category = { _id: 'category-test', name: 'Engineering', rooms: [categorizedChannel.rid] };
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [], categories: [category] }), {
+			wrapper: getWrapperSettings({ fakeRoom: categorizedChannel }).build(),
+		});
+
+		const { roomList } = result.current;
+
+		// the categorized room appears exactly once across the whole list
+		expect(roomList.filter((room) => room.rid === categorizedChannel.rid)).toHaveLength(1);
+	});
+
+	it('should keep an empty category visible with a single hint row', async () => {
+		const category = { _id: 'category-empty', name: 'Empty', rooms: [] };
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [], categories: [category] }), {
+			wrapper: getWrapperSettings({}).build(),
+		});
+
+		const { groupsList, groupsCount, roomList } = result.current;
+
+		expect(groupsList[0]).toBe('category-empty');
+		// an expanded empty category shows one "no channels yet" hint row
+		expect(groupsCount[0]).toBe(1);
+		expect((roomList[0] as unknown as { categoryEmptyHint?: unknown }).categoryEmptyHint).toEqual({ id: 'category-empty', name: 'Empty' });
+	});
+
+	it('should not show a hint row when the empty category is collapsed', async () => {
+		const category = { _id: 'category-empty', name: 'Empty', rooms: [] };
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: ['category-empty'], categories: [category] }), {
+			wrapper: getWrapperSettings({}).build(),
+		});
+
+		expect(result.current.groupsCount[0]).toBe(0);
+	});
+});
