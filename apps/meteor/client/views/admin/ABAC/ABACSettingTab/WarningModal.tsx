@@ -35,7 +35,20 @@ const WarningModal = ({ onConfirm, onCancel }: WarningModalProps) => {
 			<Trans i18nKey='ABAC_Warning_Modal_Content'>
 				You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room's default access
 				control, it must be removed from ABAC management in
-				<Box is='a' onClick={handleNavigate}>
+				<Box
+					is='button'
+					type='button'
+					onClick={handleNavigate}
+					style={{
+						background: 'none',
+						border: 'none',
+						color: 'inherit',
+						textDecoration: 'underline',
+						cursor: 'pointer',
+						padding: 0,
+						font: 'inherit',
+					}}
+				>
 					{' '}
 					ABAC {'>'} Rooms
 				</Box>

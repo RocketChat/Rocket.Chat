@@ -106,11 +106,39 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
 					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
 						Didn't receive email?{' '}
-						<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
+						<Box
+							is='button'
+							type='button'
+							mi={4}
+							onClick={handleResendRegistrationEmail}
+							style={{
+								background: 'none',
+								border: 'none',
+								color: 'inherit',
+								textDecoration: 'underline',
+								cursor: 'pointer',
+								padding: 0,
+								font: 'inherit',
+							}}
+						>
 							Resend
 						</Box>{' '}
 						or{' '}
-						<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
+						<Box
+							is='button'
+							type='button'
+							mi={4}
+							onClick={handleBackFromConfirmation}
+							style={{
+								background: 'none',
+								border: 'none',
+								color: 'inherit',
+								textDecoration: 'underline',
+								cursor: 'pointer',
+								padding: 0,
+								font: 'inherit',
+							}}
+						>
 							change email
 						</Box>
 					</Trans>
