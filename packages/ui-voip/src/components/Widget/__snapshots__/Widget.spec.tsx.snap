@@ -9,7 +9,7 @@ exports[`renders FullWidget without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div

@@ -1,7 +1,7 @@
-import { Box, ButtonGroup, Divider, Field, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useState } from 'react';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import MediaCallDialpad from './MediaCallDialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -14,10 +14,11 @@ import {
 	Timer,
 	DevicePicker,
 	ActionButton,
+	useKeypad,
 	useInfoSlots,
-	Keypad,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isExternalPeer } from '../../utils/isExternalPeer';
@@ -27,9 +28,12 @@ const OngoingCall = () => {
 
 	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
+	const { inline } = useMediaCallWidgetSlot();
 
-	const [open, setOpen] = useState(false);
-	const [inputValue, setInputValue] = useState('');
+	// The floating widget keeps its collapsible DTMF toggle for every ongoing call.
+	// The inline (sidebar rail) dialpad is rendered by <MediaCallDialpad /> in the content instead,
+	// so the toggle is only suppressed while inline to avoid showing both.
+	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -58,35 +62,15 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				<MediaCallDialpad />
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{open ? (
-					<Box display='flex' justifyContent='center' alignItems='center' w='100%' flexDirection='column' mbe={8}>
-						<Field mbe={8}>
-							<FieldRow>
-								<TextInput value={inputValue} readOnly small mi={24} />
-							</FieldRow>
-						</Field>
-						<Keypad
-							onKeyPress={(...args) => {
-								setInputValue((inputValue) => inputValue + args[0]);
-								onTone(...args);
-							}}
-						/>
-						<Divider w='100%' />
-					</Box>
-				) : null}
+				{keypad}
 				<AppActions actions={appActions} vertical />
 				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
-					<ActionButton
-						disabled={connecting || reconnecting}
-						icon='dialpad'
-						label={t('Dialpad')}
-						title={open ? t('Close_dialpad') : t('Open_dialpad')}
-						onClick={() => setOpen((open) => !open)}
-					/>
+					{!inline && <ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					<ToggleButton
 						label={t('Hold')}
