@@ -1546,7 +1546,7 @@ API.v1.get(
 
 		if (ids) {
 			return API.v1.success({
-				users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
 				full: false,
 			});
 		}
