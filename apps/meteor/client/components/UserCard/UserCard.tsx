@@ -21,6 +21,32 @@ const clampStyle = css`
 	word-break: break-word;
 `;
 
+const mobileAvatarStyle = css`
+	@media (max-width: 500px) {
+		width: 72px;
+		height: 72px;
+	}
+`;
+
+const mobileContentStyle = css`
+	@media (max-width: 500px) {
+		margin-inline-start: 8px;
+	}
+`;
+
+const mobileCardStyle = css`
+	@media (max-width: 500px) {
+		max-width: 95vw;
+	}
+`;
+
+const hideNicknameOnMobile = css`
+	@media (max-width: 400px) {
+		display: none;
+	}
+`;
+
+
 type UserCardProps = {
 	user?: {
 		nickname?: string;
@@ -49,18 +75,18 @@ const UserCard = ({
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
-		<UserCardDialog title={t('User_card')} {...props}>
+		<UserCardDialog title={t('User_card')} className={mobileCardStyle} {...props}>
 			<div>
-				{username && <UserAvatar username={username} etag={etag} size='x124' />}
+				{username && <UserAvatar username={username} etag={etag} size='x124' className={mobileAvatarStyle} />}
 				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
 					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
 				</Box>
 			</div>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
+			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px' className={mobileContentStyle}>
 				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
 					<UserCardUsername status={status} name={name} />
 					{nickname && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText>
+						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText className={hideNicknameOnMobile}>
 							({nickname})
 						</Box>
 					)}
