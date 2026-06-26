@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import type { ISamlUsedAssertions, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISamlUsedAssertionsModel } from '@rocket.chat/model-typings';
 import type { MongoServerError, Collection, Db, IndexDescription } from 'mongodb';
@@ -18,7 +20,7 @@ export class SamlUsedAssertionsRaw extends BaseRaw<ISamlUsedAssertions> implemen
 	async markUsed(assertionId: string, issuer: string, expireAt: Date): Promise<boolean> {
 		try {
 			await this.insertOne({
-				_id: `${issuer}::${assertionId}`,
+				_id: crypto.createHash('sha256').update(JSON.stringify({ issuer, assertionId })).digest('hex'),
 				assertionId,
 				issuer,
 				expireAt,
