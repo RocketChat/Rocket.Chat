@@ -24,12 +24,12 @@ export class AppUploadsConverter {
 			// matching the canonical /file-upload route. Declared before `id`/`name` so the source
 			// fields are still present on the cloned data when these run.
 			url: (upload) => {
-				const relativePath = `/file-upload/${upload._id}/${encodeURI(upload.name || '')}`;
+				const relativePath = `/file-upload/${upload._id}/${encodeURIComponent(upload.name || '')}`;
 				delete upload.url;
 				return getURL(relativePath, { cdn: false, full: true });
 			},
 			path: (upload) => {
-				const relativePath = `/file-upload/${upload._id}/${encodeURI(upload.name || '')}`;
+				const relativePath = `/file-upload/${upload._id}/${encodeURIComponent(upload.name || '')}`;
 				delete upload.path;
 				return relativePath;
 			},

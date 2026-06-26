@@ -885,7 +885,7 @@ export class FileUploadClass {
 	// The modern route depends on which store the file lives in (the old `/ufs` path served all of them).
 	private getPublicPath(file: IUpload): string | undefined {
 		if (this.model === Uploads) {
-			return FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+			return FileUpload.getPath(`${file._id}/${encodeURIComponent(file.name || '')}`);
 		}
 		if (this.model === UserDataFiles) {
 			return `/data-export/${file._id}`;
