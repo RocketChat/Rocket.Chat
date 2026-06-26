@@ -270,6 +270,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			calleeContractId: this.session.sessionId,
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
 			supportedFeatures: SIP_CALL_FEATURES,
+			sipCallId: this.sipDialog.sip?.callId,
 		});
 	}
 
