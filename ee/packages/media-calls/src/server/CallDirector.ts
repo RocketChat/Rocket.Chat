@@ -188,7 +188,8 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features, divertedBy } =
+			params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -237,6 +238,7 @@ class MediaCallDirector {
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
+			...(divertedBy && { divertedBy }),
 
 			features: allowedFeatures,
 			...(params.sipCallId && { sipCallId: params.sipCallId }),
