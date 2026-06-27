@@ -4,7 +4,12 @@ import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomList } from './useRoomList';
+import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
+
+// The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
+const groupsListOf = (groups: SidebarRoomListGroup[]) => groups.map((group) => group.key);
+const roomListOf = (groups: SidebarRoomListGroup[]) => groups.flatMap((group) => group.rooms);
 
 const user = createFakeUser({
 	active: true,
@@ -95,27 +100,22 @@ const getWrapperSettings = ({
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
 
 it('should return roomList, groupsCount and groupsList', async () => {
-	const {
-		result: {
-			current: { roomList, groupsList, groupsCount },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({}).build(),
 	});
 
-	expect(roomList).toBeDefined();
-	expect(groupsList).toBeDefined();
-	expect(groupsCount).toBeDefined();
+	expect(roomListOf(result.current.groups)).toBeDefined();
+	expect(groupsListOf(result.current.groups)).toBeDefined();
+	expect(result.current.groupsCount).toBeDefined();
 });
 
 it('should return groupsCount with the correct count', async () => {
-	const {
-		result: {
-			current: { groupsCount, roomList },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({}).build(),
 	});
+
+	const { groupsCount } = result.current;
+	const roomList = roomListOf(result.current.groups);
 
 	expect(groupsCount).toContain(fakeRooms.length);
 	expect(groupsCount).not.toContain(fakeRooms.length + 5);
@@ -124,104 +124,90 @@ it('should return groupsCount with the correct count', async () => {
 });
 
 it('should return roomList with the subscribed rooms and the correct length', async () => {
-	const {
-		result: {
-			current: { roomList },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({}).build(),
 	});
+
+	const roomList = roomListOf(result.current.groups);
 	expect(roomList).toContain(fakeRooms[0]);
 	expect(roomList).toHaveLength(fakeRooms.length);
 });
 
 it('should return groupsList with "Conversations" if preference sidebarGroupByType is not enabled', async () => {
-	const {
-		result: {
-			current: { groupsList },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({}).build(),
 	});
+
+	const groupsList = groupsListOf(result.current.groups);
 	expect(groupsList).toContain('Conversations');
 	expect(groupsList).toHaveLength(1);
 });
 
 it('should return groupsList with "Teams" if sidebarGroupByType is enabled and roomList has teams', async () => {
-	const {
-		result: {
-			current: { groupsList, groupsCount },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 
+	const groupsList = groupsListOf(result.current.groups);
 	const teamsIndex = groupsList.indexOf('Teams');
 	expect(groupsList).toContain('Teams');
-	expect(groupsCount[teamsIndex]).toEqual(teams.length);
+	expect(result.current.groupsCount[teamsIndex]).toEqual(teams.length);
 });
 
 it('should return groupsList with "Favorites" if sidebarShowFavorites is enabled', async () => {
-	const {
-		result: {
-			current: { groupsList, groupsCount },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarShowFavorites: true, sidebarGroupByType: true }).build(),
 	});
 
+	const groupsList = groupsListOf(result.current.groups);
 	const favoritesIndex = groupsList.indexOf('Favorites');
 	expect(groupsList).toContain('Favorites');
-	expect(groupsCount[favoritesIndex]).toEqual(favoriteRooms.length);
+	expect(result.current.groupsCount[favoritesIndex]).toEqual(favoriteRooms.length);
 });
 
 it('should return groupsList with "Discussions" if isDiscussionEnabled is enabled', async () => {
-	const {
-		result: {
-			current: { groupsList, groupsCount },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ isDiscussionEnabled: true, sidebarGroupByType: true }).build(),
 	});
 
+	const groupsList = groupsListOf(result.current.groups);
 	const discussionIndex = groupsList.indexOf('Discussions');
 	expect(groupsList).toContain('Discussions');
-	expect(groupsCount[discussionIndex]).toEqual(discussionRooms.length);
+	expect(result.current.groupsCount[discussionIndex]).toEqual(discussionRooms.length);
 });
 
 it('should return groupsList without "Discussions" if isDiscussionEnabled is disabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ isDiscussionEnabled: false, sidebarGroupByType: true }).build(),
 	});
-	expect(result.current.groupsList).not.toContain('Discussions');
+	expect(groupsListOf(result.current.groups)).not.toContain('Discussions');
 });
 
 it('should remove corresponding items from roomList and return groupCount 0 when group is collapsed', async () => {
-	const {
-		result: {
-			current: { roomList, groupsCount, groupsList },
-		},
-	} = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
+	const groupsList = groupsListOf(result.current.groups);
+	const roomList = roomListOf(result.current.groups);
 	const channelsIndex = groupsList.indexOf('Channels');
-	expect(groupsCount[channelsIndex]).toEqual(0);
-	expect(roomList.length).toEqual(groupsCount.reduce((a, b) => a + b, 0));
+	expect(result.current.groupsCount[channelsIndex]).toEqual(0);
+	expect(roomList.length).toEqual(result.current.groupsCount.reduce((a, b) => a + b, 0));
 });
 
 it('should always return groupsCount and groupsList with the same length', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
-	expect(result.current.groupsCount.length).toEqual(result.current.groupsList.length);
+	expect(result.current.groupsCount.length).toEqual(groupsListOf(result.current.groups).length);
 });
 
 it('should return "Unread" group with the correct items if sidebarShowUnread is enabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarShowUnread: true, sidebarGroupByType: true }).build(),
 	});
-	const unreadIndex = result.current.groupsList.indexOf('Unread');
-	expect(result.current.groupsList).toContain('Unread');
+	const groupsList = groupsListOf(result.current.groups);
+	const unreadIndex = groupsList.indexOf('Unread');
+	expect(groupsList).toContain('Unread');
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
 });
 
@@ -236,8 +222,9 @@ it('should not include unread room in unread group if hideUnreadStatus is enable
 			} as unknown as SubscriptionWithRoom,
 		}).build(),
 	});
-	const unreadIndex = result.current.groupsList.indexOf('Unread');
-	const roomListUnread = result.current.roomList.filter((room) => room.unread);
+	const groupsList = groupsListOf(result.current.groups);
+	const unreadIndex = groupsList.indexOf('Unread');
+	const roomListUnread = roomListOf(result.current.groups).filter((room) => room.unread);
 
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
 	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
@@ -248,8 +235,9 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 
-	const channelsIndex = result.current.groupsList.indexOf('Channels');
-	const { groupMentions, unread, userMentions, tunread, tunreadUser } = result.current.groupedUnreadInfo[channelsIndex];
+	const groupsList = groupsListOf(result.current.groups);
+	const channelsIndex = groupsList.indexOf('Channels');
+	const { groupMentions, unread, userMentions, tunread, tunreadUser } = result.current.groups[channelsIndex].unreadInfo;
 
 	expect(groupMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.groupMentions, 0));
 	expect(unread).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.unread, 0));
@@ -271,7 +259,8 @@ it('should add to unread group when has thread unread, even if alert is false', 
 		}).build(),
 	});
 
-	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
+	const roomList = roomListOf(result.current.groups);
+	const unreadGroup = roomList.splice(0, result.current.groupsCount[0]);
 	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeDefined();
 });
 
@@ -288,6 +277,7 @@ it('should not add room to unread group if thread unread is an empty array', asy
 		}).build(),
 	});
 
-	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
+	const roomList = roomListOf(result.current.groups);
+	const unreadGroup = roomList.splice(0, result.current.groupsCount[0]);
 	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeUndefined();
 });

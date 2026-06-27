@@ -1,11 +1,21 @@
-import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import {
+	type ISidebarCustomCategory,
+	type ISubscription,
+	type ILivechatInquiryRecord,
+	type IRoom,
+	isTeamRoom,
+	isDirectMessageRoom,
+} from '@rocket.chat/core-typings';
 import { useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useShowUnreadsGroups } from '../hooks/useShowUnreadsGroups';
+import { useSystemGroupsOrder } from '../hooks/useSystemGroupsOrder';
 
 export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: TranslationKey; icon: IconName } } = {
 	all: {
@@ -84,6 +94,9 @@ export type RoomsNavigationContextValue = {
 	currentFilter: AllGroupsKeysWithUnread;
 	setFilter: (filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => void;
 	unreadGroupData: Map<AllGroupsKeys, GroupedUnreadInfoData>;
+	customCategories: ISidebarCustomCategory[];
+	customGroups: Map<string, Set<SubscriptionWithRoom>>;
+	customUnreadData: Map<string, GroupedUnreadInfoData>;
 	parentRid?: IRoom['_id'];
 };
 
@@ -126,37 +139,99 @@ export const getEmptyUnreadInfo = (): GroupedUnreadInfoData => ({
 });
 
 // Hooks
-type RoomListGroup<T extends AllGroupsKeys> = {
-	group: T;
-	rooms: Array<T extends SideBarFiltersKeys ? SubscriptionWithRoom : ILivechatInquiryRecord>;
+
+/**
+ * A renderable section of the sidebar room list. Either a system/standard group (Teams, Channels, …)
+ * or a user-defined custom category (`category` is set).
+ */
+export type SideBarRoomListItem = {
+	/** Group key: a system filter key or a custom category id. Used for collapse state and DnD. */
+	key: string;
+	/** Resolved display title (translated for system groups, raw name for custom categories). */
+	title: string;
+	icon: IconName;
+	/** Rooms to render — already filtered for collapse + "Show unreads" behavior. */
+	rooms: SubscriptionWithRoom[];
 	unreadInfo: GroupedUnreadInfoData;
+	collapsed: boolean;
+	showUnreads: boolean;
+	/** True for a custom category that currently has no rooms (renders the "drag rooms here" placeholder). */
+	empty: boolean;
+	category?: ISidebarCustomCategory;
+};
+
+const getDisplayRooms = (rooms: SubscriptionWithRoom[], collapsed: boolean, showUnreads: boolean): SubscriptionWithRoom[] => {
+	if (!collapsed) {
+		return rooms;
+	}
+	if (!showUnreads) {
+		return [];
+	}
+	return rooms.filter((room) => isUnreadSubscription(room));
 };
 
 export const useSideBarRoomsList = (): {
-	roomListGroups: RoomListGroup<SideBarFiltersKeys>[];
+	roomListGroups: SideBarRoomListItem[];
 	groupCounts: number[];
 	totalCount: number;
 } & ReturnType<typeof useCollapsedGroups> => {
+	const { t } = useTranslation();
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groups, unreadGroupData } = useRoomsListContext();
+	const { isShowUnreads } = useShowUnreadsGroups();
+	const { sortGroups } = useSystemGroupsOrder();
+	const { groups, unreadGroupData, customCategories, customGroups, customUnreadData } = useRoomsListContext();
 
-	const roomListGroups = collapsibleFilters
-		.map((group) => {
+	// Custom categories render first (above the system groups) and persist even when empty.
+	const customItems: SideBarRoomListItem[] = customCategories.map((category) => {
+		const roomSet = customGroups.get(category._id);
+		const rooms = roomSet ? Array.from(roomSet) : [];
+		const collapsed = collapsedGroups.includes(category._id);
+		const showUnreads = category.showUnreads !== false;
+
+		return {
+			key: category._id,
+			title: category.name,
+			icon: 'folder',
+			rooms: getDisplayRooms(rooms, collapsed, showUnreads),
+			unreadInfo: customUnreadData.get(category._id) || getEmptyUnreadInfo(),
+			collapsed,
+			showUnreads,
+			empty: rooms.length === 0,
+			category,
+		};
+	});
+
+	const systemItems: SideBarRoomListItem[] = collapsibleFilters
+		.map((group): SideBarRoomListItem | undefined => {
 			const roomSet = (groups as Map<SideBarFiltersKeys, Set<SubscriptionWithRoom>>).get(group);
 			const rooms = roomSet ? Array.from(roomSet) : [];
-			const unreadInfo = unreadGroupData.get(group) || getEmptyUnreadInfo();
 
 			if (!rooms.length) {
 				return undefined;
 			}
 
-			return { group, rooms, unreadInfo };
+			const collapsed = collapsedGroups.includes(group);
+			const showUnreads = isShowUnreads(group);
+
+			return {
+				key: group,
+				title: t(sidePanelFiltersConfig[group].title),
+				icon: sidePanelFiltersConfig[group].icon,
+				rooms: getDisplayRooms(rooms, collapsed, showUnreads),
+				unreadInfo: unreadGroupData.get(group) || getEmptyUnreadInfo(),
+				collapsed,
+				showUnreads,
+				empty: false,
+			};
 		})
 		.filter(isTruthy);
 
+	const roomListGroups = [...customItems, ...sortGroups(systemItems)];
+
 	const groupCounts = roomListGroups.map((group) => {
-		if (collapsedGroups.includes(group.group)) {
-			return 0;
+		// An expanded empty custom category reserves a single row for the "drag rooms here" placeholder.
+		if (group.empty) {
+			return group.collapsed ? 0 : 1;
 		}
 		return group.rooms.length;
 	});

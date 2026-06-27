@@ -166,6 +166,19 @@ export interface IUserSettings {
 	calendar?: IUserCalendar;
 }
 
+/**
+ * A per-user, custom grouping of rooms shown in the sidebar.
+ * Order is given by the position in the `sidebarCustomCategories` preference array.
+ */
+export interface ISidebarCustomCategory {
+	_id: string;
+	name: string;
+	/** When collapsed, whether unread rooms in this category stay visible. Defaults to `true`. */
+	showUnreads?: boolean;
+	/** Room ids (`rid`) assigned to this category. A room belongs to at most one custom category. */
+	rooms?: string[];
+}
+
 export interface IUser extends IRocketChatRecord {
 	createdAt: Date;
 	roles: IRole['_id'][];

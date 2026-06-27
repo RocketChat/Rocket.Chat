@@ -1,7 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
@@ -12,6 +12,8 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
+import { useGroupDrop, useRoomDrag } from '../../views/navigation/sidebar/categories/CategoryDnDContext';
+import { CLASSIC_NATIVE_KEYS, getNativeCategoryKey } from '../../views/navigation/sidebar/categories/nativeCategory';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
@@ -57,6 +59,10 @@ type RoomListRowProps = {
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
+
+	/** The sidebar group this row belongs to (translation key for system groups, category id for custom ones). */
+	groupKey?: string;
+	isCustomCategory?: boolean;
 };
 
 const SidebarItemTemplateWithData = ({
@@ -71,6 +77,8 @@ const SidebarItemTemplateWithData = ({
 	isAnonymous,
 	videoConfActions,
 	userId,
+	groupKey,
+	isCustomCategory,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
@@ -79,6 +87,23 @@ const SidebarItemTemplateWithData = ({
 
 	const dmUserId = getUidDirectMessage(room, userId);
 	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
+
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
+	const discussionEnabled = useSetting('Discussion_enabled');
+	const nativeKey = getNativeCategoryKey(room, {
+		groupByType: Boolean(sidebarGroupByType),
+		discussionEnabled: Boolean(discussionEnabled),
+		keys: CLASSIC_NATIVE_KEYS,
+	});
+
+	const { isDragging, ...dragProps } = useRoomDrag({ rid: room.rid, name: title, isFavorite: room.f, fromGroup: groupKey, nativeKey });
+	const { isDragOver, isFadedOut, dropProps } = useGroupDrop(groupKey, Boolean(isCustomCategory));
+
+	const dragStyle = {
+		...style,
+		...(isDragging || isFadedOut ? { opacity: isDragging ? 0.5 : 0.4 } : {}),
+		...(isDragOver ? { backgroundColor: 'var(--rcx-color-surface-hover)' } : {}),
+	};
 
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -117,6 +142,8 @@ const SidebarItemTemplateWithData = ({
 			selected={selected}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
+			{...dragProps}
+			{...dropProps}
 			onClick={(): void => {
 				if (!selected) sidebar.toggle();
 			}}
@@ -125,7 +152,7 @@ const SidebarItemTemplateWithData = ({
 			time={lastMessage?.ts}
 			subtitle={subtitle}
 			icon={icon}
-			style={style}
+			style={dragStyle}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
@@ -168,6 +195,8 @@ const keys: (keyof RoomListRowProps)[] = [
 	't',
 	'sidebarViewMode',
 	'videoConfActions',
+	'groupKey',
+	'isCustomCategory',
 ];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {

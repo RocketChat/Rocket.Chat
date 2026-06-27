@@ -1,38 +1,85 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Badge, Box, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useGroupDrop } from '../../views/navigation/sidebar/categories/CategoryDnDContext';
+import CategoryMenu from '../../views/navigation/sidebar/categories/CategoryMenu';
+import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
+// The header bar has its own opaque background (identical to the sidebar's) that would hide the
+// wrapper's drag-over tint. Making it permanently transparent lets the wrapper's inline background
+// drive the header highlight in the same render as the room rows — so they light up together.
+const transparentBarClass = css`
+	.rcx-sidebar-v2-collapse-group__bar {
+		background-color: transparent;
+	}
+`;
+
 type RoomListCollapserProps = {
-	groupTitle: string;
-	collapsedGroups: string[];
+	group: SidebarRoomListGroup;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
+	onMoveUp: () => void;
+	onMoveDown: () => void;
 	onClick: MouseEventHandler<HTMLElement>;
 	onKeyDown: (e: KeyboardEvent) => void;
-	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
 } & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
-const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapsedGroups, ...props }: RoomListCollapserProps) => {
-	const { t } = useTranslation();
 
-	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
+const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
+	const { t } = useTranslation();
+	const { isDragOver, isFadedOut, dropProps } = useGroupDrop(group.key, Boolean(group.category));
+
+	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
+
+	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
+
+	// `SidebarV2CollapseGroup` doesn't render an actions slot, so the kebab is overlaid on the header;
+	// it shows on hover or while its menu is open, replacing the unread badge.
+	const [hovered, setHovered] = useState(false);
+	const [menuOpen, setMenuOpen] = useState(false);
+	const showActions = hovered || menuOpen;
 
 	return (
-		<SidebarV2CollapseGroup
-			title={t(groupTitle)}
-			expanded={!collapsedGroups.includes(groupTitle)}
-			badge={
-				showUnread ? (
-					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
-						{unreadCount.total}
-					</Badge>
-				) : undefined
-			}
-			aria-label={
-				!collapsedGroups.includes(groupTitle) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
-			}
-			{...props}
-		/>
+		<Box
+			{...dropProps}
+			position='relative'
+			className={transparentBarClass}
+			style={{ backgroundColor: isDragOver ? 'var(--rcx-color-surface-hover)' : undefined, opacity: isFadedOut ? 0.4 : undefined }}
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
+		>
+			<SidebarV2CollapseGroup
+				title={title}
+				expanded={!group.collapsed}
+				badge={
+					!showActions && showUnread ? (
+						<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
+							{unreadCount.total}
+						</Badge>
+					) : undefined
+				}
+				aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
+				{...props}
+			/>
+			{showActions && (
+				<Box position='absolute' insetBlockStart={4} insetInlineEnd={8}>
+					<CategoryMenu
+						category={group.category}
+						groupKey={group.key}
+						showUnreads={group.showUnreads}
+						canMoveUp={canMoveUp}
+						canMoveDown={canMoveDown}
+						onMoveUp={onMoveUp}
+						onMoveDown={onMoveDown}
+						onOpenChange={setMenuOpen}
+					/>
+				</Box>
+			)}
+		</Box>
 	);
 };
 

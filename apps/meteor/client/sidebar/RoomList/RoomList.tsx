@@ -11,6 +11,10 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { useCustomCategories } from '../../views/navigation/hooks/useCustomCategories';
+import { useSystemGroupsOrder } from '../../views/navigation/hooks/useSystemGroupsOrder';
+import { CategoryDnDProvider } from '../../views/navigation/sidebar/categories/CategoryDnDContext';
+import CategoryEmptyPlaceholder from '../../views/navigation/sidebar/categories/CategoryEmptyPlaceholder';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -18,13 +22,15 @@ import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
-const RoomList = () => {
+const RoomListInner = () => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
+	const { groups, groupsCount, totalCount } = useRoomList({ collapsedGroups });
+	const { reorderCategory } = useCustomCategories();
+	const { move: moveSystemGroup } = useSystemGroupsOrder();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
@@ -46,6 +52,9 @@ const RoomList = () => {
 		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
 	);
 
+	const customCount = groups.filter((group) => group.category).length;
+	const systemKeys = groups.filter((group) => !group.category).map((group) => group.key);
+
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
 
@@ -54,17 +63,39 @@ const RoomList = () => {
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupsCount}
-					groupContent={(index) => (
-						<RoomListCollapser
-							collapsedGroups={collapsedGroups}
-							onClick={() => handleClick(groupsList[index])}
-							onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-							groupTitle={groupsList[index]}
-							unreadCount={groupedUnreadInfo[index]}
-						/>
-					)}
-					{...(roomList.length > 0 && {
-						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
+					groupContent={(index) => {
+						const group = groups[index];
+						const isCustom = Boolean(group.category);
+						const positionInSegment = isCustom ? index : index - customCount;
+						const segmentLength = isCustom ? customCount : systemKeys.length;
+
+						const onMoveUp = () => (isCustom ? reorderCategory(group.key, 'up') : moveSystemGroup(systemKeys, group.key, 'up'));
+						const onMoveDown = () => (isCustom ? reorderCategory(group.key, 'down') : moveSystemGroup(systemKeys, group.key, 'down'));
+
+						return (
+							<RoomListCollapser
+								group={group}
+								canMoveUp={positionInSegment > 0}
+								canMoveDown={positionInSegment < segmentLength - 1}
+								onMoveUp={onMoveUp}
+								onMoveDown={onMoveDown}
+								onClick={() => handleClick(group.key)}
+								onKeyDown={(e) => handleKeyDown(e, group.key)}
+							/>
+						);
+					}}
+					{...(totalCount > 0 && {
+						itemContent: (index, groupIndex) => {
+							const group = groups[groupIndex];
+
+							if (group.empty) {
+								return <CategoryEmptyPlaceholder categoryId={group.key} />;
+							}
+
+							const correctedIndex = index - groupsCount.slice(0, groupIndex).reduce((acc, count) => acc + count, 0);
+							const item = group.rooms[correctedIndex];
+							return item && <RoomListRow data={itemData} item={item} groupKey={group.key} isCustomCategory={Boolean(group.category)} />;
+						},
 					})}
 					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
 				/>
@@ -72,5 +103,12 @@ const RoomList = () => {
 		</Box>
 	);
 };
+
+// eslint-disable-next-line react/no-multi-comp
+const RoomList = () => (
+	<CategoryDnDProvider>
+		<RoomListInner />
+	</CategoryDnDProvider>
+);
 
 export default RoomList;
