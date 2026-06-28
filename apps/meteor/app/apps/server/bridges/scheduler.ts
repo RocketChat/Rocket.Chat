@@ -48,13 +48,13 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 			if (job.attrs.type === 'normal') {
 				await job.agenda.cancel({ _id: job.attrs._id });
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			await CronHistory.updateOne(
 				{ _id: insertedId },
 				{
 					$set: {
 						finishedAt: new Date(),
-						error: error?.stack ? error.stack : error,
+						error: error instanceof Error && error.stack ? error.stack : String(error),
 					},
 				},
 			);
