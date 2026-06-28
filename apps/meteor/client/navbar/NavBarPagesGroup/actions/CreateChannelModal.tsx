@@ -77,6 +77,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
+	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
@@ -109,7 +110,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			topic: '',
 			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
-			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
+			encrypted: Boolean(e2eEnforcedForPrivate || e2eEnabledForPrivateByDefault),
 			broadcast: false,
 			federated: false,
 		},
@@ -131,6 +132,14 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			setValue('encrypted', false);
 		}
 	}, [isPrivate, setValue]);
+
+	useEffect(() => {
+		// Workspace policy forces encryption on for private rooms; keep the toggle on
+		// whenever the room is private (and not federated, which cannot be encrypted).
+		if (isPrivate && e2eEnforcedForPrivate && !federated) {
+			setValue('encrypted', true);
+		}
+	}, [isPrivate, e2eEnforcedForPrivate, federated, setValue]);
 
 	useEffect(() => {
 		setValue('readOnly', broadcast);
@@ -185,7 +194,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		}
 	};
 
-	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
+	const e2eDisabled = useMemo<boolean>(
+		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
+		[e2eEnabled, federated, isPrivate, e2eEnforcedForPrivate],
+	);
 
 	const createChannelFormId = useId();
 

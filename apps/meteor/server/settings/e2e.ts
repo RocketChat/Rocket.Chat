@@ -28,6 +28,14 @@ export const createE2ESettings = () =>
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
 
+		await this.add('E2E_Force_Encryption_For_Private_Rooms', false, {
+			type: 'boolean',
+			i18nLabel: 'Force_Encryption_For_Private_Rooms',
+			i18nDescription: 'Force_Encryption_For_Private_Rooms_Description',
+			public: true,
+			enableQuery: { _id: 'E2E_Enable', value: true },
+		});
+
 		await this.add('E2E_Enable_Encrypt_Files', true, {
 			type: 'boolean',
 			public: true,
