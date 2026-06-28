@@ -7,6 +7,12 @@ import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 
+// `useRoomList` reads the open room to keep it visible while collapsed; mock it (no room open in these tests)
+// to avoid loading the real RoomManager module graph (which imports non-JS assets jest can't transform).
+jest.mock('../../lib/RoomManager', () => ({
+	useOpenedRoom: () => undefined,
+}));
+
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
 const groupsListOf = (groups: SidebarRoomListGroup[]) => groups.map((group) => group.key);
 const roomListOf = (groups: SidebarRoomListGroup[]) => groups.flatMap((group) => group.rooms);

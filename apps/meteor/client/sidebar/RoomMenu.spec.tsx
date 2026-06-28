@@ -33,6 +33,9 @@ const renderOptions = {
 			Hide: 'Hide',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
+			Favorites: 'Favorites',
+			Move_to: 'Move to',
+			New_category: 'New category',
 			Leave_room: 'Leave',
 		})
 		.withSetting('Favorite_Rooms', true)
@@ -48,9 +51,21 @@ it('should display all the menu options for regular rooms', async () => {
 	await userEvent.click(menu as HTMLElement);
 
 	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
-	expect(await screen.findByRole('menuitem', { name: 'Favorite' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
+	// Favoriting moved into the "Move to" submenu, replacing the top-level "Favorite" action.
+	expect(await screen.findByRole('menuitem', { name: 'Move to' })).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: 'Favorite' })).not.toBeInTheDocument();
+});
+
+it('should reveal Favorites inside the "Move to" submenu for regular rooms', async () => {
+	render(<RoomMenu {...defaultProps} />, renderOptions);
+
+	await userEvent.click(screen.queryByRole('button') as HTMLElement);
+	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
+
+	expect(await screen.findByRole('menuitem', { name: 'Favorites' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'New category' })).toBeInTheDocument();
 });
 
 it('should display only mark unread and favorite for omnichannel rooms', async () => {

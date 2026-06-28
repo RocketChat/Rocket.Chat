@@ -18,6 +18,18 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-1c6vtok"
           >
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-105glxj"
+              title="Move_to"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
             <div
               aria-label="rocket.cat"
               class="rcx-box rcx-box--full rcx-css-1xfh5sj rcx-css-f2vsf1"
@@ -40,18 +52,6 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
                 rocket.cat
               </h1>
             </div>
-            <button
-              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
-              title="Favorite rocket.cat"
-              type="button"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
-              >
-                
-              </i>
-            </button>
           </div>
         </div>
       </div>
