@@ -47,6 +47,23 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		};
 	}
 
+	async getJob(jobName: string): Promise<ICronJobItem | null> {
+		let job = await CronJobs.findOne({ name: jobName });
+
+		if (!job) {
+			job = await AppScheduler.findOne({ name: jobName });
+		}
+
+		if (!job) {
+			return null;
+		}
+
+		return {
+			...job,
+			status: resolveStatus(job),
+		};
+	}
+
 	async getAppJobs(pagination?: {
 		offset?: number;
 		count?: number;
