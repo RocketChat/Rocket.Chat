@@ -1,4 +1,3 @@
-import type { ICronJobItem } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, Tag } from '@rocket.chat/fuselage';
 import {
 	ContextualbarFooter,
@@ -30,11 +29,22 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const getHistory = useEndpoint('GET', '/v1/cron.history');
+	const getJob = useEndpoint('GET', '/v1/cron.job');
 	const triggerJob = useEndpoint('POST', '/v1/cron.trigger');
 	const enableJob = useEndpoint('POST', '/v1/cron.enable');
 	const disableJob = useEndpoint('POST', '/v1/cron.disable');
 
-	const { data, isLoading, isError } = useQuery({
+	const { data: jobData, isLoading: isLoadingJob } = useQuery({
+		queryKey: ['cron-job', jobName],
+		queryFn: () => getJob({ jobName }),
+		meta: { apiErrorToastMessage: true },
+	});
+
+	const {
+		data,
+		isLoading: isLoadingHistory,
+		isError,
+	} = useQuery({
 		queryKey: ['cron-history', jobName],
 		queryFn: () => getHistory({ jobName, count: 20, offset: 0 }),
 		meta: {
@@ -46,6 +56,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 		mutationFn: () => triggerJob({ jobName }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Job_Triggered_Successfully') });
+			void queryClient.invalidateQueries({ queryKey: ['cron-job', jobName] });
 			void queryClient.invalidateQueries({ queryKey: ['cron-history', jobName] });
 			void queryClient.invalidateQueries({ queryKey: ['cron-jobs'] });
 		},
@@ -58,6 +69,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 		mutationFn: () => enableJob({ jobName }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Job_Enabled_Successfully') });
+			void queryClient.invalidateQueries({ queryKey: ['cron-job', jobName] });
 			void queryClient.invalidateQueries({ queryKey: ['cron-jobs'] });
 			onClose();
 		},
@@ -70,6 +82,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 		mutationFn: () => disableJob({ jobName }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Job_Disabled_Successfully') });
+			void queryClient.invalidateQueries({ queryKey: ['cron-job', jobName] });
 			void queryClient.invalidateQueries({ queryKey: ['cron-jobs'] });
 			onClose();
 		},
@@ -78,7 +91,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 		},
 	});
 
-	if (isLoading) {
+	if (isLoadingHistory || isLoadingJob) {
 		return <FormSkeleton pi={20} />;
 	}
 
@@ -92,8 +105,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 
 	const history = data?.history || [];
 
-	const jobsQueries = queryClient.getQueriesData<{ jobs: ICronJobItem[] }>({ queryKey: ['cron-jobs'] });
-	const currentJob = jobsQueries.flatMap(([, cacheData]) => cacheData?.jobs || []).find((j) => j.name === jobName);
+	const currentJob = jobData?.job;
 	const isDisabled = currentJob?.status === 'disabled';
 
 	const isPending = triggerMutation.isPending || enableMutation.isPending || disableMutation.isPending;

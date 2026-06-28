@@ -57,6 +57,16 @@ const isCronJobsListResponse = ajv.compile<{ jobs: ICronJobItem[]; count: number
 	additionalProperties: false,
 });
 
+const isCronJobResponse = ajv.compile<{ job: ICronJobItem; success: boolean }>({
+	type: 'object',
+	properties: {
+		job: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['job', 'success'],
+	additionalProperties: false,
+});
+
 const isCronJobsHistoryResponse = ajv.compile<{
 	history: ICronHistoryItem[];
 	count: number;
@@ -131,6 +141,31 @@ const cronJobsEndpoints = API.v1
 				count: jobs.length,
 				offset,
 				total,
+			});
+		},
+	)
+	.get(
+		'cron.job',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
+			query: isCronJobsActionParams,
+			response: {
+				200: isCronJobResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { jobName } = this.queryParams;
+			const job = await CronJobs.getJob(jobName);
+
+			if (!job) {
+				return API.v1.failure('error-job-not-found');
+			}
+
+			return API.v1.success({
+				job,
 			});
 		},
 	)
