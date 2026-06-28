@@ -94,13 +94,18 @@ export class AgendaCronJobs {
 		});
 
 		this.scheduler.on('success', (job: Job) => {
-			const status = job.attrs.nextRunAt ? 'scheduled' : 'completed';
 			logger.debug({
 				msg: `Job "${job.attrs.name}" succeeded`,
 				jobId: job.attrs._id,
 				jobName: job.attrs.name,
 			});
-			void CronJobs.updateOne({ _id: job.attrs._id }, { $set: { status } });
+
+			if (!job.attrs.nextRunAt) {
+				void CronJobs.deleteOne({ _id: job.attrs._id });
+				return;
+			}
+
+			void CronJobs.updateOne({ _id: job.attrs._id }, { $set: { status: 'scheduled' } });
 		});
 
 		this.scheduler.on('fail', (err: unknown, job: Job) => {
@@ -197,6 +202,7 @@ export class AgendaCronJobs {
 		const job = jobs[0];
 		job.enable();
 		await job.save();
+		await CronJobs.updateOne({ _id: job.attrs._id }, { $set: { status: 'scheduled' } });
 
 		return true;
 	}
@@ -214,6 +220,7 @@ export class AgendaCronJobs {
 		const job = jobs[0];
 		job.disable();
 		await job.save();
+		await CronJobs.updateOne({ _id: job.attrs._id }, { $set: { status: 'disabled' } });
 
 		return true;
 	}
@@ -227,7 +234,9 @@ export class AgendaCronJobs {
 			return false;
 		}
 
-		await this.scheduler.now(jobName, {});
+		const job = jobs[0];
+		job.schedule(new Date());
+		await job.save();
 
 		return true;
 	}
