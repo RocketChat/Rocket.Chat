@@ -9,13 +9,14 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import BackgroundJobsTableFilters from './BackgroundJobsTableFilters';
+import { statusVariant } from './helpers';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -24,29 +25,23 @@ type BackgroundJobsTableProps = {
 	tab: BackgroundJobsTab;
 };
 
-const statusVariant = (status?: string) => {
-	switch (status) {
-		case 'running':
-			return 'primary';
-		case 'scheduled':
-			return 'secondary-info';
-		case 'completed':
-			return 'featured';
-		case 'failed':
-			return 'danger';
-		case 'disabled':
-			return 'warning';
-		default:
-			return undefined;
-	}
-};
-
 const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const [, setSearchTerm] = useState('');
 	const formatDateAndTime = useFormatDateAndTime();
 	const timeAgo = useTimeAgo();
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	const handleClick = (jobName: string): void => {
+		router.navigate({
+			name: 'admin-background-jobs',
+			params: {
+				context: 'info',
+				id: jobName,
+			},
+		});
+	};
 
 	useEffect(() => {
 		setCurrent(0);
@@ -93,8 +88,8 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 						<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 						<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
 						<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell>{t('Last Run')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell>{t('Next Run')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
 					</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={5} />
@@ -108,12 +103,12 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Last Run')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Next Run')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
 							{jobs.map((job) => (
-								<GenericTableRow key={job._id} tabIndex={0}>
+								<GenericTableRow key={job._id} tabIndex={0} role='link' action onClick={() => handleClick(job.name)}>
 									<GenericTableCell withTruncatedText fontScale='p2'>
 										{job.name}
 									</GenericTableCell>
