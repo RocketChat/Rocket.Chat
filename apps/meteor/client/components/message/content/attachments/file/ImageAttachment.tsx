@@ -29,7 +29,11 @@ const ImageAttachment = ({
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+	{(descriptionMd || altText) ? (
+				<MessageContentBody md={descriptionMd || altText} />
+			) : (
+				description && <MarkdownText parseEmoji content={description} />
+			)}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage
 					{...imageDimensions}
