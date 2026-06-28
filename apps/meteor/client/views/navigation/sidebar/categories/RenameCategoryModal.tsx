@@ -2,10 +2,11 @@ import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput, Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import EmojiIconPicker from './EmojiIconPicker';
 import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../../hooks/useCustomCategories';
 
 type RenameCategoryModalProps = {
@@ -18,6 +19,7 @@ const RenameCategoryModal = ({ category, onClose }: RenameCategoryModalProps) =>
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { renameCategory, validateName } = useCustomCategories();
 	const nameField = useId();
+	const [icon, setIcon] = useState<string | undefined>(category.icon);
 
 	const {
 		handleSubmit,
@@ -33,8 +35,8 @@ const RenameCategoryModal = ({ category, onClose }: RenameCategoryModalProps) =>
 
 	const handleConfirm = async ({ name }: { name: string }) => {
 		const trimmed = name.trim();
-		// An unchanged name is a no-op that just closes the modal.
-		if (trimmed === category.name.trim()) {
+		// An unchanged name AND emoji is a no-op that just closes the modal.
+		if (trimmed === category.name.trim() && icon === category.icon) {
 			onClose();
 			return;
 		}
@@ -50,7 +52,7 @@ const RenameCategoryModal = ({ category, onClose }: RenameCategoryModalProps) =>
 		}
 
 		try {
-			await renameCategory(category._id, name);
+			await renameCategory(category._id, name, icon);
 			dispatchToastMessage({ type: 'success', message: t('Category_renamed_to__name__', { name: trimmed }) });
 			onClose();
 		} catch (e) {
@@ -74,6 +76,7 @@ const RenameCategoryModal = ({ category, onClose }: RenameCategoryModalProps) =>
 						{t('Name')}
 					</FieldLabel>
 					<FieldRow>
+						<EmojiIconPicker icon={icon} onSelect={setIcon} onClear={() => setIcon(undefined)} />
 						<Controller
 							control={control}
 							name='name'

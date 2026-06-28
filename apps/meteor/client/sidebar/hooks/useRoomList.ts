@@ -7,6 +7,7 @@ import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
+import { useOpenedRoom } from '../../lib/RoomManager';
 import { useCustomCategories } from '../../views/navigation/hooks/useCustomCategories';
 import { useShowUnreadsGroups } from '../../views/navigation/hooks/useShowUnreadsGroups';
 import { useSystemGroupsOrder } from '../../views/navigation/hooks/useSystemGroupsOrder';
@@ -77,6 +78,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const { categories: customCategories } = useCustomCategories();
 	const { isShowUnreads } = useShowUnreadsGroups();
 	const { sortGroups } = useSystemGroupsOrder();
+
+	const openedRoom = useOpenedRoom();
 
 	const options = useSortQueryOptions();
 
@@ -219,7 +222,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const collapsed = isCollapsed(key);
 				const showUnreads = category ? category.showUnreads !== false : isShowUnreads(key);
 				const allRooms = [...set];
-				const collapsedRooms = showUnreads ? allRooms.filter(isUnreadRoom) : [];
+				// When collapsed, keep unread rooms (if enabled) plus the currently-open room always visible.
+				const collapsedRooms = allRooms.filter((room) => (showUnreads && isUnreadRoom(room)) || room.rid === openedRoom);
 				const displayRooms = collapsed ? collapsedRooms : allRooms;
 
 				return {
@@ -281,6 +285,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			customCategories,
 			isShowUnreads,
 			sortGroups,
+			openedRoom,
 		]),
 		50,
 	);

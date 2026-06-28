@@ -13,6 +13,7 @@ import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-conte
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useOpenedRoom } from '../../../lib/RoomManager';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useShowUnreadsGroups } from '../hooks/useShowUnreadsGroups';
 import { useSystemGroupsOrder } from '../hooks/useSystemGroupsOrder';
@@ -160,14 +161,17 @@ export type SideBarRoomListItem = {
 	category?: ISidebarCustomCategory;
 };
 
-const getDisplayRooms = (rooms: SubscriptionWithRoom[], collapsed: boolean, showUnreads: boolean): SubscriptionWithRoom[] => {
+const getDisplayRooms = (
+	rooms: SubscriptionWithRoom[],
+	collapsed: boolean,
+	showUnreads: boolean,
+	openedRoom: string | undefined,
+): SubscriptionWithRoom[] => {
 	if (!collapsed) {
 		return rooms;
 	}
-	if (!showUnreads) {
-		return [];
-	}
-	return rooms.filter((room) => isUnreadSubscription(room));
+	// When collapsed, keep unread rooms (if enabled) plus the currently-open room always visible.
+	return rooms.filter((room) => (showUnreads && isUnreadSubscription(room)) || room.rid === openedRoom);
 };
 
 export const useSideBarRoomsList = (): {
@@ -181,6 +185,8 @@ export const useSideBarRoomsList = (): {
 	const { sortGroups } = useSystemGroupsOrder();
 	const { groups, unreadGroupData, customCategories, customGroups, customUnreadData } = useRoomsListContext();
 
+	const openedRoom = useOpenedRoom();
+
 	// Custom categories render first (above the system groups) and persist even when empty.
 	const customItems: SideBarRoomListItem[] = customCategories.map((category) => {
 		const roomSet = customGroups.get(category._id);
@@ -192,7 +198,7 @@ export const useSideBarRoomsList = (): {
 			key: category._id,
 			title: category.name,
 			icon: 'folder',
-			rooms: getDisplayRooms(rooms, collapsed, showUnreads),
+			rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom),
 			unreadInfo: customUnreadData.get(category._id) || getEmptyUnreadInfo(),
 			collapsed,
 			showUnreads,
@@ -217,7 +223,7 @@ export const useSideBarRoomsList = (): {
 				key: group,
 				title: t(sidePanelFiltersConfig[group].title),
 				icon: sidePanelFiltersConfig[group].icon,
-				rooms: getDisplayRooms(rooms, collapsed, showUnreads),
+				rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom),
 				unreadInfo: unreadGroupData.get(group) || getEmptyUnreadInfo(),
 				collapsed,
 				showUnreads,

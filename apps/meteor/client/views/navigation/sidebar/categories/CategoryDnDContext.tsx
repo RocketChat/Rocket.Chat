@@ -90,7 +90,7 @@ const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAE
 const createDragGhost = (node: HTMLElement, startX: number, startY: number): (() => void) => {
 	const { width } = node.getBoundingClientRect();
 	const ghost = node.cloneNode(true) as HTMLElement;
-	const transformAt = (x: number, y: number) => `translate3d(${x - 16}px, ${y - 12}px, 0) rotate(3deg)`;
+	const transformAt = (x: number, y: number) => `translate3d(${x - 16}px, ${y - 12}px, 0) rotate(1.25deg)`;
 
 	Object.assign(ghost.style, {
 		position: 'fixed',

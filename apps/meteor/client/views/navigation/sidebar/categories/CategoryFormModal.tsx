@@ -1,10 +1,11 @@
 import { Box, Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import EmojiIconPicker from './EmojiIconPicker';
 import type { MovableRoom } from '../../hooks/useCustomCategories';
 import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../../hooks/useCustomCategories';
 
@@ -19,6 +20,7 @@ const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { createCategory, createCategoryAndMoveRoom, validateName } = useCustomCategories();
 	const nameField = useId();
+	const [icon, setIcon] = useState<string | undefined>(undefined);
 
 	const {
 		handleSubmit,
@@ -45,9 +47,9 @@ const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
 
 		try {
 			if (room) {
-				await createCategoryAndMoveRoom(name, room);
+				await createCategoryAndMoveRoom(name, room, icon);
 			} else {
-				await createCategory(name);
+				await createCategory(name, icon);
 				dispatchToastMessage({ type: 'success', message: t('Category_created') });
 			}
 			onClose();
@@ -76,6 +78,7 @@ const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
 						{t('Name')}
 					</FieldLabel>
 					<FieldRow>
+						<EmojiIconPicker icon={icon} onSelect={setIcon} onClear={() => setIcon(undefined)} />
 						<Controller
 							control={control}
 							name='name'

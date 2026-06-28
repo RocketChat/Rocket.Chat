@@ -1,9 +1,11 @@
-import { Option, OptionColumn, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
+import { Box, Option, OptionColumn, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { MoveToItem } from './useRoomCategoryItems';
 import { useRoomCategoryItems } from './useRoomCategoryItems';
+import Emoji from '../../../../components/Emoji';
 import type { MovableRoom } from '../../hooks/useCustomCategories';
 
 type MoveToListProps = {
@@ -33,11 +35,18 @@ const MoveToList = ({ room, onSelect }: MoveToListProps) => {
 		onSelect();
 	};
 
-	const renderRow = (item: GenericMenuItemProps, selected = false) => (
+	const renderRow = (item: MoveToItem, selected = false) => (
 		<Option
 			key={item.id}
 			role='menuitem'
-			icon={item.icon}
+			icon={item.emoji ? undefined : item.icon}
+			avatar={
+				item.emoji ? (
+					<Box display='inline-flex' alignItems='center' justifyContent='center' size='x20'>
+						<Emoji emojiHandle={`:${item.emoji}:`} fillContainer />
+					</Box>
+				) : undefined
+			}
 			label={selected ? <strong>{item.content}</strong> : item.content}
 			onClick={handleSelect(item)}
 		>

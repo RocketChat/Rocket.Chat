@@ -36,6 +36,21 @@ test.describe.serial('sidebar custom categories', () => {
 		await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
 	};
 
+	/** Creates a category with a chosen emoji through the create (+) modal + emoji picker. */
+	const createCategoryWithEmoji = async (name: string, emojiName = 'rocket') => {
+		await poHomeChannel.navbar.openCreateCategory();
+		const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
+		await dialog.getByRole('button', { name: 'Add emoji' }).click();
+		const picker = poHomeChannel.page.getByRole('dialog', { name: 'Emoji picker' });
+		await expect(picker).toBeVisible();
+		await picker.getByRole('textbox').first().fill(emojiName);
+		await poHomeChannel.page.locator(`[data-emoji="${emojiName}"]`).first().click();
+		await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
+		await dialog.getByRole('button', { name: 'Create', exact: true }).click();
+		await expect(dialog).not.toBeVisible();
+		await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
+	};
+
 	/** True when the target room currently belongs to the named grouping (its submenu offers "Remove from …"). */
 	const isRoomInGrouping = async (groupingName: string) => {
 		await poHomeChannel.sidebar.openRoomMoveToSubmenu(targetChannel);
@@ -100,6 +115,76 @@ test.describe.serial('sidebar custom categories', () => {
 			await dialog.getByRole('button', { name: 'Create', exact: true }).click();
 			await expect(dialog.getByText('A category with this name already exists')).toBeVisible();
 			await dialog.getByRole('button', { name: 'Cancel' }).click();
+		});
+	});
+
+	test.describe('category emoji icon', () => {
+		test('should show the folder icon for a category without an emoji', async () => {
+			const name = uniqueName('folder');
+			await createCategory(name);
+			await expect(poHomeChannel.sidebar.getCategoryCollapser(name).locator('.rcx-icon--name-folder')).toBeVisible();
+		});
+
+		test('should let you pick an emoji shown before the category name', async ({ page }) => {
+			const name = uniqueName('emoji');
+			await poHomeChannel.navbar.openCreateCategory();
+			const dialog = page.getByRole('dialog', { name: 'Create category' });
+
+			await dialog.getByRole('button', { name: 'Add emoji' }).click();
+			const picker = page.getByRole('dialog', { name: 'Emoji picker' });
+			await expect(picker).toBeVisible();
+			await picker.getByRole('textbox').first().fill('rocket');
+			await page.locator('[data-emoji="rocket"]').first().click();
+
+			await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
+			await dialog.getByRole('button', { name: 'Create', exact: true }).click();
+			await expect(dialog).not.toBeVisible();
+
+			// The emoji renders before the name in the collapser, replacing the default folder icon.
+			const collapser = poHomeChannel.sidebar.getCategoryCollapser(name);
+			await expect(collapser.locator('[class*="emojione"]')).toBeVisible();
+			await expect(collapser.locator('.rcx-icon--name-folder')).toHaveCount(0);
+		});
+
+		test('should let you clear a selected emoji back to the folder icon', async ({ page }) => {
+			await poHomeChannel.navbar.openCreateCategory();
+			const dialog = page.getByRole('dialog', { name: 'Create category' });
+
+			await dialog.getByRole('button', { name: 'Add emoji' }).click();
+			await page.getByRole('dialog', { name: 'Emoji picker' }).getByRole('textbox').first().fill('rocket');
+			await page.locator('[data-emoji="rocket"]').first().click();
+
+			// While an emoji is set the clear badge appears; clicking it reverts to the folder icon.
+			const clear = dialog.getByRole('button', { name: 'Remove' });
+			await expect(clear).toBeVisible();
+			await clear.click();
+			await expect(dialog.getByRole('button', { name: 'Add emoji' }).locator('.rcx-icon--name-folder')).toBeVisible();
+			await expect(clear).toHaveCount(0);
+			await dialog.getByRole('button', { name: 'Cancel' }).click();
+		});
+
+		test('should show the category emoji in the "Move to" menu (in place of the folder)', async () => {
+			const name = uniqueName('menu-emoji');
+			await createCategoryWithEmoji(name);
+
+			await poHomeChannel.sidebar.openRoomMoveToSubmenu(targetChannel);
+			const item = poHomeChannel.sidebar.roomMenuMoveToItem(new RegExp(name));
+			await expect(item.locator('[class*="emojione"]')).toBeVisible();
+			await poHomeChannel.page.keyboard.press('Escape');
+		});
+
+		test('should keep the open room visible when its category is collapsed', async () => {
+			const name = uniqueName('collapse');
+			await createCategory(name);
+			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, name);
+
+			// Open the room, then collapse the category — the (read) open room stays visible.
+			await poHomeChannel.sidebar.getSidebarItemByName(targetChannel).click();
+			await expect(poHomeChannel.page).toHaveURL(new RegExp(targetChannel));
+			await poHomeChannel.sidebar.getCategoryCollapser(name).click();
+
+			await expect(poHomeChannel.sidebar.getCollapsedCategoryCollapser(name)).toBeVisible();
+			await expect(poHomeChannel.sidebar.getSidebarItemByName(targetChannel)).toBeVisible();
 		});
 	});
 
@@ -337,6 +422,24 @@ test.describe.serial('sidebar custom categories', () => {
 			await poHomeChannel.content.pickHeaderGroupingTarget(name);
 			await expect(poHomeChannel.content.headerGroupingIcon('folder')).toBeVisible();
 			expect(await isRoomInGrouping(name)).toBe(true);
+		});
+
+		test('should show the category emoji in the header grouping control', async ({ page }) => {
+			const name = uniqueName('hdr-emoji');
+
+			// Create-and-move into a new emoji category via the header menu.
+			await poHomeChannel.content.openHeaderGroupingMenu();
+			await page.getByRole('menuitem', { name: 'New category' }).click();
+			const dialog = page.getByRole('dialog', { name: 'Create category' });
+			await dialog.getByRole('button', { name: 'Add emoji' }).click();
+			await page.getByRole('dialog', { name: 'Emoji picker' }).getByRole('textbox').first().fill('rocket');
+			await page.locator('[data-emoji="rocket"]').first().click();
+			await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
+			await dialog.getByRole('button', { name: 'Create and move', exact: true }).click();
+			await expect(dialog).not.toBeVisible();
+
+			// The header trigger now shows the category emoji instead of the folder/star icon.
+			await expect(poHomeChannel.content.headerGroupingButton.locator('[class*="emojione"]')).toBeVisible();
 		});
 	});
 });

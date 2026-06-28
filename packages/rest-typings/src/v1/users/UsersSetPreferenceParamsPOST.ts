@@ -207,6 +207,7 @@ const UsersSetPreferencesParamsPostSchema = {
 						properties: {
 							_id: { type: 'string' },
 							name: { type: 'string' },
+							icon: { type: 'string', nullable: true },
 							showUnreads: { type: 'boolean', nullable: true },
 							rooms: { type: 'array', items: { type: 'string' }, nullable: true },
 						},

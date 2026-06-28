@@ -79,6 +79,20 @@ describe('[Sidebar Custom Categories]', () => {
 				});
 		});
 
+		it('should persist the optional emoji icon', async () => {
+			const categories = [category({ name: 'Rocket', icon: 'rocket' })];
+
+			await setCategories(categories).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCustomCategories[0]).to.have.property('icon', 'rocket');
+				});
+		});
+
 		it('should preserve the array order (order is the render order)', async () => {
 			const categories = [category({ name: 'A' }), category({ name: 'B' }), category({ name: 'C' })];
 

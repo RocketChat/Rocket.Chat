@@ -173,6 +173,8 @@ export interface IUserSettings {
 export interface ISidebarCustomCategory {
 	_id: string;
 	name: string;
+	/** Emoji name (e.g. `rocket`, without colons) shown before the category name. Falls back to the folder icon. */
+	icon?: string;
 	/** When collapsed, whether unread rooms in this category stay visible. Defaults to `true`. */
 	showUnreads?: boolean;
 	/** Room ids (`rid`) assigned to this category. A room belongs to at most one custom category. */

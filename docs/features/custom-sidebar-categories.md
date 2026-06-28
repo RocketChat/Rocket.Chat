@@ -24,10 +24,32 @@ A category is a small record stored on the user's preferences:
 export interface ISidebarCustomCategory {
 	_id: string;        // Random.id(), generated client-side on create
 	name: string;       // display name (trimmed; max 30 chars)
+	icon?: string;      // emoji name (e.g. `rocket`, no colons); falls back to the folder icon
 	showUnreads?: boolean; // when collapsed, keep listing unread rooms (default: true)
 	rooms?: string[];   // rids assigned to this category
 }
 ```
+
+### Emoji icon
+
+A category can carry an optional emoji, chosen from the shared emoji picker in the Create / Rename modals
+(`EmojiIconPicker.tsx`). The picker button sits before the name field (Slack-style) and previews the current
+icon: the chosen emoji, or the **folder** icon when none is set. The stored value is the picker's emoji name
+(e.g. `rocket`), rendered via the `<Emoji>` component.
+
+`CategoryLabel.tsx` renders the icon before the category name in the sidebar collapser — the emoji when set,
+otherwise the folder icon (constrained to the folder's `x20` size so both match). The collapser's `aria-label`
+keeps the plain name, so the emoji is purely visual and does not affect accessible names or the `region`-name
+selectors used by tests. System groups (Channels, Direct messages, …) render no leading icon.
+
+The emoji also replaces the folder icon **in the menus**: the "Move to" list (`MoveToList.tsx`, used by both
+the sidebar room kebab submenu and the room-header dropdown) renders a category's emoji via the `Option`
+`avatar` slot. And the **room-header grouping control** (`RoomGroupingMenu.tsx`) uses the same
+`HeaderToolbarAction` button — identical size to the right-side room actions (Room info, Threads, …) — and shows
+the category's emoji as its icon (falling back to filled-star / folder / star).
+
+**Unsetting:** while an emoji is selected, the picker button shows a small clear badge (an
+`IconButton secondary`, theme-aware) that reverts the category to the default folder icon.
 
 The ordered list of a user's categories is the preference `sidebarCustomCategories: ISidebarCustomCategory[]`.
 The array order **is** the render order (top to bottom).
@@ -86,6 +108,13 @@ moving it into a custom category unfavorites it. This keeps assignment exclusive
 custom category is added **only** to that category's set and `return`s before the system-group bucketing — so
 it never appears twice. Custom categories are emitted first (above system groups) and **persist even when
 empty** (an expanded empty category reserves one row for the "drag rooms here" placeholder).
+
+### Collapsed display
+
+When a group (custom category or system group) is collapsed, it shows only its unread rooms (when "Show
+unreads" is on) **plus the currently-open room**. The open room (`useOpenedRoom()`) is always kept visible in
+its group even when collapsed and not unread, so the active conversation never disappears from the sidebar.
+This is applied in both `useRoomList.ts` (classic) and `getDisplayRooms` in `RoomsNavigationContext.ts` (nav).
 
 ## The two sidebars
 

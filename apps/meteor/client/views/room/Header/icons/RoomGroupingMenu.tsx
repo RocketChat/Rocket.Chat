@@ -1,17 +1,20 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { IconButton, Position, Tile } from '@rocket.chat/fuselage';
+import { Box, Position, Tile } from '@rocket.chat/fuselage';
+import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Emoji from '../../../../components/Emoji';
 import { useCustomCategories } from '../../../navigation/hooks/useCustomCategories';
 import MoveToList from '../../../navigation/sidebar/categories/MoveToList';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
 /**
- * Room-header grouping control. The icon reflects the room's current grouping
- * (filled star = favorited, folder = in a custom category, outline star = neither)
- * and opens the same "Move to" list used by the sidebar room kebab submenu.
+ * Room-header grouping control. It uses the same `HeaderToolbarAction` button (and size) as the
+ * right-side room actions. The leading content reflects the room's current grouping: the category's
+ * emoji when set, otherwise filled star = favorited, folder = in a custom category, outline star =
+ * neither. Opens the same "Move to" list used by the sidebar room kebab submenu.
  */
 const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }) => {
 	const { t } = useTranslation();
@@ -47,22 +50,31 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 
 	const favorite = Boolean(room.f);
 	const category = getRoomCategory(room._id);
-
+	// A non-favorited room in a custom category with an emoji shows that emoji; otherwise an icon.
+	const emoji = !favorite && category?.icon ? category.icon : undefined;
 	const getGroupingIcon = () => {
 		if (favorite) {
-			return 'star-filled';
+			return 'star-filled' as const;
 		}
-		return category ? 'folder' : 'star';
+		return category ? ('folder' as const) : ('star' as const);
 	};
+
+	// `IconButton` `small` renders icons at x20, so the emoji is sized to match.
+	const groupingIcon = emoji ? (
+		<Box display='inline-flex' size='x20'>
+			<Emoji emojiHandle={`:${emoji}:`} fillContainer />
+		</Box>
+	) : (
+		getGroupingIcon()
+	);
 
 	return (
 		<>
-			<IconButton
+			<HeaderToolbarAction
 				ref={triggerRef}
-				tiny
 				mie={4}
 				pressed={open}
-				icon={getGroupingIcon()}
+				icon={groupingIcon}
 				title={t('Move_to')}
 				onClick={() => setOpen((value) => !value)}
 			/>

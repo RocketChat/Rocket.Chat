@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { SideBarRoomListItem } from '../../contexts/RoomsNavigationContext';
 import { useGroupDrop } from '../categories/CategoryDnDContext';
+import CategoryLabel from '../categories/CategoryLabel';
 import CategoryMenu from '../categories/CategoryMenu';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -34,6 +35,15 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
 
+	// `group.title` (string) drives the accessible name; this node is rendered as the visible label so a
+	// custom category's emoji shows before its name. Cast because the prop is typed `string` but the
+	// component renders it as JSX children.
+	const titleContent = (group.category ? (
+		<CategoryLabel icon={group.category.icon} name={group.title} />
+	) : (
+		group.title
+	)) as unknown as string;
+
 	// `SidebarV2CollapseGroup` doesn't render an actions slot, so the kebab is overlaid on the header;
 	// it shows on hover or while its menu is open, replacing the unread badge.
 	const [hovered, setHovered] = useState(false);
@@ -50,7 +60,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			onMouseLeave={() => setHovered(false)}
 		>
 			<SidebarV2CollapseGroup
-				title={group.title}
+				title={titleContent}
 				expanded={!group.collapsed}
 				badge={
 					!showActions && showUnread ? (

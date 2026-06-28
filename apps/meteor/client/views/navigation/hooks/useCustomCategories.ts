@@ -65,17 +65,32 @@ export const useCustomCategories = () => {
 	);
 
 	const createCategory = useCallback(
-		async (name: string): Promise<ISidebarCustomCategory> => {
-			const category: ISidebarCustomCategory = { _id: Random.id(), name: name.trim(), showUnreads: true, rooms: [] };
+		async (name: string, icon?: string): Promise<ISidebarCustomCategory> => {
+			const category: ISidebarCustomCategory = {
+				_id: Random.id(),
+				name: name.trim(),
+				showUnreads: true,
+				rooms: [],
+				...(icon ? { icon } : {}),
+			};
 			await persist([...categories, category]);
 			return category;
 		},
 		[categories, persist],
 	);
 
+	/** Updates a category's name and emoji icon. A falsy `icon` clears it (back to the folder icon). */
 	const renameCategory = useCallback(
-		(categoryId: string, name: string) =>
-			persist(categories.map((category) => (category._id === categoryId ? { ...category, name: name.trim() } : category))),
+		(categoryId: string, name: string, icon?: string) =>
+			persist(
+				categories.map((category) => {
+					if (category._id !== categoryId) {
+						return category;
+					}
+					const { icon: _previous, ...rest } = category;
+					return { ...rest, name: name.trim(), ...(icon ? { icon } : {}) };
+				}),
+			),
 		[categories, persist],
 	);
 
@@ -145,8 +160,14 @@ export const useCustomCategories = () => {
 
 	/** Create a category and move a room into it in a single persisted action (flow D). */
 	const createCategoryAndMoveRoom = useCallback(
-		async (name: string, room: MovableRoom) => {
-			const category: ISidebarCustomCategory = { _id: Random.id(), name: name.trim(), showUnreads: true, rooms: [room.rid] };
+		async (name: string, room: MovableRoom, icon?: string) => {
+			const category: ISidebarCustomCategory = {
+				_id: Random.id(),
+				name: name.trim(),
+				showUnreads: true,
+				rooms: [room.rid],
+				...(icon ? { icon } : {}),
+			};
 			await persist([...stripRoom(categories, room.rid), category]);
 			if (room.isFavorite) {
 				await setFavorite(room.rid, false);
