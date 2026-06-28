@@ -102,13 +102,13 @@ export class AutoCloseOnHoldSchedulerClass {
 					},
 				},
 			);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			await CronHistory.updateOne(
 				{ _id: insertedId },
 				{
 					$set: {
 						finishedAt: new Date(),
-						error: error?.stack ? error.stack : error,
+						error: error instanceof Error && error.stack ? error.stack : String(error),
 					},
 				},
 			);

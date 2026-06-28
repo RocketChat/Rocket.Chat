@@ -146,14 +146,14 @@ export class AutoTransferChatSchedulerClass {
 					},
 				},
 			);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({ msg: 'Error while executing auto-transfer job', schedulerName: SCHEDULER_NAME, roomId, err: error });
 			await CronHistory.updateOne(
 				{ _id: insertedId },
 				{
 					$set: {
 						finishedAt: new Date(),
-						error: error?.stack ? error.stack : error,
+						error: error instanceof Error && error.stack ? error.stack : String(error),
 					},
 				},
 			);
