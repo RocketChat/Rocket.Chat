@@ -1,11 +1,22 @@
-import { useTooltipClose, useTooltipOpen, useUserPresence } from '@rocket.chat/ui-contexts';
+import { Throbber } from '@rocket.chat/fuselage';
+import { UserPresenceContext, useTooltipClose, useTooltipOpen, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 
 import { UserStatusText } from '../components/UserStatusText';
 
-export function useUserStatusTooltip(uid: string | undefined, title?: string) {
+const UserStatusTooltipContent = ({ uid }: { uid: string }) => {
 	const presence = useUserPresence(uid);
+
+	if (!presence) {
+		return <Throbber size='x8' inheritColor />;
+	}
+
+	return <UserStatusText status={presence.status} statusText={presence.statusText} statusExpiresAt={presence.statusExpiresAt} />;
+};
+
+export function useUserStatusTooltip(uid: string | undefined, title?: string) {
+	const userPresence = useContext(UserPresenceContext);
 
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
@@ -19,11 +30,13 @@ export function useUserStatusTooltip(uid: string | undefined, title?: string) {
 			}
 
 			openTooltip(
-				<UserStatusText status={presence?.status} statusText={presence?.statusText} statusExpiresAt={presence?.statusExpiresAt} />,
+				<UserPresenceContext.Provider value={userPresence}>
+					<UserStatusTooltipContent uid={uid} />
+				</UserPresenceContext.Provider>,
 				target,
 			);
 		},
-		[uid, openTooltip, presence, title],
+		[uid, openTooltip, title, userPresence],
 	);
 
 	return useMemo(() => ({ 'data-tooltip': '', onMouseEnter, 'onMouseLeave': closeTooltip }), [onMouseEnter, closeTooltip]);
