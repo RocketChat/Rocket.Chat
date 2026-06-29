@@ -11,7 +11,7 @@ slashCommands.add({
 	options: {
 		description: 'Invite_user_to_join_channel_all_to',
 		params: '#room',
-		permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+		permission: 'add-all-to-room',
 	},
 	result: invalidateMembers,
 });
@@ -20,7 +20,7 @@ slashCommands.add({
 	options: {
 		description: 'Invite_user_to_join_channel_all_from',
 		params: '#room',
-		permission: 'add-user-to-joined-room',
+		permission: 'add-all-to-room',
 	},
 	result: invalidateMembers,
 });

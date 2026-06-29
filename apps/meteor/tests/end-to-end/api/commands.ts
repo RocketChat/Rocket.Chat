@@ -6,6 +6,7 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
+import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -421,7 +422,12 @@ describe('[Commands]', () => {
 			group1 = response3.body.group;
 		});
 
+		this.beforeAll(async () => {
+			await updatePermission('add-all-to-room', ['admin', 'user']);
+		});
+
 		this.afterAll(async () => {
+			await updatePermission('add-all-to-room', ['admin']);
 			await Promise.all([
 				deleteRoom({ type: 'p', roomId: group._id }),
 				deleteRoom({ type: 'c', roomId: channel._id }),
@@ -505,6 +511,55 @@ describe('[Commands]', () => {
 					const isUser1Added = res.body.members.some((member: IUser) => member.username === user1.username);
 					expect(isUser1Added).to.be.true;
 				});
+		});
+
+		describe('without "add-all-to-room" permission', function () {
+			let sourceGroup: IRoom;
+			let targetChannel: IRoom;
+
+			this.beforeAll(async () => {
+				const [response1, response2] = await Promise.all([
+					createRoom({ type: 'p', name: `src-${Date.now()}.${Random.id()}`, credentials: user1Credentials }),
+					createRoom({ type: 'c', name: `tgt-${Date.now()}.${Random.id()}`, credentials: user1Credentials }),
+				]);
+				sourceGroup = response1.body.group;
+				targetChannel = response2.body.channel;
+
+				await request.post(api('groups.invite')).set(user1Credentials).send({ roomId: sourceGroup._id, userId: user2._id }).expect(200);
+
+				await updatePermission('add-all-to-room', ['admin']);
+			});
+
+			this.afterAll(async () => {
+				await updatePermission('add-all-to-room', ['admin', 'user']);
+				await Promise.all([deleteRoom({ type: 'p', roomId: sourceGroup._id }), deleteRoom({ type: 'c', roomId: targetChannel._id })]);
+			});
+
+			it('should not add users when the current user lacks the "add-all-to-room" permission', async () => {
+				await request
+					.post(api('commands.run'))
+					.set(user1Credentials)
+					.send({
+						roomId: targetChannel._id,
+						command: 'invite-all-from',
+						params: `#${sourceGroup.name}`,
+						triggerId: Random.id(),
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+					});
+
+				await request
+					.get(api('channels.members'))
+					.set(user1Credentials)
+					.query({ roomId: targetChannel._id })
+					.expect(200)
+					.expect((res) => {
+						const isUser2Added = res.body.members.some((member: IUser) => member.username === user2.username);
+						expect(isUser2Added).to.be.false;
+					});
+			});
 		});
 	});
 	describe('Command "kick"', function () {

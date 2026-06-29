@@ -11,6 +11,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
@@ -42,6 +43,13 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			return;
 		}
 		const lng = user?.language || settings.get('Language') || 'en';
+
+		if (!(await hasPermissionAsync(userId, 'add-all-to-room'))) {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('error-not-allowed', { lng }),
+			});
+			return;
+		}
 
 		const baseChannel = type === 'to' ? await Rooms.findOneById(message.rid) : await Rooms.findOneByName(channel);
 		const targetChannel = type === 'from' ? await Rooms.findOneById(message.rid) : await Rooms.findOneByName(channel);
@@ -113,7 +121,7 @@ slashCommands.add({
 	options: {
 		description: 'Invite_user_to_join_channel_all_to',
 		params: '#room',
-		permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+		permission: 'add-all-to-room',
 	},
 });
 slashCommands.add({
@@ -122,7 +130,7 @@ slashCommands.add({
 	options: {
 		description: 'Invite_user_to_join_channel_all_from',
 		params: '#room',
-		permission: 'add-user-to-joined-room',
+		permission: 'add-all-to-room',
 	},
 });
 module.exports = inviteAll;
