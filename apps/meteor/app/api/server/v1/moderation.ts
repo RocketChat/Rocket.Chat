@@ -1,5 +1,5 @@
-import type { IModerationAudit, IModerationReport, IUser, IUserEmail, UserReport } from '@rocket.chat/core-typings';
-import { ModerationReports, Users } from '@rocket.chat/models';
+import type { IModerationAudit, IModerationReport, IUser, IUserEmail, UserReport, IModerationAuditLog } from '@rocket.chat/core-typings';
+import { ModerationReports, Users, ModerationAuditLogs } from '@rocket.chat/models';
 import {
 	ajv,
 	isReportHistoryProps,
@@ -16,6 +16,7 @@ import {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
+import { logModerationAction } from '../../../../server/lib/moderation/logModerationAction';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
@@ -497,6 +498,12 @@ API.v1.post(
 
 		if (userId) {
 			await ModerationReports.hideMessageReportsByUserId(userId, moderatorId, sanitizedReason, action);
+			await logModerationAction({
+				moderatorId,
+				targetUserId: userId,
+				action: 'dismiss',
+				reason: sanitizedReason,
+			});
 		} else {
 			await ModerationReports.hideMessageReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
 		}
@@ -531,6 +538,13 @@ API.v1.post(
 		const { userId: moderatorId } = this;
 
 		await ModerationReports.hideUserReportsByUserId(userId, moderatorId, sanitizedReason, action);
+
+		await logModerationAction({
+			moderatorId,
+			targetUserId: userId,
+			action: 'dismiss',
+			reason: sanitizedReason,
+		});
 
 		return API.v1.success();
 	},
@@ -636,8 +650,11 @@ API.v1.post(
 		const { userId, description } = this.bodyParams;
 
 		const {
-			user: { _id, name, username, createdAt },
+			user: { _id, name, username },
 		} = this;
+
+		const moderator = await Users.findOneById(_id, { projection: { createdAt: 1 } });
+		const createdAt = moderator?.createdAt || new Date();
 
 		const reportedUser = await Users.findOneById(userId, {
 			projection: { _id: 1, name: 1, username: 1, emails: 1, createdAt: 1 },
@@ -649,6 +666,99 @@ API.v1.post(
 
 		await ModerationReports.createWithDescriptionAndUser(reportedUser, description, { _id, name, username, createdAt });
 
+		await logModerationAction({
+			moderatorId: _id,
+			targetUserId: userId,
+			action: 'flag',
+			reason: description,
+		});
+
 		return API.v1.success();
+	},
+);
+
+const paginatedAuditLogsResponseSchema = ajv.compile<{
+	logs: IModerationAuditLog[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		logs: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					ts: { type: 'string' },
+					action: { type: 'string' },
+					reason: { type: 'string' },
+					targetAccountAge: { type: 'number' },
+					moderator: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							name: { type: 'string' },
+						},
+						required: ['_id', 'username'],
+						additionalProperties: false,
+					},
+					targetUser: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							name: { type: 'string' },
+							createdAt: { type: 'string' },
+						},
+						required: ['_id', 'username', 'createdAt'],
+						additionalProperties: false,
+					},
+				},
+				required: ['_id', 'ts', 'action', 'moderator', 'targetUser', 'targetAccountAge'],
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['logs', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
+	'moderation.auditLogs',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-moderation-console'],
+		response: {
+			200: paginatedAuditLogsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+
+		const cursor = ModerationAuditLogs.find({}, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		});
+
+		const [logs, total] = await Promise.all([cursor.toArray(), ModerationAuditLogs.countDocuments({})]);
+
+		return API.v1.success({
+			logs,
+			count: logs.length,
+			offset,
+			total,
+		});
 	},
 );

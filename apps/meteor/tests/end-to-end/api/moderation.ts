@@ -811,4 +811,19 @@ describe('[Moderation]', () => {
 				});
 		});
 	});
+
+	describe('[/moderation.auditLogs]', () => {
+		it('should return 200 and audit logs', async () => {
+			await request
+				.get(api('moderation.auditLogs'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('logs').and.to.be.an('array');
+				});
+		});
+	});
 });
+

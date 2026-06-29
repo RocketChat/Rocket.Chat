@@ -2,6 +2,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
+import { logModerationAction } from '../lib/moderation/logModerationAction';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnRoomChangedById } from '../../app/lib/server/lib/notifyListener';
@@ -71,6 +72,13 @@ export const muteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']; 
 	}
 
 	await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
+
+	await logModerationAction({
+		moderatorId: fromId,
+		targetUserId: mutedUser._id,
+		action: 'mute',
+		reason: `Muted in room ${room.name || room._id}`,
+	});
 
 	await callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 

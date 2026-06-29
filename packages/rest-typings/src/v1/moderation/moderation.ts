@@ -1,4 +1,4 @@
-import type { IModerationAudit, IModerationReport, IUser, MessageReport, UserReport } from '@rocket.chat/core-typings';
+import type { IModerationAudit, IModerationReport, IUser, MessageReport, UserReport, IModerationAuditLog } from '@rocket.chat/core-typings';
 
 import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
 import type { GetUserReportsParamsGET } from './GetUserReportsParams';
@@ -60,5 +60,10 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.reportUser': {
 		POST: (params: ModerationReportUserPOST) => void;
+	};
+	'/v1/moderation.auditLogs': {
+		GET: (params: { count?: number; offset?: number; sort?: string }) => PaginatedResult<{
+			logs: IModerationAuditLog[];
+		}>;
 	};
 };
