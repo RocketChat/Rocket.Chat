@@ -31,7 +31,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 		if (!user?._id || !reference || !type) {
 			return undefined;
 		}
-		const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
+		const sub = Subscriptions.state.find((record) => record.t === type && (record.rid === reference || record.name === reference));
 		if (!sub) {
 			return undefined;
 		}
@@ -115,7 +115,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new TypeError('room is undefined');
 			}
 
-			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
+			const sub = Subscriptions.state.find((record) => record.t === type && (record.rid === reference || record.name === reference));
 
 			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid

@@ -1,5 +1,28 @@
 # @rocket.chat/meteor
 
+## 8.6.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41057](https://github.com/RocketChat/Rocket.Chat/pull/41057)) Fixes incoming integrations inability of reaching internal hosts by adding "ignoreSsrfValidation: true" to it
+
+- ([#41046](https://github.com/RocketChat/Rocket.Chat/pull/41046)) Fixes an issue where editing or deleting a message in a federated room caused subsequent messages to stop syncing between servers
+
+  Note: this prevents the issue from happening, but does not restore rooms that are already affected. Recovering those requires a separate, one-time repair.
+
+- ([#41065](https://github.com/RocketChat/Rocket.Chat/pull/41065)) Fixes REST API endpoints that require two-factor authentication (such as `users.update`) rejecting requests authenticated with a Personal Access Token created with "Ignore Two Factor Authentication", returning `totp-required` even though the token was meant to bypass the check. The two-factor authorization check now resolves the login token from the REST connection, so `bypassTwoFactor` tokens are honored again.
+
+- <details><summary>Updated dependencies [308e1c5c3a8f6432dc03472914f563d1c0d15bdf, 6fa5378a940cbc809800b3c7d7c0639810bb0ab8, 5d5edd8520ddb424bd336e3ec802c1f4a4e7d1ce, 9861932cd7653c457a5b09e379fcb60a33947cf5]:</summary>
+
+  - @rocket.chat/federation-matrix@0.1.5-rc.1
+  - @rocket.chat/core-typings@8.6.0-rc.1
+  - @rocket.chat/media-signaling@1.1.0-rc.1
+  - @rocket.chat/ui-voip@22.0.0-rc.1
+  - @rocket.chat/rest-typings@8.6.0-rc.1
+  </details>
+
 ## 8.6.0-rc.0
 
 ### Minor Changes

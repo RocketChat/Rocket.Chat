@@ -1,5 +1,11 @@
 # @rocket.chat/core-typings
 
+## 8.6.0-rc.1
+
+### Patch Changes
+
+- ([#41065](https://github.com/RocketChat/Rocket.Chat/pull/41065)) Fixes REST API endpoints that require two-factor authentication (such as `users.update`) rejecting requests authenticated with a Personal Access Token created with "Ignore Two Factor Authentication", returning `totp-required` even though the token was meant to bypass the check. The two-factor authorization check now resolves the login token from the REST connection, so `bypassTwoFactor` tokens are honored again.
+
 ## 8.6.0-rc.0
 
 ### Patch Changes

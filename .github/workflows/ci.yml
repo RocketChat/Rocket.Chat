@@ -192,7 +192,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         id: packages-cache-build
         with:
           path: |
@@ -238,7 +238,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cache vite
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite

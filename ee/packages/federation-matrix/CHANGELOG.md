@@ -1,5 +1,19 @@
 # @rocket.chat/federation-matrix
 
+## 0.1.5-rc.1
+
+### Patch Changes
+
+- ([#41046](https://github.com/RocketChat/Rocket.Chat/pull/41046)) Fixes an issue where editing or deleting a message in a federated room caused subsequent messages to stop syncing between servers
+
+  Note: this prevents the issue from happening, but does not restore rooms that are already affected. Recovering those requires a separate, one-time repair.
+
+- <details><summary>Updated dependencies [6fa5378a940cbc809800b3c7d7c0639810bb0ab8]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.1
+  - @rocket.chat/rest-typings@8.6.0-rc.1
+  </details>
+
 ## 0.1.5-rc.0
 
 ### Patch Changes
