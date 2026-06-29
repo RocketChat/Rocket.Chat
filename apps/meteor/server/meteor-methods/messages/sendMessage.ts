@@ -16,6 +16,7 @@ import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/ai
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { sendMessage } from '../../lib/messages/sendMessage';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { metrics } from '../../lib/metrics';
 import { settings } from '../../settings';
 /**
@@ -136,6 +137,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message, previewUrls) {
+		methodDeprecationLogger.method('sendMessage', '9.0.0', '/v1/chat.sendMessage');
+
 		check(message, {
 			_id: Match.Maybe(String),
 			rid: Match.Maybe(String),
