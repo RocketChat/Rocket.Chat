@@ -1,16 +1,18 @@
-import { open } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
+import { readFile } from 'node:fs/promises';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
-import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext'
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails'
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
+import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { Defined } from 'jsonrpc-lite';
+import { JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
 import { RequestContext } from '../../lib/requestContext';
 import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
+import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 
@@ -27,8 +29,11 @@ function assertString(v: unknown): asserts v is string {
 }
 
 export default async function handleUploadEvents(request: RequestContext): Promise<Defined | JsonRpcError> {
-	const { method: rawMethod, params } = request as { method: `app:${typeof uploadEvents[number]}`; params: [{ file?: IUploadDetails, path?: string }]};
-	const [, method] = rawMethod.split(':') as ['app', typeof uploadEvents[number]];
+	const { method: rawMethod, params } = request as {
+		method: `app:${(typeof uploadEvents)[number]}`;
+		params: [{ file?: IUploadDetails; path?: string }];
+	};
+	const [, method] = rawMethod.split(':') as ['app', (typeof uploadEvents)[number]];
 
 	try {
 		const [{ file, path }] = params;
@@ -41,30 +46,25 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 		assertIsUpload(file);
 		assertString(path);
 
-		const tempFile = await open(path, 'r');
+		let context: IFileUploadContext;
 
-		try {
-			let context: IFileUploadContext;
-
-			switch (method) {
-				case 'executePreFileUpload': {
-					context = { file, content: await tempFile.readFile() };
-					break;
-				}
+		switch (method) {
+			case 'executePreFileUpload': {
+				const fileContents = await readFile(path);
+				context = { file, content: Buffer.from(fileContents) };
+				break;
 			}
-
-			return await handlerFunction.call(
-				wrapAppForRequest(app, request),
-				context,
-				AppAccessorsInstance.getReader(),
-				AppAccessorsInstance.getHttp(),
-				AppAccessorsInstance.getPersistence(),
-				AppAccessorsInstance.getModifier(),
-			);
-		} finally {
-			await tempFile.close();
 		}
-	} catch(e) {
+
+		return await handlerFunction.call(
+			wrapAppForRequest(app, request),
+			context,
+			AppAccessorsInstance.getReader(),
+			AppAccessorsInstance.getHttp(),
+			AppAccessorsInstance.getPersistence(),
+			AppAccessorsInstance.getModifier(),
+		);
+	} catch (e) {
 		if (e?.name === AppsEngineException.name) {
 			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });
 		}

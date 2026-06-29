@@ -8,7 +8,7 @@ if (!process.argv.includes('--subprocess')) {
 	process.exit(1001);
 }
 
-import { JsonRpcError } from 'jsonrpc-lite';
+import { JsonRpcError, type SuccessObject } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger';
 import { stdoutTransport } from './lib/transports/stdoutTransport';
@@ -84,19 +84,15 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 }
 
 function handleResponse(response: Messenger.JsonRpcResponse): void {
-	let event: Event;
+	let payload: { error: Error } | { detail: SuccessObject };
 
-	if (response.type === 'error') {
-		event = new ErrorEvent(`response:${response.payload.id}`, {
-			error: response.payload,
-		});
+	if (Messenger.isErrorResponse(response.payload)) {
+		payload = { error: new Error(response.payload.error.message) };
 	} else {
-		event = new CustomEvent(`response:${response.payload.id}`, {
-			detail: response.payload,
-		});
+		payload = { detail: response.payload };
 	}
 
-	Messenger.RPCResponseObserver.dispatchEvent(event);
+	Messenger.RPCResponseObserver.emit(`response:${response.payload.id}`, payload);
 }
 
 async function main() {

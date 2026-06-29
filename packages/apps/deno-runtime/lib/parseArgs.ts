@@ -1,4 +1,4 @@
-import { parseArgs as $parseArgs } from '@std/cli/parse-args';
+import { parseArgs as $parseArgs } from 'node:util';
 
 export type ParsedArgs = {
 	subprocess: string;
@@ -7,5 +7,19 @@ export type ParsedArgs = {
 };
 
 export function parseArgs(args: string[]): ParsedArgs {
-	return $parseArgs(args);
+	const { values } = $parseArgs({
+		args,
+		options: {
+			subprocess: { type: 'string' },
+			spawnId: { type: 'string' },
+			metricsReportFrequencyInMs: { type: 'string' },
+		},
+		strict: false,
+	});
+
+	return {
+		subprocess: (values.subprocess as string) ?? '',
+		spawnId: Number(values.spawnId ?? 0),
+		metricsReportFrequencyInMs: values.metricsReportFrequencyInMs !== undefined ? Number(values.metricsReportFrequencyInMs) : undefined,
+	};
 }

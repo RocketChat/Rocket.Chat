@@ -1,3 +1,5 @@
+import EventEmitter from 'node:events';
+
 import * as jsonrpc from 'jsonrpc-lite';
 
 import { encoder } from './codec';
@@ -28,7 +30,7 @@ export function isErrorResponse(message: jsonrpc.JsonRpc): message is jsonrpc.Er
 
 const COMMAND_PONG = '_zPONG';
 
-export const RPCResponseObserver = new EventTarget();
+export const RPCResponseObserver = new EventEmitter();
 
 export const Queue = new (class Queue {
 	private queue: Uint8Array[] = [];
@@ -171,19 +173,15 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 
 	// TODO: add timeout to this
 	const responsePromise = new Promise((resolve, reject) => {
-		const handler = (event: Event) => {
-			if (event instanceof ErrorEvent) {
-				reject(event.error);
+		const handler = (payload: { error: Error } | { detail: jsonrpc.SuccessObject }) => {
+			if ('error' in payload) {
+				return reject(payload.error);
 			}
 
-			if (event instanceof CustomEvent) {
-				resolve(event.detail);
-			}
-
-			RPCResponseObserver.removeEventListener(`response:${request.id}`, handler);
+			return resolve(payload.detail);
 		};
 
-		RPCResponseObserver.addEventListener(`response:${request.id}`, handler);
+		RPCResponseObserver.once(`response:${request.id}`, handler);
 	});
 
 	await Queue.enqueue(request);
