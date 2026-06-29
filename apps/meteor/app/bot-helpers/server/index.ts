@@ -9,6 +9,7 @@ import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFrom
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { addUserToRole } from '../../authorization/server/methods/addUserToRole';
 import { removeUserFromRole } from '../../authorization/server/methods/removeUserFromRole';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 
@@ -204,7 +205,11 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated Scheduled for removal in 9.0.0. No caller found in this repository — kept for external DDP clients only.
+	 */
 	async botRequest(...args) {
+		methodDeprecationLogger.method('botRequest', '9.0.0', []);
 		const userID = Meteor.userId();
 		if (userID && (await hasRoleAsync(userID, 'bot'))) {
 			return botHelpers.request(...args, userID);
