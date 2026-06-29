@@ -37,7 +37,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
-	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
+	const { sessionState, toggleWidget, showWidget, hideWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -226,6 +226,16 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			},
 			[toggleWidget],
 		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'showWidget',
+		useCallback(({ peerInfo }) => showWidget(peerInfo), [showWidget]),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'hideWidget',
+		useCallback(() => hideWidget(), [hideWidget]),
 	);
 
 	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();

@@ -14,7 +14,18 @@ export const useWidgetExternalControls = () => {
 		[signalEmitter],
 	);
 
+	const showWidget = useCallback(
+		(peerInfo?: PeerInfo) => {
+			signalEmitter.emit('showWidget', { peerInfo });
+		},
+		[signalEmitter],
+	);
+
+	const hideWidget = useCallback(() => {
+		signalEmitter.emit('hideWidget');
+	}, [signalEmitter]);
+
 	const endCall = useCallback(() => getEndCall(instance)(), [instance]);
 
-	return { toggleWidget, endCall };
+	return { toggleWidget, showWidget, hideWidget, endCall };
 };

@@ -8,6 +8,8 @@ import type { PeerInfo } from './definitions';
 
 export type Signals = {
 	toggleWidget: { peerInfo?: PeerInfo };
+	showWidget: { peerInfo?: PeerInfo };
+	hideWidget: void;
 };
 
 export type AvailableViews = 'room' | 'popout' | 'widget';
