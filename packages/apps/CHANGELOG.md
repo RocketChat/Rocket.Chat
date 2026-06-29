@@ -1,5 +1,54 @@
 # @rocket.chat/apps
 
+## 0.7.1-rc.0
+
+### Patch Changes
+
+- ([#40763](https://github.com/RocketChat/Rocket.Chat/pull/40763)) Replaces {} with Object.create(null) to ensure defense-in-depth against prototype pollution
+
+- ([#41009](https://github.com/RocketChat/Rocket.Chat/pull/41009)) Fixes an issue where an app's bot user presence was incorrectly shown as Offline after updating it.
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53, 9ab1cf6e088cc099f4fc2ba9460ce5dd41bd1dc2]:</summary>
+
+  - @rocket.chat/model-typings@2.3.1-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/apps-engine@1.64.0-rc.0
+  </details>
+
+## 0.7.0
+
+### Minor Changes
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Receives the migration of internal files from @rocket.chat/apps-engine
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, 2a927fa1362c9d4bb04bb8e26f23a6e3753d9cea, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, f392d5cc8d956c199f557dcd6beb52094232499d, 2198d9ea565b06f92e3dec29891890086f62f9df, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/model-typings@2.3.0
+  - @rocket.chat/apps-engine@1.63.0
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 0.7.0-rc.0
+
+### Minor Changes
+
+- ([#40463](https://github.com/RocketChat/Rocket.Chat/pull/40463)) Allows apps with the right permission to read room's ABAC attributes.
+
+- ([#40343](https://github.com/RocketChat/Rocket.Chat/pull/40343)) Receives the migration of internal files from @rocket.chat/apps-engine
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, 2a927fa1362c9d4bb04bb8e26f23a6e3753d9cea, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, f392d5cc8d956c199f557dcd6beb52094232499d, 2198d9ea565b06f92e3dec29891890086f62f9df, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/model-typings@2.3.0-rc.0
+  - @rocket.chat/apps-engine@1.63.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
 ## 0.6.9
 
 ### Patch Changes

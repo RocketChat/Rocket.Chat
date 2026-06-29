@@ -1,5 +1,5 @@
 import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
@@ -38,7 +38,7 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		},
 	});
 
-	const renderContactOption = useEffectEvent<RenderFnType>(({ label, ...props }, { phones }) => {
+	const renderContactOption = useStableCallback<RenderFnType>(({ label, ...props }, { phones }) => {
 		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
 
 		return (

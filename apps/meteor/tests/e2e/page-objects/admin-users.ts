@@ -53,6 +53,10 @@ export class AdminUsers extends Admin {
 		await this.userRowMenu.root.getByRole('menuitem', { name: action }).click();
 	}
 
+	async activatePendingUser(username: string): Promise<void> {
+		await this.getUserRowByUsername(username).getByRole('button', { name: 'Activate', exact: true }).click();
+	}
+
 	async deleteUser(username: string): Promise<void> {
 		await this.searchUser(username);
 		await this.getUserRowByUsername(username).click();

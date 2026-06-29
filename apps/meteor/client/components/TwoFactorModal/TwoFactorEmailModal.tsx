@@ -2,7 +2,7 @@ import { Box, Button } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +12,7 @@ import { Method } from './TwoFactorModal';
 type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	invalidAttempt?: boolean;
 	emailOrUsername: string;
 };
 
@@ -19,7 +20,7 @@ type TwoFactorEmailFormData = {
 	code: string;
 };
 
-const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorEmailModalProps): ReactElement => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttempt }: TwoFactorEmailModalProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
@@ -28,10 +29,20 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 		handleSubmit,
 		setError,
 		setValue,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm<TwoFactorEmailFormData>({
 		defaultValues: { code: '' },
 	});
+
+	useEffect(() => {
+		if (invalidAttempt) {
+			setError('code', {
+				type: 'manual',
+				message: t('Invalid_two_factor_code'),
+			});
+		}
+	}, [invalidAttempt, setError, t]);
 
 	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
 
@@ -79,9 +90,13 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 							name='code'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Code') }) }}
-							render={({ field }) => (
+							render={({ field: { onChange, ...fieldProps } }) => (
 								<TextInput
-									{...field}
+									{...fieldProps}
+									onChange={(e) => {
+										clearErrors('code');
+										onChange(e);
+									}}
 									placeholder={t('Enter_code_here')}
 									autoComplete='one-time-code'
 									inputMode='numeric'

@@ -1,5 +1,56 @@
 # @rocket.chat/ddp-client
 
+## 1.1.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ebc9c17b6ba63ee754320eadfba20c024c53c18f, 7380c44c751eff9ee624d80bf26370411ffed78b, f4f361234f00bd44efe348df4355e9d3cf80efe0, 9a36221f1fbf5ca417325204637c9f32fe760443, f57901d91feaccedd00dee65b78775b20235825b, f57901d91feaccedd00dee65b78775b20235825b, f57901d91feaccedd00dee65b78775b20235825b, 9a36221f1fbf5ca417325204637c9f32fe760443, 9a36221f1fbf5ca417325204637c9f32fe760443, fa685d0ddfdf1167705a58b5d846a993144e3734, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/media-signaling@1.1.0-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/rest-typings@8.6.0-rc.0
+  </details>
+
+## 1.1.0
+
+### Minor Changes
+
+- ([#40442](https://github.com/RocketChat/Rocket.Chat/pull/40442)) Add lifecycle event handlers to `Account`: `onLogin`, `onLogout`, `onEmailVerificationLink`, and `onPageLoadLogin`. `onLogin` / `onLogout` fire on `uid` transitions (the setter now emits only when the value changes, so a single login or logout produces exactly one callback). `onEmailVerificationLink` and `onPageLoadLogin` are convenience wrappers around new `Emitter` events of the same names — fire them externally with `account.emit('emailVerificationLink', token)` / `account.emit('pageLoadLogin', loginAttempt)`. The bridge from Meteor's accounts-base lives in the consumer (`apps/meteor/client`) so the package stays Meteor-independent. All four handlers return an unsubscribe function.
+
+### Patch Changes
+
+- ([#40307](https://github.com/RocketChat/Rocket.Chat/pull/40307)) Make `Connection.connect()` and `Connection.reconnect()` idempotent. Previously they rejected with `Error('Connection in progress')` when called while a connection was already in flight or established. Because the internal retry timer (`ws.onclose` → `setTimeout(() => void this.reconnect(), …)`) fires with no `.catch`, that rejection surfaced as an unhandled rejection at the page level whenever an external caller (e.g. an SDK consumer's bootstrap path) won the race against the timer. While `status === 'connecting'`, both methods now return the in-flight handshake promise so a later `failed` payload still propagates to every caller instead of being masked by a synthesized success; while `status === 'connected'` they resolve with `true`. The timer also no-ops when the connection has already been re-established, and a stale `ws.onclose` from a replaced socket no longer clobbers the new socket's status or schedules a redundant retry.
+
+- ([#40307](https://github.com/RocketChat/Rocket.Chat/pull/40307)) Reset `Connection.retryCount` to zero on a successful (re)connection. The counter was only ever incremented (in `ws.onclose`), never zeroed, so the retry budget was monotonically consumed across the connection's lifetime. With the default budget of `1`, any chain of two close events — for example the SDK reconnecting after a server force-logout, then the client running a follow-up `Meteor.logout()` whose server handler closes the WS again — drained the budget; the second close handler bailed at `retryCount >= retryOptions.retryCount` and the SDK stayed permanently disconnected. Method frames already in the dispatcher queue (e.g. a fresh `login` retry from the consumer) stayed queued forever.
+
+- ([#40307](https://github.com/RocketChat/Rocket.Chat/pull/40307)) Fix `DDPDispatcher` dropping non-method frames (connect, sub, unsub, ping, pong) when a `wait` block is at the head of the queue. Previously every payload flowed through the same wait-serialization path: a `connect` frame dispatched after a `wait: true` method (e.g. `login`) would be queued in a new non-wait block but never actually sent, wedging the DDP handshake — the socket stayed open, the server never replied `connected`, and any caller awaiting the connection hung. Non-method payloads now bypass the queue and emit immediately; wait-method serialization between methods is unchanged.
+
+- <details><summary>Updated dependencies [4c3984593017d59edd631bf8ae4f35f9d3c3db36, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, b1c2668b74bfb49ebaefe2f581b2f8be5d4d1dd6]:</summary>
+
+  - @rocket.chat/rest-typings@8.5.0
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 1.1.0-rc.0
+
+### Minor Changes
+
+- ([#40442](https://github.com/RocketChat/Rocket.Chat/pull/40442)) Add lifecycle event handlers to `Account`: `onLogin`, `onLogout`, `onEmailVerificationLink`, and `onPageLoadLogin`. `onLogin` / `onLogout` fire on `uid` transitions (the setter now emits only when the value changes, so a single login or logout produces exactly one callback). `onEmailVerificationLink` and `onPageLoadLogin` are convenience wrappers around new `Emitter` events of the same names — fire them externally with `account.emit('emailVerificationLink', token)` / `account.emit('pageLoadLogin', loginAttempt)`. The bridge from Meteor's accounts-base lives in the consumer (`apps/meteor/client`) so the package stays Meteor-independent. All four handlers return an unsubscribe function.
+
+### Patch Changes
+
+- ([#40307](https://github.com/RocketChat/Rocket.Chat/pull/40307)) Make `Connection.connect()` and `Connection.reconnect()` idempotent. Previously they rejected with `Error('Connection in progress')` when called while a connection was already in flight or established. Because the internal retry timer (`ws.onclose` → `setTimeout(() => void this.reconnect(), …)`) fires with no `.catch`, that rejection surfaced as an unhandled rejection at the page level whenever an external caller (e.g. an SDK consumer's bootstrap path) won the race against the timer. While `status === 'connecting'`, both methods now return the in-flight handshake promise so a later `failed` payload still propagates to every caller instead of being masked by a synthesized success; while `status === 'connected'` they resolve with `true`. The timer also no-ops when the connection has already been re-established, and a stale `ws.onclose` from a replaced socket no longer clobbers the new socket's status or schedules a redundant retry.
+
+- ([#40307](https://github.com/RocketChat/Rocket.Chat/pull/40307)) Reset `Connection.retryCount` to zero on a successful (re)connection. The counter was only ever incremented (in `ws.onclose`), never zeroed, so the retry budget was monotonically consumed across the connection's lifetime. With the default budget of `1`, any chain of two close events — for example the SDK reconnecting after a server force-logout, then the client running a follow-up `Meteor.logout()` whose server handler closes the WS again — drained the budget; the second close handler bailed at `retryCount >= retryOptions.retryCount` and the SDK stayed permanently disconnected. Method frames already in the dispatcher queue (e.g. a fresh `login` retry from the consumer) stayed queued forever.
+
+- ([#40307](https://github.com/RocketChat/Rocket.Chat/pull/40307)) Fix `DDPDispatcher` dropping non-method frames (connect, sub, unsub, ping, pong) when a `wait` block is at the head of the queue. Previously every payload flowed through the same wait-serialization path: a `connect` frame dispatched after a `wait: true` method (e.g. `login`) would be queued in a new non-wait block but never actually sent, wedging the DDP handshake — the socket stayed open, the server never replied `connected`, and any caller awaiting the connection hung. Non-method payloads now bypass the queue and emit immediately; wait-method serialization between methods is unchanged.
+
+- <details><summary>Updated dependencies [4c3984593017d59edd631bf8ae4f35f9d3c3db36, ae9f740d6af20557eac61b4af902c868b4132b49, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, b1c2668b74bfb49ebaefe2f581b2f8be5d4d1dd6]:</summary>
+
+  - @rocket.chat/rest-typings@8.5.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
 ## 1.0.9
 
 ### Patch Changes

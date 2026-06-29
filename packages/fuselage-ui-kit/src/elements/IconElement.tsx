@@ -1,6 +1,6 @@
 import { Icon, FramedIcon } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 
@@ -35,7 +35,7 @@ const getFramedIconProps = (
 	}
 };
 
-const IconElement = ({ block }: IconElementProps): ReactElement => {
+const IconElement = ({ block }: IconElementProps) => {
 	const { icon, variant, framed } = block;
 	if (framed) {
 		return <FramedIcon size={20} icon={icon} {...getFramedIconProps(variant)} />;

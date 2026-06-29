@@ -1,7 +1,7 @@
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { memo } from 'react';
 
 import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
@@ -13,7 +13,7 @@ type SidebarItemProps = {
 	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: ReactElement;
+	menu?: ReactNode;
 	menuOptions?: any;
 	selected?: boolean;
 	badges?: ReactNode;

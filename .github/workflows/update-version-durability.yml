@@ -12,6 +12,8 @@ on:
         required: true
       D360_TOKEN:
         required: true
+      D360_USER_ID:
+        required: true
 
 jobs:
   update-versions:
@@ -37,4 +39,5 @@ jobs:
           GH_TOKEN: ${{ secrets.CI_PAT }}
           D360_TOKEN: ${{ secrets.D360_TOKEN }}
           D360_ARTICLE_ID: 800f8d52-409d-478d-b560-f82a2c0eb7fb
+          D360_USER_ID: ${{ secrets.D360_USER_ID }}
           PUBLISH: true

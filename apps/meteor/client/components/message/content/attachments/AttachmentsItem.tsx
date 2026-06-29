@@ -1,6 +1,5 @@
 import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
 import { isFileAttachment, isQuoteAttachment } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import DefaultAttachment from './DefaultAttachment';
@@ -12,7 +11,7 @@ type AttachmentsItemProps = {
 	id: string | undefined;
 };
 
-const AttachmentsItem = ({ attachment, id }: AttachmentsItemProps): ReactElement => {
+const AttachmentsItem = ({ attachment, id }: AttachmentsItemProps) => {
 	if (isFileAttachment(attachment)) {
 		return <FileAttachment id={id} {...attachment} />;
 	}

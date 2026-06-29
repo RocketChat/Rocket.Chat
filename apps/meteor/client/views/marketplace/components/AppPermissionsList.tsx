@@ -1,7 +1,6 @@
 import type { AppPermission } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +34,7 @@ const defaultPermissions = [
 	'api',
 ];
 
-const AppPermissionsList = ({ appPermissions }: { appPermissions: AppPermission[] | undefined }): ReactElement => {
+const AppPermissionsList = ({ appPermissions }: { appPermissions: AppPermission[] | undefined }) => {
 	const { t } = useTranslation();
 	const handleAppPermissions = (permission: string): string => t(`Apps_Permissions_${permission.replace('.', '_')}` as TranslationKey);
 

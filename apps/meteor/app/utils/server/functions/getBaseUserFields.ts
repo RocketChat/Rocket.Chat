@@ -10,6 +10,8 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'status': 1,
 	'statusDefault': 1,
 	'statusText': 1,
+	'statusSource': 1,
+	'statusExpiresAt': 1,
 	'statusConnection': 1,
 	'bio': 1,
 	'avatarOrigin': 1,

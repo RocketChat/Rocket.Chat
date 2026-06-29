@@ -15,7 +15,6 @@ import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -55,7 +54,7 @@ export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled' | s
 
 export type LoginErrorState = [error: LoginErrors, message?: string] | undefined;
 
-export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const {
 		register,
 		handleSubmit,

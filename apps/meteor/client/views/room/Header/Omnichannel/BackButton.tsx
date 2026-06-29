@@ -1,16 +1,15 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type BackButtonProps = { routeName?: string };
 
-const BackButton = ({ routeName }: BackButtonProps): ReactElement => {
+const BackButton = ({ routeName }: BackButtonProps) => {
 	const router = useRouter();
 	const { t } = useTranslation();
 
-	const back = useEffectEvent(() => {
+	const back = useStableCallback(() => {
 		switch (routeName) {
 			case 'omnichannel-directory':
 				router.navigate({

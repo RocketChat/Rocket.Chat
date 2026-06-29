@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -39,7 +39,7 @@ type ThreadMessagePreviewProps = {
 	sequential: boolean;
 } & ComponentProps<typeof ThreadMessage>;
 
-const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
+const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps) => {
 	const parentMessage = useParentMessage(message.tmid);
 
 	const translated = useShowTranslated(message);

@@ -1,5 +1,6 @@
 /packages/* @RocketChat/Architecture
 /packages/apps-engine/ @RocketChat/apps
+/packages/apps/ @RocketChat/apps
 /packages/core-typings/ @RocketChat/Architecture
 /packages/rest-typings/ @RocketChat/Architecture @RocketChat/backend
 /packages/ui-contexts/ @RocketChat/frontend
@@ -27,6 +28,8 @@
 apps/meteor/server/startup/migrations @RocketChat/Architecture
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
 /apps/meteor/server/features/EmailInbox @RocketChat/omnichannel
+/apps/meteor/ee/server/apps/ @RocketChat/apps
+/apps/meteor/ee/tests/unit/server/apps/ @RocketChat/apps
 /apps/meteor/ee/app/canned-responses @RocketChat/omnichannel
 /apps/meteor/ee/app/livechat @RocketChat/omnichannel
 /apps/meteor/ee/app/livechat-enterprise @RocketChat/omnichannel

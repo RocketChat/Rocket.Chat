@@ -2,7 +2,12 @@ import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 
 import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
-import { addUserToRoom, createRoom, getSubscriptionByRoomId, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
+import {
+	addUserToRoomViaMethod,
+	createRoom,
+	getSubscriptionByRoomId,
+	getSubscriptions,
+} from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig, TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -180,7 +185,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					await deleteUser(user, {}, rc1AdminRequestConfig);
 				});
 				it('should not be able to add a user without access-federation permission to a room', async () => {
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [user.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
@@ -192,7 +197,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
-					addUserResponse = await addUserToRoom({
+					addUserResponse = await addUserToRoomViaMethod({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
@@ -265,7 +270,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					}).expect(200);
 
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [user.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
@@ -420,7 +425,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [rcValidUser2.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
@@ -515,7 +520,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [userWithNonMatchingEmail.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
@@ -597,7 +602,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [userWithUnverifiedEmail.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
@@ -661,7 +666,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [userWithoutEmail.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
@@ -870,7 +875,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoom({
+					const addUserResponse = await addUserToRoomViaMethod({
 						usernames: [userWithNonMatchingEmail.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,

@@ -10,7 +10,7 @@ import {
 	SidebarV2ItemTitle,
 } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
@@ -23,10 +23,10 @@ type SidePanelItemProps = {
 	icon: ReactNode;
 	unread: boolean;
 	time?: Date;
-	subtitle: ReactElement | null;
+	subtitle: ReactNode;
 	parentRoom?: ReactNode;
-	badges?: ReactElement;
-	menu?: ReactElement;
+	badges?: ReactNode;
+	menu?: ReactNode;
 };
 
 const SidePanelItem = ({

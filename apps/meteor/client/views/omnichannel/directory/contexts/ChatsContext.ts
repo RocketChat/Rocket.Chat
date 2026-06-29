@@ -40,7 +40,7 @@ export type ChatsContextValue = {
 	};
 	removeFilter: (filter: keyof ChatsFiltersQuery) => void;
 	hasAppliedFilters: boolean;
-	textInputRef: RefObject<HTMLInputElement> | null;
+	textInputRef: RefObject<HTMLInputElement | null> | null;
 };
 
 export const ChatsContext = createContext<ChatsContextValue>({

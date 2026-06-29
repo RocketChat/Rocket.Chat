@@ -18,6 +18,8 @@ export const defaultFields = {
 	bio: 1,
 	reason: 1,
 	statusText: 1,
+	statusSource: 1,
+	statusExpiresAt: 1,
 	avatarETag: 1,
 	federated: 1,
 	statusLivechat: 1,

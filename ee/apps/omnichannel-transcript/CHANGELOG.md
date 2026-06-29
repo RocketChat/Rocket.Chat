@@ -1,5 +1,50 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.58-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6ae500ab8983b334d0df3e07925b610d0ff9d38c, 4319d3eda1df3cd45b8e2b7b2b193ae9798a9ade, 73e12e1707baea845395e0582892f65456598672, a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b, 25722dbb970665c66d0acfee415650f96e52cd50, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53, ff751747f8a0637888364bde42ae18ac92a38768]:</summary>
+
+  - @rocket.chat/i18n@3.2.0-rc.0
+  - @rocket.chat/model-typings@2.3.1-rc.0
+  - @rocket.chat/models@2.3.1-rc.0
+  - @rocket.chat/core-services@0.14.2-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.55-rc.0
+  - @rocket.chat/network-broker@0.2.37-rc.0
+  </details>
+
+## 0.4.57
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, cdb264fec803e234a6ad2000018b31d4b2074e99, b6b04aadfcc8558f888b334e37c46a77e5816237, ad7d42400ea36f1eb0aaf7cc3361c77fdabf9ebc, 4704bf81ca370f120af32185a7c55407a26f8514, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, ebc9babf55dd26613027c28dcacf77909116b342, fac64728505b312d5da786e92d3134450ce4a7c1, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
+
+  - @rocket.chat/model-typings@2.3.0
+  - @rocket.chat/models@2.3.0
+  - @rocket.chat/i18n@3.1.0
+  - @rocket.chat/core-typings@8.5.0
+  - @rocket.chat/network-broker@0.2.36
+  - @rocket.chat/omnichannel-services@0.3.54
+  - @rocket.chat/core-services@0.14.1
+  </details>
+
+## 0.4.57-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, cdb264fec803e234a6ad2000018b31d4b2074e99, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, ad7d42400ea36f1eb0aaf7cc3361c77fdabf9ebc, 4704bf81ca370f120af32185a7c55407a26f8514, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, ebc9babf55dd26613027c28dcacf77909116b342, fac64728505b312d5da786e92d3134450ce4a7c1, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
+
+  - @rocket.chat/model-typings@2.3.0-rc.0
+  - @rocket.chat/models@2.3.0-rc.0
+  - @rocket.chat/i18n@3.1.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  - @rocket.chat/core-services@0.14.1-rc.0
+  - @rocket.chat/omnichannel-services@0.3.54-rc.0
+  - @rocket.chat/network-broker@0.2.36-rc.0
+  </details>
+
 ## 0.4.56
 
 ### Patch Changes

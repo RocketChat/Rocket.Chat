@@ -318,15 +318,23 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
+		POST: (params: {
+			message?: string;
+			status?: UserStatus;
+			expiresAt?: string;
+			userId?: string;
+			username?: string;
+			user?: string;
+		}) => void;
 	};
 
 	'/v1/users.getStatus': {
 		GET: () => {
+			_id: string;
 			status: 'online' | 'offline' | 'away' | 'busy';
-			message?: string;
-			_id?: string;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+			statusSource?: IUser['statusSource'];
+			statusExpiresAt?: IUser['statusExpiresAt'];
 		};
 	};
 

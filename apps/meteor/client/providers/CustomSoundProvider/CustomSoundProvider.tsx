@@ -1,11 +1,10 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { CustomSoundContext, useEndpoint, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
 import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
 
 type CustomSoundProviderProps = {
@@ -17,6 +16,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const queryClient = useQueryClient();
 	const streamAll = useStream('notify-all');
+	const getCustomSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
 	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
@@ -24,17 +24,30 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const { data: list } = useQuery({
 		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
-			const customSoundsList = await sdk.call('listCustomSounds');
-			if (!customSoundsList.length) {
+			// `/v1/custom-sounds.list` is paginated, so we page through all results to
+			// load every custom sound into the provider (the legacy `listCustomSounds`
+			// method returned them all at once).
+			const sounds: Awaited<ReturnType<typeof getCustomSounds>>['sounds'] = [];
+			let total = Infinity;
+			while (sounds.length < total) {
+				const page = await getCustomSounds({ count: 100, offset: sounds.length });
+				total = page.total;
+				sounds.push(...page.sounds);
+				if (!page.sounds.length) {
+					break;
+				}
+			}
+
+			if (!sounds.length) {
 				return defaultSounds;
 			}
-			return [...customSoundsList.map((sound) => ({ ...sound, src: getCustomSoundURL(sound) })), ...defaultSounds];
+			return [...sounds.map(({ _updatedAt: _, ...sound }) => ({ ...sound, src: getCustomSoundURL(sound) })), ...defaultSounds];
 		},
 		queryKey: ['listCustomSounds'],
 		initialData: defaultSounds,
 	});
 
-	const play = useEffectEvent((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
+	const play = useStableCallback((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
 		stop(soundId);
 
 		const item = list?.find(({ _id }) => _id === soundId);
@@ -56,7 +69,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		};
 	});
 
-	const pause = useEffectEvent((soundId: ICustomSound['_id']) => {
+	const pause = useStableCallback((soundId: ICustomSound['_id']) => {
 		const current = audioRefs.current?.find(({ id }) => id === soundId);
 		if (current) {
 			current.pause();
@@ -64,7 +77,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		}
 	});
 
-	const stop = useEffectEvent((soundId: ICustomSound['_id']) => {
+	const stop = useStableCallback((soundId: ICustomSound['_id']) => {
 		const current = audioRefs.current?.find(({ id }) => id === soundId);
 		if (current) {
 			current.load();

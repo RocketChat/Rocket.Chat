@@ -3,13 +3,12 @@ import { isDirectMessageRoom, isMultipleDirectMessageRoom } from '@rocket.chat/c
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupInfo } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
-const VideoConfPopupRoomInfo = ({ room }: { room: IRoom }): ReactElement => {
+const VideoConfPopupRoomInfo = ({ room }: { room: IRoom }) => {
 	const ownUser = useUser();
 	const [userId] = room?.uids?.filter((uid) => uid !== ownUser?._id) || [];
 	const roomName = useVideoConfRoomName(room);

@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
+import { action } from 'storybook/actions';
 
 import TriggerMessage from './component';
 import { screenDecorator } from '../../../.storybook/helpers';
