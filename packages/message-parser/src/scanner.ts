@@ -1,7 +1,5 @@
-import { matchesAt } from './chars';
-
 export class Scanner {
-	public pos: number;
+	private pos: number;
 	private readonly input: string;
 
 	constructor(input: string, startPos = 0) {
@@ -9,43 +7,35 @@ export class Scanner {
 		this.pos = startPos;
 	}
 
-	// Current character, empty string if at end
-	char(): string {
+	public char(): string {
 		return this.input[this.pos] ?? '';
 	}
 
-	// Character at offset from current pos
-	charAt(offset: number): string {
+	public charAt(offset: number): string {
 		return this.input[this.pos + offset] ?? '';
 	}
 
-	// Advance by n characters (default 1)
-	advance(n = 1): void {
+	public consume(n: number = 1): void {
 		this.pos += n;
 	}
 
-	// Are we at or past the end?
-	isEnd(): boolean {
+	public isEnd(): boolean {
 		return this.pos >= this.input.length;
 	}
 
-	// Does the input match a literal starting at current pos?
-	matches(literal: string): boolean {
-		return matchesAt(this.input, this.pos, literal);
+	public matches(literal: string): boolean {
+		return this.input.startsWith(literal, this.pos);
 	}
 
-	// Save current position for backtracking
-	save(): number {
+	public position(): number {
 		return this.pos;
 	}
 
-	// Restore to a previously saved position
-	restore(savedPos: number): void {
+	public backtrack(savedPos: number): void {
 		this.pos = savedPos;
 	}
 
-	// Slice from savedPos to current pos
-	sliceFrom(savedPos: number): string {
+	public sliceFrom(savedPos: number): string {
 		return this.input.slice(savedPos, this.pos);
 	}
 }

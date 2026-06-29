@@ -1,4 +1,21 @@
-import type { Root, Inlines } from './definitions';
+import type {
+	Root,
+	Inlines,
+	Markup,
+	Bold,
+	Italic,
+	Strike,
+	Spoiler,
+	Timestamp,
+	BigEmoji,
+	Heading,
+	Code,
+	Quote,
+	SpoilerBlock,
+	UnorderedList,
+	OrderedList,
+	KaTeX,
+} from './definitions';
 import type { Options } from './index';
 import {
 	paragraph,
@@ -24,32 +41,59 @@ import {
 	katex,
 	inlineKatex,
 	autoLink,
-	bigEmoji,
-	emoji,
 	autoEmail,
 	phoneChecker,
 	timestamp,
 	timestampFromHours,
 	timestampFromIsoTime,
+	bigEmoji,
+	emoji,
+	emoticon,
 } from './utils';
 import { Scanner } from './scanner';
-import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit, matchEmoticon } from './chars';
+import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit, EMOTICON_KEYS, EMOTICONS } from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ESCAPABLE = new Set(['*', '_', '~', '`', '#', '.']);
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function consumeEndOfLine(scanner: Scanner): void {
+	if (scanner.isEnd()) return;
+	if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
+		scanner.consume(2);
+	} else {
+		scanner.consume(1);
+	}
+}
+
 function isShortCodeChar(ch: string): boolean {
 	return isAlphaNum(ch) || ch === '-' || ch === '_' || ch === '+' || ch === '.';
 }
 
-// ─── Re-entrancy guards ───────────────────────────────────────────────────────
+/** True when every node is whitespace-only plain text (e.g. `* *` between delimiters). */
+function isWhitespaceOnly(nodes: Inlines[]): boolean {
+	return nodes.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
+}
+
+export function matchEmoticon(scanner: Scanner): Inlines | null {
+	for (const key of EMOTICON_KEYS) {
+		if (scanner.matches(key)) {
+			scanner.consume(key.length);
+			return emoticon(key, EMOTICONS[key]);
+		}
+	}
+	return null;
+}
+
+// ───  Re-entrancy guards ───────────────────────────────────────────────────
 
 let skipBold = false;
 let skipItalic = false;
 let skipStrike = false;
 
-// ─── Main entry point ─────────────────────────────────────────────────────────
+// ───  Entry point ──────────────────────────────────────────────────────────
 
 export function parse(input: string, options: Options = {}): Root {
 	const bigEmojiRoot = tryBigEmoji(input, options);
@@ -61,13 +105,10 @@ export function parse(input: string, options: Options = {}): Root {
 	const scanner = new Scanner(input);
 
 	while (!scanner.isEnd()) {
-		const start = scanner.save();
-
-		// Peek: is this line empty?
+		const start = scanner.position();
 		while (!scanner.isEnd() && !isNewline(scanner.char())) {
-			scanner.advance();
+			scanner.consume();
 		}
-
 		const text = scanner.sliceFrom(start);
 		const isLastPosition = scanner.isEnd();
 
@@ -76,175 +117,61 @@ export function parse(input: string, options: Options = {}): Root {
 				root.push(lineBreak());
 			}
 		} else {
-			scanner.restore(start);
+			scanner.backtrack(start);
 
-			const katexBlockNode: any = tryKatexBlock(scanner, options);
+			const katexBlockNode: KaTeX | null = tryKatexBlock(scanner, options);
 			if (katexBlockNode !== null) {
 				root.push(katexBlockNode);
 				continue;
 			}
 
-			// Try block-level rules first
-			const codeFenceNode: any = tryCodeFence(scanner);
+			const codeFenceNode: Code | null = tryCodeFence(scanner);
 			if (codeFenceNode !== null) {
 				root.push(codeFenceNode);
 				continue;
 			}
 
-			const blockSpoilerNode: any = tryBlockSpoiler(scanner, options);
+			const blockSpoilerNode: SpoilerBlock | null = tryBlockSpoiler(scanner, options);
 			if (blockSpoilerNode !== null) {
 				root.push(blockSpoilerNode);
 				continue;
 			}
 
-			const blockquoteNode: any = tryBlockquote(scanner, options);
+			const blockquoteNode: Quote | null = tryBlockquote(scanner, options);
 			if (blockquoteNode !== null) {
 				root.push(blockquoteNode);
 				continue;
 			}
 
-			const unorderedListNode: any = tryUnorderedList(scanner, options);
+			const unorderedListNode: UnorderedList | null = tryUnorderedList(scanner, options);
 			if (unorderedListNode !== null) {
 				root.push(unorderedListNode);
 				continue;
 			}
 
-			const orderedListNode: any = tryOrderedList(scanner, options);
+			const orderedListNode: OrderedList | null = tryOrderedList(scanner, options);
 			if (orderedListNode !== null) {
 				root.push(orderedListNode);
 				continue;
 			}
 
-			const headingNode: any = tryHeading(scanner, options);
+			const headingNode: Heading | null = tryHeading(scanner, options);
 			if (headingNode !== null) {
 				root.push(headingNode);
-			} else {
-				const inlines = parseInline(scanner, options);
-				if (inlines.length > 0) {
-					root.push(paragraph(inlines));
-				}
+				continue;
+			}
+
+			const inlines = parseInline(scanner, options);
+			if (inlines.length > 0) {
+				root.push(paragraph(inlines));
 			}
 		}
 
-		// Skip newline character(s)
-		if (!scanner.isEnd()) {
-			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-				scanner.advance(2);
-			} else {
-				scanner.advance(1);
-			}
-		}
+		consumeEndOfLine(scanner); // Skip newline character(s)
 	}
 
 	return root;
 }
-
-// ─── Block: Code Fence ────────────────────────────────────────────────────────
-
-function tryCodeFence(scanner: Scanner): Root[number] | null {
-	const start = scanner.save();
-	const fence = '```';
-
-	if (!scanner.matches(fence)) {
-		return null;
-	}
-	scanner.advance(fence.length);
-
-	// Optional language tag
-	const langStart = scanner.save();
-	while (!scanner.isEnd() && !isNewline(scanner.char())) {
-		scanner.advance();
-	}
-	const language = scanner.sliceFrom(langStart).trim();
-
-	// Must be followed by newline
-	if (scanner.isEnd()) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// Consume newline after opening ```
-	if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-		scanner.advance(2);
-	} else {
-		scanner.advance(1);
-	}
-
-	const lines: ReturnType<typeof codeLine>[] = [];
-
-	while (!scanner.isEnd()) {
-		// Check for closing ```
-		if (scanner.matches(fence)) {
-			scanner.advance(fence.length);
-			// Consume any trailing content after closing ```
-			while (!scanner.isEnd() && !isNewline(scanner.char())) {
-				scanner.advance();
-			}
-			return code(lines, language || undefined);
-		}
-
-		// Collect line content
-		const lineStart = scanner.save();
-		while (!scanner.isEnd() && !isNewline(scanner.char())) {
-			scanner.advance();
-		}
-		const lineText = scanner.sliceFrom(lineStart);
-		lines.push(codeLine(plain(lineText)));
-
-		// Consume newline
-		if (!scanner.isEnd()) {
-			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-				scanner.advance(2);
-			} else {
-				scanner.advance(1);
-			}
-		}
-	}
-
-	// Never found closing ``` → backtrack
-	scanner.restore(start);
-	return null;
-}
-
-// ─── Block: Heading ───────────────────────────────────────────────────────────
-
-function tryHeading(scanner: Scanner, options: Options): Root[number] | null {
-	const start = scanner.save();
-
-	// Count # characters (max 4)
-	let level = 0;
-	while (level < 4 && scanner.char() === '#') {
-		level++;
-		scanner.advance();
-	}
-
-	if (level === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// Must be followed by at least one space or tab
-	if (!isSpace(scanner.char())) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// Skip all spaces/tabs
-	while (isSpace(scanner.char())) {
-		scanner.advance();
-	}
-
-	// Must have content
-	if (scanner.isEnd() || isNewline(scanner.char())) {
-		scanner.restore(start);
-		return null;
-	}
-
-	const inlines = parseInline(scanner, options);
-	return heading(inlines, level as 1 | 2 | 3 | 4);
-}
-
-// ─── Inline parser ────────────────────────────────────────────────────────────
 
 function parseInline(scanner: Scanner, options: Options): Inlines[] {
 	const nodes: Inlines[] = [];
@@ -253,11 +180,10 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		const ch = scanner.char();
 
-		// Whitespace run — kept as its own node so emoji boundary detection works
 		if (isSpace(ch)) {
-			const start = scanner.save();
+			const start = scanner.position();
 			while (!scanner.isEnd() && isSpace(scanner.char())) {
-				scanner.advance();
+				scanner.consume();
 			}
 			const text = scanner.sliceFrom(start);
 			nodes.push(plain(text));
@@ -275,27 +201,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Emoticon — only at a word boundary (when emoticons are enabled)
-		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
-			const result = tryEmoticon(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ')';
-				continue;
-			}
-		}
-
-		// Emoticon — only at a word boundary (when emoticons are enabled)
-		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
-			const result = tryEmoticon(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ')';
-				continue;
-			}
-		}
-
-		// KaTeX inline — $ or \(
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
 			const result = tryKatexInline(scanner, options);
 			if (result !== null) {
@@ -305,22 +210,20 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Escape sequences
 		if (ch === '\\') {
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
-				scanner.advance(2);
+				scanner.consume(2);
 				nodes.push(plain(next));
 				prevChar = next;
 				continue;
 			}
 			nodes.push(plain('\\'));
-			scanner.advance();
+			scanner.consume();
 			prevChar = '\\';
 			continue;
 		}
 
-		// Inline code
 		if (ch === '`') {
 			const result = tryInlineCode(scanner);
 			if (result !== null) {
@@ -330,7 +233,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Bold
 		if (ch === '*') {
 			const result = tryBold(scanner, options);
 			if (result !== null) {
@@ -340,7 +242,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Italic — only when not preceded by alphanumeric
 		if (ch === '_') {
 			if (!isAlphaNum(prevChar)) {
 				const result = tryItalic(scanner, options);
@@ -352,7 +253,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Strikethrough
 		if (ch === '~') {
 			const result = tryStrike(scanner, options);
 			if (result !== null) {
@@ -362,7 +262,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Emoji shortcode
 		if (ch === ':') {
 			const result = tryEmojiShortCode(scanner);
 			if (result !== null) {
@@ -372,7 +271,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// User mention
 		if (ch === '@') {
 			const result = tryUserMention(scanner);
 			if (result !== null) {
@@ -382,7 +280,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Channel mention — only when preceded by space or start
 		if (ch === '#') {
 			if (prevChar === '' || isSpace(prevChar)) {
 				const result = tryChannelMention(scanner);
@@ -394,7 +291,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Markdown link
 		if (ch === '[') {
 			const result = tryMarkdownLink(scanner, options);
 			if (result !== null) {
@@ -413,7 +309,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Angle bracket link
 		if (ch === '<') {
 			const result = tryAngleBracketLink(scanner);
 			if (result !== null) {
@@ -423,7 +318,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Inline spoiler
 		if (ch === '|') {
 			const result = trySpoiler(scanner, options);
 			if (result !== null) {
@@ -443,7 +337,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Email (local@domain) — before bare URL / autolink so it claims the @-region
+		// Email (local@domain)
 		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
 			const result = tryEmail(scanner);
 			if (result !== null) {
@@ -453,7 +347,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Bare URL (word.word style)
 		if (isAlpha(ch)) {
 			const result = tryBareUrl(scanner);
 			if (result !== null) {
@@ -463,7 +356,6 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Auto-link URL — try when we see alpha chars that could be a domain/url
 		if (isAlpha(ch) || isDigit(ch)) {
 			const result = tryAutoLinkUrl(scanner, options);
 			if (result !== null) {
@@ -473,9 +365,8 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		// Plain run — stop at '(' and ')' so dispatch can re-attempt email/URL after them
 		if (isPlainChar(ch) && ch !== '(' && ch !== ')') {
-			const start = scanner.save();
+			const start = scanner.position();
 			while (
 				!scanner.isEnd() &&
 				isPlainChar(scanner.char()) &&
@@ -483,7 +374,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 				scanner.char() !== '(' &&
 				scanner.char() !== ')'
 			) {
-				scanner.advance();
+				scanner.consume();
 			}
 			const text = scanner.sliceFrom(start);
 			nodes.push(plain(text));
@@ -491,31 +382,26 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			continue;
 		}
 
-		// Fallback
 		nodes.push(plain(ch));
 		prevChar = ch;
-		scanner.advance();
+		scanner.consume();
 	}
 
 	return reducePlainTexts(nodes);
 }
-
-// ─── Inner content parser ─────────────────────────────────────────────────────
 
 function parseInlineContent(scanner: Scanner, options: Options, stopChar: string): Inlines[] {
 	const nodes: Inlines[] = [];
 	let prevChar = '';
 
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
-		if (stopChar && scanner.matches(stopChar)) break;
-
+		if (scanner.matches(stopChar)) break;
 		const ch = scanner.char();
 
-		// Whitespace run — kept as its own node so emoji boundary detection works
 		if (isSpace(ch)) {
-			const start = scanner.save();
+			const start = scanner.position();
 			while (!scanner.isEnd() && isSpace(scanner.char()) && !scanner.matches(stopChar)) {
-				scanner.advance();
+				scanner.consume();
 			}
 			const text = scanner.sliceFrom(start);
 			nodes.push(plain(text));
@@ -533,7 +419,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// KaTeX inline — $ or \(
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
 			const result = tryKatexInline(scanner, options);
 			if (result !== null) {
@@ -543,22 +428,20 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Escape sequences
 		if (ch === '\\') {
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
-				scanner.advance(2);
+				scanner.consume(2);
 				nodes.push(plain(next));
 				prevChar = next;
 				continue;
 			}
 			nodes.push(plain('\\'));
-			scanner.advance();
+			scanner.consume();
 			prevChar = '\\';
 			continue;
 		}
 
-		// Inline code
 		if (ch === '`') {
 			const result = tryInlineCode(scanner);
 			if (result !== null) {
@@ -568,7 +451,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Bold
 		if (ch === '*') {
 			const result = tryBold(scanner, options);
 			if (result !== null) {
@@ -578,7 +460,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Italic
 		if (ch === '_') {
 			if (!isAlphaNum(prevChar)) {
 				const result = tryItalic(scanner, options);
@@ -590,7 +471,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Strikethrough
 		if (ch === '~') {
 			const result = tryStrike(scanner, options);
 			if (result !== null) {
@@ -600,7 +480,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Emoji shortcode
 		if (ch === ':') {
 			const result = tryEmojiShortCode(scanner);
 			if (result !== null) {
@@ -610,7 +489,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// User mention
 		if (ch === '@') {
 			const result = tryUserMention(scanner);
 			if (result !== null) {
@@ -620,7 +498,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Channel mention
 		if (ch === '#') {
 			if (prevChar === '' || isSpace(prevChar)) {
 				const result = tryChannelMention(scanner);
@@ -632,7 +509,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Markdown link
 		if (ch === '[') {
 			const result = tryMarkdownLink(scanner, options);
 			if (result !== null) {
@@ -651,7 +527,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Angle bracket link
 		if (ch === '<') {
 			const result = tryAngleBracketLink(scanner);
 			if (result !== null) {
@@ -661,7 +536,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Inline spoiler
 		if (ch === '|') {
 			const result = trySpoiler(scanner, options);
 			if (result !== null) {
@@ -681,7 +555,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Email (local@domain) — before bare URL / autolink so it claims the @-region
+		// Email (local@domain)
 		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
 			const result = tryEmail(scanner);
 			if (result !== null) {
@@ -691,7 +565,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Bare URL
 		if (isAlpha(ch)) {
 			const result = tryBareUrl(scanner);
 			if (result !== null) {
@@ -701,7 +574,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Auto-link URL — try when we see alpha chars that could be a domain/url
 		if (isAlpha(ch) || isDigit(ch)) {
 			const result = tryAutoLinkUrl(scanner, options);
 			if (result !== null) {
@@ -711,9 +583,8 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Plain run
 		if (isPlainChar(ch) && ch !== '(' && ch !== ')') {
-			const start = scanner.save();
+			const start = scanner.position();
 			while (
 				!scanner.isEnd() &&
 				isPlainChar(scanner.char()) &&
@@ -722,7 +593,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 				scanner.char() !== '(' &&
 				scanner.char() !== ')'
 			) {
-				scanner.advance();
+				scanner.consume();
 			}
 			const text = scanner.sliceFrom(start);
 			nodes.push(plain(text));
@@ -730,417 +601,631 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			continue;
 		}
 
-		// Fallback
 		nodes.push(plain(ch));
 		prevChar = ch;
-		scanner.advance();
+		scanner.consume();
 	}
 
 	return nodes;
 }
 
-// ─── Bold ─────────────────────────────────────────────────────────────────────
+// ─── Inline methods ──────────────────────────────────────────────────────────────
 
 function tryBold(scanner: Scanner, options: Options): Inlines | null {
 	if (skipBold) return null;
-
-	const start = scanner.save();
-
-	// Triple asterisk: emit plain('*') and let next iteration handle '**'
+	const start = scanner.position();
 	if (scanner.matches('***')) {
-		scanner.advance(1);
+		scanner.consume(1);
 		return plain('*');
 	}
-
 	const isDouble = scanner.matches('**');
 	const delimiter = isDouble ? '**' : '*';
-
-	scanner.advance(delimiter.length);
-
+	scanner.consume(delimiter.length);
 	if (scanner.isEnd() || isNewline(scanner.char())) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	skipBold = true;
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipBold = false;
-
 	if (!scanner.matches(delimiter)) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	if (content.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	const isWhitespaceOnly = content.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
-	if (isWhitespaceOnly) {
-		scanner.restore(start);
+	if (isWhitespaceOnly(content)) {
+		scanner.backtrack(start);
 		return null;
 	}
-
-	scanner.advance(delimiter.length);
-	return bold(reducePlainTexts(content) as any);
+	scanner.consume(delimiter.length);
+	return bold(reducePlainTexts(content) as Bold['value']);
 }
-
-// ─── Italic ───────────────────────────────────────────────────────────────────
 
 function tryItalic(scanner: Scanner, options: Options): Inlines | null {
 	if (skipItalic) return null;
-
-	const start = scanner.save();
-
+	const start = scanner.position();
 	if (scanner.matches('___')) {
-		scanner.advance(1);
+		scanner.consume(1);
 		return plain('_');
 	}
-
 	const isDouble = scanner.matches('__');
 	const delimiter = isDouble ? '__' : '_';
-
-	scanner.advance(delimiter.length);
-
+	scanner.consume(delimiter.length);
 	if (scanner.isEnd() || isNewline(scanner.char())) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	skipItalic = true;
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipItalic = false;
-
 	if (!scanner.matches(delimiter)) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	if (content.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	const isWhitespaceOnly = content.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
-	if (isWhitespaceOnly) {
-		scanner.restore(start);
+	if (isWhitespaceOnly(content)) {
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Double underscore followed by alphanumeric → not italic
 	if (isDouble && isAlphaNum(scanner.charAt(delimiter.length))) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Single underscore followed by alpha → not italic
 	if (!isDouble && isAlpha(scanner.charAt(delimiter.length))) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	scanner.advance(delimiter.length);
-	return italic(reducePlainTexts(content) as any);
+	scanner.consume(delimiter.length);
+	return italic(reducePlainTexts(content) as Italic['value']);
 }
-
-// ─── Strikethrough ────────────────────────────────────────────────────────────
 
 function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 	if (skipStrike) return null;
-
-	const start = scanner.save();
-
-	// Triple tilde: emit plain('~')
+	const start = scanner.position();
 	if (scanner.matches('~~~')) {
-		scanner.advance(1);
+		scanner.consume(1);
 		return plain('~');
 	}
-
 	const isDouble = scanner.matches('~~');
 	const delimiter = isDouble ? '~~' : '~';
-
-	scanner.advance(delimiter.length);
-
+	scanner.consume(delimiter.length);
 	if (scanner.isEnd() || isNewline(scanner.char())) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	skipStrike = true;
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipStrike = false;
-
 	if (!scanner.matches(delimiter)) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	if (content.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	const isWhitespaceOnly = content.every((n) => n.type === 'PLAIN_TEXT' && n.value.trim() === '');
-	if (isWhitespaceOnly) {
-		scanner.restore(start);
+	if (isWhitespaceOnly(content)) {
+		scanner.backtrack(start);
 		return null;
 	}
-
-	scanner.advance(delimiter.length);
-	return strike(reducePlainTexts(content) as any);
+	scanner.consume(delimiter.length);
+	return strike(reducePlainTexts(content) as Strike['value']);
 }
 
-// ─── Inline code ──────────────────────────────────────────────────────────────
-
 function tryInlineCode(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	scanner.advance(); // consume opening '`'
-
-	const contentStart = scanner.save();
+	const start = scanner.position();
+	scanner.consume();
+	const contentStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '`') {
-		scanner.advance();
+		scanner.consume();
 	}
-
 	if (scanner.isEnd() || isNewline(scanner.char()) || scanner.char() !== '`') {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	const content = scanner.sliceFrom(contentStart);
 	if (content.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	scanner.advance(); // consume closing '`'
+	scanner.consume();
 	return inlineCode(plain(content));
 }
 
-// ─── User mention ─────────────────────────────────────────────────────────────
+function tryEmail(scanner: Scanner): Inlines | null {
+	const start = scanner.position();
 
-function tryUserMention(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	scanner.advance(); // consume '@'
+	if (scanner.matches('mailto:')) {
+		scanner.consume(7);
+	}
 
-	const nameStart = scanner.save();
-
-	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+	const localStart = scanner.position();
+	while (!scanner.isEnd()) {
 		const ch = scanner.char();
-		const code = ch.charCodeAt(0);
-		if (isAlphaNum(ch) || ch === '.' || ch === '-' || ch === '_' || ch === ':' || ch === '@' || code > 127) {
-			scanner.advance();
+		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '_' || ch === '+' || ch === '-' || ch === "'") {
+			scanner.consume();
+		} else {
+			break;
+		}
+	}
+	const local = scanner.sliceFrom(localStart);
+
+	if (local.length === 0 || scanner.char() !== '@') {
+		scanner.backtrack(start);
+		return null;
+	}
+	scanner.consume(); // consume '@'
+
+	const domainStart = scanner.position();
+	while (!scanner.isEnd()) {
+		const ch = scanner.char();
+		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '-') {
+			scanner.consume();
 		} else {
 			break;
 		}
 	}
 
-	const name = scanner.sliceFrom(nameStart);
+	// Trim trailing '.' / '-' back out of the domain (e.g. "joe.com." -> "joe.com")
+	while (scanner.position() > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
+		scanner.consume(-1);
+	}
 
-	if (name.length === 0) {
-		scanner.restore(start);
+	const domain = scanner.sliceFrom(domainStart);
+	const dotIdx = domain.indexOf('.');
+	if (dotIdx <= 0 || dotIdx === domain.length - 1) {
+		scanner.backtrack(start);
 		return null;
 	}
 
-	if (name.endsWith('__')) {
-		scanner.restore(start);
-		return null;
-	}
-
-	return mentionUser(name);
+	return autoEmail(local + '@' + domain);
 }
 
-// ─── Channel mention ──────────────────────────────────────────────────────────
-
-function tryChannelMention(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	scanner.advance(); // consume '#'
-
-	const nameStart = scanner.save();
-
-	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
-		const ch = scanner.char();
-		if (!isAlphaNum(ch) && ch !== '-' && ch !== '_' && ch !== '.') break;
-		scanner.advance();
-	}
-
-	const name = scanner.sliceFrom(nameStart);
-
-	if (name.length === 0) {
-		scanner.restore(start);
+function tryPhone(scanner: Scanner): Inlines | null {
+	const start = scanner.position();
+	if (scanner.char() !== '+') {
 		return null;
 	}
+	scanner.consume(); // consume '+'
 
-	return mentionChannel(name);
-}
+	// Read a run of digits (or null if none here).
+	const digits = (): string | null => {
+		const s = scanner.position();
+		while (!scanner.isEnd() && isDigit(scanner.char())) {
+			scanner.consume();
+		}
+		const d = scanner.sliceFrom(s);
+		return d.length > 0 ? d : null;
+	};
 
-function tryBlockquote(scanner: Scanner, options: Options): Root[number] | null {
-	const start = scanner.save();
+	// Prefix is either bare digits or "(" digits ")".
+	const prefix = (): { text: string; number: string } | null => {
+		if (scanner.char() === '(') {
+			const s = scanner.position();
+			scanner.consume();
+			const d = digits();
+			if (d !== null && scanner.char() === ')') {
+				scanner.consume();
+				return { text: '(' + d + ')', number: d };
+			}
+			scanner.backtrack(s);
+		}
+		const d = digits();
+		return d !== null ? { text: d, number: d } : null;
+	};
 
-	// Must start with '>'
-	if (scanner.char() !== '>') {
-		return null;
+	// PhoneNumber alternatives, in order: each backtracks on failure.
+	let pn: { text: string; number: string } | null = null;
+
+	// prefix "-" digits
+	{
+		const s = scanner.position();
+		const p = prefix();
+		if (p !== null && scanner.char() === '-') {
+			scanner.consume();
+			const d = digits();
+			if (d !== null) pn = { text: p.text + '-' + d, number: p.number + d };
+		}
+		if (pn === null) scanner.backtrack(s);
 	}
-
-	const paragraphs: ReturnType<typeof paragraph>[] = [];
-
-	while (!scanner.isEnd() && scanner.char() === '>') {
-		scanner.advance(); // consume '>'
-
-		// Optional space/tab after '>'
-		if (isSpace(scanner.char())) {
-			scanner.advance();
-		}
-
-		// Empty line inside blockquote
-		if (scanner.isEnd() || isNewline(scanner.char())) {
-			paragraphs.push(paragraph([plain('')]));
-		} else {
-			// Parse the line content as inline
-			const inlines = parseInline(scanner, options);
-			paragraphs.push(paragraph(inlines));
-		}
-
-		// Consume newline
-		if (!scanner.isEnd()) {
-			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-				scanner.advance(2);
-			} else if (isNewline(scanner.char())) {
-				scanner.advance(1);
+	// prefix digits "-" digits
+	if (pn === null) {
+		const s = scanner.position();
+		const p = prefix();
+		if (p !== null) {
+			const d1 = digits();
+			if (d1 !== null && scanner.char() === '-') {
+				scanner.consume();
+				const d2 = digits();
+				if (d2 !== null) pn = { text: p.text + d1 + '-' + d2, number: p.number + d1 + d2 };
 			}
 		}
+		if (pn === null) scanner.backtrack(s);
 	}
-
-	if (paragraphs.length === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	return quote(paragraphs);
-}
-
-function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
-	const start = scanner.save();
-
-	// Must start with "||"
-	if (!scanner.matches('||')) {
-		return null;
-	}
-	scanner.advance(2); // consume opening "||"
-
-	// Empty spoiler "||||" → plain
-	if (scanner.matches('||')) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// Parse content stopping at "||"
-	const content = parseInlineContent(scanner, options, '||');
-
-	// Must find closing "||"
-	if (!scanner.matches('||')) {
-		scanner.restore(start);
-		return null;
-	}
-	scanner.advance(2); // consume closing "||"
-
-	// Content must not be empty
-	if (content.length === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	return spoiler(reducePlainTexts(content) as any);
-}
-
-function tryBlockSpoiler(scanner: Scanner, options: Options): Root[number] | null {
-	const start = scanner.save();
-
-	// Must be "||" followed immediately by newline
-	if (!scanner.matches('||')) {
-		return null;
-	}
-
-	// Check that "||" is alone on this line
-	scanner.advance(2);
-	if (!scanner.isEnd() && !isNewline(scanner.char())) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// Consume the opening "||" line's newline
-	if (!scanner.isEnd()) {
-		if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-			scanner.advance(2);
-		} else if (isNewline(scanner.char())) {
-			scanner.advance(1);
+	// prefix digits
+	if (pn === null) {
+		const s = scanner.position();
+		const p = prefix();
+		if (p !== null) {
+			const d = digits();
+			if (d !== null) pn = { text: p.text + d, number: p.number + d };
 		}
-	} else {
-		// "||" at end of input with no content → not a block spoiler
-		scanner.restore(start);
+		if (pn === null) scanner.backtrack(s);
+	}
+	// digits
+	if (pn === null) {
+		const d = digits();
+		if (d !== null) pn = { text: d, number: d };
+	}
+
+	if (pn === null) {
+		scanner.backtrack(start);
 		return null;
 	}
 
-	const paragraphs: ReturnType<typeof paragraph>[] = [];
+	// phoneChecker returns a tel: LINK when the number has >= 5 digits,
+	// otherwise PLAIN_TEXT (the region is still consumed).
+	return phoneChecker('+' + pn.text, pn.number);
+}
 
-	// Collect lines until closing "||"
-	while (!scanner.isEnd()) {
-		// Check for closing "||" on its own line
-		if (scanner.matches('||')) {
-			const closingPos = scanner.save();
-			scanner.advance(2);
-			// Must be end of line or end of input
-			if (scanner.isEnd() || isNewline(scanner.char())) {
-				if (paragraphs.length === 0) {
-					scanner.restore(start);
-					return null;
+function tryTimestamp(scanner: Scanner): Inlines | null {
+	const start = scanner.position();
+	if (!scanner.matches('<t:')) return null;
+	scanner.consume(3);
+
+	// Read exactly n digits, or backtrack and return null.
+	const exact = (n: number): string | null => {
+		const s = scanner.position();
+		for (let i = 0; i < n; i++) {
+			if (!isDigit(scanner.char())) {
+				scanner.backtrack(s);
+				return null;
+			}
+			scanner.consume();
+		}
+		return scanner.sliceFrom(s);
+	};
+
+	// Optional timezone "(+|-)HH:MM".
+	const timezone = (): string | undefined => {
+		const s = scanner.position();
+		const sign = scanner.char();
+		if (sign !== '+' && sign !== '-') return undefined;
+		scanner.consume();
+		const h = exact(2);
+		if (h === null || scanner.char() !== ':') {
+			scanner.backtrack(s);
+			return undefined;
+		}
+		scanner.consume();
+		const m = exact(2);
+		if (m === null) {
+			scanner.backtrack(s);
+			return undefined;
+		}
+		return sign + h + ':' + m;
+	};
+
+	// ISO 8601: YYYY-MM-DDTHH:MM:SS[.mmm][tz]
+	const iso = (withMs: boolean): string | null => {
+		const s = scanner.position();
+		const year = exact(4);
+		if (year === null || scanner.char() !== '-') {
+			scanner.backtrack(s);
+			return null;
+		}
+		scanner.consume();
+		const month = exact(2);
+		if (month === null || scanner.char() !== '-') {
+			scanner.backtrack(s);
+			return null;
+		}
+		scanner.consume();
+		const day = exact(2);
+		if (day === null || scanner.char() !== 'T') {
+			scanner.backtrack(s);
+			return null;
+		}
+		scanner.consume();
+		const hours = exact(2);
+		if (hours === null || scanner.char() !== ':') {
+			scanner.backtrack(s);
+			return null;
+		}
+		scanner.consume();
+		const minutes = exact(2);
+		if (minutes === null || scanner.char() !== ':') {
+			scanner.backtrack(s);
+			return null;
+		}
+		scanner.consume();
+		const seconds = exact(2);
+		if (seconds === null) {
+			scanner.backtrack(s);
+			return null;
+		}
+		let milliseconds: string | undefined;
+		if (withMs) {
+			if (scanner.char() !== '.') {
+				scanner.backtrack(s);
+				return null;
+			}
+			scanner.consume();
+			const ms = exact(3);
+			if (ms === null) {
+				scanner.backtrack(s);
+				return null;
+			}
+			milliseconds = ms;
+		}
+		return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone: timezone() });
+	};
+
+	// Relative time: HH:MM:SS or HH:MM, optional tz.
+	const relTime = (): string | null => {
+		{
+			const s = scanner.position();
+			const h = exact(2);
+			if (h !== null && scanner.char() === ':') {
+				scanner.consume();
+				const m = exact(2);
+				if (m !== null && scanner.char() === ':') {
+					scanner.consume();
+					const sec = exact(2);
+					if (sec !== null) return timestampFromHours(h, m, sec, timezone());
 				}
-				return spoilerBlock(paragraphs);
 			}
-			// Not a closing line → restore and treat as content
-			scanner.restore(closingPos);
+			scanner.backtrack(s);
 		}
-
-		// Parse line as paragraph content
-		const inlines = parseInline(scanner, options);
-		paragraphs.push(paragraph(inlines));
-
-		// Consume newline
-		if (!scanner.isEnd()) {
-			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-				scanner.advance(2);
-			} else if (isNewline(scanner.char())) {
-				scanner.advance(1);
+		{
+			const s = scanner.position();
+			const h = exact(2);
+			if (h !== null && scanner.char() === ':') {
+				scanner.consume();
+				const m = exact(2);
+				if (m !== null) return timestampFromHours(h, m, undefined, timezone());
 			}
+			scanner.backtrack(s);
 		}
+		return null;
+	};
+
+	// date = Unixtime(10) / ISO-with-ms / ISO-no-ms / relative
+	const date = exact(10) ?? iso(true) ?? iso(false) ?? relTime();
+	if (date === null) {
+		scanner.backtrack(start);
+		return null;
 	}
 
-	// Never found closing "||" → backtrack
-	scanner.restore(start);
+	// "<t:" date ":" format ">"
+	if (scanner.char() === ':') {
+		scanner.consume();
+		const fmt = scanner.char();
+		if (fmt !== '' && 'tTdDfFR'.includes(fmt) && scanner.charAt(1) === '>') {
+			scanner.consume(2);
+			return timestamp(date, fmt as Timestamp['value']['format']);
+		}
+		scanner.backtrack(start);
+		return null;
+	}
+
+	// "<t:" date ">"
+	if (scanner.char() === '>') {
+		scanner.consume();
+		return timestamp(date);
+	}
+
+	scanner.backtrack(start);
 	return null;
 }
 
-function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
-	const start = scanner.save();
+function tryEmoticon(scanner: Scanner): Inlines | null {
+	const start = scanner.position();
+	const node = matchEmoticon(scanner);
+	if (node === null) return null;
+	const after = scanner.char();
+	if (after === '' || isSpace(after) || isNewline(after) || after === '*') {
+		return node;
+	}
+	scanner.backtrack(start);
+	return null;
+}
 
-	// Must start with '['
+function tryUserMention(scanner: Scanner): Inlines | null {
+	const start = scanner.position();
+	scanner.consume();
+	const nameStart = scanner.position();
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		const ch = scanner.char();
+		const code = ch.charCodeAt(0);
+		if (isAlphaNum(ch) || ch === '.' || ch === '-' || ch === '_' || ch === ':' || ch === '@' || code > 127) {
+			scanner.consume();
+		} else {
+			break;
+		}
+	}
+	const name = scanner.sliceFrom(nameStart);
+	if (name.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	if (name.endsWith('__')) {
+		scanner.backtrack(start);
+		return null;
+	}
+	return mentionUser(name);
+}
+
+function tryChannelMention(scanner: Scanner): Inlines | null {
+	const start = scanner.position();
+	scanner.consume();
+	const nameStart = scanner.position();
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
+		const ch = scanner.char();
+		if (!isAlphaNum(ch) && ch !== '-' && ch !== '_' && ch !== '.') break;
+		scanner.consume();
+	}
+	const name = scanner.sliceFrom(nameStart);
+	if (name.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	return mentionChannel(name);
+}
+
+function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
+	const spoilerChar = '||';
+	const start = scanner.position();
+	if (!scanner.matches(spoilerChar)) {
+		return null;
+	}
+	scanner.consume(spoilerChar.length);
+	if (scanner.matches('||')) {
+		scanner.backtrack(start);
+		return null;
+	}
+	const content = parseInlineContent(scanner, options, '||');
+	if (!scanner.matches(spoilerChar)) {
+		scanner.backtrack(start);
+		return null;
+	}
+	scanner.consume(spoilerChar.length);
+	if (content.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	return spoiler(reducePlainTexts(content) as Spoiler['value']);
+}
+
+function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
+	const start = scanner.position();
 	if (scanner.char() !== '[') {
 		return null;
 	}
-	scanner.advance(); // consume '['
+	scanner.consume();
 
-	// Parse title content — stops at ']'
-	const titleNodes = parseInlineContent(scanner, options, ']');
+	// --- title (restricted: ws / escape / code / bold / italic / strike / plain) ---
+	const titleNodes: Inlines[] = [];
+	let prevChar = '';
+	let aborted = false;
 
-	// Must find ']('
+	titleLoop: while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		if (scanner.matches('](')) break;
+		const ch = scanner.char();
+
+		if (isSpace(ch)) {
+			const s = scanner.position();
+			while (!scanner.isEnd() && isSpace(scanner.char())) {
+				scanner.consume();
+			}
+			const text = scanner.sliceFrom(s);
+			titleNodes.push(plain(text));
+			prevChar = text[text.length - 1] ?? '';
+			continue;
+		}
+		if (ch === '\\') {
+			const next = scanner.charAt(1);
+			if (next !== '' && ESCAPABLE.has(next)) {
+				scanner.consume(2);
+				titleNodes.push(plain(next));
+				prevChar = next;
+				continue;
+			}
+			titleNodes.push(plain('\\'));
+			scanner.consume();
+			prevChar = '\\';
+			continue;
+		}
+		if (ch === '`') {
+			const r = tryInlineCode(scanner);
+			if (r !== null) {
+				titleNodes.push(r);
+				prevChar = '`';
+				continue;
+			}
+		}
+		if (ch === '*') {
+			const r = tryBold(scanner, options);
+			if (r !== null) {
+				titleNodes.push(r);
+				prevChar = '*';
+				continue;
+			}
+		}
+		if (ch === '_' && !isAlphaNum(prevChar)) {
+			const r = tryItalic(scanner, options);
+			if (r !== null) {
+				titleNodes.push(r);
+				prevChar = '_';
+				continue;
+			}
+		}
+		if (ch === '~') {
+			const r = tryStrike(scanner, options);
+			if (r !== null) {
+				titleNodes.push(r);
+				prevChar = '~';
+				continue;
+			}
+		}
+
+		if (ch === ']') {
+			// abort on a "] [...](" boundary: bracketed text preceding a real link
+			if (scanner.charAt(1) === ' ' && scanner.charAt(2) === '[') {
+				let off = 3;
+				for (;;) {
+					const c = scanner.charAt(off);
+					if (c === '' || isNewline(c)) break;
+					if (c === ']') {
+						if (scanner.charAt(off + 1) === '(') aborted = true;
+						break;
+					}
+					off++;
+				}
+				if (aborted) break titleLoop;
+			}
+			titleNodes.push(plain(']'));
+			scanner.consume();
+			prevChar = ']';
+			continue;
+		}
+
+		// plain run
+		const s = scanner.position();
+		while (!scanner.isEnd() && !isNewline(scanner.char())) {
+			const c = scanner.char();
+			if (isSpace(c) || c === '*' || c === '_' || c === '~' || c === '`' || c === ']') break;
+			scanner.consume();
+		}
+		const text = scanner.sliceFrom(s);
+		if (text.length === 0) {
+			titleNodes.push(plain(ch));
+			scanner.consume();
+			prevChar = ch;
+		} else {
+			titleNodes.push(plain(text));
+			prevChar = text[text.length - 1];
+		}
+	}
+
+	if (aborted) {
+		scanner.consume(); // consume the ']' we stopped on
+		return plain(scanner.sliceFrom(start));
+	}
+
+	// --- "](", url, link ---
 	if (!scanner.matches('](')) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-	scanner.advance(2); // consume ']('
-
-	// Parse URL — stops at ')'
-	const urlStart = scanner.save();
+	scanner.consume(2);
+	const urlStart = scanner.position();
 	let depth = 1;
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		if (scanner.char() === '(') depth++;
@@ -1148,108 +1233,77 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 			depth--;
 			if (depth === 0) break;
 		}
-		scanner.advance();
+		scanner.consume();
 	}
-
 	if (!scanner.matches(')')) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	const url = scanner.sliceFrom(urlStart);
-	scanner.advance(); // consume ')'
-
+	scanner.consume();
 	if (url.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	const title = reducePlainTexts(titleNodes);
-
-	// Empty title → link with no label (defaults to src)
 	if (title.length === 0) {
 		return link(url);
 	}
-
-	return link(url, title as any);
+	return link(url, title as Markup[]);
 }
 
 function tryAngleBracketLink(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-
-	// Must start with '<'
+	const start = scanner.position();
 	if (scanner.char() !== '<') {
 		return null;
 	}
-	scanner.advance(); // consume '<'
-
-	// Parse URL — stops at '|' or '>'
-	const urlStart = scanner.save();
+	scanner.consume();
+	const urlStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		if (scanner.char() === '|' || scanner.char() === '>') break;
-		scanner.advance();
+		scanner.consume();
 	}
-
 	const url = scanner.sliceFrom(urlStart);
-
 	if (url.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Must have '|' separator for angle bracket link
 	if (scanner.char() !== '|') {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-	scanner.advance(); // consume '|'
-
-	// Parse title — stops at '>'
-	const titleStart = scanner.save();
+	scanner.consume();
+	const titleStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '>') {
-		scanner.advance();
+		scanner.consume();
 	}
-
 	if (scanner.char() !== '>') {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	const title = scanner.sliceFrom(titleStart);
-	scanner.advance(); // consume '>'
-
+	scanner.consume();
 	return link(url, [plain(title)]);
 }
 
-// ─── Bare URL ─────────────────────────────────────────────────────────────────
-
 function tryBareUrl(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-
-	// Collect leading word (alphanumeric + hyphen)
+	const start = scanner.position();
 	if (!isAlpha(scanner.char())) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	while (!scanner.isEnd() && (isAlphaNum(scanner.char()) || scanner.char() === '-')) {
-		scanner.advance();
+		scanner.consume();
 	}
-
-	// Must hit a '.'
 	if (scanner.isEnd() || scanner.char() !== '.') {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-	scanner.advance(); // consume '.'
-
-	// Must have alphanumeric after '.'
+	scanner.consume();
 	if (scanner.isEnd() || !isAlphaNum(scanner.char())) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Consume the rest of the URL-like token (no spaces/newlines)
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
 		const ch = scanner.char();
 		if (
@@ -1275,194 +1329,29 @@ function tryBareUrl(scanner: Scanner): Inlines | null {
 			ch === '*' ||
 			ch === '$'
 		) {
-			scanner.advance();
+			scanner.consume();
 		} else {
 			break;
 		}
 	}
-
 	const raw = scanner.sliceFrom(start);
-
-	// Sanity check: must contain a dot not at start or end
 	const dotIdx = raw.indexOf('.');
 	if (dotIdx <= 0 || dotIdx === raw.length - 1) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	return link('//' + raw, [plain(raw)]);
-}
-
-function tryUnorderedList(scanner: Scanner, options: Options): Root[number] | null {
-	const start = scanner.save();
-
-	// Detect which marker this list uses: '-' or '*'
-	const marker = scanner.char();
-	if (marker !== '-' && marker !== '*') {
+	const result = autoLink(raw);
+	if (result.type === 'PLAIN_TEXT') {
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Must be followed by space/tab
-	if (!isSpace(scanner.charAt(1))) {
-		return null;
-	}
-
-	const items: ReturnType<typeof listItem>[] = [];
-
-	while (!scanner.isEnd()) {
-		const ch = scanner.char();
-
-		// Stop if marker changes or no longer a list item
-		if (ch !== marker) break;
-		if (!isSpace(scanner.charAt(1))) break;
-
-		scanner.advance(); // consume marker
-
-		// Skip spaces/tabs
-		while (isSpace(scanner.char())) {
-			scanner.advance();
-		}
-
-		// Parse item content as inline
-		const inlines = parseInline(scanner, options);
-		items.push(listItem(inlines));
-
-		// Consume newline
-		if (!scanner.isEnd()) {
-			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-				scanner.advance(2);
-			} else if (isNewline(scanner.char())) {
-				scanner.advance(1);
-			}
-		}
-	}
-
-	if (items.length === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	return unorderedList(items);
-}
-
-function tryOrderedList(scanner: Scanner, options: Options): Root[number] | null {
-	const start = scanner.save();
-
-	// Must start with a digit
-	if (!isDigit(scanner.char())) {
-		return null;
-	}
-
-	// Peek ahead to confirm pattern: digits + '.' + space
-	const peekStart = scanner.save();
-	while (!scanner.isEnd() && isDigit(scanner.char())) {
-		scanner.advance();
-	}
-	if (scanner.char() !== '.') {
-		scanner.restore(start);
-		return null;
-	}
-	scanner.advance(); // consume '.'
-	if (!isSpace(scanner.char())) {
-		scanner.restore(start);
-		return null;
-	}
-	scanner.restore(peekStart);
-
-	const items: ReturnType<typeof listItem>[] = [];
-
-	while (!scanner.isEnd()) {
-		// Must start with digit
-		if (!isDigit(scanner.char())) break;
-
-		// Collect digits
-		const numStart = scanner.save();
-		while (!scanner.isEnd() && isDigit(scanner.char())) {
-			scanner.advance();
-		}
-		const numStr = scanner.sliceFrom(numStart);
-
-		// Must be followed by '.' then space
-		if (scanner.char() !== '.') {
-			scanner.restore(start);
-			return null;
-		}
-		scanner.advance(); // consume '.'
-
-		if (!isSpace(scanner.char())) {
-			scanner.restore(start);
-			return null;
-		}
-
-		// Skip spaces/tabs
-		while (isSpace(scanner.char())) {
-			scanner.advance();
-		}
-
-		// Parse item content
-		const inlines = parseInline(scanner, options);
-		items.push(listItem(inlines, parseInt(numStr, 10)));
-
-		// Consume newline
-		if (!scanner.isEnd()) {
-			if (scanner.char() === '\r' && scanner.charAt(1) === '\n') {
-				scanner.advance(2);
-			} else if (isNewline(scanner.char())) {
-				scanner.advance(1);
-			}
-		}
-	}
-
-	if (items.length === 0) {
-		scanner.restore(start);
-		return null;
-	}
-
-	return orderedList(items);
-}
-
-function tryKatexBlock(scanner: Scanner, options: Options): Root[number] | null {
-	const start = scanner.save();
-
-	let openDelim: string;
-	let closeDelim: string;
-
-	if (options.katex?.dollarSyntax && scanner.matches('$$')) {
-		openDelim = '$$';
-		closeDelim = '$$';
-	} else if (options.katex?.parenthesisSyntax && scanner.matches('\\[')) {
-		openDelim = '\\[';
-		closeDelim = '\\]';
-	} else {
-		return null;
-	}
-
-	scanner.advance(openDelim.length);
-
-	// Collect content until closing delimiter
-	const contentStart = scanner.save();
-	while (!scanner.isEnd()) {
-		if (scanner.matches(closeDelim)) break;
-		scanner.advance();
-	}
-
-	if (!scanner.matches(closeDelim)) {
-		scanner.restore(start);
-		return null;
-	}
-
-	const content = scanner.sliceFrom(contentStart);
-	scanner.advance(closeDelim.length);
-
-	return katex(content);
+	return result;
 }
 
 function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
-	const start = scanner.save();
-
+	const start = scanner.position();
 	let openDelim: string;
 	let closeDelim: string;
-
 	if (options.katex?.dollarSyntax && scanner.matches('$') && !scanner.matches('$$')) {
 		openDelim = '$';
 		closeDelim = '$';
@@ -1472,106 +1361,330 @@ function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
 	} else {
 		return null;
 	}
-
-	scanner.advance(openDelim.length);
-
-	const contentStart = scanner.save();
-
-	// Inline katex: no newlines allowed inside
+	scanner.consume(openDelim.length);
+	const contentStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		if (scanner.matches(closeDelim)) break;
-		scanner.advance();
+		scanner.consume();
 	}
-
 	if (!scanner.matches(closeDelim)) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	const content = scanner.sliceFrom(contentStart);
-	scanner.advance(closeDelim.length);
-
+	scanner.consume(closeDelim.length);
 	return inlineKatex(content);
 }
 
 function tryAutoLinkUrl(scanner: Scanner, options: Options): Inlines | null {
-	const start = scanner.save();
-
-	// Collect the full URL token — everything until whitespace or end
-	const tokenStart = scanner.save();
+	const start = scanner.position();
+	const tokenStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
-		scanner.advance();
+		scanner.consume();
 	}
-
 	const token = scanner.sliceFrom(tokenStart);
 	if (token.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Must contain '://' or '.' to be worth trying
 	if (!token.includes('://') && !token.includes('.')) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Strip trailing punctuation that shouldn't be part of URL
-	// e.g. "rocket.chat." → "rocket.chat"
 	let url = token;
 	while (url.length > 0 && '.,!?;:)'.includes(url[url.length - 1])) {
 		url = url.slice(0, -1);
 	}
-
 	if (url.length === 0) {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	// Restore scanner to end of actual url (not trailing punct)
-	scanner.restore(tokenStart);
-	scanner.advance(url.length);
-
-	// Use autoLink from utils which validates via tldts
+	scanner.backtrack(tokenStart);
+	scanner.consume(url.length);
 	const result = autoLink(url, options.customDomains);
-
-	// autoLink returns plain() if domain is invalid
 	if (result.type === 'PLAIN_TEXT') {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
 	return result;
 }
 
-// ─── Emoji ────────────────────────────────────────────────────────────────────
-
 function tryEmojiShortCode(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	scanner.advance(); // consume opening ':'
-
-	const nameStart = scanner.save();
+	const start = scanner.position();
+	scanner.consume();
+	const nameStart = scanner.position();
 	while (!scanner.isEnd() && isShortCodeChar(scanner.char())) {
-		scanner.advance();
+		scanner.consume();
 	}
 	const name = scanner.sliceFrom(nameStart);
-
 	if (name.length === 0 || scanner.char() !== ':') {
-		scanner.restore(start);
+		scanner.backtrack(start);
 		return null;
 	}
-
-	scanner.advance(); // consume closing ':'
+	scanner.consume();
 	return emoji(name);
 }
 
-// Whole-input rule: optional whitespace, then 1-3 shortcode emojis separated
-// by whitespace, then end of input (mirrors `Start = @BigEmoji !.`)
-function tryBigEmoji(input: string, options: Options): Root | null {
+// ─── Block methods ──────────────────────────────────────────────────────────────
+
+function tryCodeFence(scanner: Scanner): Code | null {
+	const fence = '```';
+	const start = scanner.position();
+	if (!scanner.matches(fence)) {
+		return null;
+	}
+	scanner.consume(fence.length);
+	const langStart = scanner.position();
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		scanner.consume();
+	}
+	const language = scanner.sliceFrom(langStart).trim();
+	if (scanner.isEnd()) {
+		scanner.backtrack(start);
+		return null;
+	}
+	consumeEndOfLine(scanner);
+	const lines: ReturnType<typeof codeLine>[] = [];
+	while (!scanner.isEnd()) {
+		if (scanner.matches('```')) {
+			scanner.consume(fence.length);
+			while (!scanner.isEnd() && !isNewline(scanner.char())) {
+				scanner.consume();
+			}
+			return code(lines, language || undefined);
+		}
+		const lineStart = scanner.position();
+		while (!scanner.isEnd() && !isNewline(scanner.char())) {
+			scanner.consume();
+		}
+		const lineText = scanner.sliceFrom(lineStart);
+		lines.push(codeLine(plain(lineText)));
+		consumeEndOfLine(scanner);
+	}
+	scanner.backtrack(start);
+	return null;
+}
+
+function tryHeading(scanner: Scanner, options: Options): Heading | null {
+	const start = scanner.position();
+	let level = 0;
+	while (level < 4 && scanner.char() === '#') {
+		level++;
+		scanner.consume();
+	}
+	if (level === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	if (!isSpace(scanner.char())) {
+		scanner.backtrack(start);
+		return null;
+	}
+	while (isSpace(scanner.char())) {
+		scanner.consume();
+	}
+	if (scanner.isEnd() || isNewline(scanner.char())) {
+		scanner.backtrack(start);
+		return null;
+	}
+	const inlines = parseInline(scanner, options);
+	consumeEndOfLine(scanner);
+	return heading(inlines, level as 1 | 2 | 3 | 4);
+}
+
+function tryBlockquote(scanner: Scanner, options: Options): Quote | null {
+	const start = scanner.position();
+	if (scanner.char() !== '>') {
+		return null;
+	}
+	const paragraphs: ReturnType<typeof paragraph>[] = [];
+	while (!scanner.isEnd() && scanner.char() === '>') {
+		const lineStart = scanner.position();
+		scanner.consume();
+		if (isSpace(scanner.char())) {
+			scanner.consume();
+		}
+		if (isNewline(scanner.char())) {
+			paragraphs.push(paragraph([plain('')]));
+		} else if (scanner.isEnd()) {
+			scanner.backtrack(lineStart);
+			break;
+		} else {
+			const inlines = parseInline(scanner, options);
+			paragraphs.push(paragraph(inlines));
+		}
+		consumeEndOfLine(scanner);
+	}
+	if (paragraphs.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	return quote(paragraphs);
+}
+
+function tryBlockSpoiler(scanner: Scanner, options: Options): SpoilerBlock | null {
+	const spoilerChar = '||';
+	const start = scanner.position();
+	if (!scanner.matches(spoilerChar)) {
+		return null;
+	}
+	scanner.consume(spoilerChar.length);
+	if (!scanner.isEnd() && !isNewline(scanner.char())) {
+		scanner.backtrack(start);
+		return null;
+	}
+	// "||" alone at end of input (no content) is not a block spoiler.
+	if (scanner.isEnd()) {
+		scanner.backtrack(start);
+		return null;
+	}
+	consumeEndOfLine(scanner);
+	const paragraphs: ReturnType<typeof paragraph>[] = [];
+	while (!scanner.isEnd()) {
+		if (scanner.matches('||')) {
+			const closingPos = scanner.position();
+			scanner.consume(spoilerChar.length);
+			if (scanner.isEnd() || isNewline(scanner.char())) {
+				if (paragraphs.length === 0) {
+					scanner.backtrack(start);
+					return null;
+				}
+				return spoilerBlock(paragraphs);
+			}
+			scanner.backtrack(closingPos);
+		}
+		const inlines = parseInline(scanner, options);
+		paragraphs.push(paragraph(inlines));
+		consumeEndOfLine(scanner);
+	}
+	scanner.backtrack(start);
+	return null;
+}
+
+function tryUnorderedList(scanner: Scanner, options: Options): UnorderedList | null {
+	const start = scanner.position();
+	const marker = scanner.char();
+	if (marker !== '-' && marker !== '*') {
+		return null;
+	}
+	if (!isSpace(scanner.charAt(1))) {
+		return null;
+	}
+	const items: ReturnType<typeof listItem>[] = [];
+	while (!scanner.isEnd()) {
+		const itemStart = scanner.position();
+		const ch = scanner.char();
+		if (ch !== marker) break;
+		if (!isSpace(scanner.charAt(1))) break;
+		scanner.consume();
+		while (isSpace(scanner.char())) {
+			scanner.consume();
+		}
+		const inlines = parseInline(scanner, options);
+		// Grammar: UnorderedListItemContent = ...+ !"*". An asterisk-bulleted item
+		// whose content is empty or ends with a dangling '*' is not a list item
+		// (e.g. "* *", "* Hello*") — let it fall through to inline emphasis.
+		if (marker === '*') {
+			const last = inlines[inlines.length - 1];
+			if (inlines.length === 0 || (last.type === 'PLAIN_TEXT' && last.value.endsWith('*'))) {
+				scanner.backtrack(itemStart);
+				break;
+			}
+		}
+		items.push(listItem(inlines));
+		consumeEndOfLine(scanner);
+	}
+	if (items.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	return unorderedList(items);
+}
+
+function tryOrderedList(scanner: Scanner, options: Options): OrderedList | null {
+	const start = scanner.position();
+	if (!isDigit(scanner.char())) {
+		return null;
+	}
+	const peekStart = scanner.position();
+	while (!scanner.isEnd() && isDigit(scanner.char())) {
+		scanner.consume();
+	}
+	if (scanner.char() !== '.') {
+		scanner.backtrack(start);
+		return null;
+	}
+	scanner.consume();
+	if (!isSpace(scanner.char())) {
+		scanner.backtrack(start);
+		return null;
+	}
+	scanner.backtrack(peekStart);
+	const items: ReturnType<typeof listItem>[] = [];
+	while (!scanner.isEnd()) {
+		if (!isDigit(scanner.char())) break;
+		const numStart = scanner.position();
+		while (!scanner.isEnd() && isDigit(scanner.char())) {
+			scanner.consume();
+		}
+		const numStr = scanner.sliceFrom(numStart);
+		if (scanner.char() !== '.') {
+			scanner.backtrack(start);
+			return null;
+		}
+		scanner.consume();
+		if (!isSpace(scanner.char())) {
+			scanner.backtrack(start);
+			return null;
+		}
+		while (isSpace(scanner.char())) {
+			scanner.consume();
+		}
+		const inlines = parseInline(scanner, options);
+		items.push(listItem(inlines, parseInt(numStr, 10)));
+		consumeEndOfLine(scanner);
+	}
+	if (items.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+	return orderedList(items);
+}
+
+function tryKatexBlock(scanner: Scanner, options: Options): KaTeX | null {
+	const start = scanner.position();
+	let openDelim: string;
+	let closeDelim: string;
+	if (options.katex?.dollarSyntax && scanner.matches('$$')) {
+		openDelim = '$$';
+		closeDelim = '$$';
+	} else if (options.katex?.parenthesisSyntax && scanner.matches('\\[')) {
+		openDelim = '\\[';
+		closeDelim = '\\]';
+	} else {
+		return null;
+	}
+	scanner.consume(openDelim.length);
+	const contentStart = scanner.position();
+	while (!scanner.isEnd()) {
+		if (scanner.matches(closeDelim)) break;
+		scanner.consume();
+	}
+	if (!scanner.matches(closeDelim)) {
+		scanner.backtrack(start);
+		return null;
+	}
+	const content = scanner.sliceFrom(contentStart);
+	scanner.consume(closeDelim.length);
+	return katex(content);
+}
+
+function tryBigEmoji(input: string, options: Options): [BigEmoji] | null {
 	const scanner = new Scanner(input);
 
 	const skipWhitespace = (): void => {
 		while (!scanner.isEnd() && (isSpace(scanner.char()) || isNewline(scanner.char()))) {
-			scanner.advance();
+			scanner.consume();
 		}
 	};
 	skipWhitespace();
@@ -1593,345 +1706,5 @@ function tryBigEmoji(input: string, options: Options): Root | null {
 	if (emojis.length === 0 || !scanner.isEnd()) {
 		return null;
 	}
-	return [bigEmoji(emojis as any)];
-}
-
-// ─── Email ─────────────────────────────────────────────────────────────────
-
-function tryEmail(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	const delimiter = 'mailto:';
-
-	// Optional "mailto:" prefix — consumed, but NOT part of the captured address
-	if (scanner.matches(delimiter)) {
-		scanner.advance(delimiter.length);
-	}
-
-	// Local part: alphanumeric / unicode, plus  . _ + - '
-	const localStart = scanner.save();
-	while (!scanner.isEnd()) {
-		const ch = scanner.char();
-		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '_' || ch === '+' || ch === '-' || ch === "'") {
-			scanner.advance();
-		} else {
-			break;
-		}
-	}
-	const local = scanner.sliceFrom(localStart);
-
-	// Must have a non-empty local part immediately followed by '@'
-	if (local.length === 0 || scanner.char() !== '@') {
-		scanner.restore(start);
-		return null;
-	}
-	scanner.advance(); // consume '@'
-
-	// Domain: alphanumeric / unicode, plus  . -
-	const domainStart = scanner.save();
-	while (!scanner.isEnd()) {
-		const ch = scanner.char();
-		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '-') {
-			scanner.advance();
-		} else {
-			break;
-		}
-	}
-
-	// Trim trailing '.' / '-' back out of the domain ("joe.com." → "joe.com")
-	while (scanner.save() > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
-		scanner.advance(-1);
-	}
-
-	const domain = scanner.sliceFrom(domainStart);
-
-	// Domain must contain a dot that is not at the very start or end
-	const dotIdx = domain.indexOf('.');
-	if (dotIdx <= 0 || dotIdx === domain.length - 1) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// autoEmail validates the TLD via tldts (same logic the grammar uses):
-	return autoEmail(local + '@' + domain);
-}
-
-// ─── Phone ─────────────────────────────────────────────────────────────────
-function parsePhoneDigits(scanner: Scanner): string | null {
-	const s = scanner.save();
-	while (!scanner.isEnd() && isDigit(scanner.char())) {
-		scanner.advance();
-	}
-	const d = scanner.sliceFrom(s);
-	return d.length > 0 ? d : null;
-}
-
-function parsePhonePrefix(scanner: Scanner): { text: string; number: string } | null {
-	if (scanner.char() === '(') {
-		const s = scanner.save();
-		scanner.advance();
-		const d = parsePhoneDigits(scanner);
-		if (d !== null && scanner.char() === ')') {
-			scanner.advance();
-			return { text: '(' + d + ')', number: d };
-		}
-		scanner.restore(s);
-	}
-	const d = parsePhoneDigits(scanner);
-	if (d !== null) {
-		return { text: d, number: d };
-	}
-	return null;
-}
-
-function parsePhoneNumber(scanner: Scanner): { text: string; number: string } | null {
-	// prefix "-" digits
-	{
-		const s = scanner.save();
-		const p = parsePhonePrefix(scanner);
-		if (p !== null && scanner.char() === '-') {
-			scanner.advance();
-			const d = parsePhoneDigits(scanner);
-			if (d !== null) {
-				return { text: p.text + '-' + d, number: p.number + d };
-			}
-		}
-		scanner.restore(s);
-	}
-	// prefix digits "-" digits
-	{
-		const s = scanner.save();
-		const p = parsePhonePrefix(scanner);
-		if (p !== null) {
-			const d1 = parsePhoneDigits(scanner);
-			if (d1 !== null && scanner.char() === '-') {
-				scanner.advance();
-				const d2 = parsePhoneDigits(scanner);
-				if (d2 !== null) {
-					return { text: p.text + d1 + '-' + d2, number: p.number + d1 + d2 };
-				}
-			}
-		}
-		scanner.restore(s);
-	}
-	// prefix digits
-	{
-		const s = scanner.save();
-		const p = parsePhonePrefix(scanner);
-		if (p !== null) {
-			const d = parsePhoneDigits(scanner);
-			if (d !== null) {
-				return { text: p.text + d, number: p.number + d };
-			}
-		}
-		scanner.restore(s);
-	}
-	// digits
-	{
-		const d = parsePhoneDigits(scanner);
-		if (d !== null) {
-			return { text: d, number: d };
-		}
-	}
-	return null;
-}
-
-function tryPhone(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	if (scanner.char() !== '+') {
-		return null;
-	}
-	scanner.advance(); // consume '+'
-
-	const pn = parsePhoneNumber(scanner);
-	if (pn === null) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// phoneChecker returns a tel: LINK when number has >= 5 digits,
-	// or PLAIN_TEXT otherwise (region still consumed → stays plain text).
-	return phoneChecker('+' + pn.text, pn.number);
-}
-
-// ─── Timestamp ─────────────────────────────────────────────────────────────
-function readExactDigits(scanner: Scanner, n: number): string | null {
-	const s = scanner.save();
-	for (let i = 0; i < n; i++) {
-		if (!isDigit(scanner.char())) {
-			scanner.restore(s);
-			return null;
-		}
-		scanner.advance();
-	}
-	return scanner.sliceFrom(s);
-}
-
-function tryTimezone(scanner: Scanner): string | null {
-	const s = scanner.save();
-	const sign = scanner.char();
-	if (sign !== '+' && sign !== '-') return null;
-	scanner.advance();
-	const h = readExactDigits(scanner, 2);
-	if (h === null || scanner.char() !== ':') {
-		scanner.restore(s);
-		return null;
-	}
-	scanner.advance();
-	const m = readExactDigits(scanner, 2);
-	if (m === null) {
-		scanner.restore(s);
-		return null;
-	}
-	return sign + h + ':' + m;
-}
-
-function tryIso(scanner: Scanner, withMs: boolean): string | null {
-	const s = scanner.save();
-	const year = readExactDigits(scanner, 4);
-	if (year === null || scanner.char() !== '-') {
-		scanner.restore(s);
-		return null;
-	}
-	scanner.advance();
-	const month = readExactDigits(scanner, 2);
-	if (month === null || scanner.char() !== '-') {
-		scanner.restore(s);
-		return null;
-	}
-	scanner.advance();
-	const day = readExactDigits(scanner, 2);
-	if (day === null || scanner.char() !== 'T') {
-		scanner.restore(s);
-		return null;
-	}
-	scanner.advance();
-	const hours = readExactDigits(scanner, 2);
-	if (hours === null || scanner.char() !== ':') {
-		scanner.restore(s);
-		return null;
-	}
-	scanner.advance();
-	const minutes = readExactDigits(scanner, 2);
-	if (minutes === null || scanner.char() !== ':') {
-		scanner.restore(s);
-		return null;
-	}
-	scanner.advance();
-	const seconds = readExactDigits(scanner, 2);
-	if (seconds === null) {
-		scanner.restore(s);
-		return null;
-	}
-	let milliseconds: string | undefined;
-	if (withMs) {
-		if (scanner.char() !== '.') {
-			scanner.restore(s);
-			return null;
-		}
-		scanner.advance();
-		const ms = readExactDigits(scanner, 3);
-		if (ms === null) {
-			scanner.restore(s);
-			return null;
-		}
-		milliseconds = ms;
-	}
-	const timezone = tryTimezone(scanner) ?? undefined;
-	return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone });
-}
-
-function tryRelTime(scanner: Scanner): string | null {
-	// HH:MM:SS
-	{
-		const s = scanner.save();
-		const h = readExactDigits(scanner, 2);
-		if (h !== null && scanner.char() === ':') {
-			scanner.advance();
-			const m = readExactDigits(scanner, 2);
-			if (m !== null && scanner.char() === ':') {
-				scanner.advance();
-				const sec = readExactDigits(scanner, 2);
-				if (sec !== null) {
-					const tz = tryTimezone(scanner) ?? undefined;
-					return timestampFromHours(h, m, sec, tz);
-				}
-			}
-		}
-		scanner.restore(s);
-	}
-	// HH:MM
-	{
-		const s = scanner.save();
-		const h = readExactDigits(scanner, 2);
-		if (h !== null && scanner.char() === ':') {
-			scanner.advance();
-			const m = readExactDigits(scanner, 2);
-			if (m !== null) {
-				const tz = tryTimezone(scanner) ?? undefined;
-				return timestampFromHours(h, m, undefined, tz);
-			}
-		}
-		scanner.restore(s);
-	}
-	return null;
-}
-
-function parseTimestampDate(scanner: Scanner): string | null {
-	// Unixtime: exactly 10 digits
-	const u = readExactDigits(scanner, 10);
-	if (u !== null) return u;
-	// ISO8601 with, then without, milliseconds
-	const isoMs = tryIso(scanner, true);
-	if (isoMs !== null) return isoMs;
-	const iso = tryIso(scanner, false);
-	if (iso !== null) return iso;
-	// Relative HH:MM[:SS]
-	return tryRelTime(scanner);
-}
-
-function tryTimestamp(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	if (!scanner.matches('<t:')) return null;
-	scanner.advance(3);
-
-	const date = parseTimestampDate(scanner);
-	if (date === null) {
-		scanner.restore(start);
-		return null;
-	}
-
-	// "<t:" date ":" format ">"
-	if (scanner.char() === ':') {
-		scanner.advance();
-		const fmt = scanner.char();
-		if (fmt !== '' && 'tTdDfFR'.includes(fmt) && scanner.charAt(1) === '>') {
-			scanner.advance(2);
-			return timestamp(date, fmt as any);
-		}
-		scanner.restore(start);
-		return null;
-	}
-
-	// "<t:" date ">"
-	if (scanner.char() === '>') {
-		scanner.advance();
-		return timestamp(date);
-	}
-
-	scanner.restore(start);
-	return null;
-}
-
-// Inline emoticon: require a trailing boundary (whitespace / newline / end / '*').
-// The preceding boundary is enforced by the caller's prevChar guard.
-export function tryEmoticon(scanner: Scanner): Inlines | null {
-	const start = scanner.save();
-	const node = matchEmoticon(scanner);
-	if (node === null) return null;
-	const after = scanner.char();
-	if (after === '' || isSpace(after) || isNewline(after) || after === '*') {
-		return node;
-	}
-	scanner.restore(start);
-	return null;
+	return [bigEmoji(emojis as BigEmoji['value'])];
 }
