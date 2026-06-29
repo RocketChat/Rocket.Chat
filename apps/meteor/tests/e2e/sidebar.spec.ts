@@ -102,17 +102,12 @@ test.describe.serial('Sidebar', () => {
 		test('should toggle Avatars using keyboard', async ({ page }) => {
 			await poHomeChannel.navbar.btnDisplay.click();
 			const avatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
-			const initiallyChecked = await avatarsItem.getByRole('checkbox').isChecked();
 
 			await avatarsItem.focus();
 			await page.keyboard.press('Space');
 
 			const newAvatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
-			if (initiallyChecked) {
-				await expect(newAvatarsItem.getByRole('checkbox')).not.toBeChecked();
-			} else {
-				await expect(newAvatarsItem.getByRole('checkbox')).toBeChecked();
-			}
+			await expect(newAvatarsItem.getByRole('checkbox')).not.toBeChecked();
 			await page.keyboard.press('Escape');
 		});
 
