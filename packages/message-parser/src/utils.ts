@@ -19,6 +19,9 @@ import type {
 	Timestamp,
 	SourceRange,
 	HorizontalRule,
+	Table,
+	TableRow,
+	TableCell,
 } from './definitions';
 
 const generate =
@@ -137,6 +140,52 @@ export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+});
+
+// GFM trims leading/trailing whitespace of each table cell's content
+const trimCellContent = (value: Inlines[]): Inlines[] => {
+	const result = value.slice();
+
+	const first = result[0];
+	if (first?.type === 'PLAIN_TEXT') {
+		const trimmed = first.value.replace(/^\s+/, '');
+		if (trimmed === '') {
+			result.shift();
+		} else {
+			result[0] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	const last = result[result.length - 1];
+	if (last?.type === 'PLAIN_TEXT') {
+		const trimmed = last.value.replace(/\s+$/, '');
+		if (trimmed === '') {
+			result.pop();
+		} else {
+			result[result.length - 1] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	return result;
+};
+
+const tableCell = (value: Inlines[], align: TableCell['align']): TableCell => ({
+	type: 'TABLE_CELL',
+	align,
+	value: trimCellContent(value),
+});
+
+export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, rows: Inlines[][][]): Table => ({
+	type: 'TABLE',
+	value: {
+		header: header.map((cell, index) => tableCell(cell, aligns[index])),
+		rows: rows.map(
+			(cells): TableRow => ({
+				type: 'TABLE_ROW',
+				value: cells.map((cell, index) => tableCell(cell, aligns[index])),
+			}),
+		),
+	},
 });
 
 export const mentionUser = (() => {

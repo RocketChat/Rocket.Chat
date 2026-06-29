@@ -34,6 +34,27 @@ export type CodeLine = {
 	value: Plain;
 };
 
+export type TableCellAlignment = 'left' | 'center' | 'right' | undefined;
+
+export type TableCell = {
+	type: 'TABLE_CELL';
+	align: TableCellAlignment;
+	value: Inlines[];
+};
+
+export type TableRow = {
+	type: 'TABLE_ROW';
+	value: TableCell[];
+};
+
+export type Table = {
+	type: 'TABLE';
+	value: {
+		header: TableCell[];
+		rows: TableRow[];
+	};
+};
+
 export type Color = {
 	type: 'COLOR';
 	value: {
@@ -218,6 +239,9 @@ export type Types = {
 	INLINE_KATEX: InlineKaTeX;
 	TIMESTAMP: Timestamp;
 	SPOILER_BLOCK: SpoilerBlock;
+	TABLE: Table;
+	TABLE_ROW: TableRow;
+	TABLE_CELL: TableCell;
 };
 
 export type ASTNode =
@@ -240,7 +264,8 @@ export type ASTNode =
 	| Emoji
 	| Color
 	| Tasks
-	| HorizontalRule;
+	| HorizontalRule
+	| Table;
 
 export type TypesKeys = keyof Types;
 
@@ -271,6 +296,7 @@ export type Blocks =
 	| UnorderedList
 	| LineBreak
 	| KaTeX
-	| HorizontalRule;
+	| HorizontalRule
+	| Table;
 
 export type Root = Array<Paragraph | Blocks> | [BigEmoji];

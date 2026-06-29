@@ -38,6 +38,28 @@ The grammar provides support for markdown, mentions and emojis.
 - URI's
 - mentions users/channels
 - timestamps
+- tables
+
+## Tables
+
+GFM-style tables. A leading and trailing pipe is required on every row.
+Alignment is taken from the delimiter row:
+
+| Marker | Alignment |
+| ------ | --------- |
+| `:---` | left      |
+| `:--:` | center    |
+| `---:` | right     |
+| `---`  | none      |
+
+```
+| Header 1 | Header 2 |
+| -------- | :------: |
+| Cell 1   | Cell 2   |
+```
+
+A literal pipe inside a cell must be escaped as `\|`. Cell content supports
+inline markup (bold, italic, links, emoji, …).
 
 ## Timestamps
 
