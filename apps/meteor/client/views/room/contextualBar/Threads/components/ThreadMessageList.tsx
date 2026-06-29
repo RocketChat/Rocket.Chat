@@ -74,7 +74,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		isFetchingPreviousPage,
 		loadMessageAround,
 	} = useThreadMessagesQuery(mainMessage._id);
-	const messages = data?.messages ?? [];
+	const messages = useMemo(() => data?.messages ?? [], [data?.messages]);
 
 	const loadMoreMessages = useDebouncedCallback(
 		() => {
@@ -86,9 +86,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		[hasNextPage, isFetchingNextPage, fetchNextPage],
 	);
 
+	const initialScrollDoneRef = useRef(false);
+
 	const loadPreviousMessages = useDebouncedCallback(
 		() => {
-			if (hasPreviousPage && !isFetchingPreviousPage) {
+			if (initialScrollDoneRef.current && isAtBottom.current !== true && hasPreviousPage && !isFetchingPreviousPage) {
 				void fetchPreviousPage();
 			}
 		},
@@ -109,16 +111,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const isAtBottom = useRef<boolean | null>(null);
 	const prevItemsLengthRef = useRef(0);
-
-	// When older replies are prepended (loading previous pages), virtua must shift the
-	// scroll position so the viewport stays anchored on the same message instead of
-	// jumping. The flag is armed near the top in onScroll and reset after every commit,
-	// so appends at the bottom (new messages) don't shift.
-	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
-	const isPrepend = useRef(false);
-	useLayoutEffect(() => {
-		isPrepend.current = false;
-	});
 
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
 	const messagesLength = messages.length;
@@ -155,7 +147,26 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const lastScrollSizeRef = useRef(0);
 
-	const items = loading ? [] : [mainMessage, ...messages];
+	const showMainMessage = !hasPreviousPage;
+	const items = useMemo(() => {
+		if (loading) {
+			return [];
+		}
+		return showMainMessage ? [mainMessage, ...messages] : messages;
+	}, [loading, showMainMessage, mainMessage, messages]);
+
+	const firstItemId = items[0]?._id;
+	const prevFirstItemIdRef = useRef<string | undefined>(undefined);
+	const prevItemsCountRef = useRef(0);
+	const isPrepend =
+		prevItemsCountRef.current > 0 &&
+		items.length > prevItemsCountRef.current &&
+		firstItemId !== undefined &&
+		firstItemId !== prevFirstItemIdRef.current;
+	useLayoutEffect(() => {
+		prevFirstItemIdRef.current = firstItemId;
+		prevItemsCountRef.current = items.length;
+	});
 
 	const threadMsgTargetIndex = useMemo(() => {
 		if (!msgJumpParam || loading) {
@@ -165,8 +176,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			return 0;
 		}
 		const replyIndex = messages.findIndex((m) => m._id === msgJumpParam);
-		return replyIndex >= 0 ? 1 + replyIndex : -1;
-	}, [msgJumpParam, loading, mainMessage._id, messages]);
+		if (replyIndex < 0) {
+			return -1;
+		}
+		return showMainMessage ? 1 + replyIndex : replyIndex;
+	}, [msgJumpParam, loading, mainMessage._id, messages, showMainMessage]);
 
 	const lastThreadJumpKeyRef = useRef<string | undefined>(undefined);
 
@@ -174,6 +188,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		lastThreadJumpKeyRef.current = undefined;
 		loadingWindowKeyRef.current = undefined;
 		prevItemsLengthRef.current = 0;
+		initialScrollDoneRef.current = false;
 	}, [mainMessage._id]);
 
 	useEffect(() => {
@@ -208,6 +223,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			isAtBottom.current = true;
 			handle.scrollToIndex(items.length, { align: 'end' });
 			setShouldJumpToBottom(false);
+			initialScrollDoneRef.current = true;
 		}
 	}, [items, loading, msgJumpParam, threadMsgTargetIndex, shouldJumpToBottom, setShouldJumpToBottom, uid]);
 
@@ -226,6 +242,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		lastThreadJumpKeyRef.current = jumpKey;
 		setShouldJumpToBottom(false);
 		handle.scrollToIndex(threadMsgTargetIndex, { align: 'center' });
+		initialScrollDoneRef.current = true;
 		setHighlightMessage(msgJumpParam);
 		setTimeout(() => {
 			clearHighlightMessage();
@@ -276,7 +293,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				<MessageListProvider>
 					<VList
 						ref={virtualizerRef}
-						shift={isPrepend.current === true}
+						shift={isPrepend}
 						style={{ height: '100%' }}
 						aria-label={t('Thread_message_list')}
 						aria-busy={loading || isFetchingNextPage || isFetchingPreviousPage}
@@ -287,7 +304,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							if (!handle) return;
 
 							if (offset < 200 && hasPreviousPage) {
-								isPrepend.current = true;
+								loadPreviousMessages();
 							}
 
 							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
@@ -304,7 +321,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							<li className='load-more'>
 								<LoadingMessagesIndicator />
 							</li>
-						) : (
+						) : null}
+						{!loading && hasPreviousPage ? (
+							<li className='load-more'>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</li>
+						) : null}
+						{!loading &&
 							items.map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
@@ -323,15 +344,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 											firstUnread={firstUnread}
 											system={system}
 										/>
-										{index === 0 && hasPreviousPage ? (
-											<li className='load-more'>
-												{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadPreviousMessages} />}
-											</li>
-										) : null}
 									</Fragment>
 								);
-							})
-						)}
+							})}
 						{!loading && hasNextPage ? (
 							<li className='load-more'>
 								{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}

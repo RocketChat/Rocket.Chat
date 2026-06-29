@@ -127,9 +127,11 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const filtered = filterThreadMessages(messages, tmid);
 			const processed = (await processMessages(filtered)) as IThreadMessage[];
 
+			const pageParam = Math.max(0, total - offset - count);
+
 			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
 				pages: [{ items: processed, itemCount: total }],
-				pageParams: [offset],
+				pageParams: [pageParam],
 			});
 		},
 		[queryClient, getThreadMessages, roomId, tmid, count],
@@ -143,13 +145,13 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			}
 
 			const cachedData = offset === 0 ? queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey) : undefined;
-			const cachedMessages = cachedData?.pages[0]?.items ?? [];
+			const cachedMessages = cachedData?.pages.at(-1)?.items ?? [];
 
 			const { messages, total } = await getThreadMessages({
 				tmid,
 				offset,
 				count,
-				sort: JSON.stringify({ ts: 1 }),
+				sort: JSON.stringify({ ts: -1 }),
 			});
 
 			let filtered = filterThreadMessages(messages, tmid);
@@ -171,12 +173,12 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-			const next = lastPageParam + count;
-			return next < lastPage.itemCount ? next : undefined;
+		getNextPageParam: (_lastPage, _allPages, lastPageParam) => {
+			return lastPageParam > 0 ? Math.max(0, lastPageParam - count) : undefined;
 		},
-		getPreviousPageParam: (_firstPage, _allPages, firstPageParam) => {
-			return firstPageParam > 0 ? Math.max(0, firstPageParam - count) : undefined;
+		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
+			const next = firstPageParam + count;
+			return next < firstPage.itemCount ? next : undefined;
 		},
 		select: ({ pages }) => {
 			const byId = new Map<string, IThreadMessage>();
