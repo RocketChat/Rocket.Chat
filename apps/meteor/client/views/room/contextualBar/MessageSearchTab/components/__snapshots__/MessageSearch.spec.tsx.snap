@@ -51,11 +51,11 @@ exports[`renders WithResults without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1cb6i7s"
             style="min-height: 0;"
           >
-            <div
+            <ul
               data-testid="message-search-list"
               data-total-count="8"
             >
-              <div>
+              <li>
                 <div
                   class="rcx-message-divider"
                   role="separator"
@@ -154,8 +154,8 @@ exports[`renders WithResults without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   class="rcx-message-divider"
                   role="separator"
@@ -227,8 +227,8 @@ exports[`renders WithResults without crashing 1`] = `
                     </div>
                   </div>
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   aria-roledescription="system_message"
                   class="rcx-box rcx-box--full rcx-message-system"
@@ -284,8 +284,8 @@ exports[`renders WithResults without crashing 1`] = `
                     </div>
                   </div>
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   aria-labelledby="date-message-2-displayName date-message-2-time date-message-2-content"
                   aria-roledescription="message"
@@ -368,8 +368,8 @@ exports[`renders WithResults without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   aria-labelledby="message-1-displayName message-1-time message-1-content"
                   aria-roledescription="message"
@@ -452,8 +452,8 @@ exports[`renders WithResults without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   aria-labelledby="message-2-displayName message-2-time message-2-content"
                   aria-roledescription="message"
@@ -540,8 +540,8 @@ exports[`renders WithResults without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   aria-labelledby="message-3-displayName message-3-time message-3-content"
                   aria-roledescription="message"
@@ -624,8 +624,8 @@ exports[`renders WithResults without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
                 </div>
-              </div>
-              <div>
+              </li>
+              <li>
                 <div
                   class="rcx-message-divider"
                   role="separator"
@@ -724,8 +724,8 @@ exports[`renders WithResults without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-message-toolbar__wrapper"
                   />
                 </div>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
         </section>
       </div>

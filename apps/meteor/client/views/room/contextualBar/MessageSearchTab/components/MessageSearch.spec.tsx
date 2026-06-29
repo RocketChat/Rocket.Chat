@@ -16,11 +16,11 @@ jest.mock('../../../../../components/PaginatedVirtualList', () => ({
 		totalCount: number;
 		renderItem: (item: MessageSearchItem, index: number) => ReactNode;
 	}) => (
-		<div data-testid='message-search-list' data-total-count={totalCount}>
+		<ul data-testid='message-search-list' data-total-count={totalCount}>
 			{items.map((item, index) => (
-				<div key={item._id}>{renderItem(item, index)}</div>
+				<li key={item._id}>{renderItem(item, index)}</li>
 			))}
-		</div>
+		</ul>
 	),
 }));
 
@@ -64,7 +64,6 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 		rules: {
 			'nested-interactive': { enabled: false },
 			'aria-required-parent': { enabled: false },
-			'aria-required-children': { enabled: false },
 		},
 	});
 	expect(results).toHaveNoViolations();
