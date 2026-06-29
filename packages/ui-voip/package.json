@@ -52,7 +52,7 @@
 		"@testing-library/user-event": "~14.6.1",
 		"@types/jest": "~30.0.0",
 		"@types/jest-axe": "~3.5.9",
-		"@types/node": "~22.19.17",
+		"@types/node": "~24.13.2",
 		"@types/react": "~19.2.17",
 		"@types/react-dom": "~19.2.3",
 		"date-fns": "~4.1.0",
