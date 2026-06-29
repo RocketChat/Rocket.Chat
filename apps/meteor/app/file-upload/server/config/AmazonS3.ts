@@ -4,10 +4,13 @@ import https from 'node:https';
 import _ from 'underscore';
 
 import { forceDownload } from './helper';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import type { S3Options } from '../../ufs/AmazonS3/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server';
+
+const hasScheme = (value: string) => /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
 	const forcedDownload = forceDownload(req);
@@ -94,6 +97,14 @@ const configure = _.debounce(() => {
 		config.connection.region = Region;
 	}
 
+	// Back-compat: AWS SDK v2 defaulted unset region to us-east-1; v3 throws.
+	if (!Region && !process.env.AWS_REGION) {
+		config.connection.region = 'us-east-1';
+		SystemLogger.warn(
+			'FileUpload_S3_Region is empty and AWS_REGION is not set; defaulting to us-east-1. Set FileUpload_S3_Region or AWS_REGION to silence this warning.',
+		);
+	}
+
 	if (AWSAccessKeyId && AWSSecretAccessKey) {
 		config.connection.credentials = {
 			accessKeyId: AWSAccessKeyId,
@@ -101,8 +112,13 @@ const configure = _.debounce(() => {
 		};
 	}
 
+	// Back-compat: AWS SDK v2 accepted scheme-less endpoints; v3 throws.
 	if (BucketURL) {
-		config.connection.endpoint = BucketURL;
+		const isValidScheme = hasScheme(BucketURL);
+		config.connection.endpoint = isValidScheme ? BucketURL : `https://${BucketURL}`;
+		if (!isValidScheme) {
+			SystemLogger.warn(`FileUpload_S3_BucketURL "${BucketURL}" has no scheme; defaulting to "https://${BucketURL}".`);
+		}
 	}
 
 	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);

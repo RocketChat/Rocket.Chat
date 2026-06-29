@@ -1,7 +1,7 @@
 {
 	"name": "rocketchat-services",
 	"private": true,
-	"version": "2.0.48",
+	"version": "2.0.49-rc.0",
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
@@ -27,7 +27,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"ajv": "^8.17.1",
+		"ajv": "^8.20.0",
 		"bcrypt": "^6.0.0",
 		"body-parser": "^1.20.4",
 		"colorette": "^2.0.20",
@@ -47,7 +47,7 @@
 		"ws": "~8.21.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/icons": "^0.48.0",
 		"@types/cookie": "^0.5.4",
 		"@types/cookie-parser": "^1.4.10",
 		"@types/ejson": "^2.2.2",

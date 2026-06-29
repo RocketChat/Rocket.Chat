@@ -18,7 +18,7 @@ const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }: Remo
 	const listRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
 	const { isPending, data } = useQuery({
 		queryKey: teamsQueryKeys.roomsOfUser(teamId, userId),
-		queryFn: () => listRoomsOfUser({ teamId, userId, canUserDelete: 'true' }),
+		queryFn: () => listRoomsOfUser({ teamId, userId }),
 	});
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');

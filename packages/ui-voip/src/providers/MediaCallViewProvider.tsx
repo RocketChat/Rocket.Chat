@@ -1,4 +1,4 @@
-import { AnchorPortal, useGoToDirectMessage } from '@rocket.chat/ui-client';
+import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useSetOutputMediaDevice,
@@ -23,7 +23,6 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
-import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
 
 type MediaCallViewProviderProps = {
@@ -36,7 +35,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId } = useMediaCallInstance();
+	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
@@ -209,6 +208,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.toggleScreenSharing();
 	};
 
+	const onOpenPopout = useCallback(() => {
+		registerView('popout');
+	}, [registerView]);
+
+	const onClosePopout = useCallback(() => {
+		unregisterView('popout');
+	}, [unregisterView]);
+
 	const streams = useScreenShareStreams(instance);
 
 	useWidgetExternalControlSignalListener(
@@ -242,6 +249,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onAccept,
 		onSelectPeer,
 		onToggleScreenSharing,
+		onOpenPopout,
+		onClosePopout,
 		streams,
 		widgetPositionTracker: {
 			onChangePosition,
@@ -249,14 +258,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		},
 	};
 
-	return (
-		<MediaCallViewContext.Provider value={contextValue}>
-			<AnchorPortal id='rcx-media-call-widget-portal'>
-				<MediaCallWidget />
-			</AnchorPortal>
-			{children}
-		</MediaCallViewContext.Provider>
-	);
+	return <MediaCallViewContext.Provider value={contextValue}>{children}</MediaCallViewContext.Provider>;
 };
 
 export default MediaCallViewProvider;

@@ -1,12 +1,14 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import { isTruthy } from '@rocket.chat/tools';
 import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui-contexts';
-import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
+import { useShowSettingAlerts } from '../hooks/useShowSettingAlerts';
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
 
@@ -96,9 +98,15 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const saveSettings = useMethod('saveSettings');
+	const showAlerts = useShowSettingAlerts();
+
+	const saveSettings = useEndpoint('POST', '/v1/settings');
 	const dispatch = useCallback(
-		async (changes: Partial<ISetting>[]) => {
+		async (changes: Partial<ISetting>[], onSaved?: () => void) => {
+			const changedSettingIds = changes.map((s) => s._id).filter(isTruthy);
+			const alerts = cachedCollection.store
+				.getState()
+				.filter((setting) => Boolean(setting.alert && changedSettingIds.includes(setting._id)));
 			// FIXME: This is a temporary solution to invalidate queries when settings change
 			changes.forEach((val) => {
 				if (val._id === 'Enterprise_License') {
@@ -106,9 +114,19 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 				}
 			});
 
-			await saveSettings(changes as Pick<ISetting, '_id' | 'value'>[]);
+			if (alerts.length) {
+				const accepted = await showAlerts(alerts);
+
+				if (!accepted) {
+					return;
+				}
+			}
+
+			await saveSettings({ settings: changes as Pick<ISetting, '_id' | 'value'>[] });
+
+			onSaved?.();
 		},
-		[queryClient, saveSettings],
+		[queryClient, saveSettings, showAlerts, cachedCollection.store],
 	);
 
 	const contextValue = useMemo<SettingsContextValue>(

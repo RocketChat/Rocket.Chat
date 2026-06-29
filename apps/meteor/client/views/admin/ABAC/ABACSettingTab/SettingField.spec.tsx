@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import SettingField from './SettingField';
@@ -31,6 +31,7 @@ jest.mock('@rocket.chat/core-typings', () => ({
 describe('SettingField', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();
+		dispatchMock.mockClear();
 	});
 
 	afterEach(() => {
@@ -54,5 +55,24 @@ describe('SettingField', () => {
 		await waitFor(() => {
 			expect(dispatchMock).toHaveBeenCalled();
 		});
+	});
+
+	it('should dispatch when the setting has an alert (confirmation is handled by the settings dispatch)', async () => {
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+		render(<SettingField settingId='Test_Setting' />, {
+			wrapper: mockAppRoot()
+				.wrap((children) => <EditableSettingsProvider>{children}</EditableSettingsProvider>)
+				.withSetting('Test_Setting', false, { ...settingStructure, alert: 'Test_Setting_Alert' })
+				.build(),
+		});
+
+		await user.click(screen.getByRole('checkbox'));
+
+		await act(async () => {
+			jest.runOnlyPendingTimers();
+		});
+
+		expect(dispatchMock).toHaveBeenCalledWith([{ _id: 'Test_Setting', value: true }]);
 	});
 });
