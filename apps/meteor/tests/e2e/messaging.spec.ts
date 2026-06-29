@@ -165,9 +165,10 @@ test.describe('Messaging', () => {
 			await channelPage.navbar.openChat(targetChannel);
 
 			await test.step('focus on the second message', async () => {
+				await expect(channelPage.composer.inputMessage).toBeFocused();
 				await page.keyboard.press('ArrowUp');
 
-				expect(await channelPage.composer.inputMessage.inputValue()).toBe('msg2');
+				await expect(channelPage.composer.inputMessage).toHaveValue('msg2');
 			});
 
 			await test.step('send edited message', async () => {
@@ -187,6 +188,7 @@ test.describe('Messaging', () => {
 				);
 
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
+					await expect(channelPage.composer.inputMessage).toBeFocused();
 					await page.keyboard.press('ArrowUp');
 
 					await channelPage.content.sendMessage(element, false);
