@@ -11,12 +11,23 @@ import CategoryMenu from '../../views/navigation/sidebar/categories/CategoryMenu
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-// The header bar has its own opaque background (identical to the sidebar's) that would hide the
-// wrapper's drag-over tint. Making it permanently transparent lets the wrapper's inline background
-// drive the header highlight in the same render as the room rows — so they light up together.
-const transparentBarClass = css`
+const barStylingClass = css`
+	/* The header bar's opaque background (identical to the sidebar's) would hide the wrapper's drag-over
+	   tint; keeping it transparent lets the wrapper's inline background drive the header highlight in the
+	   same render as the room rows. The hover background lives on the bar, so it gets the same rounding;
+	   the reduced inline padding keeps the header icon aligned with the room avatars despite the inset. */
 	.rcx-sidebar-v2-collapse-group__bar {
+		min-height: 0;
+		/* Equal inner padding on all sides (the -1px accounts for the bar's 1px transparent border). */
+		padding: calc(0.25rem - 1px);
 		background-color: transparent;
+		border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	}
+
+	/* Hide the built-in chevron; the group icon and the (hover-revealed) chevron are rendered together in
+	   the title's leading slot so they share one place without shifting the title. */
+	.rcx-sidebar-v2-collapse-group__bar .rcx-chevron {
+		display: none;
 	}
 `;
 
@@ -37,10 +48,12 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
 
 	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
-	// `title` (string) drives the accessible name; the collapser renders this node as the visible label,
-	// so a custom category's emoji shows before its name. Cast because the prop is typed `string` but the
-	// component renders it as JSX children.
-	const titleContent = (group.category ? <CategoryLabel icon={group.category.icon} name={title} /> : title) as unknown as string;
+	// `title` (string) drives the accessible name; the collapser renders this node as the visible label, with
+	// a leading icon (emoji/folder for custom, type icon for system) so all groups align. Cast because the
+	// prop is typed `string` but the component renders it as JSX children.
+	const titleContent = (
+		<CategoryLabel emoji={group.category?.icon} iconName={group.icon} name={title} collapsed={group.collapsed} unread={showUnread} />
+	) as unknown as string;
 
 	// `SidebarV2CollapseGroup` doesn't render an actions slot, so the kebab is overlaid on the header;
 	// it shows on hover or while its menu is open, replacing the unread badge.
@@ -49,41 +62,52 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const showActions = hovered || menuOpen;
 
 	return (
-		<Box
-			{...dropProps}
-			position='relative'
-			className={transparentBarClass}
-			style={{ backgroundColor: isDragOver ? 'var(--rcx-color-surface-hover)' : undefined, opacity: isFadedOut ? 0.4 : undefined }}
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
-		>
-			<SidebarV2CollapseGroup
-				title={titleContent}
-				expanded={!group.collapsed}
-				badge={
-					!showActions && showUnread ? (
-						<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
-							{unreadCount.total}
-						</Badge>
-					) : undefined
-				}
-				aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
-				{...props}
-			/>
-			{showActions && (
-				<Box position='absolute' insetBlockStart={4} insetInlineEnd={8}>
-					<CategoryMenu
-						category={group.category}
-						groupKey={group.key}
-						showUnreads={group.showUnreads}
-						canMoveUp={canMoveUp}
-						canMoveDown={canMoveDown}
-						onMoveUp={onMoveUp}
-						onMoveDown={onMoveDown}
-						onOpenChange={setMenuOpen}
-					/>
-				</Box>
-			)}
+		// Outer wrapper adds transparent space ABOVE every category (separating it from the previous category's
+		// items, and the first one from the sidebar header). It must be padding, not margin — virtuoso measures
+		// the rendered height, and a top margin would collapse out and let the header overlap its items.
+		<Box {...dropProps} style={{ paddingBlockStart: '0.5rem', opacity: isFadedOut ? 0.4 : undefined }}>
+			<Box
+				position='relative'
+				className={barStylingClass}
+				data-drop-group={group.key}
+				style={{
+					// Inset highlight matching the room rows: the hover tint lives on the bar, the drag-over tint here.
+					// Drag-over only tints the background, keeping the inset rounding so the drop area stays rounded.
+					marginInline: '0.5rem',
+					borderRadius: 'var(--rcx-border-radius-medium, 0.25rem)',
+					backgroundColor: isDragOver ? 'var(--rcx-color-surface-hover)' : undefined,
+				}}
+				onMouseEnter={() => setHovered(true)}
+				onMouseLeave={() => setHovered(false)}
+			>
+				<SidebarV2CollapseGroup
+					title={titleContent}
+					expanded={!group.collapsed}
+					badge={
+						!showActions && showUnread ? (
+							<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
+								{unreadCount.total}
+							</Badge>
+						) : undefined
+					}
+					aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
+					{...props}
+				/>
+				{showActions && (
+					<Box position='absolute' insetBlockStart={4} insetInlineEnd={8}>
+						<CategoryMenu
+							category={group.category}
+							groupKey={group.key}
+							showUnreads={group.showUnreads}
+							canMoveUp={canMoveUp}
+							canMoveDown={canMoveDown}
+							onMoveUp={onMoveUp}
+							onMoveDown={onMoveDown}
+							onOpenChange={setMenuOpen}
+						/>
+					</Box>
+				)}
+			</Box>
 		</Box>
 	);
 };

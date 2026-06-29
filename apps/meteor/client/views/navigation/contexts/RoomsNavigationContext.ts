@@ -199,7 +199,10 @@ export const useSideBarRoomsList = (): {
 			title: category.name,
 			icon: 'folder',
 			rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom),
-			unreadInfo: customUnreadData.get(category._id) || getEmptyUnreadInfo(),
+			// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
+			// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
+			// counters) even collapsed, so the header acts as when open and shows no badge.
+			unreadInfo: collapsed && !showUnreads ? customUnreadData.get(category._id) || getEmptyUnreadInfo() : getEmptyUnreadInfo(),
 			collapsed,
 			showUnreads,
 			empty: rooms.length === 0,
@@ -224,7 +227,7 @@ export const useSideBarRoomsList = (): {
 				title: t(sidePanelFiltersConfig[group].title),
 				icon: sidePanelFiltersConfig[group].icon,
 				rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom),
-				unreadInfo: unreadGroupData.get(group) || getEmptyUnreadInfo(),
+				unreadInfo: collapsed && !showUnreads ? unreadGroupData.get(group) || getEmptyUnreadInfo() : getEmptyUnreadInfo(),
 				collapsed,
 				showUnreads,
 				empty: false,

@@ -77,6 +77,9 @@ export const CategoryDnDProvider = ({ children }: { children: ReactNode }) => {
 
 const useCategoryDnD = () => useContext(CategoryDnDContext);
 
+/** The group key currently being dragged over (always an accepting group), or null. */
+export const useDragOverGroup = (): string | null => useCategoryDnD()?.dragOverGroup ?? null;
+
 // A 1×1 transparent GIF used to suppress the browser's native drag image.
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 

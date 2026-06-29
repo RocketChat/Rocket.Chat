@@ -125,6 +125,11 @@ test.describe.serial('sidebar custom categories', () => {
 			await expect(poHomeChannel.sidebar.getCategoryCollapser(name).locator('.rcx-icon--name-folder')).toBeVisible();
 		});
 
+		test('should show a leading icon on system groups too (aligned with custom categories)', async () => {
+			// System groups carry a type icon (Channels → hashtag) so default and custom groups align.
+			await expect(poHomeChannel.sidebar.getCategoryCollapser('Channels').locator('.rcx-icon--name-hashtag')).toBeVisible();
+		});
+
 		test('should let you pick an emoji shown before the category name', async ({ page }) => {
 			const name = uniqueName('emoji');
 			await poHomeChannel.navbar.openCreateCategory();

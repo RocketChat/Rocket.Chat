@@ -16,6 +16,7 @@ import { useSideBarRoomsList } from '../../contexts/RoomsNavigationContext';
 import { useCustomCategories } from '../../hooks/useCustomCategories';
 import { useSystemGroupsOrder } from '../../hooks/useSystemGroupsOrder';
 import { CategoryDnDProvider } from '../categories/CategoryDnDContext';
+import CategoryDropHighlight from '../categories/CategoryDropHighlight';
 import CategoryEmptyPlaceholder from '../categories/CategoryEmptyPlaceholder';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
@@ -46,7 +47,10 @@ const RoomListInner = () => {
 	useShortcutOpenMenu(ref);
 
 	return (
-		<Box position='relative' overflow='hidden' height='full' ref={ref}>
+		// `isolation: isolate` makes this an own stacking context so the drag-over highlight (z-index -1) sits
+		// behind the rows but above the sidebar surface.
+		<Box position='relative' overflow='hidden' height='full' ref={ref} style={{ isolation: 'isolate' }}>
+			<CategoryDropHighlight containerRef={ref} />
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupCounts}

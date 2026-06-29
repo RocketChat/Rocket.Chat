@@ -37,10 +37,39 @@ A category can carry an optional emoji, chosen from the shared emoji picker in t
 icon: the chosen emoji, or the **folder** icon when none is set. The stored value is the picker's emoji name
 (e.g. `rocket`), rendered via the `<Emoji>` component.
 
-`CategoryLabel.tsx` renders the icon before the category name in the sidebar collapser — the emoji when set,
-otherwise the folder icon (constrained to the folder's `x20` size so both match). The collapser's `aria-label`
-keeps the plain name, so the emoji is purely visual and does not affect accessible names or the `region`-name
-selectors used by tests. System groups (Channels, Direct messages, …) render no leading icon.
+`CategoryLabel.tsx` renders the icon before the group name in the sidebar collapser — the emoji when set,
+otherwise a fuselage icon (constrained to `x20`). The collapser's `aria-label` keeps the plain name, so the
+icon is purely visual and does not affect accessible names or the `region`-name selectors used by tests.
+
+**System groups get an icon too**, so default and custom groups align identically: the classic `useRoomList.ts`
+assigns each system group a leading icon (`SYSTEM_GROUP_ICONS`: Channels → `hashtag`, Direct messages → `at`,
+Teams → `team`, Favorites → `star`, …); the navigation sidebar already carries one per group
+(`sidePanelFiltersConfig`). Custom categories use `folder` (or their emoji).
+
+**Icon ⇄ chevron (Slack-style).** The icon and the collapse chevron share a single fixed-size slot in
+`CategoryLabel`: the icon shows by default and is swapped for the chevron on header hover (both layers are
+absolutely positioned inside a `1.25rem` slot, so nothing resizes and the title never shifts). The collapser's
+built-in fuselage chevron (`.rcx-chevron`) is hidden via CSS; `CategoryLabel` renders its own chevron
+(direction from the `collapsed` prop). The whole header stays clickable to collapse regardless of hover.
+
+**Inset highlight (Slack-style).** Room rows apply an inset, rounded hover/selected highlight via inline style
+on the item (`marginInline` keeps it off the sidebar edges, `borderRadius` rounds it) in
+`SidebarItemTemplateWithData.tsx` (classic) and `SidebarItemWithData.tsx` (navigation). Rooms are **indented**
+(`paddingInlineStart: 1.5rem`) so they read as nested under the category header, whose icon stays at the outer
+edge.
+
+The collapser header (`RoomListCollapser.tsx`, both sidebars) is a two-box structure:
+- an **outer** wrapper with `paddingBlockStart` that adds transparent space **above every category** (separating
+  it from the previous category's items, and the first one from the sidebar header). It is padding, not margin
+  — virtuoso measures the rendered height, and a top margin collapses out and lets the header overlap its items.
+- an **inner** box that carries the inset highlight: `marginInline` (off the edges), `border-radius` on the bar
+  for the hover tint and on the box for the drag-over tint, a reduced `padding-inline`/`padding-block` +
+  `min-height: 0` so the header is the **same height as a condensed room item** and its icon aligns with the
+  room avatars. The kebab is a `mini` `IconButton` so it fits that height.
+
+During **drag-over** the inner box rounding is dropped (`borderRadius: 0`, inset kept) and the room rows drop
+their vertical gap and rounding, so the whole category (header + its rooms) highlights as one contiguous block
+rather than separate pills.
 
 The emoji also replaces the folder icon **in the menus**: the "Move to" list (`MoveToList.tsx`, used by both
 the sidebar room kebab submenu and the room-header dropdown) renders a category's emoji via the `Option`

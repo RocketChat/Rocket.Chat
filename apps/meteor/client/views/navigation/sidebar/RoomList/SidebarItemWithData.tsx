@@ -4,8 +4,8 @@ import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes } from 'react';
-import { memo, useMemo } from 'react';
+import type { AllHTMLAttributes, MouseEvent } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import SidebarItem from './SidebarItem';
 import SidebarItemMenu from './SidebarItemMenu';
@@ -53,9 +53,30 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions, groupKey, i
 
 	const dragStyle = {
 		...style,
+		// Suppress the iOS Safari long-press preview/callout on the room link; long-press opens the menu instead.
+		WebkitTouchCallout: 'none' as const,
+		// Inset + rounded hover/selected highlight (Slack-style): margins keep it off the sidebar edges.
+		// Rooms are indented (content ~24px from the edge) so they read as nested under the category header.
+		marginInline: '0.5rem',
+		marginBlock: '1px',
+		paddingInlineStart: '1.5rem',
+		paddingInlineEnd: 'calc(0.5rem - 1px)',
+		borderRadius: 'var(--rcx-border-radius-medium, 0.25rem)',
 		...(isDragging || isFadedOut ? { opacity: isDragging ? 0.5 : 0.4 } : {}),
+		// During drag-over, only tint the background — keep the inset margins and rounding so the drop area stays
+		// rounded and the row's height doesn't change.
 		...(isDragOver ? { backgroundColor: 'var(--rcx-color-surface-hover)' } : {}),
 	};
+
+	// Long-press (iOS) / right-click opens the room menu (the kebab) instead of the native preview/context menu.
+	const handleContextMenu = useCallback((event: MouseEvent<HTMLElement>) => {
+		const trigger = event.currentTarget.querySelector<HTMLButtonElement>('.rcx-sidebar-v2-item__menu-wrapper button');
+		if (!trigger) {
+			return;
+		}
+		event.preventDefault();
+		trigger.click();
+	}, []);
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -90,6 +111,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions, groupKey, i
 		<SidebarItem
 			id={id}
 			data-unread={highlighted}
+			data-drop-group={groupKey}
 			unread={highlighted}
 			href={href}
 			selected={selected}
@@ -101,6 +123,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions, groupKey, i
 			room={room}
 			actions={actions}
 			menu={<SidebarItemMenu room={room} />}
+			onContextMenu={handleContextMenu}
 			{...dragProps}
 			{...dropProps}
 			{...buttonProps}

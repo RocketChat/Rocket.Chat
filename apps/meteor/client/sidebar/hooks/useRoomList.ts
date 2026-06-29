@@ -1,5 +1,6 @@
 import type { ILivechatInquiryRecord, ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
@@ -33,6 +34,22 @@ const order = [
 	'Conversations',
 ] as const;
 
+// Leading icon per system group, so system groups align with custom categories (which use folder/emoji).
+const SYSTEM_GROUP_ICONS: Record<string, IconName> = {
+	Incoming_Calls: 'phone',
+	Incoming_Livechats: 'burger-arrow-left',
+	Open_Livechats: 'user-arrow-right',
+	On_Hold_Chats: 'pause-unfilled',
+	Unread: 'flag',
+	Drafts: 'pencil',
+	Favorites: 'star',
+	Teams: 'team',
+	Discussions: 'balloons',
+	Channels: 'hashtag',
+	Direct_Messages: 'at',
+	Conversations: 'chat',
+};
+
 type GroupUnreadInfo = {
 	userMentions: number;
 	groupMentions: number;
@@ -47,6 +64,8 @@ export type SidebarRoomListGroup = {
 	/** Raw title — a translation key for system groups (translate it), the category name for custom ones. */
 	title: string;
 	translateTitle: boolean;
+	/** Leading icon: folder for custom categories (overridden by their emoji), the type icon for system groups. */
+	icon: IconName;
 	category?: ISidebarCustomCategory;
 	showUnreads: boolean;
 	collapsed: boolean;
@@ -230,11 +249,15 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					key,
 					title,
 					translateTitle,
+					icon: category ? 'folder' : (SYSTEM_GROUP_ICONS[key] ?? 'hashtag'),
 					category,
 					showUnreads,
 					collapsed,
 					rooms: displayRooms,
-					unreadInfo: collapsed ? buildUnreadInfo(set) : emptyUnreadInfo(),
+					// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
+					// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
+					// counters) even collapsed, so the header acts as when open and shows no badge.
+					unreadInfo: collapsed && !showUnreads ? buildUnreadInfo(set) : emptyUnreadInfo(),
 					empty: allRooms.length === 0,
 				};
 			};

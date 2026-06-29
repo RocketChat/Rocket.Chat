@@ -6,12 +6,20 @@ import { renderHook } from '@testing-library/react';
 import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
+import { useShowUnreadsGroups } from '../../views/navigation/hooks/useShowUnreadsGroups';
+
+const mockedUseShowUnreadsGroups = jest.mocked(useShowUnreadsGroups);
 
 // `useRoomList` reads the open room to keep it visible while collapsed; mock it (no room open in these tests)
 // to avoid loading the real RoomManager module graph (which imports non-JS assets jest can't transform).
 jest.mock('../../lib/RoomManager', () => ({
 	useOpenedRoom: () => undefined,
 }));
+
+// System groups read their "Show unreads" flag from this hook (localStorage-backed in the app). Mock it so
+// tests control it deterministically; it defaults ON (matching the real default), and the off-path tests
+// override it for a specific group.
+jest.mock('../../views/navigation/hooks/useShowUnreadsGroups');
 
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
 const groupsListOf = (groups: SidebarRoomListGroup[]) => groups.map((group) => group.key);
@@ -105,6 +113,11 @@ const getWrapperSettings = ({
 		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
 
+// System groups default to "Show unreads" ON; off-path tests override this per test.
+beforeEach(() => {
+	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => true, toggleShowUnreads: jest.fn() });
+});
+
 it('should return roomList, groupsCount and groupsList', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({}).build(),
@@ -189,7 +202,9 @@ it('should return groupsList without "Discussions" if isDiscussionEnabled is dis
 	expect(groupsListOf(result.current.groups)).not.toContain('Discussions');
 });
 
-it('should remove corresponding items from roomList and return groupCount 0 when group is collapsed', async () => {
+it('should remove corresponding items from roomList and return groupCount 0 when group is collapsed and "Show unreads" is off', async () => {
+	// "Show unreads" defaults ON, which keeps unread rooms visible while collapsed; turn it off for Channels.
+	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: (group) => group !== 'Channels', toggleShowUnreads: jest.fn() });
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
@@ -198,6 +213,19 @@ it('should remove corresponding items from roomList and return groupCount 0 when
 	const channelsIndex = groupsList.indexOf('Channels');
 	expect(result.current.groupsCount[channelsIndex]).toEqual(0);
 	expect(roomList.length).toEqual(result.current.groupsCount.reduce((a, b) => a + b, 0));
+});
+
+it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on by default', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+	});
+	const groupsList = groupsListOf(result.current.groups);
+	const channelsIndex = groupsList.indexOf('Channels');
+	// All 4 seeded channels are unread, so they stay visible despite the group being collapsed.
+	expect(result.current.groupsCount[channelsIndex]).toEqual(unreadChannels.length);
+	// With unreads visible, the header total badge is suppressed.
+	expect(result.current.groups[channelsIndex].unreadInfo.unread).toEqual(0);
+	expect(result.current.groups[channelsIndex].unreadInfo.tunread).toEqual([]);
 });
 
 it('should always return groupsCount and groupsList with the same length', async () => {
@@ -236,7 +264,9 @@ it('should not include unread room in unread group if hideUnreadStatus is enable
 	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
 });
 
-it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed', async () => {
+it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed and "Show unreads" is off', async () => {
+	// The header total badge only accumulates when unreads are hidden, i.e. "Show unreads" off for the group.
+	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: (group) => group !== 'Channels', toggleShowUnreads: jest.fn() });
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});

@@ -14,6 +14,7 @@ import { useOpenedRoom } from '../../lib/RoomManager';
 import { useCustomCategories } from '../../views/navigation/hooks/useCustomCategories';
 import { useSystemGroupsOrder } from '../../views/navigation/hooks/useSystemGroupsOrder';
 import { CategoryDnDProvider } from '../../views/navigation/sidebar/categories/CategoryDnDContext';
+import CategoryDropHighlight from '../../views/navigation/sidebar/categories/CategoryDropHighlight';
 import CategoryEmptyPlaceholder from '../../views/navigation/sidebar/categories/CategoryEmptyPlaceholder';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -59,7 +60,10 @@ const RoomListInner = () => {
 	useShortcutOpenMenu(ref);
 
 	return (
-		<Box position='relative' overflow='hidden' height='full' ref={ref}>
+		// `isolation: isolate` makes this an own stacking context so the drag-over highlight (z-index -1) sits
+		// behind the rows but above the sidebar surface.
+		<Box position='relative' overflow='hidden' height='full' ref={ref} style={{ isolation: 'isolate' }}>
+			<CategoryDropHighlight containerRef={ref} />
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupsCount}

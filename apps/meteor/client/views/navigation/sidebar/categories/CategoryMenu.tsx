@@ -84,7 +84,7 @@ const CategoryMenu = ({
 
 	return (
 		<Box onClick={(e) => e.stopPropagation()}>
-			<IconButton ref={triggerRef} small icon='kebab' pressed={open} title={t('Options')} onClick={() => setOpen(!open)} />
+			<IconButton ref={triggerRef} mini icon='kebab' pressed={open} title={t('Options')} onClick={() => setOpen(!open)} />
 			{open && (
 				<Position anchor={triggerRef} placement='bottom-end'>
 					<Tile role='menu' elevation='2' pb={8} pi={0} width='x224' onKeyDown={(e) => e.key === 'Escape' && close()}>
