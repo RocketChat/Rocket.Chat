@@ -1,4 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { MediaSignalingSession, CallState, CallContact } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useCallback } from 'react';
@@ -55,8 +56,11 @@ const reducer = (
 				payload: { peerInfo?: PeerInfo };
 		  }
 		| {
-				type: 'toggleWidget';
+				type: 'showWidget';
 				payload: { peerInfo?: PeerInfo };
+		  }
+		| {
+				type: 'hideWidget';
 		  }
 		| {
 				type: 'instance_updated';
@@ -67,20 +71,20 @@ const reducer = (
 				payload?: { status?: UserStatus };
 		  },
 ): SessionState => {
-	if (action.type === 'toggleWidget') {
-		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
+	if (action.type === 'showWidget') {
+		if (reducerState.state !== 'closed') {
+			return reducerState;
 		}
 
-		if (reducerState.state === 'new') {
-			// If a peer is supplied while the dialer is already open, replace the
-			// peer instead of toggling closed — keeps "Call rodrigo" working when
-			// the dialer is already mounted (e.g. inside the sidebar rail panel).
-			if (action.payload?.peerInfo) {
-				return { ...reducerState, peerInfo: action.payload.peerInfo };
-			}
-			return { ...reducerState, state: 'closed' };
+		return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
+	}
+
+	if (action.type === 'hideWidget') {
+		if (reducerState.state !== 'new') {
+			return reducerState;
 		}
+
+		return { ...reducerState, state: 'closed' };
 	}
 
 	if (action.type === 'instance_updated') {
@@ -109,6 +113,8 @@ const reducer = (
 export type MediaSessionStateWithWidgetControls = {
 	sessionState: SessionState;
 	toggleWidget: (peerInfo?: PeerInfo) => void;
+	showWidget: (peerInfo?: PeerInfo) => void;
+	hideWidget: () => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
 };
 
@@ -243,13 +249,35 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		};
 	}, [getAvatarUrl, instance]);
 
-	const toggleWidget = useCallback((peerInfo?: PeerInfo) => {
-		dispatch({ type: 'toggleWidget', payload: { peerInfo } });
+	const showWidget = useCallback((peerInfo?: PeerInfo) => {
+		dispatch({ type: 'showWidget', payload: { peerInfo } });
+	}, []);
+
+	const hideWidget = useCallback(() => {
+		dispatch({ type: 'hideWidget' });
 	}, []);
 
 	const selectPeer = useCallback((peerInfo: PeerInfo) => {
 		dispatch({ type: 'selectPeer', payload: { peerInfo } });
 	}, []);
+
+	const toggleWidget = useStableCallback((peerInfo?: PeerInfo) => {
+		const { state } = mediaSession;
+		if (state === 'closed') {
+			showWidget(peerInfo);
+		}
+
+		if (state === 'new') {
+			// If a peer is supplied while the dialer is already open, replace the
+			// peer instead of toggling closed — keeps "Call rodrigo" working when
+			// the dialer is already mounted (e.g. inside the sidebar rail panel).
+			if (peerInfo) {
+				selectPeer(peerInfo);
+			} else {
+				hideWidget();
+			}
+		}
+	});
 
 	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
 
@@ -262,6 +290,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 	return {
 		sessionState: mediaSession,
 		toggleWidget,
+		showWidget,
+		hideWidget,
 		selectPeer,
 	};
 };
