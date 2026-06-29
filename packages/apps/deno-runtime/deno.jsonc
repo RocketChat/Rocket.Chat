@@ -5,14 +5,17 @@
 		"@rocket.chat/apps-engine/": "../../../packages/apps-engine/",
 		"@rocket.chat/apps/": "../",
 		"@std/io": "jsr:@std/io@^0.225.3",
-		"acorn": "npm:acorn@8.10.0",
-		"acorn-walk": "npm:acorn-walk@8.2.0",
+		"acorn": "npm:acorn@8.17.0",
+		"acorn-walk": "npm:acorn-walk@8.3.5",
 		"astring": "npm:astring@1.8.6",
 		"jsonrpc-lite": "npm:jsonrpc-lite@2.2.0",
 		"stack-trace": "npm:stack-trace@0.0.10",
 		"uuid": "npm:uuid@8.3.2"
 	},
-	"unstable": ["detect-cjs","sloppy-imports"],
+	"unstable": ["detect-cjs", "sloppy-imports"],
+	"compilerOptions": {
+		"strict": false
+	},
 	"tasks": {
 		"test": "deno test --no-check --allow-read --allow-write --allow-env"
 	},

@@ -6,8 +6,8 @@
     "npm:@msgpack/msgpack@3.0.0-beta2": "3.0.0-beta2",
     "npm:@rocket.chat/ui-kit@~0.31.22": "0.31.25_@rocket.chat+icons@0.32.0",
     "npm:@types/node@*": "22.12.0",
-    "npm:acorn-walk@8.2.0": "8.2.0",
-    "npm:acorn@8.10.0": "8.10.0",
+    "npm:acorn-walk@8.3.5": "8.3.5",
+    "npm:acorn@8.17.0": "8.17.0",
     "npm:astring@1.8.6": "1.8.6",
     "npm:jsonrpc-lite@2.2.0": "2.2.0",
     "npm:stack-trace@*": "0.0.10",
@@ -45,11 +45,14 @@
         "undici-types"
       ]
     },
-    "acorn-walk@8.2.0": {
-      "integrity": "sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA=="
+    "acorn-walk@8.3.5": {
+      "integrity": "sha512-HEHNfbars9v4pgpW6SO1KSPkfoS0xVOM/9UzkJltjlsHZmJasxg8aXkuZa7SMf8vKGIBhpUsPluQSqhJFCqebw==",
+      "dependencies": [
+        "acorn"
+      ]
     },
-    "acorn@8.10.0": {
-      "integrity": "sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==",
+    "acorn@8.17.0": {
+      "integrity": "sha512-xRQbDb9BnwDafYNn6Vwl839DYVjqXYb1XVGtWAZ1kcDc6iwAL4hg3B1dZlRiuENFeO2H53gFG3in621AdERVAg==",
       "bin": true
     },
     "astring@1.8.6": {
@@ -115,8 +118,8 @@
       "jsr:@std/io@~0.225.3",
       "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@~0.31.22",
-      "npm:acorn-walk@8.2.0",
-      "npm:acorn@8.10.0",
+      "npm:acorn-walk@8.3.5",
+      "npm:acorn@8.17.0",
       "npm:astring@1.8.6",
       "npm:jsonrpc-lite@2.2.0",
       "npm:stack-trace@0.0.10",
