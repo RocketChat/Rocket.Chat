@@ -64,9 +64,9 @@ export const useFullscreenToggle = (): FullScreenToggleReturn => {
 		}
 
 		if (fullscreen) {
-			await ownerDocument.documentElement.requestFullscreen();
-		} else {
 			await ownerDocument.exitFullscreen();
+		} else {
+			await ownerDocument.documentElement.requestFullscreen();
 		}
 	}, [ownerDocument, fullscreen, enabled]);
 
