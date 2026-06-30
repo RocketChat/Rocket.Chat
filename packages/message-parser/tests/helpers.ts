@@ -91,6 +91,11 @@ export const lineBreak = () => ({
 	value: undefined,
 });
 
+export const horizontalRule = () => ({
+	type: 'HORIZONTAL_RULE' as const,
+	value: undefined,
+});
+
 export const katex = (value: string) => ({
 	type: 'KATEX' as const,
 	value,

@@ -14,6 +14,7 @@
     image,
     inlineCode,
     inlineKatex,
+    horizontalRule,
     italic,
     katex,
     lineBreak,
@@ -57,6 +58,7 @@ Blocks
   = Blockquote
   / BlockSpoiler
   / Code
+  / HorizontalRule
   / Heading
   / Tasks
   / OrderedList
@@ -238,6 +240,24 @@ KatexInlineEnd
  *
 */
 LineBreak = Space* EndOfLine { return lineBreak(); }
+
+/**
+ *
+ * Horizontal Rule (thematic break)
+ * e.g: ---, ***, ___
+ *
+ * A line made up of 3+ contiguous copies of the same marker (-, * or _), with
+ * nothing else on the line (leading/trailing spaces allowed). Spaced variants
+ * (e.g. `* * *`) are intentionally not matched, to preserve the existing
+ * whitespace-emphasis behavior of `** **` / `__ __`.
+ *
+*/
+HorizontalRule = [ \t]* HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(); }
+
+HorizontalRuleMarkers
+  = "-" |3..|
+  / "*" |3..|
+  / "_" |3..|
 
 /**
  *

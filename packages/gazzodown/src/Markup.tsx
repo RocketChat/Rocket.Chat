@@ -1,3 +1,4 @@
+import { Divider } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, memo } from 'react';
 
@@ -64,6 +65,9 @@ const Markup = ({ tokens, source }: MarkupProps) => (
 
 				case 'LINE_BREAK':
 					return <br key={index} />;
+
+				case 'HORIZONTAL_RULE':
+					return <Divider key={index} />;
 
 				default: {
 					// Graceful degradation: blocks may carry a `fallback`. The current form is a
