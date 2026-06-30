@@ -13,8 +13,8 @@ const Sidebar = () => {
 	return (
 		<SidebarV2 aria-label={t('Sidebar')} className='rcx-sidebar--main rcx-sidebar'>
 			<BannerSection />
-			<NowPlayingSection />
 			<SidebarRoomList />
+			<NowPlayingSection />
 			<SidebarFooter />
 		</SidebarV2>
 	);

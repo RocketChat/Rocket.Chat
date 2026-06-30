@@ -9,7 +9,7 @@ import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 
 /**
- * Persistent "now playing" card pinned to the top of the sidebar (design 1c).
+ * Persistent audio card pinned to the bottom of the sidebar (design 1c).
  * It drives the shared audio element, so playback survives switching or closing
  * the room where the audio was sent. Hidden while the source room is open (the
  * in-message player is visible there).
@@ -36,29 +36,27 @@ const NowPlayingSection = () => {
 
 	return (
 		<Box m={8} p={10} borderRadius={8} backgroundColor='surface-tint' style={{ border: '1px solid var(--rcx-color-stroke-light)' }}>
-			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={8}>
-				<Box display='flex' alignItems='center' color='info' fontScale='micro' style={{ gap: 6, textTransform: 'uppercase' }}>
-					<Box style={{ width: 7, height: 7, borderRadius: 999, background: 'var(--rcx-color-button-background-primary-default)' }} />
-					{t('Now_playing')}
-				</Box>
-				<IconButton mini icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
-			</Box>
-
-			<Box display='flex' alignItems='center' mbe={10} style={{ gap: 8 }}>
-				{track.username && <UserAvatar username={track.username} size='x24' />}
+			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={10} style={{ gap: 8 }}>
 				<Box
+					display='flex'
+					alignItems='center'
 					minWidth={0}
+					flexGrow={1}
 					onClick={() => void openConversation()}
 					title={t('Jump_to_message')}
-					style={{ cursor: track.rid ? 'pointer' : 'default' }}
+					style={{ gap: 8, cursor: track.rid ? 'pointer' : 'default' }}
 				>
-					<Box fontScale='p2b' color='default' withTruncatedText>
-						{track.name || track.username || t('Audio')}
-					</Box>
-					<Box fontScale='micro' color='info' withTruncatedText>
-						{track.title}
+					{track.username && <UserAvatar username={track.username} size='x24' />}
+					<Box minWidth={0}>
+						<Box fontScale='p2b' color='default' withTruncatedText>
+							{track.name || track.username || t('Audio')}
+						</Box>
+						<Box fontScale='micro' color='hint' withTruncatedText>
+							{track.title}
+						</Box>
 					</Box>
 				</Box>
+				<IconButton mini icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
 			</Box>
 
 			<AudioPlayerControls

@@ -21,8 +21,8 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			<NowPlayingSection />
 			<SidebarRoomList />
+			<NowPlayingSection />
 			<SidebarFooter />
 		</SidebarV2>
 	);
