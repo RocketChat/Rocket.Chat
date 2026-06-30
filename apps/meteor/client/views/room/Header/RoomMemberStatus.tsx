@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
@@ -20,11 +19,7 @@ const RoomMemberStatus = ({ room }: RoomMemberStatusProps): ReactElement | null 
 		return null;
 	}
 
-	return (
-		<Box title={expirationText}>
-			<MarkdownText content={presence?.statusText} parseEmoji={true} variant='inline' />
-		</Box>
-	);
+	return <MarkdownText title={expirationText} content={presence?.statusText} parseEmoji={true} variant='inline' withTruncatedText />;
 };
 
 export default RoomMemberStatus;
