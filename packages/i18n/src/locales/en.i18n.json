@@ -2589,6 +2589,8 @@
   "Full_Name": "Full Name",
   "Full_log": "Full log",
   "Full_Screen": "Full Screen",
+  "Fullscreen": "Fullscreen",
+  "Fullscreen_failed_to_switch_not_allowed": "Switching to fullscreen was not allowed, please check your browser settings.",
   "Fully_integrated_voip_receive_internal_external_calls_without_switching_between_apps_external_systems": "Fully-integrated Rocket.Chat VoIP allows your team to make and receive internal and external calls without switching between apps or external systems.",
   "Gaming": "Gaming",
   "General": "General",

@@ -1,5 +1,7 @@
 import { useOwnerDocument } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type FSResult = {
 	fullscreen: boolean;
@@ -25,9 +27,8 @@ const makeFullscreenSubscription = (ownerDocument: Document) => {
 	};
 
 	const subscribe = (onStoreChange: () => void) => {
-		const onChange = (e: any) => {
+		const onChange = () => {
 			onStoreChange();
-			console.log(e);
 		};
 
 		ownerDocument.addEventListener('fullscreenchange', onChange);
@@ -54,21 +55,27 @@ type FullScreenToggleReturn = {
  *  - Caveat: Triggering fullscreen through `F11` or Platform specific window controls is not identifiable. Also, `exitFullscreen` cannot revert this action, so the states returned by this hook might not accurately depict the current window state.
  */
 export const useFullscreenToggle = (): FullScreenToggleReturn => {
+	const { t } = useTranslation();
 	const { document: ownerDocument } = useOwnerDocument();
 	const { subscribe, getSnapshot } = useMemo(() => makeFullscreenSubscription(ownerDocument), [ownerDocument]);
 	const { fullscreen, enabled } = useSyncExternalStore(subscribe, getSnapshot);
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const toggleFullscreen = useCallback(async () => {
 		if (!enabled) {
 			return;
 		}
 
-		if (fullscreen) {
-			await ownerDocument.exitFullscreen();
-		} else {
-			await ownerDocument.documentElement.requestFullscreen();
+		try {
+			if (fullscreen) {
+				await ownerDocument.exitFullscreen();
+			} else {
+				await ownerDocument.documentElement.requestFullscreen();
+			}
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('Fullscreen_failed_to_switch_not_allowed') });
 		}
-	}, [ownerDocument, fullscreen, enabled]);
+	}, [ownerDocument, fullscreen, enabled, dispatchToastMessage, t]);
 
 	return {
 		fullscreen,
