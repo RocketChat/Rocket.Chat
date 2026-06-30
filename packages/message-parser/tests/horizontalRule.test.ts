@@ -1,18 +1,13 @@
 import { parse } from '../src';
 import { bold, horizontalRule, paragraph, plain } from './helpers';
 
-test.each([
-	['---', [horizontalRule()]],
-	['***', [horizontalRule()]],
-	['___', [horizontalRule()]],
-	['----------', [horizontalRule()]],
-	['   ---   ', [horizontalRule()]],
-])('parses %p as a horizontal rule', (input, output) => {
-	expect(parse(input)).toEqual(output);
+// the rule keeps its raw source in `fallback` (== the matched line, minus the trailing newline)
+test.each(['---', '***', '___', '----------', '   ---   '])('parses %p as a horizontal rule', (input) => {
+	expect(parse(input)).toEqual([horizontalRule(input)]);
 });
 
 test('parses a horizontal rule between paragraphs', () => {
-	expect(parse('above\n---\nbelow')).toEqual([paragraph([plain('above')]), horizontalRule(), paragraph([plain('below')])]);
+	expect(parse('above\n---\nbelow')).toEqual([paragraph([plain('above')]), horizontalRule('---'), paragraph([plain('below')])]);
 });
 
 test.each([

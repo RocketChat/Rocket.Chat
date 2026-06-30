@@ -252,7 +252,7 @@ LineBreak = Space* EndOfLine { return lineBreak(); }
  * whitespace-emphasis behavior of `** **` / `__ __`.
  *
 */
-HorizontalRule = [ \t]* HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(); }
+HorizontalRule = [ \t]* HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(text().replace(/[\r\n]+$/, '')); }
 
 HorizontalRuleMarkers
   = "-" |3..|

@@ -131,6 +131,8 @@ export type LineBreak = {
 export type HorizontalRule = {
 	type: 'HORIZONTAL_RULE';
 	value: undefined;
+	// Raw source, rendered verbatim by consumers that don't implement a horizontal-rule renderer
+	fallback?: Plain;
 };
 
 export type KaTeX = {
