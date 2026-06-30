@@ -8,6 +8,7 @@ export type EditableSetting = ISetting & {
 	disabled: boolean;
 	changed: boolean;
 	invisible: boolean;
+	invalid: boolean;
 };
 
 export const compareSettings = (a: EditableSetting, b: EditableSetting): number => {

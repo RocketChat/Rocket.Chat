@@ -25,6 +25,7 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 					(persisted): EditableSetting => ({
 						...persisted,
 						changed: false,
+						invalid: false,
 						// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
 						// This was left here to avoid unexpected breaking changes
 						disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, persistedSettings),
@@ -41,6 +42,7 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 								...state.find(({ _id }) => _id === persisted._id),
 								...persisted,
 								changed: false,
+								invalid: false,
 								// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
 								// This was left here to avoid unexpected breaking changes
 								disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
