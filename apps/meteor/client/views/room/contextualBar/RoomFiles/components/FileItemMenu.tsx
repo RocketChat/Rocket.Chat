@@ -65,11 +65,11 @@ const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
 					return;
 				}
 
-				if (fileData.url && fileData.name) {
+				if (fileData.name) {
 					const URL = window.webkitURL ?? window.URL;
-					const href = getURL(fileData.url);
+					const href = getURL(`/file-upload/${fileData._id}/${encodeURIComponent(fileData.name)}`);
 					download(href, fileData.name);
-					URL.revokeObjectURL(fileData.url);
+					URL.revokeObjectURL(href);
 				}
 			},
 			disabled: !canDownloadFile,
