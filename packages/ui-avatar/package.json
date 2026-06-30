@@ -27,7 +27,7 @@
 		"eslint": "~9.39.4",
 		"react": "~19.2.7",
 		"react-dom": "~19.2.7",
-		"react-virtuoso": "~4.12.8",
+		"react-virtuoso": "~4.18.10",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
