@@ -192,15 +192,17 @@ export const sendNotification = async ({
 		})
 	) {
 		const messageWithUnicode = message.msg ? shortnameToUnicode(message.msg) : message.msg;
-		const firstAttachment = message.attachments?.length && message.attachments.shift();
+		const firstAttachment = message.attachments?.[0];
 
-		if (firstAttachment) {
-			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? shortnameToUnicode(firstAttachment.description) : undefined;
-			firstAttachment.text = typeof firstAttachment.text === 'string' ? shortnameToUnicode(firstAttachment.text) : undefined;
-		}
+		const convertedFirstAttachment = firstAttachment
+			? {
+					...firstAttachment,
+					description: typeof firstAttachment.description === 'string' ? shortnameToUnicode(firstAttachment.description) : undefined,
+					text: typeof firstAttachment.text === 'string' ? shortnameToUnicode(firstAttachment.text) : undefined,
+				}
+			: undefined;
 
-		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
+		const attachments = convertedFirstAttachment ? [convertedFirstAttachment, ...(message.attachments?.slice(1) ?? [])] : [];
 		for (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
