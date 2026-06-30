@@ -53,6 +53,8 @@ export type Table = {
 		header: TableCell[];
 		rows: TableRow[];
 	};
+	// Raw source text, rendered verbatim by consumers that don't implement a table renderer
+	fallback?: Plain;
 };
 
 export type Color = {

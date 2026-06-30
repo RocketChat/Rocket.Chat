@@ -102,7 +102,7 @@ BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Para
  * the delimiter row: `:---` left, `:--:` center, `---:` right, `---` none.
  * A literal pipe inside a cell must be escaped as `\|`.
  */
-Table = header:TableRowLine aligns:TableDelimiterRow body:TableRowLine* { return table(header, aligns, body); }
+Table = header:TableRowLine aligns:TableDelimiterRow body:TableRowLine* { return table(header, aligns, body, text()); }
 
 TableRowLine = "|" cells:(@TableCell "|")+ EndOfLine? { return cells; }
 

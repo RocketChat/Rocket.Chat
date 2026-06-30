@@ -1,6 +1,8 @@
 import { parse } from '../src';
 import { bold, link, plain, table, tableCell, tableRow } from './helpers';
 
+// `fallback` always equals the exact source the table was parsed from, so each
+// case provides [input, header, rows] and the expected node is built with input.
 test.each([
 	// basic table, no alignment
 	[
@@ -9,12 +11,8 @@ test.each([
 | -------- | -------- |
 | Cell 1   | Cell 2   |
 `.trim(),
-		[
-			table(
-				[tableCell([plain('Header 1')]), tableCell([plain('Header 2')])],
-				[tableRow([tableCell([plain('Cell 1')]), tableCell([plain('Cell 2')])])],
-			),
-		],
+		[tableCell([plain('Header 1')]), tableCell([plain('Header 2')])],
+		[tableRow([tableCell([plain('Cell 1')]), tableCell([plain('Cell 2')])])],
 	],
 	// alignment markers
 	[
@@ -23,12 +21,8 @@ test.each([
 | :--- | :----: | ----: |
 | a    | b      | c     |
 `.trim(),
-		[
-			table(
-				[tableCell([plain('Left')], 'left'), tableCell([plain('Center')], 'center'), tableCell([plain('Right')], 'right')],
-				[tableRow([tableCell([plain('a')], 'left'), tableCell([plain('b')], 'center'), tableCell([plain('c')], 'right')])],
-			),
-		],
+		[tableCell([plain('Left')], 'left'), tableCell([plain('Center')], 'center'), tableCell([plain('Right')], 'right')],
+		[tableRow([tableCell([plain('a')], 'left'), tableCell([plain('b')], 'center'), tableCell([plain('c')], 'right')])],
 	],
 	// multiple body rows
 	[
@@ -38,7 +32,8 @@ test.each([
 | 1 |
 | 2 |
 `.trim(),
-		[table([tableCell([plain('h')])], [tableRow([tableCell([plain('1')])]), tableRow([tableCell([plain('2')])])])],
+		[tableCell([plain('h')])],
+		[tableRow([tableCell([plain('1')])]), tableRow([tableCell([plain('2')])])],
 	],
 	// header only (no body rows)
 	[
@@ -46,7 +41,8 @@ test.each([
 | a | b |
 | - | - |
 `.trim(),
-		[table([tableCell([plain('a')]), tableCell([plain('b')])], [])],
+		[tableCell([plain('a')]), tableCell([plain('b')])],
+		[],
 	],
 	// inline markup inside cells
 	[
@@ -55,12 +51,8 @@ test.each([
 | ---- | ---- |
 | **bold** | [rc](https://rocket.chat) |
 `.trim(),
-		[
-			table(
-				[tableCell([plain('Name')]), tableCell([plain('Link')])],
-				[tableRow([tableCell([bold([plain('bold')])]), tableCell([link('https://rocket.chat', [plain('rc')])])])],
-			),
-		],
+		[tableCell([plain('Name')]), tableCell([plain('Link')])],
+		[tableRow([tableCell([bold([plain('bold')])]), tableCell([link('https://rocket.chat', [plain('rc')])])])],
 	],
 	// escaped pipe inside a cell stays literal
 	[
@@ -69,10 +61,17 @@ test.each([
 | - | - |
 | x \\| y | z |
 `.trim(),
-		[table([tableCell([plain('a')]), tableCell([plain('b')])], [tableRow([tableCell([plain('x | y')]), tableCell([plain('z')])])])],
+		[tableCell([plain('a')]), tableCell([plain('b')])],
+		[tableRow([tableCell([plain('x | y')]), tableCell([plain('z')])])],
 	],
-])('parses %p', (input, output) => {
-	expect(parse(input)).toEqual(output);
+])('parses %p', (input, header, rows) => {
+	expect(parse(input)).toEqual([table(header, rows, input)]);
+});
+
+test('exposes the raw source as fallback for renderers without table support', () => {
+	const input = '| a | b |\n| - | - |\n| 1 | 2 |';
+	const [node] = parse(input) as [ReturnType<typeof table>];
+	expect(node.fallback).toEqual(plain(input));
 });
 
 test.each([
