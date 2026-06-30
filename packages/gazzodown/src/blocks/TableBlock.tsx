@@ -17,7 +17,7 @@ const alignMap = {
 const toAlign = (align: MessageParser.TableCell['align']) => (align ? alignMap[align] : undefined);
 
 const TableBlock = ({ header, rows }: TableBlockProps) => (
-	<Table fixed={false}>
+	<Table striped fixed={false}>
 		<TableHead>
 			<TableRow>
 				{header.map((cell, index) => (
