@@ -63,11 +63,17 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.navbar.btnCreateNew).toBeEnabled();
 		});
 		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
+			const pageActionButtons = poHomeChannel.navbar.pagesGroup.getByRole('button');
+			const pageActionButtonCount = await pageActionButtons.count();
+
 			await poHomeChannel.navbar.btnHome.focus();
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
+			await expect(poHomeChannel.navbar.btnHome).toBeFocused();
+
+			for (let index = 1; index < pageActionButtonCount; index++) {
+				await page.keyboard.press('Tab');
+				await expect(pageActionButtons.nth(index)).toBeFocused();
+			}
+
 			await page.keyboard.press('Tab');
 
 			await expect(poHomeChannel.navbar.searchInput).toBeFocused();
