@@ -437,8 +437,7 @@ test.describe.serial('teams-management', () => {
 	test('should user1 leave from targetTeam', async ({ browser }) => {
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
 		const user1Channel = new HomeTeam(user1Page);
-		await user1Page.goto(`/group/${targetTeam}`);
-		await user1Channel.content.waitForChannel();
+		await user1Channel.gotoGroup(targetTeam);
 
 		await user1Channel.headerToolbar.openTeamInfo();
 		await user1Channel.tabs.room.leaveRoom();
