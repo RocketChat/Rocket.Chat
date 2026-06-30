@@ -131,8 +131,9 @@ export type LineBreak = {
 export type HorizontalRule = {
 	type: 'HORIZONTAL_RULE';
 	value: undefined;
-	// Raw source, rendered verbatim by consumers that don't implement a horizontal-rule renderer
-	fallback?: Plain;
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
 };
 
 export type KaTeX = {

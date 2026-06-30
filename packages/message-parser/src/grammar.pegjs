@@ -252,12 +252,10 @@ LineBreak = Space* EndOfLine { return lineBreak(); }
  * whitespace-emphasis behavior of `** **` / `__ __`.
  *
 */
-HorizontalRule = [ \t]* HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(text().replace(/[\r\n]+$/, '')); }
+HorizontalRule = [ \t]* loc:HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(loc); }
 
 HorizontalRuleMarkers
-  = "-" |3..|
-  / "*" |3..|
-  / "_" |3..|
+  = ("-" |3..| / "*" |3..| / "_" |3..|) { return [range().start, range().end]; }
 
 /**
  *

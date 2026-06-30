@@ -271,10 +271,10 @@ export const lineBreak = (): LineBreak => ({
 	value: undefined,
 });
 
-export const horizontalRule = (source?: string): HorizontalRule => ({
+export const horizontalRule = (fallback?: SourceRange): HorizontalRule => ({
 	type: 'HORIZONTAL_RULE',
 	value: undefined,
-	...(source !== undefined && { fallback: plain(source) }),
+	...(fallback !== undefined && { fallback }),
 });
 
 export const katex = (content: string): KaTeX => ({
