@@ -111,8 +111,13 @@ export const sendMessage = async (
 		}
 
 		try {
-			await process(chat, message, previewUrls, isSlashCommandAllowed);
+			// Dismiss quoted messages optimistically — they are already baked into
+			// `message` by composeMessage above, so the composer preview must unmount
+			// regardless of whether the send request resolves. Keeping it coupled to a
+			// resolved request leaves the quote stuck in the composer when the REST call
+			// rejects even though the message was already broadcast over the stream.
 			chat.composer?.dismissAllQuotedMessages();
+			await process(chat, message, previewUrls, isSlashCommandAllowed);
 			await afterSendMessageCallback(message, message.rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
