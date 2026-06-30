@@ -63,8 +63,17 @@ const Markup = ({ tokens }: MarkupProps) => (
 				case 'LINE_BREAK':
 					return <br key={index} />;
 
-				default:
+				default: {
+					// Graceful degradation: blocks may carry a `fallback` plain-text
+					// representation, rendered as a paragraph when there is no
+					// dedicated renderer for the block type.
+					const { fallback } = block as { fallback?: MessageParser.Plain };
+					if (fallback) {
+						const inlines: MessageParser.Inlines[] = [fallback];
+						return <ParagraphBlock key={index}>{inlines}</ParagraphBlock>;
+					}
 					return null;
+				}
 			}
 		})}
 	</>

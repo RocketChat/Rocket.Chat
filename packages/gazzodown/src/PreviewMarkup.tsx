@@ -84,8 +84,14 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps) => {
 				</KatexErrorBoundary>
 			);
 
-		default:
+		default: {
+			const { fallback } = firstBlock as { fallback?: MessageParser.Plain };
+			if (fallback) {
+				const inlines: MessageParser.Inlines[] = [fallback];
+				return <PreviewInlineElements>{inlines}</PreviewInlineElements>;
+			}
 			return null;
+		}
 	}
 };
 
