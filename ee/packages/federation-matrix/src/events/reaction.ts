@@ -15,6 +15,11 @@ export function reaction() {
 			const reactionTargetEventId = isSetReaction?.event_id;
 			const reactionKey = isSetReaction?.key;
 
+			if (typeof reactionKey !== 'string' || reactionKey.length === 0) {
+				logger.error({ reactionTargetEventId, reactionKey, msg: 'Invalid or missing reaction key in Matrix reaction event' });
+				return;
+			}
+
 			const [userPart, domain] = event.sender.split(':');
 			if (!userPart || !domain) {
 				logger.error({ sender: event.sender, msg: 'Invalid Matrix sender ID format' });
@@ -69,6 +74,11 @@ export function reaction() {
 
 			const targetMessageEventId = reactionContent.event_id;
 			const reactionKey = reactionContent.key;
+
+			if (typeof reactionKey !== 'string' || reactionKey.length === 0) {
+				logger.error({ redactedEventId, reactionKey, msg: 'Invalid or missing reaction key in redacted reaction event' });
+				return;
+			}
 
 			const rcMessage = await Messages.findOneByFederationId(targetMessageEventId);
 			if (!rcMessage) {

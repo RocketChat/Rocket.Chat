@@ -32,6 +32,9 @@ function buildMaps() {
 				const skinCodes = getShortcodes(skin.hexcode);
 				if (skinCodes.length > 0) {
 					_unicodeToShort.set(skin.emoji, `:${skinCodes[0]}:`);
+					for (const code of skinCodes) {
+						_shortToUnicode.set(`:${code}:`, skin.emoji);
+					}
 				}
 			}
 		}

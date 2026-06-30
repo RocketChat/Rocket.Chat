@@ -97,8 +97,8 @@ function buildEmojiData() {
 			for (const skin of emojiData.skins) {
 				if (!skin.tone) continue;
 
-				const toneNum = Array.isArray(skin.tone) ? skin.tone[0] : skin.tone;
-				const toneKey = `:${primaryShortcode}_tone${toneNum}:`;
+				const tones = Array.isArray(skin.tone) ? skin.tone : [skin.tone];
+				const toneKey = `:${primaryShortcode}_tone${tones.join('-')}:`;
 				const skinHex = hexFromEmoji(skin.emoji);
 
 				emojiList[toneKey] = {
