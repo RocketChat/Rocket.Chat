@@ -35,7 +35,7 @@ const AudioPlayerControls = ({
 			<IconButton
 				small={compact}
 				primary
-				icon={playing ? 'pause' : 'play'}
+				icon={playing ? 'pause-shape-filled' : 'play-shape-filled'}
 				onClick={onToggle}
 				title={playing ? t('Pause') : t('Play')}
 				aria-label={playing ? t('Pause') : t('Play')}
