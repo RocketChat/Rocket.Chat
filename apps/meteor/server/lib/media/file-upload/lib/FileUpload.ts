@@ -36,6 +36,7 @@ import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization
 import { i18n } from '../../../i18n';
 import { SystemLogger } from '../../../logger/system';
 import { roomCoordinator } from '../../../rooms/roomCoordinator';
+import { getURL } from '../../../utils/getURL';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
 
@@ -67,16 +68,6 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				// Deprecated: Remove support to usf path
-				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
-					res.writeHead(403);
-					return false;
-				}
-
-				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
-				return true;
-			},
 		};
 	},
 
@@ -102,17 +93,6 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				// UserDataFiles are GDPR data exports — only the owner of the export may download it.
-				const uid = await FileUpload.getRequestUserId(req);
-				if (!uid || uid !== file.userId) {
-					res.writeHead(403);
-					return false;
-				}
-
-				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
-				return true;
-			},
 		};
 	},
 };
@@ -919,10 +899,42 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			return ufsComplete(fileId, this.name, { session: options?.session });
+			const file = await ufsComplete(fileId, this.name, { session: options?.session });
+
+			// `/ufs` used to serve every store generically; it was replaced by per-store routes.
+			// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
+			// (apps, integrations, …) keeps getting a link that resolves.
+			const path = this.getPublicPath(file);
+			if (path) {
+				const url = getURL(path, { cdn: false, full: true });
+				await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
+				file.path = path;
+				file.url = url;
+			}
+
+			return file;
 		} catch (e) {
 			throw e;
 		}
+	}
+
+	// The modern route depends on which store the file lives in (the old `/ufs` path served all of them).
+	private getPublicPath(file: IUpload): string | undefined {
+		if (this.model === Uploads) {
+			return FileUpload.getPath(`${file._id}/${encodeURIComponent(file.name || '')}`);
+		}
+		if (this.model === UserDataFiles) {
+			return `/data-export/${file._id}`;
+		}
+		if (this.model === Avatars) {
+			if (file.rid) {
+				return `/avatar/room/${file.rid}`;
+			}
+			if (file.userId) {
+				return `/avatar/uid/${file.userId}`;
+			}
+		}
+		return undefined;
 	}
 
 	async insert(
