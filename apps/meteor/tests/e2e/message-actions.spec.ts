@@ -67,7 +67,8 @@ test.describe.serial('message-actions', () => {
 		});
 
 		// close thread before testing because the behavior changes
-		await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
+		await poHomeChannel.btnContextualbarClose.click();
+		await expect(poHomeChannel.content.threadMessageList).toBeHidden();
 
 		await test.step('unfollow thread', async () => {
 			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });

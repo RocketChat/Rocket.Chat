@@ -255,6 +255,7 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.roomToolbar.openMembersTab();
 			await poHomeChannel.tabs.members.showAllUsers();
 			await poHomeChannel.tabs.members.ignoreUser('user1');
+			await poHomeChannel.toastMessage.waitForDisplay({ type: 'success', message: 'User has been ignored' });
 
 			await poHomeChannel.tabs.members.userInfo.openMoreActions();
 			await expect(poHomeChannel.tabs.members.userInfo.menu.getMenuItem('Unignore')).toBeVisible();

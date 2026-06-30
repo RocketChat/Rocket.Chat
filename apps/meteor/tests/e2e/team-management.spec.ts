@@ -318,6 +318,8 @@ test.describe.serial('teams-management', () => {
 		api,
 	}) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'delete-team-group', roles: ['owner'] }] })).status()).toBe(200);
+		await page.reload();
+		await poHomeTeam.waitForHome();
 
 		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.headerToolbar.openTeamChannels();
@@ -338,6 +340,8 @@ test.describe.serial('teams-management', () => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['moderator'] }] })).status()).toBe(
 			200,
 		);
+		await page.reload();
+		await poHomeTeam.waitForHome();
 
 		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.headerToolbar.openTeamChannels();
@@ -347,6 +351,8 @@ test.describe.serial('teams-management', () => {
 
 	test('should allow removing a targetChannel from targetTeam if user has the remove-team-channel permission', async ({ page, api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
+		await page.reload();
+		await poHomeTeam.waitForHome();
 
 		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.headerToolbar.openTeamChannels();
