@@ -42,6 +42,7 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
+	experimental: APIClass<'/experimental'>;
 	default: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
@@ -71,6 +72,10 @@ export const API: {
 	api: new RocketChatAPIRouter('/api'),
 	v1: createApi({
 		version: 'v1',
+		useDefaultAuth: true,
+	}),
+	experimental: createApi({
+		version: 'experimental',
 		useDefaultAuth: true,
 	}),
 	default: createApi({}),
