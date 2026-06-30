@@ -232,7 +232,14 @@ const NavBarSearch = () => {
 						</Box>
 					}
 				/>
-				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} aiSearchActive={aiSearchActive} />}
+				{state.isOpen && (
+					<NavBarSearchListBox
+						state={state}
+						overlayProps={overlayProps}
+						aiSearchActive={aiSearchActive}
+						aiSearchAvailable={canSearchWithAIFromTopBar}
+					/>
+				)}
 			</Box>
 		</FormProvider>
 	);

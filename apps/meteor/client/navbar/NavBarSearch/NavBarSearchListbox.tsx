@@ -28,6 +28,7 @@ type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
 	aiSearchActive?: boolean;
+	aiSearchAvailable?: boolean;
 };
 
 const filterSuggestionGroupLabels = {
@@ -52,7 +53,7 @@ const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchF
 	return groups;
 };
 
-const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false, aiSearchAvailable = false }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const containerRef = useRef<HTMLElement>(null);
@@ -162,7 +163,7 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 							))}
 						</Box>
 					))}
-					{itemCount === 0 && !isLoading && !isFetching && <NavBarSearchNoResults />}
+					{itemCount === 0 && !isLoading && !isFetching && <NavBarSearchNoResults suggestAISearch={aiSearchAvailable && !aiSearchActive} />}
 					{items.rooms.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 							{filterText ? t('Results') : t('Recent')}
