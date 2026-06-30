@@ -1,0 +1,79 @@
+apps/meteor/server/bridges/irc/methods/resetIrcConnection.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-7,10-91
+  s_53224188e9b882::t_cbadefb018417c 9
+  s_53224188e9b882::t_d133101490bf4f 8
+apps/meteor/server/bridges/slack/removeChannelLinks.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-41
+apps/meteor/server/bridges/nextcloud/lib.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-37
+apps/meteor/server/bridges/smarsh/functions/sendEmail.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-33
+apps/meteor/server/bridges/smarsh/startup.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-21
+apps/meteor/scripts/migration/phase2-bridges.tsv
+  s_53224188e9b882::t_14d98c00a50008 1-7
+apps/meteor/server/bridges/irc/irc-bridge/localHandlers/onSaveMessage.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-36
+apps/meteor/server/bridges/slack/SlackAdapter.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-1453
+apps/meteor/server/bridges/smarsh/functions/generateEml.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-141
+apps/meteor/server/bridges/webdav/methods/getFileFromWebdav.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-49
+apps/meteor/server/bridges/webdav/methods/getWebdavFileList.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-49
+apps/meteor/server/bridges/slack/slackbridge.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-199
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/nickChanged.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-28
+apps/meteor/server/bridges/webdav/methods/getWebdavFilePreview.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-53
+apps/meteor/server/bridges/webdav/methods/uploadFileToWebdav.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-65
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-551
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/joinedChannel.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-28
+apps/meteor/server/importPackages.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 34,43,47,65,69
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/userRegistered.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-53
+apps/meteor/server/bridges/slack/slackbridge_import.server.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-93
+apps/meteor/server/bridges/irc/servers/index.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 2-3
+  s_53224188e9b882::t_4b4c7b17c92952 1
+apps/meteor/server/bridges/nextcloud/addWebdavServer.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-41
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/leftChannel.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-22
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/disconnected.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-20
+apps/meteor/server/bridges/irc/irc-bridge/index.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-11,15-239
+  s_53224188e9b882::t_48ad3f25a0609d 12-14
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/sentMessage.js
+  s_53224188e9b882::t_0407ea5cb78e3a 1-58
+apps/meteor/server/bridges/webdav/methods/addWebdavAccount.ts
+  s_53224188e9b882::t_0407ea5cb78e3a 1-153
+apps/meteor/app/file-upload/ufs/Webdav/server.ts
+  s_53224188e9b882::t_9c9d32b0ec94a3 7
+apps/meteor/server/configuration/configureIRC.ts
+  s_53224188e9b882::t_8aa7c4cb728750 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "2bf97b12b6cae7c7d6c8f61ddc9f0bec5c765019",
+  "prompts": {},
+  "sessions": {
+    "s_53224188e9b882": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9e5f905d-74f7-4976-812e-aa4a32e4bbec",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
