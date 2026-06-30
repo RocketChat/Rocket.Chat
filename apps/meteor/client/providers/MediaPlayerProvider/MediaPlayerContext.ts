@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react';
 
 /**
- * Describes a single audio track that the persistent player can own.
- * The descriptor is fully self-contained so the player keeps working after the
- * message (and the room) that originated it has been unmounted.
+ * Describes a single audio track owned by the shared player.
+ * The descriptor is self-contained so the player keeps working after the message
+ * (and the room) that originated it has been unmounted — the underlying `<audio>`
+ * element lives in the provider and is never recreated on navigation.
  */
 export type PersistentAudioTrack = {
 	/** Stable identity of the track, e.g. `${mid}:${url}`. */
@@ -26,43 +27,29 @@ export type PersistentAudioTrack = {
 	name?: string;
 	/**
 	 * Re-resolves a fresh media URL. Used to recover from signed-URL expiry while
-	 * the track keeps playing in the persistent player. Returns `undefined` to
-	 * fall back to {@link PersistentAudioTrack.url}.
+	 * the track keeps playing. Returns `undefined` to fall back to {@link PersistentAudioTrack.url}.
 	 */
 	resolveUrl?: () => string | undefined;
 };
 
-/** Snapshot handed between the in-message audio element and the persistent player. */
-export type AudioHandoffState = {
-	currentTime: number;
-	playing: boolean;
-};
-
 export type MediaPlayerContextValue = {
-	/** Track currently owned by the persistent (detached) player; null when idle or playing in-room. */
 	track: PersistentAudioTrack | null;
 	playing: boolean;
 	currentTime: number;
 	duration: number;
 	playbackRate: number;
-
-	// --- Controls used by the persistent player UI (operate on the shared element).
-	/** Toggles play/pause for the detached track. */
+	/** Loads (only if a different track) and plays the given track in the shared element. */
+	play: (track: PersistentAudioTrack) => void;
+	/** Toggles play/pause for the active track. No-op when no track is active. */
 	toggle: () => void;
-	/** Seeks the detached track to `time` seconds. */
+	/** Seeks the active track to `time` seconds. */
 	seek: (time: number) => void;
 	/** Cycles the playback rate 1x → 1.5x → 2x → 1x. */
 	cyclePlaybackRate: () => void;
 	/** Stops playback and clears the active track. */
 	close: () => void;
-
-	// --- Hand-off between an in-message audio element and the persistent player.
-	/** Adopts a track that was playing in a message which is being unmounted, continuing playback. */
-	adoptFromMessage: (track: PersistentAudioTrack, currentTime: number, wasPlaying: boolean) => void;
-	/** If the persistent player owns `id`, stops it and returns its state so the message element can resume. */
-	claimFromPersistent: (id: string) => AudioHandoffState | null;
-	/** Stops the persistent player (e.g. when an in-message element takes over playback). */
-	stopPersistent: () => void;
+	/** Whether the given track id is the one currently owned by the shared element. */
+	isActive: (id: string) => boolean;
 };
 
 const noop = () => undefined;
@@ -73,13 +60,12 @@ export const MediaPlayerContext = createContext<MediaPlayerContextValue>({
 	currentTime: 0,
 	duration: 0,
 	playbackRate: 1,
+	play: noop,
 	toggle: noop,
 	seek: noop,
 	cyclePlaybackRate: noop,
 	close: noop,
-	adoptFromMessage: noop,
-	claimFromPersistent: () => null,
-	stopPersistent: noop,
+	isActive: () => false,
 });
 
 export const useMediaPlayer = (): MediaPlayerContextValue => useContext(MediaPlayerContext);
