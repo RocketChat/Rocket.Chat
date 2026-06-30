@@ -1,8 +1,8 @@
 import { parse } from '../src';
 import { bold, link, plain, table, tableCell, tableRow } from './helpers';
 
-// `fallback` always equals the exact source the table was parsed from, so each
-// case provides [input, header, rows] and the expected node is built with input.
+// `fallback` is the [start, end] offset span of the table in the source; since
+// each input is exactly the table, that span is [0, input.length].
 test.each([
 	// basic table, no alignment
 	[
@@ -65,13 +65,15 @@ test.each([
 		[tableRow([tableCell([plain('x | y')]), tableCell([plain('z')])])],
 	],
 ])('parses %p', (input, header, rows) => {
-	expect(parse(input)).toEqual([table(header, rows, input)]);
+	expect(parse(input)).toEqual([table(header, rows, [0, input.length])]);
 });
 
-test('exposes the raw source as fallback for renderers without table support', () => {
+test('exposes the source offsets as fallback for renderers without table support', () => {
 	const input = '| a | b |\n| - | - |\n| 1 | 2 |';
 	const [node] = parse(input) as [ReturnType<typeof table>];
-	expect(node.fallback).toEqual(plain(input));
+	expect(node.fallback).toEqual([0, input.length]);
+	// the offsets slice back to the original markup
+	expect(input.slice(node.fallback![0], node.fallback![1])).toBe(input);
 });
 
 test.each([

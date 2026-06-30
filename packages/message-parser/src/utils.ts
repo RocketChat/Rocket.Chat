@@ -175,7 +175,7 @@ const tableCell = (value: Inlines[], align: TableCell['align']): TableCell => ({
 	value: trimCellContent(value),
 });
 
-export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, rows: Inlines[][][], source?: string): Table => ({
+export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, rows: Inlines[][][], fallback?: SourceRange): Table => ({
 	type: 'TABLE',
 	value: {
 		header: header.map((cell, index) => tableCell(cell, aligns[index])),
@@ -186,7 +186,7 @@ export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, ro
 			}),
 		),
 	},
-	...(source !== undefined && { fallback: plain(source) }),
+	...(fallback !== undefined && { fallback }),
 });
 
 export const mentionUser = (() => {

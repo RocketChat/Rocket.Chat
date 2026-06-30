@@ -53,8 +53,9 @@ export type Table = {
 		header: TableCell[];
 		rows: TableRow[];
 	};
-	// Raw source text, rendered verbatim by consumers that don't implement a table renderer
-	fallback?: Plain;
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
 };
 
 export type Color = {

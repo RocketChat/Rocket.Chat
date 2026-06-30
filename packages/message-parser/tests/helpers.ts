@@ -110,10 +110,10 @@ export const tableRow = (value: unknown[]) => ({
 	value,
 });
 
-export const table = (header: unknown[], rows: unknown[], fallback?: string) => ({
+export const table = (header: unknown[], rows: unknown[], fallback?: [number, number]) => ({
 	type: 'TABLE' as const,
 	value: { header, rows },
-	...(fallback !== undefined ? { fallback: plain(fallback) } : {}),
+	...(fallback !== undefined ? { fallback } : {}),
 });
 
 export const katex = (value: string) => ({
