@@ -48,6 +48,7 @@ const AudioPlayerControls = ({
 			<Box flexGrow={1} minWidth={40}>
 				<Slider
 					aria-label={t('Seek')}
+					showOutput={false}
 					minValue={0}
 					maxValue={maxValue || 1}
 					step={1}
