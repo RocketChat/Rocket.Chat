@@ -3,7 +3,7 @@ import { describe, it } from 'mocha';
 import mock from 'proxyquire';
 import Sinon from 'sinon';
 
-import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
+import type { PermissionsPayload } from '../../../../../../../server/api/api.helpers';
 
 const userPermissions: { [k: string]: string[] } = {
 	'4r3fsadfasf': ['view-all', 'view-none'],
@@ -28,7 +28,7 @@ const mocks = {
 	},
 };
 
-const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
+const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../server/api/api.helpers', mocks);
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {
