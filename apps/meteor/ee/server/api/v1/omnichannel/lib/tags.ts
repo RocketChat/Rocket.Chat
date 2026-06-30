@@ -5,7 +5,7 @@ import type { Filter, FindOptions } from 'mongodb';
 
 import { getDepartmentsWhichUserCanAccess } from './departments';
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { helperLogger } from '../../lib/logger';
+import { helperLogger } from '../../../../../app/livechat-enterprise/server/lib/logger';
 
 type FindTagsParams = {
 	userId: string;

@@ -2,11 +2,11 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@ro
 import { isPOSTCannedResponsesProps, isCannedResponsesProps, isDELETECannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
-import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
-import { API } from '../../../../app/api/server';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { removeCannedResponse } from '../../canned-responses/server/methods/removeCannedResponse';
-import { saveCannedResponse } from '../../canned-responses/server/methods/saveCannedResponse';
+import { API } from '../../../../server/api';
+import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
+import { removeCannedResponse } from '../../../app/canned-responses/server/methods/removeCannedResponse';
+import { saveCannedResponse } from '../../../app/canned-responses/server/methods/saveCannedResponse';
+import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from '../lib/canned-responses';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

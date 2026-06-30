@@ -1,10 +1,10 @@
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import { isLivechatPrioritiesProps, isCreateOrUpdateLivechatSlaProps } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../../app/api/server';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { findSLA } from './lib/sla';
+import { API } from '../../../../../server/api';
+import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/sla',

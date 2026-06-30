@@ -9,10 +9,10 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { findTags, findTagById } from './lib/tags';
-import { API } from '../../../../../app/api/server';
-import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { API } from '../../../../../server/api';
+import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
+import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/tags',

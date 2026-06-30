@@ -1,9 +1,9 @@
 import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { ContactVisitorAssociationSchema, ajv } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../../app/api/server';
-import { logger } from '../lib/logger';
 import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense } from './lib/contacts';
+import { API } from '../../../../../server/api';
+import { logger } from '../../../../app/livechat-enterprise/server/lib/logger';
 
 type blockContactProps = {
 	visitor: ILivechatContactVisitorAssociation;

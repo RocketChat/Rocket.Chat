@@ -5,7 +5,9 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../../app/api/server';
+import { outboundMessageProvider } from './lib/outbound';
+import { API } from '../../../../../server/api';
+import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
 import {
 	GETOutboundProvidersResponseSchema,
 	GETOutboundProviderParamsSchema,
@@ -13,9 +15,7 @@ import {
 	GETOutboundProviderMetadataSchema,
 	POSTOutboundMessageParams,
 	POSTOutboundMessageSuccessSchema,
-} from '../outboundcomms/rest';
-import { outboundMessageProvider } from './lib/outbound';
-import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
+} from '../../../../app/livechat-enterprise/server/outboundcomms/rest';
 
 const outboundCommsEndpoints = API.v1
 	.get(

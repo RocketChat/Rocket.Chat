@@ -1,12 +1,12 @@
 import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, OmnichannelBusinessUnitPayload } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../../app/api/server';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { findUnits, findUnitById, findUnitMonitors, findUnitsOfUser } from './lib/units';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { API } from '../../../../../server/api';
+import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../../app/livechat-enterprise/server/lib/Department';
+import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

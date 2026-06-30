@@ -1,7 +1,7 @@
 import type { LicenseManager } from '@rocket.chat/license';
 import type { MiddlewareHandler } from 'hono';
 
-import type { FailureResult, TypedOptions } from '../../../../../app/api/server/definition';
+import type { FailureResult, TypedOptions } from '../../../../../server/api/definition';
 
 export const license =
 	(options: TypedOptions, licenseManager: LicenseManager): MiddlewareHandler =>
