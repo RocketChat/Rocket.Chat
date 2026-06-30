@@ -1,5 +1,5 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
+import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
@@ -11,6 +11,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import { links } from '../../../../lib/links';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
+import { isInvalidJSONValue } from '../lib/isInvalidJSONValue';
 
 const PRICING_URL = links.go.pricing;
 
@@ -36,6 +37,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const dispatch = useEditableSettingsDispatch();
 
+	const isJSONCodeSetting = isSettingCode(persistedSetting) && persistedSetting.code === 'application/json';
+
 	const update = useDebouncedCallback(
 		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
 			if (!persistedSetting) {
@@ -50,11 +53,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 					changed:
 						JSON.stringify(persistedSetting.value) !== JSON.stringify(value) ||
 						(isSettingColor(persistedSetting) && JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor)),
+					...(value !== undefined && { invalid: isJSONCodeSetting && isInvalidJSONValue(value) }),
 				},
 			]);
 		},
 		230,
-		[persistedSetting, dispatch],
+		[persistedSetting, dispatch, isJSONCodeSetting],
 	);
 
 	const { t, i18n } = useTranslation();
@@ -103,6 +107,11 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
 
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
+
+	const error = useMemo(
+		() => (isJSONCodeSetting && isInvalidJSONValue(value) ? t('Invalid_JSON') : undefined),
+		[isJSONCodeSetting, value, t],
+	);
 
 	const hint = useMemo(
 		() => (i18nDescription && i18n.exists(i18nDescription) ? <MarkdownText variant='inline' content={t(i18nDescription)} /> : undefined),
@@ -176,6 +185,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			disabled={disabled || shouldDisableEnterprise}
 			value={value}
 			editor={editor}
+			error={error}
 			hasResetButton={hasResetButton}
 			onChangeValue={onChangeValue}
 			onChangeEditor={onChangeEditor}

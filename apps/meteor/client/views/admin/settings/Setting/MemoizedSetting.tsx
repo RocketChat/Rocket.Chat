@@ -52,6 +52,7 @@ type MemoizedSettingProps = {
 	type: ISettingBase['type'];
 	packageValue: ISettingBase['packageValue'];
 	hint?: ReactNode;
+	error?: string;
 	callout?: ReactNode;
 	value?: SettingValue;
 	editor?: SettingEditor;
