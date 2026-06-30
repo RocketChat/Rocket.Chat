@@ -58,7 +58,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
 						<MessageContentBody
 							md={normalizedMessage.md}
-							msg={normalizedMessage.msg}
+							msg={normalizedMessage.mdSource}
 							mentions={normalizedMessage.mentions}
 							channels={normalizedMessage.channels}
 						/>
