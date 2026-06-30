@@ -1,5 +1,4 @@
 ---
-'@rocket.chat/ai-search-service': minor
 '@rocket.chat/core-services': minor
 '@rocket.chat/rest-typings': minor
 '@rocket.chat/ai-search': minor

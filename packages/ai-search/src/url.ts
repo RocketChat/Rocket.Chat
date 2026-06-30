@@ -1,4 +1,4 @@
-export const trimTrailingSlashes = (url: string): string => {
+export const normalizeBaseUrl = (url: string): string => {
 	let end = url.length;
 
 	while (end > 0 && url.charCodeAt(end - 1) === 47) {

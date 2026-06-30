@@ -9,9 +9,9 @@ import {
 	MAX_SEARCH_ANSWER_TEXT_LENGTH,
 	MAX_SEARCH_FILTER_VALUES,
 	MAX_UNSCOPED_PIPELINE_RESULTS,
+	normalizeBaseUrl,
 	normalizeIntelligentSearchCandidates,
 	searchIntelligentPipeline,
-	type AIServiceFetch,
 	type IntelligentSearchFilters,
 	type IntelligentSearchPipelineConfig,
 	type OpenAICompatibleProviderConfig,
@@ -29,7 +29,7 @@ import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { serverFetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -40,7 +40,8 @@ const DEFAULT_ANSWER_SYSTEM_PROMPT = [
 	"For formatting the answer, use markdown. For code snippets, use markdown code blocks with the appropriate language specified. Keep the answers as concise as possible, while still providing a complete answer to the user's question, and everything in a single column, without using tables or other formatting that may be hard to read in the Rocket.Chat client.",
 ].join('\n');
 
-const aiServiceFetch: AIServiceFetch = (url, options) => fetch(url, options as Parameters<typeof fetch>[1]);
+const fetchWithSsrfValidation = (url: string, options: Omit<ExtendedFetchOptions, 'allowList' | 'ignoreSsrfValidation'>) =>
+	serverFetch(url, { ...options, ignoreSsrfValidation: false, allowList: [] });
 
 const asString = (value: unknown): string => {
 	if (typeof value === 'string') {
@@ -74,6 +75,10 @@ const normalizeFilters = (filters: AISearchFilters = {}): IntelligentSearchFilte
 	endDate: toDate(filters.endDate),
 });
 
+type OpenAICompatibleProviderSettings = Pick<OpenAICompatibleProviderConfig, 'baseUrl' | 'apiKey'> & {
+	model?: string;
+};
+
 export class AISearchService extends ServiceClass implements IAISearchService {
 	protected name = 'ai-search';
 
@@ -87,7 +92,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			Settings.get<number>('AI_Intelligent_Search_Min_Similarity_Percent'),
 		]);
 
-		const normalizedBaseUrl = asString(baseUrl).replace(/\/+$/, '');
+		const normalizedBaseUrl = normalizeBaseUrl(asString(baseUrl));
 		const normalizedPipelineId = asString(pipelineId);
 		const normalizedApiKey = asString(apiKey);
 		const normalizedApiKeySecret = asString(apiKeySecret);
@@ -106,26 +111,39 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		};
 	}
 
-	private async getAnswerProviderConfig(): Promise<OpenAICompatibleProviderConfig | undefined> {
+	private async getAnswerProviderSettings(): Promise<OpenAICompatibleProviderSettings | undefined> {
 		const [baseUrl, apiKey, model] = await Promise.all([
 			Settings.get<string>('AI_LLM_OpenAI_Base_URL'),
 			Settings.get<string>('AI_LLM_OpenAI_API_Key'),
 			Settings.get<string>('AI_LLM_OpenAI_Model'),
 		]);
 
-		const normalizedBaseUrl = asString(baseUrl).replace(/\/+$/, '');
+		const normalizedBaseUrl = normalizeBaseUrl(asString(baseUrl));
 		const normalizedApiKey = asString(apiKey);
 		const normalizedModel = asString(model);
 
-		if (!normalizedBaseUrl || !normalizedApiKey || !normalizedModel) {
+		if (!normalizedBaseUrl || !normalizedApiKey) {
+			return undefined;
+		}
+
+		return {
+			baseUrl: normalizedBaseUrl,
+			apiKey: normalizedApiKey,
+			model: normalizedModel,
+		};
+	}
+
+	private async getAnswerProviderConfig(): Promise<OpenAICompatibleProviderConfig | undefined> {
+		const provider = await this.getAnswerProviderSettings();
+		if (!provider?.model) {
 			return undefined;
 		}
 
 		return {
 			name: 'OpenAI compatible',
-			baseUrl: normalizedBaseUrl,
-			apiKey: normalizedApiKey,
-			model: normalizedModel,
+			baseUrl: provider.baseUrl,
+			apiKey: provider.apiKey,
+			model: provider.model,
 		};
 	}
 
@@ -337,7 +355,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			classifications,
 			pipelineFilters,
 			limit: pipelineLimit,
-			fetch: aiServiceFetch,
+			fetch: fetchWithSsrfValidation,
 			logger: SystemLogger,
 		});
 
@@ -384,7 +402,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			messages: sanitizedMessages,
 			provider,
 			systemPrompt,
-			fetch: aiServiceFetch,
+			fetch: fetchWithSsrfValidation,
 			logger: SystemLogger,
 			maxMessages: MAX_SEARCH_ANSWER_MESSAGES,
 			maxTextLength: MAX_SEARCH_ANSWER_TEXT_LENGTH,
@@ -392,19 +410,12 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	async models(): Promise<AISearchModelOption[]> {
-		const [baseUrl, apiKey, selectedModel] = await Promise.all([
-			Settings.get<string>('AI_LLM_OpenAI_Base_URL'),
-			Settings.get<string>('AI_LLM_OpenAI_API_Key'),
-			Settings.get<string>('AI_LLM_OpenAI_Model'),
-		]);
+		const [provider, selectedModel] = await Promise.all([this.getAnswerProviderSettings(), Settings.get<string>('AI_LLM_OpenAI_Model')]);
 
 		return listOpenAICompatibleModels({
-			provider: {
-				baseUrl: asString(baseUrl).replace(/\/+$/, ''),
-				apiKey: asString(apiKey),
-			},
+			provider,
 			selectedModel: asString(selectedModel),
-			fetch: aiServiceFetch,
+			fetch: fetchWithSsrfValidation,
 			logger: SystemLogger,
 		});
 	}
