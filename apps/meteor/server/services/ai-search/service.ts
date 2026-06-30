@@ -9,7 +9,6 @@ import {
 	MAX_SEARCH_ANSWER_TEXT_LENGTH,
 	MAX_SEARCH_FILTER_VALUES,
 	MAX_UNSCOPED_PIPELINE_RESULTS,
-	normalizeBaseUrl,
 	normalizeIntelligentSearchCandidates,
 	searchIntelligentPipeline,
 	type IntelligentSearchFilters,
@@ -92,7 +91,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			Settings.get<number>('AI_Intelligent_Search_Min_Similarity_Percent'),
 		]);
 
-		const normalizedBaseUrl = normalizeBaseUrl(asString(baseUrl));
+		const normalizedBaseUrl = asString(baseUrl);
 		const normalizedPipelineId = asString(pipelineId);
 		const normalizedApiKey = asString(apiKey);
 		const normalizedApiKeySecret = asString(apiKeySecret);
@@ -118,7 +117,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			Settings.get<string>('AI_LLM_OpenAI_Model'),
 		]);
 
-		const normalizedBaseUrl = normalizeBaseUrl(asString(baseUrl));
+		const normalizedBaseUrl = asString(baseUrl);
 		const normalizedApiKey = asString(apiKey);
 		const normalizedModel = asString(model);
 

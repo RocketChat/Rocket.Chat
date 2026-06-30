@@ -1,5 +1,7 @@
 import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, SearchAnswerMessage, SearchAnswerResult } from './types';
-import { normalizeBaseUrl } from './url';
+
+const buildEndpointUrl = (baseUrl: string, path: string): string =>
+	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
 export const buildSearchAnswerPrompt = (
 	query: string,
@@ -46,7 +48,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 	maxTextLength: number;
 }): Promise<SearchAnswerResult> => {
 	try {
-		const response = await fetch(`${normalizeBaseUrl(provider.baseUrl)}/chat/completions`, {
+		const response = await fetch(buildEndpointUrl(provider.baseUrl, 'chat/completions'), {
 			method: 'POST',
 			timeout: 20000,
 			headers: {
@@ -107,7 +109,7 @@ export const listOpenAICompatibleModels = async ({
 	}
 
 	try {
-		const response = await fetch(`${normalizeBaseUrl(provider.baseUrl)}/models`, {
+		const response = await fetch(buildEndpointUrl(provider.baseUrl, 'models'), {
 			method: 'GET',
 			timeout: 10000,
 			headers: {

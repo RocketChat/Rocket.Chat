@@ -7,9 +7,11 @@ import type {
 	IntelligentSearchPipelineFilters,
 	IntelligentSearchPipelineRequest,
 } from './types';
-import { normalizeBaseUrl } from './url';
 
 type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
+
+const buildEndpointUrl = (baseUrl: string, path: string): string =>
+	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
 const asRecord = (value: unknown): Record<string, unknown> =>
 	value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
@@ -208,7 +210,7 @@ export const searchIntelligentPipeline = async ({
 }: IntelligentSearchPipelineRequest): Promise<unknown> => {
 	const minimumSimilarity = normalizeSimilarityPercent(config.minimumSimilarityPercent);
 	const formattedQuery = config.queryTemplate ? config.queryTemplate.replace('{query}', query) : query;
-	const url = `${normalizeBaseUrl(config.baseUrl)}/pipelines/${encodeURIComponent(config.pipelineId)}/search`;
+	const url = buildEndpointUrl(config.baseUrl, `pipelines/${encodeURIComponent(config.pipelineId)}/search`);
 
 	logger?.debug?.({
 		msg: 'Intelligent search request',
