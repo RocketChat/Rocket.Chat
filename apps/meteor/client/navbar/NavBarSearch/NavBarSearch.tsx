@@ -215,9 +215,9 @@ const NavBarSearch = () => {
 					small
 					style={chipContainerWidth > 0 ? { paddingInlineStart: chipContainerWidth + 16 } : undefined}
 					addon={
-						<Box display='flex' alignItems='center'>
+						<Box display='flex' alignItems='center' style={{ gap: 6 }}>
 							{isDirty ? (
-								<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
+								<IconButton tiny icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
 							) : (
 								<Icon name='magnifier' size='x20' aria-label={t('Search')} />
 							)}
