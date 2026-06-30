@@ -118,11 +118,23 @@ export const startRestAPI = () => {
 					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
 				}),
 			)
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\/experimental\//),
+					api: API.experimental,
+					settings,
+					endpointTimeSummary: metrics.rocketchatRestApi,
+					endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
 			.use(tracerSpanMiddleware)
 			.use(remoteAddressMiddleware)
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(API.v1.router)
+			.use(API.experimental.router)
 			.use(API.default.router).router,
 	);
 };
