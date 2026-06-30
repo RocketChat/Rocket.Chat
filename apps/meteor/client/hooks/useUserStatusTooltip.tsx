@@ -1,4 +1,4 @@
-import { Throbber } from '@rocket.chat/fuselage';
+import { Skeleton } from '@rocket.chat/fuselage';
 import { UserPresenceContext, useTooltipClose, useTooltipOpen, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useCallback, useContext, useMemo } from 'react';
@@ -9,7 +9,7 @@ const UserStatusTooltipContent = ({ uid }: { uid: string }) => {
 	const presence = useUserPresence(uid);
 
 	if (!presence) {
-		return <Throbber size='x8' inheritColor />;
+		return <Skeleton width='x200' variant='text' backgroundColor='surface-light' />;
 	}
 
 	return <UserStatusText status={presence.status} statusText={presence.statusText} statusExpiresAt={presence.statusExpiresAt} />;
