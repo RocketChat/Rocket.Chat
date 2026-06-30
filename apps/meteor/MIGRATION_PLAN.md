@@ -19,6 +19,31 @@ This migration extends that pattern by:
 3. Extending `server/lib/` with domain subfolders for functions and shared libraries
 4. Preserving all existing `server/` folders untouched
 
+## License Boundary (EE) — Hard Constraint
+
+**Enterprise code is governed by a different license** (the Rocket.Chat Enterprise Edition license, e.g. `apps/meteor/ee/LICENSE`) from the rest of the repository. The directory boundary _is_ the license boundary: code is protected by the Enterprise license **only** because it physically lives under an `ee/` path.
+
+This produces one non-negotiable rule for the entire migration:
+
+> **EE files never leave EE.** A file whose path contains an `ee/` segment must have a destination whose path also contains the corresponding `ee/` segment. Moving EE code into a community location would silently relicense it and is forbidden in every phase.
+
+### Where EE code lives (and what this plan touches)
+
+| EE location                      | What it is                                                    | In scope?                                                |
+| -------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------- |
+| `apps/meteor/ee/`                | EE code inside the meteor app (`apps/meteor/ee/LICENSE`)      | **Yes** — restructured by the [EE Mirror](#ee-mirror-restructuring-within-ee), staying inside `apps/meteor/ee/` |
+| `ee/apps/` (repo root)           | Standalone EE microservice apps (ddp-streamer, presence-service, queue-worker, …) | **No** — separate Yarn workspaces, not part of the `apps/meteor` restructure |
+| `ee/packages/` (repo root)       | Standalone EE packages (abac, federation-matrix, license, …)  | **No** — separate Yarn workspaces                        |
+| `packages/*/src/ee/` (e.g. `core-typings`) | EE-licensed subtrees embedded in community packages | **No** — this plan does not touch `packages/`            |
+
+This migration is strictly an **`apps/meteor/` internal restructure**. The only EE code it moves is `apps/meteor/ee/app/*/server/` → `apps/meteor/ee/server/`. Everything else under an `ee/` path is left untouched.
+
+Consequences:
+
+- **The community phases (1–7) only touch community sources** under `apps/meteor/app/**` and `apps/meteor/server/**`. None of their source paths may contain an `ee/` segment.
+- **EE code in the meteor app is restructured by an exact mirror within `apps/meteor/ee/`** — see the [EE Mirror](#ee-mirror-restructuring-within-ee) section. `ee/app/*/server/` moves into `ee/server/`, which already has the same responsibility-based folders (`api/`, `hooks/`, `lib/`, `methods/`, `services/`, `settings/`, `startup/`, …).
+- **Community ⇄ EE imports stay as imports.** EE code already imports from the community tree and vice versa; the migration only rewrites paths, never relocates a file across the boundary to "resolve" an import.
+
 ## Target Structure
 
 ```
@@ -158,6 +183,8 @@ The migration is split into 7 phases, ordered by risk (lowest first) and depende
    - Reports: files moved, imports updated, any errors
 
 3. **`verify-no-old-imports.mjs <pattern>...`** — Checks that no imports still reference given substrings (e.g., `app/slashcommand`). Run after each phase to catch stragglers.
+
+**License-boundary guard (mandatory).** `move-module.mjs` must refuse any move where the source path contains an `ee/` segment but the destination does not (and vice versa), failing loud before any `git mv`. `move-batch.mjs` validates every manifest row against this rule up front, so a community-phase manifest can never contain an `ee/` source and an EE-mirror manifest can never point outside `ee/`. This is the automated enforcement of the [License Boundary](#license-boundary-ee--hard-constraint) rule — it is not optional and not a warning.
 
 Each phase produces a manifest file (the tables below), feeds it to `move-batch.mjs`, verifies with `yarn lint --quiet`, and commits the result. The scripts themselves are deleted once all phases are complete.
 
@@ -579,7 +606,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/livechat/server/hooks/`         | Already moved in Phase 6b                                   |
 | `app/livechat/server/api/`           | Already moved in Phase 3                                    |
 | `app/livechat/server/` (remaining)   | `server/lib/omnichannel/`                                   |
-| `ee/app/livechat-enterprise/server/` | `server/lib/omnichannel/enterprise/`                        |
+
+> **EE livechat is NOT moved here.** `ee/app/livechat-enterprise/server/` is Enterprise-licensed and stays under `ee/`. It is restructured into `ee/server/lib/omnichannel/` (and sibling `ee/server/` folders) as part of the [EE Mirror](#ee-mirror-restructuring-within-ee), never into the community `server/lib/omnichannel/`. See the [License Boundary](#license-boundary-ee--hard-constraint) rule.
 
 **Remaining cleanup**:
 
@@ -601,6 +629,46 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 - Delete the migration scripts (`move-module.mjs`, `move-batch.mjs`, `verify-no-old-imports.mjs`)
 
 **Final verification**: `yarn lint --quiet` across the repo, full `tsc --noEmit` for type regressions, full test suite, manual smoke test of core features (login, send message, create room, livechat, file upload).
+
+---
+
+## EE Mirror — Restructuring within `ee/`
+
+The Enterprise tree gets the **same responsibility-based restructure** as the community tree, applied **entirely inside `apps/meteor/ee/`**. Files move from `ee/app/*/server/` into `ee/server/`, which already contains the matching responsibility folders (`api/`, `hooks/`, `lib/`, `methods/`, `services/`, `settings/`, `startup/`, …). Nothing in this section may target a path outside `ee/` — see the [License Boundary](#license-boundary-ee--hard-constraint) rule, enforced by the `move-module.mjs` guard.
+
+**Sequencing**: run each EE sub-step in (or immediately after) the community phase it parallels, so cross-tree imports are rewritten together. The EE mirror reuses the same scripts and the same `yarn lint --quiet` verification.
+
+**Folder rename**: mirror the community `methods/` → `meteor-methods/` rename here too — `ee/server/methods/` → `ee/server/meteor-methods/` — before moving EE methods into domain subfolders.
+
+| Source (EE)                                       | Destination (EE)                          | Parallels   |
+| ------------------------------------------------- | ----------------------------------------- | ----------- |
+| `ee/app/api-enterprise/server/` (endpoints)       | `ee/server/api/v1/`                       | Phase 3     |
+| `ee/app/api-enterprise/server/middlewares/`       | `ee/server/api/v1/middlewares/`           | Phase 3     |
+| `ee/app/api-enterprise/server/lib/`               | `ee/server/api/lib/`                      | Phase 3     |
+| `ee/app/livechat-enterprise/server/api/`          | `ee/server/api/v1/omnichannel/`           | Phase 3     |
+| `ee/app/authorization/server/` (functions)        | `ee/server/lib/authorization/`            | Phase 4     |
+| `ee/app/livechat-enterprise/server/methods/`      | `ee/server/meteor-methods/omnichannel/`   | Phase 5     |
+| `ee/app/canned-responses/server/methods/`         | `ee/server/meteor-methods/`               | Phase 5     |
+| `ee/app/license/server/methods.ts`                | `ee/server/meteor-methods/`               | Phase 5     |
+| `ee/app/authorization/server/` (methods)          | `ee/server/meteor-methods/auth/`          | Phase 5     |
+| `ee/app/livechat-enterprise/server/hooks/`        | `ee/server/hooks/omnichannel/`            | Phase 6b    |
+| `ee/app/canned-responses/server/hooks/`           | `ee/server/hooks/`                        | Phase 6b    |
+| `ee/app/message-read-receipt/server/hooks/`       | `ee/server/hooks/messages/`               | Phase 6b    |
+| `ee/app/authorization/server/callback.ts`         | `ee/server/hooks/auth/`                   | Phase 6b    |
+| `ee/app/canned-responses/server/` (lib)           | `ee/server/lib/canned-responses/`         | Phase 6     |
+| `ee/app/license/server/` (non-methods)            | `ee/server/lib/license/`                  | Phase 6     |
+| `ee/app/message-read-receipt/server/` (non-hooks) | `ee/server/lib/message-read-receipt/`     | Phase 6     |
+| `ee/app/livechat-enterprise/server/lib/`          | `ee/server/lib/omnichannel/`              | Phase 7     |
+| `ee/app/livechat-enterprise/server/business-hour/`| `ee/server/lib/omnichannel/business-hour/`| Phase 7     |
+| `ee/app/livechat-enterprise/server/outboundcomms/`| `ee/server/lib/omnichannel/outboundcomms/`| Phase 7     |
+| `ee/app/livechat-enterprise/server/priorities.ts` | `ee/server/lib/omnichannel/`              | Phase 7     |
+| `ee/app/livechat-enterprise/server/services/`     | `ee/server/services/`                     | Phase 7     |
+| `ee/app/livechat-enterprise/server/` (settings, startup, permissions) | `ee/server/lib/omnichannel/`  | Phase 7     |
+| `ee/app/settings/server/`                         | `ee/server/settings/`                     | Phase 7     |
+
+**Note**: feature `index.ts` files (e.g. `ee/app/*/server/index.ts`) are import aggregators — fold their contents into the corresponding `ee/server/` entry points (`ee/server/index.ts`, `importPackages`) and delete them once empty, exactly as the community plan handles `app/lib/server/index.ts`.
+
+**Verification**: `yarn lint --quiet` after each EE sub-step; confirm no community file resolves to an `ee/` _file_ that moved (imports may still cross the boundary, but every EE source must resolve to an `ee/` destination).
 
 ---
 
@@ -654,6 +722,7 @@ This file is the main import aggregator for the app/lib module. As files move ou
 | **`app/lib/server/` is a dependency hub** — 62 features import from it        | Migration script handles all import updates atomically per batch; `verify-no-old-imports.mjs` catches stragglers   |
 | **Omnichannel is huge** — 132 files in livechat                               | Move incrementally: API in Phase 3, methods in Phase 5, hooks in Phase 6, lib in Phase 7                           |
 | **Test breakage** — tests may import from old paths                           | Update test imports in the same PR as the file move; tests co-located with source files move together              |
+| **Accidental relicensing** — moving an `ee/` file into community `server/` silently strips its Enterprise license | Hard rule: EE files never leave `ee/` ([License Boundary](#license-boundary-ee--hard-constraint)); `move-module.mjs` guard refuses any boundary-crossing move before `git mv`; community manifests carry no `ee/` sources |
 
 ---
 
