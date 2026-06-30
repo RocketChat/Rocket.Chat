@@ -3,6 +3,7 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
+import { getURL } from '../../../../server/lib/utils/getURL';
 
 export class AppUploadsConverter implements IAppUploadsConverter {
 	constructor(protected readonly orch: IAppServerOrchestrator) {
@@ -27,6 +28,19 @@ export class AppUploadsConverter implements IAppUploadsConverter {
 		}
 
 		const map = {
+			// `url`/`path` are no longer persisted on the upload; derive them from the file id+name,
+			// matching the canonical /file-upload route. Declared before `id`/`name` so the source
+			// fields are still present on the cloned data when these run.
+			url: (upload: IUpload) => {
+				const relativePath = `/file-upload/${upload._id}/${encodeURIComponent(upload.name || '')}`;
+				delete (upload as { url?: string }).url;
+				return getURL(relativePath, { cdn: false, full: true });
+			},
+			path: (upload: IUpload) => {
+				const relativePath = `/file-upload/${upload._id}/${encodeURIComponent(upload.name || '')}`;
+				delete (upload as { path?: string }).path;
+				return relativePath;
+			},
 			id: '_id',
 			name: 'name',
 			size: 'size',
@@ -38,9 +52,7 @@ export class AppUploadsConverter implements IAppUploadsConverter {
 			extension: 'extension',
 			progress: 'progress',
 			etag: 'etag',
-			path: 'path',
 			token: 'token',
-			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
 			room: async (upload: IUpload) => {
