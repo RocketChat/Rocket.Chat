@@ -11,6 +11,7 @@ export type SettingInputProps<V = string, R = V> = {
 	disabled: boolean;
 	required?: boolean;
 	hint?: string;
+	error?: string;
 	editor?: string;
 	hasResetButton: boolean;
 	onChangeValue: (value: R) => void;

@@ -1,4 +1,4 @@
-import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
+import { FieldLabel, FieldHint, FieldRow, Field, FieldError } from '@rocket.chat/fuselage';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
@@ -16,6 +16,7 @@ function CodeSettingInput({
 	_id,
 	label,
 	hint,
+	error,
 	value = '',
 	code,
 	placeholder,
@@ -52,6 +53,7 @@ function CodeSettingInput({
 					onChange={handleChange}
 				/>
 			</CodeMirrorBox>
+			{error && <FieldError>{error}</FieldError>}
 		</Field>
 	);
 }
