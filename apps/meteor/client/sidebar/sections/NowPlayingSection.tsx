@@ -3,6 +3,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
 import AudioPlayerControls from '../../components/AudioPlayer/AudioPlayerControls';
+import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
@@ -19,6 +20,7 @@ const NowPlayingSection = () => {
 	const { track, playing, currentTime, duration, playbackRate, toggle, seek, cyclePlaybackRate, close } = useMediaPlayer();
 	const goToRoom = useGoToRoom();
 	const openedRoom = useOpenedRoom();
+	const formatMemorySize = useFormatMemorySize();
 
 	if (!track || (track.rid && track.rid === openedRoom)) {
 		return null;
@@ -52,7 +54,7 @@ const NowPlayingSection = () => {
 							{track.name || track.username || t('Audio')}
 						</Box>
 						<Box fontScale='micro' color='hint' withTruncatedText>
-							{track.title}
+							{track.size ? `${track.title} (${formatMemorySize(track.size)})` : track.title}
 						</Box>
 					</Box>
 				</Box>
