@@ -8,5 +8,4 @@ export type * from './LicenseLimit';
 export * from './LicenseModule';
 export type * from './LicensePeriod';
 export type * from './LicenseValidationOptions';
-export type * from './LicenseValidationResult';
 export type * from './LimitContext';

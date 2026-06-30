@@ -1,4 +1,4 @@
-import type { LicenseInfo, LicenseValidationResult, Cloud } from '@rocket.chat/core-typings';
+import type { LicenseInfo, Cloud } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 
@@ -64,7 +64,7 @@ export type LicensesEndpoints = {
 		POST: (params: licensesAddProps) => void;
 	};
 	'/v1/licenses.validate': {
-		POST: (params: licensesValidateProps) => { validation: LicenseValidationResult };
+		POST: (params: licensesValidateProps) => void;
 	};
 	'/v1/licenses.maxActiveUsers': {
 		GET: () => { maxActiveUsers: number | null; activeUsers: number };

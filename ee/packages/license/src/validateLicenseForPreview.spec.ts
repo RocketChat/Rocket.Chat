@@ -1,29 +1,30 @@
+import { LicenseImp } from '.';
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
+import { InvalidLicenseError } from './errors/InvalidLicenseError';
+import { NotReadyForValidation } from './errors/NotReadyForValidation';
 
 describe('validateLicenseForPreview', () => {
-	it('should report an invalid format for a non-license string', async () => {
+	it('should throw for a non-license string', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
-		const result = await licenseManager.validateLicenseForPreview('not-a-license');
-
-		expect(result.isFormatValid).toBe(false);
-		expect(result.isValid).toBe(false);
-		expect(result.license).toBeUndefined();
-		expect(result.grantedModules).toEqual([]);
+		await expect(licenseManager.validateLicenseForPreview('not-a-license')).rejects.toThrow(InvalidLicenseError);
 	});
 
-	it('should preview a valid license without applying it', async () => {
+	it('should throw NotReadyForValidation when the workspace cannot validate yet', async () => {
+		const licenseManager = new LicenseImp();
+		const license = await new MockedLicenseBuilder().sign();
+
+		await expect(licenseManager.validateLicenseForPreview(license)).rejects.toThrow(NotReadyForValidation);
+	});
+
+	it('should report no reasons for a valid license and not apply it', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
 		const license = await new MockedLicenseBuilder().withGrantedModules(['livechat-enterprise', 'engagement-dashboard']).sign();
 
-		const result = await licenseManager.validateLicenseForPreview(license);
+		const reasons = await licenseManager.validateLicenseForPreview(license);
 
-		expect(result.isFormatValid).toBe(true);
-		expect(result.isValid).toBe(true);
-		expect(result.license?.version).toBe('3.0');
-		expect(result.grantedModules).toEqual(expect.arrayContaining(['livechat-enterprise', 'engagement-dashboard']));
-		expect(result.validationErrors).toEqual([]);
+		expect(reasons).toEqual([]);
 
 		// previewing must not apply the license
 		expect(licenseManager.hasValidLicense()).toBe(false);
@@ -33,47 +34,37 @@ describe('validateLicenseForPreview', () => {
 	it('should not apply a license even when it is already active and being previewed again', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
-		const builder = new MockedLicenseBuilder().withGrantedModules(['livechat-enterprise']);
-		const license = await builder.sign();
+		const license = await new MockedLicenseBuilder().withGrantedModules(['livechat-enterprise']).sign();
 
 		await licenseManager.setLicense(license);
 		expect(licenseManager.hasValidLicense()).toBe(true);
 
-		const result = await licenseManager.validateLicenseForPreview(license);
+		const reasons = await licenseManager.validateLicenseForPreview(license);
 
-		expect(result.isFormatValid).toBe(true);
-		expect(result.isValid).toBe(true);
+		expect(reasons).toEqual([]);
 	});
 
-	it('should report an invalid license when the workspace URL does not match', async () => {
+	it('should report a reason when the workspace URL does not match', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
 		const license = await new MockedLicenseBuilder().withServerUrls({ value: 'another-workspace.com', type: 'url' }).sign();
 
-		const result = await licenseManager.validateLicenseForPreview(license);
+		const reasons = await licenseManager.validateLicenseForPreview(license);
 
-		expect(result.isFormatValid).toBe(true);
-		expect(result.isValid).toBe(false);
-		expect(result.validationErrors).toEqual(
-			expect.arrayContaining([expect.objectContaining({ behavior: 'invalidate_license', reason: 'url' })]),
-		);
+		expect(reasons).toEqual(expect.arrayContaining([expect.objectContaining({ behavior: 'invalidate_license', reason: 'url' })]));
 	});
 
-	it('should report an invalid license when an invalidating period has expired', async () => {
+	it('should report a reason when an invalidating period has expired', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
 		const license = await new MockedLicenseBuilder().resetValidPeriods().withExpiredDate().sign();
 
-		const result = await licenseManager.validateLicenseForPreview(license);
+		const reasons = await licenseManager.validateLicenseForPreview(license);
 
-		expect(result.isFormatValid).toBe(true);
-		expect(result.isValid).toBe(false);
-		expect(result.validationErrors).toEqual(
-			expect.arrayContaining([expect.objectContaining({ behavior: 'invalidate_license', reason: 'period' })]),
-		);
+		expect(reasons).toEqual(expect.arrayContaining([expect.objectContaining({ behavior: 'invalidate_license', reason: 'period' })]));
 	});
 
-	it('should still be valid but exclude modules disabled by an expired period', async () => {
+	it('should report no reasons when only a disable_modules period has expired', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
 		// MockedLicenseBuilder seeds a `disable_modules` period for `livechat-enterprise`; expire it.
@@ -86,10 +77,9 @@ describe('validateLicenseForPreview', () => {
 			},
 		];
 
-		const result = await licenseManager.validateLicenseForPreview(await builder.sign());
+		const reasons = await licenseManager.validateLicenseForPreview(await builder.sign());
 
-		expect(result.isValid).toBe(true);
-		expect(result.grantedModules).toContain('engagement-dashboard');
-		expect(result.grantedModules).not.toContain('livechat-enterprise');
+		// disabling modules does not invalidate the license, so it would still be accepted
+		expect(reasons).toEqual([]);
 	});
 });

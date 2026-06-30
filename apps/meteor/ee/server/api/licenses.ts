@@ -78,9 +78,13 @@ API.v1.addRoute(
 		async post() {
 			const { license } = this.bodyParams;
 
-			const validation = await License.validateLicenseForPreview(license);
+			const reasons = await License.validateLicenseForPreview(license);
 
-			return API.v1.success({ validation });
+			if (reasons.length) {
+				return API.v1.failure({ error: 'license-invalid', reasons });
+			}
+
+			return API.v1.success();
 		},
 	},
 );
