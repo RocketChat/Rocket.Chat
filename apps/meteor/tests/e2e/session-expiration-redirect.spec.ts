@@ -25,7 +25,7 @@ test.describe('Session Expiration Redirect', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api, { members: [Users.user1.data.username] });
+		targetChannel = await createTargetChannel(api, { members: [Users.user1.data.username, Users.user2.data.username] });
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -73,28 +73,32 @@ test.describe('Session Expiration Redirect', () => {
 		});
 	});
 
-	test('should redirect to login page when trying to send message with expired token', async ({ page }) => {
-		await test.step('type message', async () => {
-			await poHomeChannel.composer.inputMessage.fill('Test message');
-		});
+	test.describe('when sending a message with an expired token', () => {
+		test.use({ storageState: Users.user2.state });
 
-		await test.step('delete login tokens from database', async () => {
-			await removeTokensFromdb(Users.user1.data.username);
-		});
+		test('should redirect to login page when trying to send message with expired token', async ({ page }) => {
+			await test.step('type message', async () => {
+				await poHomeChannel.composer.inputMessage.fill('Test message');
+			});
 
-		await test.step('try to send a message (should trigger auth error)', async () => {
-			await poHomeChannel.composer.btnSend.click();
-		});
+			await test.step('delete login tokens from database', async () => {
+				await removeTokensFromdb(Users.user2.data.username);
+			});
 
-		await test.step('expect automatic redirect to login page', async () => {
-			await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
-		});
+			await test.step('try to send a message (should trigger auth error)', async () => {
+				await poHomeChannel.composer.btnSend.click();
+			});
 
-		await test.step('verify localStorage was cleared', async () => {
-			const userId = await page.evaluate(() => localStorage.getItem('Meteor.userId'));
-			const loginToken = await page.evaluate(() => localStorage.getItem('Meteor.loginToken'));
-			expect(userId).toBeNull();
-			expect(loginToken).toBeNull();
+			await test.step('expect automatic redirect to login page', async () => {
+				await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
+			});
+
+			await test.step('verify localStorage was cleared', async () => {
+				const userId = await page.evaluate(() => localStorage.getItem('Meteor.userId'));
+				const loginToken = await page.evaluate(() => localStorage.getItem('Meteor.loginToken'));
+				expect(userId).toBeNull();
+				expect(loginToken).toBeNull();
+			});
 		});
 	});
 });

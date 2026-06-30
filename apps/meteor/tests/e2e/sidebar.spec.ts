@@ -21,7 +21,7 @@ test.describe.serial('Sidebar', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await page.waitForSelector('main');
+		await poHomeChannel.waitForHome();
 	});
 
 	test.describe('global header', async () => {
