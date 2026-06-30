@@ -378,7 +378,7 @@
 		"@types/mocha": "github:whitecolor/mocha-types",
 		"@types/node": "~22.19.17",
 		"@types/node-rsa": "^1.1.4",
-		"@types/nodemailer": "^8.0.0",
+		"@types/nodemailer": "^8.0.1",
 		"@types/oauth2-server": "^3.0.18",
 		"@types/object-path": "^0.11.4",
 		"@types/parseurl": "^1.3.3",
