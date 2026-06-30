@@ -202,7 +202,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				preload='metadata'
 				onPlay={() => setPlaying(true)}
 				onPause={() => setPlaying(false)}
-				onEnded={() => setPlaying(false)}
+				onEnded={() => close()}
 				onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
 				onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
 				onDurationChange={(e) => setDuration(e.currentTarget.duration || 0)}

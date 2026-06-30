@@ -3,20 +3,23 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
 import AudioPlayerControls from '../../components/AudioPlayer/AudioPlayerControls';
+import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 
 /**
  * Persistent "now playing" card pinned to the top of the sidebar (design 1c).
- * It re-attaches to the shared audio element, so playback survives switching or
- * closing the room where the audio was sent.
+ * It drives the shared audio element, so playback survives switching or closing
+ * the room where the audio was sent. Hidden while the source room is open (the
+ * in-message player is visible there).
  */
 const NowPlayingSection = () => {
 	const { t } = useTranslation();
 	const { track, playing, currentTime, duration, playbackRate, toggle, seek, cyclePlaybackRate, close } = useMediaPlayer();
 	const goToRoom = useGoToRoom();
+	const openedRoom = useOpenedRoom();
 
-	if (!track) {
+	if (!track || (track.rid && track.rid === openedRoom)) {
 		return null;
 	}
 
