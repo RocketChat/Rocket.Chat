@@ -75,7 +75,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 			return false;
 		}
 
-		const participantSipExtension = this.getIdentificationFromAlias(participantUri);
+		const participantSipExtension = this.normalizeSipExtension(this.getIdentificationFromAlias(participantUri));
 
 		if (!participantSipExtension) {
 			logger.debug({ msg: 'Someone connected to a Pexip Conference via SIP, but we could not identify them.' });
@@ -98,6 +98,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 				// Check if the user is already linked to the conference
 				if (linkedMediaCallIds?.length) {
 					if (await MediaCalls.isUserSipExtensionInCallIds(participantSipExtension, linkedMediaCallIds)) {
+						logger.debug({ msg: 'User already had a media call linked to the conference' });
 						return true;
 					}
 				}
@@ -110,6 +111,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 
 			const updateResult = await VideoConferenceModel.addMediaCallIdByConferenceId(conference._id, mediaCallId);
 			if (updateResult.modifiedCount) {
+				logger.debug({ msg: 'Media Call linked to Conference', conference: conference._id, call: mediaCallId });
 				await MediaCall.flagAsRemotelyEscalatedByCallId(mediaCallId);
 			}
 		} catch (err) {
