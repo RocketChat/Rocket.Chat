@@ -30,7 +30,7 @@ const NowPlayingSection = () => {
 	};
 
 	return (
-		<Box m={8} p={10} borderRadius={8} backgroundColor='surface-tint' style={{ border: '1px solid var(--rcx-color-stroke-highlight)' }}>
+		<Box m={8} p={10} borderRadius={8} backgroundColor='surface-tint' style={{ border: '1px solid var(--rcx-color-stroke-light)' }}>
 			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={8}>
 				<Box display='flex' alignItems='center' color='info' fontScale='micro' style={{ gap: 6, textTransform: 'uppercase' }}>
 					<Box style={{ width: 7, height: 7, borderRadius: 999, background: 'var(--rcx-color-button-background-primary-default)' }} />

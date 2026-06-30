@@ -1,4 +1,4 @@
-import { Box, IconButton, Slider } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton, Margins, Slider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { formatPlaybackTime } from './formatPlaybackTime';
@@ -29,56 +29,69 @@ const AudioPlayerControls = ({
 
 	const maxValue = duration > 0 ? Math.floor(duration) : 0;
 	const value = Math.min(Math.floor(currentTime), maxValue);
+	const playLabel = playing ? t('Pause') : t('Play');
+	const icon = playing ? 'pause-shape-filled' : 'play-shape-filled';
 
-	return (
-		<Box display='flex' alignItems='center' flexGrow={1} style={{ gap: compact ? 8 : 10 }}>
-			<IconButton
-				small={compact}
-				primary
-				icon={playing ? 'pause-shape-filled' : 'play-shape-filled'}
-				onClick={onToggle}
-				title={playing ? t('Pause') : t('Play')}
-				aria-label={playing ? t('Pause') : t('Play')}
-			/>
-			{!compact && (
-				<Box is='span' fontScale='c1' color='default' style={{ fontVariantNumeric: 'tabular-nums', minWidth: 34 }}>
-					{formatPlaybackTime(currentTime)}
+	if (compact) {
+		return (
+			<Box display='flex' alignItems='center' flexGrow={1} style={{ gap: 8 }}>
+				<IconButton small primary icon={icon} onClick={onToggle} title={playLabel} aria-label={playLabel} />
+				<Box flexGrow={1} minWidth={40}>
+					<Slider
+						aria-label={t('Seek')}
+						showOutput={false}
+						minValue={0}
+						maxValue={maxValue || 1}
+						step={1}
+						value={value}
+						onChange={(next) => onSeek(Array.isArray(next) ? next[0] : next)}
+					/>
 				</Box>
-			)}
-			<Box flexGrow={1} minWidth={40}>
-				<Slider
-					aria-label={t('Seek')}
-					showOutput={false}
-					minValue={0}
-					maxValue={maxValue || 1}
-					step={1}
-					value={value}
-					onChange={(next) => onSeek(Array.isArray(next) ? next[0] : next)}
-				/>
+				<Box is='span' fontScale='c1' color='hint' style={{ fontVariantNumeric: 'tabular-nums', minWidth: 34, textAlign: 'right' }}>
+					{`${formatPlaybackTime(currentTime)} / ${formatPlaybackTime(duration)}`}
+				</Box>
+				<Button secondary small onClick={onCyclePlaybackRate} aria-label={t('Playback_speed')}>
+					{`${playbackRate}x`}
+				</Button>
 			</Box>
-			<Box is='span' fontScale='c1' color='hint' style={{ fontVariantNumeric: 'tabular-nums', minWidth: 34, textAlign: 'right' }}>
-				{compact ? `${formatPlaybackTime(currentTime)} / ${formatPlaybackTime(duration)}` : formatPlaybackTime(duration)}
-			</Box>
-			<Box
-				is='button'
-				type='button'
-				onClick={onCyclePlaybackRate}
-				title={t('Playback_speed')}
-				aria-label={t('Playback_speed')}
-				fontScale='c2'
-				color='default'
-				pi={8}
-				style={{
-					flex: 'none',
-					height: compact ? 24 : 30,
-					borderRadius: 6,
-					border: '1px solid var(--rcx-color-stroke-light)',
-					background: 'var(--rcx-color-surface-tint)',
-					cursor: 'pointer',
-				}}
-			>
-				{`${playbackRate}x`}
-			</Box>
+		);
+	}
+
+	// In-message player: visually identical to the original fuselage AudioPlayer.
+	return (
+		<Box
+			borderWidth='default'
+			bg='tint'
+			borderColor='extra-light'
+			pb={12}
+			pie={8}
+			pis={16}
+			borderRadius='x4'
+			w='100%'
+			maxWidth='x300'
+			display='flex'
+			alignItems='center'
+		>
+			<IconButton primary medium icon={icon} onClick={onToggle} aria-label={playLabel} />
+			<Margins inline={8}>
+				<Box fontScale='p2' color='secondary-info'>
+					{playing || currentTime > 0 ? formatPlaybackTime(currentTime) : formatPlaybackTime(duration)}
+				</Box>
+				<Box mi={16} w='full'>
+					<Slider
+						aria-label={t('Seek')}
+						showOutput={false}
+						minValue={0}
+						maxValue={maxValue || 1}
+						step={1}
+						value={value}
+						onChange={(next) => onSeek(Array.isArray(next) ? next[0] : next)}
+					/>
+				</Box>
+				<Button secondary small onClick={onCyclePlaybackRate} aria-label={t('Playback_speed')}>
+					{`${playbackRate}x`}
+				</Button>
+			</Margins>
 		</Box>
 	);
 };
