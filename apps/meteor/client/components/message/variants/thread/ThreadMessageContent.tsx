@@ -70,7 +70,13 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+			{!!attachments && (
+				<Attachments
+					id={message.files?.[0]?._id}
+					attachments={attachments}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
