@@ -1,0 +1,434 @@
+apps/meteor/ee/server/apps/communication/uikit.ts
+  s_ea480bab61bf55::t_f7f3d457699431 13
+apps/meteor/ee/app/livechat-enterprise/server/outboundcomms/rest.ts
+  s_ea480bab61bf55::t_d417c8b005a742 4
+apps/meteor/app/integrations/server/api/api.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 12-19
+apps/meteor/ee/server/api/audit.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 7-8
+apps/meteor/server/api/v1/moderation.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 18-20
+apps/meteor/server/api/lib/getInstanceList.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-4
+apps/meteor/server/api/v1/omnichannel/room.ts
+  s_ea480bab61bf55::t_d36958d3730afb 33
+  s_ea480bab61bf55::t_810b1bd7396a5f 46-50
+  s_ea480bab61bf55::t_08cf9820cc53b3 34
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-32,35-45,51-541
+apps/meteor/server/api/lib/getPaginationItems.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-37
+apps/meteor/app/oauth2-server-config/server/oauth/oauth2-server.ts
+  s_ea480bab61bf55::t_d36958d3730afb 9
+apps/meteor/server/api/v1/omnichannel/lib/agents.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-14
+apps/meteor/ee/server/apps/communication/endpoints/appGeneralLogsHandler.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 3
+apps/meteor/server/api/lib/scopeAdminRoomsForAbac.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-7
+apps/meteor/server/api/validation/ajv.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-20
+apps/meteor/server/api/v1/omnichannel/lib/transfer.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-34
+apps/meteor/ee/app/livechat-enterprise/server/lib/unit.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5-6
+apps/meteor/server/api/v1/middlewares/remoteAddressMiddleware.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-40
+apps/meteor/server/api/v1/oauthapps.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 11-14
+apps/meteor/ee/server/api/federation.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 9
+  s_ea480bab61bf55::t_d36958d3730afb 8
+apps/meteor/ee/server/api/roles.ts
+  s_ea480bab61bf55::t_4689350b396f62 9
+apps/meteor/server/api/lib/getUserInfo.spec.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-257
+apps/meteor/server/api/lib/maybeMigrateLivechatRoom.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-40
+apps/meteor/server/api/v1/omnichannel/customField.ts
+  s_ea480bab61bf55::t_d36958d3730afb 15
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-14,16-166
+apps/meteor/server/api/lib/cleanQuery.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-28
+apps/meteor/server/api/v1/commands.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 14-20
+apps/meteor/ee/server/apps/communication/endpoints/appLogsExportHandler.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 9-10
+apps/meteor/app/lib/server/functions/relinquishRoomOwnerships.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5
+apps/meteor/server/api/lib/webdav.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-13
+apps/meteor/server/api/lib/addUserToFileObj.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-21
+apps/meteor/server/api/v1/integrations.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 22-30
+apps/meteor/server/api/lib/emailInbox.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-104
+apps/meteor/server/api/v1/omnichannel/lib/users.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-118
+apps/meteor/server/api/v1/omnichannel/transfer.ts
+  s_ea480bab61bf55::t_d36958d3730afb 3
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-2,4-33
+apps/meteor/server/api/v1/assets.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 10-12
+  s_ea480bab61bf55::t_7ef77aa010da82 13
+apps/meteor/server/api/v1/mailer.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 10-11
+apps/meteor/app/apps/server/bridges/api.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 12
+apps/meteor/server/api/v1/omnichannel/lib/departments.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-197
+apps/meteor/server/api/v1/videoConference.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 15-21
+apps/meteor/ee/server/patches/getInstanceList.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 1
+apps/meteor/server/api/v1/users.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 38-75,83-87
+  s_ea480bab61bf55::t_834a6aeaede55d 76-80
+apps/meteor/server/api/v1/middlewares/metrics.spec.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-202
+apps/meteor/ee/server/apps/communication/rest.ts
+  s_ea480bab61bf55::t_d36958d3730afb 23
+  s_ea480bab61bf55::t_19357cae3fbc8b 24-28
+apps/meteor/server/api/v1/roles.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 17-27
+apps/meteor/server/api/v1/omnichannel/lib/integrations.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-20
+apps/meteor/server/api/v1/call-history.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 14-17
+apps/meteor/server/api/ApiClass.spec.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-3,5-61
+  s_ea480bab61bf55::t_19357cae3fbc8b 4
+apps/meteor/ee/server/hooks/abac/scopeAdminRoomsForAbac.ts
+  s_ea480bab61bf55::t_3766d8113b896d 7
+apps/meteor/scripts/migration/move-batch.mjs
+  s_ea480bab61bf55::t_13e1d309768ff8 36-50
+apps/meteor/server/api/lib/isValidQuery.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-67
+apps/meteor/server/api/v1/im.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 23-41
+apps/meteor/server/api/v1/misc.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 26-40
+apps/meteor/server/api/lib/getUserFromParams.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-98
+apps/meteor/server/api/lib/getUploadFormData.spec.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-196
+apps/meteor/server/api/v1/emoji-custom.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 9-13
+  s_ea480bab61bf55::t_9dd3e544138c7a 17
+apps/meteor/server/api/v1/chat.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 33-55
+apps/meteor/ee/server/apps/communication/endpoints/actionButtonsHandler.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1
+apps/meteor/ee/app/livechat-enterprise/server/hooks/onSaveVisitorInfo.ts
+  s_ea480bab61bf55::t_d417c8b005a742 5-6
+apps/meteor/ee/app/livechat-enterprise/server/hooks/onLoadConfigApi.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 3
+apps/meteor/ee/server/api/ldap.ts
+  s_ea480bab61bf55::t_3082a5c940f151 5
+apps/meteor/app/livechat/server/startup.ts
+  s_ea480bab61bf55::t_077764556a334e 14
+apps/meteor/server/api/lib/getTrimmedServerVersion.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-4
+apps/meteor/server/api/v1/omnichannel/webhooks.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-4,6-95
+  s_ea480bab61bf55::t_d36958d3730afb 5
+apps/meteor/server/api/v1/omnichannel/agent.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-13,16-21,23-170
+  s_ea480bab61bf55::t_a1deba6fb09536 15
+  s_ea480bab61bf55::t_d36958d3730afb 14
+  s_ea480bab61bf55::t_fff5cf84633a48 22
+apps/meteor/ee/server/api/api.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5-6
+apps/meteor/server/api/v1/omnichannel/lib/appearance.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-40
+apps/meteor/server/api/v1/middlewares/permissions.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5-9
+apps/meteor/server/api/lib/isWidget.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-8
+apps/meteor/server/api/index.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 1
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 2-7
+apps/meteor/ee/server/api/licenses.ts
+  s_ea480bab61bf55::t_ff719cc70357f7 9
+apps/meteor/server/api/api.helpers.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 3
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-2,4-114
+apps/meteor/server/api/v1/instances.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 4-6
+apps/meteor/server/api/router.spec.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5-6
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-4,7-56
+apps/meteor/server/api/lib/getServerInfo.spec.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-60
+apps/meteor/server/api/v1/omnichannel/integration.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-3,5-81
+  s_ea480bab61bf55::t_d36958d3730afb 4
+apps/meteor/server/api/lib/rooms.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-202
+apps/meteor/server/importPackages.ts
+  s_ea480bab61bf55::t_d36958d3730afb 3
+apps/meteor/server/api/v1/invites.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 12-17
+apps/meteor/server/api/lib/users.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-242
+apps/meteor/server/api/lib/parseJsonQuery.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 6-7
+  s_ea480bab61bf55::t_9f30c54a2ce89e 4-5
+  s_ea480bab61bf55::t_00fd3b16200d04 8
+apps/meteor/ee/server/apps/communication/endpoints/appLogsHandler.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 3
+apps/meteor/server/api/lib/isUserFromParams.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-14
+apps/meteor/server/main.ts
+  s_ea480bab61bf55::t_7f7d4f5babca76 10
+apps/meteor/server/api/lib/getUploadFormData.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-175
+apps/meteor/server/api/v1/middlewares/cors.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-58
+apps/meteor/server/api/v1/omnichannel/config.ts
+  s_ea480bab61bf55::t_d36958d3730afb 4
+  s_ea480bab61bf55::t_b5c6cb7967da34 8-9
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-3,6-7,10-67
+  s_ea480bab61bf55::t_be1572ed7f6793 5
+apps/meteor/app/file-upload/server/lib/FileUpload.ts
+  s_ea480bab61bf55::t_a9040ca0e4d62c 28
+apps/meteor/server/api/v1/email-inbox.ts
+  s_ea480bab61bf55::t_a1dfcfd416718c 17
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 14
+apps/meteor/tests/unit/app/api/server/v1/lib/checkPermissionsForInvocation.spec.ts
+  s_ea480bab61bf55::t_a002baee9c6437 6,31
+apps/meteor/server/api/v1/stats.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 10-13
+apps/meteor/server/api/lib/getUserInfo.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-117
+apps/meteor/server/api/v1/omnichannel/pageVisited.ts
+  s_ea480bab61bf55::t_d36958d3730afb 4
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-3,5-23
+apps/meteor/server/api/v1/middlewares/metrics.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-4,6-59
+apps/meteor/ee/server/api/abac/index.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 31-32
+  s_ea480bab61bf55::t_d36958d3730afb 30
+apps/meteor/server/api/default/openApi.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 8
+apps/meteor/server/api/lib/projectionAllowsAttribute.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-19
+apps/meteor/ee/server/api/engagementDashboard/messages.ts
+  s_ea480bab61bf55::t_d36958d3730afb 4
+apps/meteor/ee/server/api/chat.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5
+apps/meteor/server/api/lib/eraseTeam.spec.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-274
+apps/meteor/server/api/v1/groups.ts
+  s_ea480bab61bf55::t_834a6aeaede55d 27-28
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 17-26,29-45
+apps/meteor/server/api/v1/push.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 17-19
+  s_ea480bab61bf55::t_320020ef5d0471 20
+apps/meteor/server/api/v1/ldap.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 4
+  s_ea480bab61bf55::t_83bce90dfd2a64 5
+apps/meteor/tests/unit/app/api/server/v1/lib/isValidQuery.spec.ts
+  s_ea480bab61bf55::t_a002baee9c6437 4
+apps/meteor/tests/e2e/account-totp.spec.ts
+  s_ea480bab61bf55::t_71d626a7961bc7 29
+apps/meteor/server/api/router.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-8,10-81
+  s_ea480bab61bf55::t_19357cae3fbc8b 9
+apps/meteor/server/api/lib/messages.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-121
+apps/meteor/server/api/v1/subscriptions.ts
+  s_ea480bab61bf55::t_228b4a2f4299f7 14
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 15-16
+apps/meteor/server/api/v1/omnichannel/visitor.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-6,9-12,15-206
+  s_ea480bab61bf55::t_480591a995bb10 8
+  s_ea480bab61bf55::t_3bfead97e76de6 13-14
+  s_ea480bab61bf55::t_d36958d3730afb 7
+apps/meteor/server/api/v1/connection.d.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-13
+apps/meteor/server/api/v1/teams.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 31-34
+  s_ea480bab61bf55::t_38bd7f868d8275 35
+  s_ea480bab61bf55::t_74f32d6a35f4cd 39
+apps/meteor/ee/server/apps/communication/endpoints/appsCountHandler.ts
+  s_ea480bab61bf55::t_f8026c33cc4b3a 5
+apps/meteor/server/api/v1/import.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 23-33
+apps/meteor/server/api/v1/omnichannel/lib/visitors.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-216
+apps/meteor/server/api/ApiClass.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 21,41,44-45
+  s_ea480bab61bf55::t_d417c8b005a742 53
+  s_ea480bab61bf55::t_42255401693b55 46-47,56
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-20,22-40,42-43,48-52,54-55,57-1217
+apps/meteor/server/api/v1/middlewares/logger.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-37
+apps/meteor/server/api/v1/omnichannel/lib/businessHours.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-9
+apps/meteor/server/api/v1/settings.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 27-37
+apps/meteor/server/api/v1/omnichannel/lib/rooms.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-92
+apps/meteor/ee/app/livechat-enterprise/server/hooks/onCheckRoomParamsApi.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 3
+apps/meteor/server/api/v1/omnichannel/statistics.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-3,5-67
+  s_ea480bab61bf55::t_d36958d3730afb 4
+apps/meteor/scripts/migration/move-module.mjs
+  s_ea480bab61bf55::t_62fec5337c8382 252-255,258-278,281
+  s_ea480bab61bf55::t_62cb07543751d0 313
+  s_ea480bab61bf55::t_5b593216b8f645 196-202,204-206,212,222,226-232
+  s_ea480bab61bf55::t_cb00b6d92f1ba6 353-354
+  s_ea480bab61bf55::t_32c5eef6bf01eb 301-302
+  s_ea480bab61bf55::t_aa2c397355a39f 62
+  s_ea480bab61bf55::t_1261e4d4a2ff12 41-52,54,58-61
+  s_ea480bab61bf55::t_952c60064dc716 207-211,223-225
+  s_ea480bab61bf55::t_9f2449d315f526 257
+  s_ea480bab61bf55::t_572c9b02d98907 283-291
+  s_ea480bab61bf55::t_78a1b468e151dc 344
+apps/meteor/tests/unit/app/api/server/v1/lib/checkPermissions.spec.ts
+  s_ea480bab61bf55::t_a002baee9c6437 6,15
+apps/meteor/server/api/v1/omnichannel/lib/queue.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-46
+apps/meteor/server/api/v1/omnichannel/transcript.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-5,7-73
+  s_ea480bab61bf55::t_d36958d3730afb 6
+apps/meteor/server/api/v1/middlewares/authenticationHono.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 7-8
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-6,9-48
+apps/meteor/server/api/v1/custom-user-status.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 14-18
+apps/meteor/server/api/v1/omnichannel/lib/livechat.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-196
+apps/meteor/app/lib/server/methods/cleanRoomHistory.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 5
+apps/meteor/server/api/lib/projectionAllowsAttribute.spec.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-29
+apps/meteor/server/api/lib/MultipartUploadHandler.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-205
+apps/meteor/server/api/v1/cloud.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 12-23
+  s_ea480bab61bf55::t_403e82754825c7 24-25
+apps/meteor/server/api/v1/custom-sounds.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 19-27
+apps/meteor/server/api/v1/permissions.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 12-13
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  s_ea480bab61bf55::t_a002baee9c6437 21
+apps/meteor/server/api/lib/emoji-custom.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-31
+apps/meteor/ee/server/api/sessions.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 9-10
+apps/meteor/server/api/v1/channels.ts
+  s_ea480bab61bf55::t_834a6aeaede55d 60-61
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 36-59,63-66
+apps/meteor/server/api/lib/getServerInfo.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-37
+apps/meteor/server/api/definition.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-375
+apps/meteor/server/api/v1/omnichannel/offlineMessage.ts
+  s_ea480bab61bf55::t_d36958d3730afb 3
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-2,4-24
+apps/meteor/ee/server/api/engagementDashboard/channels.ts
+  s_ea480bab61bf55::t_d36958d3730afb 4
+  s_ea480bab61bf55::t_19357cae3fbc8b 5
+apps/meteor/server/api/v1/autotranslate.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 12-16
+apps/meteor/app/oauth2-server-config/server/admin/functions/addOAuthApp.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 7
+apps/meteor/server/api/lib/integrations.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-40
+apps/meteor/server/api/v1/omnichannel/contact.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-21,23-269
+  s_ea480bab61bf55::t_d36958d3730afb 22
+apps/meteor/server/api/v1/omnichannel/lib/inquiries.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-90
+apps/meteor/server/api/v1/middlewares/remoteAddressMiddleware.spec.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-131
+apps/meteor/server/api/v1/e2e.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 13-23
+apps/meteor/server/api/v1/rooms.ts
+  s_ea480bab61bf55::t_834a6aeaede55d 76-79
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 48-75,83-85
+apps/meteor/ee/app/livechat-enterprise/server/business-hour/lib/business-hour.ts
+  s_ea480bab61bf55::t_d417c8b005a742 6
+apps/meteor/server/api/v1/omnichannel/lib/customFields.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-61
+apps/meteor/server/api/api.ts
+  s_ea480bab61bf55::t_19357cae3fbc8b 7-13
+  s_ea480bab61bf55::t_48ea38005f9473 14-15
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-6,16-126
+apps/meteor/server/api/lib/eraseTeam.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-96
+apps/meteor/server/api/v1/omnichannel/lib/triggers.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-35
+apps/meteor/server/api/v1/middlewares/tracer.ts
+  s_ea480bab61bf55::t_d36958d3730afb 1-25
+apps/meteor/ee/server/api/engagementDashboard/users.ts
+  s_ea480bab61bf55::t_d36958d3730afb 4
+apps/meteor/server/methods/saveUserProfile.ts
+  s_ea480bab61bf55::t_60a64c1365d161 18
+apps/meteor/server/api/v1/omnichannel/message.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-13,16-19,23-320
+  s_ea480bab61bf55::t_d36958d3730afb 14
+  s_ea480bab61bf55::t_54b09b816e4cc8 20-22
+  s_ea480bab61bf55::t_e78d5c45b81efc 15
+apps/meteor/server/api/lib/composeRoomWithLastMessage.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-11
+apps/meteor/server/api/v1/middlewares/authentication.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-72
+apps/meteor/server/api/v1/middlewares/cors.spec.ts
+  s_ea480bab61bf55::t_2b31b5fbacb0ee 1-289
+apps/meteor/ee/server/requestSeatsRoute.ts
+  s_ea480bab61bf55::t_3852b060d83ddc 6
+apps/meteor/server/api/v1/omnichannel/agentDepartments.ts
+  s_ea480bab61bf55::t_22b3dc448f1ccb 3-4
+apps/meteor/server/api/v1/omnichannel/appearance.ts
+  s_ea480bab61bf55::t_b6013dea14ebfe 6-9
+apps/meteor/server/api/v1/omnichannel/businessHours.ts
+  s_ea480bab61bf55::t_7fed9932aad14d 12-15,50,69
+apps/meteor/server/api/v1/omnichannel/dashboards.ts
+  s_ea480bab61bf55::t_f8ed9783697f1f 12,23-24
+apps/meteor/server/api/v1/omnichannel/departments.ts
+  s_ea480bab61bf55::t_b2d86409f60cbe 11,19-20,27-29
+apps/meteor/server/api/v1/omnichannel/inquiries.ts
+  s_ea480bab61bf55::t_d3c84b7ba48bfc 16-22
+apps/meteor/server/api/v1/omnichannel/integrations.ts
+  s_ea480bab61bf55::t_e7f417323da9f3 1-2
+apps/meteor/server/api/v1/omnichannel/queue.ts
+  s_ea480bab61bf55::t_413cdcc325b4b3 3-5
+apps/meteor/server/api/v1/omnichannel/rooms.ts
+  s_ea480bab61bf55::t_3355e3538f0fc0 4-7
+apps/meteor/server/api/v1/omnichannel/sms.ts
+  s_ea480bab61bf55::t_cd34abcf11932c 18-25,76-79
+apps/meteor/server/api/v1/omnichannel/triggers.ts
+  s_ea480bab61bf55::t_3f69c22471077c 4-6
+apps/meteor/server/api/v1/omnichannel/upload.ts
+  s_ea480bab61bf55::t_e5624d1c855e21 3-8
+apps/meteor/server/api/v1/omnichannel/users.ts
+  s_ea480bab61bf55::t_967979de9f9c63 5-9
+apps/meteor/server/api/v1/omnichannel/visitors.ts
+  s_ea480bab61bf55::t_eda7d1a32880d9 13,21-24
+apps/meteor/app/livechat/server/index.ts
+  s_ea480bab61bf55::t_0ab4fee99e0224 26
+apps/meteor/server/api/v1/omnichannel/index.ts
+  s_ea480bab61bf55::t_567ea072e67452 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "651a52cecbdde62a67191f7c73ab02066d9133dc",
+  "prompts": {},
+  "sessions": {
+    "s_ea480bab61bf55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3252e73d-d46c-4377-be3c-143c655360b5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
