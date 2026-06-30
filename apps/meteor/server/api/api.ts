@@ -9,6 +9,7 @@ import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../lib/metrics';
 import { settings } from '../settings';
 import { cors } from './v1/middlewares/cors';
+import { experimentalWarningMiddleware } from './v1/middlewares/experimental';
 import { loggerMiddleware } from './v1/middlewares/logger';
 import { metricsMiddleware } from './v1/middlewares/metrics';
 import { remoteAddressMiddleware } from './v1/middlewares/remoteAddressMiddleware';
@@ -80,6 +81,11 @@ export const API: {
 	}),
 	default: createApi({}),
 };
+
+// Stamp the unstable-signal headers on every experimental response. Registered
+// here, at module load, so it precedes any endpoint route registered later on
+// API.experimental (Hono runs `.use` middleware in registration order).
+API.experimental.router.use(experimentalWarningMiddleware());
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
 	if (!value) {
