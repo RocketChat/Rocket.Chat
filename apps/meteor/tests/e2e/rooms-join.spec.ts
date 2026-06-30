@@ -145,6 +145,7 @@ test.describe.serial('Join rooms', () => {
 
 		test('should let a parent member join a discussion in a private channel', async ({ page }) => {
 			await page.goto(`/group/${discussion.name}`);
+			await poHomeChannel.content.waitForChannel();
 
 			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
 			await poHomeChannel.composer.btnJoinRoom.click();
