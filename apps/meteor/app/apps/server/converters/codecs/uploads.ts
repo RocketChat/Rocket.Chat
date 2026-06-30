@@ -3,6 +3,7 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import * as z from 'zod';
 
 import { mappedDecodeAsync } from './mappedData';
+import { getURL } from '../../../../../server/lib/utils/getURL';
 
 /**
  * Rocket.Chat `IUpload` <-> Apps-Engine `IAppsUpload`.
@@ -15,6 +16,19 @@ export function createUploadsCodec(orch: IAppServerOrchestrator) {
 	return z.codec(z.custom<IUpload>(), z.custom<IAppsUpload>(), {
 		decode: async (upload): Promise<IAppsUpload> => {
 			const map = {
+				// `url`/`path` are no longer persisted on the upload; derive them from the file id+name,
+				// matching the canonical /file-upload route. Declared before `id`/`name` so the source
+				// fields are still present on the cloned data when these run.
+				url: (upload: Record<string, any>) => {
+					const relativePath = `/file-upload/${upload._id}/${encodeURIComponent(upload.name || '')}`;
+					delete upload.url;
+					return getURL(relativePath, { cdn: false, full: true });
+				},
+				path: (upload: Record<string, any>) => {
+					const relativePath = `/file-upload/${upload._id}/${encodeURIComponent(upload.name || '')}`;
+					delete upload.path;
+					return relativePath;
+				},
 				id: '_id',
 				name: 'name',
 				size: 'size',
@@ -26,9 +40,7 @@ export function createUploadsCodec(orch: IAppServerOrchestrator) {
 				extension: 'extension',
 				progress: 'progress',
 				etag: 'etag',
-				path: 'path',
 				token: 'token',
-				url: 'url',
 				updatedAt: '_updatedAt',
 				uploadedAt: 'uploadedAt',
 				room: async (upload: Record<string, any>) => {
