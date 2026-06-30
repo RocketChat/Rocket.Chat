@@ -16,9 +16,11 @@ const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
 type MarkupProps = {
 	tokens: MessageParser.Root;
+	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
+	source?: string;
 };
 
-const Markup = ({ tokens }: MarkupProps) => (
+const Markup = ({ tokens, source }: MarkupProps) => (
 	<>
 		{tokens.map((block, index) => {
 			switch (block.type) {
@@ -64,12 +66,12 @@ const Markup = ({ tokens }: MarkupProps) => (
 					return <br key={index} />;
 
 				default: {
-					// Graceful degradation: blocks may carry a `fallback` plain-text
-					// representation, rendered as a paragraph when there is no
-					// dedicated renderer for the block type.
-					const { fallback } = block as { fallback?: MessageParser.Plain };
-					if (fallback) {
-						const inlines: MessageParser.Inlines[] = [fallback];
+					// Graceful degradation: blocks may carry a `fallback` [start, end] offset
+					// span into the source. With no dedicated renderer, slice the source and
+					// render the raw markup as a paragraph instead of dropping the block.
+					const { fallback } = block as { fallback?: [number, number] };
+					if (fallback && source !== undefined) {
+						const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
 						return <ParagraphBlock key={index}>{inlines}</ParagraphBlock>;
 					}
 					return null;

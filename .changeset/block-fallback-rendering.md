@@ -2,4 +2,4 @@
 "@rocket.chat/gazzodown": patch
 ---
 
-Renders a block's optional `fallback` plain-text representation (as a paragraph) when there is no dedicated renderer for its type, instead of dropping the block. This mirrors the existing inline `fallback` handling and lets unsupported blocks degrade to their original markup rather than disappearing.
+Degrades blocks without a dedicated renderer to their raw markup instead of dropping them. When a block carries a `fallback` `[start, end]` offset span, `Markup`/`PreviewMarkup` slice the original message source (passed via the new optional `source` prop) and render that text. This avoids duplicating the markup into the AST while keeping unsupported blocks visible.

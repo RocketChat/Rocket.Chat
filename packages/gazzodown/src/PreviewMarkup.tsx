@@ -12,9 +12,11 @@ const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessagePars
 
 type PreviewMarkupProps = {
 	tokens: MessageParser.Root;
+	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
+	source?: string;
 };
 
-const PreviewMarkup = ({ tokens }: PreviewMarkupProps) => {
+const PreviewMarkup = ({ tokens, source }: PreviewMarkupProps) => {
 	if (isOnlyBigEmojiBlock(tokens)) {
 		return <PreviewBigEmojiBlock emoji={tokens[0].value} />;
 	}
@@ -85,9 +87,9 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps) => {
 			);
 
 		default: {
-			const { fallback } = firstBlock as { fallback?: MessageParser.Plain };
-			if (fallback) {
-				const inlines: MessageParser.Inlines[] = [fallback];
+			const { fallback } = firstBlock as { fallback?: [number, number] };
+			if (fallback && source !== undefined) {
+				const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
 				return <PreviewInlineElements>{inlines}</PreviewInlineElements>;
 			}
 			return null;
