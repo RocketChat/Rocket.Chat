@@ -3,12 +3,7 @@ import { faker } from '@faker-js/faker';
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
 import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/fragments/modals';
-import {
-	createTargetChannel,
-	deleteTeam,
-	isChannelMember,
-	updatePermissions,
-} from './utils';
+import { createTargetChannel, deleteTeam, isChannelMember, updatePermissions } from './utils';
 import { expect, test, type BaseTest } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
