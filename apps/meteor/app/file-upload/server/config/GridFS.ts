@@ -149,9 +149,6 @@ FileUpload.configureUploadsStore('GridFS', 'GridFS:UserDataFiles', {
 	collectionName: 'rocketchat_userDataFiles',
 });
 
-// DEPRECATED: backwards compatibility (remove)
-UploadFS.getStores().rocketchat_uploads = UploadFS.getStores()['GridFS:Uploads'];
-
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 	collectionName: 'rocketchat_avatars',
 });

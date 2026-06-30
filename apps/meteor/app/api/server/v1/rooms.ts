@@ -307,8 +307,6 @@ API.v1.addRoute(
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
 
-			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
-
 			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
 
 			return API.v1.success({
