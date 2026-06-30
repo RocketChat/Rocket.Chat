@@ -1,0 +1,16 @@
+apps/meteor/tests/e2e/messaging.spec.ts
+  h_4c386397e672f4 191
+apps/meteor/tests/e2e/e2e-encryption/e2ee-file-encryption.spec.ts
+  h_4c386397e672f4 80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "5ae7178289d9590792556e2efc44a047d8b24edd",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
