@@ -1,5 +1,20 @@
 # @rocket.chat/authorization-service
 
+## 0.6.2-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b, 3c47215f4724bf41a56950542feba7c2d5d9eb7f, f4f361234f00bd44efe348df4355e9d3cf80efe0, 9a36221f1fbf5ca417325204637c9f32fe760443, f57901d91feaccedd00dee65b78775b20235825b, f57901d91feaccedd00dee65b78775b20235825b, f57901d91feaccedd00dee65b78775b20235825b, 9a36221f1fbf5ca417325204637c9f32fe760443, 9a36221f1fbf5ca417325204637c9f32fe760443, fa685d0ddfdf1167705a58b5d846a993144e3734, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/model-typings@2.3.1-rc.0
+  - @rocket.chat/models@2.3.1-rc.0
+  - @rocket.chat/core-services@0.14.2-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/abac@0.3.0-rc.0
+  - @rocket.chat/rest-typings@8.6.0-rc.0
+  - @rocket.chat/network-broker@0.2.37-rc.0
+  </details>
+
 ## 0.6.1
 
 ### Patch Changes

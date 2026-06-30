@@ -1,5 +1,14 @@
 # @rocket.chat/ui-composer
 
+## 3.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-client@32.0.0-rc.0
+  </details>
+
 ## 2.0.0
 
 ### Patch Changes

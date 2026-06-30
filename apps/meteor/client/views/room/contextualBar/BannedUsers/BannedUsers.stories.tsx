@@ -1,6 +1,6 @@
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import BannedUsers from './BannedUsers';
 

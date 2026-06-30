@@ -192,7 +192,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         id: packages-cache-build
         with:
           path: |
@@ -238,7 +238,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cache vite
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
@@ -246,7 +246,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
+      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
@@ -695,7 +695,7 @@ jobs:
           cache-modules: true
           install: true
 
-      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
+      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
 
       - name: Restore turbo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1

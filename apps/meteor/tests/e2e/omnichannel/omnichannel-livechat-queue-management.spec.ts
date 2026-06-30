@@ -1,3 +1,5 @@
+import type { BrowserContext } from '@playwright/test';
+
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
@@ -17,6 +19,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	let poHomeOmnichannel: HomeOmnichannel;
 	let poLiveChat: OmnichannelLiveChat;
+	let liveChatContext: BrowserContext;
 
 	const waitingQueueMessage = 'This is a message from Waiting Queue';
 	const queuePosition1 = 'Your spot is #1';
@@ -35,8 +38,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
-		const context = await browser.newContext();
-		const page2 = await context.newPage();
+		liveChatContext = await browser.newContext();
+		const page2 = await liveChatContext.newPage();
 
 		poLiveChat = new OmnichannelLiveChat(page2, api);
 		await poLiveChat.page.goto('/livechat');
@@ -54,7 +57,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.afterEach(async () => {
 		await poLiveChat.closeChat();
-		await poLiveChat.page.close();
+		await liveChatContext.close();
 	});
 
 	test('OC - Queue Management - Waiting Queue Message enabled', async () => {
@@ -72,17 +75,18 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.describe('OC - Queue Management - Update Queue Position', () => {
 		let poLiveChat2: OmnichannelLiveChat;
+		let liveChat2Context: BrowserContext;
 
 		test.beforeEach(async ({ browser, api }) => {
-			const context = await browser.newContext();
-			const page = await context.newPage();
+			liveChat2Context = await browser.newContext();
+			const page = await liveChat2Context.newPage();
 			poLiveChat2 = new OmnichannelLiveChat(page, api);
 			await poLiveChat2.page.goto('/livechat');
 		});
 
 		test.afterEach(async () => {
 			await poLiveChat2.closeChat();
-			await poLiveChat2.page.close();
+			await liveChat2Context.close();
 		});
 
 		test('Update user position on Queue', async () => {
@@ -125,6 +129,7 @@ test.describe('OC - Contact Manager Routing', () => {
 
 	let poHomeOmnichannel: HomeOmnichannel;
 	let poLiveChat: OmnichannelLiveChat;
+	let liveChatContext: BrowserContext;
 
 	// User2 will be the contact manager
 	let poHomeOmnichannelUser2: HomeOmnichannel;
@@ -152,8 +157,8 @@ test.describe('OC - Contact Manager Routing', () => {
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
+		liveChatContext = await browser.newContext();
+		const page = await liveChatContext.newPage();
 
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await poLiveChat.page.goto('/livechat');
@@ -173,7 +178,7 @@ test.describe('OC - Contact Manager Routing', () => {
 
 	test.afterEach(async () => {
 		await poLiveChat.closeChat();
-		await poLiveChat.page.close();
+		await liveChatContext.close();
 	});
 
 	test('should route inquiry only to the contact manager', async () => {

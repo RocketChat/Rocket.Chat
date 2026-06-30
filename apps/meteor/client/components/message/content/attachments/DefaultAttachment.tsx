@@ -91,14 +91,14 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
 											<MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />
 										) : null,
 										value: value ? (
-											<MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />
+											<MarkdownText variant='inline' parseEmoji content={String(value).replace(/(.*)/g, (line: string) => `${line}  `)} />
 										) : null,
 									};
 								})}
 							/>
 						)}
 						{attachment.image_url && (
-							<AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} alt={attachment.description || ''} />
+							<AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} alt={attachment.image_alt || ''} />
 						)}
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}

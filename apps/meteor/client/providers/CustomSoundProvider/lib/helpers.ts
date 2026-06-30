@@ -4,7 +4,7 @@ import { getURL } from '../../../../app/utils/client';
 
 export const getAssetUrl = (asset: string, params?: Record<string, any>) => getURL(asset, params, undefined, true);
 
-export const getCustomSoundURL = (sound: ICustomSound) => {
+export const getCustomSoundURL = (sound: Pick<ICustomSound, '_id' | 'extension'> & Pick<Partial<ICustomSound>, 'random'>) => {
 	return getAssetUrl(`/custom-sounds/${sound._id}.${sound.extension}`, { _dc: sound.random || 0 });
 };
 

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { GenericMenu, useSort } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import type { CallHistoryTableRowProps } from './CallHistoryTableRow';
 import CallHistoryTableRow from './CallHistoryTableRow';
@@ -25,7 +25,6 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 export default {
-	title: 'V2/Views/MediaCallHistoryTable',
 	component: MediaCallHistoryTable,
 	decorators: [mockedContexts],
 } satisfies Meta<typeof MediaCallHistoryTable>;
@@ -92,13 +91,15 @@ const results = Array.from({ length: 100 }).map(
 	}),
 );
 
-export const MediaCallHistoryTableStory: StoryFn<typeof MediaCallHistoryTable> = () => {
-	const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
-	return (
-		<MediaCallHistoryTable sort={sort}>
-			{results.map((result) => (
-				<CallHistoryTableRow key={result._id} {...result} />
-			))}
-		</MediaCallHistoryTable>
-	);
+export const MediaCallHistoryTableStory: StoryObj<typeof MediaCallHistoryTable> = {
+	render: () => {
+		const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
+		return (
+			<MediaCallHistoryTable sort={sort}>
+				{results.map((result) => (
+					<CallHistoryTableRow key={result._id} {...result} />
+				))}
+			</MediaCallHistoryTable>
+		);
+	},
 };

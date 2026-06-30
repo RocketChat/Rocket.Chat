@@ -27,6 +27,7 @@ module.exports = {
 		'tests/unit/lib/**/*.spec.ts',
 		'tests/unit/server/**/*.tests.ts',
 		'tests/unit/server/**/*.spec.ts',
+		'app/2fa/server/**/*.spec.ts',
 		'app/api/server/lib/**/*.spec.ts',
 		'app/file-upload/server/**/*.spec.ts',
 		'app/statistics/server/**/*.spec.ts',
