@@ -65,6 +65,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 						<MessageContentBody
 							id={`${normalizedMessage._id}-content`}
 							md={normalizedMessage.md}
+							msg={normalizedMessage.msg}
 							mentions={normalizedMessage.mentions}
 							channels={normalizedMessage.channels}
 							searchText={searchText}
